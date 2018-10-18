@@ -11,18 +11,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         {
             switch (channelId)
             {
-                case Channels.Facebook:
-                case Channels.Skype:
+                case Connector.Channels.Facebook:
+                case Connector.Channels.Skype:
                     return buttonCnt <= 10;
 
-                case Channels.Kik:
+                case Connector.Channels.Kik:
                     return buttonCnt <= 20;
 
-                case Channels.Slack:
-                case Channels.Telegram:
-                case Channels.Emulator:
-                case Channels.Directline:
-                case Channels.Webchat:
+                case Connector.Channels.Slack:
+                case Connector.Channels.Telegram:
+                case Connector.Channels.Emulator:
+                case Connector.Channels.Directline:
+                case Connector.Channels.Webchat:
                     return buttonCnt <= 100;
 
                 default:
@@ -34,16 +34,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         {
             switch (channelId)
             {
-                case Channels.Facebook:
-                case Channels.Skype:
-                case Channels.Msteams:
+                case Connector.Channels.Facebook:
+                case Connector.Channels.Skype:
+                case Connector.Channels.Msteams:
                     return buttonCnt <= 3;
 
-                case Channels.Slack:
-                case Channels.Emulator:
-                case Channels.Directline:
-                case Channels.Webchat:
-                case Channels.Cortana:
+                case Connector.Channels.Slack:
+                case Connector.Channels.Emulator:
+                case Connector.Channels.Directline:
+                case Connector.Channels.Webchat:
+                case Connector.Channels.Cortana:
                     return buttonCnt <= 100;
 
                 default:
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         {
             switch (channelId)
             {
-                case Channels.Cortana:
+                case Connector.Channels.Cortana:
                     return false;
 
                 default:
