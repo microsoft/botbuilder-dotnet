@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 
 namespace Microsoft.Bot.Builder.Azure
@@ -73,5 +74,13 @@ namespace Microsoft.Bot.Builder.Azure
         /// The set of options passed into <see cref="https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.client.documentclient.createdatabaseifnotexistsasync?view=azure-dotnet"/>CreateDatabaseIfNotExistsAsync.
         /// </value>
         public RequestOptions DatabaseCreationRequestOptions { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the <a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.idocumentclient?view=azure-dotnet">IDocumentClient</a> to be used internally.
+        /// </summary>
+        /// <value>
+        /// The IDocumentClient interface captures the API signatures of the Azure Cosmos DB service.
+        /// </value>
+        public IDocumentClient DocumentClient { get; set; } = null;
     }
 }

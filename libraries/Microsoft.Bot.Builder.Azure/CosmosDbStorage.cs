@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Azure
         private readonly string _collectionId;
         private readonly RequestOptions _documentCollectionCreationRequestOptions = null;
         private readonly RequestOptions _databaseCreationRequestOptions = null;
-        private readonly DocumentClient _client;
+        private readonly IDocumentClient _client;
         private string _collectionLink = null;
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.Azure
 
             // Invoke CollectionPolicy delegate to further customize settings
             cosmosDbStorageOptions.ConnectionPolicyConfigurator?.Invoke(connectionPolicy);
-            _client = new DocumentClient(cosmosDbStorageOptions.CosmosDBEndpoint, cosmosDbStorageOptions.AuthKey, connectionPolicy);
+            _client = cosmosDbStorageOptions.DocumentClient ?? new DocumentClient(cosmosDbStorageOptions.CosmosDBEndpoint, cosmosDbStorageOptions.AuthKey, connectionPolicy);
         }
 
         [Obsolete("Replaced by CosmosDBKeyEscape.EscapeKey.")]

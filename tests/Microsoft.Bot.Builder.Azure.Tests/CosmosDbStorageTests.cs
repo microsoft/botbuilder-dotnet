@@ -4,12 +4,15 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
@@ -154,20 +157,51 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             Assert.IsTrue(wasCalled, "The Connection Policy Configurator was not called.");
         }
 
-        [TestMethod]
-        public void Database_Creation_Request_Options_Should_Be_Used()
+        private Mock<IDocumentClient> GetDocumentClient()
         {
+            var mock = new Mock<IDocumentClient>();
+
+            mock.Setup(client => client.CreateDatabaseIfNotExistsAsync(It.IsAny<Database>(), It.IsAny<RequestOptions>()))
+                .ReturnsAsync(() => {
+                    var database = new Database();
+                    database.SetPropertyValue("SelfLink", "dummyDB_SelfLink");
+                    return new ResourceResponse<Database>(database);
+                });
+
+            mock.Setup(client => client.CreateDocumentCollectionIfNotExistsAsync(It.IsAny<Uri>(), It.IsAny<DocumentCollection>(), It.IsAny<RequestOptions>()))
+                .ReturnsAsync(() => {
+                    var documentCollection = new DocumentCollection();
+                    documentCollection.SetPropertyValue("SelfLink", "dummyDC_SelfLink");
+                    return new ResourceResponse<DocumentCollection>(documentCollection);
+                });
+
+            return mock;
+        }
+
+        [TestMethod]
+        public async Task Database_Creation_Request_Options_Should_Be_Used()
+        {
+            var documentClientMock = GetDocumentClient();
+
+            var databaseCreationRequestOptions = new RequestOptions { OfferThroughput = 1000 };
+            var documentCollectionRequestOptions = new RequestOptions { OfferThroughput = 500 };
+
             var optionsWithConfigurator = new CosmosDbStorageOptions
             {
                 AuthKey = "test",
                 CollectionId = "testId",
                 DatabaseId = "testDb",
                 CosmosDBEndpoint = new Uri("https://test.com"),
-                DocumentCollectionRequestOptions = new RequestOptions { OfferThroughput = 1000 }, 
+                DatabaseCreationRequestOptions = databaseCreationRequestOptions,
+                DocumentCollectionRequestOptions = documentCollectionRequestOptions,
+                DocumentClient = documentClientMock.Object
             };
 
             var storage = new CosmosDbStorage(optionsWithConfigurator);
+            await storage.DeleteAsync(new string[] { "foo" }, CancellationToken.None);
 
+            documentClientMock.Verify(client => client.CreateDatabaseIfNotExistsAsync(It.IsAny<Database>(), databaseCreationRequestOptions), Times.Once());
+            documentClientMock.Verify(client => client.CreateDocumentCollectionIfNotExistsAsync(It.IsAny<Uri>(), It.IsAny<DocumentCollection>(), documentCollectionRequestOptions), Times.Once());
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
