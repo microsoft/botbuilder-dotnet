@@ -11,6 +11,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -39,7 +40,7 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IActivity"/>
     /// <seealso cref="IBot"/>
     /// <seealso cref="IMiddleware"/>
-    public class BotFrameworkAdapter : BotAdapter
+    public class BotFrameworkAdapter : BotAdapter, IAdapterIntegration
     {
         private const string InvokeReponseKey = "BotFrameworkAdapter.InvokeResponse";
         private const string BotIdentityKey = "BotIdentity";
@@ -232,7 +233,7 @@ namespace Microsoft.Bot.Builder
                     Activity invokeResponse = context.TurnState.Get<Activity>(InvokeReponseKey);
                     if (invokeResponse == null)
                     {
-                        // ToDo: Trace Here
+                        // TODO: this should not throw, but instead it should create and return an InvokeResponse with status 501 and a null body
                         throw new InvalidOperationException("Bot failed to return a valid 'invokeResponse' activity.");
                     }
                     else

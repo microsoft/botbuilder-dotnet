@@ -4,8 +4,8 @@
 using System;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.DependencyInjection;
-
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             services.AddTransient<IBot, TBot>();
 
-            services.AddSingleton(sp =>
+            services.TryAddSingleton<IAdapterIntegration>(sp =>
             {
                 var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
                 var logger = sp.GetRequiredService<ILogger<BotFrameworkAdapter>>();

@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
             }
 
             var requestServices = httpContext.RequestServices;
-            var botFrameworkAdapter = requestServices.GetRequiredService<BotFrameworkAdapter>();
+            var botFrameworkAdapter = requestServices.GetRequiredService<IAdapterIntegration>();
             var bot = requestServices.GetRequiredService<IBot>();
 
             try
@@ -81,9 +81,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                 }
                 else
                 {
-                    response.ContentType = "application/json";
                     response.StatusCode = invokeResponse.Status;
 
+                    // TODO: the body could be null
+                    response.ContentType = "application/json";
                     using (var writer = new StreamWriter(response.Body))
                     {
                         using (var jsonWriter = new JsonTextWriter(writer))
@@ -99,6 +100,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
             }
         }
 
-        protected abstract Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, BotCallbackHandler botCallbackHandler, CancellationToken cancellationToken);
+        protected abstract Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, IAdapterIntegration adapter, BotCallbackHandler botCallbackHandler, CancellationToken cancellationToken);
     }
 }
