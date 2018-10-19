@@ -269,11 +269,21 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
-        public async Task WrittingNullStoreItems_Throws()
+        public async Task WritingNullStoreItemsDoesntThrow()
         {
             if (CheckEmulator())
             {
-                await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => _storage.WriteAsync(null));
+                await _storage.WriteAsync(null);
+            }
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
+        public async Task WritingNoStoreItemsDoesntThrow()
+        {
+            if (CheckEmulator())
+            {
+                await _storage.WriteAsync(null);
             }
         }
 
