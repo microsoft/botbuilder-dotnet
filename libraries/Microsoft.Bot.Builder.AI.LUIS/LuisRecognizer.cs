@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             }
 
             return !string.IsNullOrEmpty(topIntent) ? topIntent : defaultIntent;
-	}
+        }
 
         /// <inheritdoc />
         public async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
