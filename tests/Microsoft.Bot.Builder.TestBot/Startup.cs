@@ -32,13 +32,39 @@ namespace Microsoft.Bot.Builder.TestBot
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddBot<TestBot>(options =>
+            services.AddSingleton<IAdapterIntegration>(sp =>
             {
+                var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
+
                 IStorage dataStore = new MemoryStorage();
                 options.State.Add(new ConversationState(dataStore));
                 options.Middleware.Add(new AutoSaveStateMiddleware(options.State.ToArray()));
                 options.Middleware.Add(new ShowTypingMiddleware());
+
+                var botFrameworkAdapter = new BotFrameworkAdapter(options.CredentialProvider, options.ChannelProvider, options.ConnectorClientRetryPolicy, options.HttpClient)
+                {
+                    OnTurnError = options.OnTurnError,
+                };
+
+                foreach (var middleware in options.Middleware)
+                {
+                    botFrameworkAdapter.Use(middleware);
+                }
+
+                //return botFrameworkAdapter;
+
+                return new InteceptorAdapter(botFrameworkAdapter);
             });
+
+            services.AddBot<TestBot>();
+
+            //services.AddBot<TestBot>(options =>
+            //{
+            //    IStorage dataStore = new MemoryStorage();
+            //    options.State.Add(new ConversationState(dataStore));
+            //    options.Middleware.Add(new AutoSaveStateMiddleware(options.State.ToArray()));
+            //    options.Middleware.Add(new ShowTypingMiddleware());
+            //});
 
             services.AddSingleton(sp =>
             {
