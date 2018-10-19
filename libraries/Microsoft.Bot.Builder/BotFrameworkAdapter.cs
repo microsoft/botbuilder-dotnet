@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Rest.TransientFaultHandling;
 using Newtonsoft.Json;
 
@@ -47,6 +49,7 @@ namespace Microsoft.Bot.Builder
         private readonly IChannelProvider _channelProvider;
         private readonly HttpClient _httpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
+        private readonly ILogger<BotFrameworkAdapter> _logger;
         private ConcurrentDictionary<string, MicrosoftAppCredentials> _appCredentialMap = new ConcurrentDictionary<string, MicrosoftAppCredentials>();
 
         // There is a significant boost in throughput if we reuse a connectorClient
@@ -68,12 +71,19 @@ namespace Microsoft.Bot.Builder
         /// components in the conustructor. Use the <see cref="Use(IMiddleware)"/> method to
         /// add additional middleware to the adapter after construction.
         /// </remarks>
-        public BotFrameworkAdapter(ICredentialProvider credentialProvider, IChannelProvider channelProvider = null, RetryPolicy connectorClientRetryPolicy = null, HttpClient customHttpClient = null, IMiddleware middleware = null)
+        public BotFrameworkAdapter(
+            ICredentialProvider credentialProvider,
+            IChannelProvider channelProvider = null,
+            RetryPolicy connectorClientRetryPolicy = null,
+            HttpClient customHttpClient = null,
+            IMiddleware middleware = null,
+            ILogger<BotFrameworkAdapter> logger = null)
         {
             _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
             _channelProvider = channelProvider;
             _httpClient = customHttpClient ?? DefaultHttpClient;
             _connectorClientRetryPolicy = connectorClientRetryPolicy;
+            _logger = logger ?? NullLogger<BotFrameworkAdapter>.Instance;
 
             if (middleware != null)
             {
@@ -124,6 +134,8 @@ namespace Microsoft.Bot.Builder
             {
                 throw new ArgumentNullException(nameof(callback));
             }
+
+            _logger.LogInformation($"Sending proactive message.  botAppId: {botAppId}");
 
             using (var context = new TurnContext(this, reference.GetContinuationActivity()))
             {
@@ -202,6 +214,8 @@ namespace Microsoft.Bot.Builder
         {
             BotAssert.ActivityNotNull(activity);
 
+            _logger.LogInformation($"Received an incoming activity.  ActivityId: {activity.Id}");
+
             using (var context = new TurnContext(this, activity))
             {
                 context.TurnState.Add<IIdentity>(BotIdentityKey, identity);
@@ -272,6 +286,8 @@ namespace Microsoft.Bot.Builder
             {
                 var activity = activities[index];
                 var response = default(ResourceResponse);
+
+                _logger.LogInformation($"Sending activity.  ReplyToId: {activity.ReplyToId}");
 
                 if (activity.Type == ActivityTypesEx.Delay)
                 {
