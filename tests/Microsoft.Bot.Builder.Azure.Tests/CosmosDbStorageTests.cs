@@ -283,7 +283,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await _storage.WriteAsync(null);
+                var changes = new Dictionary<string, object>();
+                await _storage.WriteAsync(changes);
             }
         }
 
