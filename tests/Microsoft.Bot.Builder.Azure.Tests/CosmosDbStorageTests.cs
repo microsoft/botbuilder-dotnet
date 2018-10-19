@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }));
 
             // No Auth Key. Should throw. 
-            Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage( new CosmosDbStorageOptions
+            Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
             {
                 AuthKey = null,
                 CollectionId = "testId",
@@ -134,6 +134,36 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 CollectionId = null,
                 DatabaseId = "testDb",
                 CosmosDBEndpoint = new Uri("https://test.com"),
+            }));
+        }
+
+        [TestMethod]
+        public void CustomConstructor_Should_Throw_On_InvalidOptions()
+        {
+            var customClient = GetDocumentClient().Object;
+
+            // No client. Should throw. 
+            Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(null, new CosmosDbCustomClientOptions
+            {
+                CollectionId = "testId",
+                DatabaseId = "testDb",
+            }));
+
+            // No Options. Should throw. 
+            Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(customClient, null));
+
+            // No Database Id. Should throw. 
+            Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(customClient, new CosmosDbCustomClientOptions
+            {
+                CollectionId = "testId",
+                DatabaseId = null,
+            }));
+
+            // No Collection Id. Should throw. 
+            Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(customClient, new CosmosDbCustomClientOptions
+            {
+                CollectionId = null,
+                DatabaseId = "testDb",
             }));
         }
 
@@ -175,6 +205,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     return new ResourceResponse<DocumentCollection>(documentCollection);
                 });
 
+            mock.Setup(client => client.ConnectionPolicy).Returns(new ConnectionPolicy());
+
             return mock;
         }
 
@@ -186,18 +218,15 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             var databaseCreationRequestOptions = new RequestOptions { OfferThroughput = 1000 };
             var documentCollectionRequestOptions = new RequestOptions { OfferThroughput = 500 };
 
-            var optionsWithConfigurator = new CosmosDbStorageOptions
+            var optionsWithConfigurator = new CosmosDbCustomClientOptions
             {
-                AuthKey = "test",
                 CollectionId = "testId",
                 DatabaseId = "testDb",
-                CosmosDBEndpoint = new Uri("https://test.com"),
                 DatabaseCreationRequestOptions = databaseCreationRequestOptions,
                 DocumentCollectionRequestOptions = documentCollectionRequestOptions,
-                DocumentClient = documentClientMock.Object
             };
 
-            var storage = new CosmosDbStorage(optionsWithConfigurator);
+            var storage = new CosmosDbStorage(documentClientMock.Object, optionsWithConfigurator);
             await storage.DeleteAsync(new string[] { "foo" }, CancellationToken.None);
 
             documentClientMock.Verify(client => client.CreateDatabaseIfNotExistsAsync(It.IsAny<Database>(), databaseCreationRequestOptions), Times.Once());
