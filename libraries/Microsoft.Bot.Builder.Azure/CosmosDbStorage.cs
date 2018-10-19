@@ -174,9 +174,9 @@ namespace Microsoft.Bot.Builder.Azure
         /// <seealso cref="ReadAsync(string[], CancellationToken)"/>
         public async Task WriteAsync(IDictionary<string, object> changes, CancellationToken cancellationToken)
         {
-            if (changes == null)
+            if (changes == null || changes.Count == 0)
             {
-                throw new ArgumentNullException(nameof(changes), "Please provide a StoreItems with changes to persist.");
+                return;
             }
 
             // Ensure Initialization has been run
