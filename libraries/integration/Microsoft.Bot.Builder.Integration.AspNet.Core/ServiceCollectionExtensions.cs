@@ -4,6 +4,8 @@
 using System;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.DependencyInjection;
+
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
@@ -35,12 +37,26 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 services.Configure(configureAction);
             }
 
+            services.AddSingleton<ILogger<BotFrameworkAdapter>>(sp =>
+            {
+                // Loggers introduce a lock during creation, make a singleton.
+                var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
+                return new Logger<BotFrameworkAdapter>(loggerFactory);
+            });
+
             services.AddTransient<IBot, TBot>();
 
             services.AddSingleton(sp =>
             {
                 var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
-                var botFrameworkAdapter = new BotFrameworkAdapter(options.CredentialProvider, options.ChannelProvider, options.ConnectorClientRetryPolicy, options.HttpClient)
+                var logger = sp.GetRequiredService<ILogger<BotFrameworkAdapter>>();
+                var botFrameworkAdapter = new BotFrameworkAdapter(
+                                options.CredentialProvider,
+                                options.ChannelProvider,
+                                options.ConnectorClientRetryPolicy,
+                                options.HttpClient,
+                                null,
+                                logger)
                 {
                     OnTurnError = options.OnTurnError,
                 };
