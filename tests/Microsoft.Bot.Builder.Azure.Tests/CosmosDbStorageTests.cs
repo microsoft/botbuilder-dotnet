@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -243,11 +244,26 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
-        public async Task ReadingEmptyKeys_Throws()
+        public async Task ReadingEmptyKeysReturnsEmptyDictionary()
         {
             if (CheckEmulator())
             {
-                await Assert.ThrowsExceptionAsync<ArgumentException>(() => _storage.ReadAsync(new string[] { }));
+                var state = await _storage.ReadAsync(new string[] { });
+                Assert.IsInstanceOfType(state, typeof(Dictionary<string, object>));
+                Assert.AreEqual(state.Count, 0);
+            }
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
+        public async Task ReadingNullKeysReturnsEmptyDictionary()
+        {
+            if (CheckEmulator())
+            {
+                string[] nullKeys = null;
+                var state = await _storage.ReadAsync(nullKeys);
+                Assert.IsInstanceOfType(state, typeof(Dictionary<string, object>));
+                Assert.AreEqual(state.Count, 0);
             }
         }
 
