@@ -3,10 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-<<<<<<< HEAD
-=======
 using System.Linq;
->>>>>>> webapi done - unit tests for dotnet work in progress
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -20,10 +17,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 {
     public class ServiceCollectionExtensionsTests
     {
-        public class MockServiceCollection : List<ServiceDescriptor>, IServiceCollection
-        {
-        }
-
         public class AddBotTests
         {
             [Fact]
@@ -39,25 +32,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             [Fact]
             public void WithoutConfigurationCallback()
             {
-                var serviceCollection = new MockServiceCollection();
+                var serviceCollectionMock = new Mock<IServiceCollection>();
 
-                serviceCollection.AddBot<ServiceRegistrationTestBot>();
+                serviceCollectionMock.Object.AddBot<ServiceRegistrationTestBot>();
 
-<<<<<<< HEAD
                 VerifyStandardBotServicesAreRegistered(serviceCollectionMock);
-=======
-                Assert.Contains(serviceCollection, sd => sd.ServiceType == typeof(IBot) && sd.ImplementationType == typeof(ServiceRegistrationTestBot) && sd.Lifetime == ServiceLifetime.Transient);
-
-
-                //Assert.Contains(serviceCollection, sd => sd.ServiceType == typeof(IAdapterIntegration) && sd.ImplementationType == typeof(BotFrameworkAdapter) && sd.Lifetime == ServiceLifetime.Singleton);
-
-                var x = serviceCollection.Find(sd => sd.ServiceType == typeof(IAdapterIntegration) && sd.Lifetime == ServiceLifetime.Singleton);
-
-                var sp = new Mock<IServiceProvider>();
-                var obj = x.ImplementationFactory(sp.Object);
-
-                Assert.DoesNotContain(serviceCollection, sd => sd.ServiceType == typeof(IConfigureOptions<BotFrameworkOptions>));
->>>>>>> webapi done - unit tests for dotnet work in progress
             }
 
             [Fact]
