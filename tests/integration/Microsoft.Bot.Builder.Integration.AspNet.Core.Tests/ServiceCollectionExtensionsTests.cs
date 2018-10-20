@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -32,7 +31,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             [Fact]
             public void WithoutConfigurationCallback()
             {
-                var serviceCollectionMock = new Mock<IServiceCollection>();
+                var serviceCollectionMock = CreateServiceCollectionMock();
 
                 serviceCollectionMock.Object.AddBot<ServiceRegistrationTestBot>();
 
@@ -42,7 +41,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             [Fact]
             public void WithExplicitNullConfigurationCallback()
             {
-                var serviceCollectionMock = new Mock<IServiceCollection>();
+                var serviceCollectionMock = CreateServiceCollectionMock();
 
                 serviceCollectionMock.Object.AddBot<ServiceRegistrationTestBot>(null);
 
@@ -52,14 +51,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             [Fact]
             public void WithConfigurationCallback()
             {
-                var serviceCollectionMock = new Mock<IServiceCollection>();
-                var registeredServices = new List<ServiceDescriptor>();
-
-                serviceCollectionMock.Setup(sc => sc.Add(It.IsAny<ServiceDescriptor>()))
-                    .Callback<ServiceDescriptor>(sd => registeredServices.Add(sd));
-
-                serviceCollectionMock.Setup(sc => sc.GetEnumerator()).Returns(() => registeredServices.GetEnumerator());
-
+                var serviceCollectionMock = CreateServiceCollectionMock();
 
                 var configAction = new Action<BotFrameworkOptions>(options =>
                 {
@@ -73,10 +65,19 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => (sd.ImplementationInstance is ConfigureNamedOptions<BotFrameworkOptions>) && ((ConfigureNamedOptions<BotFrameworkOptions>)sd.ImplementationInstance).Action == configAction)));
             }
 
+            private static Mock<IServiceCollection> CreateServiceCollectionMock()
+            {
+                var serviceCollectionMock = new Mock<IServiceCollection>();
+                var registeredServices = new List<ServiceDescriptor>();
+                serviceCollectionMock.Setup(sc => sc.Add(It.IsAny<ServiceDescriptor>())).Callback<ServiceDescriptor>(sd => registeredServices.Add(sd));
+                serviceCollectionMock.Setup(sc => sc.GetEnumerator()).Returns(() => registeredServices.GetEnumerator());
+                return serviceCollectionMock;
+            }
+
             private static void VerifyStandardBotServicesAreRegistered(Mock<IServiceCollection> serviceCollectionMock)
             {
                 serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => sd.ServiceType == typeof(IBot) && sd.ImplementationType == typeof(ServiceRegistrationTestBot) && sd.Lifetime == ServiceLifetime.Transient)));
-                serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => sd.ServiceType == typeof(BotFrameworkAdapter) && sd.Lifetime == ServiceLifetime.Singleton)));
+                serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => sd.ServiceType == typeof(IAdapterIntegration) && sd.Lifetime == ServiceLifetime.Singleton)));
                 serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => sd.ServiceType == typeof(ILogger<BotFrameworkAdapter>))), Times.Once());
             }
         }
