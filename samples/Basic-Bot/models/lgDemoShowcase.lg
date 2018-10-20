@@ -1,0 +1,23 @@
+# confusion
+	- I didn't understand what you just said to me.
+	- I didn't quite get what you meant.
+
+
+# nameQuestion
+	- What is your name?
+	- What should I call you?
+
+# cityQuestion
+	- what city do you live in, {username}?
+
+# showAppreciation 
+	- Nice to meet you!
+
+# welcomeUser  
+	- Welcome {username}!
+	- Hi! Nice to see you again {username}. 
+
+
+# offerHelp
+	- How can I help you? 
+	- Happy to help!

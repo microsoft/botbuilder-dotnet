@@ -74,6 +74,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cafe-Bot", "Cafe-Bot", "{F7
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cafe-Bot", "samples\Cafe-Bot\Cafe-Bot.csproj", "{19484C96-8587-47FB-9BCF-9BAA9F9CEE4F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Basic-Bot", "Basic-Bot", "{F8947775-B35F-4A62-BF58-958C0C51C59A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BasicBot", "samples\Basic-Bot\BasicBot.csproj", "{B2C51FF4-E6E3-468B-873C-665C349D8141}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug - NuGet Packages|Any CPU = Debug - NuGet Packages|Any CPU
@@ -299,6 +303,14 @@ Global
 		{19484C96-8587-47FB-9BCF-9BAA9F9CEE4F}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{19484C96-8587-47FB-9BCF-9BAA9F9CEE4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19484C96-8587-47FB-9BCF-9BAA9F9CEE4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2C51FF4-E6E3-468B-873C-665C349D8141}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2C51FF4-E6E3-468B-873C-665C349D8141}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{B2C51FF4-E6E3-468B-873C-665C349D8141}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2C51FF4-E6E3-468B-873C-665C349D8141}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2C51FF4-E6E3-468B-873C-665C349D8141}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2C51FF4-E6E3-468B-873C-665C349D8141}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{B2C51FF4-E6E3-468B-873C-665C349D8141}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2C51FF4-E6E3-468B-873C-665C349D8141}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -337,6 +349,8 @@ Global
 		{1C4B8FD1-8E78-44A4-8855-439E2F4F5EA6} = {603A5352-15AF-4F0A-A527-D801531A4AA2}
 		{F7C40F7B-E17A-4C6B-9F5A-587A7B4BA69D} = {1C5590B5-AF62-4450-AC9C-C159F9DCE19B}
 		{19484C96-8587-47FB-9BCF-9BAA9F9CEE4F} = {F7C40F7B-E17A-4C6B-9F5A-587A7B4BA69D}
+		{F8947775-B35F-4A62-BF58-958C0C51C59A} = {1C5590B5-AF62-4450-AC9C-C159F9DCE19B}
+		{B2C51FF4-E6E3-468B-873C-665C349D8141} = {F8947775-B35F-4A62-BF58-958C0C51C59A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
