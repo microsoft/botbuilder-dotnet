@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
             }
 
             var requestServices = httpContext.RequestServices;
-            var botFrameworkAdapter = requestServices.GetRequiredService<IAdapterIntegration>();
+            var adapter = requestServices.GetRequiredService<IAdapterIntegration>();
             var bot = requestServices.GetRequiredService<IBot>();
 
             try
@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
 #pragma warning disable UseConfigureAwait // Use ConfigureAwait
                 var invokeResponse = await ProcessMessageRequestAsync(
                     request,
-                    botFrameworkAdapter,
+                    adapter,
                     bot.OnTurnAsync,
                     default(CancellationToken));
 #pragma warning restore UseConfigureAwait // Use ConfigureAwait
@@ -83,13 +83,15 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                 {
                     response.StatusCode = invokeResponse.Status;
 
-                    // TODO: the body could be null
-                    response.ContentType = "application/json";
-                    using (var writer = new StreamWriter(response.Body))
+                    if (response.Body != null)
                     {
-                        using (var jsonWriter = new JsonTextWriter(writer))
+                        response.ContentType = "application/json";
+                        using (var writer = new StreamWriter(response.Body))
                         {
-                            BotMessageSerializer.Serialize(jsonWriter, invokeResponse.Body);
+                            using (var jsonWriter = new JsonTextWriter(writer))
+                            {
+                                BotMessageSerializer.Serialize(jsonWriter, invokeResponse.Body);
+                            }
                         }
                     }
                 }

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -230,15 +231,14 @@ namespace Microsoft.Bot.Builder
                 // the Bot will return a specific body and return code.
                 if (activity.Type == ActivityTypes.Invoke)
                 {
-                    Activity invokeResponse = context.TurnState.Get<Activity>(InvokeReponseKey);
-                    if (invokeResponse == null)
+                    var activityInvokeResponse = context.TurnState.Get<Activity>(InvokeReponseKey);
+                    if (activityInvokeResponse == null)
                     {
-                        // TODO: this should not throw, but instead it should create and return an InvokeResponse with status 501 and a null body
-                        throw new InvalidOperationException("Bot failed to return a valid 'invokeResponse' activity.");
+                        return new InvokeResponse { Status = (int)HttpStatusCode.NotImplemented };
                     }
                     else
                     {
-                        return (InvokeResponse)invokeResponse.Value;
+                        return (InvokeResponse)activityInvokeResponse.Value;
                     }
                 }
 

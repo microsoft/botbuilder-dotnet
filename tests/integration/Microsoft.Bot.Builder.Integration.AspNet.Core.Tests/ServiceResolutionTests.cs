@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
                 var serviceProvider = serviceCollection.BuildServiceProvider();
 
-                var botFrameworkAdapter = serviceProvider.GetService<BotFrameworkAdapter>();
+                var botFrameworkAdapter = serviceProvider.GetService<IAdapterIntegration>();
 
                 botFrameworkAdapter.Should().NotBeNull();
             }
