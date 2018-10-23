@@ -15,20 +15,20 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         public void Sanitize_Key_Should_Fail_With_Null_Key()
         {
             // Null key should throw
-            Assert.ThrowsException<ArgumentNullException>(() => CosmosDBKeyEscape.EscapeKey(null));
+            Assert.ThrowsException<ArgumentNullException>(() => CosmosDbKeyEscape.EscapeKey(null));
 
             // Empty string should throw
-            Assert.ThrowsException<ArgumentNullException>(() => CosmosDBKeyEscape.EscapeKey(string.Empty));
+            Assert.ThrowsException<ArgumentNullException>(() => CosmosDbKeyEscape.EscapeKey(string.Empty));
 
             // Whitespace key should throw
-            Assert.ThrowsException<ArgumentNullException>(() => CosmosDBKeyEscape.EscapeKey("     "));
+            Assert.ThrowsException<ArgumentNullException>(() => CosmosDbKeyEscape.EscapeKey("     "));
         }
 
         [TestMethod]
         public void Sanitize_Key_Should_Not_Change_A_Valid_Key()
         {
             var validKey = "Abc12345";
-            var sanitizedKey = CosmosDBKeyEscape.EscapeKey(validKey);
+            var sanitizedKey = CosmosDbKeyEscape.EscapeKey(validKey);
             Assert.AreEqual(validKey, sanitizedKey);
         }
 
@@ -36,27 +36,27 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         public void Sanitize_Key_Should_Escape_Illegal_Character()
         {
             // Ascii code of "?" is "3f".
-            var sanitizedKey = CosmosDBKeyEscape.EscapeKey("?test?");
+            var sanitizedKey = CosmosDbKeyEscape.EscapeKey("?test?");
             Assert.AreEqual(sanitizedKey, "*3ftest*3f");
 
             // Ascii code of "/" is "2f".
-            var sanitizedKey2 = CosmosDBKeyEscape.EscapeKey("/test/");
+            var sanitizedKey2 = CosmosDbKeyEscape.EscapeKey("/test/");
             Assert.AreEqual(sanitizedKey2, "*2ftest*2f");
 
             // Ascii code of "\" is "5c".
-            var sanitizedKey3 = CosmosDBKeyEscape.EscapeKey("\\test\\");
+            var sanitizedKey3 = CosmosDbKeyEscape.EscapeKey("\\test\\");
             Assert.AreEqual(sanitizedKey3, "*5ctest*5c");
 
             // Ascii code of "#" is "23".
-            var sanitizedKey4 = CosmosDBKeyEscape.EscapeKey("#test#");
+            var sanitizedKey4 = CosmosDbKeyEscape.EscapeKey("#test#");
             Assert.AreEqual(sanitizedKey4, "*23test*23");
 
             // Ascii code of "*" is "2a".
-            var sanitizedKey5 = CosmosDBKeyEscape.EscapeKey("*test*");
+            var sanitizedKey5 = CosmosDbKeyEscape.EscapeKey("*test*");
             Assert.AreEqual(sanitizedKey5, "*2atest*2a");
 
             // Check a compound key
-            var compoundSanitizedKey = CosmosDBKeyEscape.EscapeKey("?#/");
+            var compoundSanitizedKey = CosmosDbKeyEscape.EscapeKey("?#/");
             Assert.AreEqual(compoundSanitizedKey, "*3f*23*2f");
         }
 
@@ -71,8 +71,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             // we makes sure to escape the *. 
 
             // Ascii code of "*" is "2a".
-            var escaped1 = CosmosDBKeyEscape.EscapeKey(validKey);
-            var escaped2 = CosmosDBKeyEscape.EscapeKey(validKey2);
+            var escaped1 = CosmosDbKeyEscape.EscapeKey(validKey);
+            var escaped2 = CosmosDbKeyEscape.EscapeKey(validKey2);
 
             Assert.AreNotEqual(escaped1, escaped2); 
         }
