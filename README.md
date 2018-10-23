@@ -8,7 +8,6 @@
 [![Gitter](https://img.shields.io/gitter/room/Microsoft/BotBuilder.svg)](https://gitter.im/Microsoft/BotBuilder)
 
 [![StackExchange](https://img.shields.io/stackexchange/stackoverflow/t/botframework.svg)](https://stackoverflow.com/questions/tagged/botframework)
-[![StackExchange](https://img.shields.io/stackexchange/stackoverflow/t/botframework-v4.svg)](https://stackoverflow.com/questions/tagged/botframework-v4)
 
 This repository contains code for the .NET version of the [Microsoft Bot Builder SDK](https://github.com/Microsoft/botbuilder). The Bot Builder SDK v4 is the latest SDK for building bot applications.  
 
