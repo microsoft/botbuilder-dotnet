@@ -8,9 +8,9 @@ using System.Text;
 
 namespace Microsoft.Bot.Builder.Azure
 {
-    public static class CosmosDBKeyEscape
+    public static class CosmosDbKeyEscape
     {
-        // The list of illegal characters for CosmosDB Keys comes from this list on
+        // The list of illegal characters for Cosmos DB Keys comes from this list on
         // the CosmostDB docs: https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.resource.id?view=azure-dotnet#remarks
         // Note: We are also escapting the "*" character, as that what we're using
         // as our escape character.
@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Azure
                 new Dictionary<char, string>(_illegalKeys.ToDictionary(c => c, c => '*' + ((int)c).ToString("x2")));
 
         /// <summary>
-        /// Converts the key into a DocumentID that can be used safely with CosmosDB.
+        /// Converts the key into a DocumentID that can be used safely with Cosmos DB.
         /// The following characters are restricted and cannot be used in the Id property: '/', '\', '?', '#'
         /// More information at https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.resource.id?view=azure-dotnet#remarks.
         /// </summary>
