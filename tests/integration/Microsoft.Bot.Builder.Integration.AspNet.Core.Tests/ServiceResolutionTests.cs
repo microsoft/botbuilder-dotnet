@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
                 var serviceProvider = serviceCollection.BuildServiceProvider();
 
-                var botFrameworkAdapter = serviceProvider.GetService<BotFrameworkAdapter>();
+                var botFrameworkAdapter = serviceProvider.GetService<IAdapterIntegration>();
 
                 botFrameworkAdapter.Should().NotBeNull();
             }
@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             public void BotFrameworkAdapterILoggerShouldResolve()
             {
                 // Simulate a LoggerFactory (could be AppInsights/etc)
-                var mockLog = new Mock<ILogger<BotFrameworkAdapter>>();
+                var mockLog = new Mock<ILogger<IAdapterIntegration>>();
                 var mockLogFactory = new Mock<ILoggerFactory>();
                 mockLogFactory.Setup(f => f.CreateLogger(It.IsAny<string>())).Returns(mockLog.Object);
 
@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
                 var serviceProvider = serviceCollection.BuildServiceProvider();
 
-                var frameworkLogger = serviceProvider.GetService<ILogger<BotFrameworkAdapter>>();
+                var frameworkLogger = serviceProvider.GetService<ILogger<IAdapterIntegration>>();
 
                 frameworkLogger.Should().NotBeNull();
             }

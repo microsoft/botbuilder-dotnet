@@ -37,14 +37,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
             },
         };
 
-        private readonly BotFrameworkAdapter _botFrameworkAdapter;
+        private readonly IAdapterIntegration _adapter;
 
-        public BotMessageHandlerBase(BotFrameworkAdapter botFrameworkAdapter)
+        public BotMessageHandlerBase(IAdapterIntegration adapter)
         {
-            _botFrameworkAdapter = botFrameworkAdapter ?? throw new ArgumentNullException(nameof(botFrameworkAdapter));
+            _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
         }
-
-        internal BotFrameworkAdapter BotFrameworkAdapter => _botFrameworkAdapter;
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
@@ -70,7 +68,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 #pragma warning disable UseConfigureAwait // Use ConfigureAwait
                 var invokeResponse = await ProcessMessageRequestAsync(
                     request,
-                    _botFrameworkAdapter,
+                    _adapter,
                     (context, ct) =>
                     {
                         cancellationToken.ThrowIfCancellationRequested();
@@ -103,10 +101,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
                 else
                 {
                     var response = request.CreateResponse((HttpStatusCode)invokeResponse.Status);
-                    response.Content = new ObjectContent(
-                        invokeResponse.Body.GetType(),
-                        invokeResponse.Body,
-                        BotMessageMediaTypeFormatters[0]);
+
+                    if (invokeResponse.Body != null)
+                    {
+                        response.Content = new ObjectContent(
+                            invokeResponse.Body.GetType(),
+                            invokeResponse.Body,
+                            BotMessageMediaTypeFormatters[0]);
+                    }
 
                     return response;
                 }
@@ -121,6 +123,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
             }
         }
 
-        protected abstract Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequestMessage request, BotFrameworkAdapter botFrameworkAdapter, BotCallbackHandler botCallbackHandler, CancellationToken cancellationToken);
+        protected abstract Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequestMessage request, IAdapterIntegration adapter, BotCallbackHandler botCallbackHandler, CancellationToken cancellationToken);
     }
 }
