@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
         [Obsolete("Replaced by CosmosDBKeyEscape.EscapeKey.")]
-        public static string SanitizeKey(string key) => CosmosDBKeyEscape.EscapeKey(key);
+        public static string SanitizeKey(string key) => CosmosDbKeyEscape.EscapeKey(key);
 
         /// <summary>
         /// Deletes storage items from storage.
@@ -140,7 +140,7 @@ namespace Microsoft.Bot.Builder.Azure
             // Parallelize deletion
             var tasks = keys.Select(key =>
                 _client.DeleteDocumentAsync(
-                    UriFactory.CreateDocumentUri(_databaseId, _collectionId, CosmosDBKeyEscape.EscapeKey(key)),
+                    UriFactory.CreateDocumentUri(_databaseId, _collectionId, CosmosDbKeyEscape.EscapeKey(key)),
                     cancellationToken: cancellationToken));
 
             // await to deletion tasks to complete
@@ -172,7 +172,7 @@ namespace Microsoft.Bot.Builder.Azure
             var storeItems = new Dictionary<string, object>(keys.Length);
 
             var parameterSequence = string.Join(",", Enumerable.Range(0, keys.Length).Select(i => $"@id{i}"));
-            var parameterValues = keys.Select((key, ix) => new SqlParameter($"@id{ix}", CosmosDBKeyEscape.EscapeKey(key)));
+            var parameterValues = keys.Select((key, ix) => new SqlParameter($"@id{ix}", CosmosDbKeyEscape.EscapeKey(key)));
             var querySpec = new SqlQuerySpec
             {
                 QueryText = $"SELECT c.id, c.realId, c.document, c._etag FROM c WHERE c.id in ({parameterSequence})",
@@ -227,7 +227,7 @@ namespace Microsoft.Bot.Builder.Azure
 
                 var documentChange = new DocumentStoreItem
                 {
-                    Id = CosmosDBKeyEscape.EscapeKey(change.Key),
+                    Id = CosmosDbKeyEscape.EscapeKey(change.Key),
                     ReadlId = change.Key,
                     Document = json,
                 };
