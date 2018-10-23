@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Azure
         private readonly string _collectionId;
         private readonly RequestOptions _documentCollectionCreationRequestOptions = null;
         private readonly RequestOptions _databaseCreationRequestOptions = null;
-        private readonly DocumentClient _client;
+        private readonly IDocumentClient _client;
         private string _collectionLink = null;
 
         /// <summary>
@@ -78,6 +78,41 @@ namespace Microsoft.Bot.Builder.Azure
             // Invoke CollectionPolicy delegate to further customize settings
             cosmosDbStorageOptions.ConnectionPolicyConfigurator?.Invoke(connectionPolicy);
             _client = new DocumentClient(cosmosDbStorageOptions.CosmosDBEndpoint, cosmosDbStorageOptions.AuthKey, connectionPolicy);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CosmosDbStorage"/> class.
+        /// This constructor should only be used if the default behavior of the DocumentClient needs to be changed.
+        /// The <see cref="CosmosDbStorage(CosmosDbStorageOptions)"/> constructor is preferer for most cases.
+        /// </summary>
+        /// <param name="documentClient">The custom implementation of IDocumentClient.</param>
+        /// <param name="cosmosDbCustomClientOptions">Custom client configuration options.</param>
+        public CosmosDbStorage(IDocumentClient documentClient, CosmosDbCustomClientOptions cosmosDbCustomClientOptions)
+        {
+            if (cosmosDbCustomClientOptions == null)
+            {
+                throw new ArgumentNullException(nameof(cosmosDbCustomClientOptions));
+            }
+
+            if (string.IsNullOrEmpty(cosmosDbCustomClientOptions.DatabaseId))
+            {
+                throw new ArgumentException("DatabaseId is required.", nameof(cosmosDbCustomClientOptions.DatabaseId));
+            }
+
+            if (string.IsNullOrEmpty(cosmosDbCustomClientOptions.CollectionId))
+            {
+                throw new ArgumentException("CollectionId is required.", nameof(cosmosDbCustomClientOptions.CollectionId));
+            }
+
+            _client = documentClient ?? throw new ArgumentNullException(nameof(documentClient), "An implementation of IDocumentClient for CosmosDB is required.");
+            _databaseId = cosmosDbCustomClientOptions.DatabaseId;
+            _collectionId = cosmosDbCustomClientOptions.CollectionId;
+            _documentCollectionCreationRequestOptions = cosmosDbCustomClientOptions.DocumentCollectionRequestOptions;
+            _databaseCreationRequestOptions = cosmosDbCustomClientOptions.DatabaseCreationRequestOptions;
+
+            // Inject BotBuilder version to CosmosDB Requests
+            var version = GetType().Assembly.GetName().Version;
+            _client.ConnectionPolicy.UserAgentSuffix = $"Microsoft-BotFramework {version}";
         }
 
         [Obsolete("Replaced by CosmosDBKeyEscape.EscapeKey.")]
