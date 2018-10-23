@@ -5,12 +5,14 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -39,7 +41,7 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IActivity"/>
     /// <seealso cref="IBot"/>
     /// <seealso cref="IMiddleware"/>
-    public class BotFrameworkAdapter : BotAdapter
+    public class BotFrameworkAdapter : BotAdapter, IAdapterIntegration
     {
         private const string InvokeReponseKey = "BotFrameworkAdapter.InvokeResponse";
         private const string BotIdentityKey = "BotIdentity";
@@ -49,7 +51,7 @@ namespace Microsoft.Bot.Builder
         private readonly IChannelProvider _channelProvider;
         private readonly HttpClient _httpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
-        private readonly ILogger<BotFrameworkAdapter> _logger;
+        private readonly ILogger _logger;
         private ConcurrentDictionary<string, MicrosoftAppCredentials> _appCredentialMap = new ConcurrentDictionary<string, MicrosoftAppCredentials>();
 
         // There is a significant boost in throughput if we reuse a connectorClient
@@ -65,6 +67,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="connectorClientRetryPolicy">Retry policy for retrying HTTP operations.</param>
         /// <param name="customHttpClient">The HTTP client.</param>
         /// <param name="middleware">The middleware to initially add to the adapter.</param>
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="credentialProvider"/> is <c>null</c>.</exception>
         /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
@@ -77,13 +80,13 @@ namespace Microsoft.Bot.Builder
             RetryPolicy connectorClientRetryPolicy = null,
             HttpClient customHttpClient = null,
             IMiddleware middleware = null,
-            ILogger<BotFrameworkAdapter> logger = null)
+            ILogger logger = null)
         {
             _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
             _channelProvider = channelProvider;
             _httpClient = customHttpClient ?? DefaultHttpClient;
             _connectorClientRetryPolicy = connectorClientRetryPolicy;
-            _logger = logger ?? NullLogger<BotFrameworkAdapter>.Instance;
+            _logger = logger ?? NullLogger.Instance;
 
             if (middleware != null)
             {
@@ -229,15 +232,14 @@ namespace Microsoft.Bot.Builder
                 // the Bot will return a specific body and return code.
                 if (activity.Type == ActivityTypes.Invoke)
                 {
-                    Activity invokeResponse = context.TurnState.Get<Activity>(InvokeReponseKey);
-                    if (invokeResponse == null)
+                    var activityInvokeResponse = context.TurnState.Get<Activity>(InvokeReponseKey);
+                    if (activityInvokeResponse == null)
                     {
-                        // ToDo: Trace Here
-                        throw new InvalidOperationException("Bot failed to return a valid 'invokeResponse' activity.");
+                        return new InvokeResponse { Status = (int)HttpStatusCode.NotImplemented };
                     }
                     else
                     {
-                        return (InvokeResponse)invokeResponse.Value;
+                        return (InvokeResponse)activityInvokeResponse.Value;
                     }
                 }
 

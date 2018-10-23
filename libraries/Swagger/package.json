@@ -1,0 +1,11 @@
+{
+  "name": "generateclient",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "author": "",
+  "devDependencies": {
+    "autorest": "^2.0.4283",
+    "replace": "^1.0.0"
+  }
+}
