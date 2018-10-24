@@ -23,6 +23,10 @@ namespace Connector.Tests
         }
 
         [Fact]
+        public void Constructor_Guard()
+            => Assert.Throws<System.ArgumentNullException>("client", () => new Conversations(null));
+
+        [Fact]
         public async Task CreateConversation()
         {
             var activity = new Activity()
