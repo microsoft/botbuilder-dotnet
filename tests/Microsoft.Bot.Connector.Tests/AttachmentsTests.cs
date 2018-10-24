@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.Rest;
@@ -14,9 +15,9 @@ namespace Connector.Tests
         protected const string conversationId = "B21UTEF8S:T03CWQ0QB:D2369CT7C";
 
         [Fact]
-        public void UploadAttachmentAndGetAttachment()
+        public async Task UploadAttachmentAndGetAttachment()
         {
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var attachment = new AttachmentData("image/png", "Bot.png", ReadFile("bot.png"), ReadFile("bot_icon.png"));
                 var response = await client.Conversations.UploadAttachmentAsync(conversationId, attachment);
@@ -31,9 +32,9 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void UploadAttachmentWithoutOriginalFails()
+        public async Task UploadAttachmentWithoutOriginalFails()
         {
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var attachment = new AttachmentData()
                 {
@@ -48,9 +49,9 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void UploadAttachmentWithNullConversationId()
+        public async Task UploadAttachmentWithNullConversationId()
         {
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var attachment = new AttachmentData("image/png", "Bot.png", ReadFile("bot.png"), ReadFile("bot_icon.png"));
 
@@ -60,9 +61,9 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void UploadAttachmentWithNullAttachment()
+        public async Task UploadAttachmentWithNullAttachment()
         {
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var ex = await Assert.ThrowsAsync<ValidationException>(() => client.Conversations.UploadAttachmentAsync(conversationId, null));
                 Assert.Contains("cannot be null", ex.Message);
@@ -70,9 +71,9 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void GetAttachmentInfoWithInvalidIdFails()
+        public async Task GetAttachmentInfoWithInvalidIdFails()
         {
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var ex = await Assert.ThrowsAsync<ErrorResponseException>(() => client.Attachments.GetAttachmentInfoAsync("bt13796-GJS4yaxDLI"));
                 Assert.Contains("NotFound", ex.Message);
@@ -80,9 +81,9 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void GetAttachmentInfoWithNullIdFails()
+        public async Task GetAttachmentInfoWithNullIdFails()
         {
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var ex = await Assert.ThrowsAsync<ValidationException>(() => client.Attachments.GetAttachmentInfoAsync(null));
                 Assert.Contains("cannot be null", ex.Message);
@@ -90,9 +91,9 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void GetAttachmentView()
+        public async Task GetAttachmentView()
         {
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var attachment = new AttachmentData("image/png", "Bot.png", ReadFile("bot.png"), ReadFile("bot_icon.png"));
                 var response = await client.Conversations.UploadAttachmentAsync(conversationId, attachment);
@@ -109,9 +110,9 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void GetAttachmentViewWithInvalidAttachmentIdFails()
+        public async Task GetAttachmentViewWithInvalidAttachmentIdFails()
         {
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var ex = await Assert.ThrowsAsync<ErrorResponseException>(() => client.Attachments.GetAttachmentAsync("bt13796-GJS4yaxDLI", "original"));
                 Assert.Contains("NotFound", ex.Message);
@@ -119,10 +120,10 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void GetAttachmentViewWithNullAttachmentIdFails()
+        public async Task GetAttachmentViewWithNullAttachmentIdFails()
         {
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var ex = await Assert.ThrowsAsync<ValidationException>(() => client.Attachments.GetAttachmentAsync(null, "original"));
                 Assert.Contains("cannot be null", ex.Message);
@@ -130,10 +131,10 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void GetAttachmentViewWithInvalidViewIdFails()
+        public async Task GetAttachmentViewWithInvalidViewIdFails()
         {
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var attachment = new AttachmentData("image/png", "Bot.png", ReadFile("bot.png"), ReadFile("bot_icon.png"));
                 var response = await client.Conversations.UploadAttachmentAsync(conversationId, attachment);
@@ -145,10 +146,10 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void GetAttachmentViewWithNullViewIdFails()
+        public async Task GetAttachmentViewWithNullViewIdFails()
         {
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var attachment = new AttachmentData("image/png", "Bot.png", ReadFile("bot.png"), ReadFile("bot_icon.png"));
                 var response = await client.Conversations.UploadAttachmentAsync(conversationId, attachment);
