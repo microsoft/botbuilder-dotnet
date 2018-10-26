@@ -1,8 +1,8 @@
 # Bot Builder SDK v4
  | Branch | Description        | Build Status | Coverage Status |
  |----|---------------|--------------|-----------------|
- |Master | 4.2.* Preview Builds |[![Build status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/Bot.Builder-DotNet?branchName=master)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=215&branchName=master) |[![Coverage Status](https://coveralls.io/repos/github/Microsoft/botbuilder-dotnet/badge.svg)](https://coveralls.io/github/Microsoft/botbuilder-dotnet)
- |4.1 | 4.1.* Patch Builds |[![Build status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/Bot.Builder-DotNet%204.1%20CI-CD?branchName=4.1)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=351&branchName=4.1) | N/A
+ |Master | 4.2.* Preview Builds |[![Build status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/Bot.Builder-DotNet?branchName=master)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=215&branchName=master) |[![Coverage Status](https://coveralls.io/repos/github/Microsoft/botbuilder-dotnet/badge.svg?branch=master)](https://coveralls.io/github/Microsoft/botbuilder-dotnet?branch=master)
+ |4.1 | 4.1.* Patch Builds |[![Build status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/Bot.Builder-DotNet%204.1%20CI-CD?branchName=4.1)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=351&branchName=4.1) | [![Coverage Status](https://coveralls.io/repos/github/Microsoft/botbuilder-dotnet/badge.svg?branch=4.1)](https://coveralls.io/github/Microsoft/botbuilder-dotnet?branch=4.1)
  |4.0 | 4.0.* Patch Builds | [![Build status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/Bot.Builder-DotNet-4.0%20Branch?branchName=4.0)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=341) | N/A |
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Microsoft/botbuilder-dotnet/blob/master/LICENSE)
