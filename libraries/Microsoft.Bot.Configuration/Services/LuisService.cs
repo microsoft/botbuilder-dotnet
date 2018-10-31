@@ -52,6 +52,16 @@ namespace Microsoft.Bot.Configuration
         /// <returns>endpoint url</returns>
         public string GetEndpoint()
         {
+            var region = this.Region.ToLower();
+            if (region == "virginia" || region == "usgovvirginia")
+            {
+                return $"https://virginia.api.cognitive.microsoft.us";
+            }
+            else if (region.StartsWith("usgov") || region.StartsWith("usdod"))
+            {
+                return $"https://{this.Region}.api.cognitive.microsoft.us";
+            }
+
             return $"https://{this.Region}.api.cognitive.microsoft.com";
         }
 
