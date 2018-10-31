@@ -52,6 +52,21 @@ namespace Microsoft.Bot.Configuration
         /// <returns>endpoint url</returns>
         public string GetEndpoint()
         {
+            var region = this.Region.ToLower();
+
+            // usgovvirginia is that actual azure region name, but the cognitive service team called their endpoint 'virginia' instead of 'usgovvirginia'
+            // We handle both region names as an alias for virginia.api.cognitive.microsoft.us
+            if (region == "virginia" || region == "usgovvirginia")
+            {
+                return $"https://virginia.api.cognitive.microsoft.us";
+            }
+
+            // if it starts with usgov or usdod then it is a .us TLD
+            else if (region.StartsWith("usgov") || region.StartsWith("usdod"))
+            {
+                return $"https://{this.Region}.api.cognitive.microsoft.us";
+            }
+
             return $"https://{this.Region}.api.cognitive.microsoft.com";
         }
 
