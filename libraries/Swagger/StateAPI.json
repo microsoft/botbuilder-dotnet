@@ -1,542 +1,542 @@
 {
-    "swagger": "2.0",
-    "info": {
-        "version": "v3",
-        "title": "Microsoft Bot Connector API - v3.0",
-        "description": "The Bot State REST API allows your bot to store and retrieve state associated with conversations conducted through\r\nthe [Bot Connector REST API](/en-us/restapi/connector). The Bot State REST API uses REST and HTTPS to send and receive\r\nencoded content that your bot controls.\r\n\r\nClient libraries for this REST API are available. See below for a list.\r\n\r\nYour bot may store data for a user, a conversation, or a single user within a conversation (called \"private\" data).\r\nEach payload may be up to 32 kilobytes in size. The data may be removed by the bot or upon a user's request, e.g.\r\nif the user requests the channel to inform the bot (and therefore, the Bot Framework) to delete the user's data.\r\n\r\nThe Bot State REST API is only useful in conjunction with the Bot Connector REST API.\r\n\r\nAuthentication for both the Bot State and Bot Connector REST APIs is accomplished with JWT Bearer tokens, and is\r\ndescribed in detail in the [Connector Authentication](/en-us/restapi/authentication) document.\r\n\r\nCurrently, clients calling the Bot State REST API must send their requests to the ```state.botframework.com```\r\nhost. Channel services do not currently implement the Bot State REST API.\r\n\r\nRequests to update bot state include an ```eTag``` property within the JSON payload. You may use the ```eTag```\r\nfor optimistic concurrency control. If you include an ```eTag``` value equivalent to the ```eTag``` you saw\r\nin a prior object, the Bot State REST API will fail the request with an HTTP 409 or 412 error, on update or create,\r\nrespectively. If you wish to overwrite whatever data is in the Bot State service, set ```eTag``` to ```*```.\r\n\r\n# Client Libraries for the Bot State REST API\r\n\r\n* [Bot Builder for C#](/en-us/csharp/builder/sdkreference/)\r\n* [Bot Builder for Node.js](/en-us/node/builder/overview/)\r\n* Generate your own from the [State API Swagger file](https://raw.githubusercontent.com/Microsoft/BotBuilder/master/CSharp/Library/Microsoft.Bot.Connector.Shared/Swagger/StateAPI.json)\r\n\r\n© 2016 Microsoft",
-        "termsOfService": "https://www.microsoft.com/en-us/legal/intellectualproperty/copyright/default.aspx",
-        "contact": {
-            "name": "Bot Framework",
-            "url": "https://botframework.com",
-            "email": "botframework@microsoft.com"
-        },
-        "license": {
-            "name": "The MIT License (MIT)",
-            "url": "https://opensource.org/licenses/MIT"
-        }
+  "swagger": "2.0",
+  "info": {
+    "version": "v3",
+    "title": "Microsoft Bot Framework API - v3.0",
+    "description": "The Bot State REST API allows your bot to store and retrieve state associated with conversations conducted through\r\nthe [Bot Connector REST API](/en-us/restapi/connector). The Bot State REST API uses REST and HTTPS to send and receive\r\nencoded content that your bot controls.\r\n\r\nClient libraries for this REST API are available. See below for a list.\r\n\r\nYour bot may store data for a user, a conversation, or a single user within a conversation (called \"private\" data).\r\nEach payload may be up to 32 kilobytes in size. The data may be removed by the bot or upon a user's request, e.g.\r\nif the user requests the channel to inform the bot (and therefore, the Bot Framework) to delete the user's data.\r\n\r\nThe Bot State REST API is only useful in conjunction with the Bot Connector REST API.\r\n\r\nAuthentication for both the Bot State and Bot Connector REST APIs is accomplished with JWT Bearer tokens, and is\r\ndescribed in detail in the [Connector Authentication](/en-us/restapi/authentication) document.\r\n\r\nCurrently, clients calling the Bot State REST API must send their requests to the ```state.botframework.com```\r\nhost. Channel services do not currently implement the Bot State REST API.\r\n\r\nRequests to update bot state include an ```eTag``` property within the JSON payload. You may use the ```eTag```\r\nfor optimistic concurrency control. If you include an ```eTag``` value equivalent to the ```eTag``` you saw\r\nin a prior object, the Bot State REST API will fail the request with an HTTP 409 or 412 error, on update or create,\r\nrespectively. If you wish to overwrite whatever data is in the Bot State service, set ```eTag``` to ```*```.\r\n\r\n# Client Libraries for the Bot State REST API\r\n\r\n* [Bot Builder for C#](/en-us/csharp/builder/sdkreference/)\r\n* [Bot Builder for Node.js](/en-us/node/builder/overview/)\r\n* Generate your own from the [State API Swagger file](https://raw.githubusercontent.com/Microsoft/BotBuilder/master/CSharp/Library/Microsoft.Bot.Connector.Shared/Swagger/StateAPI.json)\r\n\r\n© 2016 Microsoft",
+    "termsOfService": "https://www.microsoft.com/en-us/legal/intellectualproperty/copyright/default.aspx",
+    "contact": {
+      "name": "Bot Framework",
+      "url": "https://botframework.com",
+      "email": "botframework@microsoft.com"
     },
-    "host": "state.botframework.com",
-    "schemes": [
-        "https"
-    ],
-    "paths": {
-        "/v3/botstate/{channelId}/users/{userId}": {
-            "get": {
-                "tags": [
-                    "BotState"
-                ],
-                "summary": "Get user data. This API is deprecated, see https://aka.ms/AA1vm7i",
-                "description": "Get the bot's data for the user across all conversations",
-                "operationId": "BotState_GetUserData",
-                "consumes": [],
-                "produces": [
-                    "application/json",
-                    "text/json",
-                    "application/xml",
-                    "text/xml"
-                ],
-                "parameters": [
-                    {
-                        "name": "channelId",
-                        "in": "path",
-                        "description": "channelId",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "userId",
-                        "in": "path",
-                        "description": "id for the user on the channel",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "A bot data object will be returned containing your object",
-                        "schema": {
-                            "$ref": "#/definitions/BotData"
-                        }
-                    },
-                    "default": {
-                        "description": "The operation failed and the response is an error object describing the status code and failure.",
-                        "schema": {
-                            "$ref": "#/definitions/ErrorResponse"
-                        }
-                    }
-                },
-                "deprecated": true
-            },
-            "post": {
-                "tags": [
-                    "BotState"
-                ],
-                "summary": "Set user data. This API is deprecated, see https://aka.ms/AA1vm7i",
-                "description": "Update the bot's data for a user",
-                "operationId": "BotState_SetUserData",
-                "consumes": [
-                    "application/json",
-                    "text/json",
-                    "application/xml",
-                    "text/xml",
-                    "application/x-www-form-urlencoded"
-                ],
-                "produces": [
-                    "application/json",
-                    "text/json",
-                    "application/xml",
-                    "text/xml"
-                ],
-                "parameters": [
-                    {
-                        "name": "channelId",
-                        "in": "path",
-                        "description": "channelId",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "userId",
-                        "in": "path",
-                        "description": "id for the user on the channel",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "botData",
-                        "in": "body",
-                        "description": "the new botdata",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/BotData"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "A bot data object will be returned containing your object",
-                        "schema": {
-                            "$ref": "#/definitions/BotData"
-                        }
-                    },
-                    "default": {
-                        "description": "The operation failed and the response is an error object describing the status code and failure.",
-                        "schema": {
-                            "$ref": "#/definitions/ErrorResponse"
-                        }
-                    }
-                },
-                "deprecated": true
-            },
-            "delete": {
-                "tags": [
-                    "BotState"
-                ],
-                "summary": "Delete state for user. This API is deprecated, see https://aka.ms/AA1vm7i",
-                "description": "Delete all data for a user in a channel (UserData and PrivateConversationData)",
-                "operationId": "BotState_DeleteStateForUser",
-                "consumes": [],
-                "produces": [
-                    "application/json",
-                    "text/json",
-                    "application/xml",
-                    "text/xml"
-                ],
-                "parameters": [
-                    {
-                        "name": "channelId",
-                        "in": "path",
-                        "description": "channelId",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "userId",
-                        "in": "path",
-                        "description": "id for the user on the channel",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object"
-                        }
-                    },
-                    "204": {
-                        "description": "The operation succeeded but no content was returned."
-                    },
-                    "default": {
-                        "description": "The operation failed and the response is an error object describing the status code and failure.",
-                        "schema": {
-                            "$ref": "#/definitions/ErrorResponse"
-                        }
-                    }
-                },
-                "deprecated": true
-            }
-        },
-        "/v3/botstate/{channelId}/conversations/{conversationId}": {
-            "get": {
-                "tags": [
-                    "BotState"
-                ],
-                "summary": "Get conversation data. This API is deprecated, see https://aka.ms/AA1vm7i",
-                "description": "Get the bot's data for all users in a conversation",
-                "operationId": "BotState_GetConversationData",
-                "consumes": [],
-                "produces": [
-                    "application/json",
-                    "text/json",
-                    "application/xml",
-                    "text/xml"
-                ],
-                "parameters": [
-                    {
-                        "name": "channelId",
-                        "in": "path",
-                        "description": "the channelId",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "conversationId",
-                        "in": "path",
-                        "description": "The id for the conversation on the channel",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "A bot data object will be returned containing your object",
-                        "schema": {
-                            "$ref": "#/definitions/BotData"
-                        }
-                    },
-                    "default": {
-                        "description": "The operation failed and the response is an error object describing the status code and failure.",
-                        "schema": {
-                            "$ref": "#/definitions/ErrorResponse"
-                        }
-                    }
-                },
-                "deprecated": true
-            },
-            "post": {
-                "tags": [
-                    "BotState"
-                ],
-                "summary": "Set conversation data. This API is deprecated, see https://aka.ms/AA1vm7i",
-                "description": "Update the bot's data for all users in a conversation",
-                "operationId": "BotState_SetConversationData",
-                "consumes": [
-                    "application/json",
-                    "text/json",
-                    "application/xml",
-                    "text/xml",
-                    "application/x-www-form-urlencoded"
-                ],
-                "produces": [
-                    "application/json",
-                    "text/json",
-                    "application/xml",
-                    "text/xml"
-                ],
-                "parameters": [
-                    {
-                        "name": "channelId",
-                        "in": "path",
-                        "description": "channelId",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "conversationId",
-                        "in": "path",
-                        "description": "The id for the conversation on the channel",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "botData",
-                        "in": "body",
-                        "description": "the new botdata",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/BotData"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "A bot data object will be returned containing your object",
-                        "schema": {
-                            "$ref": "#/definitions/BotData"
-                        }
-                    },
-                    "default": {
-                        "description": "The operation failed and the response is an error object describing the status code and failure.",
-                        "schema": {
-                            "$ref": "#/definitions/ErrorResponse"
-                        }
-                    }
-                },
-                "deprecated": true
-            }
-        },
-        "/v3/botstate/{channelId}/conversations/{conversationId}/users/{userId}": {
-            "get": {
-                "tags": [
-                    "BotState"
-                ],
-                "summary": "Get private conversation data. This API is deprecated, see https://aka.ms/AA1vm7i",
-                "description": "Get the bot's data for a single user in a conversation",
-                "operationId": "BotState_GetPrivateConversationData",
-                "consumes": [],
-                "produces": [
-                    "application/json",
-                    "text/json",
-                    "application/xml",
-                    "text/xml"
-                ],
-                "parameters": [
-                    {
-                        "name": "channelId",
-                        "in": "path",
-                        "description": "channelId",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "conversationId",
-                        "in": "path",
-                        "description": "The id for the conversation on the channel",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "userId",
-                        "in": "path",
-                        "description": "id for the user on the channel",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "A bot data object will be returned containing your object",
-                        "schema": {
-                            "$ref": "#/definitions/BotData"
-                        }
-                    },
-                    "default": {
-                        "description": "The operation failed and the response is an error object describing the status code and failure.",
-                        "schema": {
-                            "$ref": "#/definitions/ErrorResponse"
-                        }
-                    }
-                },
-                "deprecated": true
-            },
-            "post": {
-                "tags": [
-                    "BotState"
-                ],
-                "summary": "Set private conversation data. This API is deprecated, see https://aka.ms/AA1vm7i",
-                "description": "Update the bot's data for a single user in a conversation",
-                "operationId": "BotState_SetPrivateConversationData",
-                "consumes": [
-                    "application/json",
-                    "text/json",
-                    "application/xml",
-                    "text/xml",
-                    "application/x-www-form-urlencoded"
-                ],
-                "produces": [
-                    "application/json",
-                    "text/json",
-                    "application/xml",
-                    "text/xml"
-                ],
-                "parameters": [
-                    {
-                        "name": "channelId",
-                        "in": "path",
-                        "description": "channelId",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "conversationId",
-                        "in": "path",
-                        "description": "The id for the conversation on the channel",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "userId",
-                        "in": "path",
-                        "description": "id for the user on the channel",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "botData",
-                        "in": "body",
-                        "description": "the new botdata",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/BotData"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "A bot data object will be returned containing your object",
-                        "schema": {
-                            "$ref": "#/definitions/BotData"
-                        }
-                    },
-                    "default": {
-                        "description": "The operation failed and the response is an error object describing the status code and failure.",
-                        "schema": {
-                            "$ref": "#/definitions/ErrorResponse"
-                        }
-                    }
-                },
-                "deprecated": true
-            }
-        },
-        "/v3/botstate/{channelId}/exportBotStateData": {
-            "get": {
-                "tags": [
-                    "BotState"
-                ],
-                "summary": "Export bot state data. This API is deprecated, see https://aka.ms/AA1vm7i",
-                "description": "Get all the state data for a bot in this channel. This returns a list of BotStateData and (possibly) a continuation token",
-                "operationId": "BotState_ExportBotStateData",
-                "consumes": [],
-                "produces": [
-                    "application/json",
-                    "text/json",
-                    "application/xml",
-                    "text/xml"
-                ],
-                "parameters": [
-                    {
-                        "name": "channelId",
-                        "in": "path",
-                        "description": "the channelId",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "A bot state data object will be returned. It contains a (possibly empty) array of BotStateData objects and a continuation token.",
-                        "schema": {
-                            "$ref": "#/definitions/BotStateDataResult"
-                        }
-                    },
-                    "default": {
-                        "description": "The operation failed and the response is an error object describing the status code and failure.",
-                        "schema": {
-                            "$ref": "#/definitions/ErrorResponse"
-                        }
-                    }
-                },
-                "deprecated": true
-            }
-        }
-    },
-    "definitions": {
-        "BotData": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "object"
-                },
-                "eTag": {
-                    "type": "string"
-                }
-            }
-        },
-        "ErrorResponse": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "$ref": "#/definitions/Error"
-                }
-            }
-        },
-        "Error": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "innerHttpError": {
-                    "$ref": "#/definitions/InnerHttpError"
-                }
-            }
-        },
-        "InnerHttpError": {
-            "type": "object",
-            "properties": {
-                "statusCode": {
-                    "format": "int32",
-                    "type": "integer"
-                },
-                "body": {
-                    "type": "object"
-                }
-            }
-        },
-        "BotStateDataResult": {
-            "type": "object",
-            "properties": {
-                "botStateData": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/BotStateData"
-                    }
-                },
-                "continuationToken": {
-                    "type": "string"
-                }
-            }
-        },
-        "BotStateData": {
-            "type": "object",
-            "properties": {
-                "conversationId": {
-                    "type": "string"
-                },
-                "userId": {
-                    "type": "string"
-                },
-                "data": {
-                    "type": "string"
-                },
-                "lastModified": {
-                    "format": "date-time",
-                    "type": "string"
-                }
-            }
-        }
-    },
-    "securityDefinitions": {
-        "bearer_auth": {
-            "type": "apiKey",
-            "description": "Access token to authenticate calls to the Bot Connector Service.",
-            "name": "Authorization",
-            "in": "header"
-        }
+    "license": {
+      "name": "The MIT License (MIT)",
+      "url": "https://opensource.org/licenses/MIT"
     }
+  },
+  "host": "state.botframework.com",
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/v3/botstate/{channelId}/users/{userId}": {
+      "get": {
+        "tags": [
+          "BotState"
+        ],
+        "summary": "Get user data. This API is deprecated, see https://aka.ms/AA1vm7i",
+        "description": "Get the bot's data for the user across all conversations",
+        "operationId": "BotState_GetUserData",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml"
+        ],
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "channelId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "id for the user on the channel",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A bot data object will be returned containing your object",
+            "schema": {
+              "$ref": "#/definitions/BotData"
+            }
+          },
+          "default": {
+            "description": "The operation failed and the response is an error object describing the status code and failure.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "deprecated": true
+      },
+      "post": {
+        "tags": [
+          "BotState"
+        ],
+        "summary": "Set user data. This API is deprecated, see https://aka.ms/AA1vm7i",
+        "description": "Update the bot's data for a user",
+        "operationId": "BotState_SetUserData",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml",
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml"
+        ],
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "channelId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "id for the user on the channel",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "botData",
+            "in": "body",
+            "description": "the new botdata",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BotData"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A bot data object will be returned containing your object",
+            "schema": {
+              "$ref": "#/definitions/BotData"
+            }
+          },
+          "default": {
+            "description": "The operation failed and the response is an error object describing the status code and failure.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "deprecated": true
+      },
+      "delete": {
+        "tags": [
+          "BotState"
+        ],
+        "summary": "Delete state for user. This API is deprecated, see https://aka.ms/AA1vm7i",
+        "description": "Delete all data for a user in a channel (UserData and PrivateConversationData)",
+        "operationId": "BotState_DeleteStateForUser",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml"
+        ],
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "channelId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "id for the user on the channel",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object"
+            }
+          },
+          "204": {
+            "description": "The operation succeeded but no content was returned."
+          },
+          "default": {
+            "description": "The operation failed and the response is an error object describing the status code and failure.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/v3/botstate/{channelId}/conversations/{conversationId}": {
+      "get": {
+        "tags": [
+          "BotState"
+        ],
+        "summary": "Get conversation data. This API is deprecated, see https://aka.ms/AA1vm7i",
+        "description": "Get the bot's data for all users in a conversation",
+        "operationId": "BotState_GetConversationData",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml"
+        ],
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "the channelId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "conversationId",
+            "in": "path",
+            "description": "The id for the conversation on the channel",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A bot data object will be returned containing your object",
+            "schema": {
+              "$ref": "#/definitions/BotData"
+            }
+          },
+          "default": {
+            "description": "The operation failed and the response is an error object describing the status code and failure.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "deprecated": true
+      },
+      "post": {
+        "tags": [
+          "BotState"
+        ],
+        "summary": "Set conversation data. This API is deprecated, see https://aka.ms/AA1vm7i",
+        "description": "Update the bot's data for all users in a conversation",
+        "operationId": "BotState_SetConversationData",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml",
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml"
+        ],
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "channelId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "conversationId",
+            "in": "path",
+            "description": "The id for the conversation on the channel",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "botData",
+            "in": "body",
+            "description": "the new botdata",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BotData"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A bot data object will be returned containing your object",
+            "schema": {
+              "$ref": "#/definitions/BotData"
+            }
+          },
+          "default": {
+            "description": "The operation failed and the response is an error object describing the status code and failure.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/v3/botstate/{channelId}/conversations/{conversationId}/users/{userId}": {
+      "get": {
+        "tags": [
+          "BotState"
+        ],
+        "summary": "Get private conversation data. This API is deprecated, see https://aka.ms/AA1vm7i",
+        "description": "Get the bot's data for a single user in a conversation",
+        "operationId": "BotState_GetPrivateConversationData",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml"
+        ],
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "channelId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "conversationId",
+            "in": "path",
+            "description": "The id for the conversation on the channel",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "id for the user on the channel",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A bot data object will be returned containing your object",
+            "schema": {
+              "$ref": "#/definitions/BotData"
+            }
+          },
+          "default": {
+            "description": "The operation failed and the response is an error object describing the status code and failure.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "deprecated": true
+      },
+      "post": {
+        "tags": [
+          "BotState"
+        ],
+        "summary": "Set private conversation data. This API is deprecated, see https://aka.ms/AA1vm7i",
+        "description": "Update the bot's data for a single user in a conversation",
+        "operationId": "BotState_SetPrivateConversationData",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml",
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml"
+        ],
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "channelId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "conversationId",
+            "in": "path",
+            "description": "The id for the conversation on the channel",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "id for the user on the channel",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "botData",
+            "in": "body",
+            "description": "the new botdata",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BotData"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A bot data object will be returned containing your object",
+            "schema": {
+              "$ref": "#/definitions/BotData"
+            }
+          },
+          "default": {
+            "description": "The operation failed and the response is an error object describing the status code and failure.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/v3/botstate/{channelId}/exportBotStateData": {
+      "get": {
+        "tags": [
+          "BotState"
+        ],
+        "summary": "Export bot state data. This API is deprecated, see https://aka.ms/AA1vm7i",
+        "description": "Get all the state data for a bot in this channel. This returns a list of BotStateData and (possibly) a continuation token",
+        "operationId": "BotState_ExportBotStateData",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml"
+        ],
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "the channelId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A bot state data object will be returned. It contains a (possibly empty) array of BotStateData objects and a continuation token.",
+            "schema": {
+              "$ref": "#/definitions/BotStateDataResult"
+            }
+          },
+          "default": {
+            "description": "The operation failed and the response is an error object describing the status code and failure.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "deprecated": true
+      }
+    }
+  },
+  "definitions": {
+    "BotData": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "object"
+        },
+        "eTag": {
+          "type": "string"
+        }
+      }
+    },
+    "ErrorResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/definitions/Error"
+        }
+      }
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "innerHttpError": {
+          "$ref": "#/definitions/InnerHttpError"
+        }
+      }
+    },
+    "InnerHttpError": {
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "body": {
+          "type": "object"
+        }
+      }
+    },
+    "BotStateDataResult": {
+      "type": "object",
+      "properties": {
+        "botStateData": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BotStateData"
+          }
+        },
+        "continuationToken": {
+          "type": "string"
+        }
+      }
+    },
+    "BotStateData": {
+      "type": "object",
+      "properties": {
+        "conversationId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "data": {
+          "type": "string"
+        },
+        "lastModified": {
+          "format": "date-time",
+          "type": "string"
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "bearer_auth": {
+      "type": "apiKey",
+      "description": "Access token to authenticate calls to the Bot Connector Service.",
+      "name": "Authorization",
+      "in": "header"
+    }
+  }
 }
