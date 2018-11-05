@@ -12,6 +12,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Channels;
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
@@ -57,6 +58,11 @@ namespace Microsoft.Bot.Builder
         // There is a significant boost in throughput if we reuse a connectorClient
         // _connectorClients is a cache using [serviceUrl + appId].
         private ConcurrentDictionary<string, ConnectorClient> _connectorClients = new ConcurrentDictionary<string, ConnectorClient>();
+
+        /// <summary>
+        /// The channel extension factory map storing channel extension factory instance against their channel Id.
+        /// </summary>
+        private Dictionary<string, IBotFrameworkChannelExtensionFactory> channelExtensionFactoryMap = new Dictionary<string, IBotFrameworkChannelExtensionFactory>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkAdapter"/> class,
@@ -153,6 +159,15 @@ namespace Microsoft.Bot.Builder
                 context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
                 var connectorClient = await CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity, cancellationToken).ConfigureAwait(false);
                 context.TurnState.Add(connectorClient);
+
+                // Initialize the Channel Extension if one is registered for the specific channel.
+                if (this.channelExtensionFactoryMap.TryGetValue(
+                    reference.ChannelId,
+                    out IBotFrameworkChannelExtensionFactory channelExtensionFactory))
+                {
+                    context.ChannelExtension = await channelExtensionFactory.GetChannelExtensionAsync(context, cancellationToken).ConfigureAwait(false);
+                }
+
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
             }
         }
@@ -168,6 +183,17 @@ namespace Microsoft.Bot.Builder
         public new BotFrameworkAdapter Use(IMiddleware middleware)
         {
             MiddlewareSet.Use(middleware);
+            return this;
+        }
+
+        /// <summary>
+        /// Registers the channel extension factory.
+        /// </summary>
+        /// <param name="channelExtensionFactory">The channel extension factory.</param>
+        /// <returns>Current instance with the extension factory added to it.</returns>
+        public BotFrameworkAdapter RegisterChannelExtensionFactory(IBotFrameworkChannelExtensionFactory channelExtensionFactory)
+        {
+            this.channelExtensionFactoryMap.Add(channelExtensionFactory.ChannelId, channelExtensionFactory);
             return this;
         }
 
@@ -225,6 +251,14 @@ namespace Microsoft.Bot.Builder
 
                 var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, identity, cancellationToken).ConfigureAwait(false);
                 context.TurnState.Add(connectorClient);
+
+                // Initialize the Channel Extension if one is registered for the specific channel.
+                if (this.channelExtensionFactoryMap.TryGetValue(
+                    activity.ChannelId,
+                    out IBotFrameworkChannelExtensionFactory channelExtensionFactory))
+                {
+                    context.ChannelExtension = await channelExtensionFactory.GetChannelExtensionAsync(context, cancellationToken).ConfigureAwait(false);
+                }
 
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
 
@@ -749,6 +783,15 @@ namespace Microsoft.Bot.Builder
 
                 context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
                 context.TurnState.Add(connectorClient);
+
+                // Initialize the Channel Extension if one is registered for the specific channel.
+                if (this.channelExtensionFactoryMap.TryGetValue(
+                    eventActivity.ChannelId,
+                    out IBotFrameworkChannelExtensionFactory channelExtensionFactory))
+                {
+                    context.ChannelExtension = await channelExtensionFactory.GetChannelExtensionAsync(context, cancellationToken).ConfigureAwait(false);
+                }
+
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
             }
         }

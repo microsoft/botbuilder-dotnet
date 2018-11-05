@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Channels;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
@@ -94,6 +95,15 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <value>The collection of services registered on this context object.</value>
         TurnContextStateCollection TurnState { get; }
+
+        /// <summary>
+        /// Gets the channel extension for the request currently active.
+        /// This can be null if no extension factory is registered for the channel.
+        /// </summary>
+        /// <value>
+        /// The channel extension.
+        /// </value>
+        IBotFrameworkChannelExtension ChannelExtension { get; }
 
         /// <summary>
         /// Gets the incoming request.

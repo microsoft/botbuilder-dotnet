@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Channels;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
@@ -44,6 +45,15 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <value>The bot adapter that created this context object.</value>
         public BotAdapter Adapter { get; }
+
+        /// <summary>
+        /// Gets or sets the channel extension for the request currently active.
+        /// This can be null if no extension factory is registered for the channel.
+        /// </summary>
+        /// <value>
+        /// The channel extension.
+        /// </value>
+        public IBotFrameworkChannelExtension ChannelExtension { get; internal set; }
 
         /// <summary>
         /// Gets the services registered on this context object.
