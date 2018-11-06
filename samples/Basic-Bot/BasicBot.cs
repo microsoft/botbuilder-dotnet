@@ -32,10 +32,11 @@ namespace Microsoft.BotBuilderSamples
         /// In the .bot file, multiple instances of LUIS can be configured.
         /// </summary>
         public static readonly string LuisConfiguration = "basic-bot-LUIS";
-        private static LanguageGenerationResolver _languageGenerationResolver;
 
         private readonly IStatePropertyAccessor<GreetingState> _greetingStateAccessor;
         private readonly IStatePropertyAccessor<DialogState> _dialogStateAccessor;
+        private readonly IStatePropertyAccessor<Dictionary<string, object>> _lgEntitiesStateAccessor;
+
         private readonly UserState _userState;
         private readonly ConversationState _conversationState;
         private readonly BotServices _services;
@@ -45,7 +46,7 @@ namespace Microsoft.BotBuilderSamples
         /// </summary>
         /// <param name="botServices">Bot services.</param>
         /// <param name="accessors">Bot State Accessors.</param>
-        public BasicBot(BotServices services, UserState userState, ConversationState conversationState, ILoggerFactory loggerFactory)
+        public BasicBot(BotServices services, UserState userState, ConversationState conversationState, IStatePropertyAccessor<Dictionary<string, object>> entitiesStateAccessor, ILoggerFactory loggerFactory)
         {
             _services = services ?? throw new ArgumentNullException(nameof(services));
             _userState = userState ?? throw new ArgumentNullException(nameof(userState));
@@ -53,6 +54,7 @@ namespace Microsoft.BotBuilderSamples
 
             _greetingStateAccessor = _userState.CreateProperty<GreetingState>(nameof(GreetingState));
             _dialogStateAccessor = _conversationState.CreateProperty<DialogState>(nameof(DialogState));
+            _lgEntitiesStateAccessor = entitiesStateAccessor;
 
             // Verify LUIS configuration.
             if (!_services.LuisServices.ContainsKey(LuisConfiguration))
@@ -60,20 +62,8 @@ namespace Microsoft.BotBuilderSamples
                 throw new InvalidOperationException($"The bot configuration does not contain a service type of `luis` with the id `{LuisConfiguration}`.");
             }
 
-            var applicationId = "lgshowcases";
-            var endpointKey = Keys.LanguageGenerationSubscriptionKey;
-            var endpointUri = "https://platform.bing.com/speechdx/lg-dev/v1/lg";
-            var tokenGenerationApiEndpoint = "https://wuppe.api.cognitive.microsoft.com/sts/v1.0/issueToken";
-
-            var languageGenerationApplication = new LanguageGenerationApplication(applicationId, endpointKey, endpointUri);
-            var languageGenerationOptions = new LanguageGenerationOptions()
-            {
-                TokenGenerationApiEndpoint = tokenGenerationApiEndpoint,
-            };
-            _languageGenerationResolver = new LanguageGenerationResolver(languageGenerationApplication, languageGenerationOptions);
-
             Dialogs = new DialogSet(_dialogStateAccessor);
-            Dialogs.Add(new GreetingDialog(_greetingStateAccessor, loggerFactory, _languageGenerationResolver));
+            Dialogs.Add(new GreetingDialog(_greetingStateAccessor, loggerFactory, _lgEntitiesStateAccessor));
         }
 
         private DialogSet Dialogs { get; set; }
@@ -140,8 +130,6 @@ namespace Microsoft.BotBuilderSamples
                                     {
                                         Text = TemplateResponses.ConfusionTemplate,
                                     };
-
-                                    await _languageGenerationResolver.ResolveAsync(outgoingActivity, new Dictionary<string, object>()).ConfigureAwait(false);
 
                                     await dc.Context.SendActivityAsync(MessageFactory.Text(outgoingActivity.Text));
                                     break;
@@ -211,8 +199,6 @@ namespace Microsoft.BotBuilderSamples
                 {
                     Text = TemplateResponses.OfferHelpTemplate,
                 };
-
-                await _languageGenerationResolver.ResolveAsync(outgoingActivity, new Dictionary<string, object>()).ConfigureAwait(false);
 
                 await dc.Context.SendActivityAsync(MessageFactory.Text(outgoingActivity.Text));
                 await dc.Context.SendActivityAsync("I understand greetings, being asked for help, or being asked to cancel what I am doing.");

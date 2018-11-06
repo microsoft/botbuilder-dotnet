@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -119,9 +120,19 @@ namespace Microsoft.BotBuilderSamples
             var userState = new UserState(dataStore);
             services.AddSingleton(userState);
 
+            var entityStateAccessor = userState.CreateProperty<Dictionary<string, object>>("EntityState");
+            services.AddSingleton(entityStateAccessor);
+
+            var applicationId = "lgshowcases";
+            var endpointKey = Keys.LanguageGenerationSubscriptionKey;
+            var endpointRegion = "westus"; // The region must be the subscription key's region.
+            var languageGenerationMiddleware = LanguageGenerationUtilities.CreateMiddleware(applicationId, endpointKey, endpointRegion, entityStateAccessor);
+
             services.AddBot<BasicBot>(options =>
             {
                 options.CredentialProvider = new SimpleCredentialProvider(endpointService.AppId, endpointService.AppPassword);
+
+                options.Middleware.Add(languageGenerationMiddleware);
 
                 // Catches any errors that occur during a conversation turn and logs them to currently
                 // configured ILogger.
