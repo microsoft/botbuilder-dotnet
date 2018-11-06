@@ -49,16 +49,8 @@ namespace Microsoft.BotBuilderSamples
 
             var applicationId = "cafebot";
             var endpointKey = Keys.LanguageGenerationSubscriptionKey;
-            var endpointUri = "https://platform.bing.com/speechdx/lg-dev/v1/lg";
-            var tokenGenerationApiEndpoint = "https://wuppe.api.cognitive.microsoft.com/sts/v1.0/issueToken";
-
-            var languageGenerationApplication = new LanguageGenerationApplication(applicationId, endpointKey, endpointUri);
-            var languageGenerationOptions = new LanguageGenerationOptions()
-            {
-                TokenGenerationApiEndpoint = tokenGenerationApiEndpoint,
-            };
-
-            _languageGenerationResolver = new LanguageGenerationResolver(languageGenerationApplication, languageGenerationOptions);
+            var endpointRegion = "westus"; // The region must be the subscription key's region.
+            _languageGenerationResolver = LanguageGenerationUtilities.CreateResolver(applicationId, endpointKey, endpointRegion);
         }
 
         /// <summary>
@@ -104,7 +96,7 @@ namespace Microsoft.BotBuilderSamples
                 {
                     var activity = new Activity()
                     {
-                        Text = TemplateResponses.WelcomeUserTemplate + " , " + $"Thank you, I have your name as '{results.Result}'.",
+                        Text = TemplateResponses.WelcomeUserTemplate + $" Thank you, I have your name as '{results.Result}'.",
                     };
 
                     // Finish by sending a message to the user. Next time ContinueAsync is called it will return DialogTurnStatus.Empty.

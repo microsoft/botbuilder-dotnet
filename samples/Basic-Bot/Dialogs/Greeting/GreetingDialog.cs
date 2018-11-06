@@ -38,7 +38,7 @@ namespace Microsoft.BotBuilderSamples
         // Dialog IDs
         private const string ProfileDialog = "profileDialog";
 
-        private static LanguageGenerationResolver _languageGenerationResolver;
+        private static IStatePropertyAccessor<Dictionary<string, object>> _entitiesStateAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GreetingDialog"/> class.
@@ -46,11 +46,11 @@ namespace Microsoft.BotBuilderSamples
         /// <param name="botServices">Connected services used in processing.</param>
         /// <param name="botState">The <see cref="UserState"/> for storing properties at user-scope.</param>
         /// <param name="loggerFactory">The <see cref="ILoggerFactory"/> that enables logging and tracing.</param>
-        public GreetingDialog(IStatePropertyAccessor<GreetingState> userProfileStateAccessor, ILoggerFactory loggerFactory, LanguageGenerationResolver languageGenerationResolver)
+        public GreetingDialog(IStatePropertyAccessor<GreetingState> userProfileStateAccessor, ILoggerFactory loggerFactory, IStatePropertyAccessor<Dictionary<string, object>> entitiesStateAccessor)
             : base(nameof(GreetingDialog))
         {
             UserProfileAccessor = userProfileStateAccessor ?? throw new ArgumentNullException(nameof(userProfileStateAccessor));
-            _languageGenerationResolver = languageGenerationResolver ?? throw new ArgumentNullException(nameof(languageGenerationResolver));
+            _entitiesStateAccessor = entitiesStateAccessor ?? throw new ArgumentNullException(nameof(entitiesStateAccessor));
 
             // Add control flow dialogs
             var waterfallSteps = new WaterfallStep[]
@@ -107,8 +107,6 @@ namespace Microsoft.BotBuilderSamples
                     Text = TemplateResponses.NameQuestionTemplate,
                 };
 
-                await _languageGenerationResolver.ResolveAsync(outgoingActivity, new Dictionary<string, object>()).ConfigureAwait(false);
-
                 var opts = new PromptOptions
                 {
                     Prompt = outgoingActivity,
@@ -141,7 +139,7 @@ namespace Microsoft.BotBuilderSamples
                 var outgoingActivity = new Activity()
                 {
                     Type = ActivityTypes.Message,
-                    Text = $"{TemplateResponses.WelcomeUserTemplate} , {TemplateResponses.CityQuestionTemplate}",
+                    Text = $"{TemplateResponses.WelcomeUserTemplate} {TemplateResponses.CityQuestionTemplate}",
                 };
 
                 var entities = new Dictionary<string, object>()
@@ -149,7 +147,7 @@ namespace Microsoft.BotBuilderSamples
                     { "username", greetingState.Name },
                 };
 
-                await _languageGenerationResolver.ResolveAsync(outgoingActivity, entities).ConfigureAwait(false);
+                await LanguageGenerationUtilities.UpdateEntitiesStateAsync(_entitiesStateAccessor, stepContext.Context, entities, cancellationToken);
 
                 var opts = new PromptOptions
                 {
@@ -194,7 +192,7 @@ namespace Microsoft.BotBuilderSamples
         {
             // Validate that the user entered a minimum length for their name.
             var value = promptContext.Recognized.Value?.Trim() ?? string.Empty;
-            if (value.Length > NameLengthMinValue)
+            if (value.Length >= NameLengthMinValue)
             {
                 promptContext.Recognized.Value = value;
                 return true;
@@ -217,7 +215,7 @@ namespace Microsoft.BotBuilderSamples
         {
             // Validate that the user entered a minimum lenght for their name
             var value = promptContext.Recognized.Value?.Trim() ?? string.Empty;
-            if (value.Length > CityLengthMinValue)
+            if (value.Length >= CityLengthMinValue)
             {
                 promptContext.Recognized.Value = value;
                 return true;
@@ -248,7 +246,7 @@ namespace Microsoft.BotBuilderSamples
                 { "username", greetingState.Name },
             };
 
-            await _languageGenerationResolver.ResolveAsync(outgoingActivity, entities).ConfigureAwait(false);
+            await LanguageGenerationUtilities.UpdateEntitiesStateAsync(_entitiesStateAccessor, stepContext.Context, entities);
 
             await context.SendActivityAsync(MessageFactory.Text(outgoingActivity.Text));
             return await stepContext.EndDialogAsync();

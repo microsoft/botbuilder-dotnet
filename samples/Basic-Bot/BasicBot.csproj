@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <CodeAnalysisRuleSet>BasicBot.ruleset</CodeAnalysisRuleSet>
+    <RootNamespace>Microsoft.BotBuilderSamples</RootNamespace>
+    <AssemblyName>Microsoft.BotBuilderSamples.BasicBot</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

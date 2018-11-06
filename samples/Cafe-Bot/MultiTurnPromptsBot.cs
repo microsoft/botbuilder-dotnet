@@ -71,16 +71,8 @@ namespace Microsoft.BotBuilderSamples
 
             var applicationId = "cafebot";
             var endpointKey = Keys.LanguageGenerationSubscriptionKey;
-            var endpointUri = "https://platform.bing.com/speechdx/lg-dev/v1/lg";
-            var tokenGenerationApiEndpoint = "https://wuppe.api.cognitive.microsoft.com/sts/v1.0/issueToken";
-
-            var languageGenerationApplication = new LanguageGenerationApplication(applicationId, endpointKey, endpointUri);
-            var languageGenerationOptions = new LanguageGenerationOptions()
-            {
-                TokenGenerationApiEndpoint = tokenGenerationApiEndpoint,
-            };
-
-            _languageGenerationResolver = new LanguageGenerationResolver(languageGenerationApplication, languageGenerationOptions);
+            var endpointRegion = "westus"; // The region must be the subscription key's region.
+            _languageGenerationResolver = LanguageGenerationUtilities.CreateResolver(applicationId, endpointKey, endpointRegion);
         }
 
         /// <summary>

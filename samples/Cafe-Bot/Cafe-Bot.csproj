@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <CodeAnalysisRuleSet>MultiTurn-Prompts-Bot.ruleset</CodeAnalysisRuleSet>
+    <AssemblyName>Microsoft.BotBuilderSamples.CafeBot</AssemblyName>
+    <RootNamespace>Microsoft.BotBuilderSamples</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
