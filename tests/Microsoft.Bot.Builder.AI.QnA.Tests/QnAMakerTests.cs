@@ -263,6 +263,63 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
+        public async Task QnaMaker_ReturnsAnswerWithFiltering()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+
+            var qna = GetQnAMaker(mockHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname
+                },
+                new QnAMakerOptions
+                {
+                    Top = 1
+                });
+
+            var options = new QnAMakerOptions
+            {
+                StrictFilters = new Metadata[] { new Metadata() { Name = "topic", Value = "value" } }
+            };
+
+            var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"), options);
+            Assert.IsNotNull(results);
+            Assert.AreEqual(results.Length, 1, "should get one result");
+            StringAssert.StartsWith(results[0].Answer, "BaseCamp: You can use a damp rag to clean around the Power Pack");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public async Task QnaMaker_ReturnsAnswerWithFiltering_OptionsNull()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+
+            var qna = GetQnAMaker(mockHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname
+                },
+                new QnAMakerOptions
+                {
+                    Top = 1
+                });
+
+            var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"), null);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
         public async Task QnaMaker_TestThreshold()
         {
             var mockHttp = new MockHttpMessageHandler();

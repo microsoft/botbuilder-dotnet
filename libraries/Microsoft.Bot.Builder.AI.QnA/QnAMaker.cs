@@ -57,35 +57,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             _options = options ?? new QnAMakerOptions();
 
-            if (_options.ScoreThreshold == 0)
-            {
-                _options.ScoreThreshold = 0.3F;
-            }
-
-            if (_options.Top == 0)
-            {
-                _options.Top = 1;
-            }
-
-            if (_options.ScoreThreshold < 0 || _options.ScoreThreshold > 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(_options.ScoreThreshold), "Score threshold should be a value between 0 and 1");
-            }
-
-            if (_options.Top < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(_options.Top), "Top should be an integer greater than 0");
-            }
-
-            if (_options.StrictFilters == null)
-            {
-                _options.StrictFilters = new Metadata[] { };
-            }
-
-            if (_options.MetadataBoost == null)
-            {
-                _options.MetadataBoost = new Metadata[] { };
-            }
+            ValidateOptions(ref _options);
         }
 
         /// <summary>
@@ -101,12 +73,20 @@ namespace Microsoft.Bot.Builder.AI.QnA
         }
 
         /// <summary>
-        /// Generates an answer from the knowledge base.
+        /// Generates an answer from the knowledge base using strict filters
         /// </summary>
         /// <param name="turnContext">The Turn Context that contains the user question to be queried against your knowledge base.</param>
+        /// <param name="options">The options for the QnA Maker knowledge base.</param>
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
-        public async Task<QueryResult[]> GetAnswersAsync(ITurnContext turnContext)
+        public async Task<QueryResult[]> GetAnswersAsync(ITurnContext turnContext, QnAMakerOptions options)
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            ValidateOptions(ref options);
+
             if (turnContext == null)
             {
                 throw new ArgumentNullException(nameof(turnContext));
@@ -136,9 +116,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 new
                 {
                     question = messageActivity.Text,
-                    top = _options.Top,
-                    strictFilters = _options.StrictFilters,
-                    metadataBoost = _options.MetadataBoost,
+                    top = options.Top,
+                    strictFilters = options.StrictFilters,
+                    metadataBoost = options.MetadataBoost,
                 }, Formatting.None);
 
             request.Content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
@@ -172,23 +152,30 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 answer.Score = answer.Score / 100;
             }
 
-            var result = results.Answers.Where(answer => answer.Score > _options.ScoreThreshold).ToArray();
+            var result = results.Answers.Where(answer => answer.Score > options.ScoreThreshold).ToArray();
 
             var traceInfo = new QnAMakerTraceInfo
             {
                 Message = (Activity)messageActivity,
                 QueryResults = result,
                 KnowledgeBaseId = _endpoint.KnowledgeBaseId,
-                ScoreThreshold = _options.ScoreThreshold,
-                Top = _options.Top,
-                StrictFilters = _options.StrictFilters,
-                MetadataBoost = _options.MetadataBoost,
+                ScoreThreshold = options.ScoreThreshold,
+                Top = options.Top,
+                StrictFilters = options.StrictFilters,
+                MetadataBoost = options.MetadataBoost,
             };
             var traceActivity = Activity.CreateTraceActivity(QnAMakerMiddlewareName, QnAMakerTraceType, traceInfo, QnAMakerTraceLabel);
             await turnContext.SendActivityAsync(traceActivity).ConfigureAwait(false);
 
             return result;
         }
+
+        /// <summary>
+        /// Generates an answer from the knowledge base.
+        /// </summary>
+        /// <param name="turnContext">The Turn Context that contains the user question to be queried against your knowledge base.</param>
+        /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
+        public async Task<QueryResult[]> GetAnswersAsync(ITurnContext turnContext) => await GetAnswersAsync(turnContext, this._options).ConfigureAwait(false);
 
         // The old version of the protocol returns the id in a field called qnaId the
         // following classes and helper function translate this old structure
@@ -207,6 +194,39 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     })
                     .ToArray(),
         };
+
+        private void ValidateOptions(ref QnAMakerOptions options)
+        {
+            if (options.ScoreThreshold == 0)
+            {
+                options.ScoreThreshold = 0.3F;
+            }
+
+            if (options.Top == 0)
+            {
+                options.Top = 1;
+            }
+
+            if (options.ScoreThreshold < 0 || options.ScoreThreshold > 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(options.ScoreThreshold), "Score threshold should be a value between 0 and 1");
+            }
+
+            if (options.Top < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(options.Top), "Top should be an integer greater than 0");
+            }
+
+            if (options.StrictFilters == null)
+            {
+                options.StrictFilters = new Metadata[] { };
+            }
+
+            if (options.MetadataBoost == null)
+            {
+                options.MetadataBoost = new Metadata[] { };
+            }
+        }
 
         private class InternalQueryResult : QueryResult
         {
