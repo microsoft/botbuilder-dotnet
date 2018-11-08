@@ -12,11 +12,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using Microsoft.Rest.Serialization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
 {
     public abstract class BotMessageHandlerBase
     {
+        // DefaultContractResolver is used so annonymous types are supported
         public static readonly JsonSerializer BotMessageSerializer = JsonSerializer.Create(new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
@@ -24,7 +26,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
             DateFormatHandling = DateFormatHandling.IsoDateFormat,
             DateTimeZoneHandling = DateTimeZoneHandling.Utc,
             ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
-            ContractResolver = new ReadOnlyJsonContractResolver(),
+            ContractResolver = new DefaultContractResolver(),
             Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() },
         });
 
