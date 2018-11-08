@@ -2,34 +2,34 @@
   "Text": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c",
   "Intents": {
     "EntityTests": {
-      "score": 0.9815396
+      "score": 0.9783022
     },
     "search": {
-      "score": 0.435023278
-    },
-    "None": {
-      "score": 0.0568813831
+      "score": 0.253596246
     },
     "Weather_GetForecast": {
-      "score": 0.05395444
+      "score": 0.0438077338
+    },
+    "None": {
+      "score": 0.0412048623
     },
     "Travel": {
-      "score": 0.0150735639
+      "score": 0.0118790194
     },
     "Delivery": {
-      "score": 0.00403430453
+      "score": 0.00688600726
     },
     "SpecifyName": {
-      "score": 0.00316059729
+      "score": 0.00150657748
     },
     "Help": {
-      "score": 0.0001318411
+      "score": 0.000121566052
     },
     "Cancel": {
-      "score": 5.48900862E-05
+      "score": 5.180011E-05
     },
     "Greeting": {
-      "score": 1.48596814E-06
+      "score": 1.6850714E-05
     }
   },
   "Entities": {
@@ -395,7 +395,7 @@
           "startIndex": 0,
           "endIndex": 262,
           "text": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5 : 30am and 4 acres and 4 pico meters and chrimc @ hotmail . com and $ 4 and $ 4 . 25 and also 32 and 210 . 4 and first and 10 % and 10 . 5 % and 425 - 555 - 1234 and 3 degrees and - 27 . 5 degrees c",
-          "score": 0.7674513,
+          "score": 0.7279488,
           "type": "Composite1"
         }
       ]
@@ -410,51 +410,58 @@
     "alteredQuery": null,
     "topScoringIntent": {
       "intent": "EntityTests",
-      "score": 0.9815396
+      "score": 0.9783022
     },
     "intents": [
       {
         "intent": "EntityTests",
-        "score": 0.9815396
+        "score": 0.9783022
       },
       {
         "intent": "search",
-        "score": 0.435023278
-      },
-      {
-        "intent": "None",
-        "score": 0.0568813831
+        "score": 0.253596246
       },
       {
         "intent": "Weather.GetForecast",
-        "score": 0.05395444
+        "score": 0.0438077338
+      },
+      {
+        "intent": "None",
+        "score": 0.0412048623
       },
       {
         "intent": "Travel",
-        "score": 0.0150735639
+        "score": 0.0118790194
       },
       {
         "intent": "Delivery",
-        "score": 0.00403430453
+        "score": 0.00688600726
       },
       {
         "intent": "SpecifyName",
-        "score": 0.00316059729
+        "score": 0.00150657748
       },
       {
         "intent": "Help",
-        "score": 0.0001318411
+        "score": 0.000121566052
       },
       {
         "intent": "Cancel",
-        "score": 5.48900862E-05
+        "score": 5.180011E-05
       },
       {
         "intent": "Greeting",
-        "score": 1.48596814E-06
+        "score": 1.6850714E-05
       }
     ],
     "entities": [
+      {
+        "entity": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5 : 30am and 4 acres and 4 pico meters and chrimc @ hotmail . com and $ 4 and $ 4 . 25 and also 32 and 210 . 4 and first and 10 % and 10 . 5 % and 425 - 555 - 1234 and 3 degrees and - 27 . 5 degrees c",
+        "type": "Composite1",
+        "startIndex": 0,
+        "endIndex": 261,
+        "score": 0.7279488
+      },
       {
         "entity": "12 years old",
         "type": "builtin.age",
@@ -474,13 +481,6 @@
           "unit": "Day",
           "value": "3"
         }
-      },
-      {
-        "entity": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5 : 30am and 4 acres and 4 pico meters and chrimc @ hotmail . com and $ 4 and $ 4 . 25 and also 32 and 210 . 4 and first and 10 % and 10 . 5 % and 425 - 555 - 1234 and 3 degrees and - 27 . 5 degrees c",
-        "type": "Composite1",
-        "startIndex": 0,
-        "endIndex": 261,
-        "score": 0.7674513
       },
       {
         "entity": "12 years",
@@ -587,7 +587,10 @@
         "entity": "chrimc@hotmail.com",
         "type": "builtin.email",
         "startIndex": 126,
-        "endIndex": 143
+        "endIndex": 143,
+        "resolution": {
+          "value": "chrimc@hotmail.com"
+        }
       },
       {
         "entity": "$4",
@@ -811,6 +814,7 @@
         "startIndex": 216,
         "endIndex": 227,
         "resolution": {
+          "score": "0.9",
           "value": "425-555-1234"
         }
       },
