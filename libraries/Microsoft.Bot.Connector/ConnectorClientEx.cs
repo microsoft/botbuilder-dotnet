@@ -75,6 +75,7 @@ namespace Microsoft.Bot.Connector
 
             // Override the contract resolver with the Default because we want to be able to serialize annonymous types
             SerializationSettings.ContractResolver = new DefaultContractResolver();
+            DeserializationSettings.ContractResolver = new DefaultContractResolver();
         }
 
         /// <summary>Gets a description of the operating system of the Azure Bot Service.</summary>
