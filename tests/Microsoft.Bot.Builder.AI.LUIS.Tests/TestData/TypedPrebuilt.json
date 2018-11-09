@@ -2,34 +2,34 @@
   "Text": "http://foo.com is where you can get a weather forecast for seattle",
   "Intents": {
     "Weather_GetForecast": {
-      "score": 0.8924456
+      "score": 0.8973387
     },
     "EntityTests": {
-      "score": 0.635434449
+      "score": 0.6120084
     },
     "None": {
-      "score": 0.04799512
+      "score": 0.038558647
     },
     "search": {
-      "score": 0.0217808
+      "score": 0.0183345526
     },
     "Travel": {
-      "score": 0.005861538
-    },
-    "SpecifyName": {
-      "score": 0.005182907
+      "score": 0.00512401946
     },
     "Delivery": {
-      "score": 0.00352461357
+      "score": 0.00396467233
+    },
+    "SpecifyName": {
+      "score": 0.00337156886
     },
     "Help": {
-      "score": 0.00179672148
+      "score": 0.00175959955
     },
     "Cancel": {
-      "score": 0.0006153381
+      "score": 0.000602799933
     },
     "Greeting": {
-      "score": 0.000140723525
+      "score": 0.000445256825
     }
   },
   "Entities": {
@@ -55,7 +55,7 @@
               "startIndex": 59,
               "endIndex": 66,
               "text": "seattle",
-              "score": 0.8966654,
+              "score": 0.8812625,
               "type": "Weather.Location"
             }
           ]
@@ -68,7 +68,7 @@
           "startIndex": 0,
           "endIndex": 66,
           "text": "http : / / foo . com is where you can get a weather forecast for seattle",
-          "score": 0.6157282,
+          "score": 0.572650731,
           "type": "Composite2"
         }
       ]
@@ -83,70 +83,73 @@
     "alteredQuery": null,
     "topScoringIntent": {
       "intent": "Weather.GetForecast",
-      "score": 0.8924456
+      "score": 0.8973387
     },
     "intents": [
       {
         "intent": "Weather.GetForecast",
-        "score": 0.8924456
+        "score": 0.8973387
       },
       {
         "intent": "EntityTests",
-        "score": 0.635434449
+        "score": 0.6120084
       },
       {
         "intent": "None",
-        "score": 0.04799512
+        "score": 0.038558647
       },
       {
         "intent": "search",
-        "score": 0.0217808
+        "score": 0.0183345526
       },
       {
         "intent": "Travel",
-        "score": 0.005861538
-      },
-      {
-        "intent": "SpecifyName",
-        "score": 0.005182907
+        "score": 0.00512401946
       },
       {
         "intent": "Delivery",
-        "score": 0.00352461357
+        "score": 0.00396467233
+      },
+      {
+        "intent": "SpecifyName",
+        "score": 0.00337156886
       },
       {
         "intent": "Help",
-        "score": 0.00179672148
+        "score": 0.00175959955
       },
       {
         "intent": "Cancel",
-        "score": 0.0006153381
+        "score": 0.000602799933
       },
       {
         "intent": "Greeting",
-        "score": 0.000140723525
+        "score": 0.000445256825
       }
     ],
     "entities": [
-      {
-        "entity": "http : / / foo . com is where you can get a weather forecast for seattle",
-        "type": "Composite2",
-        "startIndex": 0,
-        "endIndex": 65,
-        "score": 0.6157282
-      },
-      {
-        "entity": "http://foo.com",
-        "type": "builtin.url",
-        "startIndex": 0,
-        "endIndex": 13
-      },
       {
         "entity": "seattle",
         "type": "Weather.Location",
         "startIndex": 59,
         "endIndex": 65,
-        "score": 0.8966654
+        "score": 0.8812625
+      },
+      {
+        "entity": "http : / / foo . com is where you can get a weather forecast for seattle",
+        "type": "Composite2",
+        "startIndex": 0,
+        "endIndex": 65,
+        "score": 0.572650731
+      },
+      {
+        "entity": "http://foo.com",
+        "type": "builtin.url",
+        "startIndex": 0,
+        "endIndex": 13,
+        "resolution": {
+          "value": "http://foo.com"
+        }
       }
     ],
     "compositeEntities": [
@@ -155,12 +158,12 @@
         "value": "http : / / foo . com is where you can get a weather forecast for seattle",
         "children": [
           {
-            "type": "builtin.url",
-            "value": "http://foo.com"
-          },
-          {
             "type": "Weather.Location",
             "value": "seattle"
+          },
+          {
+            "type": "builtin.url",
+            "value": "http://foo.com"
           }
         ]
       }
