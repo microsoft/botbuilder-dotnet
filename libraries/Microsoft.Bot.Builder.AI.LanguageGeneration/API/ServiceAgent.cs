@@ -87,6 +87,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.API
                         {
                             { "Authorization", "Bearer " + responseBody }
                         };
+                        // You can add TraceId here then ask LG service team to debug service log
+                        // request.TraceId = "";
                         var response = await _serviceAgent.GenerateAsync(request, additionalHeaders).ConfigureAwait(false);
                         if (response != null)
                         {
@@ -94,7 +96,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.API
                         }
                         else
                         {
-                            throw new Exception("Failed to communicate with language generation runtime api.");
+                            throw new Exception("Failed to communicate with language generation runtime api. Error message: " + _serviceAgent.ErrorMessage);
                         }
                     }
                     else
