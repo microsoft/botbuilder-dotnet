@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -10,23 +9,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
-using Microsoft.Rest.Serialization;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
 {
     public abstract class BotMessageHandlerBase
     {
-        public static readonly JsonSerializer BotMessageSerializer = JsonSerializer.Create(new JsonSerializerSettings
-        {
-            NullValueHandling = NullValueHandling.Ignore,
-            Formatting = Formatting.Indented,
-            DateFormatHandling = DateFormatHandling.IsoDateFormat,
-            DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-            ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
-            ContractResolver = new ReadOnlyJsonContractResolver(),
-            Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() },
-        });
+        public static readonly JsonSerializer BotMessageSerializer = JsonSerializer.Create(MessageSerializerSettings.Create());
 
         public BotMessageHandlerBase()
         {

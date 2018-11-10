@@ -2,16 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.Versioning;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Rest;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Connector
 {
@@ -63,18 +60,22 @@ namespace Microsoft.Bot.Connector
         {
             // The Schema version is 3.1, put into the Microsoft-BotFramework header
             // https://github.com/Microsoft/botbuilder-dotnet/issues/471
-            this.HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Microsoft-BotFramework", "3.1"));
+            HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Microsoft-BotFramework", "3.1"));
 
             // The Client SDK Version 
             //  https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md
-            this.HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("BotBuilder", GetClientVersion(this)));
+            HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("BotBuilder", GetClientVersion(this)));
 
             // Additional Info. 
             // https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md
             var userAgent = $"({GetASPNetVersion()}; {GetOsVersion()}; {GetArchitecture()})";
-            this.HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(userAgent));
+            HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(userAgent));
 
-            this.HttpClient.DefaultRequestHeaders.ExpectContinue = false;
+            HttpClient.DefaultRequestHeaders.ExpectContinue = false;
+
+            // Override the contract resolver with the Default because we want to be able to serialize annonymous types
+            SerializationSettings.ContractResolver = new DefaultContractResolver();
+            DeserializationSettings.ContractResolver = new DefaultContractResolver();
         }
 
         /// <summary>Gets a description of the operating system of the Azure Bot Service.</summary>
