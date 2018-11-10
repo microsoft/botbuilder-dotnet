@@ -76,13 +76,13 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Generates an answer from the knowledge base using strict filters
         /// </summary>
         /// <param name="turnContext">The Turn Context that contains the user question to be queried against your knowledge base.</param>
-        /// <param name="options">The options for the QnA Maker knowledge base.</param>
+        /// <param name="options">The options for the QnA Maker knowledge base. If null, constructor option is used for this instance.</param>
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
-        public async Task<QueryResult[]> GetAnswersAsync(ITurnContext turnContext, QnAMakerOptions options)
+        public async Task<QueryResult[]> GetAnswersAsync(ITurnContext turnContext, QnAMakerOptions options = null)
         {
             if (options == null)
             {
-                throw new ArgumentNullException(nameof(options));
+                options = this._options;
             }
 
             ValidateOptions(ref options);
@@ -169,13 +169,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             return result;
         }
-
-        /// <summary>
-        /// Generates an answer from the knowledge base.
-        /// </summary>
-        /// <param name="turnContext">The Turn Context that contains the user question to be queried against your knowledge base.</param>
-        /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
-        public async Task<QueryResult[]> GetAnswersAsync(ITurnContext turnContext) => await GetAnswersAsync(turnContext, this._options).ConfigureAwait(false);
 
         // The old version of the protocol returns the id in a field called qnaId the
         // following classes and helper function translate this old structure
