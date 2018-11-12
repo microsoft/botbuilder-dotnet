@@ -48,19 +48,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             }
         }
 
-        public class ResolveBotFrameworkAdapter
+        public class ResolveIAdapterIntegration
         {
             [Fact]
-            public void BotFrameworkAdapterShouldResolve()
+            public void IAdapterIntegrationShouldResolve()
             {
-                // Simulate a LoggerFactory (could be AppInsights/etc)
-                var mockLog = new Mock<ILogger<BotFrameworkAdapter>>();
-                var mockLogFactory = new Mock<ILoggerFactory>();
-                mockLogFactory.Setup(f => f.CreateLogger(It.IsAny<string>())).Returns(mockLog.Object);
-
                 var serviceCollection = new ServiceCollection()
+                    .AddLogging()
                     .AddOptions()
-                    .AddSingleton<ILoggerFactory>(mockLogFactory.Object)
                     .AddBot<ServiceResolutionTestBot>(options =>
                     {
                         options.CredentialProvider = Mock.Of<ICredentialProvider>();
@@ -68,12 +63,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
                 var serviceProvider = serviceCollection.BuildServiceProvider();
 
-                var botFrameworkAdapter = serviceProvider.GetService<IAdapterIntegration>();
+                var adapterIntegration = serviceProvider.GetService<IAdapterIntegration>();
 
-                botFrameworkAdapter.Should().NotBeNull();
+                adapterIntegration.Should().NotBeNull().And.BeOfType<BotFrameworkAdapter>();
             }
         }
-
 
         public class ResolveIBot
         {
@@ -92,33 +86,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                     .And.BeOfType<ServiceResolutionTestBot>();
             }
         }
-
-        public class ResolveILogger
-        {
-            [Fact]
-            public void BotFrameworkAdapterILoggerShouldResolve()
-            {
-                // Simulate a LoggerFactory (could be AppInsights/etc)
-                var mockLog = new Mock<ILogger<IAdapterIntegration>>();
-                var mockLogFactory = new Mock<ILoggerFactory>();
-                mockLogFactory.Setup(f => f.CreateLogger(It.IsAny<string>())).Returns(mockLog.Object);
-
-                var serviceCollection = new ServiceCollection()
-                    .AddSingleton<ILoggerFactory>(mockLogFactory.Object)
-                    .AddOptions()
-                    .AddBot<ServiceResolutionTestBot>(options =>
-                    {
-                        options.CredentialProvider = Mock.Of<ICredentialProvider>();
-                    });
-
-                var serviceProvider = serviceCollection.BuildServiceProvider();
-
-                var frameworkLogger = serviceProvider.GetService<ILogger<IAdapterIntegration>>();
-
-                frameworkLogger.Should().NotBeNull();
-            }
-        }
-
 
         public sealed class ServiceResolutionTestBot : IBot
         {
