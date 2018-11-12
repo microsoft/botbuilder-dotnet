@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -12,8 +13,8 @@ using Microsoft.Rest.TransientFaultHandling;
 namespace Microsoft.Bot.Builder.Integration
 {
     /// <summary>
-    /// Contains settings that your ASP.NET application uses to initialize the <see cref="BotAdapter"/>
-    /// that it adds to the HTTP request pipeline.
+    /// Contains settings used by the .NET integration APIs to initialize the <see cref="BotFrameworkAdapter"/>
+    /// that processes the HTTP requests coming from the Bot Framework Service.
     /// </summary>
     public class BotFrameworkOptions
     {
@@ -52,14 +53,17 @@ namespace Microsoft.Bot.Builder.Integration
         public IList<IMiddleware> Middleware { get; } = new List<IMiddleware>();
 
         /// <summary>
-        /// Gets a list of the <see cref="BotState"/> providers to use on each incoming activity.
-        /// Objects in the State list enable other components to get access to the state providers
-        /// during the start up process.  For example, creating state property accessors within a ASP.net Core Singleton
-        /// that could be passed to your IBot-derived class.
-        /// The providers in this list are not associated with the BotStateSet Middleware component. To clarify, state providers
-        /// in this list are not automatically loaded or saved during the turn process.
+        /// OBSOLETE: This property is no longer used by the framework.
         /// </summary>
+        /// <remarks>
+        /// This property was used in a pattern to propagate <see cref="BotState"/> instances
+        /// throughout the service configuration phase, but it was never used at runtime and is
+        /// being retired to reduce the surface area of state APIs. As an alternative, consider
+        /// simply using an appropriately scoped <see cref="BotState"/> variable along with closures.
+        /// </remarks>
         /// <value>The list of property state providers.</value>
+        [Obsolete("This property is no longer used by the framework. Please see documentation for more details.")]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public IList<BotState> State { get; } = new List<BotState>();
 
         /// <summary>
