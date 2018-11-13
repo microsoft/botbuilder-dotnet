@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Linq;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
@@ -28,7 +31,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights
 
             var eventName = waterfallStepContext.Stack.Last().Id + stepFriendlyName;
 
-            EventTelemetry evt = new EventTelemetry(eventName);
+            var evt = new EventTelemetry(eventName);
 
             // Log the event into Application Insights
             telemetryClient.TrackEvent(evt);

@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
             {
                 // can't read from the request body at this point, as the
                 // request stream has already been disposed.
-                JObject body = _memoryCache.Get(context.TraceIdentifier) as JObject;
+                var body = _memoryCache.Get(context.TraceIdentifier) as JObject;
                 if (body != null)
                 {
                     var userId = (string)body["from"]?["id"];
