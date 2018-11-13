@@ -13,25 +13,25 @@
         {
             "type": "blob",
             "id": "2",
-            "name": "eb66xfjtsmstorage",
-            "serviceName": "eb66xfjtsmstorage",
-            "tenantId": "deadbeef-86f1-41af-91ab-2d7cd011db47",
-            "subscriptionId": "deadbeef-d48a-4053-9aa2-56c014495e89",
-            "resourceGroup": "eb66",
-            "connectionString": "DefaultEndpointsProtocol=https;EndpointSuffix=core.windows.net;AccountName=eb66xfjtsmstorage;AccountKey=FWbhsIHmtHKq+ivFcp9oP5G/Zrd0yYkUxrtQSHPjsTw0F0Tvy2zI8hJbHCKakm0I1x7SZi4C3dDCrmvtjuj7Xw==",
+            "name": "fake",
+            "serviceName": "fake",
+			"tenantId": "00000000-0000-0000-0000-000000000000",
+            "subscriptionId": "00000000-0000-0000-0000-000000000000",
+            "resourceGroup": "fake",
+            "connectionString": "DefaultEndpointsProtocol=https;EndpointSuffix=core.windows.net;AccountName=eb66xfjtsmstorage;AccountKey=000000000000000000000",
             "container": "transcripts"
         },
         {
             "type": "cosmosdb",
             "id": "8",
-            "name": "eb66",
-            "serviceName": "eb66",
-            "tenantId": "deadbeef-86f1-41af-91ab-2d7cd011db47",
-            "subscriptionId": "deadbeef-d48a-4053-9aa2-56c014495e89",
-            "resourceGroup": "eb66",
-            "endpoint": "https://eb66.documents.azure.com:443/",
-            "key": "fze8oEvihmXQ1scvb8cdOERiRQQ0YNyQ383HwprIgPuMJLdWomdbbXqWxi5QWynMCdkE3ZLKHzqBpldbVbMyfQ==",
-            "database": "botstate-db",
+            "name": "fake",
+            "serviceName": "fake",
+            "tenantId": "00000000-0000-0000-0000-000000000000",
+            "subscriptionId": "00000000-0000-0000-0000-000000000000",
+            "resourceGroup": "fake",
+            "endpoint": "https://fake.documents.azure.com:443/",
+            "key": "00000000000000000000000",
+            "database": "fake-db",
             "collection": "botstate-collection"
         },
         {
@@ -55,10 +55,10 @@
         },
         {
             "type": "luis",
-            "name": "eb66_General",
-            "appId": "7340acf1-8bc7-40aa-b23b-1341dc27ddb5",
-            "authoringKey": "b70cd8ee0844421da97ec682498b025d",
-            "subscriptionKey": "b70cd8ee0844421da97ec682498b025d",
+            "name": "fake",
+            "appId": "00000000-0000-0000-0000-000000000000",
+            "authoringKey": "00000000000000000000000000",
+            "subscriptionKey": "000000000000000000",
             "version": "0.1",
             "region": "westus",
             "id": "120"
@@ -67,10 +67,10 @@
             "type": "qna",
             "name": "FAQ",
             "id": "85",
-            "kbId": "deadbeef-d5cb-491c-bbc2-7807763ce0fe",
-            "subscriptionKey": "f28b7948f5524f5284922f784587a62d",
+            "kbId": "00000000-0000-0000-0000-000000000000",
+            "subscriptionKey": "00000000000000000000",
             "endpointKey": "deadbeef-7692-491b-b4d8-3552b2d14746",
-            "hostname": "https://eb66-qnahost.azurewebsites.net/qnamaker"
+            "hostname": "https://fake-qnahost.azurewebsites.net/qnamaker"
         },
         {
             "type": "dispatch",
@@ -78,10 +78,10 @@
                 "120",
                 "85"
             ],
-            "name": "eb66_Dispatch",
-            "appId": "deadbeef-8c82-44ba-ad2b-8197a4e52514",
-            "authoringKey": "b70cd8ee0844421da97ec682498b025d",
-            "subscriptionKey": "b70cd8ee0844421da97ec682498b025d",
+            "name": "fake_Dispatch",
+            "appId": "00000000-0000-0000-0000-000000000000",
+            "authoringKey": "0000000000000000000",
+            "subscriptionKey": "000000000000000000000000000",
             "version": "Dispatch",
             "region": "westus",
             "id": "152"

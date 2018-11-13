@@ -1,7 +1,7 @@
 ﻿{
-  "botFilePath": "bb67.bot",
+  "botFilePath": "fake.bot",
   "botFileSecret": "",
   "ApplicationInsights": {
-    "InstrumentationKey": "deadbeef-9156-4828-9d9d-67251e79a8b1"
+    "InstrumentationKey": "00000000-0000-0000-0000-000000000000"
   }
 }
