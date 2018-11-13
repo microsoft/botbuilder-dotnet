@@ -62,6 +62,7 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="legacy.bot" />
+    <None Include="govTest.bot" />
     <None Include="test.bot" />
   </ItemGroup>
   <ItemGroup>
