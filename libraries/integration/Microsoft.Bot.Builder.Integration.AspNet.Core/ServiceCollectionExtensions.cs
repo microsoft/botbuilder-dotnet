@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Bot.Configuration;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
@@ -71,5 +73,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             return services;
         }
-    }
+
+   }
 }

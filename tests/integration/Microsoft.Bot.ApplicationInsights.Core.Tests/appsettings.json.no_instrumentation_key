@@ -1,0 +1,7 @@
+﻿{
+  "botFilePath": "bb67.bot",
+  "botFileSecret": "",
+  "ApplicationInsights": {
+    "InstrumentationKey222": "deadbeef-9156-4828-9d9d-67251e79a8b1"
+  }
+}
