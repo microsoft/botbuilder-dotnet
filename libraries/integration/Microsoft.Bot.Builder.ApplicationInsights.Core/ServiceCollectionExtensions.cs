@@ -22,22 +22,11 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
         /// <param name="botConfiguration">Bot configuration that contains the Application Insights configuration information.</param>
         /// <param name="telemetryClient">(Optional) The Application Insights client used for logging.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
-        public static IServiceCollection AddBotApplicationInsights(this IServiceCollection services, IConfiguration configuration, BotConfiguration botConfiguration, ApplicationInsightsServiceOptions opts = null)
+        public static IServiceCollection AddBotApplicationInsights(this IServiceCollection services, BotConfiguration botConfiguration, ApplicationInsightsServiceOptions opts = null)
         {
             if (botConfiguration == null)
             {
                 throw new ArgumentNullException(nameof(botConfiguration));
-            }
-
-            if (configuration == null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
-
-            // Validate the appsettings.json is correct.
-            if (configuration["ApplicationInsights:InstrumentationKey"] == null)
-            {
-                throw new InvalidOperationException("The appsettings.json file is missng the Application Insights instrumentation key.");
             }
 
             // Validate the bot file is correct.

@@ -10,7 +10,7 @@ using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.ApplicationInsights
 {
-    class TelemetryWaterfallDialog : WaterfallDialog
+    public class TelemetryWaterfallDialog : WaterfallDialog
     {
         private readonly IBotTelemetryClient _telemetryClient;
 
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights
             _telemetryClient = telemetryClient;
         }
 
-        protected virtual async Task<DialogTurnResult> OnStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        protected override async Task<DialogTurnResult> OnStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             _telemetryClient.TrackWaterfallStep(stepContext, null);
             return await base.OnStepAsync(stepContext, cancellationToken);

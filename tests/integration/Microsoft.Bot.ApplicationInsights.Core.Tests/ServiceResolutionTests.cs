@@ -23,8 +23,6 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
     [TestCategory("ApplicationInsights")]
     public class ServiceResolutionTests
     {
-        private readonly TestServer _server;
-        private readonly HttpClient _client;
         public ServiceResolutionTests()
         {
             // Arrange
@@ -38,7 +36,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
         {
             ArrangeBotFile(); // Default bot file
             ArrangeAppSettings(null); // No appsettings file
-            TestServer server = new TestServer(new WebHostBuilder()
+            var server = new TestServer(new WebHostBuilder()
                 .UseStartup<Startup>());
         }
         [TestMethod]
@@ -48,7 +46,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
             ArrangeBotFile(); // Default bot file
             ArrangeAppSettings("no_app_insights"); // Bad app insights appsettings file
 
-            TestServer server = new TestServer(new WebHostBuilder()
+            var server = new TestServer(new WebHostBuilder()
                 .UseStartup<Startup>());
         }
 
@@ -59,7 +57,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
             ArrangeBotFile(); // Default bot file
             ArrangeAppSettings("no_instrumentation_key"); // Bad app insights appsettings file
 
-            TestServer server = new TestServer(new WebHostBuilder()
+            var server = new TestServer(new WebHostBuilder()
                 .UseStartup<Startup>());
         }
 
@@ -69,7 +67,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
         {
             ArrangeBotFile(null); // No bot file
             ArrangeAppSettings(); // Default app settings
-            TestServer server = new TestServer(new WebHostBuilder()
+            var server = new TestServer(new WebHostBuilder()
                 .UseStartup<Startup>());
         }
 
@@ -79,7 +77,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
         {
             ArrangeBotFile("no_app_insights"); // Invalid bot file
             ArrangeAppSettings(); // Default app settings
-            TestServer server = new TestServer(new WebHostBuilder()
+            var server = new TestServer(new WebHostBuilder()
                 .UseStartup<Startup>());
         }
 
@@ -88,37 +86,53 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
         {
             ArrangeBotFile(); // Default bot file
             ArrangeAppSettings(); // Default app settings
-            TestServer server = new TestServer(new WebHostBuilder()
+            var server = new TestServer(new WebHostBuilder()
                 .UseStartup<Startup>());
             Assert.IsTrue(true);
         }
 
         [TestMethod]
-        public void ServiceResolution_VerifyLogger()
+        public void ServiceResolution_VerifyTelemetryClient()
         {
             ArrangeBotFile(); // Default bot file
             ArrangeAppSettings(); // Default app settings
-            TestServer server = new TestServer(new WebHostBuilder()
-                .UseStartup<StartupVerifyLogger>());
+            var server = new TestServer(new WebHostBuilder()
+                .UseApplicationInsights()
+                .UseStartup<StartupVerifyTelemetryClient>());
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void ServiceResolution_VerifyTelemetryClientFail()
+        {
+            ArrangeBotFile(); // Default bot file
+            ArrangeAppSettings(); // Default app settings
+            var server = new TestServer(new WebHostBuilder() // No App Insights registered!
+                .UseStartup<StartupVerifyTelemetryClient>());
+        }
 
+        /// <summary>
+        /// Prepare appsettings.json for test
+        /// </summary>
+        /// <remarks>Ensures appsettings.json file is set up (copy based on different sample files,
+        /// post-pended with a version.)  ie, appsettings.json.no_app_insights </remarks>
+        /// <param name="version">Post-pended onto the file name to copy (ie, "no_app_insights"). If null, put no file.</param>
         public void ArrangeAppSettings(string version = "default")
         {
-            try
-            {
-                File.Delete("appsettings.json");
-            }
-            catch
-            {
-                // Do nothing
-            }
+            try { File.Delete("appsettings.json"); }
+            catch { }
             
             if (!string.IsNullOrWhiteSpace(version))
             {
                 File.Copy($"appsettings.json.{version}", "appsettings.json");
             }
         }
+        /// <summary>
+        /// Prepare testbot.bot for test
+        /// </summary>
+        /// <remarks>Ensures testbot.bot file is set up (copy based on different sample files,
+        /// post-pended with a version.)  ie, testbot.bot.no_app_insights </remarks>
+        /// <param name="version">Post-pended onto the file name to copy (ie, "no_app_insights"). If null, put no file.</param>
 
         public void ArrangeBotFile(string version = "default")
         {

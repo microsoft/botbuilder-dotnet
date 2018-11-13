@@ -4,6 +4,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Configuration;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,12 +28,16 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
         public void ConfigureServices(IServiceCollection services)
         {
             var botConfig = BotConfiguration.Load("testbot.bot", null);
-            services.AddBotApplicationInsights(Configuration, botConfig);
+            services.AddBotApplicationInsights(botConfig);
+
+            // Adding IConfiguration in sample test server.  Otherwise this appears to be 
+            // registered.
+            services.AddSingleton<IConfiguration>(this.Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseMiddleware<TelemetrySaveBodyASPMiddleware>();
+            app.UseBotTelemetry();
         }
 
     }

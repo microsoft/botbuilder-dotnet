@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights
         /// </summary>
         public void Flush()
         {
-
+            _telemetryClient.Flush();
         }
 
     }
