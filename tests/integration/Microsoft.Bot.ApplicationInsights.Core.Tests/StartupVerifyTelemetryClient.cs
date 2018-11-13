@@ -11,9 +11,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
 {
-    internal class StartupVerifyLogger
+    internal class StartupVerifyTelemetryClient
     {
-        public StartupVerifyLogger(IHostingEnvironment env)
+        public StartupVerifyTelemetryClient(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
@@ -29,14 +29,20 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
         public void ConfigureServices(IServiceCollection services)
         {
             var botConfig = BotConfiguration.Load("testbot.bot", null);
-            services.AddBotApplicationInsights(Configuration, botConfig);
+            services.AddBotApplicationInsights(botConfig);
 
-            Assert.IsNotNull(services.BuildServiceProvider().GetService<ILoggerFactory>());
+
+            // Adding IConfiguration in sample test server.  Otherwise this appears to be 
+            // registered.
+            services.AddSingleton<IConfiguration>(this.Configuration);
+
+            
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseMiddleware<TelemetrySaveBodyASPMiddleware>();
+            app.UseBotTelemetry();
+            Assert.IsNotNull(app.ApplicationServices.GetService<IBotTelemetryClient>());
         }
 
     }

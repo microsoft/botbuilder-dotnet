@@ -67,11 +67,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 async (step, cancellationToken) => { await step.Context.SendActivityAsync("step3"); return Dialog.EndOfTurn; },
             });
 
-            waterfallDialog.OnPreStep(async (stepContext, dialogReason, result, next) => 
-            {
-                return;
-            });
-
             dialogs.Add(waterfallDialog);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
