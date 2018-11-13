@@ -6,15 +6,18 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.ApplicationInsights;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Dialogs.Tests
+namespace Microsoft.Bot.Builder.ApplicationInsights.Tests
 {
     [TestClass]
-    public class WaterfallTests
+    public class TelemetryWaterfallTests
     {
+
         [TestMethod]
         public async Task Waterfall()
         {
@@ -22,10 +25,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(convoState));
+            var telemetryClient = new BotTelemetryClient();
 
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
             var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new WaterfallDialog("test", new WaterfallStep[]
+            dialogs.Add(new TelemetryWaterfallDialog("test", telemetryClient, new WaterfallStep[]
             {
                 async (step, cancellationToken) => { await step.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn; },
                 async (step, cancellationToken) => { await step.Context.SendActivityAsync("step2"); return Dialog.EndOfTurn; },
@@ -60,14 +64,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
             var dialogs = new DialogSet(dialogState);
-            var waterfallDialog = new WaterfallDialog("test", new WaterfallStep[]
+            var waterfallDialog = new TelemetryWaterfallDialog("test", new WaterfallStep[]
             {
                 async (step, cancellationToken) => { await step.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn; },
                 async (step, cancellationToken) => { await step.Context.SendActivityAsync("step2"); return Dialog.EndOfTurn; },
                 async (step, cancellationToken) => { await step.Context.SendActivityAsync("step3"); return Dialog.EndOfTurn; },
             });
 
-            waterfallDialog.OnPreStep(async (stepContext, dialogReason, result, next) => 
+            waterfallDialog.OnPreStep(async (stepContext, dialogReason, result, next) =>
             {
                 return;
             });
@@ -97,7 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public Task WaterfallWithStepsNull()
         {
-            var waterfall = new WaterfallDialog("test");
+            var waterfall = new TelemetryWaterfallDialog("test");
             waterfall.AddStep(null);
             return Task.CompletedTask;
         }
@@ -180,7 +184,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         private static WaterfallDialog Create_Waterfall2()
         {
-            return new WaterfallDialog("test-waterfall", new WaterfallStep[] {
+            return new TelemetryWaterfallDialog("test-waterfall", new WaterfallStep[] {
                 Waterfall2_Step1,
                 Waterfall2_Step2,
                 Waterfall2_Step3
@@ -268,7 +272,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var dialogs = new DialogSet(dialogState);
             dialogs.Add(new DateTimePrompt("dateTimePrompt", defaultLocale: Culture.English));
-            dialogs.Add(new WaterfallDialog("test-dateTimePrompt", new WaterfallStep[]
+            dialogs.Add(new TelemetryWaterfallDialog("test-dateTimePrompt", new WaterfallStep[]
             {
                 async (stepContext, cancellationToken) =>
                 {
@@ -307,14 +311,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         public static WaterfallDialog Create_Waterfall3()
         {
-            return new WaterfallDialog("test-waterfall-a", new WaterfallStep[] {
+            return new TelemetryWaterfallDialog("test-waterfall-a", new WaterfallStep[] {
                 Waterfall3_Step1,
                 Waterfall3_Step2
             });
         }
         public static WaterfallDialog Create_Waterfall4()
         {
-            return new WaterfallDialog("test-waterfall-b", new WaterfallStep[] {
+            return new TelemetryWaterfallDialog("test-waterfall-b", new WaterfallStep[] {
                 Waterfall4_Step1,
                 Waterfall4_Step2
             });
@@ -322,7 +326,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         public static WaterfallDialog Create_Waterfall5()
         {
-            return new WaterfallDialog("test-waterfall-c", new WaterfallStep[] {
+            return new TelemetryWaterfallDialog("test-waterfall-c", new WaterfallStep[] {
                 Waterfall5_Step1,
                 Waterfall5_Step2
             });
@@ -376,7 +380,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         private static async Task<DialogTurnResult> Waterfall2_Step1(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             await stepContext.Context.SendActivityAsync("step1");
-            return Dialog.EndOfTurn; 
+            return Dialog.EndOfTurn;
         }
         private static async Task<DialogTurnResult> Waterfall2_Step2(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
@@ -386,7 +390,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         private static async Task<DialogTurnResult> Waterfall2_Step3(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             await stepContext.Context.SendActivityAsync("step3");
-            return Dialog.EndOfTurn; 
+            return Dialog.EndOfTurn;
         }
     }
 
