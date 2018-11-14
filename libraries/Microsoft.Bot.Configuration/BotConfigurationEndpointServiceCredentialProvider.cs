@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Configuration
     /// <seealso cref="BotConfiguration"/>
     public sealed class BotConfigurationEndpointServiceCredentialProvider : ICredentialProvider
     {
-        public static readonly string DefaultEnvironmentName = "development";
+        public static readonly string DefaultEndpointName = "development";
 
         private readonly EndpointService _endpointService;
 
@@ -32,27 +32,27 @@ namespace Microsoft.Bot.Configuration
 
         /// <summary>
         ///     Given an existing <see cref="BotConfiguration"/> instance, finds the endpoint service that corresponds to the
-        /// <paramref name="environmentName">given environment</paramref>.
+        /// <paramref name="endpointName">given environment</paramref>.
         /// </summary>
         /// <param name="botConfiguration">
         ///     An <see cref="BotConfiguration"/> instance containing one or more <see cref="EndpointService">endpoint services</see>.</param>
-        /// <param name="environmentName">
+        /// <param name="endpointName">
         ///     Optional environment name that should be used to locate the correct <see cref="EndpointService">endpoint</see>
         ///     from the configuration file based on its <c>name</c>.
         /// </param>
         /// <returns>
         ///     An instance of a <see cref="BotConfigurationEndpointServiceCredentialProvider"/> loaded from the
         ///     <paramref name="botConfiguration">specified <see cref="BotConfiguration"/></paramref> populated
-        ///     with the <see cref="EndpointService">endpoint</see> resolved based on the <paramref name="environmentName"/>.
+        ///     with the <see cref="EndpointService">endpoint</see> resolved based on the <paramref name="endpointName"/>.
         /// </returns>
-        public static BotConfigurationEndpointServiceCredentialProvider FromConfiguration(BotConfiguration botConfiguration, string environmentName = null)
+        public static BotConfigurationEndpointServiceCredentialProvider FromConfiguration(BotConfiguration botConfiguration, string endpointName = null)
         {
             if (botConfiguration == null)
             {
                 throw new ArgumentNullException(nameof(botConfiguration));
             }
 
-            return new BotConfigurationEndpointServiceCredentialProvider(FindEndpointServiceForEnvironment(botConfiguration, environmentName ?? DefaultEnvironmentName));
+            return new BotConfigurationEndpointServiceCredentialProvider(FindEndpointServiceForEnvironment(botConfiguration, endpointName ?? DefaultEndpointName));
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Configuration
         /// <param name="botFileSecretKey">
         ///     Optional key that should be used to decrypt secrets inside the configuration file.
         /// </param>
-        /// <param name="environmentName">
+        /// <param name="endpointName">
         ///     Optional environment name that should be used to locate the correct <see cref="EndpointService">endpoint</see>
         ///     from the configuration file based on its <c>name</c>.
         /// </param>
@@ -70,16 +70,16 @@ namespace Microsoft.Bot.Configuration
         ///     If no value is provided for <paramref name="botFileSecretKey"/>, it is assumed that the contents of
         ///     the configuration file are not encrypted.
         ///
-        ///     If no value is provided for <paramref name="environmentName"/>, it will use
-        ///     <see cref="DefaultEnvironmentName">the default environment</see>.
+        ///     If no value is provided for <paramref name="endpointName"/>, it will use
+        ///     <see cref="DefaultEndpointName">the default environment</see>.
         /// </remarks>
         /// <returns>
         ///     An instance of a <see cref="BotConfigurationEndpointServiceCredentialProvider"/> populated with the
-        ///     <see cref="EndpointService">endpoint</see> resolved based on the <paramref name="environmentName"/>.
+        ///     <see cref="EndpointService">endpoint</see> resolved based on the <paramref name="endpointName"/>.
         /// </returns>
         /// <seealso cref="BotConfiguration"/>
-        public static BotConfigurationEndpointServiceCredentialProvider Load(string botFileSecretKey = null, string environmentName = null) =>
-            LoadBotConfiguration(() => BotConfiguration.LoadFromFolder(Environment.CurrentDirectory, botFileSecretKey), environmentName);
+        public static BotConfigurationEndpointServiceCredentialProvider Load(string botFileSecretKey = null, string endpointName = null) =>
+            LoadBotConfiguration(() => BotConfiguration.LoadFromFolder(Environment.CurrentDirectory, botFileSecretKey), endpointName);
 
         /// <summary>
         /// Attempts to load and create an <see cref="BotConfigurationEndpointServiceCredentialProvider"/> from the
@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Configuration
         /// <param name="botFileSecretKey">
         ///     Optional key that should be used to decrypt secrets inside the configuration file.
         /// </param>
-        /// <param name="environmentName">
+        /// <param name="endpointName">
         ///     Optional environment name that should be used to locate the correct <see cref="EndpointService">endpoint</see>
         ///     from the configuration file based on its <c>name</c>.
         /// </param>
@@ -99,35 +99,47 @@ namespace Microsoft.Bot.Configuration
         ///     If no value is provided for <paramref name="botFileSecretKey"/>, it is assumed that the contents of
         ///     the configuration file are not encrypted.
         ///
-        ///     If no value is provided for <paramref name="environmentName"/>, it will use
-        ///     <see cref="DefaultEnvironmentName">the default environment</see>.
+        ///     If no value is provided for <paramref name="endpointName"/>, it will use
+        ///     <see cref="DefaultEndpointName">the default environment</see>.
         /// </remarks>
         /// <returns>
         ///     An instance of a <see cref="BotConfigurationEndpointServiceCredentialProvider"/> loaded from the
         ///     <paramref name="botConfigurationFilePath">specified <c>.bot</c> configuration file</paramref> populated
-        ///     with the <see cref="EndpointService">endpoint</see> resolved based on the <paramref name="environmentName"/>.
+        ///     with the <see cref="EndpointService">endpoint</see> resolved based on the <paramref name="endpointName"/>.
         /// </returns>
         /// <seealso cref="BotConfiguration"/>
-        public static BotConfigurationEndpointServiceCredentialProvider LoadFrom(string botConfigurationFilePath, string botFileSecretKey = null, string environmentName = null)
+        public static BotConfigurationEndpointServiceCredentialProvider LoadFrom(string botConfigurationFilePath, string botFileSecretKey = null, string endpointName = null)
         {
             if (string.IsNullOrEmpty(botConfigurationFilePath))
             {
-                throw new ArgumentException(nameof(botConfigurationFilePath));
+                throw new ArgumentException("Expected a non-null/empty value.", nameof(botConfigurationFilePath));
             }
 
-            return LoadBotConfiguration(() => BotConfiguration.Load(botConfigurationFilePath, botFileSecretKey), environmentName);
+            return LoadBotConfiguration(() => BotConfiguration.Load(botConfigurationFilePath, botFileSecretKey), endpointName);
         }
 
         /// <inheritdoc />
-        public Task<string> GetAppPasswordAsync(string appId) => Task.FromResult<string>(_endpointService.AppPassword);
+        public Task<string> GetAppPasswordAsync(string appId)
+        {
+            if (appId != _endpointService.AppId)
+            {
+                return Task.FromResult(default(string));
+            }
+
+            return Task.FromResult(_endpointService.AppPassword);
+        }
 
         /// <inheritdoc />
-        public Task<bool> IsAuthenticationDisabledAsync() => Task.FromResult(string.IsNullOrWhiteSpace(_endpointService.AppId) && _endpointService.Name.Equals("development", StringComparison.InvariantCultureIgnoreCase));
+        public Task<bool> IsAuthenticationDisabledAsync() =>
+            Task.FromResult(
+                string.IsNullOrWhiteSpace(_endpointService.AppId)
+                    && 
+                _endpointService.Name?.Equals("development", StringComparison.InvariantCultureIgnoreCase) == true);
 
         /// <inheritdoc />
         public Task<bool> IsValidAppIdAsync(string appId) => Task.FromResult(appId == _endpointService.AppId);
 
-        private static BotConfigurationEndpointServiceCredentialProvider LoadBotConfiguration(Func<BotConfiguration> loader, string environmentName)
+        private static BotConfigurationEndpointServiceCredentialProvider LoadBotConfiguration(Func<BotConfiguration> loader, string endpointName)
         {
             var botConfiguration = default(BotConfiguration);
 
@@ -146,18 +158,18 @@ namespace Microsoft.Bot.Configuration
                     exception);
             }
 
-            return new BotConfigurationEndpointServiceCredentialProvider(FindEndpointServiceForEnvironment(botConfiguration, environmentName));
+            return new BotConfigurationEndpointServiceCredentialProvider(FindEndpointServiceForEnvironment(botConfiguration, endpointName));
         }
 
-        private static EndpointService FindEndpointServiceForEnvironment(BotConfiguration botConfiguration, string environmentName)
+        private static EndpointService FindEndpointServiceForEnvironment(BotConfiguration botConfiguration, string endpointName)
         {
-            environmentName = environmentName ?? DefaultEnvironmentName;
+            endpointName = endpointName ?? DefaultEndpointName;
 
-            var endpointServiceForEnvironment = botConfiguration.Services.OfType<EndpointService>().FirstOrDefault(s => s.Name.Equals(environmentName, StringComparison.InvariantCultureIgnoreCase));
+            var endpointServiceForEnvironment = botConfiguration.Services.OfType<EndpointService>().FirstOrDefault(s => s.Name.Equals(endpointName, StringComparison.InvariantCultureIgnoreCase));
 
             if (endpointServiceForEnvironment == null)
             {
-                throw new InvalidOperationException($"The .bot file does not appear to contain an endpoint service with the name \"{environmentName}\".");
+                throw new InvalidOperationException($"The .bot file does not appear to contain an endpoint service with the name \"{endpointName}\".");
             }
 
             return endpointServiceForEnvironment;
