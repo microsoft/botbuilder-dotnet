@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Configuration;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -16,8 +18,11 @@ namespace Microsoft.Bot.Builder.TestBot
 {
     public class Startup
     {
+        private bool _isProduction = false;
+
         public Startup(IHostingEnvironment env)
         {
+            _isProduction = env.IsProduction();
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -70,7 +75,25 @@ namespace Microsoft.Bot.Builder.TestBot
                 return new InteceptorAdapter(botFrameworkAdapter);
             });
 
-            services.AddBot<TestBot>();
+            services.AddBot<TestBot>(options =>
+            {
+                var secretKey = Configuration.GetSection("botFileSecret")?.Value;
+                var botFilePath = Configuration.GetSection("botFilePath")?.Value;
+
+                // Loads .bot configuration file and adds a singleton that your Bot can access through dependency injection.
+                var botConfig = BotConfiguration.Load(botFilePath ?? @".\BotBuilderTestBot.bot", secretKey);
+                services.AddSingleton(sp => botConfig ?? throw new InvalidOperationException($"The .bot config file could not be loaded. ({botConfig})"));
+
+                // Retrieve current endpoint.
+                var environment = _isProduction ? "production" : "development";
+                var service = botConfig.Services.Where(s => s.Type == "endpoint" && s.Name == environment).FirstOrDefault();
+                if (!(service is EndpointService endpointService))
+                {
+                    throw new InvalidOperationException($"The .bot file does not contain an endpoint with name '{environment}'.");
+                }
+
+                options.CredentialProvider = new SimpleCredentialProvider(endpointService.AppId, endpointService.AppPassword);
+            });
 
             //services.AddBot<TestBot>(options =>
             //{
