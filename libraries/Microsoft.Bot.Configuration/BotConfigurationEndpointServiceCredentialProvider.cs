@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Connector.Authentication;
 
-namespace Microsoft.BotBuilderSamples
+namespace Microsoft.Bot.Configuration
 {
     /// <summary>
     ///     A <see cref="ICredentialProvider">credential provider</see> which provides credentials
