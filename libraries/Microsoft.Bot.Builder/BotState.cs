@@ -61,11 +61,11 @@ namespace Microsoft.Bot.Builder
             }
 
             var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
-            var storageKey = GetStorageKey(turnContext);
             if (force || cachedState == null || cachedState.State == null)
             {
+                var storageKey = GetStorageKey(turnContext);
                 var items = await _storage.ReadAsync(new[] { storageKey }, cancellationToken).ConfigureAwait(false);
-                items.TryGetValue(storageKey, out object val);
+                items.TryGetValue(storageKey, out var val);
                 turnContext.TurnState[_contextServiceKey] = new CachedBotState((IDictionary<string, object>)val);
             }
         }
@@ -100,25 +100,66 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Reset the state cache in the turn context to it's default form.
+        ///     Clears any cached state related to this state scope from the turn.
         /// </summary>
+        /// <remarks>
+        ///     Calling this method will clear any state that may have already been loaded from the underlying store such
+        ///     that any following calls that attempt to load that state again will reload from the underlying store.
+        ///
+        ///     A scenario where it may be important to clear the cached state would be, for instance, you run into
+        ///     an issue around optimistic concurrency and need to fetch the latest values to reconcile the issue.
+        ///
+        ///     Alternatively you could consider calling <see cref="LoadAsync(ITurnContext, bool, CancellationToken)">LoadAsync</see>
+        ///     specifing <c>true</c> for the <c>force</c> parameter which would have the same effect.
+        ///
+        ///     NOTE: Unlike <see cref="ClearStateAsync(ITurnContext, CancellationToken)">ClearStateAsync</see> this does not
+        ///     have any effect on the already peristed values in the store.
+        /// </remarks>
         /// <param name="turnContext">The context object for this turn.</param>
-        /// <param name="cancellationToken">cancellation token.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public Task ClearStateAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
+        /// <seealso cref="LoadAsync(ITurnContext, bool, CancellationToken)"/>
+        /// <seealso cref="ClearStateAsync(ITurnContext, CancellationToken)(ITurnContext)"/>
+        public void ClearCachedState(ITurnContext turnContext)
         {
             if (turnContext == null)
             {
                 throw new ArgumentNullException(nameof(turnContext));
             }
 
-            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
-            if (cachedState != null)
+            // Remove any possible cached state related to this bot state instance from TurnState
+            turnContext.TurnState.Remove(_contextServiceKey);
+        }
+
+        /// <summary>
+        ///     Clears all values stored in this state scope from the underlying store.
+        /// </summary>
+        /// <remarks>
+        ///     Calling this method will <see cref="LoadAsync(ITurnContext, bool, CancellationToken)">load the state</see>, if it is not already loaded, 
+        ///     from the underlying <see cref="IStorage">store</see> and clear all existing values such that the next call to
+        ///     <see cref="SaveChangesAsync(ITurnContext, bool, CancellationToken)">SaveChanges</see> will delete those persisted values from 
+        ///     the store itself.
+        ///
+        ///     NOTE: You must call <see cref="SaveChangesAsync(ITurnContext, bool, CancellationToken)">SaveChanges</see> for this call to
+        ///     persist to the underlying store.
+        /// </remarks>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        public async Task ClearStateAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (turnContext == null)
             {
-                turnContext.TurnState[_contextServiceKey] = new CachedBotState();
+                throw new ArgumentNullException(nameof(turnContext));
             }
 
-            return Task.CompletedTask;
+            // Make sure the state for this instance is loaded
+            await this.LoadAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+            // Get the state for this instance from TurnState
+            var cachedBotState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
+
+            // Clear any/all values out of this state
+            cachedBotState.State?.Clear();
         }
 
         /// <summary>
@@ -223,15 +264,9 @@ namespace Microsoft.Bot.Builder
 
             public string Hash { get; set; }
 
-            public bool IsChanged()
-            {
-                return Hash != ComputeHash(State);
-            }
+            public bool IsChanged() => Hash != ComputeHash(State);
 
-            internal string ComputeHash(object obj)
-            {
-                return JsonConvert.SerializeObject(obj);
-            }
+            internal string ComputeHash(object obj) => JsonConvert.SerializeObject(obj);
         }
 
         /// <summary>
