@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseBotTelemetry();
+            app.UseBotApplicationInsights();
             Assert.IsNotNull(app.ApplicationServices.GetService<IBotTelemetryClient>());
         }
 
