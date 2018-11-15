@@ -53,6 +53,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BotConfigurationEndpointServiceCredentialProviderTests.cs" />
     <Compile Include="ConnectionTests.cs" />
     <Compile Include="ConfigurationLoadAndSaveTests.cs" />
     <Compile Include="ServiceTests.cs" />
@@ -63,12 +64,18 @@
     <None Include="packages.config" />
     <None Include="legacy.bot" />
     <None Include="govTest.bot" />
-    <None Include="test.bot" />
+    <None Include="test.bot">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Configuration\Microsoft.Bot.Configuration.csproj">
       <Project>{0b8abfdb-f9cf-4ec6-988e-9c32d9e01c26}</Project>
       <Name>Microsoft.Bot.Configuration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj">
+      <Project>{6462da5d-27dc-4cd5-9467-5efb998fd838}</Project>
+      <Name>Microsoft.Bot.Connector</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
