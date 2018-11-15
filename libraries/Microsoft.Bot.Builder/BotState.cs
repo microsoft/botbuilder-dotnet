@@ -100,11 +100,12 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Reset the state cache in the turn context to it's default form.
+        /// Clears any state currently stored in this state scope.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
         /// <param name="cancellationToken">cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <remarks>NOTE: that SaveChangesAsync must be called in order for the cleared state to be persisted to the underlying store.</remarks>
         public Task ClearStateAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
