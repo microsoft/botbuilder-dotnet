@@ -27,7 +27,9 @@ namespace Microsoft.Bot.Connector.Authentication
                     "https://sts.windows.net/d6d49420-f39b-4df7-a1dc-d59a935871db/",                    // Auth v3.1, 1.0 token
                     "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0",      // Auth v3.1, 2.0 token
                     "https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/",                    // Auth v3.2, 1.0 token
-                    "https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0"       // Auth v3.2, 2.0 token
+                    "https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0",      // Auth v3.2, 2.0 token
+                    "https://sts.windows.net/cab8a31a-1906-4287-a0d8-4eef66b95f6e/",                    // Auth for US Gov, 1.0 token
+                    "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0"        // Auth for US Gov, 2.0 token
                 },                
                 ValidateAudience = false,   // Audience validation takes place manually in code. 
                 ValidateLifetime = true,
@@ -95,6 +97,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="authHeader">The raw HTTP header in the format: "Bearer [longString]"</param>
         /// <param name="credentials">The user defined set of valid credentials, such as the AppId.</param>
+        /// <param name="channelProvider">The channelService value that distinguishes public Azure from US Government Azure.</param>
         /// <param name="httpClient">Authentication of tokens requires calling out to validate Endorsements and related documents. The
         /// HttpClient is used for making those calls. Those calls generally require TLS connections, which are expensive to 
         /// setup and teardown, so a shared HttpClient is recommended.</param>
@@ -105,12 +108,16 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <remarks>
         /// A token issued by the Bot Framework will FAIL this check. Only Emulator tokens will pass.
         /// </remarks>
-        public static async Task<ClaimsIdentity> AuthenticateEmulatorToken(string authHeader, ICredentialProvider credentials, HttpClient httpClient, string channelId)
+        public static async Task<ClaimsIdentity> AuthenticateEmulatorToken(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, HttpClient httpClient, string channelId)
         {
+            var openIdMetadataUrl = (channelProvider != null && channelProvider.IsGovernment()) ?
+                GovernmentAuthenticationConstants.ToBotFromEmulatorOpenIdMetadataUrl :
+                AuthenticationConstants.ToBotFromEmulatorOpenIdMetadataUrl;
+
             var tokenExtractor = new JwtTokenExtractor(
                     httpClient,
                     ToBotFromEmulatorTokenValidationParameters,
-                    AuthenticationConstants.ToBotFromEmulatorOpenIdMetadataUrl,
+                    openIdMetadataUrl,
                     AuthenticationConstants.AllowedSigningAlgorithms);
 
             var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId);
