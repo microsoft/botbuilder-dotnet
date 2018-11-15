@@ -97,6 +97,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="authHeader">The raw HTTP header in the format: "Bearer [longString]"</param>
         /// <param name="credentials">The user defined set of valid credentials, such as the AppId.</param>
+        /// <param name="channelProvider">The channelService value that distinguishes public Azure from US Government Azure.</param>
         /// <param name="httpClient">Authentication of tokens requires calling out to validate Endorsements and related documents. The
         /// HttpClient is used for making those calls. Those calls generally require TLS connections, which are expensive to 
         /// setup and teardown, so a shared HttpClient is recommended.</param>
