@@ -112,11 +112,8 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(turnContext));
             }
 
-            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
-            if (cachedState != null)
-            {
-                turnContext.TurnState[_contextServiceKey] = new CachedBotState();
-            }
+            // Explicitly setting the hash will mean IsChanged is always true. And that will force a Save.
+            turnContext.TurnState[_contextServiceKey] = new CachedBotState { Hash = string.Empty };
 
             return Task.CompletedTask;
         }
