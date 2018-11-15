@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             if (usingEmulator)
             {
-                return await EmulatorValidation.AuthenticateEmulatorToken(authHeader, credentials, httpClient ?? _httpClient, channelId);
+                return await EmulatorValidation.AuthenticateEmulatorToken(authHeader, credentials, channelProvider, httpClient ?? _httpClient, channelId);
             }
             else if(channelProvider == null || channelProvider.IsPublicAzure())
             {
