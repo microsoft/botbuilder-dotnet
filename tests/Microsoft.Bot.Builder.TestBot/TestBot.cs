@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
@@ -35,6 +36,11 @@ namespace Microsoft.Bot.Builder.TestBot
             try
             {
                 await _semaphore.WaitAsync();
+
+                if (turnContext.Activity.Type == ActivityTypes.Message && turnContext.Activity.Text == "throw")
+                {
+                    throw new Exception("oh dear");
+                }
 
                 // run the DialogSet - let the framework identify the current state of the dialog from 
                 // the dialog stack and figure out what (if any) is the active dialog
@@ -82,6 +88,12 @@ namespace Microsoft.Bot.Builder.TestBot
             if (stepContext.Values != null)
             {
                 var numberResult = (int)stepContext.Result;
+
+                if (numberResult == 0)
+                {
+                    throw new Exception("zero is not a number");
+                }
+
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thanks for '{numberResult}'"), cancellationToken);
             }
             return await stepContext.PromptAsync("number", new PromptOptions { Prompt = MessageFactory.Text("Enter another number.") }, cancellationToken);

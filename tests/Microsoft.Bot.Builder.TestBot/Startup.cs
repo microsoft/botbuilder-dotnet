@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder.Dialogs;
@@ -32,45 +33,52 @@ namespace Microsoft.Bot.Builder.TestBot
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(sp =>
+            //services.AddSingleton<IAdapterIntegration>(sp =>
+            //{
+            //    var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
+            //    var accessors = sp.GetRequiredService<TestBotAccessors>();
+
+            //    options.Middleware.Add(new AutoSaveStateMiddleware(accessors.ConversationState));
+            //    options.Middleware.Add(new ShowTypingMiddleware());
+
+            //    var botFrameworkAdapter = new BotFrameworkAdapter(options.CredentialProvider, options.ChannelProvider, options.ConnectorClientRetryPolicy, options.HttpClient)
+            //    {
+            //        OnTurnError = options.OnTurnError,
+            //    };
+
+            //    foreach (var middleware in options.Middleware)
+            //    {
+            //        botFrameworkAdapter.Use(middleware);
+            //    }
+
+            //    //return botFrameworkAdapter;
+
+            //    return new InteceptorAdapter(botFrameworkAdapter);
+            //});
+
+            IStorage dataStore = new MemoryStorage();
+            var conversationState = new ConversationState(dataStore);
+
+            var accessors = new TestBotAccessors
             {
-                IStorage dataStore = new MemoryStorage();
+                ConversationDialogState = conversationState.CreateProperty<DialogState>("DialogState"),
+                ConversationState = conversationState
+            };
 
-                var conversationState = new ConversationState(dataStore);
-
-                var accessors = new TestBotAccessors
+            services.AddBot<IBot>(
+                (IServiceProvider sp) =>
                 {
-                    ConversationDialogState = conversationState.CreateProperty<DialogState>("DialogState"),
-                    ConversationState = new ConversationState(dataStore)
-                };
-
-                return accessors;
-            });
-
-            services.AddSingleton<IAdapterIntegration>(sp =>
-            {
-                var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
-                var accessors = sp.GetRequiredService<TestBotAccessors>();
-
-                options.Middleware.Add(new AutoSaveStateMiddleware(accessors.ConversationState));
-                options.Middleware.Add(new ShowTypingMiddleware());
-
-                var botFrameworkAdapter = new BotFrameworkAdapter(options.CredentialProvider, options.ChannelProvider, options.ConnectorClientRetryPolicy, options.HttpClient)
+                    return new TestBot(accessors);
+                },
+                (BotFrameworkOptions options) =>
                 {
-                    OnTurnError = options.OnTurnError,
-                };
-
-                foreach (var middleware in options.Middleware)
-                {
-                    botFrameworkAdapter.Use(middleware);
-                }
-
-                //return botFrameworkAdapter;
-
-                return new InteceptorAdapter(botFrameworkAdapter);
-            });
-
-            services.AddBot<TestBot>();
+                    options.OnTurnError = async (turnContext, exception) =>
+                    {
+                        await conversationState.ClearStateAsync(turnContext);
+                        await conversationState.SaveChangesAsync(turnContext);
+                    };
+                    options.Middleware.Add(new AutoSaveStateMiddleware(conversationState));
+                });
 
             //services.AddBot<TestBot>(options =>
             //{
