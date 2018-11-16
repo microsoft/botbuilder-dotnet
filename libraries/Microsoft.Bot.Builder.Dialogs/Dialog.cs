@@ -10,21 +10,19 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Base class for all dialogs.
     /// </summary>
-    public abstract class Dialog
+    public abstract class Dialog : IDialog
     {
         public static readonly DialogTurnResult EndOfTurn = new DialogTurnResult(DialogTurnStatus.Waiting);
 
-        public Dialog(string dialogId)
+        public Dialog(string dialogId=null)
         {
-            if (string.IsNullOrWhiteSpace(dialogId))
-            {
-                throw new ArgumentNullException(nameof(dialogId));
-            }
-
             Id = dialogId;
         }
 
-        public string Id { get; }
+        /// <summary>
+        /// Unique id for the dialog
+        /// </summary>
+        public string Id { get; set; }
 
         /// <summary>
         /// Method called when a new dialog has been pushed onto the stack and is being activated.

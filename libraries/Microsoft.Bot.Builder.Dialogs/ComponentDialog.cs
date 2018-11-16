@@ -13,14 +13,9 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private DialogSet _dialogs;
 
-        public ComponentDialog(string dialogId)
+        public ComponentDialog(string dialogId=null)
             : base(dialogId)
         {
-            if (string.IsNullOrEmpty(dialogId))
-            {
-                throw new ArgumentNullException(nameof(dialogId));
-            }
-
             _dialogs = new DialogSet();
         }
 
@@ -116,6 +111,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>The updated <see cref="ComponentDialog"/>.</returns>
         public ComponentDialog AddDialog(Dialog dialog)
         {
+            if (string.IsNullOrEmpty(dialog.Id))
+            {
+                throw new ArgumentNullException("Dialog.Id", "You can't add a dialog without an Id set.");
+            }
+
             _dialogs.Add(dialog);
             if (string.IsNullOrEmpty(InitialDialogId))
             {

@@ -3,6 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{4269F3C3-6B42-419B-B64A-3E6DC0F1574A}"
+	ProjectSection(SolutionItems) = preProject
+		Libraries\Microsoft.Bot.Builder.ComposableDialogs\Recognizers\NumberEntityRecognizer.cs = Libraries\Microsoft.Bot.Builder.ComposableDialogs\Recognizers\NumberEntityRecognizer.cs
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AD743B78-D61F-4FBF-B620-FA83CE599A50}"
 EndProject
@@ -61,6 +64,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Configuration.Tests", "tests\Microsoft.Bot.Configuration.Tests\Microsoft.Bot.Configuration.Tests.csproj", "{1B7920E6-5262-4054-B72D-3A8DBBA057D2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.TestBot.WebApi", "tests\Microsoft.Bot.Builder.TestBot.WebApi\Microsoft.Bot.Builder.TestBot.WebApi.csproj", "{298009D3-971D-4375-A2F2-04CFB168CED9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.ComposableDialogs", "Libraries\Microsoft.Bot.Builder.ComposableDialogs\Microsoft.Bot.Builder.ComposableDialogs.csproj", "{F54A242E-C7C9-481C-84F1-285EAA5243B8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.ComposableDialogs.Tests", "tests\Microsoft.Bot.Builder.ComposableDialogs.Tests\Microsoft.Bot.Builder.ComposableDialogs.Tests.csproj", "{47EDC8A7-FCC1-4AF5-B9D5-2CD0F6343052}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -263,6 +270,22 @@ Global
 		{298009D3-971D-4375-A2F2-04CFB168CED9}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{298009D3-971D-4375-A2F2-04CFB168CED9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{298009D3-971D-4375-A2F2-04CFB168CED9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F54A242E-C7C9-481C-84F1-285EAA5243B8}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{F54A242E-C7C9-481C-84F1-285EAA5243B8}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{F54A242E-C7C9-481C-84F1-285EAA5243B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F54A242E-C7C9-481C-84F1-285EAA5243B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F54A242E-C7C9-481C-84F1-285EAA5243B8}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{F54A242E-C7C9-481C-84F1-285EAA5243B8}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{F54A242E-C7C9-481C-84F1-285EAA5243B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F54A242E-C7C9-481C-84F1-285EAA5243B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47EDC8A7-FCC1-4AF5-B9D5-2CD0F6343052}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{47EDC8A7-FCC1-4AF5-B9D5-2CD0F6343052}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{47EDC8A7-FCC1-4AF5-B9D5-2CD0F6343052}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47EDC8A7-FCC1-4AF5-B9D5-2CD0F6343052}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47EDC8A7-FCC1-4AF5-B9D5-2CD0F6343052}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{47EDC8A7-FCC1-4AF5-B9D5-2CD0F6343052}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{47EDC8A7-FCC1-4AF5-B9D5-2CD0F6343052}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47EDC8A7-FCC1-4AF5-B9D5-2CD0F6343052}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -296,6 +319,8 @@ Global
 		{0B8ABFDB-F9CF-4EC6-988E-9C32D9E01C26} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{1B7920E6-5262-4054-B72D-3A8DBBA057D2} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{298009D3-971D-4375-A2F2-04CFB168CED9} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{F54A242E-C7C9-481C-84F1-285EAA5243B8} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
+		{47EDC8A7-FCC1-4AF5-B9D5-2CD0F6343052} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

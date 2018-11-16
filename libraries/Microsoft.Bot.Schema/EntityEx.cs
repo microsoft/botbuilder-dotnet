@@ -1,12 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Schema
 {
-    public partial class Entity
+    public partial class Entity : IEquatable<Entity>
     {
         /// <summary>
         /// Gets or sets properties that are not otherwise defined by the <see cref="Entity"/> type but that
@@ -39,6 +40,22 @@ namespace Microsoft.Bot.Schema
             var entity = JsonConvert.DeserializeObject<Entity>(JsonConvert.SerializeObject(obj));
             this.Type = entity.Type;
             this.Properties = entity.Properties;
+        }
+
+        public bool Equals(Entity other)
+        {
+            if (other == null)
+                return false;
+
+            return JsonConvert.SerializeObject(this).Equals(JsonConvert.SerializeObject(other));
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals(obj as Entity);
         }
     }
 }
