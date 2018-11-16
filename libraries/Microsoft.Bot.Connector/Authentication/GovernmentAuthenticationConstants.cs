@@ -39,5 +39,10 @@ namespace Microsoft.Bot.Connector.Authentication
         /// TO BOT FROM GOVERNMANT CHANNEL: OpenID metadata document for tokens coming from MSA
         /// </summary>
         public const string ToBotFromChannelOpenIdMetadataUrl = "https://login.botframework.azure.us/v1/.well-known/openidconfiguration";
+
+        /// <summary>
+        /// TO BOT FROM GOVERNMENT EMULATOR: OpenID metadata document for tokens coming from MSA
+        /// </summary>
+        public const string ToBotFromEmulatorOpenIdMetadataUrl = "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0/.well-known/openid-configuration";
     }
 }

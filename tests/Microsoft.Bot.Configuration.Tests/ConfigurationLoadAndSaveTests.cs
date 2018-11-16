@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -404,6 +405,20 @@ namespace Microsoft.Bot.Configuration.Tests
             File.Delete("save.bot");
             Assert.IsTrue(!String.IsNullOrEmpty(config.Padlock), "padlock should exist");
             Assert.IsNull(config.Properties["secretKey"], "secretKey should not exist");
+        }
+
+        [TestMethod]
+        public void LoadAndVerifyChannelServiceSync()
+        {
+            var publicConfig = BotConfiguration.Load(@"..\..\test.bot");
+            var endpointSvc = publicConfig.Services.Single(x => x.Type == ServiceTypes.Endpoint) as EndpointService;
+            Assert.IsNotNull(endpointSvc);
+            Assert.IsNull(endpointSvc.ChannelService);
+            
+            var govConfig = BotConfiguration.Load(@"..\..\govTest.bot");
+            endpointSvc = govConfig.Services.Single(x => x.Type == ServiceTypes.Endpoint) as EndpointService;
+            Assert.IsNotNull(endpointSvc);
+            Assert.AreEqual("https://botframework.azure.us", endpointSvc.ChannelService);
         }
     }
 }
