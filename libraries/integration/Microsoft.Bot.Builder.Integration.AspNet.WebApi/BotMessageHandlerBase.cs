@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Rest.Serialization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 {
@@ -19,16 +20,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
         {
             new JsonMediaTypeFormatter
             {
-                SerializerSettings =
-                {
-                    NullValueHandling = NullValueHandling.Ignore,
-                    Formatting = Formatting.Indented,
-                    DateFormatHandling = DateFormatHandling.IsoDateFormat,
-                    DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-                    ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
-                    ContractResolver = new ReadOnlyJsonContractResolver(),
-                    Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() },
-                },
+                SerializerSettings = MessageSerializerSettings.Create(),
                 SupportedMediaTypes =
                 {
                     new System.Net.Http.Headers.MediaTypeHeaderValue("application/json") { CharSet = "utf-8" },

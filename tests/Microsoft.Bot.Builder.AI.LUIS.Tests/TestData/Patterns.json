@@ -2,34 +2,34 @@
   "text": "email about something wicked this way comes from bart simpson and also kb435",
   "intents": {
     "search": {
-      "score": 0.9999993
+      "score": 0.999999
     },
     "None": {
-      "score": 1.20633467E-05
+      "score": 7.91005E-06
     },
     "EntityTests": {
-      "score": 9.122724E-06
+      "score": 5.412342E-06
     },
     "Weather_GetForecast": {
-      "score": 3.749986E-06
-    },
-    "Travel": {
-      "score": 3.53740256E-06
-    },
-    "SpecifyName": {
-      "score": 1.75083869E-06
+      "score": 3.7898792E-06
     },
     "Delivery": {
-      "score": 1.13355657E-06
+      "score": 2.06122013E-06
+    },
+    "SpecifyName": {
+      "score": 1.76767367E-06
+    },
+    "Travel": {
+      "score": 1.76767367E-06
     },
     "Greeting": {
-      "score": 5.875E-10
+      "score": 5.9375E-10
     },
     "Cancel": {
-      "score": 5.47058843E-10
+      "score": 5.529412E-10
     },
     "Help": {
-      "score": 5.47058843E-10
+      "score": 5.529412E-10
     }
   },
   "entities": {
@@ -88,48 +88,48 @@
     "query": "email about something wicked this way comes from bart simpson and also kb435",
     "topScoringIntent": {
       "intent": "search",
-      "score": 0.9999993
+      "score": 0.999999
     },
     "intents": [
       {
         "intent": "search",
-        "score": 0.9999993
+        "score": 0.999999
       },
       {
         "intent": "None",
-        "score": 1.20633467E-05
+        "score": 7.91005E-06
       },
       {
         "intent": "EntityTests",
-        "score": 9.122724E-06
+        "score": 5.412342E-06
       },
       {
         "intent": "Weather.GetForecast",
-        "score": 3.749986E-06
-      },
-      {
-        "intent": "Travel",
-        "score": 3.53740256E-06
-      },
-      {
-        "intent": "SpecifyName",
-        "score": 1.75083869E-06
+        "score": 3.7898792E-06
       },
       {
         "intent": "Delivery",
-        "score": 1.13355657E-06
+        "score": 2.06122013E-06
+      },
+      {
+        "intent": "SpecifyName",
+        "score": 1.76767367E-06
+      },
+      {
+        "intent": "Travel",
+        "score": 1.76767367E-06
       },
       {
         "intent": "Greeting",
-        "score": 5.875E-10
+        "score": 5.9375E-10
       },
       {
         "intent": "Cancel",
-        "score": 5.47058843E-10
+        "score": 5.529412E-10
       },
       {
         "intent": "Help",
-        "score": 5.47058843E-10
+        "score": 5.529412E-10
       }
     ],
     "entities": [
