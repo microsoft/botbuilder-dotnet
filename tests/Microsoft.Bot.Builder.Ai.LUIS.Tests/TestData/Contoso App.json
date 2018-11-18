@@ -1,0 +1,1071 @@
+{
+  "luis_schema_version": "3.1.0",
+  "versionId": "AllEntity",
+  "name": "Contoso App",
+  "desc": "Default Intents for Azure Bot Service V2",
+  "culture": "en-us",
+  "intents": [
+    {
+      "name": "Cancel"
+    },
+    {
+      "name": "Delivery"
+    },
+    {
+      "name": "EntityTests"
+    },
+    {
+      "name": "Greeting"
+    },
+    {
+      "name": "Help"
+    },
+    {
+      "name": "None"
+    },
+    {
+      "name": "search"
+    },
+    {
+      "name": "SpecifyName"
+    },
+    {
+      "name": "Travel"
+    },
+    {
+      "name": "Weather.GetForecast",
+      "inherits": {
+        "domain_name": "Weather",
+        "model_name": "GetForecast"
+      }
+    }
+  ],
+  "entities": [
+    {
+      "name": "Name",
+      "roles": []
+    },
+    {
+      "name": "State",
+      "roles": []
+    },
+    {
+      "name": "Weather.Location",
+      "inherits": {
+        "domain_name": "Weather",
+        "model_name": "Location"
+      },
+      "roles": []
+    },
+    {
+      "name": "City",
+      "children": [
+        "To",
+        "From"
+      ],
+      "roles": []
+    }
+  ],
+  "composites": [
+    {
+      "name": "Address",
+      "children": [
+        "number",
+        "State"
+      ],
+      "roles": [
+        "Source",
+        "Destination"
+      ]
+    },
+    {
+      "name": "Composite1",
+      "children": [
+        "age",
+        "datetimeV2",
+        "dimension",
+        "email",
+        "money",
+        "number",
+        "ordinal",
+        "percentage",
+        "phonenumber",
+        "temperature"
+      ],
+      "roles": []
+    },
+    {
+      "name": "Composite2",
+      "children": [
+        "Airline",
+        "City",
+        "url",
+        "City::From",
+        "City::To",
+        "Weather.Location"
+      ],
+      "roles": []
+    }
+  ],
+  "closedLists": [
+    {
+      "name": "Airline",
+      "subLists": [
+        {
+          "canonicalForm": "Delta",
+          "list": [
+            "DL"
+          ]
+        },
+        {
+          "canonicalForm": "Alaska",
+          "list": []
+        },
+        {
+          "canonicalForm": "United",
+          "list": []
+        },
+        {
+          "canonicalForm": "Virgin",
+          "list": [
+            "DL"
+          ]
+        }
+      ],
+      "roles": []
+    }
+  ],
+  "patternAnyEntities": [
+    {
+      "name": "person",
+      "explicitList": [],
+      "roles": []
+    },
+    {
+      "name": "subject",
+      "explicitList": [],
+      "roles": [
+        "extra"
+      ]
+    }
+  ],
+  "regex_entities": [
+    {
+      "name": "Part",
+      "regexPattern": "kb[0-9]+",
+      "roles": []
+    }
+  ],
+  "prebuiltEntities": [
+    {
+      "name": "age",
+      "roles": []
+    },
+    {
+      "name": "datetimeV2",
+      "roles": []
+    },
+    {
+      "name": "dimension",
+      "roles": []
+    },
+    {
+      "name": "email",
+      "roles": []
+    },
+    {
+      "name": "money",
+      "roles": []
+    },
+    {
+      "name": "number",
+      "roles": []
+    },
+    {
+      "name": "ordinal",
+      "roles": []
+    },
+    {
+      "name": "percentage",
+      "roles": []
+    },
+    {
+      "name": "phonenumber",
+      "roles": []
+    },
+    {
+      "name": "temperature",
+      "roles": []
+    },
+    {
+      "name": "url",
+      "roles": []
+    }
+  ],
+  "model_features": [],
+  "regex_features": [],
+  "patterns": [
+    {
+      "pattern": "email about {subject} [from {person}] [and also {subject:extra}]",
+      "intent": "search"
+    },
+    {
+      "pattern": "from {Address:Source} to {Address:Destination}",
+      "intent": "Delivery"
+    }
+  ],
+  "utterances": [
+    {
+      "text": "\" i need to know the temperature at bangor , sme \"",
+      "intent": "Weather.GetForecast",
+      "entities": []
+    },
+    {
+      "text": "\" tell me perth weather , sclimate & temperature at australia \"",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "Weather.Location",
+          "startPos": 10,
+          "endPos": 14
+        }
+      ]
+    },
+    {
+      "text": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c",
+      "intent": "EntityTests",
+      "entities": [
+        {
+          "entity": "Composite1",
+          "startPos": 0,
+          "endPos": 256
+        }
+      ]
+    },
+    {
+      "text": "abort",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "assist",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "cancel",
+      "intent": "Delivery",
+      "entities": []
+    },
+    {
+      "text": "deliver this from 1234 wa to 5678 va",
+      "intent": "Delivery",
+      "entities": [
+        {
+          "entity": "Address",
+          "startPos": 18,
+          "endPos": 24
+        },
+        {
+          "entity": "State",
+          "startPos": 23,
+          "endPos": 24
+        },
+        {
+          "entity": "Address",
+          "startPos": 29,
+          "endPos": 35
+        },
+        {
+          "entity": "State",
+          "startPos": 34,
+          "endPos": 35
+        }
+      ]
+    },
+    {
+      "text": "delivery address is in 45654 ga",
+      "intent": "Delivery",
+      "entities": [
+        {
+          "entity": "Address",
+          "startPos": 23,
+          "endPos": 30
+        },
+        {
+          "entity": "State",
+          "startPos": 29,
+          "endPos": 30
+        }
+      ]
+    },
+    {
+      "text": "disregard",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "do not do it",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "do not do that",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "don't",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "don't do it",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "don't do that",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "email about dogs from chris and also cats",
+      "intent": "search",
+      "entities": []
+    },
+    {
+      "text": "forecast in celcius",
+      "intent": "Weather.GetForecast",
+      "entities": []
+    },
+    {
+      "text": "get florence temperature in september",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "Weather.Location",
+          "startPos": 4,
+          "endPos": 11
+        }
+      ]
+    },
+    {
+      "text": "get for me the weather conditions in sonoma county",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "Weather.Location",
+          "startPos": 37,
+          "endPos": 49
+        }
+      ]
+    },
+    {
+      "text": "get the daily temperature greenwood indiana",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "Weather.Location",
+          "startPos": 26,
+          "endPos": 42
+        }
+      ]
+    },
+    {
+      "text": "get the forcast for me",
+      "intent": "Weather.GetForecast",
+      "entities": []
+    },
+    {
+      "text": "get the weather at saint george utah",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "Weather.Location",
+          "startPos": 19,
+          "endPos": 35
+        }
+      ]
+    },
+    {
+      "text": "good afternoon",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "good evening",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "good morning",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "good night",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "he is yousef",
+      "intent": "SpecifyName",
+      "entities": [
+        {
+          "entity": "Name",
+          "startPos": 6,
+          "endPos": 11
+        }
+      ]
+    },
+    {
+      "text": "hello",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "hello bot",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "help",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "help me",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "help me please",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "help please",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "hi",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "hi bot",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "hi emad",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "his name is tom",
+      "intent": "SpecifyName",
+      "entities": [
+        {
+          "entity": "Name",
+          "startPos": 12,
+          "endPos": 14
+        }
+      ]
+    },
+    {
+      "text": "hiya",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "how are you",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "how are you doing today?",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "how are you doing?",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "how are you today?",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "how much rain does chambersburg get a year",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "Weather.Location",
+          "startPos": 19,
+          "endPos": 30
+        }
+      ]
+    },
+    {
+      "text": "howdy",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "how's it goig",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "http://blah.com is where you can fly from dallas to seattle via denver",
+      "intent": "EntityTests",
+      "entities": [
+        {
+          "entity": "Composite2",
+          "startPos": 0,
+          "endPos": 69
+        },
+        {
+          "entity": "City::From",
+          "startPos": 42,
+          "endPos": 47
+        },
+        {
+          "entity": "City::To",
+          "startPos": 52,
+          "endPos": 58
+        },
+        {
+          "entity": "City",
+          "startPos": 64,
+          "endPos": 69
+        }
+      ]
+    },
+    {
+      "text": "http://woof.com is where you can fly from seattle to dallas via chicago",
+      "intent": "EntityTests",
+      "entities": [
+        {
+          "entity": "Composite2",
+          "startPos": 0,
+          "endPos": 70
+        },
+        {
+          "entity": "City::From",
+          "startPos": 42,
+          "endPos": 48
+        },
+        {
+          "entity": "City::To",
+          "startPos": 53,
+          "endPos": 58
+        },
+        {
+          "entity": "City",
+          "startPos": 64,
+          "endPos": 70
+        }
+      ]
+    },
+    {
+      "text": "http://woof.com is where you can fly from seattle to dallas via chicago on delta",
+      "intent": "EntityTests",
+      "entities": [
+        {
+          "entity": "Composite2",
+          "startPos": 0,
+          "endPos": 70
+        },
+        {
+          "entity": "City::From",
+          "startPos": 42,
+          "endPos": 48
+        },
+        {
+          "entity": "City::To",
+          "startPos": 53,
+          "endPos": 58
+        },
+        {
+          "entity": "City",
+          "startPos": 64,
+          "endPos": 70
+        }
+      ]
+    },
+    {
+      "text": "https://foo.com is where you can get weather for seattle",
+      "intent": "Weather.GetForecast",
+      "entities": [
+        {
+          "entity": "Composite2",
+          "startPos": 0,
+          "endPos": 55
+        },
+        {
+          "entity": "Weather.Location",
+          "startPos": 49,
+          "endPos": 55
+        }
+      ]
+    },
+    {
+      "text": "i am lili",
+      "intent": "SpecifyName",
+      "entities": [
+        {
+          "entity": "Name",
+          "startPos": 5,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "i am stuck",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "i want this in 98052 wa",
+      "intent": "Delivery",
+      "entities": [
+        {
+          "entity": "Address",
+          "startPos": 15,
+          "endPos": 22
+        },
+        {
+          "entity": "State",
+          "startPos": 21,
+          "endPos": 22
+        }
+      ]
+    },
+    {
+      "text": "i want to arrive at newyork",
+      "intent": "Travel",
+      "entities": [
+        {
+          "entity": "City::To",
+          "startPos": 20,
+          "endPos": 26
+        }
+      ]
+    },
+    {
+      "text": "i want to fly out of seattle",
+      "intent": "Travel",
+      "entities": [
+        {
+          "entity": "City::From",
+          "startPos": 21,
+          "endPos": 27
+        }
+      ]
+    },
+    {
+      "text": "i want to know the temperature at death valley",
+      "intent": "Weather.GetForecast",
+      "entities": [
+        {
+          "entity": "Weather.Location",
+          "startPos": 34,
+          "endPos": 45
+        }
+      ]
+    },
+    {
+      "text": "i want to travel",
+      "intent": "Travel",
+      "entities": []
+    },
+    {
+      "text": "i want to travel from seattle to dallas",
+      "intent": "Travel",
+      "entities": [
+        {
+          "entity": "City::From",
+          "startPos": 22,
+          "endPos": 28
+        },
+        {
+          "entity": "City::To",
+          "startPos": 33,
+          "endPos": 38
+        }
+      ]
+    },
+    {
+      "text": "i would like to cancel",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "i'll be leaving from cairo to paris",
+      "intent": "Travel",
+      "entities": [
+        {
+          "entity": "City::From",
+          "startPos": 21,
+          "endPos": 25
+        },
+        {
+          "entity": "City::To",
+          "startPos": 30,
+          "endPos": 34
+        }
+      ]
+    },
+    {
+      "text": "i'm stuck",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "kb409 is cool",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "mayday",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "my name is emad",
+      "intent": "SpecifyName",
+      "entities": [
+        {
+          "entity": "Name",
+          "startPos": 11,
+          "endPos": 14
+        }
+      ]
+    },
+    {
+      "text": "my water bottle is green.",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "never mind",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "no thanks",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "nope",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "please cancel",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "please deliver february 2nd 2001",
+      "intent": "Delivery",
+      "entities": []
+    },
+    {
+      "text": "please deliver to 98033 wa",
+      "intent": "Delivery",
+      "entities": [
+        {
+          "entity": "Address",
+          "startPos": 18,
+          "endPos": 25
+        },
+        {
+          "entity": "State",
+          "startPos": 24,
+          "endPos": 25
+        }
+      ]
+    },
+    {
+      "text": "please delivery it to 98033 wa",
+      "intent": "Delivery",
+      "entities": [
+        {
+          "entity": "Address",
+          "startPos": 22,
+          "endPos": 29
+        },
+        {
+          "entity": "State",
+          "startPos": 28,
+          "endPos": 29
+        }
+      ]
+    },
+    {
+      "text": "please disregard",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "please help me",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "please stop",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "provide me by toronto weather please",
+      "intent": "Weather.GetForecast",
+      "entities": [
+        {
+          "entity": "Weather.Location",
+          "startPos": 14,
+          "endPos": 20
+        }
+      ]
+    },
+    {
+      "text": "show average rainfall for boise",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "Weather.Location",
+          "startPos": 26,
+          "endPos": 30
+        }
+      ]
+    },
+    {
+      "text": "show me the forecast at alabama",
+      "intent": "Weather.GetForecast",
+      "entities": [
+        {
+          "entity": "Weather.Location",
+          "startPos": 24,
+          "endPos": 30
+        }
+      ]
+    },
+    {
+      "text": "soliciting today ' s weather",
+      "intent": "Weather.GetForecast",
+      "entities": []
+    },
+    {
+      "text": "sos",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "stop",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "temperature of delhi in celsius please",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "Weather.Location",
+          "startPos": 15,
+          "endPos": 19
+        }
+      ]
+    },
+    {
+      "text": "the address is 66666 fl",
+      "intent": "Delivery",
+      "entities": [
+        {
+          "entity": "Address",
+          "startPos": 15,
+          "endPos": 22
+        },
+        {
+          "entity": "State",
+          "startPos": 21,
+          "endPos": 22
+        }
+      ]
+    },
+    {
+      "text": "there is a large deep dish pizza in your future.",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "this is chris",
+      "intent": "SpecifyName",
+      "entities": [
+        {
+          "entity": "Name",
+          "startPos": 8,
+          "endPos": 12
+        }
+      ]
+    },
+    {
+      "text": "this is requested in 55555 ny",
+      "intent": "Delivery",
+      "entities": [
+        {
+          "entity": "State",
+          "startPos": 27,
+          "endPos": 28
+        }
+      ]
+    },
+    {
+      "text": "was last year about this time as wet as it is now in the south ?",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "Weather.Location",
+          "startPos": 57,
+          "endPos": 61
+        }
+      ]
+    },
+    {
+      "text": "what ' s the weather going to be like in hawaii ?",
+      "intent": "Weather.GetForecast",
+      "entities": [
+        {
+          "entity": "Weather.Location",
+          "startPos": 41,
+          "endPos": 46
+        }
+      ]
+    },
+    {
+      "text": "what ' s the weather like in minneapolis",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "Weather.Location",
+          "startPos": 29,
+          "endPos": 39
+        }
+      ]
+    },
+    {
+      "text": "what can i say",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "what can you do",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "what can you help me with",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "what do i do now?",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "what do i do?",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "what is the rain volume in sonoma county ?",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "Weather.Location",
+          "startPos": 27,
+          "endPos": 39
+        }
+      ]
+    },
+    {
+      "text": "what is the weather in redmond ?",
+      "intent": "Weather.GetForecast",
+      "entities": [
+        {
+          "entity": "Weather.Location",
+          "startPos": 23,
+          "endPos": 29
+        }
+      ]
+    },
+    {
+      "text": "what is the weather today at 10 day durham ?",
+      "intent": "Weather.GetForecast",
+      "entities": [
+        {
+          "entity": "Weather.Location",
+          "startPos": 36,
+          "endPos": 41
+        }
+      ]
+    },
+    {
+      "text": "what to wear in march in california",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "Weather.Location",
+          "startPos": 25,
+          "endPos": 34
+        }
+      ]
+    },
+    {
+      "text": "what will the weather be tomorrow in accord new york ?",
+      "intent": "Weather.GetForecast",
+      "entities": [
+        {
+          "entity": "Weather.Location",
+          "startPos": 37,
+          "endPos": 51
+        }
+      ]
+    },
+    {
+      "text": "why doesn't this work ?",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "will it be raining in ranchi",
+      "intent": "Weather.GetForecast",
+      "entities": [
+        {
+          "entity": "Weather.Location",
+          "startPos": 22,
+          "endPos": 27
+        }
+      ]
+    },
+    {
+      "text": "will it rain this weekend",
+      "intent": "Weather.GetForecast",
+      "entities": []
+    },
+    {
+      "text": "will it snow today",
+      "intent": "Weather.GetForecast",
+      "entities": []
+    }
+  ],
+  "settings": []
+}

@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder.Dialogs;
@@ -32,31 +33,52 @@ namespace Microsoft.Bot.Builder.TestBot
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IAdapterIntegration>(sp =>
+            //services.AddSingleton<IAdapterIntegration>(sp =>
+            //{
+            //    var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
+            //    var accessors = sp.GetRequiredService<TestBotAccessors>();
+
+            //    options.Middleware.Add(new AutoSaveStateMiddleware(accessors.ConversationState));
+            //    options.Middleware.Add(new ShowTypingMiddleware());
+
+            //    var botFrameworkAdapter = new BotFrameworkAdapter(options.CredentialProvider, options.ChannelProvider, options.ConnectorClientRetryPolicy, options.HttpClient)
+            //    {
+            //        OnTurnError = options.OnTurnError,
+            //    };
+
+            //    foreach (var middleware in options.Middleware)
+            //    {
+            //        botFrameworkAdapter.Use(middleware);
+            //    }
+
+            //    //return botFrameworkAdapter;
+
+            //    return new InteceptorAdapter(botFrameworkAdapter);
+            //});
+
+            IStorage dataStore = new MemoryStorage();
+            var conversationState = new ConversationState(dataStore);
+
+            var accessors = new TestBotAccessors
             {
-                var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
+                ConversationDialogState = conversationState.CreateProperty<DialogState>("DialogState"),
+                ConversationState = conversationState
+            };
 
-                IStorage dataStore = new MemoryStorage();
-                options.State.Add(new ConversationState(dataStore));
-                options.Middleware.Add(new AutoSaveStateMiddleware(options.State.ToArray()));
-                options.Middleware.Add(new ShowTypingMiddleware());
-
-                var botFrameworkAdapter = new BotFrameworkAdapter(options.CredentialProvider, options.ChannelProvider, options.ConnectorClientRetryPolicy, options.HttpClient)
+            services.AddBot<IBot>(
+                (IServiceProvider sp) =>
                 {
-                    OnTurnError = options.OnTurnError,
-                };
-
-                foreach (var middleware in options.Middleware)
+                    return new TestBot(accessors);
+                },
+                (BotFrameworkOptions options) =>
                 {
-                    botFrameworkAdapter.Use(middleware);
-                }
-
-                //return botFrameworkAdapter;
-
-                return new InteceptorAdapter(botFrameworkAdapter);
-            });
-
-            services.AddBot<TestBot>();
+                    options.OnTurnError = async (turnContext, exception) =>
+                    {
+                        await conversationState.ClearStateAsync(turnContext);
+                        await conversationState.SaveChangesAsync(turnContext);
+                    };
+                    options.Middleware.Add(new AutoSaveStateMiddleware(conversationState));
+                });
 
             //services.AddBot<TestBot>(options =>
             //{
@@ -65,28 +87,6 @@ namespace Microsoft.Bot.Builder.TestBot
             //    options.Middleware.Add(new AutoSaveStateMiddleware(options.State.ToArray()));
             //    options.Middleware.Add(new ShowTypingMiddleware());
             //});
-
-            services.AddSingleton(sp =>
-            {
-                var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
-                if (options == null)
-                {
-                    throw new InvalidOperationException("BotFrameworkOptions must be configured prior to setting up the State Accessors");
-                }
-
-                var conversationState = options.State.OfType<ConversationState>().FirstOrDefault();
-                if (conversationState == null)
-                {
-                    throw new InvalidOperationException("ConversationState must be defined and added before adding conversation-scoped state accessors.");
-                }
-
-                var accessors = new TestBotAccessors
-                {
-                    ConversationDialogState = conversationState.CreateProperty<DialogState>("DialogState")
-                };
-
-                return accessors;
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

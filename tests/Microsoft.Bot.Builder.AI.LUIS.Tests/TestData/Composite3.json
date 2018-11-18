@@ -1,0 +1,256 @@
+{
+  "text": "Deliver from 12345 VA to 12346 WA",
+  "intents": {
+    "Delivery": {
+      "score": 0.999999642
+    },
+    "search": {
+      "score": 5.50502E-06
+    },
+    "None": {
+      "score": 1.97937743E-06
+    },
+    "EntityTests": {
+      "score": 1.76767367E-06
+    },
+    "Travel": {
+      "score": 1.76767367E-06
+    },
+    "Weather_GetForecast": {
+      "score": 5.997471E-07
+    },
+    "SpecifyName": {
+      "score": 1.75E-09
+    },
+    "Greeting": {
+      "score": 5.9375E-10
+    },
+    "Cancel": {
+      "score": 5.529412E-10
+    },
+    "Help": {
+      "score": 5.529412E-10
+    }
+  },
+  "entities": {
+    "$instance": {
+      "Source": [
+        {
+          "startIndex": 13,
+          "endIndex": 21,
+          "text": "12345 va",
+          "type": "Address",
+          "score": 0.7669167
+        }
+      ],
+      "Destination": [
+        {
+          "startIndex": 25,
+          "endIndex": 33,
+          "text": "12346 wa",
+          "type": "Address",
+          "score": 0.9737196
+        }
+      ]
+    },
+    "Source": [
+      {
+        "$instance": {
+          "State": [
+            {
+              "startIndex": 19,
+              "endIndex": 21,
+              "text": "va",
+              "type": "State",
+              "score": 0.8453893
+            }
+          ],
+          "number": [
+            {
+              "startIndex": 13,
+              "endIndex": 18,
+              "text": "12345",
+              "type": "builtin.number",
+              "subtype": "integer"
+            }
+          ]
+        },
+        "State": [
+          "va"
+        ],
+        "number": [
+          12345
+        ]
+      }
+    ],
+    "Destination": [
+      {
+        "$instance": {
+          "State": [
+            {
+              "startIndex": 31,
+              "endIndex": 33,
+              "text": "wa",
+              "type": "State",
+              "score": 0.9857455
+            }
+          ],
+          "number": [
+            {
+              "startIndex": 25,
+              "endIndex": 30,
+              "text": "12346",
+              "type": "builtin.number",
+              "subtype": "integer"
+            }
+          ]
+        },
+        "State": [
+          "wa"
+        ],
+        "number": [
+          12346
+        ]
+      }
+    ]
+  },
+  "sentiment": {
+    "label": "neutral",
+    "score": 0.5
+  },
+  "luisResult": {
+    "query": "Deliver from 12345 VA to 12346 WA",
+    "topScoringIntent": {
+      "intent": "Delivery",
+      "score": 0.999999642
+    },
+    "intents": [
+      {
+        "intent": "Delivery",
+        "score": 0.999999642
+      },
+      {
+        "intent": "search",
+        "score": 5.50502E-06
+      },
+      {
+        "intent": "None",
+        "score": 1.97937743E-06
+      },
+      {
+        "intent": "EntityTests",
+        "score": 1.76767367E-06
+      },
+      {
+        "intent": "Travel",
+        "score": 1.76767367E-06
+      },
+      {
+        "intent": "Weather.GetForecast",
+        "score": 5.997471E-07
+      },
+      {
+        "intent": "SpecifyName",
+        "score": 1.75E-09
+      },
+      {
+        "intent": "Greeting",
+        "score": 5.9375E-10
+      },
+      {
+        "intent": "Cancel",
+        "score": 5.529412E-10
+      },
+      {
+        "intent": "Help",
+        "score": 5.529412E-10
+      }
+    ],
+    "entities": [
+      {
+        "entity": "va",
+        "type": "State",
+        "startIndex": 19,
+        "endIndex": 20,
+        "score": 0.8453893
+      },
+      {
+        "entity": "wa",
+        "type": "State",
+        "startIndex": 31,
+        "endIndex": 32,
+        "score": 0.9857455
+      },
+      {
+        "entity": "12345 va",
+        "type": "Address",
+        "startIndex": 13,
+        "endIndex": 20,
+        "score": 0.7669167,
+        "role": "Source"
+      },
+      {
+        "entity": "12346 wa",
+        "type": "Address",
+        "startIndex": 25,
+        "endIndex": 32,
+        "score": 0.9737196,
+        "role": "Destination"
+      },
+      {
+        "entity": "12345",
+        "type": "builtin.number",
+        "startIndex": 13,
+        "endIndex": 17,
+        "resolution": {
+          "subtype": "integer",
+          "value": "12345"
+        }
+      },
+      {
+        "entity": "12346",
+        "type": "builtin.number",
+        "startIndex": 25,
+        "endIndex": 29,
+        "resolution": {
+          "subtype": "integer",
+          "value": "12346"
+        }
+      }
+    ],
+    "compositeEntities": [
+      {
+        "parentType": "Address",
+        "value": "12345 va",
+        "children": [
+          {
+            "type": "State",
+            "value": "va"
+          },
+          {
+            "type": "builtin.number",
+            "value": "12345"
+          }
+        ]
+      },
+      {
+        "parentType": "Address",
+        "value": "12346 wa",
+        "children": [
+          {
+            "type": "State",
+            "value": "wa"
+          },
+          {
+            "type": "builtin.number",
+            "value": "12346"
+          }
+        ]
+      }
+    ],
+    "sentimentAnalysis": {
+      "label": "neutral",
+      "score": 0.5
+    }
+  }
+}
