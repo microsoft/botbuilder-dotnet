@@ -26,6 +26,12 @@ namespace Microsoft.Bot.Configuration
         public string AppPassword { get; set; }
 
         /// <summary>
+        /// Gets or sets the channel service (Azure or US Government Azure) for the bot.
+        /// </summary>
+        [JsonProperty("channelService")]
+        public string ChannelService { get; set; }
+
+        /// <summary>
         /// Gets or sets endpoint url for the bot.
         /// </summary>
         [JsonProperty("endpoint")]

@@ -355,10 +355,10 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 }
             }
 
-            AddProperty(entitiesAndMetadata, compositeEntity.ParentType, childrenEntites);
+            AddProperty(entitiesAndMetadata, ExtractNormalizedEntityName(compositeEntityMetadata), childrenEntites);
             if (verbose)
             {
-                AddProperty((JObject)entitiesAndMetadata[_metadataKey], compositeEntity.ParentType, childrenEntitiesMetadata);
+                AddProperty((JObject)entitiesAndMetadata[_metadataKey], ExtractNormalizedEntityName(compositeEntityMetadata), childrenEntitiesMetadata);
             }
 
             // filter entities that were covered by this composite entity
