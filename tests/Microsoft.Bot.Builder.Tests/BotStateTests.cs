@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json.Linq;
@@ -685,6 +686,43 @@ namespace Microsoft.Bot.Builder.Tests
             context.Activity.Conversation = null;
             var testProperty = userState.CreateProperty<TestPocoState>("test");
             var value = await testProperty.GetAsync(context);
+        }
+
+        [TestMethod]
+        public async Task ClearAndSave()
+        {
+            var turnContext = TestUtilities.CreateEmptyContext();
+            turnContext.Activity.Conversation = new ConversationAccount { Id = "1234" };
+
+            var storage = new MemoryStorage(new Dictionary<string, JObject>());
+
+            // Turn 0
+            var botState1 = new ConversationState(storage);
+            (await botState1
+                .CreateProperty<TestPocoState>("test-name")
+                .GetAsync(turnContext, () => new TestPocoState())).Value = "test-value";
+            await botState1.SaveChangesAsync(turnContext);
+
+            // Turn 1
+            var botState2 = new ConversationState(storage);
+            var value1 = (await botState2
+                .CreateProperty<TestPocoState>("test-name")
+                .GetAsync(turnContext, () => new TestPocoState { Value = "default-value" })).Value;
+
+            Assert.AreEqual("test-value", value1);
+
+            // Turn 2
+            var botState3 = new ConversationState(storage);
+            await botState3.ClearStateAsync(turnContext);
+            await botState3.SaveChangesAsync(turnContext);
+
+            // Turn 3
+            var botState4 = new ConversationState(storage);
+            var value2 = (await botState4
+                .CreateProperty<TestPocoState>("test-name")
+                .GetAsync(turnContext, () => new TestPocoState { Value = "default-value" })).Value;
+
+            Assert.AreEqual("default-value", value2);
         }
 
         public class TestBotState : BotState
