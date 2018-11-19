@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Builder.Azure
 
             var dirName = GetDirName(channelId, conversationId);
             var dir = this.Container.Value.GetDirectoryReference(dirName);
-            int pageSize = 20;
+            var pageSize = 20;
             BlobContinuationToken token = null;
             List<CloudBlockBlob> blobs = new List<CloudBlockBlob>();
             do
@@ -195,7 +195,7 @@ namespace Microsoft.Bot.Builder.Azure
 
             var dirName = GetDirName(channelId);
             var dir = this.Container.Value.GetDirectoryReference(dirName);
-            int pageSize = 20;
+            var pageSize = 20;
             BlobContinuationToken token = null;
             List<TranscriptInfo> conversations = new List<TranscriptInfo>();
             do
