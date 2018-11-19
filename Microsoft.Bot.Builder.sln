@@ -62,6 +62,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Configuration
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.TestBot.WebApi", "tests\Microsoft.Bot.Builder.TestBot.WebApi\Microsoft.Bot.Builder.TestBot.WebApi.csproj", "{298009D3-971D-4375-A2F2-04CFB168CED9}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.ApplicationInsights.Core", "libraries\integration\Microsoft.Bot.Builder.ApplicationInsights.Core\Microsoft.Bot.Builder.ApplicationInsights.Core.csproj", "{8FC920C6-E895-4A17-AB2F-452FAAA36CC8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.ApplicationInsights", "libraries\Microsoft.Bot.Builder.ApplicationInsights\Microsoft.Bot.Builder.ApplicationInsights.csproj", "{B609DB2C-5C1F-46D1-A0FA-A0FF9216899A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.ApplicationInsights.Core.Tests", "tests\integration\Microsoft.Bot.ApplicationInsights.Core.Tests\Microsoft.Bot.ApplicationInsights.Core.Tests.csproj", "{3F4A0DD8-4D47-4B9C-939A-3146E68C84F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.ApplicationInsights.Tests", "Microsoft.Bot.Builder.ApplicationInsights.Tests\Microsoft.Bot.Builder.ApplicationInsights.Tests.csproj", "{FC304BC8-D719-4E97-8C6C-36BDC342F069}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug - NuGet Packages|Any CPU = Debug - NuGet Packages|Any CPU
@@ -263,6 +271,38 @@ Global
 		{298009D3-971D-4375-A2F2-04CFB168CED9}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{298009D3-971D-4375-A2F2-04CFB168CED9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{298009D3-971D-4375-A2F2-04CFB168CED9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FC920C6-E895-4A17-AB2F-452FAAA36CC8}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FC920C6-E895-4A17-AB2F-452FAAA36CC8}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{8FC920C6-E895-4A17-AB2F-452FAAA36CC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FC920C6-E895-4A17-AB2F-452FAAA36CC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FC920C6-E895-4A17-AB2F-452FAAA36CC8}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FC920C6-E895-4A17-AB2F-452FAAA36CC8}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{8FC920C6-E895-4A17-AB2F-452FAAA36CC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FC920C6-E895-4A17-AB2F-452FAAA36CC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B609DB2C-5C1F-46D1-A0FA-A0FF9216899A}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{B609DB2C-5C1F-46D1-A0FA-A0FF9216899A}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{B609DB2C-5C1F-46D1-A0FA-A0FF9216899A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B609DB2C-5C1F-46D1-A0FA-A0FF9216899A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B609DB2C-5C1F-46D1-A0FA-A0FF9216899A}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{B609DB2C-5C1F-46D1-A0FA-A0FF9216899A}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{B609DB2C-5C1F-46D1-A0FA-A0FF9216899A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B609DB2C-5C1F-46D1-A0FA-A0FF9216899A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F4A0DD8-4D47-4B9C-939A-3146E68C84F7}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F4A0DD8-4D47-4B9C-939A-3146E68C84F7}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{3F4A0DD8-4D47-4B9C-939A-3146E68C84F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F4A0DD8-4D47-4B9C-939A-3146E68C84F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F4A0DD8-4D47-4B9C-939A-3146E68C84F7}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F4A0DD8-4D47-4B9C-939A-3146E68C84F7}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{3F4A0DD8-4D47-4B9C-939A-3146E68C84F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F4A0DD8-4D47-4B9C-939A-3146E68C84F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC304BC8-D719-4E97-8C6C-36BDC342F069}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC304BC8-D719-4E97-8C6C-36BDC342F069}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{FC304BC8-D719-4E97-8C6C-36BDC342F069}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC304BC8-D719-4E97-8C6C-36BDC342F069}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC304BC8-D719-4E97-8C6C-36BDC342F069}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC304BC8-D719-4E97-8C6C-36BDC342F069}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{FC304BC8-D719-4E97-8C6C-36BDC342F069}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC304BC8-D719-4E97-8C6C-36BDC342F069}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -296,6 +336,10 @@ Global
 		{0B8ABFDB-F9CF-4EC6-988E-9C32D9E01C26} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{1B7920E6-5262-4054-B72D-3A8DBBA057D2} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{298009D3-971D-4375-A2F2-04CFB168CED9} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{8FC920C6-E895-4A17-AB2F-452FAAA36CC8} = {276EBE79-A13A-46BD-A566-B01DC0477A9B}
+		{B609DB2C-5C1F-46D1-A0FA-A0FF9216899A} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
+		{3F4A0DD8-4D47-4B9C-939A-3146E68C84F7} = {0A0E26B0-7A46-4F1A-8BFE-9A763FDF6CF8}
+		{FC304BC8-D719-4E97-8C6C-36BDC342F069} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
