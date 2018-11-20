@@ -4,7 +4,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
-
+using System.Collections.Generic;
+using System;
 
 namespace Microsoft.Bot.Builder.ApplicationInsights.Tests
 {
@@ -19,13 +20,25 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Tests
             Assert.IsNotNull(client);
         }
 
+
+        [TestMethod]
+        public void TrackAvailabilityTest()
+        {
+            var telemetryClient = new TelemetryClient();
+            var client = new BotTelemetryClient(telemetryClient);
+
+            client.TrackAvailability("test", DateTimeOffset.Now, new TimeSpan(1000), "run location", true,
+                "message", new Dictionary<string, string>() { { "hello", "value" } }, new Dictionary<string, double>() { { "metric", 0.6 } });
+        }
+
+
         [TestMethod]
         public void TrackEventTest()
         {
             var telemetryClient = new TelemetryClient();
             var client = new BotTelemetryClient(telemetryClient);
-            var eventTelemetry = new EventTelemetry();
-            client.TrackEvent(eventTelemetry);
+            
+            client.TrackEvent("test", new Dictionary<string, string>() { { "hello", "value" } }, new Dictionary<string, double>() { { "metric", 0.6 } });
         }
 
         [TestMethod]
@@ -33,8 +46,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Tests
         {
             var telemetryClient = new TelemetryClient();
             var client = new BotTelemetryClient(telemetryClient);
-            var telemetry = new DependencyTelemetry("my dependency", "my target", "foo", "data");
-            client.TrackDependency(telemetry);
+            client.TrackDependency("test", "target", "dependencyname", "data", DateTimeOffset.Now, new TimeSpan(10000), "result", false );
         }
 
         [TestMethod]
@@ -42,8 +54,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Tests
         {
             var telemetryClient = new TelemetryClient();
             var client = new BotTelemetryClient(telemetryClient);
-            var telemetry = new ExceptionTelemetry();
-            client.TrackException(telemetry);
+            client.TrackException(new Exception(), new Dictionary<string, string>() { { "foo", "bar" } }, new Dictionary<string, double>() { { "metric", 0.6 } });
         }
 
         [TestMethod]
@@ -51,8 +62,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Tests
         {
             var telemetryClient = new TelemetryClient();
             var client = new BotTelemetryClient(telemetryClient);
-            var telemetry = new TraceTelemetry();
-            client.TrackTrace(telemetry);
+            client.TrackTrace("hello", Severity.Critical, new Dictionary<string, string>() { { "foo", "bar" } });
         }
 
 

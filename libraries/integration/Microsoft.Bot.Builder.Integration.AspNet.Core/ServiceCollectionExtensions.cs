@@ -117,7 +117,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         }
 
         /// <summary>
-        /// Adds the <see cref="BotFrameworkAdapter"/> as the <see cref="IAdapterIntegration"/> which will be used by the integration layer 
+        /// Adds the <see cref="BotFrameworkAdapter"/> as the <see cref="IAdapterIntegration"/> which will be used by the integration layer
         /// for processing bot requests.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <remarks>
         ///     The <see cref="BotFrameworkAdapter"/> will be registered as a <see cref="ServiceLifetime.Singleton">singleton</see>.
         ///
-        ///     NOTE: Calling any of the <c>AddBot</c> overloads those will attempt to implicitly register this for you if there is no 
+        ///     NOTE: Calling any of the <c>AddBot</c> overloads those will attempt to implicitly register this for you if there is no
         ///     explicit <see cref="IAdapterIntegration"/> already registered in the <paramref name="services"/> collection.
         /// </remarks>
         /// <seealso cref="overloads:AddBot" />

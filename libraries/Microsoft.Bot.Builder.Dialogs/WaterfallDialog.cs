@@ -105,6 +105,14 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         protected virtual async Task<DialogTurnResult> OnStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            // Log Waterfall Step event. Each event has a distinct name to hook up
+            // to the Application Insights funnel.
+            var eventName = $"{Id}.Step{stepContext.Index + 1}of{_steps.Count}";
+            var properties = new Dictionary<string, string>()
+            {
+                { "DialogId", Id.ToString() },
+            };
+            Logger.TrackEvent(eventName, properties);
             return await _steps[stepContext.Index](stepContext, cancellationToken).ConfigureAwait(false);
         }
 
@@ -134,6 +142,21 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // End of waterfall so just return any result to parent
                 return await dc.EndDialogAsync(result).ConfigureAwait(false);
             }
+        }
+
+        public override Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (reason == DialogReason.CancelCalled)
+            {
+                var properties = new Dictionary<string, string>()
+                {
+                    { "DialogId", Id.ToString() },
+                };
+                Logger.TrackEvent("WaterfallCancel", properties);
+            }
+
+            // No-op by default
+            return Task.CompletedTask;
         }
     }
 }

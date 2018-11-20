@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
@@ -25,12 +26,13 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Tests
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
             var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new TelemetryWaterfallDialog("test", telemetryClient.Object, new WaterfallStep[]
+            dialogs.Add(new WaterfallDialog("test", new WaterfallStep[]
             {
                 async (step, cancellationToken) => { await step.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn; },
                 async (step, cancellationToken) => { await step.Context.SendActivityAsync("step2"); return Dialog.EndOfTurn; },
                 async (step, cancellationToken) => { await step.Context.SendActivityAsync("step3"); return Dialog.EndOfTurn; },
-            }));
+            })
+            { Logger = telemetryClient.Object });
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -48,7 +50,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Tests
             .Send("hello")
             .AssertReply("step3")
             .StartTestAsync();
-            telemetryClient.Verify(m => m.TrackWaterfallStep(It.IsAny<WaterfallStepContext>(), It.IsAny<String>()), Times.Exactly(3));
+            telemetryClient.Verify(m => m.TrackEvent(It.IsAny<string>(), It.IsAny<IDictionary<string,string>>(), It.IsAny<IDictionary<string, double>>()), Times.Exactly(3));
             Console.WriteLine("Complete");
         }
 
@@ -63,12 +65,13 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Tests
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
             var dialogs = new DialogSet(dialogState);
             var telemetryClient = new Mock<IBotTelemetryClient>(); ;
-            var waterfallDialog = new TelemetryWaterfallDialog("test", telemetryClient.Object, new WaterfallStep[]
+            var waterfallDialog = new WaterfallDialog("test", new WaterfallStep[]
             {
                     async (step, cancellationToken) => { await step.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn; },
                     async (step, cancellationToken) => { await step.Context.SendActivityAsync("step2"); return Dialog.EndOfTurn; },
                     async (step, cancellationToken) => { await step.Context.SendActivityAsync("step3"); return Dialog.EndOfTurn; },
-            });
+            })
+            { Logger = telemetryClient.Object };
 
             dialogs.Add(waterfallDialog);
 
@@ -88,23 +91,16 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Tests
             .Send("hello")
             .AssertReply("step3")
             .StartTestAsync();
-            telemetryClient.Verify(m => m.TrackWaterfallStep(It.IsAny<WaterfallStepContext>(), It.IsAny<String>()), Times.Exactly(3));
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public async Task WaterfallWithNullTelemetryClient()
-        {
-            var waterfall = new TelemetryWaterfallDialog("test", null);
+            telemetryClient.Verify(m => m.TrackEvent(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, double>>()), Times.Exactly(3));
         }
 
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public async Task WaterfallWithStepsNull()
+        public void WaterfallWithStepsNull()
         {
-            var telemetryClient = new Mock<IBotTelemetryClient>(); 
-            var waterfall = new TelemetryWaterfallDialog("test", telemetryClient.Object);
+            var telemetryClient = new Mock<IBotTelemetryClient>();
+            var waterfall = new WaterfallDialog("test") { Logger = telemetryClient.Object };
             waterfall.AddStep(null);
         }
 

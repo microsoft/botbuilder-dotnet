@@ -27,6 +27,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         public string Id { get; }
 
         /// <summary>
+        /// Gets or sets the telemetry client for logging events.
+        /// </summary>
+        /// <value>The Telemetry Client logger.</value>
+        public IBotTelemetryClient Logger { get; set; } = new NullBotTelemetryClient();
+
+        /// <summary>
         /// Method called when a new dialog has been pushed onto the stack and is being activated.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of conversation.</param>

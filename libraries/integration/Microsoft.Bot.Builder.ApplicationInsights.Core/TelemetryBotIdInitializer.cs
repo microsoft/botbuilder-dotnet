@@ -44,6 +44,9 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
 
                     // Set the session id on the Application Insights telemetry item.
                     telemetry.Context.Session.Id = conversationId;
+
+                    // Set the activity id
+                    telemetry.Context.GlobalProperties.Add("activity_id", (string)body["id"]);
                 }
             }
         }
