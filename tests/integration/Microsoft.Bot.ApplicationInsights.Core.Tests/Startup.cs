@@ -27,8 +27,8 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var botConfig = BotConfiguration.Load("testbot.bot", null);
-            services.AddBotApplicationInsights(botConfig);
+            var botConfig = BotConfiguration.Load("testbot.bot");
+            services.AddBotApplicationInsightsTelemetryClient(botConfig);
 
             // Adding IConfiguration in sample test server.  Otherwise this appears to be 
             // registered.
@@ -37,8 +37,6 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseBotApplicationInsights();
         }
-
     }
 }

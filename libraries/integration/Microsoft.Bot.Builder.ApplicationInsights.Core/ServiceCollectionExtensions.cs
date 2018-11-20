@@ -3,9 +3,12 @@
 
 using System;
 using System.Linq;
+using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Bot.Builder.ApplicationInsights.Core
 {
@@ -15,28 +18,84 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
         /// Adds and configures services for Application Insights to the <see cref="IServiceCollection" />.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/> which specifies the contract for a collection of service descriptors.</param>
-        /// <param name="botConfiguration">Bot configuration that contains the Application Insights configuration information.</param>
+        /// <param name="instrumentationKey">The Application Insights instrumentation key to use.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
-        public static IServiceCollection AddBotApplicationInsights(this IServiceCollection services, BotConfiguration botConfiguration)
+        public static IServiceCollection AddBotApplicationInsightsTelemetryClient(this IServiceCollection services, string instrumentationKey)
         {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            return services.AddBotApplicationInsightsTelemetryClient(tc => tc.InstrumentationKey = instrumentationKey);
+        }
+
+        public static IServiceCollection AddBotApplicationInsightsTelemetryClient(this IServiceCollection services, Action<TelemetryConfiguration> config = null)
+        {
+            var botFrameworkTelemetryClient = CreateTelemetryClient(config);
+
+            services.AddSingleton<IBotTelemetryClient>(new BotTelemetryClient(botFrameworkTelemetryClient));
+
+            // Add a post configure call back to hook up our middleware
+            services.PostConfigure<BotFrameworkOptions>(options =>
+            {
+                // Always add ourselves as the first piece of middleware to ensure we make our telemetry data available ASAP
+                options.Middleware.Insert(0, new ActivityTelemetryMiddleware(botFrameworkTelemetryClient));
+            });
+
+            return services;
+
+        }
+
+
+        // REVISIT: QUESTIONABLE THAT THIS SHOULD BE HERE - let the app do this work itself if it wants to, remove direct ties to Microsoft.Bot.Configuration
+        public static IServiceCollection AddBotApplicationInsightsTelemetryClient(this IServiceCollection services, BotConfiguration botConfiguration, string appInsightsServiceInstanceName = null)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
             if (botConfiguration == null)
             {
                 throw new ArgumentNullException(nameof(botConfiguration));
             }
 
-            // Validate the bot file is correct.
-            var appInsightsConfig = botConfiguration.Services.FirstOrDefault(s => s.Type == "appInsights");
-            if (appInsightsConfig == null)
+            var appInsightsServices = botConfiguration.Services.OfType<AppInsightsService>();
+
+            var instanceNameSpecified = appInsightsServiceInstanceName != null;
+
+            if (instanceNameSpecified)
             {
-                throw new InvalidOperationException("The .bot file is missing the Application Insights (appinsights) service.");
+                appInsightsServices = appInsightsServices.Where(ais => ais.Name == appInsightsServiceInstanceName);
             }
 
-            // Enables Bot Telemetry to save user/session id's as the bot user id and session
-            services.AddTransient<TelemetrySaveBodyASPMiddleware>();
-            services.AddSingleton<ITelemetryInitializer, OperationCorrelationTelemetryInitializer>();
-            services.AddSingleton<ITelemetryInitializer, TelemetryBotIdInitializer>();
-            services.AddSingleton<IBotTelemetryClient, BotTelemetryClient>();
-            return services;
+            var appInsightsService = appInsightsServices.FirstOrDefault();
+
+            if(appInsightsService == null)
+            {
+                var message = instanceNameSpecified ?
+                                    $"No Application Insights Service instance with the specified name \"{appInsightsServiceInstanceName}\" was found in the {nameof(BotConfiguration)}"
+                                        : 
+                                    $"No Application Insights Service instance was found in the {nameof(BotConfiguration)}.";
+
+                throw new Exception();
+            }
+
+            return services.AddBotApplicationInsightsTelemetryClient(tc => tc.InstrumentationKey = appInsightsService.InstrumentationKey);
+        }
+
+        private static TelemetryClient CreateTelemetryClient(Action<TelemetryConfiguration> config)
+        {
+            var telemetryConfiguration = new TelemetryConfiguration();
+
+            var telemetryInitializers = telemetryConfiguration.TelemetryInitializers;
+            telemetryInitializers.Add(new OperationCorrelationTelemetryInitializer());
+            telemetryInitializers.Add(new BotActivityTelemetryInitializer());
+
+            config?.Invoke(telemetryConfiguration);
+
+            return new TelemetryClient(telemetryConfiguration);
         }
     }
 }
