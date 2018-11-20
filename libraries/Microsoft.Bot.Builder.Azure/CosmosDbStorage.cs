@@ -129,7 +129,12 @@ namespace Microsoft.Bot.Builder.Azure
         /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
         public async Task DeleteAsync(string[] keys, CancellationToken cancellationToken)
         {
-            if (keys == null || keys.Length == 0)
+            if (keys == null)
+            {
+                throw new ArgumentNullException(nameof(keys));
+            }
+
+            if (keys.Length == 0)
             {
                 return;
             }
@@ -160,7 +165,12 @@ namespace Microsoft.Bot.Builder.Azure
         /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
         public async Task<IDictionary<string, object>> ReadAsync(string[] keys, CancellationToken cancellationToken)
         {
-            if (keys == null || keys.Length == 0)
+            if (keys == null)
+            {
+                throw new ArgumentNullException(nameof(keys));
+            }
+
+            if (keys.Length == 0)
             {
                 // No keys passed in, no result to return.
                 return new Dictionary<string, object>();
@@ -209,7 +219,12 @@ namespace Microsoft.Bot.Builder.Azure
         /// <seealso cref="ReadAsync(string[], CancellationToken)"/>
         public async Task WriteAsync(IDictionary<string, object> changes, CancellationToken cancellationToken)
         {
-            if (changes == null || changes.Count == 0)
+            if (changes == null)
+            {
+                throw new ArgumentNullException(nameof(changes));
+            }
+
+            if (changes.Count == 0)
             {
                 return;
             }
