@@ -20,9 +20,8 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/> which specifies the contract for a collection of service descriptors.</param>
         /// <param name="botConfiguration">Bot configuration that contains the Application Insights configuration information.</param>
-        /// <param name="telemetryClient">(Optional) The Application Insights client used for logging.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
-        public static IServiceCollection AddBotApplicationInsights(this IServiceCollection services, BotConfiguration botConfiguration, ApplicationInsightsServiceOptions opts = null)
+        public static IServiceCollection AddBotApplicationInsights(this IServiceCollection services, BotConfiguration botConfiguration)
         {
             if (botConfiguration == null)
             {

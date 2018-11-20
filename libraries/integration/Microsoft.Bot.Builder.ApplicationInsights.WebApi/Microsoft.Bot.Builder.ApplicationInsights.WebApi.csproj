@@ -58,6 +58,14 @@
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
     <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.1" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.8.1" />
+    <PackageReference Include="Microsoft.ApplicationInsights.Agent.Intercept" Version="2.4.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.DependencyCollector" Version="2.8.1" />    
+    <PackageReference Include="Microsoft.ApplicationInsights.PerfCounterCollector" Version="2.8.1" />        
+    <PackageReference Include="Microsoft.ApplicationInsights.TraceListener" Version="2.8.1" />            
+    <PackageReference Include="Microsoft.ApplicationInsights.Web" Version="2.8.1" />                
+    <PackageReference Include="Microsoft.ApplicationInsights.WindowsServer" Version="2.8.1" />                
+    <PackageReference Include="Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel" Version="2.8.1" />                    
   </ItemGroup>
 
 	<ItemGroup>
