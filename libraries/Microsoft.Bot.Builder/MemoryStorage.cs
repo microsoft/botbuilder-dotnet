@@ -41,6 +41,11 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
         public Task DeleteAsync(string[] keys, CancellationToken cancellationToken)
         {
+            if (keys == null)
+            {
+                throw new ArgumentNullException(nameof(keys));
+            }
+
             lock (_syncroot)
             {
                 foreach (var key in keys)
@@ -65,6 +70,11 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
         public Task<IDictionary<string, object>> ReadAsync(string[] keys, CancellationToken cancellationToken)
         {
+            if (keys == null)
+            {
+                throw new ArgumentNullException(nameof(keys));
+            }
+
             var storeItems = new Dictionary<string, object>(keys.Length);
             lock (_syncroot)
             {
@@ -94,6 +104,11 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="ReadAsync(string[], CancellationToken)"/>
         public Task WriteAsync(IDictionary<string, object> changes, CancellationToken cancellationToken)
         {
+            if (changes == null)
+            {
+                throw new ArgumentNullException(nameof(changes));
+            }
+
             lock (_syncroot)
             {
                 foreach (var change in changes)
