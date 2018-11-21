@@ -8,9 +8,9 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.ComposableDialogs
 {
-    public interface IExpression
+    public interface IExpressionEval
     {
-        Task<object> Execute(ITurnContext turnContext);
+        Task<object> Evaluate(IDictionary<String, object> vars);
     }
 
 }

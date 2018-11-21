@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -75,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var instance = new DialogInstance
             {
                 Id = dialogId,
-                State = new Dictionary<string, object>(),
+                State = new ExpandoObject(),
             };
 
             Stack.Insert(0, instance);

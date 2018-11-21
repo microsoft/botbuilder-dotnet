@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     public class TextPrompt : Prompt<string>
     {
-        public TextPrompt(string dialogId, PromptValidator<string> validator = null)
+        public TextPrompt(string dialogId = nameof(TextPrompt), PromptValidator<string> validator = null)
             : base(dialogId, validator)
         {
         }

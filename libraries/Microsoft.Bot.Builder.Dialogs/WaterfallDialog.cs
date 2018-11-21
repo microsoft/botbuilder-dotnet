@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -61,7 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Initialize waterfall state
             var state = dc.ActiveDialog.State;
             state[PersistedOptions] = options;
-            state[PersistedValues] = new Dictionary<string, object>();
+            state[PersistedValues] = new ExpandoObject();
 
             // Run first step
             return await RunStepAsync(dc, 0, DialogReason.BeginCalled, null, cancellationToken).ConfigureAwait(false);

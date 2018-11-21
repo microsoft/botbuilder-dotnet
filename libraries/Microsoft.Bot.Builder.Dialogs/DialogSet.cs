@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class DialogSet
     {
         private readonly IStatePropertyAccessor<DialogState> _dialogState;
-        private readonly IDictionary<string, Dialog> _dialogs = new Dictionary<string, Dialog>();
+        private readonly IDictionary<string, IDialog> _dialogs = new Dictionary<string, IDialog>();
 
         public DialogSet(IStatePropertyAccessor<DialogState> dialogState)
         {
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dialog">The dialog to add.</param>
         /// <returns>The DialogSet for fluent calls to Add().</returns>
-        public DialogSet Add(Dialog dialog)
+        public DialogSet Add(IDialog dialog)
         {
             if (dialog == null)
             {
@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dialogId">ID of the dialog/prompt to lookup.</param>
         /// <returns>dialog if found otherwise null.</returns>
-        public Dialog Find(string dialogId)
+        public IDialog Find(string dialogId)
         {
             if (string.IsNullOrWhiteSpace(dialogId))
             {

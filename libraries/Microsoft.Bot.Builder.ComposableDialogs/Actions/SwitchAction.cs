@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.ComposableDialogs.Dialogs
         /// <summary>
         /// Expression to evalute
         /// </summary>
-        public IExpression Condition { get; set; }
+        public IExpressionEval Condition { get; set; }
 
         /// <summary>
         /// Cases to compare against result of condition expression
@@ -36,21 +36,24 @@ namespace Microsoft.Bot.Builder.ComposableDialogs.Dialogs
 
         public async Task<DialogTurnResult> Execute(DialogContext dialogContext, object options, DialogTurnResult result, CancellationToken cancellationToken)
         {
-            var conditionalValue = await Condition.Execute(dialogContext.Context);
+            var state = dialogContext.ActiveDialog.State;
+            state["DialogTurnResult"] = result;
+
+            var conditionResult = await Condition.Evaluate(state);
 
             foreach (var key in this.Cases.Keys)
             {
-                if (IgnoreCase && conditionalValue is string)
+                if (IgnoreCase && conditionResult is string)
                 {
-                    if (String.Equals((string)conditionalValue, key, StringComparison.CurrentCultureIgnoreCase))
+                    if (String.Equals((string)conditionResult, key, StringComparison.CurrentCultureIgnoreCase))
                     {
                         return await this.Cases[key].Execute(dialogContext, options, result, cancellationToken);
                     }
                 }
                 else
                 {
-                    var typeCode = Type.GetTypeCode(conditionalValue.GetType());
-                    if (conditionalValue.Equals(Convert.ChangeType(key, typeCode)))
+                    var typeCode = Type.GetTypeCode(conditionResult.GetType());
+                    if (conditionResult.Equals(Convert.ChangeType(key, typeCode)))
                     {
                         return await this.Cases[key].Execute(dialogContext, options, result, cancellationToken);
                     }

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
@@ -22,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private readonly PromptValidator<T> _validator;
 
-        public Prompt(string dialogId, PromptValidator<T> validator = null)
+        public Prompt(string dialogId = null, PromptValidator<T> validator = null)
             : base(dialogId)
         {
             _validator = validator;
@@ -55,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Initialize prompt state
             var state = dc.ActiveDialog.State;
             state[PersistedOptions] = opt;
-            state[PersistedState] = new Dictionary<string, object>();
+            state[PersistedState] = new ExpandoObject();
 
             // Send initial prompt
             await OnPromptAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions], false, cancellationToken).ConfigureAwait(false);

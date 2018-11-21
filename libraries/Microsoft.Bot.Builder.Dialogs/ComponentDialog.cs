@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             _dialogs = new DialogSet();
         }
 
-        protected string InitialDialogId { get; set; }
+        public string InitialDialogId { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -130,7 +130,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dialogId">The ID of the dialog to find.</param>
         /// <returns>The dialog; or <c>null</c> if there is not a match for the ID.</returns>
-        public Dialog FindDialog(string dialogId)
+        public IDialog FindDialog(string dialogId)
         {
             return _dialogs.Find(dialogId);
         }

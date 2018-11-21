@@ -9,22 +9,21 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder.ComposableDialogs.Dialogs
 {
     /// <summary>
-    /// Send an activity as an action
+    /// Set State variable as an action
     /// </summary>
-    public class SendActivityAction : IAction
+    public class SetVarAction : IAction
     {
-        public SendActivityAction() { }
+        public SetVarAction() { }
 
-        public SendActivityAction(string text) { this.Text = text; }
-
-        public string Text { get; set; }
+        public string Name { get; set; }
         
-        // public Activity Activity { get; set; }
+        public IExpressionEval Value { get; set; }
 
         public async Task<DialogTurnResult> Execute(DialogContext dialogContext, object options, DialogTurnResult result, CancellationToken cancellationToken)
         {
-            Activity activity = dialogContext.Context.Activity.CreateReply(this.Text);
-            await dialogContext.Context.SendActivityAsync(activity, cancellationToken);
+            var state = dialogContext.ActiveDialog.State;
+            state["DialogTurnResult"] = result;
+            state[Name] = await Value.Evaluate(state);
             return result;
         }
     }

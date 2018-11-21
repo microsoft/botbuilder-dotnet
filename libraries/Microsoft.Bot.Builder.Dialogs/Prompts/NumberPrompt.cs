@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class NumberPrompt<T> : Prompt<T>
         where T : struct
     {
-        public NumberPrompt(string dialogId, PromptValidator<T> validator = null, string defaultLocale = null)
+        public NumberPrompt(string dialogId = nameof(NumberPrompt<T>), PromptValidator<T> validator = null, string defaultLocale = null)
             : base(dialogId, validator)
         {
             DefaultLocale = defaultLocale;
