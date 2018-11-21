@@ -152,9 +152,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var dialogs = new DialogSet(dialogState);
 
-            PromptValidator<Activity> validator = async (prompt, cancellationToken) =>
+            PromptValidator<Activity> validator = (prompt, cancellationToken) =>
             {
-                return false;
+                return Task.FromResult(false);
             };
 
             var eventPrompt = new EventActivityPrompt("EventActivityPrompt", validator);
@@ -198,9 +198,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var dialogs = new DialogSet(dialogState);
 
-            PromptValidator<Activity> validator = async (prompt, cancellationToken) =>
+            PromptValidator<Activity> validator = (prompt, cancellationToken) =>
             {
-                return false;
+                return Task.FromResult(false);
             };
 
             var eventPrompt = new EventActivityPrompt("EventActivityPrompt", validator);

@@ -26,28 +26,16 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class ConfirmPrompt : Prompt<bool>
     {
-        private static readonly Dictionary<string, Tuple<Choice, Choice>> DefaultConfirmChoices = new Dictionary<string, Tuple<Choice, Choice>>()
+        private static readonly Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> ChoiceDefaults = new Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)>()
         {
-            { Spanish, new Tuple<Choice, Choice>(new Choice { Value = "Sí" }, new Choice { Value = "No" }) },
-            { Dutch, new Tuple<Choice, Choice>(new Choice { Value = "Ja" }, new Choice { Value = "Nee" }) },
-            { English, new Tuple<Choice, Choice>(new Choice { Value = "Yes" }, new Choice { Value = "No" }) },
-            { French, new Tuple<Choice, Choice>(new Choice { Value = "Oui" }, new Choice { Value = "Non" }) },
-            { German, new Tuple<Choice, Choice>(new Choice { Value = "Ja" }, new Choice { Value = "Nein" }) },
-            { Japanese, new Tuple<Choice, Choice>(new Choice { Value = "はい" }, new Choice { Value = "いいえ" }) },
-            { Portuguese, new Tuple<Choice, Choice>(new Choice { Value = "Sim" }, new Choice { Value = "Não" }) },
-            { Chinese, new Tuple<Choice, Choice>(new Choice { Value = "是的" }, new Choice { Value = "不" }) },
-        };
-
-        private static readonly Dictionary<string, ChoiceFactoryOptions> DefaultChoiceOptions = new Dictionary<string, ChoiceFactoryOptions>()
-        {
-            { Spanish, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " o ", InlineOrMore = ", o ", IncludeNumbers = true } },
-            { Dutch, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " of ", InlineOrMore = ", of ", IncludeNumbers = true } },
-            { English, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " or ", InlineOrMore = ", or ", IncludeNumbers = true } },
-            { French, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " ou ", InlineOrMore = ", ou ", IncludeNumbers = true } },
-            { German, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " oder ", InlineOrMore = ", oder ", IncludeNumbers = true } },
-            { Japanese, new ChoiceFactoryOptions { InlineSeparator = "、 ", InlineOr = " または ", InlineOrMore = "、 または ", IncludeNumbers = true } },
-            { Portuguese, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " ou ", InlineOrMore = ", ou ", IncludeNumbers = true } },
-            { Chinese, new ChoiceFactoryOptions { InlineSeparator = "， ", InlineOr = " 要么 ", InlineOrMore = "， 要么 ", IncludeNumbers = true } },
+            { Spanish, (new Choice("Sí"), new Choice("No"), new ChoiceFactoryOptions(", ", " o ", ", o ", true)) },
+            { Dutch, (new Choice("Ja"), new Choice("Nee"), new ChoiceFactoryOptions(", ", " of ", ", of ", true)) },
+            { English, (new Choice("Yes"), new Choice("No"), new ChoiceFactoryOptions(", ", " or ", ", or ", true)) },
+            { French, (new Choice("Oui"), new Choice("Non"), new ChoiceFactoryOptions(", ", " ou ", ", ou ", true)) },
+            { German, (new Choice("Ja"), new Choice("Nein"), new ChoiceFactoryOptions(", ", " oder ", ", oder ", true)) },
+            { Japanese, (new Choice("はい"), new Choice("いいえ"), new ChoiceFactoryOptions("、 ", " または ", "、 または ", true)) },
+            { Portuguese, (new Choice("Sim"), new Choice("Não"), new ChoiceFactoryOptions(", ", " ou ", ", ou ", true)) },
+            { Chinese, (new Choice("是的"), new Choice("不"), new ChoiceFactoryOptions("， ", " 要么 ",  "， 要么 ", true)) },
         };
 
         /// <summary>
@@ -101,18 +89,13 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(options));
             }
 
-            // Determine culture
-            var culture = turnContext.Activity.Locale ?? DefaultLocale;
-            if (string.IsNullOrEmpty(culture) || !DefaultChoiceOptions.ContainsKey(culture))
-            {
-                culture = English;
-            }
-
             // Format prompt to send
             IMessageActivity prompt;
             var channelId = turnContext.Activity.ChannelId;
-            var choiceOptions = ChoiceOptions ?? DefaultChoiceOptions[culture];
-            var confirmChoices = ConfirmChoices ?? DefaultConfirmChoices[culture];
+            var culture = DetermineCulture(turnContext.Activity);
+            var defaults = ChoiceDefaults[culture];
+            var choiceOptions = ChoiceOptions ?? defaults.Item3;
+            var confirmChoices = ConfirmChoices ?? Tuple.Create(defaults.Item1, defaults.Item2);
             var choices = new List<Choice> { confirmChoices.Item1, confirmChoices.Item2 };
             if (isRetry && options.RetryPrompt != null)
             {
@@ -139,7 +122,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 // Recognize utterance
                 var message = turnContext.Activity.AsMessageActivity();
-                var culture = turnContext.Activity.Locale ?? DefaultLocale ?? English;
+                var culture = DetermineCulture(turnContext.Activity);
                 var results = ChoiceRecognizer.RecognizeBoolean(message.Text, culture);
                 if (results.Count > 0)
                 {
@@ -153,13 +136,14 @@ namespace Microsoft.Bot.Builder.Dialogs
                 else
                 {
                     // First check whether the prompt was sent to the user with numbers - if it was we should recognize numbers
-                    var choiceOptions = ChoiceOptions ?? DefaultChoiceOptions[culture];
+                    var defaults = ChoiceDefaults[culture];
+                    var choiceOptions = ChoiceOptions ?? defaults.Item3;
 
                     // This logic reflects the fact that IncludeNumbers is nullable and True is the default set in Inline style
                     if (!choiceOptions.IncludeNumbers.HasValue || choiceOptions.IncludeNumbers.Value)
                     {
                         // The text may be a number in which case we will interpret that as a choice.
-                        var confirmChoices = ConfirmChoices ?? DefaultConfirmChoices[culture];
+                        var confirmChoices = ConfirmChoices ?? Tuple.Create(defaults.Item1, defaults.Item2);
                         var choices = new List<Choice> { confirmChoices.Item1, confirmChoices.Item2 };
                         var secondAttemptResults = ChoiceRecognizers.RecognizeChoices(message.Text, choices);
                         if (secondAttemptResults.Count > 0)
@@ -172,6 +156,17 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return Task.FromResult(result);
+        }
+
+        private string DetermineCulture(Activity activity)
+        {
+            var culture = activity.Locale ?? DefaultLocale;
+            if (string.IsNullOrEmpty(culture) || !ChoiceDefaults.ContainsKey(culture))
+            {
+                culture = English;
+            }
+
+            return culture;
         }
     }
 }
