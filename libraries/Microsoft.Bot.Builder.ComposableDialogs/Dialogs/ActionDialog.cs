@@ -59,18 +59,26 @@ namespace Microsoft.Bot.Builder.ComposableDialogs.Dialogs
             return await BeginInnerDialog(dialogContext, options, cancellationToken);
         }
 
+        /// <summary>
+        /// Inner dialog has completed
+        /// </summary>
+        /// <param name="dialogContext"></param>
+        /// <param name="reason"></param>
+        /// <param name="result"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dialogContext, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var state = dialogContext.ActiveDialog.State;
             var options = state[$"{this.Id}.options"];
-
+            var dialogTurnResult = new DialogTurnResult(DialogTurnStatus.Complete, result);
             switch (reason)
             {
                 case DialogReason.EndCalled:
                     // call the IDialogAction handler
                     if (this.OnCompleted != null)
                     {
-                        return await this.OnCompleted.Execute(dialogContext, options, new DialogTurnResult(DialogTurnStatus.Complete, result), cancellationToken);
+                        return await this.OnCompleted.Execute(dialogContext, options, dialogTurnResult, cancellationToken);
                     }
                     return await dialogContext.EndDialogAsync(result, cancellationToken);
 
