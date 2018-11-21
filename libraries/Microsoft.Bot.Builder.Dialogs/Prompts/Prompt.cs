@@ -29,6 +29,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             _validator = validator;
         }
 
+        public PromptOptions Options { get; set; }
+
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
@@ -36,13 +38,14 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            if (!(options is PromptOptions))
+            // Ensure prompts have input hint set
+            var opt = (options as PromptOptions) ?? this.Options;
+
+            if (opt == null)
             {
-                throw new ArgumentOutOfRangeException(nameof(options), "Prompt options are required for Prompt dialogs");
+                throw new ArgumentNullException(nameof(options), "Prompt options are required for Prompt dialogs");
             }
 
-            // Ensure prompts have input hint set
-            var opt = (PromptOptions)options;
             if (opt.Prompt != null && string.IsNullOrEmpty(opt.Prompt.InputHint))
             {
                 opt.Prompt.InputHint = InputHints.ExpectingInput;

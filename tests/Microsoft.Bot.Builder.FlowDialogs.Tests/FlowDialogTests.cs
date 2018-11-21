@@ -23,18 +23,21 @@ namespace Microsoft.Bot.Builder.FormDialogs.Tests
 
             // add prompts
             dialog.AddDialog(new NumberPrompt<Int32>());
-            dialog.AddDialog(new TextPrompt());
+            dialog.AddDialog(new TextPrompt()
+            {
+                Id = "NamePrompt",
+                Options = new PromptOptions()
+                {
+                    Prompt = new Activity(type: ActivityTypes.Message, text: "What is your name?"),
+                    RetryPrompt = new Activity(type: ActivityTypes.Message, text: "Reprompt: What is your name?")
+                }
+            });
 
             // define GetNameDialog
             var actionDialog = new FlowDialog()
             {
                 Id = "GetNameDialog",
-                CallDialogId = "TextPrompt",
-                CallDialogOptions = new PromptOptions()
-                {
-                    Prompt = new Activity(type: ActivityTypes.Message, text: "What is your name?"),
-                    RetryPrompt = new Activity(type: ActivityTypes.Message, text: "What is your name?")
-                },
+                CallDialogId = "NamePrompt",
                 OnCompleted = new CommandSet()
                 {
                     Actions =
@@ -64,7 +67,7 @@ namespace Microsoft.Bot.Builder.FormDialogs.Tests
                 CallDialogOptions = new PromptOptions()
                 {
                     Prompt = new Activity(type: ActivityTypes.Message, text: "What is your age?"),
-                    RetryPrompt = new Activity(type: ActivityTypes.Message, text: "What is your age?")
+                    RetryPrompt = new Activity(type: ActivityTypes.Message, text: "Reprompt: What is your age?")
                 },
                 OnCompleted = new CommandSet()
                 {

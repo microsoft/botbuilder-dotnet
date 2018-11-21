@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.FlowDialogs
         /// <summary>
         /// Settings for the dialog
         /// </summary>
-        public object CallDialogOptions { get; set; } = new ExpandoObject();
+        public object CallDialogOptions { get; set; }
 
         /// <summary>
         /// Action to perform when dialog is completed
