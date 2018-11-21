@@ -12,7 +12,9 @@ namespace Microsoft.Bot.Builder.TestBot.WebApi
         {
             config.MapBotFramework(botConfig =>
             {
-                botConfig.UseMicrosoftApplicationIdentity(null, null);
+                botConfig
+                    .UseMicrosoftApplicationIdentity(null, null)
+                    .UseApplicationInsightsBotTelemetry("myinstrumentationkey");
 
                 // Uncomment these lines to debug with state
 
