@@ -57,6 +57,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Include="..\Microsoft.Bot.Builder.ApplicationInsights.Core\BotActivityTelemetryMiddleware.cs" Link="BotActivityTelemetryMiddleware.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.4" />
 		 <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
@@ -75,6 +79,7 @@
 
 	<ItemGroup>
     <ProjectReference Include="..\..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Builder.Integration.AspNet.WebApi\Microsoft.Bot.Builder.Integration.AspNet.WebApi.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
