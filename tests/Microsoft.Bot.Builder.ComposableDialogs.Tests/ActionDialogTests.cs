@@ -40,11 +40,11 @@ namespace Microsoft.Bot.Builder.ComposableDialogs.Tests
                         new SetVarAction() { Name="Name", Value= new CSharpExpression("State.DialogTurnResult.Result")},
                         new SwitchAction()
                         {
-                            Condition = new CSharpExpression("State.Name.Length > 2"),
+                            Condition = new CSharpExpression() { Expression="State.Name.Length > 2" },
                             Cases = new Dictionary<string, IAction>
                             {
                                 { "true", new CallDialogAction("GetAgeDialog")  },
-                                { "false", new SendActivityAction("false") }
+                                { "false", new ContinueDialogAction() }
                             },
                             DefaultAction = new SendActivityAction("default")
                         }
@@ -102,6 +102,8 @@ namespace Microsoft.Bot.Builder.ComposableDialogs.Tests
                     results = await dialogContext.BeginDialogAsync(testDialog.Id, null, cancellationToken);
             })
             .Send("hello")
+            .AssertReply("What is your name?")
+            .Send("x")
             .AssertReply("What is your name?")
             .Send("Joe")
             .AssertReply("What is your age?")
