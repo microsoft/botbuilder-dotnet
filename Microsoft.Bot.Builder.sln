@@ -4,7 +4,7 @@ VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{4269F3C3-6B42-419B-B64A-3E6DC0F1574A}"
 	ProjectSection(SolutionItems) = preProject
-		Libraries\Microsoft.Bot.Builder.ComposableDialogs\Recognizers\NumberEntityRecognizer.cs = Libraries\Microsoft.Bot.Builder.ComposableDialogs\Recognizers\NumberEntityRecognizer.cs
+		Libraries\Microsoft.Bot.Builder.Dialogs.Composition\Recognizers\NumberEntityRecognizer.cs = Libraries\Microsoft.Bot.Builder.Dialogs.Composition\Recognizers\NumberEntityRecognizer.cs
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AD743B78-D61F-4FBF-B620-FA83CE599A50}"
@@ -65,13 +65,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Configuration
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.TestBot.WebApi", "tests\Microsoft.Bot.Builder.TestBot.WebApi\Microsoft.Bot.Builder.TestBot.WebApi.csproj", "{298009D3-971D-4375-A2F2-04CFB168CED9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.ComposableDialogs", "Libraries\Microsoft.Bot.Builder.ComposableDialogs\Microsoft.Bot.Builder.ComposableDialogs.csproj", "{F54A242E-C7C9-481C-84F1-285EAA5243B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Composition", "Libraries\Microsoft.Bot.Builder.Dialogs.Composition\Microsoft.Bot.Builder.Dialogs.Composition.csproj", "{F54A242E-C7C9-481C-84F1-285EAA5243B8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.ComposableDialogs.Tests", "tests\Microsoft.Bot.Builder.ComposableDialogs.Tests\Microsoft.Bot.Builder.ComposableDialogs.Tests.csproj", "{47EDC8A7-FCC1-4AF5-B9D5-2CD0F6343052}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Composition.Tests", "tests\Microsoft.Bot.Builder.Dialogs.Composition.Tests\Microsoft.Bot.Builder.Dialogs.Composition.Tests.csproj", "{47EDC8A7-FCC1-4AF5-B9D5-2CD0F6343052}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.FlowDialogs", "libraries\Microsoft.Bot.Builder.FlowDialogs\Microsoft.Bot.Builder.FlowDialogs.csproj", "{F838C47F-4E44-4872-A3EC-017B5E1AB6B6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Dialogs.Flow", "libraries\Microsoft.Bot.Builder.Dialogs.Flow\Microsoft.Bot.Builder.Dialogs.Flow.csproj", "{F838C47F-4E44-4872-A3EC-017B5E1AB6B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.FlowDialogs.Tests", "tests\Microsoft.Bot.Builder.FlowDialogs.Tests\Microsoft.Bot.Builder.FlowDialogs.Tests.csproj", "{B537CD8F-1335-407D-AAD2-6E147A0E221E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Dialogs.Flows.Tests", "tests\Microsoft.Bot.Builder.Dialogs.Flow.Tests\Microsoft.Bot.Builder.Dialogs.Flows.Tests.csproj", "{B537CD8F-1335-407D-AAD2-6E147A0E221E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
