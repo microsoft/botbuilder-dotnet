@@ -34,14 +34,13 @@ namespace Microsoft.Bot.Builder.FormDialogs.Tests
             });
 
             // define GetNameDialog
-            var actionDialog = new FlowDialog()
+            var flowDialog = new FlowDialog()
             {
                 Id = "GetNameDialog",
                 CallDialogId = "NamePrompt",
                 OnCompleted = new CommandSet()
                 {
-                    Actions =
-                    {
+                    Commands = {
                         new SetVariable() { Name="Name", Value= new CSharpExpression("State.DialogTurnResult.Result")},
                         new Switch()
                         {
@@ -56,11 +55,11 @@ namespace Microsoft.Bot.Builder.FormDialogs.Tests
                     }
                 }
             };
-            dialog.InitialDialogId = actionDialog.Id;
-            dialog.AddDialog(actionDialog);
+            dialog.InitialDialogId = flowDialog.Id;
+            dialog.AddDialog(flowDialog);
 
             // define GetAgeDialog
-            actionDialog = new FlowDialog()
+            flowDialog = new FlowDialog()
             {
                 Id = "GetAgeDialog",
                 CallDialogId = "NumberPrompt",
@@ -71,14 +70,14 @@ namespace Microsoft.Bot.Builder.FormDialogs.Tests
                 },
                 OnCompleted = new CommandSet()
                 {
-                    Actions = {
+                    Commands = {
                         new SetVariable() { Name = "Age", Value = new CSharpExpression("State.DialogTurnResult.Result") },
                         new SetVariable() { Name = "IsChild", Value = new CSharpExpression("State.Age < 18") },
                         new SendActivity() { Text = "Done" }
                     }
                 }
             };
-            dialog.AddDialog(actionDialog);
+            dialog.AddDialog(flowDialog);
 
             return dialog;
         }

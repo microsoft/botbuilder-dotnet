@@ -16,14 +16,14 @@ namespace Microsoft.Bot.Builder.FlowDialogs
         public CommandSet(List<IFlowCommand> actions = null)
         {
             if (actions != null)
-                this.Actions = actions;
+                this.Commands = actions;
         }
 
-        public List<IFlowCommand> Actions { get; set; } = new List<IFlowCommand>();
+        public List<IFlowCommand> Commands { get; set; } = new List<IFlowCommand>();
 
         public async Task<DialogTurnResult> Execute(DialogContext dialogContext, object options, DialogTurnResult result, CancellationToken cancellationToken)
         {
-            foreach (var action in Actions)
+            foreach (var action in Commands)
             {
                 result = await action.Execute(dialogContext, options, result, cancellationToken);
             }
