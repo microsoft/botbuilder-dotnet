@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
@@ -51,6 +52,24 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         public BotFrameworkConfigurationBuilder UseMiddleware(IMiddleware middleware)
         {
             BotFrameworkOptions.Middleware.Add(middleware);
+            return this;
+        }
+
+        /// <summary>
+        /// Invokes a supplied configuration callback that allows advanced configuration of the bot's middleware pipeline.
+        /// </summary>
+        /// <param name="configure">A configuration action that can directly manipulate the list of <see cref="IMiddleware">middleware</see> that makes up the bot's middleware pipeline.</param>
+        /// <returns>A reference to this instance after the operation has completed.</returns>
+        /// <seealso cref="IMiddleware"/>
+        public BotFrameworkConfigurationBuilder UseMiddleware(Action<IList<IMiddleware>> configure)
+        {
+            if (configure == null)
+            {
+                throw new ArgumentNullException(nameof(configure));
+            }
+
+            configure(BotFrameworkOptions.Middleware);
+
             return this;
         }
 
