@@ -51,6 +51,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        public async Task WaterfallWithCallback()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+            var dialogs = new DialogSet(dialogState);
+            var waterfallDialog = new WaterfallDialog("test", new WaterfallStep[]
+            {
+                async (step, cancellationToken) => { await step.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn; },
+                async (step, cancellationToken) => { await step.Context.SendActivityAsync("step2"); return Dialog.EndOfTurn; },
+                async (step, cancellationToken) => { await step.Context.SendActivityAsync("step3"); return Dialog.EndOfTurn; },
+            });
+
+            dialogs.Add(waterfallDialog);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                await dc.ContinueDialogAsync(cancellationToken);
+                if (!turnContext.Responded)
+                {
+                    await dc.BeginDialogAsync("test", null, cancellationToken);
+                }
+            })
+            .Send("hello")
+            .AssertReply("step1")
+            .Send("hello")
+            .AssertReply("step2")
+            .Send("hello")
+            .AssertReply("step3")
+            .StartTestAsync();
+        }
+
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public Task WaterfallWithStepsNull()
         {
