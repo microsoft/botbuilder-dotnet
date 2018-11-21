@@ -2,16 +2,14 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Bot.Builder.ApplicationInsights.Core;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Microsoft.Bot.Builder.TestBot
 {
@@ -79,6 +77,8 @@ namespace Microsoft.Bot.Builder.TestBot
                     };
                     options.Middleware.Add(new AutoSaveStateMiddleware(conversationState));
                 });
+
+            services.AddBotApplicationInsightsTelemetryClient("test");
 
             //services.AddBot<TestBot>(options =>
             //{
