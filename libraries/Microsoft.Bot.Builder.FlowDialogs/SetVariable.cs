@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.ComposableDialogs;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.ComposableDialogs.Dialogs
+namespace Microsoft.Bot.Builder.FlowDialogs
 {
     /// <summary>
     /// Set State variable as an action
     /// </summary>
-    public class SetVarAction : IAction
+    public class SetVariable : IFlowAction
     {
-        public SetVarAction() { }
+        public SetVariable() { }
 
         public string Name { get; set; }
         

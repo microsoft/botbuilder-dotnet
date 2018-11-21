@@ -3,14 +3,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 
-namespace Microsoft.Bot.Builder.ComposableDialogs.Dialogs
+namespace Microsoft.Bot.Builder.FlowDialogs
 {
     /// <summary>
     /// ActionDialog 
     /// </summary>
-    public class ActionDialog : Dialog, IDialog
+    public class FlowDialog : Dialog, IDialog
     {
-        public ActionDialog(string dialogId = null) : base(dialogId)
+        public FlowDialog(string dialogId = null) : base(dialogId)
         {
         }
 
@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.ComposableDialogs.Dialogs
         /// <summary>
         /// Action to perform when dialog is completed
         /// </summary>
-        public IAction OnCompleted { get; set; }
+        public IFlowAction OnCompleted { get; set; }
 
         /// <summary>
         /// When this dialog is started we start the inner dialog

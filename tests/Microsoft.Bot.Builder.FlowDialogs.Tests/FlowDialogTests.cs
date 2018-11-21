@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.ComposableDialogs.Dialogs;
+using Microsoft.Bot.Builder.FormDialogs;
 using Microsoft.Bot.Builder.ComposableDialogs.Expressions;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using Microsoft.Bot.Builder.FlowDialogs;
 
-namespace Microsoft.Bot.Builder.ComposableDialogs.Tests
+namespace Microsoft.Bot.Builder.FormDialogs.Tests
 {
     [TestClass]
-    public class ActionDialogTests
+    public class FlowDialogTests
     {
         private static JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };
 
@@ -25,7 +26,7 @@ namespace Microsoft.Bot.Builder.ComposableDialogs.Tests
             dialog.AddDialog(new TextPrompt());
 
             // define GetNameDialog
-            var actionDialog = new ActionDialog()
+            var actionDialog = new FlowDialog()
             {
                 Id = "GetNameDialog",
                 CallDialogId = "TextPrompt",
@@ -34,20 +35,20 @@ namespace Microsoft.Bot.Builder.ComposableDialogs.Tests
                     Prompt = new Activity(type: ActivityTypes.Message, text: "What is your name?"),
                     RetryPrompt = new Activity(type: ActivityTypes.Message, text: "What is your name?")
                 },
-                OnCompleted = new ActionSet()
+                OnCompleted = new FlowActionSet()
                 {
                     Actions =
                     {
-                        new SetVarAction() { Name="Name", Value= new CSharpExpression("State.DialogTurnResult.Result")},
-                        new SwitchAction()
+                        new SetVariable() { Name="Name", Value= new CSharpExpression("State.DialogTurnResult.Result")},
+                        new Switch()
                         {
                             Condition = new CSharpExpression() { Expression="State.Name.Length > 2" },
-                            Cases = new Dictionary<string, IAction>
+                            Cases = new Dictionary<string, IFlowAction>
                             {
-                                { "true", new CallDialogAction("GetAgeDialog")  },
-                                { "false", new ContinueDialogAction() }
+                                { "true", new CallDialog("GetAgeDialog")  },
+                                { "false", new ContinueDialog() }
                             },
-                            DefaultAction = new SendActivityAction("default")
+                            DefaultAction = new SendActivity("default")
                         }
                     }
                 }
@@ -56,7 +57,7 @@ namespace Microsoft.Bot.Builder.ComposableDialogs.Tests
             dialog.AddDialog(actionDialog);
 
             // define GetAgeDialog
-            actionDialog = new ActionDialog()
+            actionDialog = new FlowDialog()
             {
                 Id = "GetAgeDialog",
                 CallDialogId = "NumberPrompt",
@@ -65,12 +66,12 @@ namespace Microsoft.Bot.Builder.ComposableDialogs.Tests
                     Prompt = new Activity(type: ActivityTypes.Message, text: "What is your age?"),
                     RetryPrompt = new Activity(type: ActivityTypes.Message, text: "What is your age?")
                 },
-                OnCompleted = new ActionSet()
+                OnCompleted = new FlowActionSet()
                 {
                     Actions = {
-                        new SetVarAction() { Name = "Age", Value = new CSharpExpression("State.DialogTurnResult.Result") },
-                        new SetVarAction() { Name = "IsChild", Value = new CSharpExpression("State.Age < 18") },
-                        new SendActivityAction() { Text = "Done" }
+                        new SetVariable() { Name = "Age", Value = new CSharpExpression("State.DialogTurnResult.Result") },
+                        new SetVariable() { Name = "IsChild", Value = new CSharpExpression("State.Age < 18") },
+                        new SendActivity() { Text = "Done" }
                     }
                 }
             };
@@ -80,7 +81,7 @@ namespace Microsoft.Bot.Builder.ComposableDialogs.Tests
         }
 
         [TestMethod]
-        public async Task TestActionDialog()
+        public async Task TestFlowDialog()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");

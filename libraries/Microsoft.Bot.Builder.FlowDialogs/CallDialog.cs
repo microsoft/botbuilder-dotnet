@@ -4,25 +4,25 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.ComposableDialogs.Dialogs
+namespace Microsoft.Bot.Builder.FlowDialogs
 {
     /// <summary>
-    /// Clear a variable as an action
+    /// Replace the current Dialog with another dialog as an action
     /// </summary>
-    public class ClearVarAction : IAction
+    public class CallDialog : IFlowAction
     {
-        public ClearVarAction() { }
+        public CallDialog() { }
 
-        public string Name { get; set; }
-        
+        public CallDialog(string dialogId) { this.DialogId = dialogId; }
+
+        public string DialogId { get; set; }
+
         public Task<DialogTurnResult> Execute(DialogContext dialogContext, object options, DialogTurnResult result, CancellationToken cancellationToken)
         {
             var state = dialogContext.ActiveDialog.State;
             state["DialogTurnResult"] = result;
-            state.Remove(Name);
-            return Task.FromResult(result);
+            return dialogContext.ReplaceDialogAsync(DialogId, null, cancellationToken);
         }
     }
 }

@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.ComposableDialogs.Dialogs
+namespace Microsoft.Bot.Builder.FlowDialogs
 {
     /// <summary>
     /// Send an activity as an action
     /// </summary>
-    public class SendActivityAction : IAction
+    public class SendActivity : IFlowAction
     {
-        public SendActivityAction() { }
+        public SendActivity() { }
 
-        public SendActivityAction(string text) { this.Text = text; }
+        public SendActivity(string text) { this.Text = text; }
 
         public string Text { get; set; }
         

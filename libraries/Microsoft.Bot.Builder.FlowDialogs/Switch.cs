@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.ComposableDialogs;
 using Microsoft.Bot.Builder.Dialogs;
 
-namespace Microsoft.Bot.Builder.ComposableDialogs.Dialogs
+namespace Microsoft.Bot.Builder.FlowDialogs
 {
     /// <summary>
     /// Evaluate expression and execute actions based on the result
     /// </summary>
     /// <typeparam name="ValueT"></typeparam>
-    public class SwitchAction : IAction
+    public class Switch : IFlowAction
     {
-        public SwitchAction() { }
+        public Switch() { }
 
         /// <summary>
         /// Control whether case sensitive or not
@@ -27,12 +28,12 @@ namespace Microsoft.Bot.Builder.ComposableDialogs.Dialogs
         /// <summary>
         /// Cases to compare against result of condition expression
         /// </summary>
-        public Dictionary<string, IAction> Cases { get; set; } = new Dictionary<string, IAction>();
+        public Dictionary<string, IFlowAction> Cases { get; set; } = new Dictionary<string, IFlowAction>();
 
         /// <summary>
         /// Default action to take if no match
         /// </summary>
-        public IAction DefaultAction { get; set; }
+        public IFlowAction DefaultAction { get; set; }
 
         public async Task<DialogTurnResult> Execute(DialogContext dialogContext, object options, DialogTurnResult result, CancellationToken cancellationToken)
         {

@@ -5,9 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 
-namespace Microsoft.Bot.Builder.ComposableDialogs
+namespace Microsoft.Bot.Builder.FlowDialogs
 {
-    public interface IAction
+    public interface IFlowAction
     {
         /// <summary>
         /// Execute an action 
