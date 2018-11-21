@@ -25,10 +25,11 @@ namespace Microsoft.Bot.Builder.ComposableDialogs.Tests
             dialog.AddDialog(new TextPrompt());
 
             // define GetNameDialog
-            var actionDialog = new ActionDialog("GetNameDialog")
+            var actionDialog = new ActionDialog()
             {
-                DialogId = "TextPrompt",
-                DialogOptions = new PromptOptions()
+                Id = "GetNameDialog",
+                CallDialogId = "TextPrompt",
+                CallDialogOptions = new PromptOptions()
                 {
                     Prompt = new Activity(type: ActivityTypes.Message, text: "What is your name?"),
                     RetryPrompt = new Activity(type: ActivityTypes.Message, text: "What is your name?")
@@ -55,10 +56,11 @@ namespace Microsoft.Bot.Builder.ComposableDialogs.Tests
             dialog.AddDialog(actionDialog);
 
             // define GetAgeDialog
-            actionDialog = new ActionDialog("GetAgeDialog")
+            actionDialog = new ActionDialog()
             {
-                DialogId = "NumberPrompt",
-                DialogOptions = new PromptOptions()
+                Id = "GetAgeDialog",
+                CallDialogId = "NumberPrompt",
+                CallDialogOptions = new PromptOptions()
                 {
                     Prompt = new Activity(type: ActivityTypes.Message, text: "What is your age?"),
                     RetryPrompt = new Activity(type: ActivityTypes.Message, text: "What is your age?")
