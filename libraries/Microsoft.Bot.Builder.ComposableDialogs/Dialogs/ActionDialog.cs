@@ -8,10 +8,8 @@ namespace Microsoft.Bot.Builder.ComposableDialogs.Dialogs
     /// <summary>
     /// ActionDialog 
     /// </summary>
-    public class ActionDialog : ComponentDialog, IDialog
+    public class ActionDialog : Dialog, IDialog
     {
-        private const string PersistedOptions = "options";
-
         public ActionDialog(string dialogId = null) : base(dialogId)
         {
         }
@@ -35,7 +33,7 @@ namespace Microsoft.Bot.Builder.ComposableDialogs.Dialogs
         {
             var state = dialogContext.ActiveDialog.State;
             options = options ?? this.DialogOptions;
-            state[PersistedOptions] = options;
+            state[$"{this.Id}.options"] = options;
 
             // start the inner dialog
             var result = await dialogContext.BeginDialogAsync(this.DialogId, options, cancellationToken);
@@ -57,10 +55,9 @@ namespace Microsoft.Bot.Builder.ComposableDialogs.Dialogs
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dialogContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             var state = dialogContext.ActiveDialog.State;
+            dynamic options = state[$"{this.Id}.options"];
 
-            var options = state[PersistedOptions];
-
-            // restart the inner dialog
+            // start the inner dialog
             var result = await dialogContext.BeginDialogAsync(this.DialogId, options, cancellationToken);
             if (result.Status == DialogTurnStatus.Waiting)
             {
@@ -77,10 +74,12 @@ namespace Microsoft.Bot.Builder.ComposableDialogs.Dialogs
             return result;
         }
 
+
+
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dialogContext, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var state = dialogContext.ActiveDialog.State;
-            var options = state[PersistedOptions];
+            var options = state[$"{this.Id}.options"];
 
             switch (reason)
             {
@@ -92,21 +91,12 @@ namespace Microsoft.Bot.Builder.ComposableDialogs.Dialogs
                     }
                     return await dialogContext.EndDialogAsync(result, cancellationToken);
 
-                case DialogReason.BeginCalled:
-                    break;
-                case DialogReason.CancelCalled:
-                    break;
-                case DialogReason.ContinueCalled:
-                    break;
-                case DialogReason.NextCalled:
-                    break;
-                case DialogReason.ReplaceCalled:
+                default:
                     break;
             }
 
             // no routing, return the result as our result 
             return await dialogContext.EndDialogAsync(result, cancellationToken);
         }
-
     }
 }

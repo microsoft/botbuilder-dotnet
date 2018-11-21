@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.ComposableDialogs.Dialogs
         {
             var state = dialogContext.ActiveDialog.State;
             state["DialogTurnResult"] = result;
-            return dialogContext.ReplaceDialogAsync(DialogId, options, cancellationToken);
+            return dialogContext.ReplaceDialogAsync(DialogId, null, cancellationToken);
         }
     }
 }

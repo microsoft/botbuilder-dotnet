@@ -37,6 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             var emptyId = "";
             var textPrompt = new EventActivityPrompt(emptyId, _validator);
+            Assert.IsNotNull(textPrompt.Id);
         }
 
         [TestMethod]
@@ -46,6 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var nullId = "";
             nullId = null;
             var textPrompt = new EventActivityPrompt(nullId, _validator);
+            Assert.IsNull(textPrompt.Id);
         }
         
         [TestMethod]

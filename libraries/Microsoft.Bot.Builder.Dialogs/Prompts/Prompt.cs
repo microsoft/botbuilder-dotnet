@@ -23,8 +23,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private readonly PromptValidator<T> _validator;
 
-        public Prompt(string dialogId = null, PromptValidator<T> validator = null)
-            : base(dialogId)
+        public Prompt(string dialogId, PromptValidator<T> validator = null)
+            : base(string.IsNullOrEmpty(dialogId) ? throw new ArgumentNullException(nameof(dialogId)) : dialogId)
         {
             _validator = validator;
         }

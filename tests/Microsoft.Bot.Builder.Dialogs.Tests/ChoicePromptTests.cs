@@ -67,6 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             var emptyId = "";
             var choicePrompt = new ChoicePrompt(emptyId);
+            Assert.IsNotNull(choicePrompt.Id);
         }
 
         [TestMethod]
@@ -76,6 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var nullId = "";
             nullId = null;
             var choicePrompt = new ChoicePrompt(nullId);
+            Assert.AreEqual("ChoicePrompt", choicePrompt.Id);
         }
 
         [TestMethod]

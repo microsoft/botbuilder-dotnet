@@ -16,9 +16,7 @@ namespace Microsoft.Bot.Builder.ComposableDialogs.Dialogs
 
         public async Task<DialogTurnResult> Execute(DialogContext dialogContext, object options, DialogTurnResult result, CancellationToken cancellationToken)
         {
-            await dialogContext.ContinueDialogAsync(cancellationToken);
-
-            return result;
+            return await dialogContext.ContinueDialogAsync(cancellationToken);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     {
         public static readonly DialogTurnResult EndOfTurn = new DialogTurnResult(DialogTurnStatus.Waiting);
 
-        public Dialog(string dialogId=null)
+        public Dialog(string dialogId = null)
         {
             Id = dialogId;
         }
@@ -22,7 +22,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Unique id for the dialog
         /// </summary>
-        public string Id { get; set; }
+        private string _id;
+        public string Id { get { return String.IsNullOrEmpty(_id) ? throw new ArgumentNullException(nameof(Id)) : _id; } set { this._id = value; } }
 
         /// <summary>
         /// Method called when a new dialog has been pushed onto the stack and is being activated.

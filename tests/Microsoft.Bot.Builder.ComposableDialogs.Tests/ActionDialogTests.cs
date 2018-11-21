@@ -84,6 +84,7 @@ namespace Microsoft.Bot.Builder.ComposableDialogs.Tests
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
             var adapter = new TestAdapter()
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger()))
                 .Use(new AutoSaveStateMiddleware(convoState));
 
             var dialogs = new DialogSet(dialogState);
