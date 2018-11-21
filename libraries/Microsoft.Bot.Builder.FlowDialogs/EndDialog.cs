@@ -8,15 +8,15 @@ using Microsoft.Bot.Builder.Dialogs;
 namespace Microsoft.Bot.Builder.FlowDialogs
 {
     /// <summary>
-    /// Continue the current dialog 
+    /// end the current dialog 
     /// </summary>
-    public class ContinueDialog : IFlowAction
+    public class EndDialog : IFlowAction
     {
-        public ContinueDialog() { }
+        public EndDialog() { }
 
         public async Task<DialogTurnResult> Execute(DialogContext dialogContext, object options, DialogTurnResult result, CancellationToken cancellationToken)
         {
-            return await dialogContext.ContinueDialogAsync(cancellationToken);
+            return await dialogContext.EndDialogAsync(result.Result, cancellationToken);
         }
     }
 }
