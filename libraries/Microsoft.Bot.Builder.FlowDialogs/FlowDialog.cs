@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.FlowDialogs
         /// <summary>
         /// Action to perform when dialog is completed
         /// </summary>
-        public IFlowAction OnCompleted { get; set; }
+        public IFlowCommand OnCompleted { get; set; }
 
         /// <summary>
         /// When this dialog is started we start the inner dialog

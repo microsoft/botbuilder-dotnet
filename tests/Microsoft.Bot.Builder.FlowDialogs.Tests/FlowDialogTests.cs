@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.FormDialogs.Tests
                     Prompt = new Activity(type: ActivityTypes.Message, text: "What is your name?"),
                     RetryPrompt = new Activity(type: ActivityTypes.Message, text: "What is your name?")
                 },
-                OnCompleted = new FlowActionSet()
+                OnCompleted = new CommandSet()
                 {
                     Actions =
                     {
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.FormDialogs.Tests
                         new Switch()
                         {
                             Condition = new CSharpExpression() { Expression="State.Name.Length > 2" },
-                            Cases = new Dictionary<string, IFlowAction>
+                            Cases = new Dictionary<string, IFlowCommand>
                             {
                                 { "true", new CallDialog("GetAgeDialog")  },
                                 { "false", new ContinueDialog() }
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.FormDialogs.Tests
                     Prompt = new Activity(type: ActivityTypes.Message, text: "What is your age?"),
                     RetryPrompt = new Activity(type: ActivityTypes.Message, text: "What is your age?")
                 },
-                OnCompleted = new FlowActionSet()
+                OnCompleted = new CommandSet()
                 {
                     Actions = {
                         new SetVariable() { Name = "Age", Value = new CSharpExpression("State.DialogTurnResult.Result") },

@@ -7,10 +7,13 @@ using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.FlowDialogs
 {
-    public interface IFlowAction
+    /// <summary>
+    /// Defines a flow command 
+    /// </summary>
+    public interface IFlowCommand
     {
         /// <summary>
-        /// Execute an action 
+        /// Execute an commmand 
         /// </summary>
         /// <param name="context"></param>
         /// <returns>DialogTurnResult</returns>

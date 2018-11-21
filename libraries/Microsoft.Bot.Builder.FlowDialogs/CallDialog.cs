@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.FlowDialogs
     /// <summary>
     /// Replace the current Dialog with another dialog as an action
     /// </summary>
-    public class CallDialog : IFlowAction
+    public class CallDialog : IFlowCommand
     {
         public CallDialog() { }
 

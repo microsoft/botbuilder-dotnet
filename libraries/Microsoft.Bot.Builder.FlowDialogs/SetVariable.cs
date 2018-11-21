@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.FlowDialogs
     /// <summary>
     /// Set State variable as an action
     /// </summary>
-    public class SetVariable : IFlowAction
+    public class SetVariable : IFlowCommand
     {
         public SetVariable() { }
 

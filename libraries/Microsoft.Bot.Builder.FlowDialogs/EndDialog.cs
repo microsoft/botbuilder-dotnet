@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.FlowDialogs
     /// <summary>
     /// end the current dialog 
     /// </summary>
-    public class EndDialog : IFlowAction
+    public class EndDialog : IFlowCommand
     {
         public EndDialog() { }
 

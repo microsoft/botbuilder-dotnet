@@ -6,20 +6,20 @@ using Microsoft.Bot.Builder.Dialogs;
 namespace Microsoft.Bot.Builder.FlowDialogs
 {
     /// <summary>
-    /// Execute set of actions in sequence
+    /// Execute set of commands in sequence
     /// </summary>
     /// <remarks>
     /// The behavior of executing multiple actions that try to manipulate the DialogStack is not defined.  
     /// </remarks>
-    public class FlowActionSet : IFlowAction
+    public class CommandSet : IFlowCommand
     {
-        public FlowActionSet(List<IFlowAction> actions = null)
+        public CommandSet(List<IFlowCommand> actions = null)
         {
             if (actions != null)
                 this.Actions = actions;
         }
 
-        public List<IFlowAction> Actions { get; set; } = new List<IFlowAction>();
+        public List<IFlowCommand> Actions { get; set; } = new List<IFlowCommand>();
 
         public async Task<DialogTurnResult> Execute(DialogContext dialogContext, object options, DialogTurnResult result, CancellationToken cancellationToken)
         {

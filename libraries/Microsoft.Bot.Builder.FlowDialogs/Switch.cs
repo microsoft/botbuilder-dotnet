@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.FlowDialogs
     /// Evaluate expression and execute actions based on the result
     /// </summary>
     /// <typeparam name="ValueT"></typeparam>
-    public class Switch : IFlowAction
+    public class Switch : IFlowCommand
     {
         public Switch() { }
 
@@ -28,12 +28,12 @@ namespace Microsoft.Bot.Builder.FlowDialogs
         /// <summary>
         /// Cases to compare against result of condition expression
         /// </summary>
-        public Dictionary<string, IFlowAction> Cases { get; set; } = new Dictionary<string, IFlowAction>();
+        public Dictionary<string, IFlowCommand> Cases { get; set; } = new Dictionary<string, IFlowCommand>();
 
         /// <summary>
         /// Default action to take if no match
         /// </summary>
-        public IFlowAction DefaultAction { get; set; }
+        public IFlowCommand DefaultAction { get; set; }
 
         public async Task<DialogTurnResult> Execute(DialogContext dialogContext, object options, DialogTurnResult result, CancellationToken cancellationToken)
         {
