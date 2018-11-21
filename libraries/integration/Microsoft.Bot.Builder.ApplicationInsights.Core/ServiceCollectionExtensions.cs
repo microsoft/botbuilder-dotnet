@@ -30,17 +30,17 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
             return services.AddBotApplicationInsightsTelemetryClient(tc => tc.InstrumentationKey = instrumentationKey);
         }
 
-        public static IServiceCollection AddBotApplicationInsightsTelemetryClient(this IServiceCollection services, Action<TelemetryConfiguration> config = null)
+        public static IServiceCollection AddBotApplicationInsightsTelemetryClient(this IServiceCollection services, Action<TelemetryConfiguration> configure = null)
         {
-            var botFrameworkTelemetryClient = CreateTelemetryClient(config);
+            var applicationInsightsTelemetryClient = CreateApplicationInsightsTelemetryClient(configure);
 
-            services.AddSingleton<IBotTelemetryClient>(new BotTelemetryClient(botFrameworkTelemetryClient));
+            services.AddSingleton<IBotTelemetryClient>(new BotTelemetryClient(applicationInsightsTelemetryClient));
 
             // Add a post configure call back to hook up our middleware
             services.PostConfigure<BotFrameworkOptions>(options =>
             {
                 // Always add ourselves as the first piece of middleware to ensure we make our telemetry data available ASAP
-                options.Middleware.Insert(0, new BotActivityTelemetryMiddleware(botFrameworkTelemetryClient));
+                options.Middleware.Insert(0, new BotActivityTelemetryMiddleware(applicationInsightsTelemetryClient));
             });
 
             return services;
@@ -85,14 +85,14 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
             return services.AddBotApplicationInsightsTelemetryClient(tc => tc.InstrumentationKey = appInsightsService.InstrumentationKey);
         }
 
-        private static TelemetryClient CreateTelemetryClient(Action<TelemetryConfiguration> config)
+        private static TelemetryClient CreateApplicationInsightsTelemetryClient(Action<TelemetryConfiguration> configure)
         {
             var telemetryConfiguration = new TelemetryConfiguration();
 
             var telemetryInitializers = telemetryConfiguration.TelemetryInitializers;
             telemetryInitializers.Add(new OperationCorrelationTelemetryInitializer());
 
-            config?.Invoke(telemetryConfiguration);
+            configure?.Invoke(telemetryConfiguration);
 
             return new TelemetryClient(telemetryConfiguration);
         }
