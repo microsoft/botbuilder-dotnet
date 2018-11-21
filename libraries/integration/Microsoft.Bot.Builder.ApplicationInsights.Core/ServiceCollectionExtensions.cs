@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
             services.PostConfigure<BotFrameworkOptions>(options =>
             {
                 // Always add ourselves as the first piece of middleware to ensure we make our telemetry data available ASAP
-                options.Middleware.Insert(0, new ActivityTelemetryMiddleware(botFrameworkTelemetryClient));
+                options.Middleware.Insert(0, new BotActivityTelemetryMiddleware(botFrameworkTelemetryClient));
             });
 
             return services;
@@ -91,7 +91,6 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
 
             var telemetryInitializers = telemetryConfiguration.TelemetryInitializers;
             telemetryInitializers.Add(new OperationCorrelationTelemetryInitializer());
-            telemetryInitializers.Add(new BotActivityTelemetryInitializer());
 
             config?.Invoke(telemetryConfiguration);
 
