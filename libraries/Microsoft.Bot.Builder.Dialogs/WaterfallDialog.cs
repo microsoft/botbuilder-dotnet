@@ -103,18 +103,45 @@ namespace Microsoft.Bot.Builder.Dialogs
             return await RunStepAsync(dc, index + 1, reason, result, cancellationToken).ConfigureAwait(false);
         }
 
-        protected virtual async Task<DialogTurnResult> OnStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        /// <summary>
+        /// Called when the dialog is ending.
+        /// </summary>
+        /// <param name="turnContext">Context for the current turn of conversation.</param>
+        /// <param name="instance">The instance of the current dialog.</param>
+        /// <param name="reason">he reason the dialog is ending.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        public override Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
         {
-            // Log Waterfall Step event. Each event has a distinct name to hook up
-            // to the Application Insights funnel.
-            var stepName = _steps[stepContext.Index].Method.Name;
-
-            // Default stepname for lambdas
-            if (string.IsNullOrWhiteSpace(stepName) || stepName.Contains("<"))
+            if (reason == DialogReason.CancelCalled)
             {
-                stepName = $"Step{stepContext.Index + 1}of{_steps.Count}";
+                // Create step context
+                var index = Convert.ToInt32(instance.State[StepIndex]);
+                var stepName = WaterfallStepName(index);
+
+                var properties = new Dictionary<string, string>()
+                {
+                    { "DialogId", Id },
+                    { "StepName", stepName },
+                };
+                TelemetryClient.TrackEvent("WaterfallCancel", properties);
+            }
+            else if (reason == DialogReason.EndCalled)
+            {
+                var properties = new Dictionary<string, string>()
+                {
+                    { "DialogId", Id },
+                };
+                TelemetryClient.TrackEvent("WaterfallComplete", properties);
             }
 
+            return Task.CompletedTask;
+        }
+
+        protected virtual async Task<DialogTurnResult> OnStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var stepName = WaterfallStepName(stepContext.Index);
             var properties = new Dictionary<string, string>()
             {
                 { "DialogId", Id },
@@ -152,27 +179,20 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        public override Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
+        private string WaterfallStepName(int index)
         {
-            if (reason == DialogReason.CancelCalled)
+            // Log Waterfall Step event. Each event has a distinct name to hook up
+            // to the Application Insights funnel.
+            var stepName = _steps[index].Method.Name;
+
+            // Default stepname for lambdas
+            if (string.IsNullOrWhiteSpace(stepName) || stepName.Contains("<"))
             {
-                var properties = new Dictionary<string, string>()
-                {
-                    { "DialogId", Id.ToString() },
-                };
-                TelemetryClient.TrackEvent("WaterfallCancel", properties);
-            }
-            else if (reason == DialogReason.EndCalled)
-            {
-                var properties = new Dictionary<string, string>()
-                {
-                    { "DialogId", Id.ToString() },
-                };
-                TelemetryClient.TrackEvent("WaterfallComplete", properties);
+                stepName = $"Step{index + 1}of{_steps.Count}";
             }
 
-            // No-op by default
-            return Task.CompletedTask;
+            return stepName;
+
         }
     }
 }

@@ -45,9 +45,15 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
                     // Set the session id on the Application Insights telemetry item.
                     telemetry.Context.Session.Id = conversationId;
 
-                    // Set the activity id
-                    telemetry.Context.GlobalProperties.Add("activity_id", (string)body["id"]);
+                    // Set the activity id https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#id
+                    telemetry.Context.GlobalProperties.Add("activityId", (string)body["id"]);
+                    // Set the channel id https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#channel-id
+                    telemetry.Context.GlobalProperties.Add("channelId", (string)body["channelId "]);
+                    // Set the activity type https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#type
+                    telemetry.Context.GlobalProperties.Add("activityType", (string)body["type"]);
+
                 }
+
             }
         }
     }
