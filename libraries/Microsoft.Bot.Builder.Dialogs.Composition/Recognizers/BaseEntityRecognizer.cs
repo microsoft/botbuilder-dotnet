@@ -15,22 +15,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 
         protected abstract List<ModelResult> Recognize(string text, string culture);
 
-        public Task<IList<Entity>> RecognizeEntities(ITurnContext turnContext, IList<Entity> entities)
+        public Task<IList<Entity>> RecognizeEntities(ITurnContext turnContext, IEnumerable<Entity> entities)
         {
             List<Entity> newEntities = new List<Entity>();
             if (turnContext.Activity.Type == ActivityTypes.Message)
             {
                 var culture = Culture.MapToNearestLanguage(turnContext.Activity.Locale);
 
-                // if there are no entities, then look at activity.Text
-                if (entities.Any() == false)
+                // look for text entities to recognize 
+                foreach(var entity in entities.Where(e => e.Type == TextEntity.TypeName).Select(e => e as TextEntity ?? e.GetAs<TextEntity>()))
                 {
-                    var results = Recognize(turnContext.Activity.Text, culture);
-                    foreach (var number in results)
+                    var results = Recognize(entity.Text, culture);
+                    foreach (var result in results)
                     {
-                        Entity newEntity = new Entity();
-                        newEntity.SetAs(number);
-                        newEntity.Type = number.TypeName;
+                        var newEntity = new Entity();
+                        newEntity.SetAs(result);
+                        newEntity.Type = result.TypeName;
                         newEntities.Add(newEntity);
                     }
                 }

@@ -12,6 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Slots
 
         public TimeSpan MinValue { get; set; } = TimeSpan.MinValue;
         public TimeSpan MaxValue { get; set; } = TimeSpan.MaxValue;
+        // public Timex Resolution { get; set; } 
 
         public string TooSmallText { get; set; } = "The value DATE($.newValue, r) is smaller then the minimum value of DATE(slot.MinValue).";
         public string TooLargeText { get; set; } = "The value DATE($.newValue, r) is larger then the minimum value of DATE(slot.MaxValue).";

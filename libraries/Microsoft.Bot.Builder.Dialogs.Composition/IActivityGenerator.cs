@@ -13,6 +13,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
         /// ActivityGenerator
         /// </summary>
         /// <remarks>Generate an activity for templateId, locale</remarks>
-        Task<Activity> GenerateActivity(ITurnContext context, string templateId, params object[] args);
+        Task<Activity> GenerateActivity(ITurnContext context, string templateId, object args);
     }
 }
