@@ -107,12 +107,20 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             // Log Waterfall Step event. Each event has a distinct name to hook up
             // to the Application Insights funnel.
-            var eventName = $"{Id}.Step{stepContext.Index + 1}of{_steps.Count}";
+            var stepName = _steps[stepContext.Index].Method.Name;
+
+            // Default stepname for lambdas
+            if (string.IsNullOrWhiteSpace(stepName) || stepName.Contains("<"))
+            {
+                stepName = $"Step{stepContext.Index + 1}of{_steps.Count}";
+            }
+
             var properties = new Dictionary<string, string>()
             {
-                { "DialogId", Id.ToString() },
+                { "DialogId", Id },
+                { "StepName", stepName },
             };
-            Logger.TrackEvent(eventName, properties);
+            TelemetryClient.TrackEvent("WaterfallStep", properties);
             return await _steps[stepContext.Index](stepContext, cancellationToken).ConfigureAwait(false);
         }
 
@@ -152,7 +160,15 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     { "DialogId", Id.ToString() },
                 };
-                Logger.TrackEvent("WaterfallCancel", properties);
+                TelemetryClient.TrackEvent("WaterfallCancel", properties);
+            }
+            else if (reason == DialogReason.EndCalled)
+            {
+                var properties = new Dictionary<string, string>()
+                {
+                    { "DialogId", Id.ToString() },
+                };
+                TelemetryClient.TrackEvent("WaterfallComplete", properties);
             }
 
             // No-op by default

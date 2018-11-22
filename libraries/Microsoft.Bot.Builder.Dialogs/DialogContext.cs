@@ -152,20 +152,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Pop active dialog off the stack
             if (Stack.Any())
             {
-                // Log WaterfallConvert event.
-                var dialogId = Stack.ElementAt(0).Id;
+                var dialogId = Stack[0].Id;
                 var dialog = Dialogs.Find(dialogId);
-                var dialogType = dialog.GetType();
-                if (dialogType == typeof(WaterfallDialog) || dialogType.IsSubclassOf(typeof(WaterfallDialog)))
-                {
-                    var properties = new Dictionary<string, string>()
-                    {
-                        { "DialogId", dialogId },
-                        { "DialogType", dialog.GetType().Name },
-                    };
-                    dialog.Logger.TrackEvent("WaterfallConvert", properties);
-                }
-
+                await dialog.EndDialogAsync(this.Context, Stack[0], DialogReason.EndCalled).ConfigureAwait(false);
                 Stack.RemoveAt(0);
             }
 

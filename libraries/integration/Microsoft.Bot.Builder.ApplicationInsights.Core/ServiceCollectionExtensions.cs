@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
             // Enables Bot Telemetry to save user/session id's as the bot user id and session
             services.AddMemoryCache();
             services.AddTransient<TelemetrySaveBodyASPMiddleware>();
-            services.AddSingleton<ITelemetryInitializer>(new OperationCorrelationTelemetryInitializer());
+            services.AddSingleton<ITelemetryInitializer, OperationCorrelationTelemetryInitializer>();
             services.AddSingleton<ITelemetryInitializer, TelemetryBotIdInitializer>();
             services.AddSingleton<IBotTelemetryClient, BotTelemetryClient>();
             return services;
