@@ -23,12 +23,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
         /// Implement RecognizeEntities by iterating against the Recognizer pool.
         /// </summary>
         /// <param name="turnContext"></param>
-        /// <param name="entities"></param>
+        /// <param name="entities">if no entities are passed in, it will generate a TextEntity for turnContext.Activity.Text and then generate entities off of that</param>
         /// <returns></returns>
-        public async Task<IList<Entity>> RecognizeEntities(ITurnContext turnContext, IList<Entity> entities = null)
+        public async Task<IList<Entity>> RecognizeEntities(ITurnContext turnContext, IEnumerable<Entity> entities = null)
         {
             List<Entity> allNewEntities = new List<Entity>();
             List<Entity> entitiesToProcess = new List<Entity>(entities ?? Array.Empty<Entity>());
+
+            if (entitiesToProcess.Count == 0)
+            {
+                var textEntity = new TextEntity(turnContext.Activity.Text);
+                allNewEntities.Add(textEntity);
+                entitiesToProcess.Add(textEntity);
+            }
 
             do
             {

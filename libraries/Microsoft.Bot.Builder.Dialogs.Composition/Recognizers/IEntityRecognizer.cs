@@ -16,6 +16,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
         /// <param name="turnContext"></param>
         /// <param name="entities"></param>
         /// <returns>returns collection of new entities (thus triggering further evaluation)</returns>
-        Task<IList<Entity>> RecognizeEntities(ITurnContext turnContext, IList<Entity> entities);
+        Task<IList<Entity>> RecognizeEntities(ITurnContext turnContext, IEnumerable<Entity> entities);
     }
 }
