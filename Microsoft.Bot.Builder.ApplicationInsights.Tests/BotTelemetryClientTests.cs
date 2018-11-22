@@ -3,76 +3,138 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
 using System.Collections.Generic;
 using System;
+using Microsoft.ApplicationInsights.Extensibility;
+using Moq;
+using Microsoft.ApplicationInsights.Channel;
 
 namespace Microsoft.Bot.Builder.ApplicationInsights.Tests
 {
-    [TestClass]
     public class BotTelemetryClientTests
     {
-
-        [TestMethod]
-        public void Construct()
+        [TestClass]
+        public class ConstructorTests
         {
-            var telemetryClient = new TelemetryClient();
-            var client = new BotTelemetryClient(telemetryClient);
-            Assert.IsNotNull(client);
+            [TestMethod]
+            public void NullTelemetryClientThrows()
+            {
+                try
+                {
+                    new BotTelemetryClient(null);
 
-        }
-        
-        [TestMethod]
-        public void TrackAvailabilityTest()
-        {
-            // Just invoke underlying TelemetryClient.  Not configured, just tests if it can be invoked.
-            // Class is sealed, so nothing to mock here.
-            var telemetryClient = new TelemetryClient();
-            var client = new BotTelemetryClient(telemetryClient);
+                    Assert.Fail("Expected an exception to be thrown.");
+                }
+                catch (ArgumentNullException exception)
+                {
+                    Assert.AreEqual<string>("telemetryClient", exception.ParamName);
+                }
+            }
 
-            client.TrackAvailability("test", DateTimeOffset.Now, new TimeSpan(1000), "run location", true,
-                "message", new Dictionary<string, string>() { { "hello", "value" } }, new Dictionary<string, double>() { { "metric", 0.6 } });
-        }
+            [TestMethod]
+            public void NonNullTelemtryClientSucceeds()
+            {
+                var telemetryClient = new TelemetryClient();
 
-
-        [TestMethod]
-        public void TrackEventTest()
-        {
-            // Just invoke underlying TelemetryClient.  Not configured, just tests if it can be invoked.
-            // Class is sealed, so nothing to mock here.
-            var telemetryClient = new TelemetryClient();
-            var client = new BotTelemetryClient(telemetryClient);
-
-            client.TrackEvent("test", new Dictionary<string, string>() { { "hello", "value" } }, new Dictionary<string, double>() { { "metric", 0.6 } });
+                var botTelemetryClient = new BotTelemetryClient(telemetryClient);
+            }
         }
 
-        [TestMethod]
-        public void TrackDependencyTest()
+        [TestClass]
+        public class TrackTelemetryTests
         {
-            // Just invoke underlying TelemetryClient.  Not configured, just tests if it can be invoked.
-            // Class is sealed, so nothing to mock here.
-            var telemetryClient = new TelemetryClient();
-            var client = new BotTelemetryClient(telemetryClient);
-            client.TrackDependency("test", "target", "dependencyname", "data", DateTimeOffset.Now, new TimeSpan(10000), "result", false );
-        }
+            private BotTelemetryClient _botTelemetryClient;
+            private Mock<ITelemetryChannel> _mockTelemetryChannel;
 
-        [TestMethod]
-        public void TrackExceptionTest()
-        {
-            // Just invoke underlying TelemetryClient.  Not configured, just tests if it can be invoked.
-            // Class is sealed, so nothing to mock here.
-            var telemetryClient = new TelemetryClient();
-            var client = new BotTelemetryClient(telemetryClient);
-            client.TrackException(new Exception(), new Dictionary<string, string>() { { "foo", "bar" } }, new Dictionary<string, double>() { { "metric", 0.6 } });
-        }
+            [TestInitialize]
+            public void TestInitialize()
+            {
+                _mockTelemetryChannel = new Mock<ITelemetryChannel>();
 
-        [TestMethod]
-        public void TrackTraceTest()
-        {
-            // Just invoke underlying TelemetryClient.  Not configured, just tests if it can be invoked.
-            // Class is sealed, so nothing to mock here.
-            var telemetryClient = new TelemetryClient();
-            var client = new BotTelemetryClient(telemetryClient);
-            client.TrackTrace("hello", Severity.Critical, new Dictionary<string, string>() { { "foo", "bar" } });
+                var telemetryConfiguration = new TelemetryConfiguration("UNITTEST-INSTRUMENTATION-KEY", _mockTelemetryChannel.Object);
+                var telemetryClient = new TelemetryClient(telemetryConfiguration);
+
+                _botTelemetryClient = new BotTelemetryClient(telemetryClient);
+            }
+
+            [TestMethod]
+            public void TrackAvailabilityTest()
+            {
+                _botTelemetryClient.TrackAvailability("test", DateTimeOffset.Now, new TimeSpan(1000), "run location", true,
+                    "message", new Dictionary<string, string>() { { "hello", "value" } }, new Dictionary<string, double>() { { "metric", 0.6 } });
+
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<AvailabilityTelemetry>(t =>
+                    t.Name == "test"
+                        &&
+                    t.Message == "message"
+                        &&
+                    t.Properties["hello"] == "value"
+                        &&
+                    t.Metrics["metric"] == 0.6)));
+            }
+
+
+            [TestMethod]
+            public void TrackEventTest()
+            {
+                _botTelemetryClient.TrackEvent("test", new Dictionary<string, string>() { { "hello", "value" } }, new Dictionary<string, double>() { { "metric", 0.6 } });
+
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<EventTelemetry>(t =>
+                    t.Name == "test"
+                        &&
+                    t.Properties["hello"] == "value"
+                        &&
+                    t.Metrics["metric"] == 0.6
+                )));
+            }
+
+            [TestMethod]
+            public void TrackDependencyTest()
+            {
+                _botTelemetryClient.TrackDependency("test", "target", "dependencyname", "data", DateTimeOffset.Now, new TimeSpan(10000), "result", false);
+
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<DependencyTelemetry>(t =>
+                    t.DependencyTypeName == "test"
+                        &&
+                    t.Target == "target"
+                        &&
+                    t.Name == "dependencyname"
+                        &&
+                    t.Data == "data"
+                        &&
+                    t.ResultCode == "result"
+                        &&
+                    t.Success == false)));
+            }
+
+            [TestMethod]
+            public void TrackExceptionTest()
+            {
+                var expectedException = new Exception("test-exception");
+
+                _botTelemetryClient.TrackException(expectedException, new Dictionary<string, string>() { { "foo", "bar" } }, new Dictionary<string, double>() { { "metric", 0.6 } });
+
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<ExceptionTelemetry>(t =>
+                    t.Exception == expectedException
+                        &&
+                    t.Properties["foo"] == "bar"
+                        &&
+                    t.Metrics["metric"] == 0.6)));
+            }
+
+            [TestMethod]
+            public void TrackTraceTest()
+            {
+                _botTelemetryClient.TrackTrace("hello", Severity.Critical, new Dictionary<string, string>() { { "foo", "bar" } });
+
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<TraceTelemetry>(t =>
+                    t.Message == "hello"
+                        &&
+                    t.SeverityLevel == SeverityLevel.Critical
+                        &&
+                    t.Properties["foo"] == "bar")));
+            }
         }
     }
 }

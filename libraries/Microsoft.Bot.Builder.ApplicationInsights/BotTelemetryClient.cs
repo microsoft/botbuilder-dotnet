@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights
 
         public BotTelemetryClient(TelemetryClient telemetryClient)
         {
-            _telemetryClient = telemetryClient;
+            _telemetryClient = telemetryClient ?? throw new ArgumentNullException(nameof(telemetryClient));
         }
 
         /// <summary>
