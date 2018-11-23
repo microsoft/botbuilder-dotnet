@@ -6,7 +6,6 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -21,28 +20,26 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
             _next = next ?? throw new ArgumentNullException(nameof(next));
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext httpContext)
         {
-            if (context.Request.Method == "POST")
-            {
-                var memoryCache = context.RequestServices.GetService(typeof(IMemoryCache)) as IMemoryCache;
+            var request = httpContext?.Request;
 
-                if (memoryCache != null)
+
+            if (request != null && request.Method == "POST")
+            {
+                var items = httpContext?.Items;
+                if (items != null && !items.ContainsKey(TelemetryBotIdInitializer.BotActivityKey))
                 {
-                    context.Request.EnableBuffering();
+                    request.EnableBuffering();
                     try
                     {
-                        using (var reader = new StreamReader(context.Request.Body, Encoding.UTF8, true, 1024, true))
+                        using (var reader = new StreamReader(request.Body, Encoding.UTF8, true, 1024, true))
                         {
-                            // Set cache options.
-                            var cacheEntryOptions = new MemoryCacheEntryOptions()
-                                .SetSlidingExpiration(TimeSpan.FromSeconds(3)); // Keep in cache for this time, reset time if accessed.
-
                             var body = reader.ReadToEnd();
                             var jsonObject = JObject.Parse(body);
 
                             // Save data in cache.
-                            memoryCache.Set(context.TraceIdentifier, jsonObject, cacheEntryOptions);
+                            items.Add(TelemetryBotIdInitializer.BotActivityKey, jsonObject);
                         }
                     }
                     catch (JsonReaderException)
@@ -52,12 +49,12 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
                     finally
                     {
                         // rewind for next middleware.
-                        context.Request.Body.Position = 0;
+                        request.Body.Position = 0;
                     }
                 }
             }
 
-            await _next(context);
+            await _next(httpContext);
         }
     }
 }

@@ -6,7 +6,6 @@ using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.ApplicationInsights.Core
@@ -16,44 +15,51 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
     /// </summary>
     public class TelemetryBotIdInitializer : ITelemetryInitializer
     {
-        private readonly IMemoryCache _memoryCache;
+        public static readonly string BotActivityKey = "BotActivity";
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public TelemetryBotIdInitializer(IHttpContextAccessor httpContextAccessor, IMemoryCache memoryCache)
+        public TelemetryBotIdInitializer(IHttpContextAccessor httpContextAccessor)
         {
-            _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
             _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         }
 
         public void Initialize(ITelemetry telemetry)
         {
-            var context = _httpContextAccessor.HttpContext;
-            if (context != null && (telemetry is RequestTelemetry || telemetry is EventTelemetry))
+            if (telemetry == null)
             {
-                // can't read from the request body at this point, as the
-                // request stream has already been disposed.
-                var body = _memoryCache.Get(context.TraceIdentifier) as JObject;
-                if (body != null)
+                return;
+            }
+
+            var httpContext = _httpContextAccessor.HttpContext;
+            var items = httpContext?.Items;
+
+            if (items != null)
+            {
+                if ((telemetry is RequestTelemetry || telemetry is EventTelemetry) && items.ContainsKey(BotActivityKey))
                 {
-                    var userId = (string)body["from"]?["id"];
-                    var channelId = (string)body["channelId"];
-                    var conversationId = (string)body["conversation"]?["id"];
+                    var body = items[BotActivityKey] as JObject;
+                    if (body != null)
+                    {
+                        var userId = (string)body["from"]?["id"];
+                        var channelId = (string)body["channelId"];
+                        var conversationId = (string)body["conversation"]?["id"];
 
-                    // Set the user id on the Application Insights telemetry item.
-                    telemetry.Context.User.Id = channelId + userId;
+                        // Set the user id on the Application Insights telemetry item.
+                        telemetry.Context.User.Id = channelId + userId;
 
-                    // Set the session id on the Application Insights telemetry item.
-                    telemetry.Context.Session.Id = conversationId;
+                        // Set the session id on the Application Insights telemetry item.
+                        telemetry.Context.Session.Id = conversationId;
 
-                    // Set the activity id https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#id
-                    telemetry.Context.GlobalProperties.Add("activityId", (string)body["id"]);
-                    // Set the channel id https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#channel-id
-                    telemetry.Context.GlobalProperties.Add("channelId", (string)body["channelId "]);
-                    // Set the activity type https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#type
-                    telemetry.Context.GlobalProperties.Add("activityType", (string)body["type"]);
+                        // Set the activity id https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#id
+                        telemetry.Context.GlobalProperties.Add("activityId", (string)body["id"]);
 
+                        // Set the channel id https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#channel-id
+                        telemetry.Context.GlobalProperties.Add("channelId", (string)body["channelId "]);
+
+                        // Set the activity type https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#type
+                        telemetry.Context.GlobalProperties.Add("activityType", (string)body["type"]);
+                    }
                 }
-
             }
         }
     }

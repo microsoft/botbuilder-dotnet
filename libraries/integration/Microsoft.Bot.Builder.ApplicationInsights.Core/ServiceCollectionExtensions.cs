@@ -5,11 +5,7 @@ using System;
 using System.Linq;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Bot.Configuration;
-using Microsoft.Bot.Builder.ApplicationInsights;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.ApplicationInsights.AspNetCore.Extensions;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Bot.Builder.ApplicationInsights.Core
 {
@@ -36,7 +32,6 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
             }
 
             // Enables Bot Telemetry to save user/session id's as the bot user id and session
-            services.AddMemoryCache();
             services.AddTransient<TelemetrySaveBodyASPMiddleware>();
             services.AddSingleton<ITelemetryInitializer, OperationCorrelationTelemetryInitializer>();
             services.AddSingleton<ITelemetryInitializer, TelemetryBotIdInitializer>();
