@@ -6,6 +6,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
     public class ChoiceFactoryOptions
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="ChoiceFactoryOptions"/> class.
+        /// </summary>
+        public ChoiceFactoryOptions()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChoiceFactoryOptions"/> class.
+        /// Refer to the code in teh ConfirmPrompt for an example of usage.
+        /// </summary>
+        /// <param name="inlineSeparator">The inline seperator value.</param>
+        /// <param name="inlineOr">The inline or value.</param>
+        /// <param name="inlineOrMore">The inline or more value.</param>
+        /// <param name="includeNumbers">Flag indicating whether to include numbers as a choice.</param>
+        public ChoiceFactoryOptions(string inlineSeparator, string inlineOr, string inlineOrMore, bool? includeNumbers)
+        {
+            InlineSeparator = inlineSeparator;
+            InlineOr = inlineOr;
+            InlineOrMore = inlineOrMore;
+            IncludeNumbers = includeNumbers;
+        }
+
+        /// <summary>
         /// Gets or sets the character used to separate individual choices when there are more than 2 choices.
         /// The default value is `", "`. This is optional.
         /// </summary>
