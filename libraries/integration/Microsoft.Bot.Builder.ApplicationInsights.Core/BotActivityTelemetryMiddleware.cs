@@ -5,14 +5,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.ApplicationInsights.Core
 {
     public sealed class BotActivityTelemetryMiddleware : IMiddleware
     {
-        private static readonly AsyncLocal<Activity> ActivityAsyncLocal = new AsyncLocal<Activity>();
-
         private readonly TelemetryClient _telemetryClient;
 
         public BotActivityTelemetryMiddleware(TelemetryClient telemetryClient)
@@ -29,20 +26,22 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
             var requestTelemetry = new RequestTelemetry
             {
                 Id = activity.Id,
-                Name = "Bot Turn",
+                Name = "Bot Turn"
             };
+
+            requestTelemetry.Start();
 
             var telemetryContext = requestTelemetry.Context;
 
             telemetryContext.User.Id = activity.From.Id;
             telemetryContext.Session.Id = activity.Conversation.Id;
 
-            requestTelemetry.Properties.Add("BotFramework.Activity.ChannelId", activity.ChannelId);
-            requestTelemetry.Properties.Add("BotFramework.Activity.Type", activity.Type);
+            var telemetryProperties = requestTelemetry.Properties;
+            telemetryProperties.Add("BotFramework.Activity.ChannelId", activity.ChannelId);
+            telemetryProperties.Add("BotFramework.Activity.Type", activity.Type);
 
             // TODO: anything else we want to enrich with?
 
-            requestTelemetry.Start();
 
             try
             {
@@ -59,9 +58,10 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
 
             void TrackTelemetry(bool success)
             {
-                requestTelemetry.Stop();
-
+                requestTelemetry.Success = success;
                 requestTelemetry.Metrics.Add("BotFramework.Responded", turnContext.Responded ? 1 : 0);
+
+                requestTelemetry.Stop();
 
                 _telemetryClient.Track(requestTelemetry);
             }
