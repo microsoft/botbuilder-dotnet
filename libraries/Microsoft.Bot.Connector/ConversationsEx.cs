@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System.Threading;
@@ -37,8 +37,11 @@ namespace Microsoft.Bot.Connector
         public static async Task<ConversationResourceResponse> CreateDirectConversationAsync(this IConversations operations, ChannelAccount bot, ChannelAccount user, Activity activity = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var _result = await operations.CreateConversationWithHttpMessagesAsync(GetDirectParameters(bot, user, activity), null, cancellationToken).ConfigureAwait(false);
-            var res = _result.Body; 
-            MicrosoftAppCredentials.TrustServiceUrl(res.ServiceUrl);
+            var res = _result.Body;
+            if (res.ServiceUrl != null)
+            {
+                MicrosoftAppCredentials.TrustServiceUrl(res.ServiceUrl);
+            }
             return res;
         }
 
@@ -66,7 +69,10 @@ namespace Microsoft.Bot.Connector
         {
             var _result = await operations.CreateConversationWithHttpMessagesAsync(GetDirectParameters(botAddress, userAddress, activity), null, cancellationToken).ConfigureAwait(false);
             var res = _result.Body;
-            MicrosoftAppCredentials.TrustServiceUrl(res.ServiceUrl);
+            if (res.ServiceUrl != null)
+            {
+                MicrosoftAppCredentials.TrustServiceUrl(res.ServiceUrl);
+            }
             return res;
         }
 
