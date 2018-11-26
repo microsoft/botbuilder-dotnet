@@ -17,6 +17,8 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.WebApi
     /// </summary>
     public class TelemetryBotIdInitializer : ITelemetryInitializer
     {
+        public static readonly string BotActivityKey = "BotActivity";
+
         public void Initialize(ITelemetry telemetry)
         {
             if (telemetry == null)
@@ -34,14 +36,25 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.WebApi
                     CacheBody();
                 }
 
-                if ((telemetry is RequestTelemetry || telemetry is EventTelemetry) && HttpContext.Current.Items.Contains("BotActivity"))
+                if ((telemetry is RequestTelemetry || telemetry is EventTelemetry) && HttpContext.Current.Items.Contains(BotActivityKey))
                 {
-                    var body = items["BotActivity"] as JObject;
-                    if (body != null)
+                    if (items[BotActivityKey] is JObject body)
                     {
-                        var userId = (string)body["from"]?["id"];
+                        var userId = string.Empty;
+                        var from = body["from"];
+                        if (!string.IsNullOrWhiteSpace(from.ToString()))
+                        {
+                            userId = (string)from["id"];
+                        }
+
                         var channelId = (string)body["channelId"];
-                        var conversationId = (string)body["conversation"]?["id"];
+
+                        var conversationId = string.Empty;
+                        var conversation = body["conversation"];
+                        if (!string.IsNullOrWhiteSpace(conversation.ToString()))
+                        {
+                            conversationId = (string)conversation["id"];
+                        }
 
                         // Set the user id on the Application Insights telemetry item.
                         telemetry.Context.User.Id = channelId + userId;
@@ -51,8 +64,10 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.WebApi
 
                         // Set the activity id https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#id
                         telemetry.Context.GlobalProperties.Add("activityId", (string)body["id"]);
+
                         // Set the channel id https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#channel-id
                         telemetry.Context.GlobalProperties.Add("channelId", (string)body["channelId "]);
+
                         // Set the activity type https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#type
                         telemetry.Context.GlobalProperties.Add("activityType", (string)body["type"]);
                     }
@@ -76,7 +91,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.WebApi
                         // Set cache options.
                         var bodyAsString = reader.ReadToEnd();
                         body = JObject.Parse(bodyAsString);
-                        httpContext.Items["BotActivity"] = body;
+                        httpContext.Items[BotActivityKey] = body;
                     }
                 }
                 catch (JsonReaderException)

@@ -37,12 +37,22 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
             {
                 if ((telemetry is RequestTelemetry || telemetry is EventTelemetry) && items.ContainsKey(BotActivityKey))
                 {
-                    var body = items[BotActivityKey] as JObject;
-                    if (body != null)
+                    if (items[BotActivityKey] is JObject body)
                     {
-                        var userId = (string)body["from"]?["id"];
+                        var userId = string.Empty;
+                        var from = body["from"];
+                        if (!string.IsNullOrWhiteSpace(from.ToString()))
+                        {
+                            userId = (string)from["id"];
+                        }
                         var channelId = (string)body["channelId"];
-                        var conversationId = (string)body["conversation"]?["id"];
+
+                        var conversationId = string.Empty;
+                        var conversation = body["conversation"];
+                        if (!string.IsNullOrWhiteSpace(conversation.ToString()))
+                        {
+                            conversationId = (string)conversation["id"];
+                        }
 
                         // Set the user id on the Application Insights telemetry item.
                         telemetry.Context.User.Id = channelId + userId;

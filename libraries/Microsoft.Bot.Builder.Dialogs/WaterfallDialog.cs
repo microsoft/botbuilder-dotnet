@@ -192,7 +192,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return stepName;
-
         }
     }
 }
