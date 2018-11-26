@@ -108,7 +108,6 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
             Assert.IsTrue(telem != null);
             Assert.IsTrue(telem.Properties["activityId"] == activityID);
             Assert.IsTrue(telem.Properties["activityType"] == "message");
-            //Assert.IsTrue(telem.Context.Session.Id == conversationID);
             Assert.IsTrue(telem.Context.User.Id == channelID + fromID);
             Assert.IsTrue(telem.Properties["hello"] == "value");
             Assert.IsTrue(telem.Metrics["metric"] == 0.6);

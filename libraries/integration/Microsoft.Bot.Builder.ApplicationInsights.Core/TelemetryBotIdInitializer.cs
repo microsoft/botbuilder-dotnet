@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
     /// </summary>
     public class TelemetryBotIdInitializer : ITelemetryInitializer
     {
-        public static readonly string BotActivityKey = "BotActivity";
+        public static readonly string BotActivityKey = "BotBuilderActivity";
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public TelemetryBotIdInitializer(IHttpContextAccessor httpContextAccessor)

@@ -17,26 +17,18 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.WebApi
     /// </summary>
     public class TelemetryBotIdInitializer : ITelemetryInitializer
     {
-        public static readonly string BotActivityKey = "BotActivity";
+        public static readonly string BotActivityKey = "BotBuilderActivity";
 
         public void Initialize(ITelemetry telemetry)
         {
-            if (telemetry == null)
-            {
-                return;
-            }
-
             var httpContext = HttpContext.Current;
             var items = httpContext?.Items;
 
             if (items != null)
             {
-                if (!HttpContext.Current.Items.Contains("BotActivity"))
-                {
-                    CacheBody();
-                }
+                CacheBody();
 
-                if ((telemetry is RequestTelemetry || telemetry is EventTelemetry) && HttpContext.Current.Items.Contains(BotActivityKey))
+                if (telemetry is RequestTelemetry || telemetry is EventTelemetry)
                 {
                     if (items[BotActivityKey] is JObject body)
                     {
@@ -82,7 +74,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.WebApi
         {
             var httpContext = HttpContext.Current;
             var request = httpContext.Request;
-            if (request.HttpMethod == "POST")
+            if (request.HttpMethod == "POST" && request.ContentType == "application/json")
             {
                 JObject body = null;
 
