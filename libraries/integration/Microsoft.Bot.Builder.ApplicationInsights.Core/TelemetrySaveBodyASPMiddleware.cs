@@ -22,35 +22,31 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
 
         public async Task Invoke(HttpContext httpContext)
         {
-            var request = httpContext?.Request;
+            var request = httpContext.Request;
 
-
-            if (request != null && request.Method == "POST")
+            if (request.Method == "POST" && request.ContentType == "application/json")
             {
-                var items = httpContext?.Items;
-                if (items != null && !items.ContainsKey(TelemetryBotIdInitializer.BotActivityKey))
+                var items = httpContext.Items;
+                request.EnableBuffering();
+                try
                 {
-                    request.EnableBuffering();
-                    try
+                    using (var reader = new StreamReader(request.Body, Encoding.UTF8, true, 4096, true))
                     {
-                        using (var reader = new StreamReader(request.Body, Encoding.UTF8, true, 1024, true))
-                        {
-                            var body = reader.ReadToEnd();
-                            var jsonObject = JObject.Parse(body);
+                        var body = await reader.ReadToEndAsync();
+                        var jsonObject = JObject.Parse(body);
 
-                            // Save data in cache.
-                            items.Add(TelemetryBotIdInitializer.BotActivityKey, jsonObject);
-                        }
+                        // Save data in cache.
+                        items.Add(TelemetryBotIdInitializer.BotActivityKey, jsonObject);
                     }
-                    catch (JsonReaderException)
-                    {
-                        // Request not json.
-                    }
-                    finally
-                    {
-                        // rewind for next middleware.
-                        request.Body.Position = 0;
-                    }
+                }
+                catch (JsonReaderException)
+                {
+                    // Request not json.
+                }
+                finally
+                {
+                    // rewind for next middleware.
+                    request.Body.Position = 0;
                 }
             }
 

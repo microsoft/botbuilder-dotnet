@@ -55,21 +55,24 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.WebApi
                         {
                             conversationId = (string)conversation["id"];
                         }
+                        var context = telemetry.Context;
 
                         // Set the user id on the Application Insights telemetry item.
-                        telemetry.Context.User.Id = channelId + userId;
+                        context.User.Id = channelId + userId;
 
                         // Set the session id on the Application Insights telemetry item.
-                        telemetry.Context.Session.Id = conversationId;
+                        context.Session.Id = conversationId;
+
+                        var telemetryProperties = ((ISupportProperties)telemetry).Properties;
 
                         // Set the activity id https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#id
-                        telemetry.Context.GlobalProperties.Add("activityId", (string)body["id"]);
+                        telemetryProperties.Add("activityId", (string)body["id"]);
 
                         // Set the channel id https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#channel-id
-                        telemetry.Context.GlobalProperties.Add("channelId", (string)body["channelId "]);
+                        telemetryProperties.Add("channelId", (string)body["channelId "]);
 
                         // Set the activity type https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#type
-                        telemetry.Context.GlobalProperties.Add("activityType", (string)body["type"]);
+                        telemetryProperties.Add("activityType", (string)body["type"]);
                     }
                 }
             }
@@ -78,8 +81,8 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.WebApi
         private void CacheBody()
         {
             var httpContext = HttpContext.Current;
-            var request = httpContext?.Request;
-            if (request != null && request.HttpMethod == "POST")
+            var request = httpContext.Request;
+            if (request.HttpMethod == "POST")
             {
                 JObject body = null;
 

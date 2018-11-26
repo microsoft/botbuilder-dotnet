@@ -59,8 +59,8 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
             Assert.IsTrue(sentItems.Count == 1);
             var telem = sentItems[0] as EventTelemetry;
             Assert.IsTrue(telem != null);
-            Assert.IsTrue(telem.Context.GlobalProperties["activityId"] == activityID);
-            Assert.IsTrue(telem.Context.GlobalProperties["activityType"] == "message");
+            Assert.IsTrue(telem.Properties["activityId"] == activityID);
+            Assert.IsTrue(telem.Properties["activityType"] == "message");
             Assert.IsTrue(telem.Context.Session.Id == conversationID);
             Assert.IsTrue(telem.Context.User.Id == channelID + fromID);
             Assert.IsTrue(telem.Properties["hello"] == "value");
@@ -104,8 +104,8 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
             Assert.IsTrue(sentItems.Count == 1);
             var telem = sentItems[0] as EventTelemetry;
             Assert.IsTrue(telem != null);
-            Assert.IsTrue(telem.Context.GlobalProperties["activityId"] == activityID);
-            Assert.IsTrue(telem.Context.GlobalProperties["activityType"] == "message");
+            Assert.IsTrue(telem.Context.Properties["activityId"] == activityID);
+            Assert.IsTrue(telem.Context.Properties["activityType"] == "message");
             //Assert.IsTrue(telem.Context.Session.Id == conversationID);
             Assert.IsTrue(telem.Context.User.Id == channelID + fromID);
             Assert.IsTrue(telem.Properties["hello"] == "value");
