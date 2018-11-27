@@ -105,11 +105,12 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
 
             Assert.IsTrue(sentItems.Count == 1);
             var telem = sentItems[0] as EventTelemetry;
+            var properties = (ISupportProperties)telem;
             Assert.IsTrue(telem != null);
-            Assert.IsTrue(telem.Properties["activityId"] == activityID);
-            Assert.IsTrue(telem.Properties["activityType"] == "message");
+            Assert.IsTrue(properties.Properties["activityId"] == activityID);
+            Assert.IsTrue(properties.Properties["activityType"] == "message");
             Assert.IsTrue(telem.Context.User.Id == channelID + fromID);
-            Assert.IsTrue(telem.Properties["hello"] == "value");
+            Assert.IsTrue(properties.Properties["hello"] == "value");
             Assert.IsTrue(telem.Metrics["metric"] == 0.6);
         }
 

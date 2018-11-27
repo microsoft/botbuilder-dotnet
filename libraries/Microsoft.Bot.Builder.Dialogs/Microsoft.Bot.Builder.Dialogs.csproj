@@ -49,7 +49,6 @@
 	<PropertyGroup>
 	  <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Dialogs.ruleset</CodeAnalysisRuleSet>
 	</PropertyGroup>
-  
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 	  <DebugType>full</DebugType>
 	  <DebugSymbols>true</DebugSymbols>

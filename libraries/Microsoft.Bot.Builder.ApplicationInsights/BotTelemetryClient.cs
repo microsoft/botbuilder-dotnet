@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights
 
         public BotTelemetryClient(TelemetryClient telemetryClient)
         {
-            _telemetryClient = telemetryClient;
+            _telemetryClient = telemetryClient ?? throw new ArgumentNullException(nameof(telemetryClient));
         }
 
         /// <summary>
@@ -161,6 +161,5 @@ namespace Microsoft.Bot.Builder.ApplicationInsights
         /// Flushes the in-memory buffer and any metrics being pre-aggregated.
         /// </summary>
         public void Flush() => _telemetryClient.Flush();
-
     }
 }
