@@ -19,7 +19,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             var emptyId = "";
             var attachmentPrompt = new AttachmentPrompt(emptyId);
-            Assert.IsNotNull(attachmentPrompt.Id);
         }
 
         [TestMethod]
@@ -29,7 +28,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var nullId = "";
             nullId = null;
             var attachmentPrompt = new AttachmentPrompt(nullId);
-            Assert.IsNull(attachmentPrompt.Id);
         }
 
         [TestMethod]
