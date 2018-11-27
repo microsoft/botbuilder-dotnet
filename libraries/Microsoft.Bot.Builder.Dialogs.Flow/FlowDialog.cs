@@ -1,4 +1,5 @@
-﻿using System.Dynamic;
+﻿using System;
+using System.Dynamic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
@@ -6,7 +7,7 @@ using Microsoft.Bot.Builder.Dialogs;
 namespace Microsoft.Bot.Builder.Dialogs.Flow
 {
     /// <summary>
-    /// ActionDialog 
+    /// FlowDialog- Call a IDialog and then execute  FlowCommand when completed
     /// </summary>
     public class FlowDialog : Dialog, IDialog
     {
@@ -20,12 +21,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         public string CallDialogId { get; set; }
 
         /// <summary>
-        /// Settings for the dialog
+        /// Settings for the inner dialog
         /// </summary>
         public object CallDialogOptions { get; set; }
 
         /// <summary>
-        /// Action to perform when dialog is completed
+        /// Command to perform when dialog is completed
         /// </summary>
         public IFlowCommand OnCompleted { get; set; }
 
@@ -93,6 +94,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
 
         private async Task<DialogTurnResult> BeginInnerDialog(DialogContext dialogContext, object options, CancellationToken cancellationToken)
         {
+            if (string.IsNullOrEmpty(this.CallDialogId))
+            {
+                throw new ArgumentNullException(nameof(this.CallDialogId));
+            }
+
             // start the inner dialog
             var result = await dialogContext.BeginDialogAsync(this.CallDialogId, options, cancellationToken);
             if (result.Status == DialogTurnStatus.Waiting)
