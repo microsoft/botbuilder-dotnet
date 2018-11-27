@@ -11,15 +11,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// <remarks>
     /// The behavior of executing multiple actions that try to manipulate the DialogStack is not defined.  
     /// </remarks>
-    public class CommandSet : IFlowCommand
+    public class CommandSet : IDialogCommand
     {
-        public CommandSet(List<IFlowCommand> actions = null)
+        public CommandSet(List<IDialogCommand> actions = null)
         {
             if (actions != null)
                 this.Commands = actions;
         }
 
-        public List<IFlowCommand> Commands { get; set; } = new List<IFlowCommand>();
+        public List<IDialogCommand> Commands { get; set; } = new List<IDialogCommand>();
 
         public async Task<DialogTurnResult> Execute(DialogContext dialogContext, object options, DialogTurnResult result, CancellationToken cancellationToken)
         {

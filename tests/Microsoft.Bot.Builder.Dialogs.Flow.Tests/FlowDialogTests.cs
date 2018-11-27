@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                         new Switch()
                         {
                             Condition = new CSharpExpression() { Expression="State.Name.Length > 2" },
-                            Cases = new Dictionary<string, IFlowCommand>
+                            Cases = new Dictionary<string, IDialogCommand>
                             {
                                 { "true", new CallDialog("GetAgeDialog")  },
                                 { "false", new ContinueDialog() }

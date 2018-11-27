@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// <summary>
     /// Send an activity as an action
     /// </summary>
-    public class SendActivity : IFlowCommand
+    public class SendActivity : IDialogCommand
     {
         public SendActivity() { }
 

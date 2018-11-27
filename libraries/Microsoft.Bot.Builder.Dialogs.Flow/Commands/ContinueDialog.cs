@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// <summary>
     /// Continue the current dialog 
     /// </summary>
-    public class ContinueDialog : IFlowCommand
+    public class ContinueDialog : IDialogCommand
     {
         public ContinueDialog() { }
 

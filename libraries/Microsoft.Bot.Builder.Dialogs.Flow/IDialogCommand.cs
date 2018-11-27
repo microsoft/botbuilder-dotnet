@@ -8,9 +8,9 @@ using Microsoft.Bot.Builder.Dialogs;
 namespace Microsoft.Bot.Builder.Dialogs.Flow
 {
     /// <summary>
-    /// Defines a flow command 
+    /// Defines a dialog command 
     /// </summary>
-    public interface IFlowCommand
+    public interface IDialogCommand
     {
         /// <summary>
         /// Execute an commmand 

@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// <summary>
     /// Clear a variable as an action
     /// </summary>
-    public class ClearVar : IFlowCommand
+    public class ClearVar : IDialogCommand
     {
         public ClearVar() { }
 
