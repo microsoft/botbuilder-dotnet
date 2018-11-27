@@ -401,6 +401,21 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
+        /// Create a ConversationReference based on this Activity's Conversation info and the ResourceResponse from sending an activity.
+        /// </summary>
+        /// <param name="reply">ResourceResponse returned from sendActivity</param>
+        /// <returns>A ConversationReference that can be stored and used later to delete or update the activity.</returns>
+        /// <exception cref="ArgumentNullException"/>
+        public ConversationReference GetReplyConversationReference(ResourceResponse reply)
+        {
+            var reference = GetConversationReference();
+
+            // Update the reference with the new outgoing Activity's id.
+            reference.ActivityId = reply.Id;
+            return reference;
+        }
+
+        /// <summary>
         /// Updates this activity with the delivery information from an existing 
         /// conversation reference.
         /// </summary>
@@ -434,6 +449,5 @@ namespace Microsoft.Bot.Schema
             }
             return this;
         }
-
     }
 }
