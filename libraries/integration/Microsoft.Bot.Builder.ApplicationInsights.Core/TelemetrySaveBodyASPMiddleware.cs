@@ -6,7 +6,6 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -21,43 +20,37 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
             _next = next ?? throw new ArgumentNullException(nameof(next));
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext httpContext)
         {
-            if (context.Request.Method == "POST")
+            var request = httpContext.Request;
+
+            if (request.Method == "POST" && request.ContentType == "application/json")
             {
-                var memoryCache = context.RequestServices.GetService(typeof(IMemoryCache)) as IMemoryCache;
-
-                if (memoryCache != null)
+                var items = httpContext.Items;
+                request.EnableBuffering();
+                try
                 {
-                    context.Request.EnableBuffering();
-                    try
+                    using (var reader = new StreamReader(request.Body, Encoding.UTF8, true, 4096, true))
                     {
-                        using (var reader = new StreamReader(context.Request.Body, Encoding.UTF8, true, 1024, true))
-                        {
-                            // Set cache options.
-                            var cacheEntryOptions = new MemoryCacheEntryOptions()
-                                .SetSlidingExpiration(TimeSpan.FromSeconds(3)); // Keep in cache for this time, reset time if accessed.
+                        var body = await reader.ReadToEndAsync();
+                        var jsonObject = JObject.Parse(body);
 
-                            var body = reader.ReadToEnd();
-                            var jsonObject = JObject.Parse(body);
-
-                            // Save data in cache.
-                            memoryCache.Set(context.TraceIdentifier, jsonObject, cacheEntryOptions);
-                        }
+                        // Save data in cache.
+                        items.Add(TelemetryBotIdInitializer.BotActivityKey, jsonObject);
                     }
-                    catch (JsonReaderException)
-                    {
-                        // Request not json.
-                    }
-                    finally
-                    {
-                        // rewind for next middleware.
-                        context.Request.Body.Position = 0;
-                    }
+                }
+                catch (JsonReaderException)
+                {
+                    // Request not json.
+                }
+                finally
+                {
+                    // rewind for next middleware.
+                    request.Body.Position = 0;
                 }
             }
 
-            await _next(context);
+            await _next(httpContext);
         }
     }
 }

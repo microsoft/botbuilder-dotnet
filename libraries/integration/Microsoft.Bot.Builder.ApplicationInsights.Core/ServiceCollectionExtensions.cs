@@ -5,11 +5,7 @@ using System;
 using System.Linq;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Bot.Configuration;
-using Microsoft.Bot.Builder.ApplicationInsights;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.ApplicationInsights.AspNetCore.Extensions;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Bot.Builder.ApplicationInsights.Core
 {
@@ -20,9 +16,8 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/> which specifies the contract for a collection of service descriptors.</param>
         /// <param name="botConfiguration">Bot configuration that contains the Application Insights configuration information.</param>
-        /// <param name="telemetryClient">(Optional) The Application Insights client used for logging.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
-        public static IServiceCollection AddBotApplicationInsights(this IServiceCollection services, BotConfiguration botConfiguration, ApplicationInsightsServiceOptions opts = null)
+        public static IServiceCollection AddBotApplicationInsights(this IServiceCollection services, BotConfiguration botConfiguration)
         {
             if (botConfiguration == null)
             {
@@ -37,11 +32,10 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
             }
 
             // Enables Bot Telemetry to save user/session id's as the bot user id and session
-            services.AddMemoryCache();
-            services.TryAddTransient<TelemetrySaveBodyASPMiddleware>();
-            services.TryAddSingleton<ITelemetryInitializer>(new OperationCorrelationTelemetryInitializer());
-            services.TryAddSingleton<ITelemetryInitializer, TelemetryBotIdInitializer>();
-            services.TryAddSingleton<IBotTelemetryClient, BotTelemetryClient>();
+            services.AddTransient<TelemetrySaveBodyASPMiddleware>();
+            services.AddSingleton<ITelemetryInitializer, OperationCorrelationTelemetryInitializer>();
+            services.AddSingleton<ITelemetryInitializer, TelemetryBotIdInitializer>();
+            services.AddSingleton<IBotTelemetryClient, BotTelemetryClient>();
             return services;
         }
     }

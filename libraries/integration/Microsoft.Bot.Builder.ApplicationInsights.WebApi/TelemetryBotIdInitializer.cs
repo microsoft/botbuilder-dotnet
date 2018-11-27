@@ -1,15 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
+using System.IO;
+using System.Text;
+using System.Web;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.ApplicationInsights.Core
+namespace Microsoft.Bot.Builder.ApplicationInsights.WebApi
 {
     /// <summary>
     /// Initializer that sets the user ID based on Bot data.
@@ -17,26 +18,17 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
     public class TelemetryBotIdInitializer : ITelemetryInitializer
     {
         public static readonly string BotActivityKey = "BotBuilderActivity";
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public TelemetryBotIdInitializer(IHttpContextAccessor httpContextAccessor)
-        {
-            _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
-        }
 
         public void Initialize(ITelemetry telemetry)
         {
-            if (telemetry == null)
-            {
-                return;
-            }
-
-            var httpContext = _httpContextAccessor.HttpContext;
+            var httpContext = HttpContext.Current;
             var items = httpContext?.Items;
 
             if (items != null)
             {
-                if ((telemetry is RequestTelemetry || telemetry is EventTelemetry) && items.ContainsKey(BotActivityKey))
+                CacheBody();
+
+                if (telemetry is RequestTelemetry || telemetry is EventTelemetry)
                 {
                     if (items[BotActivityKey] is JObject body)
                     {
@@ -46,6 +38,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
                         {
                             userId = (string)from["id"];
                         }
+
                         var channelId = (string)body["channelId"];
 
                         var conversationId = string.Empty;
@@ -54,12 +47,13 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
                         {
                             conversationId = (string)conversation["id"];
                         }
+                        var context = telemetry.Context;
 
                         // Set the user id on the Application Insights telemetry item.
-                        telemetry.Context.User.Id = channelId + userId;
+                        context.User.Id = channelId + userId;
 
                         // Set the session id on the Application Insights telemetry item.
-                        telemetry.Context.Session.Id = conversationId;
+                        context.Session.Id = conversationId;
 
                         var telemetryProperties = ((ISupportProperties)telemetry).Properties;
 
@@ -72,6 +66,38 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
                         // Set the activity type https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#type
                         telemetryProperties.Add("activityType", (string)body["type"]);
                     }
+                }
+            }
+        }
+
+        private void CacheBody()
+        {
+            var httpContext = HttpContext.Current;
+            var request = httpContext.Request;
+            if (request.HttpMethod == "POST" && request.ContentType == "application/json")
+            {
+                JObject body = null;
+
+                // Retrieve Http Body and cache body.
+                try
+                {
+                    using (var reader = new StreamReader(request.InputStream, Encoding.UTF8, true, 1024, true))
+                    {
+                        // Set cache options.
+                        var bodyAsString = reader.ReadToEnd();
+                        body = JObject.Parse(bodyAsString);
+                        httpContext.Items[BotActivityKey] = body;
+                    }
+                }
+                catch (JsonReaderException)
+                {
+                    // Request not json.
+                    return;
+                }
+                finally
+                {
+                    // rewind for next middleware.
+                    request.InputStream.Position = 0;
                 }
             }
         }
