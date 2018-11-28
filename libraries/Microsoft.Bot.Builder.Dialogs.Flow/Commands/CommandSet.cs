@@ -41,11 +41,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
                         return result;
 
                     case DialogTurnStatus.Cancelled:
-                        // don't process commands on canceled. IS THIS RIGHT?
+                        // stop processing when we get canceled
                         return result;
 
                     case DialogTurnStatus.Empty:
-                        // Dialog stack is empty, but we are still operating...what the?
+                        // ERROR: Dialog stack is empty, but we are still operating...what the?
                         throw new System.Exception("The dialog stack is empty but there should still be a dialog on the stack! Somebody called EndDialog multiple times for the current turn.");
                 }
             }
