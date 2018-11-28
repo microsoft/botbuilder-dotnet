@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         [TestMethod]
         public async Task CallDialog_Test()
         {
-            var testFlow = CreateTestFlow("Step1", out var dialogs);
+            var testFlow = CreateTestFlow("TestDialog", out var dialogs);
 
             dialogs.Add(new SendIdDialog("OneDialog"));
             dialogs.Add(new SendIdDialog("TwoDialog"));
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             // when oneDialog finishes, call TwoDialog
             var flowDialog = new FlowDialog()
             {
-                Id = "Step1",
+                Id = "TestDialog",
                 CallDialogId = "OneDialog",
                 OnCompleted = new CallDialog("TwoDialog")
             };
@@ -115,12 +115,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         [TestMethod]
         public async Task SetClearVal_Test()
         {
-            var testFlow = CreateTestFlow("Step1", out var dialogs);
+            var testFlow = CreateTestFlow("TestDialog", out var dialogs);
 
             dialogs.Add(new SendIdDialog("OneDialog"));
             var flowDialog = new FlowDialog()
             {
-                Id = "Step1",
+                Id = "TestDialog",
                 CallDialogId = "OneDialog",
                 OnCompleted = new CommandSet()
                 {
@@ -148,12 +148,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         [TestMethod]
         public async Task ContinueAndEnd_Test()
         {
-            var testFlow = CreateTestFlow("Step1", out var dialogs);
+            var testFlow = CreateTestFlow("TestDialog", out var dialogs);
 
             dialogs.Add(new ReturnTextDialog($"ReturnText"));
             var flowDialog = new FlowDialog()
             {
-                Id = $"Step1",
+                Id = $"TestDialog",
                 CallDialogId = "ReturnText",
                 OnCompleted = new Switch()
                 {
@@ -188,12 +188,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         [TestMethod]
         public async Task NoCommand_Test()
         {
-            var testFlow = CreateTestFlow("Step1", out var dialogs);
+            var testFlow = CreateTestFlow("TestDialog", out var dialogs);
 
             dialogs.Add(new SendIdDialog("OneDialog"));
             var flowDialog = new FlowDialog()
             {
-                Id = "Step1",
+                Id = "TestDialog",
                 CallDialogId = "OneDialog"
                 // OnCommand = null
             };
@@ -207,11 +207,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         [TestMethod]
         public async Task NoDialog_Test()
         {
-            var testFlow = CreateTestFlow("Step1", out var dialogs);
+            var testFlow = CreateTestFlow("TestDialog", out var dialogs);
 
             var flowDialog = new FlowDialog()
             {
-                Id = "Step1",
+                Id = "TestDialog",
                 // CallDialogId = null
                 OnCompleted = new SendActivity("done")
             };
@@ -225,11 +225,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         [TestMethod]
         public async Task SendActivity_Test()
         {
-            var testFlow = CreateTestFlow("Step1", out var dialogs);
+            var testFlow = CreateTestFlow("TestDialog", out var dialogs);
 
             var flowDialog = new FlowDialog()
             {
-                Id = "Step1",
+                Id = "TestDialog",
                 // CallDialogId = null
                 OnCompleted = new SendActivity("done")
             };
@@ -243,12 +243,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         [TestMethod]
         public async Task Switch_Test()
         {
-            var testFlow = CreateTestFlow("Step1", out var dialogs);
+            var testFlow = CreateTestFlow("TestDialog", out var dialogs);
 
             dialogs.Add(new EchoDialog($"EchoDialog"));
             var flowDialog = new FlowDialog()
             {
-                Id = $"Step1",
+                Id = $"TestDialog",
                 CallDialogId = "EchoDialog",
                 OnCompleted = new Switch()
                 {
