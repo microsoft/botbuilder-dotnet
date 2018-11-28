@@ -8,6 +8,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
 {
+    /// <summary>
+    /// Send dialog id as the reply text when called
+    /// </summary>
     public class SendIdDialog : Dialog
     {
         public SendIdDialog(string id) : base(id)
@@ -21,6 +24,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         }
     }
 
+    /// <summary>
+    /// return the activity text as the result of the dialog
+    /// </summary>
     public class ReturnTextDialog : Dialog
     {
 
@@ -35,6 +41,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         }
     }
 
+    /// <summary>
+    /// Echo the activity text back and end
+    /// </summary>
     public class EchoDialog : Dialog
     {
         public EchoDialog(string id) : base(id)
@@ -54,7 +63,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
     {
         private static JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };
 
-        private static TestFlow CreateTestFlow(string dialogId, out DialogSet dialogs)
+        /// <summary>
+        /// Create test flow
+        /// </summary>
+        private static TestFlow CreateTestFlow(string initialDialog, out DialogSet dialogs)
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
@@ -72,7 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
 
                 var results = await dialogContext.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
-                    results = await dialogContext.BeginDialogAsync(dialogId, null, cancellationToken);
+                    results = await dialogContext.BeginDialogAsync(initialDialog, null, cancellationToken);
             });
         }
 
@@ -82,10 +94,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         {
             var testFlow = CreateTestFlow("Step1", out var dialogs);
 
-            var flowDialog = new FlowDialog() { Id = "Step1", CallDialogId = "OneDialog", OnCompleted = new CallDialog("TwoDialog") };
-            dialogs.Add(flowDialog);
             dialogs.Add(new SendIdDialog("OneDialog"));
             dialogs.Add(new SendIdDialog("TwoDialog"));
+            
+            // when oneDialog finishes, call TwoDialog
+            var flowDialog = new FlowDialog()
+            {
+                Id = "Step1",
+                CallDialogId = "OneDialog",
+                OnCompleted = new CallDialog("TwoDialog")
+            };
+            dialogs.Add(flowDialog);
 
             await testFlow.Send("hello")
                 .AssertReply("OneDialog")
@@ -98,6 +117,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         {
             var testFlow = CreateTestFlow("Step1", out var dialogs);
 
+            dialogs.Add(new SendIdDialog("OneDialog"));
             var flowDialog = new FlowDialog()
             {
                 Id = "Step1",
@@ -105,14 +125,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                 OnCompleted = new CommandSet()
                 {
                     Commands = {
+                        // set the test=123
                         new SetVariable() { Name = "test", Value=new CSharpExpression("123") },
+                        // send the value of test
                         new SendActivity("{test}"),
+                        // set test=
                         new ClearVar() { Name = "test" },
+                        // send the value of test
                         new SendActivity("{test}"),
                     }
                 }
             };
-            dialogs.Add(new SendIdDialog("OneDialog"));
             dialogs.Add(flowDialog);
 
             await testFlow.Send("hello")
@@ -127,6 +150,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         {
             var testFlow = CreateTestFlow("Step1", out var dialogs);
 
+            dialogs.Add(new ReturnTextDialog($"ReturnText"));
             var flowDialog = new FlowDialog()
             {
                 Id = $"Step1",
@@ -136,24 +160,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                     Condition = new CSharpExpression("State.DialogTurnResult.Result"),
                     Cases = new Dictionary<string, IDialogCommand>
                     {
+                        // case "end" 
                         {  $"end", new CommandSet() {
                             Commands = new List<IDialogCommand>
                             {
+                                // send done
                                 new SendActivity("Done"),
+                                // end the dialog
                                 new EndDialog()
                             }
                         } }
                     },
+                    // keep running the dialog
                     DefaultAction = new ContinueDialog()
                 }
             };
-            dialogs.Add(new ReturnTextDialog($"ReturnText"));
             dialogs.Add(flowDialog);
 
             await testFlow
                 .Send("hello") // ContinueDialog()
                 .Send("three") // ContinueDialog()
-                .Send("end") // EndDialog()
+                .Send("end")   // trigger EndDialog()
                 .AssertReply("Done")
                 .StartTestAsync();
         }
@@ -163,13 +190,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         {
             var testFlow = CreateTestFlow("Step1", out var dialogs);
 
+            dialogs.Add(new SendIdDialog("OneDialog"));
             var flowDialog = new FlowDialog()
             {
                 Id = "Step1",
                 CallDialogId = "OneDialog"
+                // OnCommand = null
             };
             dialogs.Add(flowDialog);
-            dialogs.Add(new SendIdDialog("OneDialog"));
 
             await testFlow.Send("hello")
                 .AssertReply("OneDialog")
@@ -184,10 +212,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             var flowDialog = new FlowDialog()
             {
                 Id = "Step1",
+                // CallDialogId = null
                 OnCompleted = new SendActivity("done")
             };
             dialogs.Add(flowDialog);
-            dialogs.Add(new SendIdDialog("OneDialog"));
+
+            await testFlow.Send("hello")
+                .AssertReply("done")
+                .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task SendActivity_Test()
+        {
+            var testFlow = CreateTestFlow("Step1", out var dialogs);
+
+            var flowDialog = new FlowDialog()
+            {
+                Id = "Step1",
+                // CallDialogId = null
+                OnCompleted = new SendActivity("done")
+            };
+            dialogs.Add(flowDialog);
 
             await testFlow.Send("hello")
                 .AssertReply("done")
@@ -199,6 +245,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         {
             var testFlow = CreateTestFlow("Step1", out var dialogs);
 
+            dialogs.Add(new EchoDialog($"EchoDialog"));
             var flowDialog = new FlowDialog()
             {
                 Id = $"Step1",
@@ -208,28 +255,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                     Condition = new CSharpExpression("State.DialogTurnResult.Result"),
                     Cases = new Dictionary<string, IDialogCommand>
                             {
-                                { $"one", new SendActivity("1") },
-                                { $"two", new SendActivity("2") },
-                                { $"three", new SendActivity("3") },
-                                { $"four", new SendActivity("4") },
-                                { $"five", new SendActivity("5") }
+                                { $"one", new SendActivity("response:1") },
+                                { $"two", new SendActivity("response:2") },
+                                { $"three", new SendActivity("response:3") },
+                                { $"four", new SendActivity("response:4") },
+                                { $"five", new SendActivity("response:5") }
                             },
-                    DefaultAction = new SendActivity("default")
+                    DefaultAction = new SendActivity("response:default")
                 }
             };
-            dialogs.Add(new EchoDialog($"EchoDialog"));
             dialogs.Add(flowDialog);
 
             await testFlow
                 .Send("hello")
                 .AssertReply("hello")
-                .AssertReply("default")
+                .AssertReply("response:default")
                 .Send("three")
                 .AssertReply("three")
-                .AssertReply("3")
+                .AssertReply("response:3")
                 .Send("five")
                 .AssertReply("five")
-                .AssertReply("5")
+                .AssertReply("response:5")
                 .StartTestAsync();
         }
 
