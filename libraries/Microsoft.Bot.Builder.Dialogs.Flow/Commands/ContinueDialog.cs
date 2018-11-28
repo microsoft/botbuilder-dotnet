@@ -14,9 +14,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     {
         public ContinueDialog() { }
 
-        public async Task<DialogTurnResult> Execute(DialogContext dialogContext, object options, DialogTurnResult result, CancellationToken cancellationToken)
+        public Task<DialogTurnResult> Execute(DialogContext dialogContext, object options, DialogTurnResult result, CancellationToken cancellationToken)
         {
-            return await dialogContext.ContinueDialogAsync(cancellationToken);
+            return Task.FromResult(new DialogTurnResult(DialogTurnStatus.Waiting));
         }
     }
 }

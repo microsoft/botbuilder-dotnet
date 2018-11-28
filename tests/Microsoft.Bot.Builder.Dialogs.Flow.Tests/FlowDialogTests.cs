@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                             Cases = new Dictionary<string, IDialogCommand>
                             {
                                 { "true", new CallDialog("GetAgeDialog")  },
-                                { "false", new ContinueDialog() }
+                                { "false", new CallDialog("GetNameDialog") }
                             },
                             DefaultAction = new SendActivity("default")
                         }

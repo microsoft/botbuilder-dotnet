@@ -21,6 +21,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         }
     }
 
+    public class ReturnTextDialog : Dialog
+    {
+
+        public ReturnTextDialog(string id) : base(id)
+        {
+        }
+
+
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return await dc.EndDialogAsync(dc.Context.Activity.Text);
+        }
+    }
+
     public class EchoDialog : Dialog
     {
         public EchoDialog(string id) : base(id)
@@ -105,6 +119,42 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                 .AssertReply("OneDialog")
                 .AssertReply("123")
                 .AssertReply("null")
+                .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task ContinueAndEnd_Test()
+        {
+            var testFlow = CreateTestFlow("Step1", out var dialogs);
+
+            var flowDialog = new FlowDialog()
+            {
+                Id = $"Step1",
+                CallDialogId = "ReturnText",
+                OnCompleted = new Switch()
+                {
+                    Condition = new CSharpExpression("State.DialogTurnResult.Result"),
+                    Cases = new Dictionary<string, IDialogCommand>
+                    {
+                        {  $"end", new CommandSet() {
+                            Commands = new List<IDialogCommand>
+                            {
+                                new SendActivity("Done"),
+                                new EndDialog()
+                            }
+                        } }
+                    },
+                    DefaultAction = new ContinueDialog()
+                }
+            };
+            dialogs.Add(new ReturnTextDialog($"ReturnText"));
+            dialogs.Add(flowDialog);
+
+            await testFlow
+                .Send("hello") // ContinueDialog()
+                .Send("three") // ContinueDialog()
+                .Send("end") // EndDialog()
+                .AssertReply("Done")
                 .StartTestAsync();
         }
 
