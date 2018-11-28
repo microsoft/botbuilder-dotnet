@@ -1,8 +1,5 @@
-﻿using System;
-using System.Dynamic;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.Dialogs.Flow
 {
@@ -39,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         /// <returns></returns>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dialogContext, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var state = dialogContext.ActiveDialog.State;
+            var state = dialogContext.ActiveDialog?.State;
             options = options ?? this.CallDialogOptions;
             state[$"{this.Id}.options"] = options;
 
@@ -79,11 +76,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
                     // call the IDialogAction handler
                     if (this.OnCompleted != null)
                     {
+                        state["DialogTurnResult"] = dialogTurnResult;
                         return await this.OnCompleted.Execute(dialogContext, options, dialogTurnResult, cancellationToken);
                     }
-                    return await dialogContext.EndDialogAsync(result, cancellationToken);
-
-                default:
                     break;
             }
 
@@ -94,28 +89,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
 
         private async Task<DialogTurnResult> BeginInnerDialog(DialogContext dialogContext, object options, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(this.CallDialogId))
-            {
-                throw new ArgumentNullException(nameof(this.CallDialogId));
-            }
+            var state = dialogContext.ActiveDialog.State;
 
-            // start the inner dialog
-            var result = await dialogContext.BeginDialogAsync(this.CallDialogId, options, cancellationToken);
-            if (result.Status == DialogTurnStatus.Waiting)
+            if (!string.IsNullOrEmpty(this.CallDialogId))
             {
-                return result;
+                // start the inner dialog
+                return await dialogContext.BeginDialogAsync(this.CallDialogId, options, cancellationToken);
             }
 
             // call the IDialogAction handler
+            var dialogTurnResult = new DialogTurnResult(DialogTurnStatus.Complete);
             if (this.OnCompleted != null)
             {
-                return await this.OnCompleted.Execute(dialogContext, options, result, cancellationToken);
+                state["DialogTurnResult"] = dialogTurnResult;
+                return await this.OnCompleted.Execute(dialogContext, options, dialogTurnResult, cancellationToken);
             }
 
             // no routing, return the result as our result 
-            return result;
+            return dialogTurnResult;
         }
-
 
     }
 }

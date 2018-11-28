@@ -23,7 +23,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         public async Task<DialogTurnResult> Execute(DialogContext dialogContext, object options, DialogTurnResult result, CancellationToken cancellationToken)
         {
             var state = dialogContext.ActiveDialog.State;
-            state["DialogTurnResult"] = result;
             state[Name] = await Value.Evaluate(state);
             return result;
         }

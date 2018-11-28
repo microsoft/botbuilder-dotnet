@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Flow
@@ -18,13 +15,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         public SendActivity(string text) { this.Text = text; }
 
         public string Text { get; set; }
-        
+
         // public Activity Activity { get; set; }
 
         public async Task<DialogTurnResult> Execute(DialogContext dialogContext, object options, DialogTurnResult result, CancellationToken cancellationToken)
         {
-            Activity activity = dialogContext.Context.Activity.CreateReply(this.Text);
-            await dialogContext.Context.SendActivityAsync(activity, cancellationToken);
+            if (this.Text.StartsWith("{") && this.Text.EndsWith("}"))
+            {
+                var var = this.Text.Trim('{', '}');
+                var state = dialogContext.ActiveDialog.State;
+                if (state.TryGetValue(var, out object val))
+                {
+                    Activity activity = dialogContext.Context.Activity.CreateReply(Convert.ToString(state[var]));
+                    await dialogContext.Context.SendActivityAsync(activity, cancellationToken);
+                }
+                else
+                {
+                    await dialogContext.Context.SendActivityAsync(dialogContext.Context.Activity.CreateReply("null"), cancellationToken);
+                }
+            }
+            else
+            {
+                Activity activity = dialogContext.Context.Activity.CreateReply(this.Text);
+                await dialogContext.Context.SendActivityAsync(activity, cancellationToken);
+            }
             return result;
         }
     }
