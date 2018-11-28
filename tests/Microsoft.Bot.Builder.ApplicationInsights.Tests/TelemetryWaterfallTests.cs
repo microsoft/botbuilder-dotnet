@@ -158,9 +158,12 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Tests
             // Event DialogId is set correctly.
             Assert.IsTrue(saved_properties["WaterfallComplete_3"].ContainsKey("DialogId"));
             Assert.IsTrue(saved_properties["WaterfallComplete_3"]["DialogId"] == "test");
+            Assert.IsTrue(saved_properties["WaterfallComplete_3"].ContainsKey("InstanceId"));
+            Assert.IsTrue(saved_properties["WaterfallStep_0"].ContainsKey("InstanceId"));
             // Verify naming on lambda's is "StepXofY"
             Assert.IsTrue(saved_properties["WaterfallStep_0"].ContainsKey("StepName"));
             Assert.IsTrue(saved_properties["WaterfallStep_0"]["StepName"] == "Step1of3");
+            Assert.IsTrue(saved_properties["WaterfallStep_0"].ContainsKey("InstanceId"));
             Assert.IsTrue(waterfallDialog.EndDialogCalled);
         }
 
@@ -217,6 +220,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Tests
             Assert.IsTrue(saved_properties["WaterfallCancel_3"].ContainsKey("DialogId"));
             Assert.IsTrue(saved_properties["WaterfallCancel_3"]["DialogId"] == "test");
             Assert.IsTrue(saved_properties["WaterfallCancel_3"].ContainsKey("StepName"));
+            Assert.IsTrue(saved_properties["WaterfallCancel_3"].ContainsKey("InstanceId"));
             // Event contains "StepName"
             // Event naming on lambda's is "StepXofY"
             Assert.IsTrue(saved_properties["WaterfallCancel_3"]["StepName"] == "Step3of3");
