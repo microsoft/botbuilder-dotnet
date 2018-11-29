@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// </summary>
     public class QnAMaker
     {
-        public const string QnAMakerMiddlewareName = "QnAMakerMiddleware";
+        public const string QnAMakerName = nameof(QnAMaker);
         public const string QnAMakerTraceType = "https://www.qnamaker.ai/schemas/trace";
         public const string QnAMakerTraceLabel = "QnAMaker Trace";
 
@@ -104,8 +104,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Generates an answer from the knowledge base.
         /// </summary>
         /// <param name="turnContext">The Turn Context that contains the user question to be queried against your knowledge base.</param>
+        /// <param name="options">The options for the QnA Maker knowledge base. If null, constructor option is used for this instance.</param>
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
-        public async Task<QueryResult[]> GetAnswersAsync(ITurnContext turnContext)
+        public async Task<QueryResult[]> GetAnswersAsync(ITurnContext turnContext, QnAMakerOptions options = null)
         {
             if (turnContext == null)
             {
@@ -116,6 +117,13 @@ namespace Microsoft.Bot.Builder.AI.QnA
             {
                 throw new ArgumentNullException(nameof(turnContext.Activity));
             }
+
+            if (options == null)
+            {
+                options = _options;
+            }
+
+            ValidateOptions(options);
 
             var messageActivity = turnContext.Activity.AsMessageActivity();
             if (messageActivity == null)
@@ -136,9 +144,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 new
                 {
                     question = messageActivity.Text,
-                    top = _options.Top,
-                    strictFilters = _options.StrictFilters,
-                    metadataBoost = _options.MetadataBoost,
+                    top = options.Top,
+                    strictFilters = options.StrictFilters,
+                    metadataBoost = options.MetadataBoost,
                 }, Formatting.None);
 
             request.Content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
@@ -172,19 +180,19 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 answer.Score = answer.Score / 100;
             }
 
-            var result = results.Answers.Where(answer => answer.Score > _options.ScoreThreshold).ToArray();
+            var result = results.Answers.Where(answer => answer.Score > options.ScoreThreshold).ToArray();
 
             var traceInfo = new QnAMakerTraceInfo
             {
                 Message = (Activity)messageActivity,
                 QueryResults = result,
                 KnowledgeBaseId = _endpoint.KnowledgeBaseId,
-                ScoreThreshold = _options.ScoreThreshold,
-                Top = _options.Top,
-                StrictFilters = _options.StrictFilters,
-                MetadataBoost = _options.MetadataBoost,
+                ScoreThreshold = options.ScoreThreshold,
+                Top = options.Top,
+                StrictFilters = options.StrictFilters,
+                MetadataBoost = options.MetadataBoost,
             };
-            var traceActivity = Activity.CreateTraceActivity(QnAMakerMiddlewareName, QnAMakerTraceType, traceInfo, QnAMakerTraceLabel);
+            var traceActivity = Activity.CreateTraceActivity(QnAMakerName, QnAMakerTraceType, traceInfo, QnAMakerTraceLabel);
             await turnContext.SendActivityAsync(traceActivity).ConfigureAwait(false);
 
             return result;
@@ -207,6 +215,39 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     })
                     .ToArray(),
         };
+
+        private void ValidateOptions(QnAMakerOptions options)
+        {
+            if (options.ScoreThreshold == 0)
+            {
+                options.ScoreThreshold = 0.3F;
+            }
+
+            if (options.Top == 0)
+            {
+                options.Top = 1;
+            }
+
+            if (options.ScoreThreshold < 0 || options.ScoreThreshold > 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(options.ScoreThreshold), "Score threshold should be a value between 0 and 1");
+            }
+
+            if (options.Top < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(options.Top), "Top should be an integer greater than 0");
+            }
+
+            if (options.StrictFilters == null)
+            {
+                options.StrictFilters = new Metadata[] { };
+            }
+
+            if (options.MetadataBoost == null)
+            {
+                options.MetadataBoost = new Metadata[] { };
+            }
+        }
 
         private class InternalQueryResult : QueryResult
         {
