@@ -19,8 +19,6 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
         /// <param name="botConfiguration">Bot configuration that contains the Application Insights configuration information.</param>
         /// <param name="appInsightsServiceInstanceName">(OPTIONAL) Specifies a Application Insights instance name in the Bot configuration.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
-        /// <remarks>If the BotTelemtryClient is not overridden (and Application Insights is configured in the botConfiguration), a default Application Insights client will be used.
-        /// If Application Insights is not configured, the Null logger will be used.</remarks>
         public static IServiceCollection AddBotApplicationInsights(this IServiceCollection services, BotConfiguration botConfiguration, string appInsightsServiceInstanceName = null)
         {
             if (botConfiguration == null)
@@ -71,7 +69,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
         /// <param name="services">The <see cref="IServiceCollection"/> which specifies the contract for a collection of service descriptors.</param>
         /// <param name="botTelemetryClient">Bot Telemetry Client that logs event information.</param>
         /// <param name="instrumentationKey">If Bot Telemetry Client is using Application Insights, provide the instumentation key.</param>
-        /// <returns>The IServiceCollection</returns>
+        /// <returns>A reference to this instance after the operation has completed.</returns>
         public static IServiceCollection AddBotApplicationInsights(this IServiceCollection services, IBotTelemetryClient botTelemetryClient, string instrumentationKey = null)
         {
             if (botTelemetryClient == null)
