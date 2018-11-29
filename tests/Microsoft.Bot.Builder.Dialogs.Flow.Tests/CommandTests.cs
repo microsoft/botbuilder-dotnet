@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         /// <summary>
         /// Create test flow
         /// </summary>
-        private static TestFlow CreateTestFlow(string initialDialog, out DialogSet dialogs)
+        private static TestAdapter CreateTestAdapter(string initialDialog, out DialogSet dialogs, out BotCallbackHandler botHandler)
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
@@ -75,8 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                 .Use(new AutoSaveStateMiddleware(convoState));
             var dlgs = new DialogSet(dialogState);
             dialogs = dlgs;
-
-            return new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            botHandler =  async (turnContext, cancellationToken) =>
             {
                 var state = await dialogState.GetAsync(turnContext, () => new DialogState());
 
@@ -85,18 +84,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                 var results = await dialogContext.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
                     results = await dialogContext.BeginDialogAsync(initialDialog, null, cancellationToken);
-            });
+            };
+            
+            return adapter;
         }
+
 
 
         [TestMethod]
         public async Task CallDialog_Test()
         {
-            var testFlow = CreateTestFlow("TestDialog", out var dialogs);
+            var testAdapter = CreateTestAdapter("TestDialog", out var dialogs, out var botHandler);
 
             dialogs.Add(new SendIdDialog("OneDialog"));
             dialogs.Add(new SendIdDialog("TwoDialog"));
-            
+
             // when oneDialog finishes, call TwoDialog
             var flowDialog = new FlowDialog()
             {
@@ -106,7 +108,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             };
             dialogs.Add(flowDialog);
 
-            await testFlow.Send("hello")
+            await new TestFlow(testAdapter, botHandler)
+                .Send("hello")
                 .AssertReply("OneDialog")
                 .AssertReply("TwoDialog")
                 .StartTestAsync();
@@ -115,7 +118,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         [TestMethod]
         public async Task SetClearVal_Test()
         {
-            var testFlow = CreateTestFlow("TestDialog", out var dialogs);
+            var testAdapter = CreateTestAdapter("TestDialog", out var dialogs, out var botHandler);
 
             dialogs.Add(new SendIdDialog("OneDialog"));
             var flowDialog = new FlowDialog()
@@ -138,7 +141,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             };
             dialogs.Add(flowDialog);
 
-            await testFlow.Send("hello")
+            await new TestFlow(testAdapter, botHandler)
+                .Send("hello")
                 .AssertReply("OneDialog")
                 .AssertReply("123")
                 .AssertReply("null")
@@ -148,7 +152,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         [TestMethod]
         public async Task ContinueAndEnd_Test()
         {
-            var testFlow = CreateTestFlow("TestDialog", out var dialogs);
+            var testAdapter = CreateTestAdapter("TestDialog", out var dialogs, out var botHandler);
 
             dialogs.Add(new ReturnTextDialog($"ReturnText"));
             var flowDialog = new FlowDialog()
@@ -177,7 +181,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             };
             dialogs.Add(flowDialog);
 
-            await testFlow
+            await new TestFlow(testAdapter, botHandler)
                 .Send("hello") // ContinueDialog()
                 .Send("three") // ContinueDialog()
                 .Send("end")   // trigger EndDialog()
@@ -188,7 +192,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         [TestMethod]
         public async Task NoCommand_Test()
         {
-            var testFlow = CreateTestFlow("TestDialog", out var dialogs);
+            var testAdapter = CreateTestAdapter("TestDialog", out var dialogs, out var botHandler);
 
             dialogs.Add(new SendIdDialog("OneDialog"));
             var flowDialog = new FlowDialog()
@@ -199,7 +203,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             };
             dialogs.Add(flowDialog);
 
-            await testFlow.Send("hello")
+            await new TestFlow(testAdapter, botHandler)
+                .Send("hello")
                 .AssertReply("OneDialog")
                 .StartTestAsync();
         }
@@ -207,7 +212,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         [TestMethod]
         public async Task NoDialog_Test()
         {
-            var testFlow = CreateTestFlow("TestDialog", out var dialogs);
+            var testAdapter = CreateTestAdapter("TestDialog", out var dialogs, out var botHandler);
 
             var flowDialog = new FlowDialog()
             {
@@ -217,7 +222,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             };
             dialogs.Add(flowDialog);
 
-            await testFlow.Send("hello")
+            await new TestFlow(testAdapter, botHandler)
+                .Send("hello")
                 .AssertReply("done")
                 .StartTestAsync();
         }
@@ -225,7 +231,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         [TestMethod]
         public async Task SendActivity_Test()
         {
-            var testFlow = CreateTestFlow("TestDialog", out var dialogs);
+            var testAdapter = CreateTestAdapter("TestDialog", out var dialogs, out var botHandler);
 
             var flowDialog = new FlowDialog()
             {
@@ -235,7 +241,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             };
             dialogs.Add(flowDialog);
 
-            await testFlow.Send("hello")
+            await new TestFlow(testAdapter, botHandler)
+                .Send("hello")
                 .AssertReply("done")
                 .StartTestAsync();
         }
@@ -243,7 +250,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         [TestMethod]
         public async Task Switch_Test()
         {
-            var testFlow = CreateTestFlow("TestDialog", out var dialogs);
+            var testAdapter = CreateTestAdapter("TestDialog", out var dialogs, out var botHandler);
 
             dialogs.Add(new EchoDialog($"EchoDialog"));
             var flowDialog = new FlowDialog()
@@ -266,7 +273,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             };
             dialogs.Add(flowDialog);
 
-            await testFlow
+            await new TestFlow(testAdapter, botHandler)
                 .Send("hello")
                 .AssertReply("hello")
                 .AssertReply("response:default")
