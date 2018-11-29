@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Tests
             .Send("hello")
             .AssertReply("step3")
             .StartTestAsync();
-            telemetryClient.Verify(m => m.TrackEvent(It.IsAny<string>(), It.IsAny<IDictionary<string,string>>(), It.IsAny<IDictionary<string, double>>()), Times.Exactly(3));
+            telemetryClient.Verify(m => m.TrackEvent(It.IsAny<string>(), It.IsAny<IDictionary<string,string>>(), It.IsAny<IDictionary<string, double>>()), Times.Exactly(4));
             Console.WriteLine("Complete");
         }
 
@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Tests
             .Send("hello")
             .AssertReply("step3")
             .StartTestAsync();
-            telemetryClient.Verify(m => m.TrackEvent(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, double>>()), Times.Exactly(3));
+            telemetryClient.Verify(m => m.TrackEvent(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, double>>()), Times.Exactly(4));
         }
 
 
@@ -150,20 +150,20 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Tests
             .Send("hello")
             .AssertReply("step1")
             .StartTestAsync();
-            telemetryClient.Verify(m => m.TrackEvent(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, double>>()), Times.Exactly(5));
+            telemetryClient.Verify(m => m.TrackEvent(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, double>>()), Times.Exactly(7));
             // Verify:
             // Event name is "WaterfallComplete"
             // Event occurs on the 4th event logged
             // Event contains DialogId
             // Event DialogId is set correctly.
-            Assert.IsTrue(saved_properties["WaterfallComplete_3"].ContainsKey("DialogId"));
-            Assert.IsTrue(saved_properties["WaterfallComplete_3"]["DialogId"] == "test");
-            Assert.IsTrue(saved_properties["WaterfallComplete_3"].ContainsKey("InstanceId"));
-            Assert.IsTrue(saved_properties["WaterfallStep_0"].ContainsKey("InstanceId"));
+            Assert.IsTrue(saved_properties["WaterfallComplete_4"].ContainsKey("DialogId"));
+            Assert.IsTrue(saved_properties["WaterfallComplete_4"]["DialogId"] == "test");
+            Assert.IsTrue(saved_properties["WaterfallComplete_4"].ContainsKey("InstanceId"));
+            Assert.IsTrue(saved_properties["WaterfallStep_1"].ContainsKey("InstanceId"));
             // Verify naming on lambda's is "StepXofY"
-            Assert.IsTrue(saved_properties["WaterfallStep_0"].ContainsKey("StepName"));
-            Assert.IsTrue(saved_properties["WaterfallStep_0"]["StepName"] == "Step1of3");
-            Assert.IsTrue(saved_properties["WaterfallStep_0"].ContainsKey("InstanceId"));
+            Assert.IsTrue(saved_properties["WaterfallStep_1"].ContainsKey("StepName"));
+            Assert.IsTrue(saved_properties["WaterfallStep_1"]["StepName"] == "Step1of3");
+            Assert.IsTrue(saved_properties["WaterfallStep_1"].ContainsKey("InstanceId"));
             Assert.IsTrue(waterfallDialog.EndDialogCalled);
         }
 
@@ -211,19 +211,21 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Tests
             .Send("hello")
             .AssertReply("step1")
             .StartTestAsync();
-            telemetryClient.Verify(m => m.TrackEvent(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, double>>()), Times.Exactly(5));
+            telemetryClient.Verify(m => m.TrackEvent(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, double>>()), Times.Exactly(7));
             // Verify:
             // Event name is "WaterfallCancel"
             // Event occurs on the 4th event logged
             // Event contains DialogId
             // Event DialogId is set correctly.
-            Assert.IsTrue(saved_properties["WaterfallCancel_3"].ContainsKey("DialogId"));
-            Assert.IsTrue(saved_properties["WaterfallCancel_3"]["DialogId"] == "test");
-            Assert.IsTrue(saved_properties["WaterfallCancel_3"].ContainsKey("StepName"));
-            Assert.IsTrue(saved_properties["WaterfallCancel_3"].ContainsKey("InstanceId"));
+            Assert.IsTrue(saved_properties["WaterfallStart_0"].ContainsKey("DialogId"));
+            Assert.IsTrue(saved_properties["WaterfallStart_0"].ContainsKey("InstanceId"));
+            Assert.IsTrue(saved_properties["WaterfallCancel_4"].ContainsKey("DialogId"));
+            Assert.IsTrue(saved_properties["WaterfallCancel_4"]["DialogId"] == "test");
+            Assert.IsTrue(saved_properties["WaterfallCancel_4"].ContainsKey("StepName"));
+            Assert.IsTrue(saved_properties["WaterfallCancel_4"].ContainsKey("InstanceId"));
             // Event contains "StepName"
             // Event naming on lambda's is "StepXofY"
-            Assert.IsTrue(saved_properties["WaterfallCancel_3"]["StepName"] == "Step3of3");
+            Assert.IsTrue(saved_properties["WaterfallCancel_4"]["StepName"] == "Step3of3");
             Assert.IsTrue(waterfallDialog.CancelDialogCalled);
             Assert.IsFalse(waterfallDialog.EndDialogCalled);
         }

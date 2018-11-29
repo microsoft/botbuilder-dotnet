@@ -47,6 +47,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.WebApi
                         {
                             conversationId = (string)conversation["id"];
                         }
+
                         var context = telemetry.Context;
 
                         // Set the user id on the Application Insights telemetry item.

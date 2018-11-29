@@ -61,9 +61,17 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Initialize waterfall state
             var state = dc.ActiveDialog.State;
+            var instanceId = Guid.NewGuid().ToString();
             state[PersistedOptions] = options;
             state[PersistedValues] = new Dictionary<string, object>();
-            state[PersistedInstanceId] = Guid.NewGuid().ToString();
+            state[PersistedInstanceId] = instanceId;
+
+            var properties = new Dictionary<string, string>()
+                {
+                    { "DialogId", Id },
+                    { "InstanceId", instanceId },
+                };
+            TelemetryClient.TrackEvent("WaterfallStart", properties);
 
             // Run first step
             return await RunStepAsync(dc, 0, DialogReason.BeginCalled, null, cancellationToken).ConfigureAwait(false);
