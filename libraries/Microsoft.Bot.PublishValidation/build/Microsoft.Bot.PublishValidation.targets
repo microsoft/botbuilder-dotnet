@@ -1,0 +1,6 @@
+﻿<Project>
+  <!-- -->
+  <Target Name="BotConfigurationValidation" AfterTargets="CoreBuild">
+    <BotConfigCheckerTask ProjectPath="$(MSBuildProjectDirectory)" />
+  </Target>
+</Project>
