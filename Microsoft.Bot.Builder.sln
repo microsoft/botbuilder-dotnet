@@ -72,7 +72,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Appli
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestBot", "tests\Microsoft.Bot.Builder.TestBot\Microsoft.Bot.Builder.TestBot.csproj", "{C113E0AE-5564-4389-BA39-183A8D574210}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.TestBot.WebApi", "tests\Microsoft.Bot.Builder.TestBot.WebApi\Microsoft.Bot.Builder.TestBot.WebApi.csproj", "{610963BB-2717-47AB-BFEB-C8856A4A7CA7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.PublishValidation", "libraries\Microsoft.Bot.PublishValidation\Microsoft.Bot.PublishValidation.csproj", "{2C6862A7-CBAE-4976-AC12-2F5E0C4F6087}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

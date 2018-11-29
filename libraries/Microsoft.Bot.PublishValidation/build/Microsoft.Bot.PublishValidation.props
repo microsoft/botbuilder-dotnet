@@ -1,0 +1,3 @@
+﻿<Project>
+  <UsingTask TaskName="BotConfigCheckerTask" AssemblyFile="$(NuGetPackageRoot)Microsoft.Bot.PublishValidation\1.0.0\lib\netstandard2.0\Microsoft.Bot.PublishValidation.dll" />
+</Project>
