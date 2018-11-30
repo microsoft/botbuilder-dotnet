@@ -15,11 +15,11 @@ namespace Microsoft.Bot.Builder.AI.Luis
     {
         protected async override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            // Bot Builder Package name and version
+            // Bot Builder Package name and version.
             var assemblyName = this.GetType().Assembly.GetName();
             request.Headers.UserAgent.Add(new ProductInfoHeaderValue(assemblyName.Name, assemblyName.Version.ToString()));
 
-            // Platform information: OS and language runtime
+            // Platform information: OS and language runtime.
             var framework = Assembly
                 .GetEntryAssembly()?
                 .GetCustomAttribute<TargetFrameworkAttribute>()?
@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             var comment = $"({Environment.OSVersion.VersionString};{framework})";
             request.Headers.UserAgent.Add(new ProductInfoHeaderValue(comment));
 
-            // Forward the call
+            // Forward the call.
             return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
         }
     }

@@ -367,6 +367,39 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 });
         }
 
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        public async Task QnaMaker_UserAgent()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+
+            var interceptHttp = new InterceptRequestHandler(mockHttp);
+
+            var qna = GetQnAMaker(interceptHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname
+                },
+                new QnAMakerOptions
+                {
+                    Top = 1
+                });
+
+            var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
+
+            Assert.IsNotNull(results);
+            Assert.AreEqual(results.Length, 1, "should get one result");
+            StringAssert.StartsWith(results[0].Answer, "BaseCamp: You can use a damp rag to clean around the Power Pack");
+
+            // Verify that we added the bot.builder package details.
+            Assert.IsTrue(interceptHttp.UserAgent.Contains("Microsoft.Bot.Builder.AI.QnA/4"));
+        }
+
         private string GetRequestUrl()
         {
             return $"{_hostname}/knowledgebases/{_knowlegeBaseId}/generateanswer";
