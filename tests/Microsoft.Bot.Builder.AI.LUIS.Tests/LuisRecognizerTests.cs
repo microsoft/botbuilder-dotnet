@@ -484,10 +484,10 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
             var userAgent = clientHandler.UserAgent;
 
-            // verify we didn't unintentionally stamp on the user-agent from the client
+            // Verify we didn't unintentionally stamp on the user-agent from the client.
             Assert.IsTrue(userAgent.Contains("Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.LUISRuntimeClient"));
 
-            // and that we added the bot.builder package details
+            // And that we added the bot.builder package details.
             Assert.IsTrue(userAgent.Contains("Microsoft.Bot.Builder.AI.Luis/4"));
         }
 

@@ -4,6 +4,9 @@
 using System;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Reflection;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Configuration;
@@ -162,6 +165,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 request.Headers.Add("Authorization", $"EndpointKey {_endpoint.EndpointKey}");
             }
 
+            AddUserAgent(request);
+
             var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
@@ -196,6 +201,21 @@ namespace Microsoft.Bot.Builder.AI.QnA
             await turnContext.SendActivityAsync(traceActivity).ConfigureAwait(false);
 
             return result;
+        }
+
+        private void AddUserAgent(HttpRequestMessage request)
+        {
+            // Bot Builder Package name and version
+            var assemblyName = this.GetType().Assembly.GetName();
+            request.Headers.UserAgent.Add(new ProductInfoHeaderValue(assemblyName.Name, assemblyName.Version.ToString()));
+
+            // Platform information: OS and language runtime
+            var framework = Assembly
+                .GetEntryAssembly()?
+                .GetCustomAttribute<TargetFrameworkAttribute>()?
+                .FrameworkName;
+            var comment = $"({Environment.OSVersion.VersionString};{framework})";
+            request.Headers.UserAgent.Add(new ProductInfoHeaderValue(comment));
         }
 
         // The old version of the protocol returns the id in a field called qnaId the

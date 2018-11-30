@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            // grab the user-agent so we can examine it after the call completes
+            // Grab the user-agent so we can examine it after the call completes.
             UserAgent = request.Headers.UserAgent.ToString();
 
             return Task.FromResult(new HttpResponseMessage
