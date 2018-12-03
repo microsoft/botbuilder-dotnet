@@ -24,6 +24,20 @@ namespace Microsoft.Bot.Builder.Dialogs
             _dialogs = new DialogSet();
         }
 
+        public new IBotTelemetryClient TelemetryClient
+        {
+            get
+            {
+                return base.TelemetryClient;
+            }
+
+            set
+            {
+                _dialogs.SetTelemetryClient(value);
+                base.TelemetryClient = value;
+            }
+        }
+
         protected string InitialDialogId { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default(CancellationToken))

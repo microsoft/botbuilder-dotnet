@@ -86,5 +86,22 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             return null;
         }
+
+        /// <summary>
+        /// Sets the IBotTelemetryClient for all the dialogs in the set.
+        /// </summary>
+        /// <param name="telemetryClient">The new IBotTelemetryClient to use in all dialogs.</param>
+        public void SetTelemetryClient(IBotTelemetryClient telemetryClient)
+        {
+            if (telemetryClient == null)
+            {
+                throw new ArgumentNullException(nameof(telemetryClient));
+            }
+
+            foreach (var dialog in _dialogs.Values)
+            {
+                dialog.TelemetryClient = telemetryClient;
+            }
+        }
     }
 }
