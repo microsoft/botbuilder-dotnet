@@ -44,6 +44,10 @@ namespace Microsoft.Bot.Schema
         /// <param name="localTimestamp">Contains the date and time that the
         /// message was sent, in local time, expressed in ISO-8601 format.
         /// For example, 2016-09-23T13:07:49.4714686-07:00.</param>
+        /// <param name="localTimezone">Contains the name of the timezone in
+        /// which the message, in local time, expressed in IANA Time Zone
+        /// database format.
+        /// For example, America/Los_Angeles.</param>
         /// <param name="serviceUrl">Contains the URL that specifies the
         /// channel's service endpoint. Set by the channel.</param>
         /// <param name="channelId">Contains an ID that uniquely identifies the
@@ -117,7 +121,7 @@ namespace Microsoft.Bot.Schema
         /// recipient.</param>
         /// <param name="importance">The importance of the activity. Possible
         /// values include: 'low', 'normal', 'high'</param>
-        /// <param name="deliveryMode">A delivery hint to  signal to the
+        /// <param name="deliveryMode">A delivery hint to signal to the
         /// recipient alternate delivery paths for the activity.
         /// The default delivery mode is "default". Possible values include:
         /// 'normal', 'notification'</param>
@@ -127,12 +131,13 @@ namespace Microsoft.Bot.Schema
         /// highlight when the activity contains a ReplyToId value.</param>
         /// <param name="semanticAction">An optional programmatic action
         /// accompanying this request</param>
-        public Activity(string type = default(string), string id = default(string), System.DateTimeOffset? timestamp = default(System.DateTimeOffset?), System.DateTimeOffset? localTimestamp = default(System.DateTimeOffset?), string serviceUrl = default(string), string channelId = default(string), ChannelAccount from = default(ChannelAccount), ConversationAccount conversation = default(ConversationAccount), ChannelAccount recipient = default(ChannelAccount), string textFormat = default(string), string attachmentLayout = default(string), IList<ChannelAccount> membersAdded = default(IList<ChannelAccount>), IList<ChannelAccount> membersRemoved = default(IList<ChannelAccount>), IList<MessageReaction> reactionsAdded = default(IList<MessageReaction>), IList<MessageReaction> reactionsRemoved = default(IList<MessageReaction>), string topicName = default(string), bool? historyDisclosed = default(bool?), string locale = default(string), string text = default(string), string speak = default(string), string inputHint = default(string), string summary = default(string), SuggestedActions suggestedActions = default(SuggestedActions), IList<Attachment> attachments = default(IList<Attachment>), IList<Entity> entities = default(IList<Entity>), object channelData = default(object), string action = default(string), string replyToId = default(string), string label = default(string), string valueType = default(string), object value = default(object), string name = default(string), ConversationReference relatesTo = default(ConversationReference), string code = default(string), System.DateTimeOffset? expiration = default(System.DateTimeOffset?), string importance = default(string), string deliveryMode = default(string), IList<string> listenFor = default(IList<string>), IList<TextHighlight> textHighlights = default(IList<TextHighlight>), SemanticAction semanticAction = default(SemanticAction))
+        public Activity(string type = default(string), string id = default(string), System.DateTimeOffset? timestamp = default(System.DateTimeOffset?), System.DateTimeOffset? localTimestamp = default(System.DateTimeOffset?), string serviceUrl = default(string), string channelId = default(string), ChannelAccount from = default(ChannelAccount), ConversationAccount conversation = default(ConversationAccount), ChannelAccount recipient = default(ChannelAccount), string textFormat = default(string), string attachmentLayout = default(string), IList<ChannelAccount> membersAdded = default(IList<ChannelAccount>), IList<ChannelAccount> membersRemoved = default(IList<ChannelAccount>), IList<MessageReaction> reactionsAdded = default(IList<MessageReaction>), IList<MessageReaction> reactionsRemoved = default(IList<MessageReaction>), string topicName = default(string), bool? historyDisclosed = default(bool?), string locale = default(string), string text = default(string), string speak = default(string), string inputHint = default(string), string summary = default(string), SuggestedActions suggestedActions = default(SuggestedActions), IList<Attachment> attachments = default(IList<Attachment>), IList<Entity> entities = default(IList<Entity>), object channelData = default(object), string action = default(string), string replyToId = default(string), string label = default(string), string valueType = default(string), object value = default(object), string name = default(string), ConversationReference relatesTo = default(ConversationReference), string code = default(string), System.DateTimeOffset? expiration = default(System.DateTimeOffset?), string importance = default(string), string deliveryMode = default(string), IList<string> listenFor = default(IList<string>), IList<TextHighlight> textHighlights = default(IList<TextHighlight>), SemanticAction semanticAction = default(SemanticAction), string localTimezone = default(string))
         {
             Type = type;
             Id = id;
             Timestamp = timestamp;
             LocalTimestamp = localTimestamp;
+            LocalTimezone = localTimezone;
             ServiceUrl = serviceUrl;
             ChannelId = channelId;
             From = from;
@@ -208,6 +213,15 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "localTimestamp")]
         public System.DateTimeOffset? LocalTimestamp { get; set; }
+
+        /// <summary>
+        /// Gets or sets contains the name of the timezone in which the
+        /// message, in local time, expressed in IANA Time Zone database
+        /// format.
+        /// For example, America/Los_Angeles.
+        /// </summary>
+        [JsonProperty(PropertyName = "localTimezone")]
+        public string LocalTimezone { get; set; }
 
         /// <summary>
         /// Gets or sets contains the URL that specifies the channel's service
@@ -429,7 +443,7 @@ namespace Microsoft.Bot.Schema
         public string Importance { get; set; }
 
         /// <summary>
-        /// Gets or sets a delivery hint to  signal to the recipient alternate
+        /// Gets or sets a delivery hint to signal to the recipient alternate
         /// delivery paths for the activity.
         /// The default delivery mode is "default". Possible values include:
         /// 'normal', 'notification'
