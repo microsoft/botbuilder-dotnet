@@ -1,6 +1,19 @@
-﻿<Project>
-  <!-- -->
-  <Target Name="BotConfigurationValidation" AfterTargets="CoreBuild">
-    <BotConfigCheckerTask ProjectPath="$(MSBuildProjectDirectory)" />
+﻿<Project TreatAsLocalProperty="LocalRequireEndpoints;LocalForbidEndpoints;LocalForbidSpacesInProjectName;LocalRequireBotFile;LocalRequireLuisKey;LocalRequireQnAMakerKey">
+  <PropertyGroup>
+    <LocalRequireEndpoints Condition="'$(RequireEndpoints)' == ''" >Production</LocalRequireEndpoints>
+    <LocalRequireEndpoints Condition="'$(RequireEndpoints)' != ''" >$(RequireEndpoints)</LocalRequireEndpoints>
+    <LocalForbidEndpoints Condition="'$(ForbidEndpoints)' == ''" >Development</LocalForbidEndpoints>
+    <LocalForbidEndpoints Condition="'$(ForbidEndpoints)' != ''" >$(ForbidEndpoints)</LocalForbidEndpoints>
+    <LocalForbidSpacesInProjectName Condition="'$(ForbidSpacesInProjectName)' == ''" >true</LocalForbidSpacesInProjectName>
+    <LocalForbidSpacesInProjectName Condition="'$(ForbidSpacesInProjectName)' != ''" >$(ForbidSpacesInProjectName)</LocalForbidSpacesInProjectName>
+    <LocalRequireBotFile Condition="'$(RequireBotFile)' == ''" >true</LocalRequireBotFile>
+    <LocalRequireBotFile Condition="'$(RequireBotFile)' != ''" >$(RequireBotFile)</LocalRequireBotFile>
+    <LocalRequireLuisKey Condition="'$(RequireLuisKey)' == ''" >true</LocalRequireLuisKey>
+    <LocalRequireLuisKey Condition="'$(RequireLuisKey)' != ''" >$(RequireLuisKey)</LocalRequireLuisKey>
+    <LocalRequireQnAMakerKey Condition="'$(RequireQnAMakerKey)' == ''" >true</LocalRequireQnAMakerKey>
+    <LocalRequireQnAMakerKey Condition="'$(RequireQnAMakerKey)' != ''" >$(RequireQnAMakerKey)</LocalRequireQnAMakerKey>
+  </PropertyGroup>
+  <Target Name="BotConfigurationValidation" BeforeTargets="Publish" Condition="$(DisablePublishValidation) != 'true'">
+    <Exec Command="dotnet $(NuGetPackageRoot)Microsoft.Bot.PublishValidation\1.0.0\lib\netcoreapp2.1\Microsoft.Bot.PublishValidation.dll $(MSBuildProjectDirectory) $(LocalRequireEndpoints) $(LocalForbidEndpoints) $(ForbidSpacesInProjectName) $(RequireBotFile) $(RequireLuisKey) $(RequireQnAMakerKey)"/>
   </Target>
 </Project>
