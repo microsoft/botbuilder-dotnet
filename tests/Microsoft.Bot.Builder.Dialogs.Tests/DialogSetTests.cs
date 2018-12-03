@@ -80,6 +80,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await Task.CompletedTask;
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public async Task DialogSet_NullTelemetrySet()
+        {
+
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogStateProperty = convoState.CreateProperty<DialogState>("dialogstate");
+            var ds = new DialogSet(dialogStateProperty)
+                .Add(new WaterfallDialog("A"))
+                .Add(new WaterfallDialog("B"));
+            ds.SetTelemetryClient(null);
+        }
+
+
         private class MyBotTelemetryClient : IBotTelemetryClient
         {
             public MyBotTelemetryClient()
