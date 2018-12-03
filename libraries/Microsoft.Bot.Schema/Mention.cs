@@ -32,8 +32,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="mentioned">The mentioned user</param>
         /// <param name="text">Sub Text which represents the mention (can be
         /// null or empty)</param>
-        /// <param name="type">Entity Type (typically from schema.org
-        /// types)</param>
+        /// <param name="type">Type of this entity (RFC 3987 IRI)</param>
         public Mention(ChannelAccount mentioned = default(ChannelAccount), string text = default(string), string type = default(string))
         {
             Mentioned = mentioned;
@@ -61,7 +60,7 @@ namespace Microsoft.Bot.Schema
         public string Text { get; set; }
 
         /// <summary>
-        /// Gets or sets entity Type (typically from schema.org types)
+        /// Gets or sets type of this entity (RFC 3987 IRI)
         /// </summary>
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }

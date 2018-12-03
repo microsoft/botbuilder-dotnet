@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <param name="id">ID of this action</param>
         /// <param name="entities">Entities associated with this action</param>
-        public SemanticAction(string id = default(string), IDictionary<string, object> entities = default(IDictionary<string, object>))
+        public SemanticAction(string id = default(string), IDictionary<string, Entity> entities = default(IDictionary<string, Entity>))
         {
             Id = id;
             Entities = entities;
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets entities associated with this action
         /// </summary>
         [JsonProperty(PropertyName = "entities")]
-        public IDictionary<string, object> Entities { get; set; }
+        public IDictionary<string, Entity> Entities { get; set; }
 
     }
 }
