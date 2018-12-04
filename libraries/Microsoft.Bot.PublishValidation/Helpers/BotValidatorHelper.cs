@@ -193,8 +193,8 @@ namespace Microsoft.Bot.PublishValidation
             // If there is at least one missing endpoint, the method will return an error message listing all of them
             if (missingEndpointsList.Count() != 0)
             {
-                missingEndpoints = string.Join("\n\t*", missingEndpointsList);
-                missingEndpoints = "\n\t*" + missingEndpoints;
+                missingEndpoints = string.Join(", ", missingEndpointsList);
+                //missingEndpoints = "\n\t*" + missingEndpoints;
                 return false;
             }
 
@@ -334,12 +334,12 @@ namespace Microsoft.Bot.PublishValidation
                 IEnumerable<string> requiredEP = requiredEndpoints.Trim().Split(',').Select(ep => ep.Trim()).ToList();
 
                 // Removes from the forbidden endpoints those who also are required
-                string finalForbiddenEP = string.Join(",", forbiddenEP.Except(requiredEP));
+                string finalForbiddenEP = string.Join(", ", forbiddenEP.Except(requiredEP));
 
                 // Gets the forbidden endpoints repeated in the required list
-                string repeteadForbiddenEP = string.Join("\n\t*", forbiddenEP.Except(forbiddenEP.Except(requiredEP)));
+                string repeteadForbiddenEP = string.Join(", ", forbiddenEP.Except(forbiddenEP.Except(requiredEP)));
 
-                repeteadForbiddenEP = "\n\t*" + repeteadForbiddenEP;
+                //repeteadForbiddenEP = "\n\t*" + repeteadForbiddenEP;
 
                 errorMsg = $"The next forbidden endpoints won't be checked because they also appear as required:{ repeteadForbiddenEP }";
 
