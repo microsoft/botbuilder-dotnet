@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -104,15 +105,23 @@ namespace Microsoft.Bot.Builder
             // flush transcript at end of turn
             while (transcript.Count > 0)
             {
-                try
-                {
-                    var activity = transcript.Dequeue();
-                    await logger.LogActivityAsync(activity).ConfigureAwait(false);
-                }
-                catch (Exception err)
-                {
-                    System.Diagnostics.Trace.TraceError($"Transcript logActivity failed with {err}");
-                }
+                var activity = transcript.Dequeue();
+
+#pragma warning disable 4014
+                logger.LogActivityAsync(activity).ContinueWith(
+                    task =>
+                    {
+                        try
+                        {
+                            task.Wait();
+                        }
+                        catch (Exception err)
+                        {
+                            Trace.TraceError($"Transcript logActivity failed with {err}");
+                        }
+                    },
+                    cancellationToken);
+#pragma warning restore 4014
             }
         }
 
