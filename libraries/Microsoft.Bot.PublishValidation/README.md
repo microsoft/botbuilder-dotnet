@@ -21,7 +21,6 @@ There are several validation checks available at the moment. These are the follo
 - **RequireBotFile**:
     - Possible values: 'True' or 'False'
     - Description: Existence of a '.bot' file
-- Internal structure of the configuration file:
 - **RequireEndpoints**: 
     - Possible values: List of comma separated values
     - Description: Required endpoints inside the configuration file
