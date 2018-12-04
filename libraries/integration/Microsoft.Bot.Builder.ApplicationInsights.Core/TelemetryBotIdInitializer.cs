@@ -36,7 +36,8 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core
 
             if (items != null)
             {
-                if ((telemetry is RequestTelemetry || telemetry is EventTelemetry) && items.ContainsKey(BotActivityKey))
+                if ((telemetry is RequestTelemetry || telemetry is EventTelemetry || telemetry is TraceTelemetry)
+                    && items.ContainsKey(BotActivityKey))
                 {
                     if (items[BotActivityKey] is JObject body)
                     {

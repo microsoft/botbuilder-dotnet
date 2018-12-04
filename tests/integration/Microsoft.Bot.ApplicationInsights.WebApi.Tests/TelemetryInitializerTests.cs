@@ -68,6 +68,99 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
             Assert.IsTrue(telem.Properties["hello"] == "value");
             Assert.IsTrue(telem.Metrics["metric"] == 0.6);
         }
+
+        [TestMethod]
+        public void VerifyTracePropoerties()
+        {
+
+            var configuration = new TelemetryConfiguration();
+            var sentItems = new List<ITelemetry>();
+            var mockTelemetryChannel = new Mock<ITelemetryChannel>();
+            mockTelemetryChannel.Setup(c => c.Send(It.IsAny<ITelemetry>()))
+                            .Callback<ITelemetry>((telemetry) => sentItems.Add(telemetry))
+                            .Verifiable();
+            configuration.TelemetryChannel = mockTelemetryChannel.Object;
+            configuration.InstrumentationKey = Guid.NewGuid().ToString();
+
+            // Mock http context
+            var httpContext = new HttpContext(
+                    new HttpRequest("", "http://google.com", ""),
+                    new HttpResponse(new StringWriter())
+                );
+            HttpContext.Current = httpContext;
+
+            // Simulate what Middleware does to read body
+            var fromID = "FROMID";
+            var channelID = "CHANNELID";
+            var conversationID = "CONVERSATIONID";
+            var activityID = "ACTIVITYID";
+            var activity = Activity.CreateMessageActivity();
+            activity.From = new ChannelAccount(fromID);
+            activity.ChannelId = channelID;
+            activity.Conversation = new ConversationAccount(false, "CONVOTYPE", conversationID);
+            activity.Id = activityID;
+            var activityBody = JObject.FromObject(activity);
+            HttpContext.Current.Items.Add(TelemetryBotIdInitializer.BotActivityKey, activityBody);
+            configuration.TelemetryInitializers.Add(new TelemetryBotIdInitializer());
+            var telemetryClient = new TelemetryClient(configuration);
+
+            telemetryClient.TrackTrace("test");
+
+            Assert.IsTrue(sentItems.Count == 1);
+            var telem = sentItems[0] as TraceTelemetry;
+            Assert.IsTrue(telem != null);
+            Assert.IsTrue(telem.Properties["activityId"] == activityID);
+            Assert.IsTrue(telem.Properties["activityType"] == "message");
+            Assert.IsTrue(telem.Context.Session.Id == conversationID);
+            Assert.IsTrue(telem.Context.User.Id == channelID + fromID);
+        }
+
+        [TestMethod]
+        public void VerifyRequestPropoerties()
+        {
+
+            var configuration = new TelemetryConfiguration();
+            var sentItems = new List<ITelemetry>();
+            var mockTelemetryChannel = new Mock<ITelemetryChannel>();
+            mockTelemetryChannel.Setup(c => c.Send(It.IsAny<ITelemetry>()))
+                            .Callback<ITelemetry>((telemetry) => sentItems.Add(telemetry))
+                            .Verifiable();
+            configuration.TelemetryChannel = mockTelemetryChannel.Object;
+            configuration.InstrumentationKey = Guid.NewGuid().ToString();
+
+            // Mock http context
+            var httpContext = new HttpContext(
+                    new HttpRequest("", "http://google.com", ""),
+                    new HttpResponse(new StringWriter())
+                );
+            HttpContext.Current = httpContext;
+
+            // Simulate what Middleware does to read body
+            var fromID = "FROMID";
+            var channelID = "CHANNELID";
+            var conversationID = "CONVERSATIONID";
+            var activityID = "ACTIVITYID";
+            var activity = Activity.CreateMessageActivity();
+            activity.From = new ChannelAccount(fromID);
+            activity.ChannelId = channelID;
+            activity.Conversation = new ConversationAccount(false, "CONVOTYPE", conversationID);
+            activity.Id = activityID;
+            var activityBody = JObject.FromObject(activity);
+            HttpContext.Current.Items.Add(TelemetryBotIdInitializer.BotActivityKey, activityBody);
+            configuration.TelemetryInitializers.Add(new TelemetryBotIdInitializer());
+            var telemetryClient = new TelemetryClient(configuration);
+
+            telemetryClient.TrackRequest("Foo", DateTimeOffset.Now, TimeSpan.FromSeconds(1.0), "response", true);
+
+            Assert.IsTrue(sentItems.Count == 1);
+            var telem = sentItems[0] as RequestTelemetry;
+            Assert.IsTrue(telem != null);
+            Assert.IsTrue(telem.Properties["activityId"] == activityID);
+            Assert.IsTrue(telem.Properties["activityType"] == "message");
+            Assert.IsTrue(telem.Context.Session.Id == conversationID);
+            Assert.IsTrue(telem.Context.User.Id == channelID + fromID);
+        }
+
         [TestMethod]
         public void InvalidMessage_NoConversation()
         {
