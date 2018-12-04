@@ -14,6 +14,6 @@
     <LocalRequireQnAMakerKey Condition="'$(RequireQnAMakerKey)' != ''" >$(RequireQnAMakerKey)</LocalRequireQnAMakerKey>
   </PropertyGroup>
   <Target Name="BotConfigurationValidation" BeforeTargets="Publish" Condition="$(DisablePublishValidation) != 'true'">
-    <Exec Command="dotnet $(NuGetPackageRoot)Microsoft.Bot.PublishValidation\1.0.0\lib\netcoreapp2.1\Microsoft.Bot.PublishValidation.dll $(MSBuildProjectDirectory) $(LocalRequireEndpoints) $(LocalForbidEndpoints) $(ForbidSpacesInProjectName) $(RequireBotFile) $(RequireLuisKey) $(RequireQnAMakerKey)"/>
+    <Exec Command="dotnet $(NuGetPackageRoot)Microsoft.Bot.PublishValidation\4.1.5\lib\netcoreapp2.1\Microsoft.Bot.PublishValidation.dll $(MSBuildProjectDirectory) $(LocalRequireEndpoints) $(LocalForbidEndpoints) $(ForbidSpacesInProjectName) $(RequireBotFile) $(RequireLuisKey) $(RequireQnAMakerKey)"/>
   </Target>
 </Project>

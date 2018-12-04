@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <ToolCommandName>bot-validate</ToolCommandName>
+    <Version>4.1.5</Version>
     <PackageId>Microsoft.Bot.PublishValidation</PackageId>
     <Description>Task for validating the configuration of bot projects before publishing</Description>
     <Summary>Summary</Summary>
