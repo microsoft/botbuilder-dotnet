@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.IsTrue(ds.Find("B").TelemetryClient is NullBotTelemetryClient, "A not NullBotTelemetryClient");
 
             var myTelemetryClient = new MyBotTelemetryClient();
-            ds.SetTelemetryClient(myTelemetryClient);
+            ds.TelemetryClient = myTelemetryClient;
 
             Assert.IsTrue(ds.Find("A").TelemetryClient is MyBotTelemetryClient, "A not MyBotTelemetryClient");
             Assert.IsTrue(ds.Find("B").TelemetryClient is MyBotTelemetryClient, "A not MyBotTelemetryClient");
@@ -81,7 +81,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public async Task DialogSet_NullTelemetrySet()
         {
 
@@ -90,7 +89,50 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var ds = new DialogSet(dialogStateProperty)
                 .Add(new WaterfallDialog("A"))
                 .Add(new WaterfallDialog("B"));
-            ds.SetTelemetryClient(null);
+
+            ds.TelemetryClient = new MyBotTelemetryClient();
+            ds.TelemetryClient = null;
+            Assert.IsTrue(ds.Find("A").TelemetryClient is NullBotTelemetryClient, "A not NullBotTelemetryClient");
+            Assert.IsTrue(ds.Find("B").TelemetryClient is NullBotTelemetryClient, "A not NullBotTelemetryClient");
+            await Task.CompletedTask;
+
+        }
+
+        [TestMethod]
+        public async Task DialogSet_AddTelemetrySet()
+        {
+
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogStateProperty = convoState.CreateProperty<DialogState>("dialogstate");
+            var ds = new DialogSet(dialogStateProperty)
+                .Add(new WaterfallDialog("A"))
+                .Add(new WaterfallDialog("B"));
+
+            ds.TelemetryClient = new MyBotTelemetryClient();
+            ds.Add(new WaterfallDialog("C"));
+
+            Assert.IsTrue(ds.Find("C").TelemetryClient is MyBotTelemetryClient, "C (added dialog) not MyBotTelemetryClient");
+            await Task.CompletedTask;
+        }
+
+        [TestMethod]
+        public async Task DialogSet_HeterogeneousLoggers()
+        {
+
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogStateProperty = convoState.CreateProperty<DialogState>("dialogstate");
+            var ds = new DialogSet(dialogStateProperty)
+                .Add(new WaterfallDialog("A"))
+                .Add(new WaterfallDialog("B"));
+            ds.Add(new WaterfallDialog("C"));
+
+            // Make sure we can override (after Adding) the TelemetryClient and "sticks"
+            ds.Find("C").TelemetryClient = new MyBotTelemetryClient();
+
+            Assert.IsTrue(ds.Find("A").TelemetryClient is NullBotTelemetryClient, "A not NullBotTelemetryClient");
+            Assert.IsTrue(ds.Find("B").TelemetryClient is NullBotTelemetryClient, "B not NullBotTelemetryClient");
+            Assert.IsTrue(ds.Find("C").TelemetryClient is MyBotTelemetryClient, "C (added dialog) not MyBotTelemetryClient");
+            await Task.CompletedTask;
         }
 
 

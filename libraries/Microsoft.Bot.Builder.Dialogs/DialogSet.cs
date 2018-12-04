@@ -15,10 +15,12 @@ namespace Microsoft.Bot.Builder.Dialogs
     {
         private readonly IStatePropertyAccessor<DialogState> _dialogState;
         private readonly IDictionary<string, Dialog> _dialogs = new Dictionary<string, Dialog>();
+        private IBotTelemetryClient _telemetryClient;
 
         public DialogSet(IStatePropertyAccessor<DialogState> dialogState)
         {
             _dialogState = dialogState ?? throw new ArgumentNullException($"missing {nameof(dialogState)}");
+            _telemetryClient = NullBotTelemetryClient.Instance;
         }
 
         internal DialogSet()
@@ -26,6 +28,29 @@ namespace Microsoft.Bot.Builder.Dialogs
             // TODO: This is only used by ComponentDialog and future release
             // will refactor to use IStatePropertyAccessor from context
             _dialogState = null;
+            _telemetryClient = NullBotTelemetryClient.Instance;
+        }
+
+        /// <summary>
+        /// Gets or sets or set the <see cref="IBotTelemetryClient"/> to use.
+        /// When setting this property, all the contained dialogs TelemetryClient properties are also set.
+        /// </summary>
+        /// <value>The <see cref="IBotTelemetryClient"/> to use when logging.</value>
+        public IBotTelemetryClient TelemetryClient
+        {
+            get
+            {
+                return _telemetryClient;
+            }
+
+            set
+            {
+                _telemetryClient = value ?? NullBotTelemetryClient.Instance;
+                foreach (var dialog in _dialogs.Values)
+                {
+                    dialog.TelemetryClient = _telemetryClient;
+                }
+            }
         }
 
         /// <summary>
@@ -33,6 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dialog">The dialog to add.</param>
         /// <returns>The DialogSet for fluent calls to Add().</returns>
+        /// <remarks>Adding a new dialog will inherit the <see cref="IBotTelemetryClient"/> of the DialogSet.</remarks>
         public DialogSet Add(Dialog dialog)
         {
             if (dialog == null)
@@ -45,7 +71,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentException($"DialogSet.Add(): A dialog with an id of '{dialog.Id}' already added.");
             }
 
+            dialog.TelemetryClient = _telemetryClient;
             _dialogs[dialog.Id] = dialog;
+
             return this;
         }
 
@@ -85,23 +113,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return null;
-        }
-
-        /// <summary>
-        /// Sets the IBotTelemetryClient for all the dialogs in the set.
-        /// </summary>
-        /// <param name="telemetryClient">The new IBotTelemetryClient to use in all dialogs.</param>
-        public void SetTelemetryClient(IBotTelemetryClient telemetryClient)
-        {
-            if (telemetryClient == null)
-            {
-                throw new ArgumentNullException(nameof(telemetryClient));
-            }
-
-            foreach (var dialog in _dialogs.Values)
-            {
-                dialog.TelemetryClient = telemetryClient;
-            }
         }
     }
 }

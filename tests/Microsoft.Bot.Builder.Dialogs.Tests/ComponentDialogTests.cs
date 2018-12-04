@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
-        public async Task TelemtryBasicWaterfallTest()
+        public async Task TelemetryBasicWaterfallTest()
         {
             var testComponentDialog = new TestComponentDialog();
             Assert.IsTrue(testComponentDialog.TelemetryClient is NullBotTelemetryClient);
@@ -70,6 +70,60 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.IsTrue(testComponentDialog.FindDialog("number").TelemetryClient is MyBotTelemetryClient);
             await Task.CompletedTask;
         }
+
+        [TestMethod]
+        public async Task TelemetryHeterogeneousLoggerTest()
+        {
+            var testComponentDialog = new TestComponentDialog();
+            Assert.IsTrue(testComponentDialog.TelemetryClient is NullBotTelemetryClient);
+            Assert.IsTrue(testComponentDialog.FindDialog("test-waterfall").TelemetryClient is NullBotTelemetryClient);
+            Assert.IsTrue(testComponentDialog.FindDialog("number").TelemetryClient is NullBotTelemetryClient);
+
+            testComponentDialog.FindDialog("test-waterfall").TelemetryClient = new MyBotTelemetryClient();
+
+            Assert.IsTrue(testComponentDialog.FindDialog("test-waterfall").TelemetryClient is MyBotTelemetryClient);
+            Assert.IsTrue(testComponentDialog.FindDialog("number").TelemetryClient is NullBotTelemetryClient);
+            await Task.CompletedTask;
+        }
+
+
+        [TestMethod]
+        public async Task TelemetryAddWaterfallTest()
+        {
+            var testComponentDialog = new TestComponentDialog();
+            Assert.IsTrue(testComponentDialog.TelemetryClient is NullBotTelemetryClient);
+            Assert.IsTrue(testComponentDialog.FindDialog("test-waterfall").TelemetryClient is NullBotTelemetryClient);
+            Assert.IsTrue(testComponentDialog.FindDialog("number").TelemetryClient is NullBotTelemetryClient);
+
+            testComponentDialog.TelemetryClient = new MyBotTelemetryClient();
+            testComponentDialog.AddDialog(new WaterfallDialog("C"));
+            
+            Assert.IsTrue(testComponentDialog.FindDialog("C").TelemetryClient is MyBotTelemetryClient);
+            await Task.CompletedTask;
+        }
+
+        [TestMethod]
+        public async Task TelemetryNullUpdateAfterAddTest()
+        {
+            var testComponentDialog = new TestComponentDialog();
+            Assert.IsTrue(testComponentDialog.TelemetryClient is NullBotTelemetryClient);
+            Assert.IsTrue(testComponentDialog.FindDialog("test-waterfall").TelemetryClient is NullBotTelemetryClient);
+            Assert.IsTrue(testComponentDialog.FindDialog("number").TelemetryClient is NullBotTelemetryClient);
+
+            testComponentDialog.TelemetryClient = new MyBotTelemetryClient();
+            testComponentDialog.AddDialog(new WaterfallDialog("C"));
+
+            Assert.IsTrue(testComponentDialog.FindDialog("C").TelemetryClient is MyBotTelemetryClient);
+            testComponentDialog.TelemetryClient = null;
+
+            Assert.IsTrue(testComponentDialog.FindDialog("test-waterfall").TelemetryClient is NullBotTelemetryClient);
+            Assert.IsTrue(testComponentDialog.FindDialog("number").TelemetryClient is NullBotTelemetryClient);
+            Assert.IsTrue(testComponentDialog.FindDialog("C").TelemetryClient is NullBotTelemetryClient);
+
+            await Task.CompletedTask;
+        }
+
+
 
         [TestMethod]
         public async Task BasicComponentDialogTest()
