@@ -1,6 +1,8 @@
 ﻿namespace Microsoft.Bot.PublishValidation
 {
     using System;
+    using System.Collections;
+    using System.Collections.Generic;
     using Microsoft.Bot.Configuration;
 
     class Program
@@ -11,8 +13,6 @@
 
         public static int Main(string[] args)
         {
-            Console.WriteLine("Args: " + string.Join(", ", args));
-
             var projectPath = args[0].ToString();
             var requireEndpoints = args[1].ToString();
             var forbidEndpoints = args[2].ToString();
@@ -34,11 +34,16 @@
                         requireQnAMakerKey
                     );
 
-                bool validationResult = BotValidatorHelper.BotFileIsValid(projectPath, options, out errorMsg);
+                IEnumerable<NotificationMessage> messages = new List<NotificationMessage>();
+
+                bool validationResult = BotValidatorHelper.BotFileIsValid(projectPath, options, ref messages);
 
                 if(!validationResult)
                 {
-                    Console.WriteLine($"Errors found:\n{ errorMsg }");
+                    foreach (var message in messages)
+                    {
+                        Console.WriteLine(((NotificationMessage)message).ToString());
+                    }
                 }
 
                 return validationResult ? OK : ERROR;
