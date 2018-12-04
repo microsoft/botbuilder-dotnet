@@ -107,6 +107,7 @@ namespace Microsoft.Bot.Builder
             {
                 var activity = transcript.Dequeue();
 
+                // As we are deliberately not using await, disable teh associated warning.
 #pragma warning disable 4014
                 logger.LogActivityAsync(activity).ContinueWith(
                     task =>
