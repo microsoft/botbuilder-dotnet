@@ -32,3 +32,12 @@ In order to change the behavior of this validations, you can create your own pro
 </PropertyGroup>
 ------------------------------------------------------------------------------
 
+> Note: You don't need to add all of them, only the ones you want to modify.
+
+Also, there's an option to disable the validation entirely, and for doing so, all you have to do is add the following property to your .csproj file:
+
+------------------------------------------------------------------------------
+<PropertyGroup>
+    <DisablePublishValidation>True</DisablePublishValidation>
+</PropertyGroup>
+------------------------------------------------------------------------------
