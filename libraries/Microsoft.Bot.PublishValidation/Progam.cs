@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     class Program
     {
@@ -38,10 +39,7 @@
 
                 if(!validationResult)
                 {
-                    foreach (var message in messages)
-                    {
-                        Console.WriteLine(((NotificationMessage)message).ToString());
-                    }
+                    Console.WriteLine(GetErrorMessage(messages));
                 }
 
                 return validationResult ? OK : ERROR;
@@ -51,6 +49,18 @@
                 Console.WriteLine(ex.Message);
                 return ERROR;
             }
+        }
+
+        private static string GetErrorMessage(IEnumerable<NotificationMessage> messages)
+        {
+            string errorMessage = string.Empty;
+
+            foreach (var message in messages)
+            {
+                errorMessage += ((NotificationMessage)message).ToString() + "\n";
+            }
+            
+            return errorMessage;
         }
     }
 }
