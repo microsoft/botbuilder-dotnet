@@ -1,9 +1,7 @@
 ﻿namespace Microsoft.Bot.PublishValidation
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
-    using Microsoft.Bot.Configuration;
 
     class Program
     {

@@ -17,8 +17,8 @@ namespace Microsoft.Bot.PublishValidation
 
     public class BotValidatorHelper
     {
-        private const string forbiddenEndpoints = "Forbidden Endpoints";
-        private const string requiredEndpoints = "Required Endpoints";
+        private const string FORBIDDEN_ENDPOINTS = "Forbidden Endpoints";
+        private const string REQUIRED_ENDPOINTS = "Required Endpoints";
 
         /// <summary>
         /// Checks if a bot file is valid or not according to some configuration options
@@ -84,8 +84,8 @@ namespace Microsoft.Bot.PublishValidation
                     if (!BotValidatorHelper.ValidateEndpoints(botConfiguration, options.RequiredEndpoints, true, out missingEndpoints))
                     {
                         errorMsg = string.IsNullOrWhiteSpace(missingEndpoints) ?
-                            $"There isnt't any { requiredEndpoints } in the .bot file.\n" :
-                            $"The .bot file does not have the next { requiredEndpoints }: { missingEndpoints }";
+                            $"There isnt't any { REQUIRED_ENDPOINTS } in the .bot file.\n" :
+                            $"The .bot file does not have the next { REQUIRED_ENDPOINTS }: { missingEndpoints }";
 
                         message = new NotificationMessage(errorMsg, (int)NotificationMessageTypes.Error);
                         messages = messages.Append(message);
@@ -96,11 +96,28 @@ namespace Microsoft.Bot.PublishValidation
                 // Check if the .bot file does not contain the forbidded endpoints
                 if (!string.IsNullOrWhiteSpace(options.ForbiddenEndpoints))
                 {
-                    if (!BotValidatorHelper.ValidateEndpoints(botConfiguration, options.ForbiddenEndpoints, false, out missingEndpoints))
+                    string forbiddenEndpoints = options.ForbiddenEndpoints;
+
+                    // Checks that there isn't any forbidden endpoint in the required endpoint's list
+                    if (!string.IsNullOrWhiteSpace(options.RequiredEndpoints))
+                    {
+                        forbiddenEndpoints = FixForbiddenEndpoints(options.ForbiddenEndpoints, options.RequiredEndpoints, out errorMsg);
+
+                        // If there is at least one repeated endpoint in both required and forbidden list, then creates a warning to notify
+                        // that the repeated forbidden Endpoint wont be validated
+                        if (!string.IsNullOrWhiteSpace(errorMsg))
+                        {
+                            message = new NotificationMessage(errorMsg, (int)NotificationMessageTypes.Warning);
+                            messages = messages.Append(message);
+                        }
+                    }
+
+                    // Validates the forbidden endpoints
+                    if (!BotValidatorHelper.ValidateEndpoints(botConfiguration, forbiddenEndpoints, false, out missingEndpoints))
                     {
                         errorMsg = string.IsNullOrWhiteSpace(missingEndpoints) ?
-                            $"There isnt't any { forbiddenEndpoints } in the .bot file." :
-                            $"The .bot file have (but shouldn't have) the next { forbiddenEndpoints }: { missingEndpoints }";
+                            $"There isnt't any { FORBIDDEN_ENDPOINTS } in the .bot file." :
+                            $"The .bot file has (but shouldn't) the next { FORBIDDEN_ENDPOINTS }: { missingEndpoints }";
 
                         message = new NotificationMessage(errorMsg, (int)NotificationMessageTypes.Error);
                         messages = messages.Append(message);
@@ -300,6 +317,38 @@ namespace Microsoft.Bot.PublishValidation
                 return null;
 
             return botEndpoints;
+        }
+
+        /// <summary>
+        /// Deletes from the forbidden endpoint's list those who also appears in the required list
+        /// </summary>
+        /// <param name="forbiddenEndpoints"></param>
+        /// <param name="requiredEndpoints"></param>
+        /// <param name="errorMsg"></param>
+        /// <returns></returns>
+        private static string FixForbiddenEndpoints(string forbiddenEndpoints, string requiredEndpoints, out string errorMsg)
+        {
+            try
+            {
+                IEnumerable<string> forbiddenEP = forbiddenEndpoints.Trim().Split(',').Select(ep => ep.Trim()).ToList();
+                IEnumerable<string> requiredEP = requiredEndpoints.Trim().Split(',').Select(ep => ep.Trim()).ToList();
+
+                // Removes from the forbidden endpoints those who also are required
+                string finalForbiddenEP = string.Join(",", forbiddenEP.Except(requiredEP));
+
+                // Gets the forbidden endpoints repeated in the required list
+                string repeteadForbiddenEP = string.Join("\n\t*", forbiddenEP.Except(forbiddenEP.Except(requiredEP)));
+
+                repeteadForbiddenEP = "\n\t*" + repeteadForbiddenEP;
+
+                errorMsg = $"The next forbidden endpoints won't be checked because they also appear as required:{ repeteadForbiddenEP }";
+
+                return finalForbiddenEP;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         /// <summary>
