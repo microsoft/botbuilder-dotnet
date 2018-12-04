@@ -24,7 +24,7 @@ namespace Microsoft.Bot.PublishValidation
         public override string ToString()
         {
             string notificationType = ((NotificationMessageTypes)this.type).ToString();
-            return $"({ notificationType }): { this.message }";
+            return $"{ notificationType }: { this.message }";
         }
     }
 }
