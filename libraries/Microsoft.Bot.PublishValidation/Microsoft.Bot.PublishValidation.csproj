@@ -1,13 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <Version Condition=" '$(PackageVersion)' == '' ">4.0.0-local</Version>
+    <Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
+    <PackageVersion Condition=" '$(PackageVersion)' == '' ">4.0.0-local</PackageVersion>
+    <PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
+    <Configurations>Debug;Release;Documentation;Debug - NuGet Packages;</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>true</DelaySign>
+    <AssemblyOriginatorKeyFile>..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+  
+  <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <ToolCommandName>bot-validate</ToolCommandName>
-    <Version>4.1.5</Version>
     <PackageId>Microsoft.Bot.PublishValidation</PackageId>
     <Description>Task for validating the configuration of bot projects before publishing</Description>
-    <Summary>Summary</Summary>
+    <Summary>Task for validating the configuration of bot projects before publishing</Summary>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -33,7 +46,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Bot.Configuration" Version="4.1.5" />
+    <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
+    <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
   </ItemGroup>
 
 </Project>
