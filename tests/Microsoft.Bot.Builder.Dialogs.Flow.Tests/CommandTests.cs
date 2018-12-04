@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             var flowDialog = new FlowDialog()
             {
                 Id = "TestDialog",
-                CallDialogId = "OneDialog",
+                DialogId = "OneDialog",
                 OnCompleted = new CallDialog("TwoDialog")
             };
             dialogs.Add(flowDialog);
@@ -124,7 +124,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             var flowDialog = new FlowDialog()
             {
                 Id = "TestDialog",
-                CallDialogId = "OneDialog",
+                DialogId = "OneDialog",
                 OnCompleted = new CommandSet()
                 {
                     Commands = {
@@ -158,7 +158,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             var flowDialog = new FlowDialog()
             {
                 Id = $"TestDialog",
-                CallDialogId = "ReturnText",
+                DialogId = "ReturnText",
                 OnCompleted = new Switch()
                 {
                     Condition = new CSharpExpression("State.DialogTurnResult.Result"),
@@ -198,7 +198,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             var flowDialog = new FlowDialog()
             {
                 Id = "TestDialog",
-                CallDialogId = "OneDialog"
+                DialogId = "OneDialog"
                 // OnCommand = null
             };
             dialogs.Add(flowDialog);
@@ -256,7 +256,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             var flowDialog = new FlowDialog()
             {
                 Id = $"TestDialog",
-                CallDialogId = "EchoDialog",
+                DialogId = "EchoDialog",
                 OnCompleted = new Switch()
                 {
                     Condition = new CSharpExpression("State.DialogTurnResult.Result"),

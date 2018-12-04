@@ -1,5 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Flow
 {
@@ -13,14 +15,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         }
 
         /// <summary>
-        /// Dialog to call
+        /// Innner dialog to call
         /// </summary>
-        public string CallDialogId { get; set; }
-
-        /// <summary>
-        /// Settings for the inner dialog
-        /// </summary>
-        public object CallDialogOptions { get; set; }
+        public string DialogId { get; set; }
 
         /// <summary>
         /// Command to perform when dialog is completed
@@ -37,10 +34,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dialogContext, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var state = dialogContext.ActiveDialog?.State;
-            options = options ?? this.CallDialogOptions;
+            options = MergeDefaultOptions(options);
             state[$"{this.Id}.options"] = options;
 
             return await BeginInnerDialog(dialogContext, options, cancellationToken);
+        }
+
+        private object MergeDefaultOptions(object options)
+        {
+            dynamic opts;
+            if (options != null && DefaultOptions != null)
+            {
+                opts = JObject.FromObject(options);
+                opts.Merge(this.DefaultOptions);
+            }
+            else
+            {
+                opts = options ?? this.DefaultOptions;
+            }
+
+            options = options ?? this.DefaultOptions;
+            return options;
         }
 
         /// <summary>
@@ -91,10 +105,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         {
             var state = dialogContext.ActiveDialog.State;
 
-            if (!string.IsNullOrEmpty(this.CallDialogId))
+            if (!string.IsNullOrEmpty(this.DialogId))
             {
                 // start the inner dialog
-                return await dialogContext.BeginDialogAsync(this.CallDialogId, options, cancellationToken);
+                return await dialogContext.BeginDialogAsync(this.DialogId, options, cancellationToken);
             }
 
             // call the IDialogAction handler

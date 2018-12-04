@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             dialog.AddDialog(new TextPrompt()
             {
                 Id = "NamePrompt",
-                Options = new PromptOptions()
+                DefaultOptions = new PromptOptions()
                 {
                     Prompt = new Activity(type: ActivityTypes.Message, text: "What is your name?"),
                     RetryPrompt = new Activity(type: ActivityTypes.Message, text: "Reprompt: What is your name?")
@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             var flowDialog = new FlowDialog()
             {
                 Id = "GetNameDialog",
-                CallDialogId = "NamePrompt",
+                DialogId = "NamePrompt",
                 OnCompleted = new CommandSet()
                 {
                     Commands = {
@@ -60,8 +60,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             flowDialog = new FlowDialog()
             {
                 Id = "GetAgeDialog",
-                CallDialogId = "NumberPrompt",
-                CallDialogOptions = new PromptOptions()
+                DialogId = "NumberPrompt",
+                DefaultOptions = new PromptOptions()
                 {
                     Prompt = new Activity(type: ActivityTypes.Message, text: "What is your age?"),
                     RetryPrompt = new Activity(type: ActivityTypes.Message, text: "Reprompt: What is your age?")

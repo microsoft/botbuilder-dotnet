@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.Dialogs.Flow
 {
@@ -14,15 +10,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     {
         public CallDialog() { }
 
-        public CallDialog(string dialogId) { this.DialogId = dialogId; }
+        public CallDialog(string dialogId, object options = null)
+        {
+            this.DialogId = dialogId;
+            this.Options = options;
+        }
 
+        /// <summary>
+        /// The dialog Id to call
+        /// </summary>
         public string DialogId { get; set; }
+
+        /// <summary>
+        /// The options for calling the dilaog
+        /// </summary>
+        public object Options { get; set; }
 
         public Task<DialogTurnResult> Execute(DialogContext dialogContext, object options, DialogTurnResult result, CancellationToken cancellationToken)
         {
             var state = dialogContext.ActiveDialog.State;
             state["DialogTurnResult"] = result;
-            return dialogContext.ReplaceDialogAsync(DialogId, null, cancellationToken);
+            return dialogContext.ReplaceDialogAsync(DialogId, Options, cancellationToken);
         }
     }
 }

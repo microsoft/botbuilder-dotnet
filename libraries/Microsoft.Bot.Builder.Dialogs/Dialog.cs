@@ -23,7 +23,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Unique id for the dialog
         /// </summary>
         private string _id;
+
         public string Id { get { return String.IsNullOrEmpty(_id) ? throw new ArgumentNullException(nameof(Id)) : _id; } set { this._id = value; } }
+
+        /// <summary>
+        /// Gets or sets default options for the dialog
+        /// </summary>
+        public object DefaultOptions { get; set; }
 
         /// <summary>
         /// Method called when a new dialog has been pushed onto the stack and is being activated.

@@ -33,26 +33,26 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            if (!(options is PromptOptions))
+            var promptOptions = Object.Assign<PromptOptions>(this.DefaultOptions, options);
+            if (!(promptOptions is PromptOptions))
             {
                 throw new ArgumentOutOfRangeException(nameof(options), "Prompt options are required for Prompt dialogs");
             }
 
             // Ensure prompts have input hint set
-            var opt = (PromptOptions)options;
-            if (opt.Prompt != null && string.IsNullOrEmpty(opt.Prompt.InputHint))
+            if (promptOptions.Prompt != null && string.IsNullOrEmpty(promptOptions.Prompt.InputHint))
             {
-                opt.Prompt.InputHint = InputHints.ExpectingInput;
+                promptOptions.Prompt.InputHint = InputHints.ExpectingInput;
             }
 
-            if (opt.RetryPrompt != null && string.IsNullOrEmpty(opt.RetryPrompt.InputHint))
+            if (promptOptions.RetryPrompt != null && string.IsNullOrEmpty(promptOptions.RetryPrompt.InputHint))
             {
-                opt.RetryPrompt.InputHint = InputHints.ExpectingInput;
+                promptOptions.RetryPrompt.InputHint = InputHints.ExpectingInput;
             }
 
             // Initialize prompt state
             var state = dc.ActiveDialog.State;
-            state[PersistedOptions] = opt;
+            state[PersistedOptions] = promptOptions;
             state[PersistedState] = new ExpandoObject();
 
             // Send initial prompt

@@ -29,8 +29,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             _validator = validator;
         }
 
-        public PromptOptions Options { get; set; }
-
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
@@ -39,26 +37,26 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Ensure prompts have input hint set
-            var opt = (options as PromptOptions) ?? this.Options;
+            var promptOptions = Object.Assign<PromptOptions>(this.DefaultOptions, options);
 
-            if (opt == null)
+            if (promptOptions == null)
             {
                 throw new ArgumentNullException(nameof(options), "Prompt options are required for Prompt dialogs");
             }
 
-            if (opt.Prompt != null && string.IsNullOrEmpty(opt.Prompt.InputHint))
+            if (promptOptions.Prompt != null && string.IsNullOrEmpty(promptOptions.Prompt.InputHint))
             {
-                opt.Prompt.InputHint = InputHints.ExpectingInput;
+                promptOptions.Prompt.InputHint = InputHints.ExpectingInput;
             }
 
-            if (opt.RetryPrompt != null && string.IsNullOrEmpty(opt.RetryPrompt.InputHint))
+            if (promptOptions.RetryPrompt != null && string.IsNullOrEmpty(promptOptions.RetryPrompt.InputHint))
             {
-                opt.RetryPrompt.InputHint = InputHints.ExpectingInput;
+                promptOptions.RetryPrompt.InputHint = InputHints.ExpectingInput;
             }
 
             // Initialize prompt state
             var state = dc.ActiveDialog.State;
-            state[PersistedOptions] = opt;
+            state[PersistedOptions] = promptOptions;
             state[PersistedState] = new ExpandoObject();
 
             // Send initial prompt

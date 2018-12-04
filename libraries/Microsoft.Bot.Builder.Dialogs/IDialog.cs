@@ -11,6 +11,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         string Id { get; }
 
         /// <summary>
+        /// Default options for this dialog
+        /// </summary>
+        object DefaultOptions { get; set; }
+
+        /// <summary>
         /// Method called when a new dialog has been pushed onto the stack and is being activated.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of conversation.</param>
