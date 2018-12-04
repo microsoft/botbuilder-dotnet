@@ -36,13 +36,17 @@ There are several validation checks available at the moment. These are the follo
 
 By default, these validations are all set like this:
 
-**ForbidSpacesInProjectName**: True
-**RequireBotFile**: True
-**RequireEndpoints**: Production
-**ForbidEndpoints**: Development
-**RequireLuisKey**: True
-**RequireQnAMakerKey**: True
-
+> ForbidSpacesInProjectName: True
+>
+> RequireBotFile: True
+>
+> RequireEndpoints: Production
+>
+> ForbidEndpoints: Development
+>
+> RequireLuisKey: True
+>
+> RequireQnAMakerKey: True
 
 In order to change the behavior of this validations, you can create your own properties in your `.csproj` file by adding the following code:
 
