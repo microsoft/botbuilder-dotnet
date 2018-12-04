@@ -1,13 +1,24 @@
 ﻿-- Microsoft.Bot.PublishValidation --
 
 This is a tool for validating a bot configuration prior to publishing it. At this moment, these are the available validation checks:
-- ForbidSpacesInProjectName: No spaces in the Project's name (this is due to a bug in .NET/Azure - https://github.com/aspnet/websdk/issues/237)
-- RequireBotFile: Existence of a '.bot' file
-- Internal structure of the configuration file:
-    - RequireEndpoints: Required endpoints  
-    - ForbidEndpoints: Forbidden endpoints
-    - RequireLuisKey: Existence of LUIS key
-    - RequireQnAMakerKey: Existence of QnA Maker key
+- ForbidSpacesInProjectName: 
+    - Possible values: 'True' or 'False'
+    - Description: No spaces in the Project's name (this is due to a bug in .NET/Azure - https://github.com/aspnet/websdk/issues/237)
+- RequireBotFile: 
+    - Possible values: 'True' or 'False'
+    - Description: Existence of a '.bot' file
+- RequireEndpoints: 
+    - Possible values: List of comma separated values
+    - Description: Required endpoints inside the configuration file
+- ForbidEndpoints: 
+    - Possible values: List of comma separated values
+    - Description: Forbidden endpoints inside the configuration file
+- RequireLuisKey: 
+    - Possible values: 'True' or 'False'
+    - Description: Existence of LUIS key inside the configuration file
+- RequireQnAMakerKey: 
+    - Possible values: 'True' or 'False'
+    - Description: Existence of QnA Maker key inside the configuration file
 
 By default, these validations are all set like this:
 
