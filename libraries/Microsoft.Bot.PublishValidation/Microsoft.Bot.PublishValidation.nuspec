@@ -15,7 +15,7 @@
     <copyright>$copyright$</copyright>
     <tags>bots ai botframework botbuilder</tags>
     <dependencies>
-      <dependency id="Microsoft.Bot.Configuration" version="4.1.5" />
+      <dependency id="Microsoft.Bot.Configuration" version="$version$" />
     </dependencies>
   </metadata>
   <files>
