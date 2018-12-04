@@ -725,6 +725,42 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual("default-value", value2);
         }
 
+        [TestMethod]
+        public async Task BotStateDelete()
+        {
+            var turnContext = TestUtilities.CreateEmptyContext();
+            turnContext.Activity.Conversation = new ConversationAccount { Id = "1234" };
+
+            var storage = new MemoryStorage(new Dictionary<string, JObject>());
+
+            // Turn 0
+            var botState1 = new ConversationState(storage);
+            (await botState1
+                .CreateProperty<TestPocoState>("test-name")
+                .GetAsync(turnContext, () => new TestPocoState())).Value = "test-value";
+            await botState1.SaveChangesAsync(turnContext);
+
+            // Turn 1
+            var botState2 = new ConversationState(storage);
+            var value1 = (await botState2
+                .CreateProperty<TestPocoState>("test-name")
+                .GetAsync(turnContext, () => new TestPocoState { Value = "default-value" })).Value;
+
+            Assert.AreEqual("test-value", value1);
+
+            // Turn 2
+            var botState3 = new ConversationState(storage);
+            await botState3.DeleteAsync(turnContext);
+
+            // Turn 3
+            var botState4 = new ConversationState(storage);
+            var value2 = (await botState4
+                .CreateProperty<TestPocoState>("test-name")
+                .GetAsync(turnContext, () => new TestPocoState { Value = "default-value" })).Value;
+
+            Assert.AreEqual("default-value", value2);
+        }
+
         public class TestBotState : BotState
         {
             public TestBotState(IStorage storage)
