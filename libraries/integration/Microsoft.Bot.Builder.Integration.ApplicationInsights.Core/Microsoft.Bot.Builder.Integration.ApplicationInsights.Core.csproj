@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version Condition=" '$(PackageVersion)' == '' ">4.2.0-local</Version>
+    <Version Condition=" '$(PackageVersion)' == '' ">4.0.0-local</Version>
     <Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
-    <PackageVersion Condition=" '$(PackageVersion)' == '' ">4.2.0-local</PackageVersion>
+    <PackageVersion Condition=" '$(PackageVersion)' == '' ">4.0.0-local</PackageVersion>
     <PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
     <Configurations>Debug;Release;Documentation;Debug - NuGet Packages;</Configurations>
   </PropertyGroup>
@@ -49,8 +49,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.5.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.1" />    
   </ItemGroup>
 
   <ItemGroup>

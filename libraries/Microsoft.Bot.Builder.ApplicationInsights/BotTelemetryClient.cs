@@ -86,8 +86,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights
         /// </summary>
         /// <param name="eventName">A name for the event.</param>
         /// <param name="properties">Named string values you can use to search and classify events.</param>
-        /// <param name="metrics">Measurements associated with this event.</param>
-        /// <remarks>For Application Insights, this maps to <cref="https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/application-insights/app-insights-api-custom-events-metrics.md#trackevent".</remarks>
+        /// <param name="metrics">Measurements associated with this event.</param>        
         public void TrackEvent(string eventName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
         {
             var telemetry = new EventTelemetry(eventName);

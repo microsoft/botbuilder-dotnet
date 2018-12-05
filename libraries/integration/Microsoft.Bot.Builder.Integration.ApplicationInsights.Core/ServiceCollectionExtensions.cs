@@ -5,10 +5,11 @@ using System;
 using System.Linq;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.Bot.Builder.ApplicationInsights;
 using Microsoft.Bot.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Bot.Builder.ApplicationInsights.Core
+namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
 {
     public static class ServiceCollectionExtensions
     {

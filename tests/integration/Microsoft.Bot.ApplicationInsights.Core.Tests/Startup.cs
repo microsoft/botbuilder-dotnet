@@ -8,7 +8,7 @@ using Microsoft.Bot.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
+namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 {
     internal class Startup
     {

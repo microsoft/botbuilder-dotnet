@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.ApplicationInsights.Core
+namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
 {
     public class TelemetrySaveBodyASPMiddleware
     {

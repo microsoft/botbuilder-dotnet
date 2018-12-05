@@ -3,7 +3,7 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.ApplicationInsights.WebApi.Tests
+namespace Microsoft.Bot.Integration.ApplicationInsights.WebApi.Tests
 {
         [TestClass]
         [TestCategory("ApplicationInsights")]

@@ -10,7 +10,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace Microsoft.Bot.Builder.ApplicationInsights.Tests
+namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
 {
     [TestClass]
     public class TelemetryWaterfallTests

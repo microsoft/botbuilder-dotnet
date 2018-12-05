@@ -10,7 +10,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.ApplicationInsights.WebApi
+namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi
 {
     /// <summary>
     /// Initializer that sets the user ID based on Bot data.

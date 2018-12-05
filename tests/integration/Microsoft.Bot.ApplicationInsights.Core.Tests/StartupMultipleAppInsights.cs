@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Bot.Builder.ApplicationInsights;
 using Microsoft.Bot.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
+namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 {
     internal class StartupMultipleAppInsights
     {

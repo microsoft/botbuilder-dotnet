@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
+namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 {
     internal class StartupVerifyNullTelemetry
     {
