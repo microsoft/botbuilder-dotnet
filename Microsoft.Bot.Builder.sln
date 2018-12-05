@@ -62,13 +62,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Configuration
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.TestBot.WebApi", "tests\Microsoft.Bot.Builder.TestBot.WebApi\Microsoft.Bot.Builder.TestBot.WebApi.csproj", "{298009D3-971D-4375-A2F2-04CFB168CED9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.ApplicationInsights.Core", "libraries\integration\Microsoft.Bot.Builder.ApplicationInsights.Core\Microsoft.Bot.Builder.ApplicationInsights.Core.csproj", "{8FC920C6-E895-4A17-AB2F-452FAAA36CC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Integration.ApplicationInsights.Core", "libraries\integration\Microsoft.Bot.Builder.Integration.ApplicationInsights.Core\Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.csproj", "{8FC920C6-E895-4A17-AB2F-452FAAA36CC8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.ApplicationInsights", "libraries\Microsoft.Bot.Builder.ApplicationInsights\Microsoft.Bot.Builder.ApplicationInsights.csproj", "{B609DB2C-5C1F-46D1-A0FA-A0FF9216899A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.ApplicationInsights.Core.Tests", "tests\integration\Microsoft.Bot.ApplicationInsights.Core.Tests\Microsoft.Bot.ApplicationInsights.Core.Tests.csproj", "{3F4A0DD8-4D47-4B9C-939A-3146E68C84F7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.ApplicationInsights.WebApi", "libraries\integration\Microsoft.Bot.Builder.ApplicationInsights.WebApi\Microsoft.Bot.Builder.ApplicationInsights.WebApi.csproj", "{400BB78F-AFDC-4B1C-AD85-BE159B576FCE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi", "libraries\integration\Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi\Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi.csproj", "{400BB78F-AFDC-4B1C-AD85-BE159B576FCE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.ApplicationInsights.WebApi.Tests", "tests\integration\Microsoft.Bot.ApplicationInsights.WebApi.Tests\Microsoft.Bot.ApplicationInsights.WebApi.Tests.csproj", "{873BCC1F-ED12-424E-93FA-D76F4BA022C2}"
 EndProject

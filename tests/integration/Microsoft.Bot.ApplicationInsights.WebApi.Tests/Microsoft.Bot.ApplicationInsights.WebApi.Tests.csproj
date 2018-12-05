@@ -52,9 +52,9 @@
     <Compile Include="TelemetryInitializerTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\libraries\integration\Microsoft.Bot.Builder.ApplicationInsights.WebApi\Microsoft.Bot.Builder.ApplicationInsights.WebApi.csproj">
+    <ProjectReference Include="..\..\..\libraries\integration\Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi\Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi.csproj">
       <Project>{400bb78f-afdc-4b1c-ad85-be159b576fce}</Project>
-      <Name>Microsoft.Bot.Builder.ApplicationInsights.WebApi</Name>
+      <Name>Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\libraries\Microsoft.Bot.Builder.ApplicationInsights\Microsoft.Bot.Builder.ApplicationInsights.csproj">
       <Project>{b609db2c-5c1f-46d1-a0fa-a0ff9216899a}</Project>
