@@ -32,8 +32,10 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Tests
                 async (step, cancellationToken) => { await step.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn; },
                 async (step, cancellationToken) => { await step.Context.SendActivityAsync("step2"); return Dialog.EndOfTurn; },
                 async (step, cancellationToken) => { await step.Context.SendActivityAsync("step3"); return Dialog.EndOfTurn; },
-            })
-            { TelemetryClient = telemetryClient.Object });
+            }));
+
+            dialogs.TelemetryClient = telemetryClient.Object;
+            
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -71,10 +73,11 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Tests
                     async (step, cancellationToken) => { await step.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn; },
                     async (step, cancellationToken) => { await step.Context.SendActivityAsync("step2"); return Dialog.EndOfTurn; },
                     async (step, cancellationToken) => { await step.Context.SendActivityAsync("step3"); return Dialog.EndOfTurn; },
-            })
-            { TelemetryClient = telemetryClient.Object };
+            });
+
 
             dialogs.Add(waterfallDialog);
+            dialogs.TelemetryClient = telemetryClient.Object;
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -127,10 +130,10 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Tests
                     async (step, cancellationToken) => { await step.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn; },
                     async (step, cancellationToken) => { await step.Context.SendActivityAsync("step2"); return Dialog.EndOfTurn; },
                     async (step, cancellationToken) => { await step.Context.SendActivityAsync("step3"); return Dialog.EndOfTurn; },
-            })
-            { TelemetryClient = telemetryClient.Object };
+            });
 
             dialogs.Add(waterfallDialog);
+            dialogs.TelemetryClient = telemetryClient.Object;
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -190,10 +193,10 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Tests
                     async (step, cancellationToken) => { await step.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn; },
                     async (step, cancellationToken) => { await step.Context.SendActivityAsync("step2"); return Dialog.EndOfTurn; },
                     async (step, cancellationToken) => { await step.CancelAllDialogsAsync(); return Dialog.EndOfTurn; },
-            })
-            { TelemetryClient = telemetryClient.Object };
+            });
 
             dialogs.Add(waterfallDialog);
+            dialogs.TelemetryClient = telemetryClient.Object;
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {

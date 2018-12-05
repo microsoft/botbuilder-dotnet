@@ -24,6 +24,25 @@ namespace Microsoft.Bot.Builder.Dialogs
             _dialogs = new DialogSet();
         }
 
+        /// <summary>
+        /// Gets or sets or set the <see cref="IBotTelemetryClient"/> to use.
+        /// When setting this property, all the contained dialogs TelemetryClient properties are also set.
+        /// </summary>
+        /// <value>The <see cref="IBotTelemetryClient"/> to use when logging.</value>
+        public new IBotTelemetryClient TelemetryClient
+        {
+            get
+            {
+                return base.TelemetryClient;
+            }
+
+            set
+            {
+                base.TelemetryClient = value ?? NullBotTelemetryClient.Instance;
+                _dialogs.TelemetryClient = base.TelemetryClient;
+            }
+        }
+
         protected string InitialDialogId { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -114,6 +133,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dialog">The dialog to add.</param>
         /// <returns>The updated <see cref="ComponentDialog"/>.</returns>
+        /// <remarks>Adding a new dialog will inherit the <see cref="IBotTelemetryClient"/> of the ComponentDialog.</remarks>
         public ComponentDialog AddDialog(Dialog dialog)
         {
             _dialogs.Add(dialog);
