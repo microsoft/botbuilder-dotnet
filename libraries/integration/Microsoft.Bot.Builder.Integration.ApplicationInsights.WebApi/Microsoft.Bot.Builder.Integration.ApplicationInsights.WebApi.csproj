@@ -16,7 +16,7 @@
 
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
-    <PackageId>Microsoft.Bot.Builder.ApplicationInsights.WebApi</PackageId>
+    <PackageId>Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi</PackageId>
     <Description>This library integrates the Microsoft Bot Builder SDK with Application Insights WebAPI.</Description>
     <Summary>This library provides integration between the Microsoft Bot Builder SDK and Application Insights.</Summary>
   </PropertyGroup>
@@ -35,20 +35,20 @@
 		<RepositoryType />
 		<PackageTags>bots;ai;botframework;botbuilder</PackageTags>
 		<NeutralLanguage />
-		<AssemblyName>Microsoft.Bot.Builder.ApplicationInsights.WebApi</AssemblyName>
-		<RootNamespace>Microsoft.Bot.Builder.ApplicationInsights.WebApi</RootNamespace>
+		<AssemblyName>Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi</AssemblyName>
+		<RootNamespace>Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi</RootNamespace>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
-	  <DocumentationFile>bin\$(Configuration)\net461\Microsoft.Bot.Builder.ApplicationInsights.WebApi.xml</DocumentationFile>
+	  <DocumentationFile>bin\$(Configuration)\net461\Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\net461\Microsoft.Bot.Builder.ApplicationInsights.WebApi.xml</DocumentationFile>		
+		<DocumentationFile>bin\$(Configuration)\net461\Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi.xml</DocumentationFile>		
 	</PropertyGroup>
 
 	<PropertyGroup>
-	  <CodeAnalysisRuleSet>Microsoft.Bot.Builder.ApplicationInsights.WebApi.ruleset</CodeAnalysisRuleSet>
+	  <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi.ruleset</CodeAnalysisRuleSet>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
