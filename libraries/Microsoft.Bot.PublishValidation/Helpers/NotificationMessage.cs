@@ -1,30 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
 namespace Microsoft.Bot.PublishValidation
 {
+    #region Enums
+
     public enum NotificationMessageTypes
     {
         Warning = 0,
         Error = 1
     }
 
+    public enum BotServiceType
+    {
+        endpoint,
+        luis,
+        qna,
+        dispatch
+    }
+
+    public enum Endpoints
+    {
+        production
+    }
+
+    #endregion
+
     public class NotificationMessage
     {
-        public string message { get; set; }
-        public int type { get; set; }
+        public string Message { get; set; }
+        public NotificationMessageTypes Type { get; set; }
 
-        public NotificationMessage(string message, int type)
+        public NotificationMessage(string message, NotificationMessageTypes type)
         {
-            this.message = message;
-            this.type = type;
+            Message = message;
+            Type = type;
         }
 
         public override string ToString()
         {
-            string notificationType = ((NotificationMessageTypes)this.type).ToString();
-            return $"{ notificationType }: { this.message }";
+            var notificationType = Type.ToString();
+            return $"{ notificationType }: { Message }";
         }
     }
 }
