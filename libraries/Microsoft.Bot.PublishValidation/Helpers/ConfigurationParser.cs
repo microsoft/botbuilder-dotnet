@@ -7,7 +7,7 @@ namespace Microsoft.Bot.PublishValidation
     using System.Collections.Generic;
     using System.Linq;
 
-    public class ConfigurationParser
+    public static class ConfigurationParser
     {
         private const string PROJECTPATH = "-ProjectPath";
         private const string ALLOWSPACESINPROJECTNAME = "-AllowSpacesInProjectName";
@@ -26,10 +26,10 @@ namespace Microsoft.Bot.PublishValidation
                     // Parse the PROJECT PATH
                     ProjectPath = options.Contains(PROJECTPATH) ? options[options.ToList().IndexOf(PROJECTPATH) + 1] : string.Empty,
 
-                    // If the option 'AllowSpacesInProjectName' is present, the process wont validated if the project's name has white spaces
+                    // If the option 'AllowSpacesInProjectName' is present, the process won't validated if the project's name has white spaces
                     ForbidSpacesInProjectName = options.Contains(ALLOWSPACESINPROJECTNAME) ? false : true,
 
-                    // If the option 'NotRequireBotFile' is present, the process wont validated if the project has a bot file. Also, the remaining validations will be skipped.
+                    // If the option 'NotRequireBotFile' is present, the process won't validated if the project has a bot file. Also, the remaining validations will be skipped.
                     RequireBotFile = options.Contains(NOTREQUIREBOTFILE) ? false : true,
 
                     // Parse the parameters related to the option RequireEndpoints to a IEnumerable<String>. If there isn't any option, the default value will be "production"
@@ -47,9 +47,9 @@ namespace Microsoft.Bot.PublishValidation
 
                 return configurationOptions;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
