@@ -1,20 +1,20 @@
 ﻿<Project TreatAsLocalProperty="LocalRequireEndpoints;LocalForbidEndpoints;LocalForbidSpacesInProjectName;LocalRequireBotFile;LocalRequireLuisKey;LocalRequireQnAMakerKey;ThisToolPath">
   <PropertyGroup>
-    <LocalRequireEndpoints Condition="'$(RequireEndpoints)' == ''" >Production</LocalRequireEndpoints>
-    <LocalRequireEndpoints Condition="'$(RequireEndpoints)' != ''" >$(RequireEndpoints)</LocalRequireEndpoints>
-    <LocalForbidEndpoints Condition="'$(ForbidEndpoints)' == ''" >Development</LocalForbidEndpoints>
-    <LocalForbidEndpoints Condition="'$(ForbidEndpoints)' != ''" >$(ForbidEndpoints)</LocalForbidEndpoints>
-    <LocalForbidSpacesInProjectName Condition="'$(ForbidSpacesInProjectName)' == ''" >true</LocalForbidSpacesInProjectName>
-    <LocalForbidSpacesInProjectName Condition="'$(ForbidSpacesInProjectName)' != ''" >$(ForbidSpacesInProjectName)</LocalForbidSpacesInProjectName>
-    <LocalRequireBotFile Condition="'$(RequireBotFile)' == ''" >true</LocalRequireBotFile>
-    <LocalRequireBotFile Condition="'$(RequireBotFile)' != ''" >$(RequireBotFile)</LocalRequireBotFile>
-    <LocalRequireLuisKey Condition="'$(RequireLuisKey)' == ''" >true</LocalRequireLuisKey>
-    <LocalRequireLuisKey Condition="'$(RequireLuisKey)' != ''" >$(RequireLuisKey)</LocalRequireLuisKey>
-    <LocalRequireQnAMakerKey Condition="'$(RequireQnAMakerKey)' == ''" >true</LocalRequireQnAMakerKey>
-    <LocalRequireQnAMakerKey Condition="'$(RequireQnAMakerKey)' != ''" >$(RequireQnAMakerKey)</LocalRequireQnAMakerKey>
+    <LocalRequireEndpoints Condition="'$(RequireEndpoints)' == ''" >-RequireEndpoints Production</LocalRequireEndpoints>
+    <LocalRequireEndpoints Condition="'$(RequireEndpoints)' != ''" >-RequireEndpoints $(RequireEndpoints)</LocalRequireEndpoints>
+    <LocalForbidEndpoints Condition="'$(ForbidEndpoints)' == ''" ></LocalForbidEndpoints>
+    <LocalForbidEndpoints Condition="'$(ForbidEndpoints)' != ''" >-ForbidEndpoints $(ForbidEndpoints)</LocalForbidEndpoints>
+    <LocalAllowSpacesInProjectName Condition="'$(AllowSpacesInProjectName)' == 'true'" >-AllowSpacesInProjectName</LocalAllowSpacesInProjectName>
+    <LocalAllowSpacesInProjectName Condition="'$(AllowSpacesInProjectName)' != 'true'" ></LocalAllowSpacesInProjectName>
+    <LocalNotRequireBotFile Condition="'$(NotRequireBotFile)' == 'true'" >-NotRequireBotFile</LocalNotRequireBotFile>
+    <LocalNotRequireBotFile Condition="'$(NotRequireBotFile)' != 'true'" ></LocalNotRequireBotFile>
+    <LocalRequireLuisKey Condition="'$(RequireLuisKey)' == 'true'" >-RequireLuisKey</LocalRequireLuisKey>
+    <LocalRequireLuisKey Condition="'$(RequireLuisKey)' != 'true'" ></LocalRequireLuisKey>
+    <LocalRequireQnAMakerKey Condition="'$(RequireQnAMakerKey)' == 'true'" >-RequireQnAMakerKey</LocalRequireQnAMakerKey>
+    <LocalRequireQnAMakerKey Condition="'$(RequireQnAMakerKey)' != 'true'" ></LocalRequireQnAMakerKey>
     <ThisToolPath>$(MSBuildThisFileDirectory)..\lib\netcoreapp2.1\Microsoft.Bot.PublishValidation.dll</ThisToolPath>
   </PropertyGroup>
   <Target Name="BotConfigurationValidation" BeforeTargets="Publish" Condition="$(DisablePublishValidation) != 'true'">
-    <Exec Command="dotnet $(ThisToolPath) $(MSBuildProjectDirectory) $(LocalRequireEndpoints) $(LocalForbidEndpoints) $(LocalForbidSpacesInProjectName) $(LocalRequireBotFile) $(LocalRequireLuisKey) $(LocalRequireQnAMakerKey)"/>
+    <Exec Command="dotnet $(ThisToolPath) -ProjectPath $(MSBuildProjectDirectory) $(LocalAllowSpacesInProjectName) $(LocalNotRequireBotFile) $(LocalRequireEndpoints) $(LocalForbidEndpoints) $(LocalRequireLuisKey) $(LocalRequireQnAMakerKey)"/>
   </Target>
 </Project>

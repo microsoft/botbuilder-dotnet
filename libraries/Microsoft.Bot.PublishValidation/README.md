@@ -15,49 +15,49 @@ This tool is used for validating a Bot's Configuration prior to publishing it, i
 ## How to use
 
 There are several validation checks available at the moment. These are the following:
-- **ForbidSpacesInProjectName**: 
-    - Possible values: 'True' or 'False'
+- **AllowSpacesInProjectName**: 
+    - Possible values: 'true' or 'false'
     - Description: No spaces in the Project's name (this is due to a [bug in .NET/Azure](https://github.com/aspnet/websdk/issues/237))
-- **RequireBotFile**:
-    - Possible values: 'True' or 'False'
+- **NotRequireBotFile**:
+    - Possible values: 'true' or 'false'
     - Description: Existence of a '.bot' file
 - **RequireEndpoints**: 
-    - Possible values: List of comma separated values
+    - Possible values: List of comma separated values, inside double quotes
     - Description: Required endpoints inside the configuration file
 - **ForbidEndpoints**: 
-    - Possible values: List of comma separated values
+    - Possible values: List of comma separated values, inside double quotes
     - Description: Forbidden endpoints inside the configuration file
 - **RequireLuisKey**: 
-    - Possible values: 'True' or 'False'
+    - Possible values: 'true' or 'false'
     - Description: Existence of LUIS key inside the configuration file
 - **RequireQnAMakerKey**: 
-    - Possible values: 'True' or 'False'
+    - Possible values: 'true' or 'false'
     - Description: Existence of QnA Maker key inside the configuration file
 
 By default, these validations are all set like this:
 
-> ForbidSpacesInProjectName: True
+> AllowSpacesInProjectName: false
 >
-> RequireBotFile: True
+> NotRequireBotFile: false
 >
-> RequireEndpoints: Production
+> RequireEndpoints: production
 >
-> ForbidEndpoints: Development
+> ForbidEndpoints: [empty]
 >
-> RequireLuisKey: True
+> RequireLuisKey: false
 >
-> RequireQnAMakerKey: True
+> RequireQnAMakerKey: false
 
 In order to change the behavior of this validations, you can create your own properties in your `.csproj` file by adding the following code:
 
 ```.csproj
 <PropertyGroup>
-    <ForbidSpacesInProjectName>True</ForbidSpacesInProjectName>
-    <RequireBotFile>True</RequireBotFile>
-    <RequireEndpoints>Production</RequireEndpoints>
-    <ForbidEndpoints>Development</ForbidEndpoints>
-    <RequireLuisKey>True</RequireLuisKey>
-    <RequireQnAMakerKey>True</RequireQnAMakerKey>
+    <AllowSpacesInProjectName>true</AllowSpacesInProjectName>
+    <NotRequireBotFile>true</NotRequireBotFile>
+    <RequireEndpoints>"production1,production2"</RequireEndpoints>
+    <ForbidEndpoints>"development"</ForbidEndpoints>
+    <RequireLuisKey>true</RequireLuisKey>
+    <RequireQnAMakerKey>true</RequireQnAMakerKey>
 </PropertyGroup>
 ```
 > **Note:** You don't need to add all of them, only the ones you want to modify.
@@ -66,7 +66,7 @@ Also, there's an option to disable the validation entirely, and for doing so, al
 
 ```.csproj
 <PropertyGroup>
-    <DisablePublishValidation>True</DisablePublishValidation>
+    <DisablePublishValidation>true</DisablePublishValidation>
 </PropertyGroup>
 ```
 

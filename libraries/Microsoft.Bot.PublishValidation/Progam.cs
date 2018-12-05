@@ -1,8 +1,10 @@
-﻿namespace Microsoft.Bot.PublishValidation
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace Microsoft.Bot.PublishValidation
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
 
     class Program
     {
@@ -10,32 +12,25 @@
         private const int ERROR = 2;
         private const int OK = 0;
 
+        //dotnet publishValidations.dll
+        //  -ProjectPath C:\my-project\
+        //  -AllowSpacesInProjectName
+        //  -NotRequireBotFile
+        //  -RequireEndpoints Production,Production2
+        //  -ForbidEndpoints Dev,Test
+        //  -RequireLuisKey
+        //  -RequireQnAMakerKey
         public static int Main(string[] args)
         {
-            var projectPath = args[0].ToString();
-            var requireEndpoints = args[1].ToString();
-            var forbidEndpoints = args[2].ToString();
-            var forbidSpacesInProjectName = args[3].ToString();
-            var requireBotFile = args[4].ToString();
-            var requireLuisKey = args[5].ToString();
-            var requireQnAMakerKey = args[6].ToString();
-
             try
             {
-                string errorMsg = string.Empty;
+                var errorMsg = string.Empty;
 
-                ConfigurationOptions options = new ConfigurationOptions(
-                        forbidSpacesInProjectName,
-                        requireBotFile,
-                        requireEndpoints,
-                        forbidEndpoints,
-                        requireLuisKey,
-                        requireQnAMakerKey
-                    );
-
+                var options = ConfigurationParser.ParseConfiguration(args);
+                
                 IEnumerable<NotificationMessage> messages = new List<NotificationMessage>();
 
-                bool validationResult = BotValidatorHelper.BotFileIsValid(projectPath, options, ref messages);
+                var validationResult = BotValidatorHelper.BotFileIsValid(options, ref messages);
 
                 if(!validationResult)
                 {
