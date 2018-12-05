@@ -9,8 +9,9 @@ using System;
 using Microsoft.ApplicationInsights.Extensibility;
 using Moq;
 using Microsoft.ApplicationInsights.Channel;
+using Microsoft.Bot.Builder.ApplicationInsights;
 
-namespace Microsoft.Bot.Builder.ApplicationInsights.Tests
+namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
 {
     public class BotTelemetryClientTests
     {

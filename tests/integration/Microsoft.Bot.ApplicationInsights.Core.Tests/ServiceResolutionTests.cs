@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.TestHost;
 using System.IO;
 using Microsoft.ApplicationInsights;
 
-namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
+namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 {
     [TestClass]
     [TestCategory("ApplicationInsights")]

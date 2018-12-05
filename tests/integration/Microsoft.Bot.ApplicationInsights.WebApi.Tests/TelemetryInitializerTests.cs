@@ -12,10 +12,10 @@ using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
-using Microsoft.Bot.Builder.ApplicationInsights.WebApi;
+using Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi;
 using System.IO;
 
-namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
+namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 {
     [TestClass]
     [TestCategory("ApplicationInsights")]

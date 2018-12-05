@@ -4,7 +4,7 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 
-namespace Microsoft.Bot.Builder.ApplicationInsights.Core
+namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
 {
     public static class ApplicationBuilderExtensions
     {

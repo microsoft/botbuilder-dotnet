@@ -8,7 +8,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.ApplicationInsights.Core
+namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
 {
     /// <summary>
     /// Initializer that sets the user ID based on Bot data.
