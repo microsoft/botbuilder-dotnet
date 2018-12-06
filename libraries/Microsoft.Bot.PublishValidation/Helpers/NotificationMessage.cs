@@ -3,8 +3,6 @@
 
 namespace Microsoft.Bot.PublishValidation
 {
-    #region Enums
-
     public enum NotificationMessageTypes
     {
         Warning = 0,
@@ -13,34 +11,33 @@ namespace Microsoft.Bot.PublishValidation
 
     public enum BotServiceType
     {
-        endpoint,
-        luis,
-        qna,
-        dispatch
+        Endpoint,
+        Luis,
+        Qna,
+        Dispatch
     }
 
     public enum Endpoints
     {
-        production
+        Production
     }
-
-    #endregion
 
     public class NotificationMessage
     {
-        public string Message { get; set; }
-        public NotificationMessageTypes Type { get; set; }
-
         public NotificationMessage(string message, NotificationMessageTypes type)
         {
             Message = message;
             Type = type;
         }
 
+        public string Message { get; set; }
+
+        public NotificationMessageTypes Type { get; set; }
+
         public override string ToString()
         {
             var notificationType = Type.ToString();
-            return $"{ notificationType }: { Message }";
+            return $"{notificationType}: {Message}";
         }
     }
 }

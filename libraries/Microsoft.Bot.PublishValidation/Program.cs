@@ -6,12 +6,12 @@ namespace Microsoft.Bot.PublishValidation
     using System;
     using System.Collections.Generic;
 
-    class Program
+    public class Program
     {
         // Return codes
         private const int ERROR = 2;
         private const int OK = 0;
-        
+
         public static int Main(string[] args)
         {
             try
@@ -19,12 +19,12 @@ namespace Microsoft.Bot.PublishValidation
                 var errorMsg = string.Empty;
 
                 var options = ConfigurationParser.ParseConfiguration(args);
-                
+
                 List<NotificationMessage> messages = new List<NotificationMessage>();
 
                 var validationResult = BotValidatorHelper.BotFileIsValid(options, messages);
 
-                if(!validationResult)
+                if (!validationResult)
                 {
                     Console.WriteLine(GetErrorMessage(messages));
                 }
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.PublishValidation
             {
                 errorMessage += ((NotificationMessage)message).ToString() + "\n";
             }
-            
+
             return errorMessage;
         }
     }

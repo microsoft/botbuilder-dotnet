@@ -8,6 +8,11 @@
     <Configurations>Debug;Release;Documentation;Debug - NuGet Packages;</Configurations>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>BotBuilder.ruleset</CodeAnalysisRuleSet>
+    <NoWarn>SA1652</NoWarn>
+  </PropertyGroup>
+
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
@@ -40,6 +45,11 @@
     <AssemblyName>Microsoft.Bot.PublishValidation</AssemblyName>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile></DocumentationFile>
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <!-- pack the props and targets files -->
     <Content Include="build\Microsoft.Bot.PublishValidation.targets" PackagePath="build\" />
@@ -48,6 +58,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
     <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
