@@ -5,22 +5,13 @@ namespace Microsoft.Bot.PublishValidation
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
 
     class Program
     {
         // Return codes
         private const int ERROR = 2;
         private const int OK = 0;
-
-        //dotnet publishValidations.dll
-        //  -ProjectPath C:\my-project\
-        //  -AllowSpacesInProjectName
-        //  -NotRequireBotFile
-        //  -RequireEndpoints Production,Production2
-        //  -ForbidEndpoints Dev,Test
-        //  -RequireLuisKey
-        //  -RequireQnAMakerKey
+        
         public static int Main(string[] args)
         {
             try
