@@ -33,7 +33,7 @@ namespace Microsoft.Bot.PublishValidation
                     RequireBotFile = options.Contains(NOTREQUIREBOTFILE) ? false : true,
 
                     // Parse the parameters related to the option RequireEndpoints to a IEnumerable<String>. If there isn't any option, the default value will be "production"
-                    RequiredEndpoints = options.Contains(REQUIREENDPOINTS) ? GetOptionValue(options, REQUIREENDPOINTS).Split(',').Select(endpoint => endpoint.Trim()) : new List<string>() { Endpoints.production.ToString() },
+                    RequiredEndpoints = options.Contains(REQUIREENDPOINTS) ? GetOptionValue(options, REQUIREENDPOINTS).Split(',').Select(endpoint => endpoint.Trim()) : new List<string>() { Endpoints.Production.ToString() },
 
                     // Parse the parameters related to the option ForbidEndpoints to a IEnumerable<String>
                     ForbiddenEndpoints = options.Contains(FORBIDENDPOINTS) ? GetOptionValue(options, FORBIDENDPOINTS).Split(',').Select(endpoint => endpoint.Trim()) : new List<string>(),
