@@ -21,7 +21,7 @@ namespace Microsoft.Bot.PublishValidation
         /// <param name="configurationOptions"></param>
         /// <param name="messages"></param>
         /// <returns></returns>
-        public static bool BotFileIsValid(ConfigurationOptions configurationOptions, ref IEnumerable<NotificationMessage> messages)
+        public static bool BotFileIsValid(ConfigurationOptions configurationOptions, List<NotificationMessage> messages)
         {
             try
             {
@@ -29,11 +29,11 @@ namespace Microsoft.Bot.PublishValidation
                 // Also validates its existence (throws an exception is there isn't any file)
                 var botConfiguration = BotValidatorHelper.LoadFromFolder(configurationOptions.ProjectPath);
 
-                return BotValidatorHelper.ValidateBotFile(botConfiguration, configurationOptions, ref messages);
+                return BotValidatorHelper.ValidateBotFile(botConfiguration, configurationOptions, messages);
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.PublishValidation
         /// <param name="options"></param>
         /// <param name="messages"></param>
         /// <returns></returns>
-        private static bool ValidateBotFile(BotConfiguration botConfiguration, ConfigurationOptions options, ref IEnumerable<NotificationMessage> messages)
+        private static bool ValidateBotFile(BotConfiguration botConfiguration, ConfigurationOptions options, List<NotificationMessage> messages)
         {
             try
             {
@@ -54,14 +54,14 @@ namespace Microsoft.Bot.PublishValidation
                 var validationResult = true;
                 var missingEndpoints = string.Empty;
 
-                // Checks if the project name which uses the .bot file contains white spaces on its name.
+                // Checks if the project name which uses the .bot file contains white spaces.
                 // If it has at least one white space, the process will fail and return an error.
                 if (options.ForbidSpacesInProjectName)
                 {
                     if (!BotValidatorHelper.ProjectNameIsValid(options.ProjectPath, out errorMsg))
                     {
                         message = new NotificationMessage(errorMsg, NotificationMessageTypes.Error);
-                        messages = messages.Append(message);
+                        messages.Add(message);
                         validationResult = false;
                     }
                 }
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.PublishValidation
                             $"The .bot file does not have the next { REQUIRED_ENDPOINTS }: { missingEndpoints }";
 
                         message = new NotificationMessage(errorMsg, NotificationMessageTypes.Error);
-                        messages = messages.Append(message);
+                        messages.Add(message);
                         validationResult = false;
                     }
                 }
@@ -101,7 +101,7 @@ namespace Microsoft.Bot.PublishValidation
                         if (!string.IsNullOrWhiteSpace(errorMsg))
                         {
                             message = new NotificationMessage(errorMsg, (int)NotificationMessageTypes.Warning);
-                            messages = messages.Append(message);
+                            messages.Add(message);
                         }
                     }
 
@@ -113,7 +113,7 @@ namespace Microsoft.Bot.PublishValidation
                             $"The .bot file has (but shouldn't) the next { FORBIDDEN_ENDPOINTS }: { missingEndpoints }";
 
                         message = new NotificationMessage(errorMsg, NotificationMessageTypes.Error);
-                        messages = messages.Append(message);
+                        messages.Add(message);
                         validationResult = false;
                     }
                 }
@@ -125,7 +125,7 @@ namespace Microsoft.Bot.PublishValidation
                     {
                         errorMsg = "The .bot file does not have a Luis Key.";
                         message = new NotificationMessage(errorMsg, NotificationMessageTypes.Error);
-                        messages = messages.Append(message);
+                        messages.Add(message);
                         validationResult = false;
                     }
                 }
@@ -137,7 +137,7 @@ namespace Microsoft.Bot.PublishValidation
                     {
                         errorMsg = "The .bot file does not have a QnA Key.";
                         message = new NotificationMessage(errorMsg, NotificationMessageTypes.Error);
-                        messages = messages.Append(message);
+                        messages.Append(message);
                         validationResult = false;
                     }
                 }
@@ -146,7 +146,7 @@ namespace Microsoft.Bot.PublishValidation
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -154,8 +154,8 @@ namespace Microsoft.Bot.PublishValidation
         /// Validate the specified endpoints of a .bot file, according to if they are required or not.
         /// </summary>
         /// <param name="botConfiguration"></param>
-        /// <param name="specifiedEndpoints"></param>
-        /// <param name="required"></param>
+        /// <param name="endpoints"></param>
+        /// <param name="required">Specify if the provided endpoints are required (True) or forbidden (False)</param>
         /// <missingEndpoints name="missingEndpoints">List of the missing endpoints in the bot file. If its null/empty and the methods returns FALSE, it means that there isn't ANY endpoint in the file.</missingEndpoints>
         /// <returns></returns>
         private static bool ValidateEndpoints(BotConfiguration botConfiguration, IEnumerable<string> endpoints, bool required, out string missingEndpoints)
@@ -173,10 +173,16 @@ namespace Microsoft.Bot.PublishValidation
                 return false;
             }
 
-            // Checks that all the specified endpoints are/aren't in the bot file
+            // Checks that all the specified endpoints are/aren't in the bot file (according to the 'required' parameter)
             foreach (var endpoint in endpoints)
             {
-                if (botEndpoints.Any(ep => ((EndpointService)ep).Name.Trim() == endpoint.Trim()) != required)
+                // checks if the bot file contains one of the endpoints provided in the required/forbidden 'endpoints' list
+                var existEndpoint = botEndpoints.Any(ep => CompareEndpointsName((EndpointService)ep, endpoint));
+
+                // Compare the previous result (existEndpoint) with the 'required' parameter to check if there are any missing endpoints (required = true
+                // and at least one of the provided required endpoints isn't in the .bot file) or if the .bot file has incorrect endpoints (required = false
+                // and at least one of the provided forbidden endpoints is in the .bot file), according to the value of 'required'
+                if (existEndpoint != required)
                 {
                     missingEndpointsList.Add(endpoint.Trim());
                 }
@@ -186,12 +192,23 @@ namespace Microsoft.Bot.PublishValidation
             if (missingEndpointsList.Count() != 0)
             {
                 missingEndpoints = string.Join(", ", missingEndpointsList);
-                //missingEndpoints = "\n\t*" + missingEndpoints;
+                
                 return false;
             }
 
             missingEndpoints = string.Empty;
             return true;
+        }
+
+        /// <summary>
+        /// Compare an Endpoint's Name with another provided endpoint
+        /// </summary>
+        /// <param name="botEndpoint"></param>
+        /// <param name="providedEndpoint"></param>
+        /// <returns></returns>
+        private static bool CompareEndpointsName(EndpointService botEndpoint, string providedEndpoint)
+        {
+            return botEndpoint.Name.Trim() == providedEndpoint.Trim();
         }
 
         /// <summary>
@@ -239,7 +256,7 @@ namespace Microsoft.Bot.PublishValidation
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -270,7 +287,7 @@ namespace Microsoft.Bot.PublishValidation
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -305,7 +322,7 @@ namespace Microsoft.Bot.PublishValidation
         }
 
         /// <summary>
-        /// Returns a IEnumerable containing and specific type of bot's services contained in the .bot file
+        /// Returns a IEnumerable with a specific type of bot's services contained in the .bot file
         /// </summary>
         /// <param name="botConfiguration">BotConfiguration</param>
         /// <param name="serviceType">Specifies the type of service to return</param>
@@ -352,7 +369,7 @@ namespace Microsoft.Bot.PublishValidation
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -370,7 +387,7 @@ namespace Microsoft.Bot.PublishValidation
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
     }

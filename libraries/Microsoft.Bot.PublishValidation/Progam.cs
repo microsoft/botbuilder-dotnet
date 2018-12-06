@@ -5,6 +5,7 @@ namespace Microsoft.Bot.PublishValidation
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     class Program
     {
@@ -28,9 +29,9 @@ namespace Microsoft.Bot.PublishValidation
 
                 var options = ConfigurationParser.ParseConfiguration(args);
                 
-                IEnumerable<NotificationMessage> messages = new List<NotificationMessage>();
+                List<NotificationMessage> messages = new List<NotificationMessage>();
 
-                var validationResult = BotValidatorHelper.BotFileIsValid(options, ref messages);
+                var validationResult = BotValidatorHelper.BotFileIsValid(options, messages);
 
                 if(!validationResult)
                 {

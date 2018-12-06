@@ -1,16 +1,6 @@
 ﻿<Project TreatAsLocalProperty="LocalRequireEndpoints;LocalForbidEndpoints;LocalForbidSpacesInProjectName;LocalRequireBotFile;LocalRequireLuisKey;LocalRequireQnAMakerKey;ThisToolPath">
   <PropertyGroup>
-    <!--Parameter used to provide the necessary endpoints that the .bot file needs to have-->
-    <!--Gets the value provided by the user in the .csproj file, in the 'RequireEndpoints' tag, and pass it with the command '-RequireEndpoints-->
-    <!--If no endpoints are provided, the default value is 'Production'-->
-    <LocalRequireEndpoints Condition="'$(RequireEndpoints)' == ''" >-RequireEndpoints Production</LocalRequireEndpoints>
-    <LocalRequireEndpoints Condition="'$(RequireEndpoints)' != ''" >-RequireEndpoints $(RequireEndpoints)</LocalRequireEndpoints>
-    <!--Parameter used to provide the endpoints that the .bot file must not have-->
-    <!--Gets the value provided by the user in the .csproj file, in the 'ForbidEndpoints' tag, and, if it has a value, it will be passed with the command '-ForbidEndpoints-->
-    <!--The default value is [empty]-->
-    <LocalForbidEndpoints Condition="'$(ForbidEndpoints)' == ''" ></LocalForbidEndpoints>
-    <LocalForbidEndpoints Condition="'$(ForbidEndpoints)' != ''" >-ForbidEndpoints $(ForbidEndpoints)</LocalForbidEndpoints>
-    <!--Allows the user to have in the project name empty spaces-->
+    <!--Allows the user to have empty spaces in the project name-->
     <!--If the user set in the .csproj file the value of the tag 'AllowSpacesInProjectName' to true, the validation will be executed with the parameter -AllowSpacesInProjectName-->
     <!--The default value is false (the validation won't receive any parameter and will require that the project's name does not have empty spaces)-->
     <LocalAllowSpacesInProjectName Condition="'$(AllowSpacesInProjectName)' == 'true'" >-AllowSpacesInProjectName</LocalAllowSpacesInProjectName>
@@ -20,6 +10,16 @@
     <!--The default value is false (the validation won't receive any parameter and will require the existence of the bot)-->
     <LocalNotRequireBotFile Condition="'$(NotRequireBotFile)' == 'true'" >-NotRequireBotFile</LocalNotRequireBotFile>
     <LocalNotRequireBotFile Condition="'$(NotRequireBotFile)' != 'true'" ></LocalNotRequireBotFile>
+    <!--Parameter used to provide the necessary endpoints that the .bot file must have-->
+    <!--Gets the value provided by the user in the .csproj file, in the 'RequireEndpoints' tag, and pass it with the command '-RequireEndpoints-->
+    <!--If no endpoints are provided, the default value is 'production'-->
+    <LocalRequireEndpoints Condition="'$(RequireEndpoints)' == ''" >-RequireEndpoints production</LocalRequireEndpoints>
+    <LocalRequireEndpoints Condition="'$(RequireEndpoints)' != ''" >-RequireEndpoints $(RequireEndpoints)</LocalRequireEndpoints>
+    <!--Parameter used to provide the endpoints that the .bot file must not have-->
+    <!--Gets the value provided by the user in the .csproj file, in the 'ForbidEndpoints' tag, and, if it has a value, it will be passed with the command '-ForbidEndpoints-->
+    <!--The default value is [empty]-->
+    <LocalForbidEndpoints Condition="'$(ForbidEndpoints)' == ''" ></LocalForbidEndpoints>
+    <LocalForbidEndpoints Condition="'$(ForbidEndpoints)' != ''" >-ForbidEndpoints $(ForbidEndpoints)</LocalForbidEndpoints>
     <!--Allows the user to indicate if the validation process should check the existence of Luis Key in the '.bot' file-->
     <!--Gets the value provided by the user in the .csproj file, in the 'RequireLuisKey' tag, and if it is true, the process will be executed with the command -RequireLuisKey-->
     <!--The default value is false (so, the Luis key won't be validated-->
