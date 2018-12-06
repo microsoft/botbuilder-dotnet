@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.Bot.PublishValidation</name>
+    </assembly>
+    <members>
+        <member name="M:Microsoft.Bot.PublishValidation.BotValidatorHelper.BotFileIsValid(Microsoft.Bot.PublishValidation.ConfigurationOptions,System.Collections.Generic.List{Microsoft.Bot.PublishValidation.NotificationMessage})">
+            <summary>
+            Checks if a bot file is valid or not according to some configuration options
+            </summary>
+            <param name="configurationOptions">Configuration Options</param>
+            <param name="messages">Error Messages</param>
+            <returns>bool that indicates if a .bot file is valid</returns>
+        </member>
+        <member name="M:Microsoft.Bot.PublishValidation.BotValidatorHelper.ValidateBotFile(Microsoft.Bot.Configuration.BotConfiguration,Microsoft.Bot.PublishValidation.ConfigurationOptions,System.Collections.Generic.List{Microsoft.Bot.PublishValidation.NotificationMessage})">
+            <summary>
+            Performs the validation of the specified .bot file, according the specified validation options
+            </summary>
+            <param name="botConfiguration">Bot Configuration</param>
+            <param name="options">Options</param>
+            <param name="messages">Messages</param>
+            <returns>bool that indicates if a .bot file is valid</returns>
+        </member>
+        <member name="M:Microsoft.Bot.PublishValidation.BotValidatorHelper.ValidateEndpoints(Microsoft.Bot.Configuration.BotConfiguration,System.Collections.Generic.IEnumerable{System.String},System.Boolean,System.String@)">
+            <summary>
+            Validate the specified endpoints of a .bot file, according to if they are required or not.
+            </summary>
+            <param name="botConfiguration">Bot configuration</param>
+            <param name="endpoints">Endpoints</param>
+            <param name="required">Specify if the provided endpoints are required (True) or forbidden (False)</param>
+            <param name="missingEndpoints">List of the missing endpoints in the bot file. If its null/empty and the methods returns FALSE, it means that there isn't ANY endpoint in the file.</param>
+            <returns>bool that indicates if a .bot file's endpoints are valid</returns>
+        </member>
+        <member name="M:Microsoft.Bot.PublishValidation.BotValidatorHelper.CompareEndpointsName(Microsoft.Bot.Configuration.EndpointService,System.String)">
+            <summary>
+            Compare an Endpoint's Name with another provided endpoint
+            </summary>
+            <param name="botEndpoint">Bot Endpoint</param>
+            <param name="providedEndpoint">Endpoint to compare</param>
+            <returns>bool that indicates if a provided Bot's Endpoint and a String endpoint have the same name</returns>
+        </member>
+        <member name="M:Microsoft.Bot.PublishValidation.BotValidatorHelper.ValidateLuisKey(Microsoft.Bot.Configuration.BotConfiguration)">
+            <summary>
+            Checks if the Luis service has specified its key.
+            </summary>
+            <param name="botConfiguration">Bot configuration</param>
+            <returns>bool that indicates if a .bot file's Luis keys are valid</returns>
+        </member>
+        <member name="M:Microsoft.Bot.PublishValidation.BotValidatorHelper.ValidateQnAKey(Microsoft.Bot.Configuration.BotConfiguration)">
+            <summary>
+            Checks if the QnA service has specified its key.
+            </summary>
+            <param name="botConfiguration">Bot Configuration</param>
+            <returns>bool that indicates if a .bot's file QNA Keys are valid</returns>
+        </member>
+        <member name="M:Microsoft.Bot.PublishValidation.BotValidatorHelper.ProjectNameIsValid(System.String,System.String@)">
+            <summary>
+            Check if the Project's Name contains white spaces. If there is any white space, will return an error.
+            </summary>
+            <param name="folder">Folder</param>
+            <param name="errorMsg">Error message</param>
+            <returns>bool that indicate if a Project's Name is valid</returns>
+        </member>
+        <member name="M:Microsoft.Bot.PublishValidation.BotValidatorHelper.GetBotServices(Microsoft.Bot.Configuration.BotConfiguration,Microsoft.Bot.PublishValidation.BotServiceType)">
+            <summary>
+            Returns a IEnumerable with a specific type of bot's services contained in the .bot file
+            </summary>
+            <param name="botConfiguration">BotConfiguration</param>
+            <param name="serviceType">Specifies the type of service to return</param>
+            <returns>List of .bot file' services</returns>
+        </member>
+        <member name="M:Microsoft.Bot.PublishValidation.BotValidatorHelper.FixForbiddenEndpoints(System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String},System.String@)">
+            <summary>
+            Deletes from the forbidden endpoint's list those who also appears in the required list
+            </summary>
+            <param name="forbiddenEndpoints">List of forbidden endpoints</param>
+            <param name="requiredEndpoints">List of required endpoints</param>
+            <param name="errorMsg">Error message</param>
+            <returns>Fixed forbidden endpoints</returns>
+        </member>
+        <member name="M:Microsoft.Bot.PublishValidation.BotValidatorHelper.LoadFromFolder(System.String,System.String)">
+            <summary>
+            Load the .bot file from the specified folder
+            </summary>
+            <param name="folder">The folder where the .bot file is located</param>
+            <param name="secret">The path of the secret file to decrypt the .bot file</param>
+            <returns>The first .bot file in the specified folder</returns>
+        </member>
+    </members>
+</doc>
