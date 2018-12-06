@@ -1,17 +1,28 @@
 {
+  // Set this value to false if you want to test against the real service, but you have to fill in the externalApiTestSettings object
   "mock": "true",
 
   "mockApiTestSettings": {
-    "subscriptionKey": "9c05a515-62dc-44f3-86a3-7787ab3ced64",
-    "endpointURI": "https://platform.bing.com/speechdx/lg-dev/v1/lg",
-    "tokenGenerationEndPoint": "dummy-token-gen-end-point",
-    "languageGenerationApplicationId": "lgmodelfortesting"
+    "languageGenerationApplication": {
+      "id": "lgmodelfortesting",
+      "region": "westus",
+      "locale": "en-us",
+      "version": "0.1",
+      "subscriptionKey": "9c05a515-62dc-44f3-86a3-7787ab3ced64"
+    },
+    "resolverEndpoint": "dummy-resolver-endpoint",
+    "tokenGenerationEndPoint": "dummy-token-gen-endpoint"
   },
 
   "externalApiTestSettings": {
-    "subscriptionKey": "",
-    "endpointURI": "https://platform.bing.com/speechdx/lg-dev/v1/lg",
-    "tokenGenerationEndPoint": "https://wuppe.api.cognitive.microsoft.com/sts/v1.0/issueToken",
-    "languageGenerationApplicationId": "lgmodelfortesting"
+    "languageGenerationApplication": {
+      "id": "lgmodelfortesting",
+      "region": "",
+      "locale": "",
+      "version": "",
+      "subscriptionKey": ""
+    },
+    "resolverEndpoint": "",
+    "tokenGenerationEndPoint": ""
   }
 }

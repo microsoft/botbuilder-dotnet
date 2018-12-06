@@ -16,33 +16,21 @@ namespace Microsoft.BotBuilderSamples
         /// Creates an instance of <see cref="LanguageGenerationResolver"/>.
         /// </summary>
         /// <param name="applicationId">Language generation application id.</param>
-        /// <param name="endpointKey">The language generation service subscription key.</param>
-        /// <param name="endpointRegion">The language generation region.</param>
+        /// <param name="applicationRegion">Language generation application region.</param>
+        /// <param name="applicationLocale">Language generation application locale.</param>
+        /// <param name="applicationVersion">Language generation application version.</param>
+        /// <param name="subscriptionKey">The language generation service subscription key.</param>
         /// <returns>An instance of the language generation resolver.</returns>
-        public static LanguageGenerationResolver CreateResolver(string applicationId, string endpointKey, string endpointRegion)
+        public static LanguageGenerationResolver CreateResolver(string applicationId, string applicationRegion, string applicationLocale, string applicationVersion, string subscriptionKey)
         {
-            if (string.IsNullOrEmpty(applicationId))
-            {
-                throw new ArgumentException("Application id can't be null or empty.", nameof(applicationId));
-            }
 
-            if (string.IsNullOrEmpty(endpointKey))
-            {
-                throw new ArgumentException("Endpoint subscription key can't be null or empty.", nameof(applicationId));
-            }
+            var application = new LanguageGenerationApplication(applicationId, applicationRegion, applicationLocale, applicationVersion, subscriptionKey);
 
-            if (string.IsNullOrEmpty(endpointRegion))
-            {
-                // Set default region to westus
-                endpointRegion = "westus";
-            }
-
-            var languageGenerationEndpoint = $"https://{endpointRegion}.cts.speech.microsoft.com/v1/lg";
-            var tokenIssuingEndpoint = $"https://{endpointRegion}.api.cognitive.microsoft.com/sts/v1.0/issueToken";
-
-            var application = new LanguageGenerationApplication(applicationId, endpointKey, languageGenerationEndpoint);
+            var languageGenerationEndpoint = $"https://{applicationRegion}.cts.speech.microsoft.com/v1/lg";
+            var tokenIssuingEndpoint = $"https://{applicationRegion}.api.cognitive.microsoft.com/sts/v1.0/issueToken";
             var options = new LanguageGenerationOptions
             {
+                ResolverApiEndpoint = languageGenerationEndpoint,
                 TokenGenerationApiEndpoint = tokenIssuingEndpoint,
             };
 
@@ -53,18 +41,20 @@ namespace Microsoft.BotBuilderSamples
         /// Creates an instance of <see cref="LanguageGenerationMiddleware"/> to simplify and contain the resolution of the activities with the middleware
         /// </summary>
         /// <param name="applicationId">Language generation application id.</param>
-        /// <param name="endpointKey">The language generation service subscription key.</param>
-        /// <param name="endpointRegion">The language generation region.</param>
+        /// <param name="applicationRegion">Language generation application region.</param>
+        /// <param name="applicationLocale">Language generation application locale.</param>
+        /// <param name="applicationVersion">Language generation application version.</param>
+        /// <param name="subscriptionKey">The language generation service subscription key.</param>
         /// <param name="entitiesStateAccessor">The user state accessor providing the entities preserved in the request.</param>
         /// <returns>An instance of the language generation middleware</returns>
-        public static LanguageGenerationMiddleware CreateMiddleware(string applicationId, string endpointKey, string endpointRegion, IStatePropertyAccessor<Dictionary<string, object>> entitiesStateAccessor)
+        public static LanguageGenerationMiddleware CreateMiddleware(string applicationId, string applicationRegion, string applicationLocale, string applicationVersion, string subscriptionKey, IStatePropertyAccessor<Dictionary<string, object>> entitiesStateAccessor)
         {
             if (entitiesStateAccessor == null)
             {
                 throw new ArgumentNullException(nameof(entitiesStateAccessor));
             }
 
-            var resolver = CreateResolver(applicationId, endpointKey, endpointRegion);
+            var resolver = CreateResolver(applicationId, applicationRegion, applicationLocale, applicationVersion, subscriptionKey);
             return new LanguageGenerationMiddleware(resolver, entitiesStateAccessor);
         }
 

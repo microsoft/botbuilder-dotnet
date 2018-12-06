@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using DialogFoundation.Backend.LG;
 using Microsoft.Bot.Builder.AI.LanguageGeneration.API;
 
-namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests.TestData.Mocks
+namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests.Mocks
 {
     public class ServiceAgentMock : IServiceAgent
     {
@@ -14,13 +14,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests.TestData.Mocks
         }
         public string Generate(LGRequest request) => _resolutionsDictionary[request.TemplateId];
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task<string> GenerateAsync(LGRequest request)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        public Task<string> GenerateAsync(LGRequest request)
         {
             var response = _resolutionsDictionary[request.TemplateId];
             ResolveEntities(ref response, request);
-            return response;
+            return Task.FromResult(response);
         }
 
         private void ResolveEntities(ref string uttrance, LGRequest request)

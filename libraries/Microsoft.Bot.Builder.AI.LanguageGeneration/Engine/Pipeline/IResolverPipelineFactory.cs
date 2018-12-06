@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Bot.Builder.AI.LanguageGeneration.API;
+using Microsoft.Bot.Builder.AI.LanguageGeneration.Resolver;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
 {
@@ -13,12 +14,17 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
         /// <summary>
         /// Creates a new <see cref="IResolverPipeline"/> object using the passed arguments.
         /// </summary>
-        /// <param name="endpoint">Language generation runtime api endpoint.</param>
-        /// <param name="endpointKey">Language generation runtime api endpoint key.</param>
-        /// <param name="applicationId">Language generation application id.</param>
-        /// <param name="tokenGenerationEndpoint">Token generation endpoint, default is "https://api.cognitive.microsoft.com/sts/v1.0/issueToken".</param>
+        /// <param name="languageGenerationApplication">Language generation application.</param>
+        /// <param name="endpointProvider">Resolver and token generation provider.</param>
+        /// <returns>A <see cref="IResolverPipeline"/>.</returns>
+        IResolverPipeline CreateResolverPipeline(LanguageGenerationApplication languageGenerationApplication, IEndpointProvider endpointProvider);
+
+        /// <summary>
+        /// Creates a new <see cref="IResolverPipeline"/> object using the passed arguments.
+        /// </summary>
+        /// <param name="languageGenerationApplication">Language generation application.</param>
         /// <param name="serviceAgent">A <see cref="IServiceAgent"/> object.</param>
         /// <returns>A <see cref="IResolverPipeline"/>.</returns>
-        IResolverPipeline CreateResolverPipeline(string endpoint, string endpointKey, string applicationId, string tokenGenerationEndpoint = null, IServiceAgent serviceAgent = null);
+        IResolverPipeline CreateResolverPipeline(LanguageGenerationApplication languageGenerationApplication, IServiceAgent serviceAgent);
     }
 }

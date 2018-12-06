@@ -15,8 +15,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
         /// The main method to build the <see cref="ICompositeRequest"/> object.
         /// </summary>
         /// <param name="slots">The <see cref="IList{Slot}"/>.</param>
-        /// <param name="locale">Locale.</param>
         /// <returns>A <see cref="ICompositeRequest"/>.</returns>
-        ICompositeRequest BuildRequest(IList<Slot> slots, string locale);
+        ICompositeRequest BuildRequest(IList<Slot> slots);
     }
 }

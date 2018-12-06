@@ -4,7 +4,7 @@ using System.Text;
 using DialogFoundation.Backend.LG;
 using Microsoft.Bot.Builder.AI.LanguageGeneration.Engine;
 
-namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests.TestData.Mocks
+namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests.Mocks
 {
     internal class CompositeRequestMock : ICompositeRequest
     {

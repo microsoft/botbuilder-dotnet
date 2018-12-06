@@ -1,0 +1,24 @@
+# wPhrase
+	- Hello
+# welcomeUser 
+	- welcome {userName}
+# offerHelp
+	- How can I help you?
+# errorReadout
+	- Sorry, something went wrong, could you repeate this again?
+# sayGoodAfternoon
+	- good afternoon
+# sayGoodNight
+	- good night
+# sayWelcome
+	- welcome {user}
+# sayGoodBye
+	- bye
+# thankingPhrase
+	- thanks
+# scheduleMeeting
+	- let's have a meeting
+# welcomePhrase
+	- welcome
+# sayHello
+	- Hello

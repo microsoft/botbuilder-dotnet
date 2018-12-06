@@ -13,22 +13,37 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
     internal class RequestBuilder : IRequestBuilder
     {
         private readonly string _applicationId;
-        public RequestBuilder(string applicationId)
+        private readonly string _applicationLocale;
+        private readonly string _applicationVersion;
+
+        public RequestBuilder(string applicationId, string applicationLocale, string applicationVersion)
         {
             if (string.IsNullOrWhiteSpace(applicationId))
             {
-                throw new ArgumentException($"\"{applicationId}\" is not a valid Language generation application id.");
+                throw new ArgumentException($"\"{applicationId}\" is not a valid language generation application id.");
             }
+
+            if (string.IsNullOrWhiteSpace(applicationLocale))
+            {
+                throw new ArgumentException($"\"{applicationLocale}\" is not a valid language generation application locale.");
+            }
+
+            if (string.IsNullOrWhiteSpace(applicationVersion))
+            {
+                throw new ArgumentException($"\"{applicationVersion}\" is not a valid language generation application version.");
+            }
+
             _applicationId = applicationId;
+            _applicationLocale = applicationLocale;
+            _applicationVersion = applicationVersion;
         }
 
         /// <summary>
         /// The main method to build the <see cref="ICompositeRequest"/> object.
         /// </summary>
         /// <param name="slots">The <see cref="IList{Slot}"/>.</param>
-        /// <param name="locale">Locale.</param>
         /// <returns>A <see cref="ICompositeRequest"/>.</returns>
-        public ICompositeRequest BuildRequest(IList<Slot> slots, string locale)
+        public ICompositeRequest BuildRequest(IList<Slot> slots)
         {
             if (slots == null)
             {
@@ -104,7 +119,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
                 var lgRequest = new LGRequest()
                 {
                     Scenario = _applicationId,
-                    Locale = locale,
+                    Locale = _applicationLocale,
+                    Version = _applicationVersion,
                     TemplateId = (string)slot.KeyValue.Value
                 };
 

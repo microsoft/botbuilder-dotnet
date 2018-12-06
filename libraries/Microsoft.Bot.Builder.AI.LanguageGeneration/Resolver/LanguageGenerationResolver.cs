@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using DialogFoundation.Backend.LG;
-using LanguageGeneration.V2;
 using Microsoft.Bot.Builder.AI.LanguageGeneration.Engine;
-using Microsoft.Bot.Builder.AI.LanguageGeneration.Helpers;
 using Microsoft.Bot.Builder.AI.LanguageGeneration.API;
 using Microsoft.Bot.Schema;
 
@@ -18,6 +13,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Resolver
     public class LanguageGenerationResolver
     {
         private readonly LanguageGenerationApplication _languageGenerationApplication;
+        private readonly LanguageGenerationOptions _languageGenerationOptions;
+
         private readonly IResolverPipeline _resolverPipeline;
 
         /// <summary>
@@ -28,13 +25,20 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Resolver
         /// <param name="serviceAgent"></param>
         public LanguageGenerationResolver(LanguageGenerationApplication languageGenerationApplication, LanguageGenerationOptions languageGenerationOptions = null, IServiceAgent serviceAgent = null)
         {
-            _languageGenerationApplication = languageGenerationApplication ?? throw new ArgumentNullException(nameof(_languageGenerationApplication));
+            _languageGenerationApplication = languageGenerationApplication ?? throw new ArgumentNullException(nameof(languageGenerationApplication));
+            _languageGenerationOptions = languageGenerationOptions ?? new LanguageGenerationOptions();
+
             var resolverPipelineFactory = new ResolverPipelineFactory();
-            if (languageGenerationOptions == null)
+
+            if (serviceAgent != null)
             {
-                languageGenerationOptions = new LanguageGenerationOptions();
+                _resolverPipeline = resolverPipelineFactory.CreateResolverPipeline(_languageGenerationApplication, serviceAgent);
+            } 
+            else
+            {
+                var endpointProvider = new EndpointProvider(_languageGenerationApplication, _languageGenerationOptions);
+                _resolverPipeline = resolverPipelineFactory.CreateResolverPipeline(_languageGenerationApplication, endpointProvider);
             }
-            _resolverPipeline = resolverPipelineFactory.CreateResolverPipeline(_languageGenerationApplication.Endpoint, _languageGenerationApplication.EndpointKey, _languageGenerationApplication.ApplicationId, languageGenerationOptions.TokenGenerationApiEndpoint, serviceAgent);
         }
 
         /// <summary>

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using DialogFoundation.Backend.LG;
 using Microsoft.Bot.Builder.AI.LanguageGeneration.API;
 using Microsoft.Bot.Builder.AI.LanguageGeneration.Resolver;
-using Microsoft.Bot.Builder.AI.LanguageGeneration.Tests.TestData.Mocks;
+using Microsoft.Bot.Builder.AI.LanguageGeneration.Tests.Mocks;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
@@ -34,14 +34,21 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             if (_mock)
             {
-                var languageGenerationApplicationId = testSettings.mockApiTestSettings.languageGenerationApplicationId.Value;
-                var endpointKey = testSettings.mockApiTestSettings.subscriptionKey.Value;
-                var endpointUri = testSettings.mockApiTestSettings.endpointURI.Value;
-                var tokenGenerationEndPoint = testSettings.mockApiTestSettings.tokenGenerationEndPoint.Value;
-                _languageGenerationApplication = new LanguageGenerationApplication(languageGenerationApplicationId, endpointKey, endpointUri);
+
+                var jsonLanguageGenerationApplication = testSettings.mockApiTestSettings.languageGenerationApplication;
+
+                _languageGenerationApplication = new LanguageGenerationApplication(
+                    applicationId: jsonLanguageGenerationApplication.id.Value,
+                    applicationRegion: jsonLanguageGenerationApplication.region.Value,
+                    applicationLocale: jsonLanguageGenerationApplication.locale.Value,
+                    applicationVersion: jsonLanguageGenerationApplication.version.Value,
+                    subscriptionKey: jsonLanguageGenerationApplication.subscriptionKey.Value
+                );
+
                 _languageGenerationOptions = new LanguageGenerationOptions()
                 {
-                    TokenGenerationApiEndpoint = tokenGenerationEndPoint
+                    ResolverApiEndpoint = testSettings.mockApiTestSettings.resolverEndpoint.Value,
+                    TokenGenerationApiEndpoint = testSettings.mockApiTestSettings.tokenGenerationEndPoint.Value,
                 };
 
                 var resolutionsDictionary = new Dictionary<string, string>
@@ -55,14 +62,20 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             }
             else
             {
-                var languageGenerationApplicationId = testSettings.externalApiTestSettings.languageGenerationApplicationId.Value;
-                var endpointKey = testSettings.externalApiTestSettings.subscriptionKey.Value;
-                var endpointUri = testSettings.externalApiTestSettings.endpointURI.Value;
-                var tokenGenerationEndPoint = testSettings.externalApiTestSettings.tokenGenerationEndPoint.Value;
-                _languageGenerationApplication = new LanguageGenerationApplication(languageGenerationApplicationId, endpointKey, endpointUri);
+                var jsonLanguageGenerationApplication = testSettings.externalApiTestSettings.languageGenerationApplication;
+
+                _languageGenerationApplication = new LanguageGenerationApplication(
+                    applicationId: jsonLanguageGenerationApplication.id.Value,
+                    applicationRegion: jsonLanguageGenerationApplication.region.Value,
+                    applicationLocale: jsonLanguageGenerationApplication.locale.Value,
+                    applicationVersion: jsonLanguageGenerationApplication.version.Value,
+                    subscriptionKey: jsonLanguageGenerationApplication.subscriptionKey.Value
+                );
+
                 _languageGenerationOptions = new LanguageGenerationOptions()
                 {
-                    TokenGenerationApiEndpoint = tokenGenerationEndPoint
+                    ResolverApiEndpoint = testSettings.externalApiTestSettings.resolverEndpoint.Value,
+                    TokenGenerationApiEndpoint = testSettings.externalApiTestSettings.tokenGenerationEndPoint.Value,
                 };
             }
         }
