@@ -31,7 +31,7 @@ namespace Microsoft.Bot.PublishValidation
 
                 return BotValidatorHelper.ValidateBotFile(botConfiguration, configurationOptions, messages);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -77,7 +77,7 @@ namespace Microsoft.Bot.PublishValidation
                     if (!BotValidatorHelper.ValidateEndpoints(botConfiguration, options.RequiredEndpoints, true, out missingEndpoints))
                     {
                         errorMsg = string.IsNullOrWhiteSpace(missingEndpoints) ?
-                            $"There isnt't any { REQUIRED_ENDPOINTS } in the .bot file.\n" :
+                            $"There isn't any { REQUIRED_ENDPOINTS } in the .bot file.\n" :
                             $"The .bot file does not have the next { REQUIRED_ENDPOINTS }: { missingEndpoints }";
 
                         message = new NotificationMessage(errorMsg, NotificationMessageTypes.Error);
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.PublishValidation
                     if (!BotValidatorHelper.ValidateEndpoints(botConfiguration, forbiddenEndpoints, false, out missingEndpoints))
                     {
                         errorMsg = string.IsNullOrWhiteSpace(missingEndpoints) ?
-                            $"There isnt't any { FORBIDDEN_ENDPOINTS } in the .bot file." :
+                            $"There isn't any { FORBIDDEN_ENDPOINTS } in the .bot file." :
                             $"The .bot file has (but shouldn't) the next { FORBIDDEN_ENDPOINTS }: { missingEndpoints }";
 
                         message = new NotificationMessage(errorMsg, NotificationMessageTypes.Error);
@@ -137,14 +137,14 @@ namespace Microsoft.Bot.PublishValidation
                     {
                         errorMsg = "The .bot file does not have a QnA Key.";
                         message = new NotificationMessage(errorMsg, NotificationMessageTypes.Error);
-                        messages.Append(message);
+                        messages.Add(message);
                         validationResult = false;
                     }
                 }
 
                 return validationResult;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -254,7 +254,7 @@ namespace Microsoft.Bot.PublishValidation
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -285,7 +285,7 @@ namespace Microsoft.Bot.PublishValidation
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -367,7 +367,7 @@ namespace Microsoft.Bot.PublishValidation
 
                 return finalForbiddenEP;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -385,7 +385,7 @@ namespace Microsoft.Bot.PublishValidation
             {
                 return BotConfiguration.LoadFromFolder(folder, secret);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
