@@ -4,6 +4,9 @@ This is a tool for validating a bot configuration prior to publishing it. At thi
 - AllowSpacesInProjectName: 
     - Possible values: 'true' or 'false'
     - Description: No spaces in the Project's name (this is due to a bug in .NET/Azure - https://github.com/aspnet/websdk/issues/237)
+-AppSecret:
+    - Possible values: If necessary, environment variable name, following the format "$(ENV_VAR)".
+    - Description: Environment variable with the secret key to decrypt the .bot file, in case it's necessary.
 - NotRequireBotFile: 
     - Possible values: 'true' or 'false'
     - Description: Existence of a '.bot' file
@@ -23,6 +26,7 @@ This is a tool for validating a bot configuration prior to publishing it. At thi
 By default, these validations are all set like this:
 
 AllowSpacesInProjectName    ->  false
+AppSecret                   ->  [empty]
 NotRequireBotFile           ->  false
 RequireEndpoints            ->  production
 ForbidEndpoints             ->  [empty]
@@ -35,6 +39,7 @@ In order to change the behavior of this validations, you can create your own pro
 ------------------------------------------------------------------------------
 <PropertyGroup>
     <AllowSpacesInProjectName>false</AllowSpacesInProjectName>
+    <AppSecret>"$(ENV_VAR)"</AppSecret>
     <NotRequireBotFile>false</NotRequireBotFile>
     <RequireEndpoints>"production1,production2"</RequireEndpoints>
     <ForbidEndpoints>"development"</ForbidEndpoints>
