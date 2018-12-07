@@ -9,17 +9,20 @@
     <!--If the user set in the .csproj file the value of the tag 'NotRequireBotFile' to true, the validation will be executed with the parameter -NotRequireBotFile-->
     <!--The default value is false (the validation won't receive any parameter and will require the existence of the bot)-->
     <LocalNotRequireBotFile Condition="'$(NotRequireBotFile)' == 'true'" >-NotRequireBotFile</LocalNotRequireBotFile>
-    <LocalNotRequireBotFile Condition="'$(NotRequireBotFile)' != 'true'" ></LocalNotRequireBotFile>
     <!--Parameter used to provide the necessary endpoints that the .bot file must have-->
     <!--Gets the value provided by the user in the .csproj file, in the 'RequireEndpoints' tag, and pass it with the command '-RequireEndpoints-->
     <!--If no endpoints are provided, the default value is 'production'-->
     <LocalRequireEndpoints Condition="'$(RequireEndpoints)' == ''" >-RequireEndpoints production</LocalRequireEndpoints>
-    <LocalRequireEndpoints Condition="'$(RequireEndpoints)' != ''" >-RequireEndpoints $(RequireEndpoints)</LocalRequireEndpoints>
+    <!--'%22' is the HEX value of "(double quotes)-->
+    <LocalRequireEndpoints Condition="'$(RequireEndpoints)' != '' AND $(RequireEndpoints.Contains('%22'))" >-RequireEndpoints $(RequireEndpoints)</LocalRequireEndpoints>
+    <LocalRequireEndpoints Condition="'$(RequireEndpoints)' != '' AND !$(RequireEndpoints.Contains('%22'))" >-RequireEndpoints "$(RequireEndpoints)"</LocalRequireEndpoints>
     <!--Parameter used to provide the endpoints that the .bot file must not have-->
     <!--Gets the value provided by the user in the .csproj file, in the 'ForbidEndpoints' tag, and, if it has a value, it will be passed with the command '-ForbidEndpoints-->
     <!--The default value is [empty]-->
     <LocalForbidEndpoints Condition="'$(ForbidEndpoints)' == ''" ></LocalForbidEndpoints>
-    <LocalForbidEndpoints Condition="'$(ForbidEndpoints)' != ''" >-ForbidEndpoints $(ForbidEndpoints)</LocalForbidEndpoints>
+    <!--'%22' is the HEX value of "(double quotes)-->
+    <LocalForbidEndpoints Condition="'$(ForbidEndpoints)' != '' AND $(ForbidEndpoints.Contains('%22'))" >-ForbidEndpoints $(ForbidEndpoints)</LocalForbidEndpoints>
+    <LocalForbidEndpoints Condition="'$(ForbidEndpoints)' != '' AND !$(ForbidEndpoints.Contains('%22'))" >-ForbidEndpoints "$(ForbidEndpoints)"</LocalForbidEndpoints>
     <!--Allows the user to indicate if the validation process should check the existence of Luis Key in the '.bot' file-->
     <!--Gets the value provided by the user in the .csproj file, in the 'RequireLuisKey' tag, and if it is true, the process will be executed with the command -RequireLuisKey-->
     <!--The default value is false (so, the Luis key won't be validated-->
@@ -32,8 +35,13 @@
     <LocalRequireQnAMakerKey Condition="'$(RequireQnAMakerKey)' != 'true'" ></LocalRequireQnAMakerKey>
     <!--Path to the command line tool-->
     <ThisToolPath>$(MSBuildThisFileDirectory)..\lib\netcoreapp2.1\Microsoft.Bot.PublishValidation.dll</ThisToolPath>
+    <!--`Secret` to read the .bot file-->
+    <LocalAppSecret Condition="'$(AppSecret)' == ''"></LocalAppSecret>
+    <!--'%22' is the HEX value of "(double quotes)-->
+    <LocalAppSecret Condition="'$(AppSecret)' != '' AND $(AppSecret.Contains('%22'))">-AppSecret $(AppSecret)</LocalAppSecret>
+    <LocalAppSecret Condition="'$(AppSecret)' != '' AND !$(AppSecret.Contains('%22'))">-AppSecret "$(AppSecret)"</LocalAppSecret>
   </PropertyGroup>
   <Target Name="BotConfigurationValidation" BeforeTargets="Publish" Condition="$(DisablePublishValidation) != 'true'">
-    <Exec Command="dotnet $(ThisToolPath) -ProjectPath $(MSBuildProjectDirectory) $(LocalAllowSpacesInProjectName) $(LocalNotRequireBotFile) $(LocalRequireEndpoints) $(LocalForbidEndpoints) $(LocalRequireLuisKey) $(LocalRequireQnAMakerKey)"/>
+    <Exec Command="dotnet $(ThisToolPath) -ProjectPath $(MSBuildProjectDirectory) $(LocalAppSecret) $(LocalAllowSpacesInProjectName) $(LocalNotRequireBotFile) $(LocalRequireEndpoints) $(LocalForbidEndpoints) $(LocalRequireLuisKey) $(LocalRequireQnAMakerKey)"/>
   </Target>
 </Project>

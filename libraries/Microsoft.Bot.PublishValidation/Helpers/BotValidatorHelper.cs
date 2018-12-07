@@ -27,7 +27,7 @@ namespace Microsoft.Bot.PublishValidation
             {
                 // Load the first .bot file from the provided folder.
                 // Also validates its existence (throws an exception is there isn't any file)
-                var botConfiguration = BotValidatorHelper.LoadFromFolder(configurationOptions.ProjectPath);
+                var botConfiguration = BotValidatorHelper.LoadFromFolder(configurationOptions);
 
                 return BotValidatorHelper.ValidateBotFile(botConfiguration, configurationOptions, messages);
             }
@@ -77,7 +77,7 @@ namespace Microsoft.Bot.PublishValidation
                     if (!BotValidatorHelper.ValidateEndpoints(botConfiguration, options.RequiredEndpoints, true, out missingEndpoints))
                     {
                         errorMsg = string.IsNullOrWhiteSpace(missingEndpoints) ?
-                            $"There isn't any {REQUIREDENDPOINTS} in the .bot file.\n" :
+                            $"There isn't any {REQUIREDENDPOINTS} in the .bot file." :
                             $"The .bot file does not have the next {REQUIREDENDPOINTS}: {missingEndpoints}";
 
                         message = new NotificationMessage(errorMsg, NotificationMessageTypes.Error);
@@ -108,13 +108,15 @@ namespace Microsoft.Bot.PublishValidation
                     // Validates the forbidden endpoints
                     if (!BotValidatorHelper.ValidateEndpoints(botConfiguration, forbiddenEndpoints, false, out missingEndpoints))
                     {
-                        errorMsg = string.IsNullOrWhiteSpace(missingEndpoints) ?
-                            $"There isn't any {FORBIDDENENDPOINTS} in the .bot file." :
-                            $"The .bot file has (but shouldn't) the next {FORBIDDENENDPOINTS}: {missingEndpoints}";
+                        // If there is at least one forbidden endpoint in the .bot file, an error will be thrown
+                        if (!string.IsNullOrWhiteSpace(missingEndpoints))
+                        {
+                            errorMsg = $"The .bot file has (but shouldn't) the next {FORBIDDENENDPOINTS}: {missingEndpoints}";
 
-                        message = new NotificationMessage(errorMsg, NotificationMessageTypes.Error);
-                        messages.Add(message);
-                        validationResult = false;
+                            message = new NotificationMessage(errorMsg, NotificationMessageTypes.Error);
+                            messages.Add(message);
+                            validationResult = false;
+                        }
                     }
                 }
 
@@ -371,9 +373,9 @@ namespace Microsoft.Bot.PublishValidation
                 var finalForbiddenEP = forbiddenEndpoints.Except(requiredEndpoints);
 
                 // Gets the forbidden endpoints repeated in the required list
-                var repeteadForbiddenEP = string.Join(", ", forbiddenEndpoints.Except(finalForbiddenEP));
+                var repeatedForbiddenEP = string.Join(", ", forbiddenEndpoints.Except(finalForbiddenEP));
 
-                errorMsg = string.IsNullOrWhiteSpace(repeteadForbiddenEP) ? string.Empty : $"The next forbidden endpoints won't be checked because they also appear as required:{repeteadForbiddenEP}";
+                errorMsg = string.IsNullOrWhiteSpace(repeatedForbiddenEP) ? string.Empty : $"The next forbidden endpoints won't be checked because they also appear as required:{repeatedForbiddenEP}";
 
                 return finalForbiddenEP;
             }
@@ -386,18 +388,24 @@ namespace Microsoft.Bot.PublishValidation
         /// <summary>
         /// Load the .bot file from the specified folder
         /// </summary>
-        /// <param name="folder">The folder where the .bot file is located</param>
-        /// <param name="secret">The path of the secret file to decrypt the .bot file</param>
+        /// <param name="options">Contains the necessary values to Load the .bot file</param>
         /// <returns>The first .bot file in the specified folder</returns>
-        private static BotConfiguration LoadFromFolder(string folder, string secret = null)
+        private static BotConfiguration LoadFromFolder(ConfigurationOptions options)
         {
             try
             {
-                return BotConfiguration.LoadFromFolder(folder, secret);
+                return BotConfiguration.LoadFromFolder(options.ProjectPath, options.Secret);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                if (ex is ArgumentNullException || ex is FileNotFoundException)
+                {
+                    throw;
+                }
+                else
+                {
+                    throw new Exception("Error: A `SECRET` is needed to access the .bot file. Provide it setting the property \'AppSecret\' in your \'.csproj\' file as stated in README.md.");
+                }
             }
         }
     }

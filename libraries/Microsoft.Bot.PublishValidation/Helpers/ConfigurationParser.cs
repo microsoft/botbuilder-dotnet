@@ -10,6 +10,7 @@ namespace Microsoft.Bot.PublishValidation
     public static class ConfigurationParser
     {
         private const string PROJECTPATH = "-ProjectPath";
+        private const string APPSECRET = "-AppSecret";
         private const string ALLOWSPACESINPROJECTNAME = "-AllowSpacesInProjectName";
         private const string NOTREQUIREBOTFILE = "-NotRequireBotFile";
         private const string REQUIREENDPOINTS = "-RequireEndpoints";
@@ -24,7 +25,10 @@ namespace Microsoft.Bot.PublishValidation
                 var configurationOptions = new ConfigurationOptions
                 {
                     // Parse the PROJECT PATH
-                    ProjectPath = options.Contains(PROJECTPATH) ? options[options.ToList().IndexOf(PROJECTPATH) + 1] : string.Empty,
+                    ProjectPath = options.Contains(PROJECTPATH) ? GetOptionValue(options, PROJECTPATH) : string.Empty,
+
+                    // Parse the AppSecret Path
+                    Secret = options.Contains(APPSECRET) ? GetOptionValue(options, APPSECRET) : string.Empty,
 
                     // If the option 'AllowSpacesInProjectName' is present, the process won't validated if the project's name has white spaces
                     ForbidSpacesInProjectName = options.Contains(ALLOWSPACESINPROJECTNAME) ? false : true,
