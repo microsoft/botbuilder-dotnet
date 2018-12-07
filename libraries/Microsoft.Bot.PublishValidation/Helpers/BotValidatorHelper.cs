@@ -398,12 +398,15 @@ namespace Microsoft.Bot.PublishValidation
             }
             catch (Exception ex)
             {
+                // If the exception is an ArgumentNullException, it means that the `LoadFromFolder` method failed because a project path was not provided
+                // If the exception is an FileNotFoundException, it means that there where no .bot files in the folder
                 if (ex is ArgumentNullException || ex is FileNotFoundException)
                 {
                     throw;
                 }
                 else
                 {
+                    // The last kind of exception that we should catch are the one related to the missing `secret` parameter of the `LoadFromFolder` method, which is necessary when the .bot file was encrypted.
                     throw new Exception("Error: A `SECRET` is needed to access the .bot file. Provide it setting the property \'AppSecret\' in your \'.csproj\' file as stated in README.md.");
                 }
             }
