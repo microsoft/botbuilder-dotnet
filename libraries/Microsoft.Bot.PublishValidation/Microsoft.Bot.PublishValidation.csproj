@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <CodeAnalysisRuleSet>BotBuilder.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>BotPublishValidation.ruleset</CodeAnalysisRuleSet>
     <NoWarn>SA1652</NoWarn>
   </PropertyGroup>
 
