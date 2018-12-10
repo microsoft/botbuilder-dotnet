@@ -347,7 +347,7 @@ namespace Microsoft.Bot.PublishValidation
             }
 
             // Obtains all the endpoints specified in the bot file's services
-            var botEndpoints = botServices.Where(service => service.Type.Trim().ToLower() == serviceType.ToString());
+            var botEndpoints = botServices.Where(service => service.Type.Trim().ToLower() == serviceType.ToString().ToLower());
 
             // If there isn't any endpoint specified, returns an error
             if (botEndpoints == null || botEndpoints.Count() == 0)
