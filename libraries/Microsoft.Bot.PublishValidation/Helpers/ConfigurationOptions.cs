@@ -9,6 +9,8 @@ namespace Microsoft.Bot.PublishValidation
     {
         public string ProjectPath { get; set; }
 
+        public string BotFileName { get; set; }
+
         public string Secret { get; set; }
 
         public bool ForbidSpacesInProjectName { get; set; }

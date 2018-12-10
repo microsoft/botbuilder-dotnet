@@ -5,6 +5,13 @@
     <!--The default value is false (the validation won't receive any parameter and will require that the project's name does not have empty spaces)-->
     <LocalAllowSpacesInProjectName Condition="'$(AllowSpacesInProjectName)' == 'true'" >-AllowSpacesInProjectName</LocalAllowSpacesInProjectName>
     <LocalAllowSpacesInProjectName Condition="'$(AllowSpacesInProjectName)' != 'true'" ></LocalAllowSpacesInProjectName>
+    <!--Allows to validate a specific .bot file-->
+    <!--Validates the specified .bot file in the .csproj with the tag 'BotFileName'-->
+    <!--By default, its value is empty. So, the validator will check the first .bot file in the project folder (if there isn't any file, will thrown an error)-->
+    <!--'%22' is the HEX value of "(double quotes)-->
+    <LocalBotFileName Condition="'$(BotFileName)' != '' AND $(BotFileName.Contains('%22'))">-BotFileName $(BotFileName)</LocalBotFileName>
+    <LocalBotFileName Condition="'$(BotFileName)' != '' AND !$(BotFileName.Contains('%22'))">-BotFileName "$(BotFileName)"</LocalBotFileName>
+    <LocalBotFileName Condition="'$(BotFileName)' == ''"></LocalBotFileName>
     <!--Allows the user to validate or not the existence of the .bot file-->
     <!--If the user set in the .csproj file the value of the tag 'NotRequireBotFile' to true, the validation will be executed with the parameter -NotRequireBotFile-->
     <!--The default value is false (the validation won't receive any parameter and will require the existence of the bot)-->
@@ -42,6 +49,6 @@
     <LocalAppSecret Condition="'$(AppSecret)' != '' AND !$(AppSecret.Contains('%22'))">-AppSecret "$(AppSecret)"</LocalAppSecret>
   </PropertyGroup>
   <Target Name="BotConfigurationValidation" BeforeTargets="Publish" Condition="$(DisablePublishValidation) != 'true'">
-    <Exec Command="dotnet $(ThisToolPath) -ProjectPath $(MSBuildProjectDirectory) $(LocalAppSecret) $(LocalAllowSpacesInProjectName) $(LocalNotRequireBotFile) $(LocalRequireEndpoints) $(LocalForbidEndpoints) $(LocalRequireLuisKey) $(LocalRequireQnAMakerKey)"/>
+    <Exec Command="dotnet $(ThisToolPath) -ProjectPath $(MSBuildProjectDirectory) $(LocalBotFileName) $(LocalAppSecret) $(LocalAllowSpacesInProjectName) $(LocalNotRequireBotFile) $(LocalRequireEndpoints) $(LocalForbidEndpoints) $(LocalRequireLuisKey) $(LocalRequireQnAMakerKey)"/>
   </Target>
 </Project>

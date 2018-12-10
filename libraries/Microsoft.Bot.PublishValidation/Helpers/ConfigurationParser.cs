@@ -10,6 +10,7 @@ namespace Microsoft.Bot.PublishValidation
     public static class ConfigurationParser
     {
         private const string PROJECTPATH = "-ProjectPath";
+        private const string BOTFILENAME = "-BotFileName";
         private const string APPSECRET = "-AppSecret";
         private const string ALLOWSPACESINPROJECTNAME = "-AllowSpacesInProjectName";
         private const string NOTREQUIREBOTFILE = "-NotRequireBotFile";
@@ -26,6 +27,9 @@ namespace Microsoft.Bot.PublishValidation
                 {
                     // Parse the PROJECT PATH
                     ProjectPath = options.Contains(PROJECTPATH) ? GetOptionValue(options, PROJECTPATH) : string.Empty,
+
+                    // Parse a specific .bot file name
+                    BotFileName = options.Contains(BOTFILENAME) ? GetOptionValue(options, BOTFILENAME) : string.Empty,
 
                     // Parse the AppSecret Path
                     Secret = options.Contains(APPSECRET) ? GetOptionValue(options, APPSECRET) : string.Empty,
@@ -48,6 +52,12 @@ namespace Microsoft.Bot.PublishValidation
                     // Check if the configuration will require the QNA MAKER KEY
                     RequireQnAMakerKey = options.Contains(REQUIREQNAMAKERKEY) ? true : false
                 };
+
+                // Adds the '.bot' extension to the file if a specific file was provided and it hasn't any extension.
+                if (!string.IsNullOrWhiteSpace(configurationOptions.BotFileName) && !configurationOptions.BotFileName.EndsWith(".bot"))
+                {
+                    configurationOptions.BotFileName = configurationOptions.BotFileName + ".bot";
+                }
 
                 return configurationOptions;
             }

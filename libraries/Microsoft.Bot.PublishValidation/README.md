@@ -18,8 +18,11 @@ There are several validation checks available at the moment. These are the follo
 - **AllowSpacesInProjectName**: 
     - Possible values: 'true' or 'false'
     - Description: No spaces in the Project's name (this is due to a [bug in .NET/Azure](https://github.com/aspnet/websdk/issues/237))
+- **BotFileName**:
+    - Posible values: Any string that represents a .bot file's name.
+    - Description: A specific .bot file's name.
 - **AppSecret**:
-    - Possible values: If necessary, environment variable name, following the format "$(ENV_VAR)".
+    - Possible values: If necessary, environment variable name, following the format `$(ENV_VAR)`.
     - Description: Environment variable with the secret key to decrypt the .bot file, in case it's necessary.
 - **NotRequireBotFile**:
     - Possible values: 'true' or 'false'
@@ -41,6 +44,8 @@ By default, these validations are all set like this:
 
 > AllowSpacesInProjectName: false
 >
+> BotFileName: [empty]
+>
 > AppSecret: [empty]
 >
 > NotRequireBotFile: false
@@ -58,6 +63,7 @@ In order to change the behavior of this validations, you can create your own pro
 ```.csproj
 <PropertyGroup>
     <AllowSpacesInProjectName>true</AllowSpacesInProjectName>
+    <BotFileName>"botfile.bot"</BotFileName>
     <AppSecret>"$(ENV_VAR)"</AppSecret>
     <NotRequireBotFile>true</NotRequireBotFile>
     <RequireEndpoints>"production1,production2"</RequireEndpoints>

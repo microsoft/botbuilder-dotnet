@@ -386,14 +386,20 @@ namespace Microsoft.Bot.PublishValidation
         }
 
         /// <summary>
-        /// Load the .bot file from the specified folder
+        /// Load the .bot file from the specified folder or by its name, if it was provided
         /// </summary>
         /// <param name="options">Contains the necessary values to Load the .bot file</param>
-        /// <returns>The first .bot file in the specified folder</returns>
+        /// <returns>A .bot file</returns>
         private static BotConfiguration LoadFromFolder(ConfigurationOptions options)
         {
             try
             {
+                // Search a .bot file by its name if it was provided.
+                if (!string.IsNullOrWhiteSpace(options.BotFileName))
+                {
+                    return BotConfiguration.Load(options.BotFileName, options.Secret);
+                }
+
                 return BotConfiguration.LoadFromFolder(options.ProjectPath, options.Secret);
             }
             catch (Exception ex)
