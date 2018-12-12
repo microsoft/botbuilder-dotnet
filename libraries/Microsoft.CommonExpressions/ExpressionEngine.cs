@@ -85,7 +85,7 @@ namespace Microsoft.Expressions
             var entry = term.Entry;
             if (entry != null)
             {
-                var eager = entry.Eager;
+                var eager = entry.Evaluate;
                 if (eager != null)
                 {
                     var terms = term.Terms.Select(t => Evaluate(t, scope, getValue)).ToArray();

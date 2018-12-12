@@ -4,9 +4,9 @@ namespace Microsoft.Expressions
 {
 
     /// <summary>
-    /// Eagerly evaluate an expression term.
+    /// Delegate which evaluates operators operands (aka the paramters) to the result
     /// </summary>
-    public delegate object Eager(IReadOnlyList<object> parameters);
+    public delegate object EvaluationDelegate(IReadOnlyList<object> parameters);
 
     /// <summary>
     /// Schema for entry in table of operators
@@ -18,6 +18,9 @@ namespace Microsoft.Expressions
         /// </summary>
         public string Token { get; private set; }
 
+        /// <summary>
+        /// Precedence order (lower numbers evaluated before higher)
+        /// </summary>
         public int Power { get; private set; }
 
         /// <summary>
@@ -26,16 +29,19 @@ namespace Microsoft.Expressions
         public BindingDirection Direction { get; private set; }
 
         /// <summary>
-        /// Min number of args (arrityMin)
+        /// Min number of args (arityMin)
         /// </summary>
         public int MinArgs { get; private set; }
 
         /// <summary>
-        /// Max number of args to support (arrityMax)
+        /// Max number of args to support (arityMax)
         /// </summary>
         public int MaxArgs { get; private set; }
 
-        public Eager Eager { get; private set; }
+        /// <summary>
+        /// Delegate to evaluates operator operands (aka the paramters) to the result
+        /// </summary>
+        public EvaluationDelegate Evaluate { get; private set; }
 
         /// <summary>
         /// Create OperatorEntry 
@@ -45,9 +51,9 @@ namespace Microsoft.Expressions
         /// <param name="direction"></param>
         /// <param name="minArgs"></param>
         /// <param name="maxArgs"></param>
-        /// <param name="eager"></param>
+        /// <param name="evaluator">the delegate which evaluates the operands according to the operator semantics</param>
         /// <returns></returns>
-        public static OperatorEntry From(string token, int power, BindingDirection direction, int minArgs, int maxArgs, Eager eager)
+        public static OperatorEntry From(string token, int power, BindingDirection direction, int minArgs, int maxArgs, EvaluationDelegate evaluator)
             => new OperatorEntry()
             {
                 Token = token,
@@ -55,7 +61,7 @@ namespace Microsoft.Expressions
                 Direction = direction,
                 MinArgs = maxArgs,
                 MaxArgs = maxArgs,
-                Eager = eager
+                Evaluate = evaluator
             };
 
 

@@ -9,17 +9,17 @@ namespace Microsoft.Expressions
     /// </summary>
     public static class OperatorTable
     {
-        public static OperatorEntry Prefix(string input, int power, Eager eager) =>
-            OperatorEntry.From(input, power, BindingDirection.Left, 1, 1, eager);
+        public static OperatorEntry Prefix(string input, int power, EvaluationDelegate evaluator) =>
+            OperatorEntry.From(input, power, BindingDirection.Left, 1, 1, evaluator);
 
-        public static OperatorEntry Infix(string input, int power, Eager eager) =>
-            OperatorEntry.From(input, power, BindingDirection.Left, 2, 2, eager);
+        public static OperatorEntry Infix(string input, int power, EvaluationDelegate evaluator) =>
+            OperatorEntry.From(input, power, BindingDirection.Left, 2, 2, evaluator);
 
-        public static OperatorEntry InfixFree(string input, int power, Eager eager) =>
-            OperatorEntry.From(input, power, BindingDirection.Free, 2, int.MaxValue, eager);
+        public static OperatorEntry InfixFree(string input, int power, EvaluationDelegate evaluator) =>
+            OperatorEntry.From(input, power, BindingDirection.Free, 2, int.MaxValue, evaluator);
 
-        public static OperatorEntry InfixRight(string input, int power, Eager eager) =>
-            OperatorEntry.From(input, power, BindingDirection.Right, 2, 2, eager);
+        public static OperatorEntry InfixRight(string input, int power, EvaluationDelegate evaluator) =>
+            OperatorEntry.From(input, power, BindingDirection.Right, 2, 2, evaluator);
 
         public static readonly IReadOnlyList<OperatorEntry> All = new[]
         {
@@ -27,60 +27,60 @@ namespace Microsoft.Expressions
             Infix("]", 0, null),
             Infix(")", 0, null),
 
-            InfixRight("or", 30, p => p[0] is bool b0 && p[1] is bool b1 ? b0 || b1 : throw new Exception()),
-            InfixRight("and", 40, p => p[0] is bool b0 && p[1] is bool b1 ? b0 && b1 : throw new Exception()),
-            Prefix("not", 50, p => p[0] is bool b0 ? !b0 : throw new Exception()),
+            InfixRight("or", 30, operands => operands[0] is bool bool0 && operands[1] is bool bool1 ? bool0 || bool1 : throw new Exception()),
+            InfixRight("and", 40, operands => operands[0] is bool bool0 && operands[1] is bool bool1 ? bool0 && bool1 : throw new Exception()),
+            Prefix("not", 50, operands => operands[0] is bool bool0 ? !bool0 : throw new Exception()),
 
             // TODO: delegate to C# IComparable semantics
-            Infix("<", 60, p => p[0] is IComparable c0 && p[1] is IComparable c1 ? c0.CompareTo(c1) < 0 : throw new Exception()),
-            Infix("<=", 60, p => p[0] is IComparable c0 && p[1] is IComparable c1 ? c0.CompareTo(c1) <= 0 : throw new Exception()),
-            Infix(">", 60, p => p[0] is IComparable c0 && p[1] is IComparable c1 ? c0.CompareTo(c1) > 0 : throw new Exception()),
-            Infix(">=", 60, p => p[0] is IComparable c0 && p[1] is IComparable c1 ? c0.CompareTo(c1) >= 0 : throw new Exception()),
-            Infix("<>", 60, p => p[0] is IComparable c0 && p[1] is IComparable c1 ? c0.CompareTo(c1) != 0 : throw new Exception()),
-            Infix("!=", 60, p => p[0] is IComparable c0 && p[1] is IComparable c1 ? c0.CompareTo(c1) != 0 : throw new Exception()),
-            Infix("==", 60, p => p[0] is IComparable c0 && p[1] is IComparable c1 ? c0.CompareTo(c1) == 0 : throw new Exception()),
+            Infix("<", 60, operands => operands[0] is IComparable operand0 && operands[1] is IComparable operand1 ? operand0.CompareTo(operand1) < 0 : throw new Exception()),
+            Infix("<=", 60, operands => operands[0] is IComparable operand0 && operands[1] is IComparable operand1 ? operand0.CompareTo(operand1) <= 0 : throw new Exception()),
+            Infix(">", 60, operands => operands[0] is IComparable operand0 && operands[1] is IComparable operand1 ? operand0.CompareTo(operand1) > 0 : throw new Exception()),
+            Infix(">=", 60, operands => operands[0] is IComparable operand0 && operands[1] is IComparable operand1 ? operand0.CompareTo(operand1) >= 0 : throw new Exception()),
+            Infix("<>", 60, operands => operands[0] is IComparable operand0 && operands[1] is IComparable operand1 ? operand0.CompareTo(operand1) != 0 : throw new Exception()),
+            Infix("!=", 60, operands => operands[0] is IComparable operand0 && operands[1] is IComparable operand1 ? operand0.CompareTo(operand1) != 0 : throw new Exception()),
+            Infix("==", 60, operands => operands[0] is IComparable operand0 && operands[1] is IComparable operand1 ? operand0.CompareTo(operand1) == 0 : throw new Exception()),
 
             // TODO: delegate to C# double and int, might prefer coercion rules
-            Infix("+", 110, p =>
-                p[0] is double d0 && p[1] is double d1 ? d0 + d1 :
-                p[0] is int i0 && p[1] is int i1 ? (object)(i0 + i1) :
-                p[0] is string s0 && p[1] is string s1 ? s0 + s1 :
+            Infix("+", 110, operands =>
+                operands[0] is double double0 && operands[1] is double double1 ? double0 + double1 :
+                operands[0] is int int0 && operands[1] is int int1 ? (object)(int0 + int1) :
+                operands[0] is string string0 && operands[1] is string string1 ? string0 + string1 :
                 throw new Exception()
             ),
 
-            Infix("-", 110, p =>
-                p[0] is double d0 && p[1] is double d1 ? d0 - d1 :
-                p[0] is int i0 && p[1] is int i1 ? (object)(i0 - i1) :
+            Infix("-", 110, operands =>
+                operands[0] is double double0 && operands[1] is double double1 ? double0 - double1 :
+                operands[0] is int int0 && operands[1] is int int1 ? (object)(int0 - int1) :
                 throw new Exception()
             ),
 
-            Infix("*", 120, p =>
-                p[0] is double d0 && p[1] is double d1 ? d0 * d1 :
-                p[0] is int i0 && p[1] is int i1 ? (object)(i0 * i1) :
+            Infix("*", 120, operands =>
+                operands[0] is double double0 && operands[1] is double double1 ? double0 * double1 :
+                operands[0] is int int0 && operands[1] is int int1 ? (object)(int0 * int1) :
                 throw new Exception()
             ),
 
-            Infix("/", 120, p =>
-                p[0] is double d0 && p[1] is double d1 ? d0 / d1 :
-                p[0] is int i0 && p[1] is int i1 ? (object)(i0 / i1) :
+            Infix("/", 120, operands =>
+                operands[0] is double double0 && operands[1] is double double1 ? double0 / double1 :
+                operands[0] is int int0 && operands[1] is int int1 ? (object)(int0 / int1) :
                 throw new Exception()
             ),
 
-            Prefix("+", 130, p =>
-                p[0] is double d0 ? +d0 :
-                p[0] is int i0 ? +i0 :
+            Prefix("+", 130, operands =>
+                operands[0] is double double0 ? +double0 :
+                operands[0] is int int0 ? +int0 :
                 throw new Exception()
             ),
 
-            Prefix("-", 130, p =>
-                p[0] is double d0 ? -d0 :
-                p[0] is int i0 ? -i0 :
+            Prefix("-", 130, operands =>
+                operands[0] is double double0 ? -double0 :
+                operands[0] is int int0 ? -int0 :
                 throw new Exception()
             ),
 
-            InfixRight("^", 140, p =>
-                p[0] is double d0 && p[1] is double d1 ? Math.Pow(d0, d1) :
-                p[0] is int i0 && p[1] is int i1 ? Math.Pow(i0, i1) :
+            InfixRight("^", 140, operands =>
+                operands[0] is double double0 && operands[1] is double double1 ? Math.Pow(double0, double1) :
+                operands[0] is int int0 && operands[1] is int int1 ? Math.Pow(int0, int1) :
                 throw new Exception()
             ),
 
