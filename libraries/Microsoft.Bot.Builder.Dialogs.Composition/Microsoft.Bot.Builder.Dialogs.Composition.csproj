@@ -20,6 +20,7 @@
     <ProjectReference Include="..\Microsoft.Bot.Builder.TemplateManager\Microsoft.Bot.Builder.TemplateManager.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
+    <ProjectReference Include="..\Microsoft.CommonExpressions\Microsoft.Expressions.csproj" />
   </ItemGroup>
 
 </Project>

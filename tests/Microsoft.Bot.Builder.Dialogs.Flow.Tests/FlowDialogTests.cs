@@ -7,6 +7,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using Microsoft.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
 {
@@ -39,10 +40,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                 OnCompleted = new CommandSet()
                 {
                     Commands = {
-                        new SetVariable() { Name="Name", Value= new CSharpExpression("State.DialogTurnResult.Result")},
+                        new SetVariable() { Name="Name", Value= new CommonExpression("DialogTurnResult.Result")},
                         new Switch()
                         {
-                            Condition = new CSharpExpression() { Expression="State.Name.Length > 2" },
+                            Condition = new CommonExpression() { Expression="Name.Length > 2" },
                             Cases = new Dictionary<string, IDialogCommand>
                             {
                                 { "true", new CallDialog("GetAgeDialog")  },
@@ -69,8 +70,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                 OnCompleted = new CommandSet()
                 {
                     Commands = {
-                        new SetVariable() { Name = "Age", Value = new CSharpExpression("State.DialogTurnResult.Result") },
-                        new SetVariable() { Name = "IsChild", Value = new CSharpExpression("State.Age < 18") },
+                        new SetVariable() { Name = "Age", Value = new CommonExpression("DialogTurnResult.Result") },
+                        new SetVariable() { Name = "IsChild", Value = new CommonExpression("Age < 18") },
                         new SendActivity() { Text = "Done" }
                     }
                 }

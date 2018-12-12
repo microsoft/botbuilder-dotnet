@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                 {
                     Commands = {
                         // set the test=123
-                        new SetVariable() { Name = "test", Value=new CSharpExpression("123") },
+                        new SetVariable() { Name = "test", Value=new CommonExpression("123") },
                         // send the value of test
                         new SendActivity("{test}"),
                         // set test=
@@ -161,7 +161,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                 DialogId = "ReturnText",
                 OnCompleted = new Switch()
                 {
-                    Condition = new CSharpExpression("State.DialogTurnResult.Result"),
+                    Condition = new CommonExpression("DialogTurnResult.Result"),
                     Cases = new Dictionary<string, IDialogCommand>
                     {
                         // case "end" 
@@ -259,7 +259,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                 DialogId = "EchoDialog",
                 OnCompleted = new Switch()
                 {
-                    Condition = new CSharpExpression("State.DialogTurnResult.Result"),
+                    Condition = new CommonExpression("DialogTurnResult.Result"),
                     Cases = new Dictionary<string, IDialogCommand>
                             {
                                 { $"one", new SendActivity("response:1") },

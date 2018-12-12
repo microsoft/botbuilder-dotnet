@@ -78,6 +78,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Flows.Tests", "tests\Microsoft.Bot.Builder.Dialogs.Flow.Tests\Microsoft.Bot.Builder.Dialogs.Flows.Tests.csproj", "{0027D023-2E4C-4298-81A0-DC8BA8577116}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Expressions", "libraries\Microsoft.CommonExpressions\Microsoft.Expressions.csproj", "{68899A42-6375-43BC-95BB-2E4798D2C0EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Expressions.Tests", "tests\Microsoft.Expressions.Tests\Microsoft.Expressions.Tests.csproj", "{A7637631-40EF-4E8D-A90A-422A5FD593D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug - NuGet Packages|Any CPU = Debug - NuGet Packages|Any CPU
@@ -343,6 +347,22 @@ Global
 		{0027D023-2E4C-4298-81A0-DC8BA8577116}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{0027D023-2E4C-4298-81A0-DC8BA8577116}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0027D023-2E4C-4298-81A0-DC8BA8577116}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68899A42-6375-43BC-95BB-2E4798D2C0EB}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{68899A42-6375-43BC-95BB-2E4798D2C0EB}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{68899A42-6375-43BC-95BB-2E4798D2C0EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68899A42-6375-43BC-95BB-2E4798D2C0EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68899A42-6375-43BC-95BB-2E4798D2C0EB}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{68899A42-6375-43BC-95BB-2E4798D2C0EB}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{68899A42-6375-43BC-95BB-2E4798D2C0EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68899A42-6375-43BC-95BB-2E4798D2C0EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7637631-40EF-4E8D-A90A-422A5FD593D1}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7637631-40EF-4E8D-A90A-422A5FD593D1}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{A7637631-40EF-4E8D-A90A-422A5FD593D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7637631-40EF-4E8D-A90A-422A5FD593D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7637631-40EF-4E8D-A90A-422A5FD593D1}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7637631-40EF-4E8D-A90A-422A5FD593D1}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{A7637631-40EF-4E8D-A90A-422A5FD593D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7637631-40EF-4E8D-A90A-422A5FD593D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -384,6 +404,8 @@ Global
 		{33A0609A-020F-474C-8113-93CD03928387} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{78D16CCC-6184-4678-87D8-E8C4299317CE} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{0027D023-2E4C-4298-81A0-DC8BA8577116} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{68899A42-6375-43BC-95BB-2E4798D2C0EB} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
+		{A7637631-40EF-4E8D-A90A-422A5FD593D1} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
