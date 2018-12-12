@@ -73,12 +73,22 @@ namespace Microsoft.Expressions
                 return value;
             }
 
-            // special handling for operators without eagerly evaluated operands
+            // special handling for operators
+            // 1. without eagerly evaluated operands, or
+            // 2. require access to the environment
             switch (token.Input)
             {
                 case ".":
-                    var instance = Evaluate(term.Terms[0], scope, getValue);
-                    return getValue(instance, term.Terms[1].Token.Input);
+                    {
+                        var instance = Evaluate(term.Terms[0], scope, getValue);
+                        return getValue(instance, term.Terms[1].Token.Input);
+                    }
+                case "[":
+                    {
+                        var instance = Evaluate(term.Terms[0], scope, getValue);
+                        var index = Evaluate(term.Terms[1], scope, getValue);
+                        return getValue(instance, index);
+                    }
             }
 
             // otherwise look in table for operators with eagerly evaluated operands
@@ -144,29 +154,43 @@ namespace Microsoft.Expressions
             if (OperatorTable.InfixByToken.TryGetValue(token.Input, out var infix))
             {
                 // special handling for method invocations
-                if (token.Input == "(")
+                switch (token.Input)
                 {
-                    var terms = new List<Term>() { left };
-                    if (tokens.Current.Input != ")")
-                    {
-                        while (true)
+                    case "(":
                         {
-                            var term = Expression(tokens, 0);
-                            terms.Add(term);
-                            if (tokens.Current.Input != ",")
+                            var terms = new List<Term>() { left };
+                            if (tokens.Current.Input != ")")
                             {
-                                break;
+                                while (true)
+                                {
+                                    var term = Expression(tokens, 0);
+                                    terms.Add(term);
+                                    if (tokens.Current.Input != ",")
+                                    {
+                                        break;
+                                    }
+                                    Lexer.Match(tokens, ",");
+                                }
                             }
-                            Lexer.Match(tokens, ",");
+
+                            Lexer.Match(tokens, ")");
+                            return Term.From(token, infix, terms.ToArray());
                         }
-                    }
-
-                    Lexer.Match(tokens, ")");
-                    return Term.From(token, null, terms.ToArray());
+                    case "[":
+                        {
+                            var terms = new[] {
+                                left,
+                                Expression(tokens, 0)
+                            };
+                            Lexer.Match(tokens, "]");
+                            return Term.From(token, infix, terms);
+                        }
+                    default:
+                        {
+                            var power = infix.Power - (infix.Direction == BindingDirection.Right ? 1 : 0);
+                            return Term.From(token, infix, left, Expression(tokens, power));
+                        }
                 }
-
-                var power = infix.Power - (infix.Direction == BindingDirection.Right ? 1 : 0);
-                return Term.From(token, infix, left, Expression(tokens, power));
             }
 
             throw new NotImplementedException();

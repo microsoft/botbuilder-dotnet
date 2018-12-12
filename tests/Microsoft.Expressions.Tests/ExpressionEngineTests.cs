@@ -20,6 +20,9 @@ namespace Microsoft.Expressions.Tests
             Test("(one + two) * bag.three", 9.0),
             Test("(one + two) * bag.set.four", 12.0),
             Test("(hello + ' ' + world)", "hello world"),
+            Test("items[2]", "two"),
+            Test("bag.list[bag.index - 2]", "blue"),
+            Test("bag.list[bag.index - 2] + 'more'", "bluemore"),
         };
 
         [DataTestMethod]
@@ -28,30 +31,6 @@ namespace Microsoft.Expressions.Tests
         {
             var actual = Lexer.Tokens(input).Select(t => t.Input).ToArray();
             Assert.AreNotEqual(0, actual.Length);
-        }
-
-        [TestMethod]
-        public void TestArrayIndex()
-        {
-            var data = new
-            {
-                one = 1.0,
-                two = 2.0,
-                hello = "hello",
-                world = "world",
-                bag = new
-                {
-                    three = 3.0,
-                    set = new
-                    {
-                        four = 4.0,
-                    },
-                },
-                array = new string[] { "zero", "one", "two" }
-            };
-
-            var result = ExpressionEngine.Evaluate("items[2]", dynamicData);
-            Assert.AreEqual("two", result);
         }
 
         [DataTestMethod]
@@ -66,27 +45,28 @@ namespace Microsoft.Expressions.Tests
         [DynamicData(nameof(Data))]
         public void Evaluate(string input, object expected)
         {
-            var scope = dynamicData;
+            var scope = new
+            {
+                one = 1.0,
+                two = 2.0,
+                hello = "hello",
+                world = "world",
+                bag = new
+                {
+                    three = 3.0,
+                    set = new
+                    {
+                        four = 4.0,
+                    },
+                    index = 3,
+                    list = new[] { "red", "blue" }
+                },
+                items = new string[] { "zero", "one", "two" }
+            };
+
             var parsed = ExpressionEngine.Parse(input);
             var actual = ExpressionEngine.Evaluate(parsed, scope);
             Assert.AreEqual(expected, actual);
         }
-
-        private static object dynamicData = new
-        {
-            one = 1.0,
-            two = 2.0,
-            hello = "hello",
-            world = "world",
-            bag = new
-            {
-                three = 3.0,
-                set = new
-                {
-                    four = 4.0,
-                },
-            },
-            items = new string[] { "zero", "one", "two" }
-        };
     }
 }

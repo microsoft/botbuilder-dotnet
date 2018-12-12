@@ -9,7 +9,7 @@ namespace Microsoft.Expressions
     /// <param name="instance"></param>
     /// <param name="key"></param>
     /// <returns></returns>
-    public delegate object GetValueDelegate(object instance, string key);
+    public delegate object GetValueDelegate(object instance, object key);
 
     /// <summary>
     /// Look up identifier binding from environment scope
@@ -19,7 +19,7 @@ namespace Microsoft.Expressions
         /// <summary>
         /// Automatically use reflection or dictionary based on instance
         /// </summary>
-        public static GetValueDelegate Auto = (object instance, string property) =>
+        public static GetValueDelegate Auto = (object instance, object property) =>
         {
             if (instance is IDictionary<string, object>)
             {
@@ -27,10 +27,7 @@ namespace Microsoft.Expressions
             }
             else if (instance.GetType().IsArray)
             {
-                if (property.StartsWith("[") && property.EndsWith("]"))
-                {
-                    return null; // return ((Array)instance)[int.Parse(property.Trim('[', ']'))];
-                }
+                return ((Array)instance).GetValue((int)property);
             }
             return Reflection(instance, property);
         };
@@ -38,11 +35,11 @@ namespace Microsoft.Expressions
         /// <summary>
         /// Use reflection to bind to properties of instance object
         /// </summary>
-        public static GetValueDelegate Reflection = (object instance, string property) => instance.GetType().GetProperty(property).GetValue(instance);
+        public static GetValueDelegate Reflection = (object instance, object property) => instance.GetType().GetProperty((string)property).GetValue(instance);
 
         /// <summary>
         /// Use IDictionary<string, object> to get acces to properties of instance object</string>
         /// </summary>
-        public static GetValueDelegate Dictionary = (object instance, string property) => ((IDictionary<string, object>)instance)[property];
+        public static GetValueDelegate Dictionary = (object instance, object property) => ((IDictionary<string, object>)instance)[(string)property];
     }
 }
