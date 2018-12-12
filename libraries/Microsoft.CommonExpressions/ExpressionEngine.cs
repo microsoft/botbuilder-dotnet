@@ -7,7 +7,12 @@ namespace Microsoft.Expressions
     /// <summary>
     /// Operator binding direction.
     /// </summary>
-    public enum BindingDirection { Left, Free, Right };
+    public enum BindingDirection
+    {
+        Left,
+        Free,
+        Right
+    };
 
     public static class ExpressionEngine
     {
@@ -18,7 +23,7 @@ namespace Microsoft.Expressions
         /// <param name="scope"></param>
         /// <param name="getValue"></param>
         /// <returns></returns>
-        public static object Evaluate(string expression, object scope, GetValueDelegate getValue)
+        public static object Evaluate(string expression, object scope, GetValueDelegate getValue = null)
         {
             var term = Parse(expression);
             return Evaluate(term, scope, getValue);
@@ -49,7 +54,7 @@ namespace Microsoft.Expressions
         {
             if (getValue == null)
             {
-                getValue = PropertyBinder.Auto; 
+                getValue = PropertyBinder.Auto;
             }
 
             var token = term.Token;
@@ -84,7 +89,7 @@ namespace Microsoft.Expressions
                 if (eager != null)
                 {
                     var terms = term.Terms.Select(t => Evaluate(t, scope, getValue)).ToArray();
-                    if (terms.Length < entry.ArityMin || terms.Length > entry.ArityMax)
+                    if (terms.Length < entry.MinArgs || terms.Length > entry.MaxArgs)
                     {
                         throw new Exception();
                     }

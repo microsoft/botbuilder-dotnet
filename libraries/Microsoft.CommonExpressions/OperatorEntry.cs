@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
 
 namespace Microsoft.Expressions
 {
@@ -14,20 +13,52 @@ namespace Microsoft.Expressions
     /// </summary>
     public sealed class OperatorEntry
     {
+        /// <summary>
+        /// Token for operator
+        /// </summary>
         public string Token { get; private set; }
 
         public int Power { get; private set; }
 
+        /// <summary>
+        /// Binding direction (left, free, right)
+        /// </summary>
         public BindingDirection Direction { get; private set; }
 
-        public int ArityMin { get; private set; }
+        /// <summary>
+        /// Min number of args (arrityMin)
+        /// </summary>
+        public int MinArgs { get; private set; }
 
-        public int ArityMax { get; private set; }
+        /// <summary>
+        /// Max number of args to support (arrityMax)
+        /// </summary>
+        public int MaxArgs { get; private set; }
 
         public Eager Eager { get; private set; }
 
-        public static OperatorEntry From(string token, int power, BindingDirection direction, int arityMin, int arityMax, Eager eager)
-            => new OperatorEntry() { Token = token, Power = power, Direction = direction, ArityMin = arityMax, ArityMax = arityMax, Eager = eager };
+        /// <summary>
+        /// Create OperatorEntry 
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="power"></param>
+        /// <param name="direction"></param>
+        /// <param name="minArgs"></param>
+        /// <param name="maxArgs"></param>
+        /// <param name="eager"></param>
+        /// <returns></returns>
+        public static OperatorEntry From(string token, int power, BindingDirection direction, int minArgs, int maxArgs, Eager eager)
+            => new OperatorEntry()
+            {
+                Token = token,
+                Power = power,
+                Direction = direction,
+                MinArgs = maxArgs,
+                MaxArgs = maxArgs,
+                Eager = eager
+            };
+
+
         public override string ToString() => Token;
     }
 }

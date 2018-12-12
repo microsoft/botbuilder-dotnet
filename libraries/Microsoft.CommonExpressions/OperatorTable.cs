@@ -90,7 +90,7 @@ namespace Microsoft.Expressions
             Infix("(", 150, null),
         };
 
-        public static readonly IReadOnlyDictionary<string, OperatorEntry> PrefixByToken = All.Where(e => e.ArityMin == 1).ToDictionary(e => e.Token);
-        public static readonly IReadOnlyDictionary<string, OperatorEntry> InfixByToken = All.Where(e => e.ArityMin > 1).ToDictionary(e => e.Token);
+        public static readonly IReadOnlyDictionary<string, OperatorEntry> PrefixByToken = All.Where(e => e.MinArgs == 1).ToDictionary(e => e.Token);
+        public static readonly IReadOnlyDictionary<string, OperatorEntry> InfixByToken = All.Where(e => e.MinArgs > 1).ToDictionary(e => e.Token);
     }
 }

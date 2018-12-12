@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Microsoft.Expressions
 {
@@ -18,7 +19,21 @@ namespace Microsoft.Expressions
         /// <summary>
         /// Automatically use reflection or dictionary based on instance
         /// </summary>
-        public static GetValueDelegate Auto = (object instance, string property) => (instance is IDictionary<string, object>) ? Dictionary(instance, property) : Reflection(instance, property);
+        public static GetValueDelegate Auto = (object instance, string property) =>
+        {
+            if (instance is IDictionary<string, object>)
+            {
+                return Dictionary(instance, property);
+            }
+            else if (instance.GetType().IsArray)
+            {
+                if (property.StartsWith("[") && property.EndsWith("]"))
+                {
+                    return null; // return ((Array)instance)[int.Parse(property.Trim('[', ']'))];
+                }
+            }
+            return Reflection(instance, property);
+        };
 
         /// <summary>
         /// Use reflection to bind to properties of instance object

@@ -71,8 +71,7 @@ namespace Microsoft.Expressions
             }
         }
 
-        public static void Next(IEnumerator<Token> tokens) =>
-            tokens.MoveNext();
+        public static void Next(IEnumerator<Token> tokens) => tokens.MoveNext();
 
         public static void Match(IEnumerator<Token> tokens, string token)
         {
