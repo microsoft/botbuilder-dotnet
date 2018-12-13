@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\libraries\integration\Microsoft.Bot.Builder.ApplicationInsights.Core\Microsoft.Bot.Builder.ApplicationInsights.Core.csproj" />
+    <ProjectReference Include="..\..\..\libraries\integration\Microsoft.Bot.Builder.Integration.ApplicationInsights.Core\Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,6 +27,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="testbot.bot.default">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="testbot.bot.multiple_app_insights">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="testbot.bot.no_app_insights">

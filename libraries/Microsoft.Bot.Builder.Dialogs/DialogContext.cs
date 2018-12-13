@@ -153,6 +153,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Pop active dialog off the stack
             if (Stack.Any())
             {
+                var dialogId = Stack[0].Id;
+                var dialog = Dialogs.Find(dialogId);
+                await dialog.EndDialogAsync(this.Context, Stack[0], DialogReason.EndCalled).ConfigureAwait(false);
                 Stack.RemoveAt(0);
             }
 

@@ -49,10 +49,18 @@ namespace Microsoft.Bot.Builder.AI.Luis
             _application = application ?? throw new ArgumentNullException(nameof(application));
             _options = predictionOptions ?? new LuisPredictionOptions();
             _includeApiResults = includeApiResults;
-            _runtime = new LUISRuntimeClient(new ApiKeyServiceClientCredentials(application.EndpointKey), clientHandler)
-            {
-                Endpoint = application.Endpoint,
-            };
+
+            var credentials = new ApiKeyServiceClientCredentials(application.EndpointKey);
+            var delegatingHandler = new LuisDelegatingHandler();
+
+            // LUISRuntimeClient requires that we explicitly bind to the appropriate constructor.
+            _runtime = clientHandler == null
+                    ?
+                new LUISRuntimeClient(credentials, delegatingHandler)
+                    :
+                new LUISRuntimeClient(credentials, clientHandler, delegatingHandler);
+
+            _runtime.Endpoint = application.Endpoint;
         }
 
         /// <summary>

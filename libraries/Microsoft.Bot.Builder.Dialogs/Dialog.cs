@@ -13,12 +13,16 @@ namespace Microsoft.Bot.Builder.Dialogs
     public abstract class Dialog : IDialog
     {
         public static readonly DialogTurnResult EndOfTurn = new DialogTurnResult(DialogTurnStatus.Waiting);
+        private IBotTelemetryClient _telemetryClient;
 
         public Dialog(string dialogId = null)
         {
             Id = dialogId;
         }
 
+            _telemetryClient = NullBotTelemetryClient.Instance;
+            Id = dialogId;
+        }
         /// <summary>
         /// Unique id for the dialog
         /// </summary>
@@ -30,6 +34,23 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Gets or sets default options for the dialog
         /// </summary>
         public object DefaultOptions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the telemetry client for logging events.
+        /// </summary>
+        /// <value>The Telemetry Client logger.</value>
+        public IBotTelemetryClient TelemetryClient
+        {
+            get
+            {
+                return _telemetryClient;
+            }
+
+            set
+            {
+                _telemetryClient = value;
+            }
+        }
 
         /// <summary>
         /// Method called when a new dialog has been pushed onto the stack and is being activated.

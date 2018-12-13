@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Schema
     using System.Linq;
 
     /// <summary>
-    /// Conversation Transcript
+    /// Transcript
     /// </summary>
     public partial class Transcript
     {
@@ -31,7 +31,8 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Initializes a new instance of the Transcript class.
         /// </summary>
-        /// <param name="activities">Array of conversation activities.</param>
+        /// <param name="activities">A collection of Activities that conforms
+        /// to the Transcript schema.</param>
         public Transcript(IList<Activity> activities = default(IList<Activity>))
         {
             Activities = activities;
@@ -44,7 +45,8 @@ namespace Microsoft.Bot.Schema
         partial void CustomInit();
 
         /// <summary>
-        /// Gets or sets array of conversation activities.
+        /// Gets or sets a collection of Activities that conforms to the
+        /// Transcript schema.
         /// </summary>
         [JsonProperty(PropertyName = "activities")]
         public IList<Activity> Activities { get; set; }

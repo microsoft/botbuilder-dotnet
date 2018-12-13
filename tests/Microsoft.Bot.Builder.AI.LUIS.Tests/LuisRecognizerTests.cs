@@ -454,6 +454,43 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             Assert.AreEqual(defaultIntent, "Greeting");
         }
 
+        [TestMethod]
+        public void UserAgentContainsProductVersion()
+        {
+            var application = new LuisApplication
+            {
+                EndpointKey = "this-is-not-a-key",
+                ApplicationId = "this-is-not-an-application-id",
+                Endpoint = "https://westus.api.cognitive.microsoft.com"
+            };
+
+            var clientHandler = new EmptyLuisResponseClientHandler();
+
+            var recognizer = new LuisRecognizer(application, clientHandler: clientHandler);
+
+            var adapter = new NullAdapter();
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Message,
+                Text = "please book from May 5 to June 6",
+                Recipient = new ChannelAccount(),           // to no where
+                From = new ChannelAccount(),                // from no one
+                Conversation = new ConversationAccount()    // on no conversation
+            };
+
+            var turnContext = new TurnContext(adapter, activity);
+
+            var recognizerResult = recognizer.RecognizeAsync(turnContext, CancellationToken.None).Result;
+
+            var userAgent = clientHandler.UserAgent;
+
+            // Verify we didn't unintentionally stamp on the user-agent from the client.
+            Assert.IsTrue(userAgent.Contains("Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.LUISRuntimeClient"));
+
+            // And that we added the bot.builder package details.
+            Assert.IsTrue(userAgent.Contains("Microsoft.Bot.Builder.AI.Luis/4"));
+        }
+
         // Compare two JSON structures and ensure entity and intent scores are within delta
         private bool WithinDelta(JToken token1, JToken token2, double delta, bool compare = false)
         {

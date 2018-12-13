@@ -32,12 +32,15 @@ namespace Microsoft.Bot.Schema
         /// <param name="id">Channel id for the user or bot on this channel
         /// (Example: joe@smith.com, or @joesmith or 123456)</param>
         /// <param name="name">Display friendly name</param>
+        /// <param name="aadObjectId">This account's object ID within Azure
+        /// Active Directory (AAD)</param>
         /// <param name="role">Role of the entity behind the account (Example:
         /// User, Bot, etc.). Possible values include: 'user', 'bot'</param>
-        public ChannelAccount(string id = default(string), string name = default(string), string role = default(string))
+        public ChannelAccount(string id = default(string), string name = default(string), string role = default(string), string aadObjectId = default(string))
         {
             Id = id;
             Name = name;
+            AadObjectId = aadObjectId;
             Role = role;
             CustomInit();
         }
@@ -59,6 +62,13 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets this account's object ID within Azure Active Directory
+        /// (AAD)
+        /// </summary>
+        [JsonProperty(PropertyName = "aadObjectId")]
+        public string AadObjectId { get; set; }
 
         /// <summary>
         /// Gets or sets role of the entity behind the account (Example: User,

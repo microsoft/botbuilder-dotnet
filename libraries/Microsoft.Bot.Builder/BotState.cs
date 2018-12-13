@@ -120,6 +120,29 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
+        /// Delete any state currently stored in this state scope.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="cancellationToken">cancellation token.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task DeleteAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
+
+            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
+            if (cachedState != null)
+            {
+                turnContext.TurnState.Remove(_contextServiceKey);
+            }
+
+            var storageKey = GetStorageKey(turnContext);
+            await _storage.DeleteAsync(new[] { storageKey }, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// When overridden in a derived class, gets the key to use when reading and writing state to and from storage.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>

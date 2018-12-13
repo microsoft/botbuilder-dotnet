@@ -20,6 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string PersistedOptions = "options";
         private const string StepIndex = "stepIndex";
         private const string PersistedValues = "values";
+        private const string PersistedInstanceId = "instanceId";
 
         private readonly List<WaterfallStep> _steps;
 
@@ -61,8 +62,17 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Initialize waterfall state
             var state = dc.ActiveDialog.State;
+            var instanceId = Guid.NewGuid().ToString();
             state[PersistedOptions] = options;
             state[PersistedValues] = new ExpandoObject();
+            state[PersistedInstanceId] = instanceId;
+
+            var properties = new Dictionary<string, string>()
+                {
+                    { "DialogId", Id },
+                    { "InstanceId", instanceId },
+                };
+            TelemetryClient.TrackEvent("WaterfallStart", properties);
 
             // Run first step
             return await RunStepAsync(dc, 0, DialogReason.BeginCalled, null, cancellationToken).ConfigureAwait(false);
@@ -104,8 +114,57 @@ namespace Microsoft.Bot.Builder.Dialogs
             return await RunStepAsync(dc, index + 1, reason, result, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Called when the dialog is ending.
+        /// </summary>
+        /// <param name="turnContext">Context for the current turn of conversation.</param>
+        /// <param name="instance">The instance of the current dialog.</param>
+        /// <param name="reason">he reason the dialog is ending.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        public override Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (reason == DialogReason.CancelCalled)
+            {
+                // Create step context
+                var index = Convert.ToInt32(instance.State[StepIndex]);
+                var stepName = WaterfallStepName(index);
+                var instanceId = instance.State[PersistedInstanceId] as string;
+
+                var properties = new Dictionary<string, string>()
+                {
+                    { "DialogId", Id },
+                    { "StepName", stepName },
+                    { "InstanceId", instanceId },
+                };
+                TelemetryClient.TrackEvent("WaterfallCancel", properties);
+            }
+            else if (reason == DialogReason.EndCalled)
+            {
+                var instanceId = instance.State[PersistedInstanceId] as string;
+                var properties = new Dictionary<string, string>()
+                {
+                    { "DialogId", Id },
+                    { "InstanceId", instanceId },
+                };
+                TelemetryClient.TrackEvent("WaterfallComplete", properties);
+            }
+
+            return Task.CompletedTask;
+        }
+
         protected virtual async Task<DialogTurnResult> OnStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            var stepName = WaterfallStepName(stepContext.Index);
+            var instanceId = stepContext.ActiveDialog.State[PersistedInstanceId] as string;
+            var properties = new Dictionary<string, string>()
+            {
+                { "DialogId", Id },
+                { "StepName", stepName },
+                { "InstanceId", instanceId },
+            };
+            TelemetryClient.TrackEvent("WaterfallStep", properties);
             return await _steps[stepContext.Index](stepContext, cancellationToken).ConfigureAwait(false);
         }
 
@@ -135,6 +194,21 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // End of waterfall so just return any result to parent
                 return await dc.EndDialogAsync(result).ConfigureAwait(false);
             }
+        }
+
+        private string WaterfallStepName(int index)
+        {
+            // Log Waterfall Step event. Each event has a distinct name to hook up
+            // to the Application Insights funnel.
+            var stepName = _steps[index].Method.Name;
+
+            // Default stepname for lambdas
+            if (string.IsNullOrWhiteSpace(stepName) || stepName.Contains("<"))
+            {
+                stepName = $"Step{index + 1}of{_steps.Count}";
+            }
+
+            return stepName;
         }
     }
 }

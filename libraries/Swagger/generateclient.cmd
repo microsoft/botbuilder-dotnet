@@ -1,12 +1,12 @@
 call npm install
 
-call .\node_modules\.bin\autorest README.md --csharp
+call npx autorest README.md --csharp --use=".\node_modules\@microsoft.azure\autorest.csharp"
 
 pushd generated
-call ..\node_modules\.bin\replace "Microsoft.Bot.Connector.Models" "Microsoft.Bot.Schema" . -r --include="*.cs"
-call ..\node_modules\.bin\replace "using Models;" "using Microsoft.Bot.Schema;"  . -r --include="*.cs"
-call ..\node_modules\.bin\replace "FromProperty" "From" . -r --include="*.cs"
-call ..\node_modules\.bin\replace "fromProperty" "from" . -r --include="*.cs"
+call npx replace "Microsoft.Bot.Connector.Models" "Microsoft.Bot.Schema" . -r --include="*.cs"
+call npx replace "using Models;" "using Microsoft.Bot.Schema;"  . -r --include="*.cs"
+call npx replace "FromProperty" "From" . -r --include="*.cs"
+call npx replace "fromProperty" "from" . -r --include="*.cs"
 popd
 
 copy generated\Models\*.* ..\Microsoft.Bot.Schema

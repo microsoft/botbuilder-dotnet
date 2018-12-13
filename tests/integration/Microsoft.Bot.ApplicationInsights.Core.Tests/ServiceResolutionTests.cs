@@ -2,22 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Linq;
-using Moq;
-using System.Threading.Tasks;
-using Microsoft.ApplicationInsights.AspNetCore.TelemetryInitializers;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Bot.Builder.ApplicationInsights.Core;
-using Microsoft.Bot.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.AspNetCore.TestHost;
-using System.Net.Http;
 using System.IO;
+using Microsoft.ApplicationInsights;
 
-namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
+namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 {
     [TestClass]
     [TestCategory("ApplicationInsights")]
@@ -31,16 +22,19 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
             //_client = _server.CreateClient();
         }
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void AppSettings_NoAppSettings()
         {
             ArrangeBotFile(); // Default bot file
             ArrangeAppSettings(null); // No appsettings file
             var server = new TestServer(new WebHostBuilder()
                 .UseStartup<Startup>());
+
+            // Telemetry Client should be active, just not configured.
+            // This is not an error condition so samples can degrade.
+            var telemetryClient = new TelemetryClient();
+            Assert.IsTrue(string.IsNullOrWhiteSpace(telemetryClient.InstrumentationKey));
         }
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void AppSettings_NoAppInsights()
         {
             ArrangeBotFile(); // Default bot file
@@ -48,10 +42,13 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
 
             var server = new TestServer(new WebHostBuilder()
                 .UseStartup<Startup>());
+            // Telemetry Client should be active, just not configured.
+            // This is not an error condition so samples can degrade.
+            var telemetryClient = new TelemetryClient();
+            Assert.IsTrue(string.IsNullOrWhiteSpace(telemetryClient.InstrumentationKey));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void AppSettings_NoAppInsightsKey()
         {
             ArrangeBotFile(); // Default bot file
@@ -59,6 +56,11 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
 
             var server = new TestServer(new WebHostBuilder()
                 .UseStartup<Startup>());
+
+            // Telemetry Client should be active, just not configured.
+            // This is not an error condition so samples can degrade.
+            var telemetryClient = new TelemetryClient();
+            Assert.IsTrue(string.IsNullOrWhiteSpace(telemetryClient.InstrumentationKey));
         }
 
         [TestMethod]
@@ -72,13 +74,13 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void BotFile_NoAppInsights()
+        public void BotFile_NoAppInsightsInBot()
         {
+            // Should default to the Null TelemetryClient
             ArrangeBotFile("no_app_insights"); // Invalid bot file
             ArrangeAppSettings(); // Default app settings
             var server = new TestServer(new WebHostBuilder()
-                .UseStartup<Startup>());
+                .UseStartup<StartupVerifyNullTelemetry>());
         }
 
         [TestMethod]
@@ -91,6 +93,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
             Assert.IsTrue(true);
         }
 
+
         [TestMethod]
         public void ServiceResolution_VerifyTelemetryClient()
         {
@@ -101,14 +104,34 @@ namespace Microsoft.Bot.Builder.ApplicationInsights.Core.Tests
                 .UseStartup<StartupVerifyTelemetryClient>());
         }
 
+
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void ServiceResolution_VerifyTelemetryClientFail()
+        public void ServiceResolution_OverrideTelemetry()
         {
             ArrangeBotFile(); // Default bot file
             ArrangeAppSettings(); // Default app settings
-            var server = new TestServer(new WebHostBuilder() // No App Insights registered!
-                .UseStartup<StartupVerifyTelemetryClient>());
+            var server = new TestServer(new WebHostBuilder()
+                .UseStartup<StartupOverideTelemClient>());
+            Assert.IsTrue(true);
+        }
+
+        [TestMethod]
+        public void ServiceResolution_MultipleAppInsights()
+        {
+            ArrangeBotFile("multiple_app_insights"); // Default bot file
+            ArrangeAppSettings(); // Default app settings
+            var server = new TestServer(new WebHostBuilder()
+                .UseStartup<StartupMultipleAppInsights>());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ServiceResolution_InvalidInstance()
+        {
+            ArrangeBotFile("multiple_app_insights"); // Default bot file
+            ArrangeAppSettings(); // Default app settings
+            var server = new TestServer(new WebHostBuilder()
+                .UseStartup<StartupInvalidInstance>());
         }
 
         /// <summary>
