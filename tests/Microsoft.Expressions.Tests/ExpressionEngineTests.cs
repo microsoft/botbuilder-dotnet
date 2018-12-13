@@ -23,6 +23,7 @@ namespace Microsoft.Expressions.Tests
             Test("items[2]", "two"),
             Test("bag.list[bag.index - 2]", "blue"),
             Test("bag.list[bag.index - 2] + 'more'", "bluemore"),
+            Test("min(1.0, two) + max(one, 2.0)", 3.0),
         };
 
         [DataTestMethod]
