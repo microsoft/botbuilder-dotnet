@@ -195,7 +195,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 magicCode = value.GetValue("state")?.ToString();
             }
 
-            if (turnContext.Activity.Type == ActivityTypes.Message && _magicCodeRegex.IsMatch(turnContext.Activity.Text))
+            if (turnContext.Activity.Type == ActivityTypes.Message && turnContext.Activity.Text != null && _magicCodeRegex.IsMatch(turnContext.Activity.Text))
             {
                 magicCode = turnContext.Activity.Text;
             }
