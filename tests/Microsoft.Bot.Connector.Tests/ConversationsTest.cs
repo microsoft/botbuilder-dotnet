@@ -554,7 +554,7 @@ namespace Connector.Tests
                         {
                             Title = "A static image",
                             Subtitle = "JPEG image",
-                            Images = new CardImage[] { new CardImage() { Url = "https://docs.microsoft.com/en-us/bot-framework/media/designing-bots/core/dialogs-screens.png" } }
+                            Images = new CardImage[] { new CardImage() { Url = "https://docs.microsoft.com/bot-framework/media/designing-bots/core/dialogs-screens.png" } }
                         }
                     },
                     new Attachment()

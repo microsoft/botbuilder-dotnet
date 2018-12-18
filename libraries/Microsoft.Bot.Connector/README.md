@@ -20,7 +20,7 @@ Your bot communicates with the Bot Connector service using HTTP over a secured c
 
 To authenticate the requests, you'll need configure the Connector with the App ID and password that you obtained for your bot during registration and the Connector will handle the rest.
 
-More information: https://docs.microsoft.com/en-us/bot-framework/rest-api/bot-framework-rest-connector-authentication
+More information: https://docs.microsoft.com/bot-framework/rest-api/bot-framework-rest-connector-authentication
 
 ### Example
 Client creation (with authentication), conversation initialization and activity send to user.
@@ -57,7 +57,7 @@ The sample shows how to use a WebAPI Controller for listening to activities and 
 
 ## Rest API Documentation
 
-For the Connector Service API Documentation, please see our [API reference](https://docs.microsoft.com/en-us/Bot-Framework/rest-api/bot-framework-rest-connector-api-reference).
+For the Connector Service API Documentation, please see our [API reference](https://docs.microsoft.com/Bot-Framework/rest-api/bot-framework-rest-connector-api-reference).
 
 ## Contributing
 
