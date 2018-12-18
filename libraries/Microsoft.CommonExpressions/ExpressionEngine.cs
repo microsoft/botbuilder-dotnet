@@ -50,12 +50,10 @@ namespace Microsoft.Expressions
         /// <param name="scope"></param>
         /// <param name="getValue"></param>
         /// <returns></returns>
-        public static object Evaluate(Term term, object scope, GetValueDelegate getValue = null)
+        public static object Evaluate(Term term, object scope, GetValueDelegate getValue = null, GetMethodDelegate getMethod = null)
         {
-            if (getValue == null)
-            {
-                getValue = PropertyBinder.Auto;
-            }
+            getValue = getValue ?? PropertyBinder.Auto;
+            getMethod = getMethod ?? MethodBinder.All;
 
             var token = term.Token;
             var value = token.Value;
@@ -88,6 +86,13 @@ namespace Microsoft.Expressions
                         var instance = Evaluate(term.Terms[0], scope, getValue);
                         var index = Evaluate(term.Terms[1], scope, getValue);
                         return getValue(instance, index);
+                    }
+                case "(":
+                    {
+                        var name = term.Terms[0].Token.Input;
+                        var method = getMethod(name);
+                        var parameters = term.Terms.Skip(1).Select(t => Evaluate(t, scope, getValue)).ToArray();
+                        return method(parameters);
                     }
             }
 
