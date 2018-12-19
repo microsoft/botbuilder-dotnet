@@ -163,7 +163,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="forceRefresh">True to force a refresh of the token; or false to get
         /// a cached token if it exists.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>If the task is successful, the result contains the access token string.
+        /// <remarks>If the task is successful, the result contains the access token string.</remarks>
         public async Task<string> GetTokenAsync(bool forceRefresh = false)
         {
             Task<OAuthResponse> oAuthTokenTask = null;

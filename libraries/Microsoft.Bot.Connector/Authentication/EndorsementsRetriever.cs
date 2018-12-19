@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Connector.Authentication
     /// strings which you can use to verify that the channel ID specified in the channelId 
     /// property within the Activity object of the incoming request is authentic.
     /// More details at:
-    ///     https://docs.microsoft.com/en-us/bot-framework/rest-api/bot-framework-rest-connector-authentication
+    ///     https://docs.microsoft.com/bot-framework/rest-api/bot-framework-rest-connector-authentication
     /// </summary>
     public sealed class EndorsementsRetriever : IDocumentRetriever, IConfigurationRetriever<IDictionary<string, HashSet<string>>>
     {

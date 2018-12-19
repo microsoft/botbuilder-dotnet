@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.Adapters
                     // https://stackoverflow.com/questions/11904821/proper-way-to-use-continuewith-for-tasks/11906865#11906865
                     //
                     // From the Docs:
-                    //  https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/exception-handling-task-parallel-library
+                    //  https://docs.microsoft.com/dotnet/standard/parallel-programming/exception-handling-task-parallel-library
                     //  Exceptions are propagated when you use one of the static or instance Task.Wait or Wait
                     //  methods, and you handle them by enclosing the call in a try/catch statement. If a task is the
                     //  parent of attached child tasks, or if you are waiting on multiple tasks, multiple exceptions

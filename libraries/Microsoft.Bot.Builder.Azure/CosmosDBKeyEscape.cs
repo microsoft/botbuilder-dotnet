@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Azure
     public static class CosmosDbKeyEscape
     {
         // The list of illegal characters for Cosmos DB Keys comes from this list on
-        // the CosmostDB docs: https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.resource.id?view=azure-dotnet#remarks
+        // the CosmostDB docs: https://docs.microsoft.com/dotnet/api/microsoft.azure.documents.resource.id?view=azure-dotnet#remarks
         // Note: We are also escapting the "*" character, as that what we're using
         // as our escape character.
         private static char[] _illegalKeys = new[] { '\\', '?', '/', '#', '*' };
@@ -23,8 +23,8 @@ namespace Microsoft.Bot.Builder.Azure
 
         /// <summary>
         /// Converts the key into a DocumentID that can be used safely with Cosmos DB.
-        /// The following characters are restricted and cannot be used in the Id property: '/', '\', '?', '#'
-        /// More information at https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.resource.id?view=azure-dotnet#remarks.
+        /// The following characters are restricted and cannot be used in the Id property: '/', '\', '?', and '#'.
+        /// More information at <see cref="Microsoft.Azure.Documents.Resource.Id"/>.
         /// </summary>
         /// <param name="key">The key to escape.</param>
         /// <returns>An escaped key that can be used safely with CosmosDB.</returns>

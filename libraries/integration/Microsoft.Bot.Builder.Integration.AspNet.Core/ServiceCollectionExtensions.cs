@@ -47,11 +47,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         }
 
         /// <summary>
-        /// Adds and optionally configures a singleton <paramref name="bot">bot</paramref> instance to the <see cref="IServiceCollection" />.
+        /// Adds and optionally configures a singleton <paramref name="bot">bot</paramref> instance to the <see cref="IServiceCollection"/>.
         /// </summary>
         /// <typeparam name="TBot">A concrete type of <see cref="IBot"/> that is to be registered and exposed to the Bot Framework.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <param name="bot">The instance of the bot that will be registered as a <see cref="ServiceLifetime.Singleton">singleton</param>.
+        /// <param name="bot">The instance of the bot that will be registered as a <see cref="ServiceLifetime.Singleton"/>.</param>
         /// <param name="configureAction">A optional callback that, if provided, will be invoked to further configure of the bot.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="IBot"/>
