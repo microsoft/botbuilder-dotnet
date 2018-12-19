@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DialogFoundation.Backend.LG;
-using Microsoft.Bot.Builder.AI.LanguageGeneration.API;
 using Microsoft.Bot.Builder.AI.LanguageGeneration.Engine;
 using Microsoft.Bot.Builder.AI.LanguageGeneration.Helpers;
-using Microsoft.Bot.Builder.AI.LanguageGeneration.Tests.TestData.Mocks;
+using Microsoft.Bot.Builder.AI.LanguageGeneration.Tests.Mocks;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -674,16 +673,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestCategory("RequestBuilder")]
         public void TestRequestBuilder_BuildRequestNullParameters_InValid()
         {
-            try
-            {
-                var dummyAppId = "TEST_ID";
-                var requestBuilder = new RequestBuilder(dummyAppId);
-                requestBuilder.BuildRequest(null, null);
-            }
-            catch (ArgumentNullException e)
-            {
-                Assert.AreEqual("slots", e.ParamName);
-            }
+            var dummyAppId = "TEST_ID";
+            var dummyLocale = "en-us";
+            var dummyVersion = "0.1";
+            var requestBuilder = new RequestBuilder(dummyAppId, dummyLocale, dummyVersion);
+
+            var exception = Assert.ThrowsException<ArgumentNullException>(() => requestBuilder.BuildRequest(slots: null));
+            Assert.AreEqual("slots", exception.ParamName);
         }
 
         [TestMethod]
@@ -691,7 +687,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestRequestBuilder_BuildRequestOneTemplate_Valid()
         {
             var dummyAppId = "TEST_ID";
-            var requestBuilder = new RequestBuilder(dummyAppId);
+            var locale = "en-US";
+            var version = "default";
+
+            var requestBuilder = new RequestBuilder(dummyAppId, locale, version);
             var slots = new List<Slot>()
             {
                 new Slot()
@@ -705,8 +704,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 },
             };
 
-            var locale = "en-US";
-            var compositeRequest = requestBuilder.BuildRequest(slots, locale);
+            
+            var compositeRequest = requestBuilder.BuildRequest(slots);
 
             var expectedRequests = new Dictionary<string, LGRequest>()
             {
@@ -735,7 +734,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestRequestBuilder_BuildRequestMultipleTemplates_Valid()
         {
             var dummyAppId = "TEST_ID";
-            var requestBuilder = new RequestBuilder(dummyAppId);
+            var locale = "en-US";
+            var version = "default";
+            var requestBuilder = new RequestBuilder(dummyAppId, locale, version);
+
             var slots = new List<Slot>()
             {
                 new Slot()
@@ -758,8 +760,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                     KeyValue = new KeyValuePair<string, object>("age", 20)
                 },
             };
-            var locale = "en-US";
-            var compositeRequest = requestBuilder.BuildRequest(slots, locale);
+            
+            var compositeRequest = requestBuilder.BuildRequest(slots);
 
             var expectedRequests = new Dictionary<string, LGRequest>()
             {

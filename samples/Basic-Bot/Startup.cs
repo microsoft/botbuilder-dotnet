@@ -123,10 +123,15 @@ namespace Microsoft.BotBuilderSamples
             var entityStateAccessor = userState.CreateProperty<Dictionary<string, object>>("EntityState");
             services.AddSingleton(entityStateAccessor);
 
+            // The application values must match the ones during creation of the endpoint
             var applicationId = "lgshowcases";
-            var endpointKey = Keys.LanguageGenerationSubscriptionKey;
-            var endpointRegion = "westus"; // The region must be the subscription key's region.
-            var languageGenerationMiddleware = LanguageGenerationUtilities.CreateMiddleware(applicationId, endpointKey, endpointRegion, entityStateAccessor);
+            var applicationRegion = "westus";
+            var applicationLocale = "en-US";
+            var applicationVersion = "0.1";
+
+            var subscriptionKey = Keys.LanguageGenerationSubscriptionKey;
+
+            var languageGenerationMiddleware = LanguageGenerationUtilities.CreateMiddleware(applicationId, applicationRegion, applicationLocale, applicationVersion, subscriptionKey, entityStateAccessor);
 
             services.AddBot<BasicBot>(options =>
             {

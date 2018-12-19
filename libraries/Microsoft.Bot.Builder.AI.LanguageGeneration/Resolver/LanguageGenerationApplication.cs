@@ -11,31 +11,38 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Resolver
     /// </summary>
     public class LanguageGenerationApplication
     {
-        public LanguageGenerationApplication(string applicationId, string endpointKey, string endpoint)
+        public LanguageGenerationApplication(string applicationId, string applicationRegion, string applicationLocale, string applicationVersion, string subscriptionKey)
         {
             if (string.IsNullOrWhiteSpace(applicationId))
             {
-                throw new ArgumentException($"\"{applicationId}\" is not a valid Language generation application id.");
+                throw new ArgumentException($"\"{applicationId}\" is not a valid Language generation application id.", nameof(applicationId));
             }
 
-            if (!Guid.TryParse(endpointKey, out var subscriptionGuid))
+            if (string.IsNullOrWhiteSpace(applicationRegion))
             {
-                throw new ArgumentException($"\"{endpointKey}\" is not a valid Language generation subscription key.");
+                throw new ArgumentException($"\"{applicationRegion}\" is not a valid region.", nameof(applicationRegion));
             }
 
-            if (string.IsNullOrWhiteSpace(endpoint))
+            if (string.IsNullOrWhiteSpace(applicationLocale))
             {
-                throw new ArgumentException($"\"{endpoint}\" is not a valid Language generation endpoint.");
+                throw new ArgumentException($"\"{applicationLocale}\" is not a valid locale.", nameof(applicationLocale));
             }
 
-            if (!Uri.IsWellFormedUriString(endpoint, UriKind.Absolute))
+            if (string.IsNullOrWhiteSpace(applicationVersion))
             {
-                throw new ArgumentException($"\"{endpoint}\" is not a valid Language generation endpoint.");
+                throw new ArgumentException($"\"{applicationVersion}\" is not a valid application version.", nameof(applicationVersion));
+            }
+
+            if (!Guid.TryParse(subscriptionKey, out var subscriptionGuid))
+            {
+                throw new ArgumentException($"\"{subscriptionKey}\" is not a valid Language generation subscription key.", nameof(subscriptionKey));
             }
 
             ApplicationId = applicationId;
-            EndpointKey = endpointKey;
-            Endpoint = endpoint;
+            ApplicationRegion = applicationRegion;
+            ApplicationLocale = applicationLocale;
+            ApplicationVersion = applicationVersion;
+            SubscriptionKey = subscriptionKey;
         }
 
         /// <summary>
@@ -44,19 +51,39 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Resolver
         /// <value>
         /// LUIS _application ID.
         /// </value>
-        public string ApplicationId { get; set; }
+        public string ApplicationId { get; private set; }
 
         /// <summary>
-        /// Gets or sets language generation subscription or endpoint key.
+        /// Gets or sets language generation application region.
         /// </summary>
         /// <value>
-        /// LUIS subscription or endpoint key.
+        /// LUIS application region.
         /// </value>
-        public string EndpointKey { get; private set; }
+        public string ApplicationRegion { get; private set; }
+
 
         /// <summary>
-        /// Gets or sets language generation  endpoint where the application is hosted
+        /// Gets or sets language generation application locale.
         /// </summary>
-        public string Endpoint { get; set; }
+        /// <value>
+        /// LUIS application locale.
+        /// </value>
+        public string ApplicationLocale { get; private set; }
+
+        /// <summary>
+        /// Gets or sets language generation application version.
+        /// </summary>
+        /// <value>
+        /// LUIS application version.
+        /// </value>
+        public string ApplicationVersion { get; private set; }
+
+        /// <summary>
+        /// Gets or sets language generation subscription key.
+        /// </summary>
+        /// <value>
+        /// LUIS subscription key.
+        /// </value>
+        public string SubscriptionKey { get; private set; }
     }
 }

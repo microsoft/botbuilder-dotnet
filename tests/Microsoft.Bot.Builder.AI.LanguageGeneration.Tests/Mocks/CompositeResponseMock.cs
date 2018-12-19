@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Bot.Builder.AI.LanguageGeneration.Engine;
 
-namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests.TestData.Mocks
+namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests.Mocks
 {
     internal class CompositeResponseMock : ICompositeResponse
     {

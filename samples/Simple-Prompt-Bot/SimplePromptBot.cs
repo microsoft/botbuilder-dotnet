@@ -47,10 +47,15 @@ namespace Microsoft.BotBuilderSamples
             _dialogs = new DialogSet(accessors.ConversationDialogState);
             _dialogs.Add(new TextPrompt("name"));
 
+            // The application values must match the ones during creation of the endpoint
             var applicationId = "cafebot";
-            var endpointKey = Keys.LanguageGenerationSubscriptionKey;
-            var endpointRegion = "westus"; // The region must be the subscription key's region.
-            _languageGenerationResolver = LanguageGenerationUtilities.CreateResolver(applicationId, endpointKey, endpointRegion);
+            var applicationRegion = "westus";
+            var applicationLocale = "en-US";
+            var applicationVersion = "0.1";
+
+            var subscriptionKey = Keys.LanguageGenerationSubscriptionKey;
+
+            _languageGenerationResolver = LanguageGenerationUtilities.CreateResolver(applicationId, applicationRegion, applicationLocale, applicationVersion, subscriptionKey);
         }
 
         /// <summary>
