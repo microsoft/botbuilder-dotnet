@@ -14,11 +14,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
         /// <summary>
         /// Creates a new <see cref="IResolverPipeline"/> object using the passed arguments.
         /// </summary>
-        /// <param name="endpoint">Language generation runtime api endpoint.</param>
-        /// <param name="endpointKey">Language generation runtime api endpoint key.</param>
-        /// <param name="applicationId">Language generation application id.</param>
-        /// <param name="tokenGenerationEndpoint">Token generation endpoint, default is "https://api.cognitive.microsoft.com/sts/v1.0/issueToken".</param>
-        /// <param name="serviceAgent">A <see cref="IServiceAgent"/> object.</param>
+        /// <param name="languageGenerationApplication">Language Generation Application identifing parameters</param>
+        /// <param name="endpointProvider">An provider object to provide the endpoints required during resolution and authentication token generation</param>
         /// <returns>A <see cref="IResolverPipeline"/>.</returns>
         public IResolverPipeline CreateResolverPipeline(LanguageGenerationApplication languageGenerationApplication, IEndpointProvider endpointProvider)
         {
@@ -31,14 +28,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
 
             return CreateResolverPipeline(languageGenerationApplication, serviceAgent);
         }
-        
+
         /// <summary>
         /// Creates a new <see cref="IResolverPipeline"/> object using the passed arguments.
         /// </summary>
-        /// <param name="endpoint">Language generation runtime api endpoint.</param>
-        /// <param name="endpointKey">Language generation runtime api endpoint key.</param>
-        /// <param name="applicationId">Language generation application id.</param>
-        /// <param name="tokenGenerationEndpoint">Token generation endpoint, default is "https://api.cognitive.microsoft.com/sts/v1.0/issueToken".</param>
+        /// <param name="languageGenerationApplication">Language Generation Application identifing parameters</param>
         /// <param name="serviceAgent">A <see cref="IServiceAgent"/> object.</param>
         /// <returns>A <see cref="IResolverPipeline"/>.</returns>
         public IResolverPipeline CreateResolverPipeline(LanguageGenerationApplication languageGenerationApplication, IServiceAgent serviceAgent)
