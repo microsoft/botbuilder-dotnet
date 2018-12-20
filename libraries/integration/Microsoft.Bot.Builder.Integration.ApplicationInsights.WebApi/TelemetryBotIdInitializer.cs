@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi
                         telemetryProperties.Add("activityId", (string)body["id"]);
 
                         // Set the channel id https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#channel-id
-                        telemetryProperties.Add("channelId", (string)body["channelId "]);
+                        telemetryProperties.Add("channelId", (string)channelId);
 
                         // Set the activity type https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#type
                         telemetryProperties.Add("activityType", (string)body["type"]);
