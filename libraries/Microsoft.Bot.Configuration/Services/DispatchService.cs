@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
-        /// Gets or sets the service IDs to include in the dispatch model.
+        /// ServiceIds to include in the dispatch model
         /// </summary>
         [JsonProperty("serviceIds")]
         public List<string> ServiceIds { get; set; } = new List<string>();

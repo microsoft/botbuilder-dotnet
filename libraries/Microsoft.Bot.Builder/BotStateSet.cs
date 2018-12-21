@@ -30,10 +30,10 @@ namespace Microsoft.Bot.Builder
         public List<BotState> BotStates { get; set; } = new List<BotState>();
 
         /// <summary>
-        /// Adds a bot state object to the set.
+        /// Add a BotState to the set.
         /// </summary>
-        /// <param name="botState">The bot state object to add.</param>
-        /// <returns>The updated <see cref="BotStateSet"/>, so you can fluently call <see cref="Add(BotState)"/> multiple times.</returns>
+        /// <param name="botState">BotState object</param>
+        /// <returns>BotStateSet so you can fluently call Add() multiple times.</returns>
         public BotStateSet Add(BotState botState)
         {
             if (botState == null)

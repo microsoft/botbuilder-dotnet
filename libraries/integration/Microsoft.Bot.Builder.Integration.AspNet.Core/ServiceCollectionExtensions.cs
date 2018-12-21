@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     /// A set of extension methods for <see cref="IServiceCollection"/> which provide support for hosting bots with .NET Core.
     /// </summary>
     /// <seealso cref="ApplicationBuilderExtensions"/>
-    /// <seealso cref="IAdapterIntegration"/>
+    /// <seealso cref="IAdapteIntegration"/>
     /// <seealso cref="IBot"/>
     public static class ServiceCollectionExtensions
     {
@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         ///     NOTE: Calling any of the <c>AddBot</c> overloads those will attempt to implicitly register this for you if there is no
         ///     explicit <see cref="IAdapterIntegration"/> already registered in the <paramref name="services"/> collection.
         /// </remarks>
-        /// <seealso cref="O:AddBot{TBot}()"/>
+        /// <seealso cref="overloads:AddBot" />
         /// <seealso cref="BotFrameworkAdapter"/>
         /// <seealso cref="IAdapterIntegration"/>
         public static IServiceCollection AddBotFrameworkAdapterIntegration(this IServiceCollection services, Action<BotFrameworkOptions> configureAction = null)

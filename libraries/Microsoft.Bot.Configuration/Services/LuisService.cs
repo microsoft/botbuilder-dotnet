@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
-        /// Gets or sets appId for the LUIS model.
+        /// Gets or sets appId for the luis model.
         /// </summary>
         [JsonProperty("appId")]
         public string AppId { get; set; }
@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Configuration
         public string SubscriptionKey { get; set; }
 
         /// <summary>
-        /// Gets or sets version of the LUIS app.
+        /// Gets or sets version of the luis app.
         /// </summary>
         [JsonProperty("version")]
         public string Version { get; set; }
@@ -47,9 +47,9 @@ namespace Microsoft.Bot.Configuration
         public string Region { get; set; }
 
         /// <summary>
-        /// Gets the endpoint for this LUIS service.
+        /// Get the endpoint for this luis service.
         /// </summary>
-        /// <returns>The URL for this service.</returns>
+        /// <returns>endpoint url</returns>
         public string GetEndpoint()
         {
             var region = this.Region.ToLower();

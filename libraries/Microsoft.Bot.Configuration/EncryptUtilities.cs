@@ -10,9 +10,9 @@ namespace Microsoft.Bot.Configuration.Encryption
     public static class EncryptUtilities
     {
         /// <summary>
-        /// Generates a key to use for encryption.
+        /// Generate key to use for encryption.
         /// </summary>
-        /// <returns>The base64-encoded cryptokey.</returns>
+        /// <returns>base64 encoded cryptokey</returns>
         public static string GenerateKey()
         {
             using (var aes = AesManaged.Create())
@@ -22,11 +22,11 @@ namespace Microsoft.Bot.Configuration.Encryption
         }
 
         /// <summary>
-        /// Encrypts a string.
+        /// Encrypt a string
         /// </summary>
-        /// <param name="plainText">The string to encrypt.</param>
-        /// <param name="key">The key to use for encryption.</param>
-        /// <returns>The base64-encrypted value.</returns>
+        /// <param name="plainText">test to encrypt</param>
+        /// <param name="key">key to encrypt with</param>
+        /// <returns>encrypted value as Base64 string</returns>
         public static string Encrypt(this string plainText, string key)
         {
             if (string.IsNullOrEmpty(plainText))
@@ -47,11 +47,11 @@ namespace Microsoft.Bot.Configuration.Encryption
         }
 
         /// <summary>
-        /// Decrypts a string.
+        /// Decrypt a string.
         /// </summary>
-        /// <param name="encryptedText">The base64-encrypted string.</param>
-        /// <param name="key">The key to use for decryption.</param>
-        /// <returns>The decrypted string.</returns>
+        /// <param name="encryptedText">encrypted text</param>
+        /// <param name="key">key to use to decrypt the text</param>
+        /// <returns>original unecrypted value</returns>
         public static string Decrypt(this string encryptedText, string key)
         {
             if (string.IsNullOrEmpty(encryptedText))
@@ -105,12 +105,12 @@ namespace Microsoft.Bot.Configuration.Encryption
         }
 
         /// <summary>
-        /// Encrypts a string using Advanced Encryption Standard (AES).
+        /// Stock MSDN crypto function that every single blog post on the planet uses.
         /// </summary>
-        /// <param name="plainText">The text to encrypt.</param>
-        /// <param name="key">The 32-byte encryption key to use.</param>
-        /// <param name="iv">A 16-byte initialization vector to use.</param>
-        /// <returns>The initialization vector and the encrypted bytes.</returns>
+        /// <param name="plainText">text to encrypt</param>
+        /// <param name="key">32 byte encryption key to use</param>
+        /// <param name="iv"> 16 byte iv to use</param>
+        /// <returns>Tuple[IV,EncryptedBytes]</returns>
         public static Tuple<byte[], byte[]> EncryptStringToBytes_Aes(string plainText, byte[] key, byte[] iv = null)
         {
             // Check arguments.
@@ -161,12 +161,12 @@ namespace Microsoft.Bot.Configuration.Encryption
         }
 
         /// <summary>
-        /// Decrypts a string using Advanced Encryption Standard (AES).
+        /// Stock MSDN crypto function that every single blog post on the planet uses
         /// </summary>
-        /// <param name="cipherText">The encrypted bytes.</param>
-        /// <param name="key">The 32-byte encryption key to use.</param>
-        /// <param name="iv">A 16-byte initialization vector to use.</param>
-        /// <returns>The decrypted string.</returns>
+        /// <param name="cipherText">encrypted byte array to decrypt</param>
+        /// <param name="key">key to use</param>
+        /// <param name="iv">iv to use</param>
+        /// <returns>decrypted string</returns>
         public static string DecryptStringFromBytes_Aes(byte[] cipherText, byte[] key, byte[] iv)
         {
             // Check arguments.

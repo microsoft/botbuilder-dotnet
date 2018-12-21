@@ -9,11 +9,11 @@ namespace Microsoft.Bot.Builder
     public interface IPropertyManager
     {
         /// <summary>
-        /// Creates a managed state property accessor for a property.
+        /// Create a managed state property accessor for named property.
         /// </summary>
-        /// <typeparam name="T">The property value type.</typeparam>
-        /// <param name="name">The name of the property accessor.</param>
-        /// <returns>A state property accessor for the property.</returns>
+        /// <typeparam name="T">type of object</typeparam>
+        /// <param name="name">name of the object</param>
+        /// <returns>property accessor for accessing the object of type T.</returns>
         IStatePropertyAccessor<T> CreateProperty<T>(string name);
     }
 }
