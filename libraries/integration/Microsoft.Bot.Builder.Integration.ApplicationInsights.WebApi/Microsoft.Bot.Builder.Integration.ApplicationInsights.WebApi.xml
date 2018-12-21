@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi.TelemetryBotIdInitializer">
+            <summary>
+            Initializer that sets the user ID based on Bot data.
+            </summary>
+        </member>
+    </members>
+</doc>

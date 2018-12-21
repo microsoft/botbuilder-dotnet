@@ -54,6 +54,7 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 	  <DebugType>full</DebugType>
 	  <DebugSymbols>true</DebugSymbols>
+	  <DocumentationFile>C:\Users\v-jofing\source\repos\botbuilder-dotnet\libraries\integration\Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi\Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>
