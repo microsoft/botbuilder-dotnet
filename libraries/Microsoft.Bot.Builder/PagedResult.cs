@@ -6,16 +6,16 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// Page of results from an enumeration.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The type of items in the results.</typeparam>
     public class PagedResult<T>
     {
         /// <summary>
-        /// Page of items.
+        /// Gets or sets the page of items.
         /// </summary>
         public T[] Items { get; set; } = new T[0];
 
         /// <summary>
-        /// Token used to page through multiple pages.
+        /// Gets or sets a token for retrieving the next page of results.
         /// </summary>
         public string ContinuationToken { get; set; }
     }
