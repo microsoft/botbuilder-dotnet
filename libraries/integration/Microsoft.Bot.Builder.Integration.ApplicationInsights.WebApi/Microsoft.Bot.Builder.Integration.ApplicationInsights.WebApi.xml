@@ -6,7 +6,7 @@
     <members>
         <member name="T:Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi.TelemetryBotIdInitializer">
             <summary>
-            Initializer that sets the user ID based on Bot data.
+            Initializer that sets the user ID and session ID (in addition to other bot-specific properties such as activity ID).
             </summary>
         </member>
     </members>
