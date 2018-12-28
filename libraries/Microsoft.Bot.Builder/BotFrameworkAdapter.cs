@@ -5,15 +5,19 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Rest.TransientFaultHandling;
 using Newtonsoft.Json;
 
@@ -37,7 +41,7 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IActivity"/>
     /// <seealso cref="IBot"/>
     /// <seealso cref="IMiddleware"/>
-    public class BotFrameworkAdapter : BotAdapter
+    public class BotFrameworkAdapter : BotAdapter, IAdapterIntegration
     {
         private const string InvokeReponseKey = "BotFrameworkAdapter.InvokeResponse";
         private const string BotIdentityKey = "BotIdentity";
@@ -47,6 +51,7 @@ namespace Microsoft.Bot.Builder
         private readonly IChannelProvider _channelProvider;
         private readonly HttpClient _httpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
+        private readonly ILogger _logger;
         private ConcurrentDictionary<string, MicrosoftAppCredentials> _appCredentialMap = new ConcurrentDictionary<string, MicrosoftAppCredentials>();
 
         // There is a significant boost in throughput if we reuse a connectorClient
@@ -62,18 +67,26 @@ namespace Microsoft.Bot.Builder
         /// <param name="connectorClientRetryPolicy">Retry policy for retrying HTTP operations.</param>
         /// <param name="customHttpClient">The HTTP client.</param>
         /// <param name="middleware">The middleware to initially add to the adapter.</param>
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="credentialProvider"/> is <c>null</c>.</exception>
         /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
         /// components in the conustructor. Use the <see cref="Use(IMiddleware)"/> method to
         /// add additional middleware to the adapter after construction.
         /// </remarks>
-        public BotFrameworkAdapter(ICredentialProvider credentialProvider, IChannelProvider channelProvider = null, RetryPolicy connectorClientRetryPolicy = null, HttpClient customHttpClient = null, IMiddleware middleware = null)
+        public BotFrameworkAdapter(
+            ICredentialProvider credentialProvider,
+            IChannelProvider channelProvider = null,
+            RetryPolicy connectorClientRetryPolicy = null,
+            HttpClient customHttpClient = null,
+            IMiddleware middleware = null,
+            ILogger logger = null)
         {
             _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
             _channelProvider = channelProvider;
             _httpClient = customHttpClient ?? DefaultHttpClient;
             _connectorClientRetryPolicy = connectorClientRetryPolicy;
+            _logger = logger ?? NullLogger.Instance;
 
             if (middleware != null)
             {
@@ -124,6 +137,8 @@ namespace Microsoft.Bot.Builder
             {
                 throw new ArgumentNullException(nameof(callback));
             }
+
+            _logger.LogInformation($"Sending proactive message.  botAppId: {botAppId}");
 
             using (var context = new TurnContext(this, reference.GetContinuationActivity()))
             {
@@ -202,6 +217,8 @@ namespace Microsoft.Bot.Builder
         {
             BotAssert.ActivityNotNull(activity);
 
+            _logger.LogInformation($"Received an incoming activity.  ActivityId: {activity.Id}");
+
             using (var context = new TurnContext(this, activity))
             {
                 context.TurnState.Add<IIdentity>(BotIdentityKey, identity);
@@ -215,15 +232,14 @@ namespace Microsoft.Bot.Builder
                 // the Bot will return a specific body and return code.
                 if (activity.Type == ActivityTypes.Invoke)
                 {
-                    Activity invokeResponse = context.TurnState.Get<Activity>(InvokeReponseKey);
-                    if (invokeResponse == null)
+                    var activityInvokeResponse = context.TurnState.Get<Activity>(InvokeReponseKey);
+                    if (activityInvokeResponse == null)
                     {
-                        // ToDo: Trace Here
-                        throw new InvalidOperationException("Bot failed to return a valid 'invokeResponse' activity.");
+                        return new InvokeResponse { Status = (int)HttpStatusCode.NotImplemented };
                     }
                     else
                     {
-                        return (InvokeResponse)invokeResponse.Value;
+                        return (InvokeResponse)activityInvokeResponse.Value;
                     }
                 }
 
@@ -272,6 +288,8 @@ namespace Microsoft.Bot.Builder
             {
                 var activity = activities[index];
                 var response = default(ResourceResponse);
+
+                _logger.LogInformation($"Sending activity.  ReplyToId: {activity.ReplyToId}");
 
                 if (activity.Type == ActivityTypesEx.Delay)
                 {

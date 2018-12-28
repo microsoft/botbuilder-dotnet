@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
     public class Channel
@@ -9,16 +11,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         {
             switch (channelId)
             {
-                case Channels.Facebook:
-                case Channels.Skype:
+                case Connector.Channels.Facebook:
+                case Connector.Channels.Skype:
                     return buttonCnt <= 10;
 
-                case Channels.Kik:
+                case Connector.Channels.Kik:
                     return buttonCnt <= 20;
 
-                case Channels.Slack:
-                case Channels.Telegram:
-                case Channels.Emulator:
+                case Connector.Channels.Slack:
+                case Connector.Channels.Telegram:
+                case Connector.Channels.Emulator:
+                case Connector.Channels.Directline:
+                case Connector.Channels.Webchat:
                     return buttonCnt <= 100;
 
                 default:
@@ -30,16 +34,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         {
             switch (channelId)
             {
-                case Channels.Facebook:
-                case Channels.Skype:
-                case Channels.Msteams:
+                case Connector.Channels.Facebook:
+                case Connector.Channels.Skype:
+                case Connector.Channels.Msteams:
                     return buttonCnt <= 3;
 
-                case Channels.Slack:
-                case Channels.Emulator:
-                case Channels.Directline:
-                case Channels.Webchat:
-                case Channels.Cortana:
+                case Connector.Channels.Slack:
+                case Connector.Channels.Emulator:
+                case Connector.Channels.Directline:
+                case Connector.Channels.Webchat:
+                case Connector.Channels.Cortana:
                     return buttonCnt <= 100;
 
                 default:
@@ -51,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         {
             switch (channelId)
             {
-                case Channels.Cortana:
+                case Connector.Channels.Cortana:
                     return false;
 
                 default:
@@ -64,22 +68,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         public static string GetChannelId(ITurnContext turnContext) => string.IsNullOrEmpty(turnContext.Activity.ChannelId)
             ? string.Empty : turnContext.Activity.ChannelId;
 
-        public class Channels
+        // This class has been deprecated in favor of the class in Microsoft.Bot.Connector.Channels located
+        // at https://github.com/Microsoft/botbuilder-dotnet/libraries/Microsoft.Bot.Connector/Channels.cs.
+        // This change is non-breaking and this class now inherits from the class in the connector library.
+        [Obsolete("This class is deprecated. Please use Microsoft.Bot.Connector.Channels.")]
+        public class Channels : Connector.Channels
         {
-            public const string Facebook = "facebook";
-            public const string Skype = "skype";
-            public const string Msteams = "msteams";
-            public const string Telegram = "telegram";
-            public const string Kik = "kik";
-            public const string Email = "email";
-            public const string Slack = "slack";
-            public const string Groupme = "groupme";
-            public const string Sms = "sms";
-            public const string Emulator = "emulator";
-            public const string Directline = "directline";
-            public const string Webchat = "webchat";
-            public const string Console = "console";
-            public const string Cortana = "cortana";
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license.
+
 using System;
-using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
-using Newtonsoft.Json;
+using Microsoft.Bot.Configuration;
 
 namespace Microsoft.Bot.Builder.AI.Luis
 {
@@ -11,10 +11,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
     /// </summary>
     public class LuisApplication
     {
-
         public LuisApplication()
         {
-
         }
 
         /// <summary>
@@ -32,7 +30,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
             if (!Guid.TryParse(endpointKey, out var subscriptionGuid))
             {
-                throw new ArgumentException($"\"{applicationId}\" is not a valid LUIS subscription key.");
+                throw new ArgumentException($"\"{subscriptionGuid}\" is not a valid LUIS subscription key.");
             }
 
             if (string.IsNullOrWhiteSpace(endpoint))
@@ -51,12 +49,21 @@ namespace Microsoft.Bot.Builder.AI.Luis
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="LuisApplication"/> class.
+        /// </summary>
+        /// <param name="service">LUIS coonfiguration.</param>
+        public LuisApplication(LuisService service)
+            : this(service.AppId, service.SubscriptionKey, service.GetEndpoint())
+        {
+        }
+
+        /// <summary>
         /// Gets or sets lUIS application ID.
         /// </summary>
         /// <value>
         /// LUIS application ID.
         /// </value>
-        public string ApplicationId { get; set;}
+        public string ApplicationId { get; set; }
 
         /// <summary>
         /// Gets or sets lUIS subscription or endpoint key.

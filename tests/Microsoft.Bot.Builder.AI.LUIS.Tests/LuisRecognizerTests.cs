@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -9,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -24,6 +26,15 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         private readonly string _luisAppId = TestUtilities.GetKey("LUISAPPID", "ab48996d-abe2-4785-8eff-f18d15fc3560");
         private readonly string _subscriptionKey = TestUtilities.GetKey("LUISAPPKEY", "cc7bbcc0-3715-44f0-b7c9-d8fee333dce1");
         private readonly string _endpoint = TestUtilities.GetKey("LUISENDPOINT", "https://westus.api.cognitive.microsoft.com");
+
+        private readonly RecognizerResult _mockedResults = new RecognizerResult
+        {
+            Intents = new Dictionary<string, IntentScore>()
+                {
+                    { "Test", new IntentScore { Score = 0.2 } },
+                    { "Greeting", new IntentScore { Score = 0.4 } }
+                }
+        };
         // LUIS tests run off of recorded HTTP responses to avoid service dependencies.
         // To update the recorded responses:
         // 1) Change _mock to false below
@@ -34,6 +45,44 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         // Changing this to false will cause running against the actual LUIS service.
         // This is useful in order to see if the oracles for mocking or testing have changed.
         private readonly bool _mock = true;
+
+        [TestMethod]
+        public async Task LuisRecognizer_Configuration()
+        {
+            var service = new LuisService
+            {
+                AppId = _luisAppId,
+                SubscriptionKey = _subscriptionKey,
+                Region = "westus"
+            };
+
+            const string utterance = "My name is Emad";
+
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(GetRequestUrl()).WithPartialContent(utterance)
+                .Respond("application/json", GetResponse("SingleIntent_SimplyEntity.json"));
+
+            var luisRecognizer = new LuisRecognizer(service, null, false, new MockedHttpClientHandler(mockHttp.ToHttpClient()));
+
+            var context = GetContext(utterance);
+            var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
+
+            Assert.IsNotNull(result);
+            Assert.IsNull(result.AlteredText);
+            Assert.AreEqual(utterance, result.Text);
+            Assert.IsNotNull(result.Intents);
+            Assert.AreEqual(1, result.Intents.Count);
+            Assert.IsNotNull(result.Intents["SpecifyName"]);
+            Assert.IsTrue(result.Intents["SpecifyName"].Score > 0 && result.Intents["SpecifyName"].Score <= 1);
+            Assert.IsNotNull(result.Entities);
+            Assert.IsNotNull(result.Entities["Name"]);
+            Assert.AreEqual("emad", (string)result.Entities["Name"].First);
+            Assert.IsNotNull(result.Entities["$instance"]);
+            Assert.IsNotNull(result.Entities["$instance"]["Name"]);
+            Assert.AreEqual(11, (int)result.Entities["$instance"]["Name"].First["startIndex"]);
+            Assert.AreEqual(15, (int)result.Entities["$instance"]["Name"].First["endIndex"]);
+            AssertScore(result.Entities["$instance"]["Name"].First["score"]);
+        }
 
         [TestMethod]
         public async Task SingleIntent_SimplyEntity()
@@ -259,6 +308,26 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             Assert.AreEqual(3, result.Entities["$instance"]["datetime"].Count());
         }
 
+        [TestMethod]
+        public async Task V1DatetimeResolution()
+        {
+            const string utterance = "at 4";
+
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(GetRequestUrl()).WithPartialContent(utterance)
+                .Respond("application/json", GetResponse("V1DatetimeResolution.json"));
+
+            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true });
+            var context = GetContext(utterance);
+            var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
+
+            Assert.IsNotNull(result.Entities["datetime_time"]);
+            Assert.AreEqual(1, result.Entities["datetime_time"].Count());
+            Assert.AreEqual("ampm", (string)result.Entities["datetime_time"][0]["comment"]);
+            Assert.AreEqual("T04", (string)result.Entities["datetime_time"][0]["time"]);
+            Assert.AreEqual(1, result.Entities["$instance"]["datetime_time"].Count());
+        }
+
         // To create a file to test:
         // 1) Create a <name>.json file with an object { Text:<query> } in it.
         // 2) Run this test which will fail and generate a <name>.json.new file.
@@ -366,6 +435,42 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
         [TestMethod]
         public async Task TypedPrebuiltDomains() => await TestJson<Contoso_App>("TypedPrebuilt.json");
+
+        [TestMethod]
+        public void TopIntentReturnsTopIntent()
+        {
+            var greetingIntent = LuisRecognizer.TopIntent(_mockedResults);
+            Assert.AreEqual(greetingIntent, "Greeting");
+        }
+
+        [TestMethod]
+        public void TopIntentReturnsDefaultIntentIfMinScoreIsHigher()
+        {
+            var defaultIntent = LuisRecognizer.TopIntent(_mockedResults, minScore: 0.5);
+            Assert.AreEqual(defaultIntent, "None");
+        }
+
+        [TestMethod]
+        public void TopIntentReturnsDefaultIntentIfProvided()
+        {
+            var defaultIntent = LuisRecognizer.TopIntent(_mockedResults, "Test2", 0.5);
+            Assert.AreEqual(defaultIntent, "Test2");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void TopIntentThrowsArgumentNullExceptionIfResultsIsNull()
+        {
+            RecognizerResult nullResults = null;
+            var noIntent = LuisRecognizer.TopIntent(nullResults);
+        }
+
+        [TestMethod]
+        public void TopIntentReturnsTopIntentIfScoreEqualsMinScore()
+        {
+            var defaultIntent = LuisRecognizer.TopIntent(_mockedResults, minScore: 0.4);
+            Assert.AreEqual(defaultIntent, "Greeting");
+        }
 
         // Compare two JSON structures and ensure entity and intent scores are within delta
         private bool WithinDelta(JToken token1, JToken token2, double delta, bool compare = false)

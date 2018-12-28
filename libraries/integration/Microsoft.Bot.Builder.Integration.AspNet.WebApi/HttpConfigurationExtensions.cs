@@ -30,32 +30,33 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 
             configurer?.Invoke(optionsBuilder);
 
-            var botFrameworkAdapter = httpConfiguration.DependencyResolver.GetService(typeof(BotFrameworkAdapter)) as BotFrameworkAdapter;
-            if (botFrameworkAdapter == null)
+            var adapter = httpConfiguration.DependencyResolver.GetService(typeof(IAdapterIntegration)) as IAdapterIntegration;
+            if (adapter == null)
             {
                 var credentialProvider = ResolveCredentialProvider(options);
 
-                // TODO: fix up constructor to take options
-                botFrameworkAdapter = new BotFrameworkAdapter(credentialProvider, options.ChannelProvider, options.ConnectorClientRetryPolicy, options.HttpClient);
+                var botFrameworkAdapter = new BotFrameworkAdapter(credentialProvider, options.ChannelProvider, options.ConnectorClientRetryPolicy, options.HttpClient);
+
+                // error handler
+                botFrameworkAdapter.OnTurnError = options.OnTurnError;
+
+                // add middleware
+                foreach (var middleware in options.Middleware)
+                {
+                    botFrameworkAdapter.Use(middleware);
+                }
+
+                adapter = botFrameworkAdapter;
             }
 
-            // error handler
-            botFrameworkAdapter.OnTurnError = options.OnTurnError;
-
-            // add middleware
-            foreach (var middleware in options.Middleware)
-            {
-                botFrameworkAdapter.Use(middleware);
-            }
-
-            ConfigureBotRoutes(httpConfiguration, options, botFrameworkAdapter);
+            ConfigureBotRoutes(httpConfiguration, options, adapter);
 
             ConfigureCustomEndpoints();
 
             return httpConfiguration;
         }
 
-        private static void ConfigureBotRoutes(HttpConfiguration httpConfiguration, BotFrameworkOptions options, BotFrameworkAdapter adapter)
+        private static void ConfigureBotRoutes(HttpConfiguration httpConfiguration, BotFrameworkOptions options, IAdapterIntegration adapter)
         {
             var routes = httpConfiguration.Routes;
             var baseUrl = options.Paths.BasePath;

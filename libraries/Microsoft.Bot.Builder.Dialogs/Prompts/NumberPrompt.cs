@@ -12,6 +12,7 @@ using static Microsoft.Recognizers.Text.Culture;
 namespace Microsoft.Bot.Builder.Dialogs
 {
     public class NumberPrompt<T> : Prompt<T>
+        where T : struct
     {
         public NumberPrompt(string dialogId, PromptValidator<T> validator = null, string defaultLocale = null)
             : base(dialogId, validator)

@@ -2,14 +2,18 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
@@ -29,7 +33,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private static Lazy<bool> _hasEmulator = new Lazy<bool>(() =>
         {
             if (File.Exists(_emulatorPath))
-            { 
+            {
                 Process p = new Process();
                 p.StartInfo.UseShellExecute = true;
                 p.StartInfo.FileName = _emulatorPath;
@@ -75,6 +79,159 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     Debug.WriteLine("Error cleaning up resources: {0}", ex.ToString());
                 }
             }
+        }
+
+        [TestMethod]
+        public void Sanatize_Key_Should_Work()
+        {
+            // Note: The SanatizeKey method delegates to the CosmosDBKeyEscape class. The method is 
+            // marked as obsolete, and should no longer be used. This test is here to make sure
+            // the method does actually delegate, as we can't remove it due to back-compat reasons.
+
+#pragma warning disable 0618
+            // Ascii code of "?" is "3f".
+            var sanitizedKey = CosmosDbStorage.SanitizeKey("?test?");
+            Assert.AreEqual(sanitizedKey, "*3ftest*3f");
+#pragma warning restore 0618
+        }
+
+        [TestMethod]
+        public void Constructor_Should_Throw_On_InvalidOptions()
+        {
+            // No Options. Should throw. 
+            Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(null));
+
+            // No Endpoint. Should throw. 
+            Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
+            {
+                AuthKey = "test",
+                CollectionId = "testId",
+                DatabaseId = "testDb",
+                CosmosDBEndpoint = null,
+            }));
+
+            // No Auth Key. Should throw. 
+            Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
+            {
+                AuthKey = null,
+                CollectionId = "testId",
+                DatabaseId = "testDb",
+                CosmosDBEndpoint = new Uri("https://test.com"),
+            }));
+
+            // No Database Id. Should throw. 
+            Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
+            {
+                AuthKey = "test",
+                CollectionId = "testId",
+                DatabaseId = null,
+                CosmosDBEndpoint = new Uri("https://test.com"),
+            }));
+
+            // No Collection Id. Should throw. 
+            Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
+            {
+                AuthKey = "test",
+                CollectionId = null,
+                DatabaseId = "testDb",
+                CosmosDBEndpoint = new Uri("https://test.com"),
+            }));
+        }
+
+        [TestMethod]
+        public void CustomConstructor_Should_Throw_On_InvalidOptions()
+        {
+            var customClient = GetDocumentClient().Object;
+
+            // No client. Should throw. 
+            Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(null, new CosmosDbCustomClientOptions
+            {
+                CollectionId = "testId",
+                DatabaseId = "testDb",
+            }));
+
+            // No Options. Should throw. 
+            Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(customClient, null));
+
+            // No Database Id. Should throw. 
+            Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(customClient, new CosmosDbCustomClientOptions
+            {
+                CollectionId = "testId",
+                DatabaseId = null,
+            }));
+
+            // No Collection Id. Should throw. 
+            Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(customClient, new CosmosDbCustomClientOptions
+            {
+                CollectionId = null,
+                DatabaseId = "testDb",
+            }));
+        }
+
+        [TestMethod]
+        public void Connection_Policy_Configurator_Should_Be_Called_If_Present()
+        {
+            var wasCalled = false;
+
+            var optionsWithConfigurator = new CosmosDbStorageOptions
+            {
+                AuthKey = "test",
+                CollectionId = "testId",
+                DatabaseId = "testDb",
+                CosmosDBEndpoint = new Uri("https://test.com"),
+
+                // Make sure the Callback is called.
+                ConnectionPolicyConfigurator = (ConnectionPolicy p) => wasCalled = true,
+            };
+
+            var storage = new CosmosDbStorage(optionsWithConfigurator);
+            Assert.IsTrue(wasCalled, "The Connection Policy Configurator was not called.");
+        }
+
+        private Mock<IDocumentClient> GetDocumentClient()
+        {
+            var mock = new Mock<IDocumentClient>();
+
+            mock.Setup(client => client.CreateDatabaseIfNotExistsAsync(It.IsAny<Database>(), It.IsAny<RequestOptions>()))
+                .ReturnsAsync(() => {
+                    var database = new Database();
+                    database.SetPropertyValue("SelfLink", "dummyDB_SelfLink");
+                    return new ResourceResponse<Database>(database);
+                });
+
+            mock.Setup(client => client.CreateDocumentCollectionIfNotExistsAsync(It.IsAny<Uri>(), It.IsAny<DocumentCollection>(), It.IsAny<RequestOptions>()))
+                .ReturnsAsync(() => {
+                    var documentCollection = new DocumentCollection();
+                    documentCollection.SetPropertyValue("SelfLink", "dummyDC_SelfLink");
+                    return new ResourceResponse<DocumentCollection>(documentCollection);
+                });
+
+            mock.Setup(client => client.ConnectionPolicy).Returns(new ConnectionPolicy());
+
+            return mock;
+        }
+
+        [TestMethod]
+        public async Task Database_Creation_Request_Options_Should_Be_Used()
+        {
+            var documentClientMock = GetDocumentClient();
+
+            var databaseCreationRequestOptions = new RequestOptions { OfferThroughput = 1000 };
+            var documentCollectionRequestOptions = new RequestOptions { OfferThroughput = 500 };
+
+            var optionsWithConfigurator = new CosmosDbCustomClientOptions
+            {
+                CollectionId = "testId",
+                DatabaseId = "testDb",
+                DatabaseCreationRequestOptions = databaseCreationRequestOptions,
+                DocumentCollectionRequestOptions = documentCollectionRequestOptions,
+            };
+
+            var storage = new CosmosDbStorage(documentClientMock.Object, optionsWithConfigurator);
+            await storage.DeleteAsync(new string[] { "foo" }, CancellationToken.None);
+
+            documentClientMock.Verify(client => client.CreateDatabaseIfNotExistsAsync(It.IsAny<Database>(), databaseCreationRequestOptions), Times.Once());
+            documentClientMock.Verify(client => client.CreateDocumentCollectionIfNotExistsAsync(It.IsAny<Uri>(), It.IsAny<DocumentCollection>(), documentCollectionRequestOptions), Times.Once());
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
@@ -150,21 +307,47 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
-        public async Task ReadingEmptyKeys_Throws()
+        public async Task ReadingEmptyKeysReturnsEmptyDictionary()
         {
             if (CheckEmulator())
             {
-                await Assert.ThrowsExceptionAsync<ArgumentException>(() => _storage.ReadAsync(new string[] { }));
+                var state = await _storage.ReadAsync(new string[] { });
+                Assert.IsInstanceOfType(state, typeof(Dictionary<string, object>));
+                Assert.AreEqual(state.Count, 0);
             }
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
-        public async Task WrittingNullStoreItems_Throws()
+        public async Task ReadingNullKeysReturnsEmptyDictionary()
         {
             if (CheckEmulator())
             {
-                await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => _storage.WriteAsync(null));
+                string[] nullKeys = null;
+                var state = await _storage.ReadAsync(nullKeys);
+                Assert.IsInstanceOfType(state, typeof(Dictionary<string, object>));
+                Assert.AreEqual(state.Count, 0);
+            }
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
+        public async Task WritingNullStoreItemsDoesntThrow()
+        {
+            if (CheckEmulator())
+            {
+                await _storage.WriteAsync(null);
+            }
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
+        public async Task WritingNoStoreItemsDoesntThrow()
+        {
+            if (CheckEmulator())
+            {
+                var changes = new Dictionary<string, object>();
+                await _storage.WriteAsync(changes);
             }
         }
 

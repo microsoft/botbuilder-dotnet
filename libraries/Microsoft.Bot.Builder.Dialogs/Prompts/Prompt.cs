@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -164,6 +165,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Update prompt with text and actions
             if (prompt != null)
             {
+                // clone the prompt the set in the options (note ActivityEx has Properties so this is the safest mechanism)
+                prompt = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(prompt));
+
                 prompt.Text = msg.Text;
                 if (msg.SuggestedActions != null && msg.SuggestedActions.Actions != null && msg.SuggestedActions.Actions.Count > 0)
                 {

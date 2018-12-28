@@ -13,17 +13,17 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
     {
         public static readonly string RouteName = "BotFramework - Message Handler";
 
-        public BotMessageHandler(BotFrameworkAdapter botFrameworkAdapter)
-            : base(botFrameworkAdapter)
+        public BotMessageHandler(IAdapterIntegration adapter)
+            : base(adapter)
         {
         }
 
-        protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequestMessage request, BotFrameworkAdapter botFrameworkAdapter, BotCallbackHandler botCallbackHandler, CancellationToken cancellationToken)
+        protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequestMessage request, IAdapterIntegration adapter, BotCallbackHandler botCallbackHandler, CancellationToken cancellationToken)
         {
             var activity = await request.Content.ReadAsAsync<Activity>(BotMessageHandlerBase.BotMessageMediaTypeFormatters, cancellationToken).ConfigureAwait(false);
 
 #pragma warning disable UseConfigureAwait // Use ConfigureAwait
-            var invokeResponse = await botFrameworkAdapter.ProcessActivityAsync(
+            var invokeResponse = await adapter.ProcessActivityAsync(
                 request.Headers.Authorization?.ToString(),
                 activity,
                 botCallbackHandler,

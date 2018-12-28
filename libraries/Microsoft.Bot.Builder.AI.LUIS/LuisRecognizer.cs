@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
 using Microsoft.Bot.Builder.TraceExtensions;
+using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
@@ -54,6 +55,50 @@ namespace Microsoft.Bot.Builder.AI.Luis
             };
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LuisRecognizer"/> class.
+        /// </summary>
+        /// <param name="service">The LUIS service from configuration.</param>
+        /// <param name="predictionOptions">(Optional) The LUIS prediction options to use.</param>
+        /// <param name="includeApiResults">(Optional) TRUE to include raw LUIS API response.</param>
+        /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
+        public LuisRecognizer(LuisService service, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null)
+            : this(new LuisApplication(service), predictionOptions, includeApiResults, clientHandler)
+        {
+        }
+
+        /// <summary>
+        /// Returns the name of the top scoring intent from a set of LUIS results.
+        /// </summary>
+        /// <param name="results">Result set to be searched.</param>
+        /// <param name="defaultIntent">(Optional) Intent name to return should a top intent be found. Defaults to a value of "None".</param>
+        /// <param name="minScore">(Optional) Minimum score needed for an intent to be considered as a top intent. If all intents in the set are below this threshold then the `defaultIntent` will be returned.  Defaults to a value of `0.0`.</param>
+        /// <returns>The top scoring intent name.</returns>
+        public static string TopIntent(RecognizerResult results, string defaultIntent = "None", double minScore = 0.0)
+        {
+            if (results == null)
+            {
+                throw new ArgumentNullException(nameof(results));
+            }
+
+            string topIntent = null;
+            double topScore = -1.0;
+            if (results.Intents.Count > 0)
+            {
+                foreach (var intent in results.Intents)
+                {
+                    var score = (double)intent.Value.Score;
+                    if (score > topScore && score >= minScore)
+                    {
+                        topIntent = intent.Key;
+                        topScore = score;
+                    }
+                }
+            }
+
+            return !string.IsNullOrEmpty(topIntent) ? topIntent : defaultIntent;
+        }
+
         /// <inheritdoc />
         public async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
             => await RecognizeInternalAsync(turnContext, cancellationToken).ConfigureAwait(false);
@@ -70,18 +115,24 @@ namespace Microsoft.Bot.Builder.AI.Luis
         private static string NormalizedIntent(string intent) => intent.Replace('.', '_').Replace(' ', '_');
 
         private static IDictionary<string, IntentScore> GetIntents(LuisResult luisResult)
-            => luisResult.Intents != null ?
-                luisResult.Intents.ToDictionary(
+        {
+            if (luisResult.Intents != null)
+            {
+                return luisResult.Intents.ToDictionary(
                     i => NormalizedIntent(i.Intent),
-                    i => new IntentScore { Score = i.Score ?? 0 })
-                    :
-                new Dictionary<string, IntentScore>()
+                    i => new IntentScore { Score = i.Score ?? 0 });
+            }
+            else
+            {
+                return new Dictionary<string, IntentScore>()
                 {
                     {
                         NormalizedIntent(luisResult.TopScoringIntent.Intent),
                         new IntentScore() { Score = luisResult.TopScoringIntent.Score ?? 0 }
                     },
                 };
+            }
+        }
 
         private static JObject ExtractEntitiesAndMetadata(IList<EntityModel> entities, IList<CompositeEntityModel> compositeEntities, bool verbose)
         {
@@ -140,7 +191,11 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 return entity.Entity;
             }
 
-            if (entity.Type.StartsWith("builtin.datetimeV2."))
+            if (entity.Type.StartsWith("builtin.datetime."))
+            {
+                return JObject.FromObject(resolution);
+            }
+            else if (entity.Type.StartsWith("builtin.datetimeV2."))
             {
                 if (resolution.values == null || resolution.values.Count == 0)
                 {

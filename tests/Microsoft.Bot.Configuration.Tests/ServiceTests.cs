@@ -11,6 +11,15 @@ namespace Microsoft.Bot.Configuration.Tests
         {
             var luis = new LuisService() { Region = "westus" };
             Assert.AreEqual(luis.GetEndpoint(), "https://westus.api.cognitive.microsoft.com");
+
+            luis = new LuisService() { Region = "virginia" };
+            Assert.AreEqual(luis.GetEndpoint(), "https://virginia.api.cognitive.microsoft.us");
+
+            luis = new LuisService() { Region = "usgovvirginia" };
+            Assert.AreEqual(luis.GetEndpoint(), "https://virginia.api.cognitive.microsoft.us");
+
+            luis = new LuisService() { Region = "usgoviowa" };
+            Assert.AreEqual(luis.GetEndpoint(), "https://usgoviowa.api.cognitive.microsoft.us");
         }
 
 
