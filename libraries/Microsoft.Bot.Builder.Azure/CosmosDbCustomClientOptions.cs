@@ -24,20 +24,22 @@ namespace Microsoft.Bot.Builder.Azure
         public string CollectionId { get; set; }
 
         /// <summary>
-        /// Gets or sets the CosmosDB <see cref="https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.client.requestoptions?view=azure-dotnet"/>RequestOptions that
+        /// Gets or sets the CosmosDB <see cref="Microsoft.Azure.Documents.Client.RequestOptions"/> that
         /// are passed when the document collection is created. Null is the default.
         /// </summary>
         /// <value>
-        /// The set of options passed into <see cref="https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.client.documentclient.createdocumentcollectionifnotexistsasync?view=azure-dotnet"/>CreateDocumentCollectionIfNotExistsAsync.
+        /// The set of options passed into
+        /// <see cref="Microsoft.Azure.Documents.Client.DocumentClient.CreateDocumentCollectionIfNotExistsAsync(string, Microsoft.Azure.Documents.DocumentCollection, RequestOptions)"/>.
         /// </value>
         public RequestOptions DocumentCollectionRequestOptions { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the CosmosDB <see cref="https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.client.requestoptions?view=azure-dotnet"/>RequestOptions that
-        /// are passed when the database is created. Null is the default.
+        /// Gets or sets the CosmosDB <see cref="Microsoft.Azure.Documents.Client.RequestOptions"/>
+        /// that are passed when the database is created. Null is the default.
         /// </summary>
         /// <value>
-        /// The set of options passed into <see cref="https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.client.documentclient.createdatabaseifnotexistsasync?view=azure-dotnet"/>CreateDatabaseIfNotExistsAsync.
+        /// The set of options passed into
+        /// <see cref="Microsoft.Azure.Documents.Client.DocumentClient.CreateDatabaseIfNotExistsAsync(Microsoft.Azure.Documents.Database, RequestOptions)"/>.
         /// </value>
         public RequestOptions DatabaseCreationRequestOptions { get; set; } = null;
     }

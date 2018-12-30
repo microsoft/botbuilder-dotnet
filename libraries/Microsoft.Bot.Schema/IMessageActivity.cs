@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Schema
         /// The language code of the Text field
         /// </summary>
         /// <remarks>
-        /// See https://msdn.microsoft.com/en-us/library/hh456380.aspx for a list of valid language codes
+        /// See https://msdn.microsoft.com/library/hh456380.aspx for a list of valid language codes
         /// </remarks>
         string Locale { get; set; }
 

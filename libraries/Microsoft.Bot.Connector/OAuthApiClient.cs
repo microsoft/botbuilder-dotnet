@@ -297,7 +297,6 @@ namespace Microsoft.Bot.Connector
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="includeFilter">A comma seperated list of connections to include. If null, then all connections are returned</param>
-        /// <param name="customHeaders"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public async Task<TokenStatus[]> GetTokenStatusAsync(string userId, string includeFilter = null, CancellationToken cancellationToken = default(CancellationToken))
