@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialog">The dialog to add.</param>
         /// <returns>The DialogSet for fluent calls to Add().</returns>
         /// <remarks>Adding a new dialog will inherit the <see cref="IBotTelemetryClient"/> of the DialogSet.</remarks>
-        public DialogSet Add(Dialog dialog)
+        public DialogSet Add(IDialog dialog)
         {
             if (dialog == null)
             {

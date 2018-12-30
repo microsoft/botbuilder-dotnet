@@ -16,6 +16,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         object DefaultOptions { get; set; }
 
         /// <summary>
+        /// Telemetry client
+        /// </summary>
+        IBotTelemetryClient TelemetryClient { get; set; }
+
+        /// <summary>
         /// Method called when a new dialog has been pushed onto the stack and is being activated.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of conversation.</param>
@@ -68,5 +73,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken));
+
     }
 }

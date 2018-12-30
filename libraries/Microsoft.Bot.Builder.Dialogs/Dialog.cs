@@ -18,11 +18,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         public Dialog(string dialogId = null)
         {
             Id = dialogId;
+            _telemetryClient = NullBotTelemetryClient.Instance;
         }
 
-            _telemetryClient = NullBotTelemetryClient.Instance;
-            Id = dialogId;
-        }
         /// <summary>
         /// Unique id for the dialog
         /// </summary>

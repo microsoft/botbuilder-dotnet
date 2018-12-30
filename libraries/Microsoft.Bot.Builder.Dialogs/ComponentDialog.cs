@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        protected string InitialDialogId { get; set; }
+        public string InitialDialogId { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
