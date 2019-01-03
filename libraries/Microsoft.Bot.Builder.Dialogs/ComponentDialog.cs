@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         /// <summary>
         /// Gets or sets or set the <see cref="IBotTelemetryClient"/> to use.
-        /// When setting this property, all the contained dialogs TelemetryClient properties are also set.
+        /// When setting this property, all of the contained dialogs' TelemetryClient properties are also set.
         /// </summary>
         /// <value>The <see cref="IBotTelemetryClient"/> to use when logging.</value>
         public new IBotTelemetryClient TelemetryClient
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             // Containers are typically leaf nodes on the stack but the dev is free to push other dialogs
             // on top of the stack which will result in the container receiving an unexpected call to
-            // dialogResume() when the pushed on dialog ends.
+            // ResumeDialogAsync() when the pushed on dialog ends.
             // To avoid the container prematurely ending we need to implement this method and simply
             // ask our inner dialog stack to re-prompt.
             await RepromptDialogAsync(outerDc.Context, outerDc.ActiveDialog, cancellationToken).ConfigureAwait(false);

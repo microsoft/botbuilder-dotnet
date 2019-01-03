@@ -19,10 +19,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         public string Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the instances persisted state.
+        /// Gets or sets the instance's persisted state.
         /// </summary>
         /// <value>
-        /// The instances persisted state.
+        /// The instance's persisted state.
         /// </value>
         public IDictionary<string, object> State { get; set; }
     }
