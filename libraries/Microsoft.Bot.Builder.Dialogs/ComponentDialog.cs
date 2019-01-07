@@ -123,13 +123,18 @@ namespace Microsoft.Bot.Builder.Dialogs
             await OnEndDialogAsync(turnContext, instance, reason, cancellationToken).ConfigureAwait(false);
         }
 
+        public ComponentDialog AddDialog(Dialog dialog)
+        {
+            return AddDialog(dialog as IDialog);
+        }
+
         /// <summary>
         /// Adds a dialog to the component dialog.
         /// </summary>
         /// <param name="dialog">The dialog to add.</param>
         /// <returns>The updated <see cref="ComponentDialog"/>.</returns>
         /// <remarks>Adding a new dialog will inherit the <see cref="IBotTelemetryClient"/> of the ComponentDialog.</remarks>
-        public ComponentDialog AddDialog(Dialog dialog)
+        public ComponentDialog AddDialog(IDialog dialog)
         {
             if (string.IsNullOrEmpty(dialog.Id))
             {
