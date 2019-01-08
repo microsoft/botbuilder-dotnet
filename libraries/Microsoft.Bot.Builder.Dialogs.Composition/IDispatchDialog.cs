@@ -11,10 +11,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
         /// Recognizer
         /// </summary>
         IRecognizer Recognizer { get; set; }
-
-        /// <summary>
-        /// Intent -> DialogId mappings
-        /// </summary>
-        Dictionary<string, string> Routes { get; set; }
     }
 }

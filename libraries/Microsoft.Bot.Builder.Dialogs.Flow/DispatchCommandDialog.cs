@@ -4,12 +4,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 
-namespace Microsoft.Bot.Builder.Dialogs.Composition
+namespace Microsoft.Bot.Builder.Dialogs.Flow
 {
     /// <summary>
     /// DispatchDialog - Dispatches to sub Dialog based on intent out of a recognizer
     /// </summary>
-    public class DispatchDialog : ComponentDialog, IDispatchDialog
+    public class DispatchDialog : ComponentDialog
     {
         /// <summary>
         /// Recognizer to use to get intents/entities
@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
         /// <summary>
         /// Route of Intent -> DialogId 
         /// </summary>
-        public Dictionary<string, string> Routes { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, IDialogCommand> Routes { get; set; } = new Dictionary<string, IDialogCommand>();
 
         /// <summary>
         /// Use recognizer intent to invoke sub dialog
@@ -40,9 +40,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
             var topIntent = result.GetTopScoringIntent();
 
             // look up route
-            if (Routes.TryGetValue(topIntent.intent, out string dialogId))
+            if (Routes.TryGetValue(topIntent.intent, out IDialogCommand command))
             {
-                return await outerDc.BeginDialogAsync(dialogId, null, cancellationToken).ConfigureAwait(false);
+                return await command.Execute(outerDc, options, null, cancellationToken);
             }
 
             // no match

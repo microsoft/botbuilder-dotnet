@@ -6,11 +6,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// <summary>
     /// Replace the current Dialog with another dialog as an action
     /// </summary>
-    public class CallDialog : IDialogCommand
+    public class GotoDialog : IDialogCommand
     {
-        public CallDialog() { }
+        public GotoDialog() { }
 
-        public CallDialog(string dialogId, object options = null)
+        public GotoDialog(string dialogId, object options = null)
         {
             this.DialogId = dialogId;
             this.Options = options;
@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         {
             var state = dialogContext.ActiveDialog.State;
             state["DialogTurnResult"] = result;
-            return dialogContext.BeginDialogAsync(DialogId, Options, cancellationToken);
+            return dialogContext.ReplaceDialogAsync(DialogId, Options, cancellationToken);
         }
     }
 }

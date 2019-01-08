@@ -57,6 +57,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         }
     }
 
+    /// <summary>
+    /// Echo the activity text back and end
+    /// </summary>
+    public class SendIdUntilStop : Dialog
+    {
+        public SendIdUntilStop(string id) : base(id)
+        {
+        }
+
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (dc.Context.Activity.Text == "stop")
+            {
+                await dc.Context.SendActivityAsync(dc.Context.Activity.CreateReply("stop"));
+                return await dc.EndDialogAsync(dc.Context.Activity.Text);
+            }
+            else
+            {
+                await dc.Context.SendActivityAsync(dc.Context.Activity.CreateReply(this.Id));
+                return new DialogTurnResult(DialogTurnStatus.Waiting);
+            }
+        }
+
+        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (dc.Context.Activity.Text == "stop")
+            {
+                await dc.Context.SendActivityAsync(dc.Context.Activity.CreateReply("stop"));
+                return await dc.EndDialogAsync(dc.Context.Activity.Text);
+            }
+            else
+            {
+                await dc.Context.SendActivityAsync(dc.Context.Activity.CreateReply(this.Id));
+                return new DialogTurnResult(DialogTurnStatus.Waiting);
+            }
+        }
+    }
+
 
     [TestClass]
     public class DialogCommandTests
@@ -75,17 +113,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                 .Use(new AutoSaveStateMiddleware(convoState));
             var dlgs = new DialogSet(dialogState);
             dialogs = dlgs;
-            botHandler =  async (turnContext, cancellationToken) =>
-            {
-                var state = await dialogState.GetAsync(turnContext, () => new DialogState());
+            botHandler = async (turnContext, cancellationToken) =>
+           {
+               var state = await dialogState.GetAsync(turnContext, () => new DialogState());
 
-                var dialogContext = await dlgs.CreateContextAsync(turnContext, cancellationToken);
+               var dialogContext = await dlgs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dialogContext.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                    results = await dialogContext.BeginDialogAsync(initialDialog, null, cancellationToken);
-            };
-            
+               var results = await dialogContext.ContinueDialogAsync(cancellationToken);
+               if (results.Status == DialogTurnStatus.Empty)
+                   results = await dialogContext.BeginDialogAsync(initialDialog, null, cancellationToken);
+           };
+
             return adapter;
         }
 
@@ -97,7 +135,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             var testAdapter = CreateTestAdapter("TestDialog", out var dialogs, out var botHandler);
 
             dialogs.Add(new SendIdDialog("OneDialog"));
-            dialogs.Add(new SendIdDialog("TwoDialog"));
+            dialogs.Add(new SendIdUntilStop("TwoDialog"));
+            dialogs.Add(new SendIdDialog("ThreeDialog"));
 
             // when oneDialog finishes, call TwoDialog
             var flowDialog = new FlowDialog()
@@ -112,6 +151,43 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                 .Send("hello")
                 .AssertReply("OneDialog")
                 .AssertReply("TwoDialog")
+                .Send("hello")
+                .AssertReply("TwoDialog")
+                .Send("stop")
+                .AssertReply("stop")
+                .Send("hello")
+                .AssertReply("OneDialog")
+                .AssertReply("TwoDialog")
+                .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task GotoDialog_Test()
+        {
+            var testAdapter = CreateTestAdapter("TestDialog", out var dialogs, out var botHandler);
+
+            dialogs.Add(new SendIdDialog("OneDialog"));
+            dialogs.Add(new SendIdUntilStop("TwoDialog"));
+            dialogs.Add(new SendIdDialog("ThreeDialog"));
+
+
+            // when oneDialog finishes, call TwoDialog
+            var flowDialog = new FlowDialog()
+            {
+                Id = "TestDialog",
+                DialogId = "OneDialog",
+                OnCompleted = new GotoDialog("TwoDialog")
+            };
+            dialogs.Add(flowDialog);
+
+            await new TestFlow(testAdapter, botHandler)
+                .Send("hello")
+                .AssertReply("OneDialog")
+                .AssertReply("TwoDialog")
+                .Send("hello")
+                .AssertReply("TwoDialog")
+                .Send("stop")
+                .AssertReply("stop")
                 .StartTestAsync();
         }
 

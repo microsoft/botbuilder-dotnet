@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
             var state = dialogContext.ActiveDialog?.State;
             options = MergeDefaultOptions(options);
             state[$"{this.Id}.options"] = options;
-
+            state[$"{this.Id}.OnCompletedCalled"] = false;
             return await BeginInnerDialog(dialogContext, options, cancellationToken);
         }
 
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         {
             var state = dialogContext.ActiveDialog.State;
             dynamic options = state[$"{this.Id}.options"];
-
+            state[$"{this.Id}.OnCompletedCalled"] = false;
             return await BeginInnerDialog(dialogContext, options, cancellationToken);
         }
 
@@ -87,9 +87,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
             switch (reason)
             {
                 case DialogReason.EndCalled:
-                    // call the IDialogAction handler
-                    if (this.OnCompleted != null)
+                    // call the OnCommand handler
+                    bool OnCompletedCalled = (bool)state[$"{this.Id}.OnCompletedCalled"];
+                    if (this.OnCompleted != null && !OnCompletedCalled)
                     {
+                        state[$"{this.Id}.OnCompletedCalled"] = true;
                         state["DialogTurnResult"] = dialogTurnResult;
                         return await this.OnCompleted.Execute(dialogContext, options, dialogTurnResult, cancellationToken);
                     }
@@ -97,6 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
             }
 
             // no routing, return the result as our result 
+            state.Remove($"{this.Id}.OnCompletedCalled");
             return await dialogContext.EndDialogAsync(result, cancellationToken);
         }
 
@@ -111,10 +114,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
                 return await dialogContext.BeginDialogAsync(this.DialogId, options, cancellationToken);
             }
 
-            // call the IDialogAction handler
+            // call the OnCompleted handler
             var dialogTurnResult = new DialogTurnResult(DialogTurnStatus.Complete);
+
             if (this.OnCompleted != null)
             {
+                state[$"{this.Id}.OnCompletedCalled"] = true;
                 state["DialogTurnResult"] = dialogTurnResult;
                 return await this.OnCompleted.Execute(dialogContext, options, dialogTurnResult, cancellationToken);
             }
