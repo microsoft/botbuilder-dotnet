@@ -295,7 +295,7 @@ namespace Microsoft.Bot.Builder
 
             /// <summary>
             /// Get the property value. The semantics are intended to be lazy, note the use of LoadAsync at the start.
-            /// /// </summary>
+            /// </summary>
             /// <param name="turnContext">The context object for this turn.</param>
             /// <param name="defaultValueFactory">Defines the default value. Invoked when no value been set for the requested state property.  If defaultValueFactory is defined as null, the MissingMemberException will be thrown if the underlying property is not set.</param>
             /// <param name="cancellationToken">The cancellation token.</param>

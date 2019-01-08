@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Builder
         BotAdapter Adapter { get; }
 
         /// <summary>
-        /// Collection of values cached with the context object for the lifetime of the turn.
+        /// Gets the collection of values cached with the context object for the lifetime of the turn.
         /// </summary>
         /// <value>The collection of services registered on this context object.</value>
         TurnContextStateCollection TurnState { get; }

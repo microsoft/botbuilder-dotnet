@@ -469,11 +469,11 @@ namespace Microsoft.Bot.Builder
         /// <param name="serviceUrl">The URL of the channel server to query.  This can be retrieved
         /// from `context.activity.serviceUrl`. </param>
         /// <param name="credentials">The credentials needed for the Bot to connect to the services.</param>
-        /// <param name="continuationToken"></param>
+        /// <param name="continuationToken">The continuation token from the previous page of results.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>If the task completes successfully, the result contains the members of the current conversation.
+        /// <remarks>If the task completes successfully, the result contains a page of the members of the current conversation.
         /// This overload may be called from outside the context of a conversation, as only the
         /// bot's service URL and credentials are required.
         /// </remarks>
@@ -500,11 +500,11 @@ namespace Microsoft.Bot.Builder
         /// that can be used to fetch the next page of results from the server.
         /// </summary>
         /// <param name="turnContext">The context object for the turn.</param>
-        /// <param name="continuationToken"></param>
+        /// <param name="continuationToken">The continuation token from the previous page of results.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>If the task completes successfully, the result contains the members of the current conversation.
+        /// <remarks>If the task completes successfully, the result contains a page of the members of the current conversation.
         /// This overload may be called during standard activity processing, at which point the Bot's
         /// service URL and credentials that are part of the current activity processing pipeline
         /// will be used.

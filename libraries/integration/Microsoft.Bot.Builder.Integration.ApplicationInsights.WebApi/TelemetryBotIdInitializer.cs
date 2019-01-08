@@ -13,7 +13,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi
 {
     /// <summary>
-    /// Initializer that sets the user ID based on Bot data.
+    /// Initializer that sets the user ID and session ID (in addition to other bot-specific properties such as activity ID).
     /// </summary>
     public class TelemetryBotIdInitializer : ITelemetryInitializer
     {
