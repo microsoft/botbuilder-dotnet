@@ -7,9 +7,9 @@ using Microsoft.Bot.Builder.Dialogs;
 namespace Microsoft.Bot.Builder.Dialogs.Flow
 {
     /// <summary>
-    /// DispatchDialog - Dispatches to sub Dialog based on intent out of a recognizer
+    /// IntentDialog - Dispatches command based on intent out of a recognizer
     /// </summary>
-    public class DispatchDialog : ComponentDialog
+    public class CommandDialog : ComponentDialog
     {
         /// <summary>
         /// Recognizer to use to get intents/entities
@@ -17,9 +17,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         public IRecognizer Recognizer { get; set; }
 
         /// <summary>
-        /// Route of Intent -> DialogId 
+        /// Route of Intent -> Commands
         /// </summary>
-        public Dictionary<string, IDialogCommand> Routes { get; set; } = new Dictionary<string, IDialogCommand>();
+        public Dictionary<string, IDialogCommand> Commands { get; set; } = new Dictionary<string, IDialogCommand>();
 
         /// <summary>
         /// Use recognizer intent to invoke sub dialog
@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
             var topIntent = result.GetTopScoringIntent();
 
             // look up route
-            if (Routes.TryGetValue(topIntent.intent, out IDialogCommand command))
+            if (Commands.TryGetValue(topIntent.intent, out IDialogCommand command))
             {
                 return await command.Execute(outerDc, options, null, cancellationToken);
             }

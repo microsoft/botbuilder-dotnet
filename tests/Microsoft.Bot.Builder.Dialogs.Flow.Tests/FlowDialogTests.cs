@@ -12,7 +12,7 @@ using Microsoft.Expressions;
 namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
 {
     [TestClass]
-    public class FlowDialogTests
+    public class DialogTests
     {
         private static JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };
 

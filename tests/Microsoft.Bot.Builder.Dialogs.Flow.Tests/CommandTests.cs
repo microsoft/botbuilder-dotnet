@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
 
 
     [TestClass]
-    public class DialogCommandTests
+    public class CommandTests
     {
         private static JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };
 
@@ -293,6 +293,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             var flowDialog = new FlowDialog()
             {
                 Id = "TestDialog",
+                // no dialog is same as dialog completing
                 // CallDialogId = null
                 OnCompleted = new SendActivity("done")
             };
