@@ -193,7 +193,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         // These tests require Azure Storage Emulator v5.7
         [TestMethod]
-        [ExpectedException(typeof(AggregateException))]
+        [ExpectedException(typeof(StorageException))]
         public async Task LongIdAddTest()
         {
             var a = CreateActivity(0, 0, LongId);
