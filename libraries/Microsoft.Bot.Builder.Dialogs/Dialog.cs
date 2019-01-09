@@ -49,15 +49,15 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Method called when a new dialog has been pushed onto the stack and is being activated.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of conversation.</param>
-        /// <param name="options">(Optional) arguments that were passed to the dialog during `begin()` call that started the instance.</param>
+        /// <param name="options">(Optional) additional argument(s) to pass to the dialog being started.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public abstract Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Method called when an instance of the dialog is the "current" dialog and the
-        /// user replies with a new activity. The dialog will generally continue to receive the users
-        /// replies until it calls either `DialogSet.end()` or `DialogSet.begin()`.
+        /// user replies with a new activity. The dialog will generally continue to receive the user's
+        /// replies until it calls either `EndDialogAsync()` or `BeginDialogAsync()`.
         /// If this method is NOT implemented then the dialog will automatically be ended when the user replies.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of conversation.</param>
@@ -71,14 +71,14 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         /// <summary>
         /// Method called when an instance of the dialog is being returned to from another
-        /// dialog that was started by the current instance using `DialogSet.begin()`.
+        /// dialog that was started by the current instance using `BeginDialogAsync()`.
         /// If this method is NOT implemented then the dialog will be automatically ended with a call
-        /// to `DialogSet.endDialogWithResult()`. Any result passed from the called dialog will be passed
-        /// to the current dialogs parent.
+        /// to `EndDialogAsync()`. Any result passed from the called dialog will be passed
+        /// to the current dialog's parent.
         /// </summary>
-        /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <param name="dc">The dialog context for the current turn of the conversation.</param>
         /// <param name="reason">Reason why the dialog resumed.</param>
-        /// <param name="result">(Optional) value returned from the dialog that was called. The type of the value returned is dependant on the dialog that was called.</param>
+        /// <param name="result">(Optional) value returned from the dialog that was called. The type of the value returned is dependent on the dialog that was called.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public virtual async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))

@@ -64,14 +64,14 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(dialogId));
             }
 
-            // Lookup dialog
+            // Look up dialog
             var dialog = Dialogs.Find(dialogId);
             if (dialog == null)
             {
                 throw new Exception($"DialogContext.BeginDialogAsync(): A dialog with an id of '{dialogId}' wasn't found.");
             }
 
-            // Push new instance onto stack.
+            // Push new instance onto stack
             var instance = new DialogInstance
             {
                 Id = dialogId,
@@ -80,13 +80,14 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             Stack.Insert(0, instance);
 
-            // Call dialogs BeginAsync() method.
+            // Call dialog's BeginAsync() method
             return await dialog.BeginDialogAsync(this, options, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Helper function to simplify formatting the options for calling a prompt dialog. This helper will
-        /// take a `PromptOptions` argument and then call[begin(context, dialogId, options)](#begin).
+        /// take a `PromptOptions` argument and then call
+        /// <see cref="BeginDialogAsync(string, object, CancellationToken)"/>.
         /// </summary>
         /// <param name="dialogId">ID of the prompt to start.</param>
         /// <param name="options">Contains a Prompt, potentially a RetryPrompt and if using ChoicePrompt, Choices.</param>
@@ -109,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         /// <summary>
         /// Continues execution of the active dialog, if there is one, by passing the context object to
-        /// its `Dialog.ContinueDialogAsync()` method. You can check `context.responded` after the call completes
+        /// its `Dialog.ContinueDialogAsync()` method. You can check `turnContext.Responded` after the call completes
         /// to determine if a dialog was run and a reply was sent to the user.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
@@ -119,7 +120,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Check for a dialog on the stack
             if (ActiveDialog != null)
             {
-                // Lookup dialog
+                // Look up dialog
                 var dialog = Dialogs.Find(ActiveDialog.Id);
                 if (dialog == null)
                 {
@@ -136,11 +137,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Ends a dialog by popping it off the stack and returns an optional result to the dialogs
-        /// parent.The parent dialog is the dialog the started the on being ended via a call to
-        /// either[begin()](#begin) or [prompt()](#prompt).
-        /// The parent dialog will have its `Dialog.resume()` method invoked with any returned
-        /// result. If the parent dialog hasn't implemented a `resume()` method then it will be
+        /// Ends a dialog by popping it off the stack and returns an optional result to the dialog's
+        /// parent. The parent dialog is the dialog that started the dialog being ended via a call to
+        /// either <see cref="BeginDialogAsync(string, object, CancellationToken)"/>
+        /// or <see cref="PromptAsync(string, PromptOptions, CancellationToken)"/>.
+        /// The parent dialog will have its `Dialog.ResumeDialogAsync()` method invoked with any returned
+        /// result. If the parent dialog hasn't implemented a `ResumeDialogAsync()` method then it will be
         /// automatically ended as well and the result passed to its parent. If there are no more
         /// parent dialogs on the stack then processing of the turn will end.
         /// </summary>
@@ -161,7 +163,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Resume previous dialog
             if (ActiveDialog != null)
             {
-                // Lookup dialog
+                // Look up dialog
                 var dialog = Dialogs.Find(ActiveDialog.Id);
                 if (dialog == null)
                 {
@@ -229,7 +231,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Check for a dialog on the stack
             if (ActiveDialog != null)
             {
-                // Lookup dialog
+                // Look up dialog
                 var dialog = Dialogs.Find(ActiveDialog.Id);
                 if (dialog == null)
                 {
@@ -246,7 +248,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var instance = ActiveDialog;
             if (instance != null)
             {
-                // Lookup dialog
+                // Look up dialog
                 var dialog = Dialogs.Find(instance.Id);
                 if (dialog != null)
                 {
