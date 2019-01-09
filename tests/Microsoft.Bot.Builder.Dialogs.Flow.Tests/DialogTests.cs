@@ -33,11 +33,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             });
 
             // define GetNameDialog
-            var flowDialog = new FlowDialog()
+            var flowDialog = new CommandDialog()
             {
                 Id = "GetNameDialog",
                 DialogId = "NamePrompt",
-                OnCompleted = new CommandSet()
+                Command = new CommandSet()
                 {
                     Commands = {
                         new SetVariable() { Name="Name", Value= new CommonExpression("DialogTurnResult.Result")},
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             dialog.AddDialog(flowDialog);
 
             // define GetAgeDialog
-            flowDialog = new FlowDialog()
+            flowDialog = new CommandDialog()
             {
                 Id = "GetAgeDialog",
                 DialogId = "NumberPrompt",
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                     Prompt = new Activity(type: ActivityTypes.Message, text: "What is your age?"),
                     RetryPrompt = new Activity(type: ActivityTypes.Message, text: "Reprompt: What is your age?")
                 },
-                OnCompleted = new CommandSet()
+                Command = new CommandSet()
                 {
                     Commands = {
                         new SetVariable() { Name = "Age", Value = new CommonExpression("DialogTurnResult.Result") },

@@ -35,11 +35,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader
             {
                 rootDialog.AddDialog(flowNodeInfo.Dialog);
 
-                var flowDialog = new FlowDialog()
+                var flowDialog = new CommandDialog()
                 {
                     Id = flowNodeInfo.Id,
                     DialogId = flowNodeInfo.Dialog.Id,
-                    OnCompleted = new CommandSet()
+                    Command = new CommandSet()
                     {
                         Commands = flowNodeInfo.Commands
                     }

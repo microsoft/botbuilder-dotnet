@@ -139,11 +139,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             dialogs.Add(new SendIdDialog("ThreeDialog"));
 
             // when oneDialog finishes, call TwoDialog
-            var flowDialog = new FlowDialog()
+            var flowDialog = new CommandDialog()
             {
                 Id = "TestDialog",
                 DialogId = "OneDialog",
-                OnCompleted = new CallDialog("TwoDialog")
+                Command = new CallDialog("TwoDialog")
             };
             dialogs.Add(flowDialog);
 
@@ -172,11 +172,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
 
 
             // when oneDialog finishes, call TwoDialog
-            var flowDialog = new FlowDialog()
+            var flowDialog = new CommandDialog()
             {
                 Id = "TestDialog",
                 DialogId = "OneDialog",
-                OnCompleted = new GotoDialog("TwoDialog")
+                Command = new GotoDialog("TwoDialog")
             };
             dialogs.Add(flowDialog);
 
@@ -197,11 +197,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             var testAdapter = CreateTestAdapter("TestDialog", out var dialogs, out var botHandler);
 
             dialogs.Add(new SendIdDialog("OneDialog"));
-            var flowDialog = new FlowDialog()
+            var flowDialog = new CommandDialog()
             {
                 Id = "TestDialog",
                 DialogId = "OneDialog",
-                OnCompleted = new CommandSet()
+                Command = new CommandSet()
                 {
                     Commands = {
                         // set the test=123
@@ -231,11 +231,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             var testAdapter = CreateTestAdapter("TestDialog", out var dialogs, out var botHandler);
 
             dialogs.Add(new ReturnTextDialog($"ReturnText"));
-            var flowDialog = new FlowDialog()
+            var flowDialog = new CommandDialog()
             {
                 Id = $"TestDialog",
                 DialogId = "ReturnText",
-                OnCompleted = new Switch()
+                Command = new Switch()
                 {
                     Condition = new CommonExpression("DialogTurnResult.Result"),
                     Cases = new Dictionary<string, IDialogCommand>
@@ -271,7 +271,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             var testAdapter = CreateTestAdapter("TestDialog", out var dialogs, out var botHandler);
 
             dialogs.Add(new SendIdDialog("OneDialog"));
-            var flowDialog = new FlowDialog()
+            var flowDialog = new CommandDialog()
             {
                 Id = "TestDialog",
                 DialogId = "OneDialog"
@@ -290,12 +290,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         {
             var testAdapter = CreateTestAdapter("TestDialog", out var dialogs, out var botHandler);
 
-            var flowDialog = new FlowDialog()
+            var flowDialog = new CommandDialog()
             {
                 Id = "TestDialog",
                 // no dialog is same as dialog completing
                 // CallDialogId = null
-                OnCompleted = new SendActivity("done")
+                Command = new SendActivity("done")
             };
             dialogs.Add(flowDialog);
 
@@ -310,11 +310,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         {
             var testAdapter = CreateTestAdapter("TestDialog", out var dialogs, out var botHandler);
 
-            var flowDialog = new FlowDialog()
+            var flowDialog = new CommandDialog()
             {
                 Id = "TestDialog",
                 // CallDialogId = null
-                OnCompleted = new SendActivity("done")
+                Command = new SendActivity("done")
             };
             dialogs.Add(flowDialog);
 
@@ -330,11 +330,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             var testAdapter = CreateTestAdapter("TestDialog", out var dialogs, out var botHandler);
 
             dialogs.Add(new EchoDialog($"EchoDialog"));
-            var flowDialog = new FlowDialog()
+            var flowDialog = new CommandDialog()
             {
                 Id = $"TestDialog",
                 DialogId = "EchoDialog",
-                OnCompleted = new Switch()
+                Command = new Switch()
                 {
                     Condition = new CommonExpression("DialogTurnResult.Result"),
                     Cases = new Dictionary<string, IDialogCommand>
