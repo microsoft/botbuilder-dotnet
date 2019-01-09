@@ -10,7 +10,7 @@
               <Exclude>
                 <ModulePath>.*moq.dll</ModulePath>
                 <ModulePath>.*tests.dll</ModulePath>
-                <ModulePath>.*microsoft.windowsazure.storage.dll</ModulePath>
+                <ModulePath>.*microsoft.azure.storage*.dll</ModulePath>
                 <ModulePath>.*fluentassertions.dll</ModulePath>
               </Exclude>
             </ModulePaths>
