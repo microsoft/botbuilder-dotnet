@@ -45,6 +45,8 @@ namespace Microsoft.Bot.Builder
             // log incoming activity at beginning of turn
             if (turnContext.Activity != null)
             {
+                if (turnContext.Activity.From == null) turnContext.Activity.From = new ChannelAccount();
+
                 if (string.IsNullOrEmpty((string)turnContext.Activity.From.Properties["role"]))
                 {
                     turnContext.Activity.From.Properties["role"] = "user";
