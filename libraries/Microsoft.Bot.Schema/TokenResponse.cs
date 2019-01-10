@@ -29,12 +29,14 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Initializes a new instance of the TokenResponse class.
         /// </summary>
+        /// <param name="channelId">The channelId of the TokenResponse</param>
         /// <param name="connectionName">The connection name</param>
         /// <param name="token">The user token</param>
         /// <param name="expiration">Expiration for the token, in ISO 8601
         /// format (e.g. "2007-04-05T14:30Z")</param>
-        public TokenResponse(string connectionName = default(string), string token = default(string), string expiration = default(string))
+        public TokenResponse(string channelId = default(string), string connectionName = default(string), string token = default(string), string expiration = default(string))
         {
+            ChannelId = channelId;
             ConnectionName = connectionName;
             Token = token;
             Expiration = expiration;
@@ -45,6 +47,12 @@ namespace Microsoft.Bot.Schema
         /// An initialization method that performs custom operations like setting defaults
         /// </summary>
         partial void CustomInit();
+
+        /// <summary>
+        /// Gets or sets the channelId of the TokenResponse
+        /// </summary>
+        [JsonProperty(PropertyName = "channelId")]
+        public string ChannelId { get; set; }
 
         /// <summary>
         /// Gets or sets the connection name

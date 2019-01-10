@@ -2069,6 +2069,10 @@
       "description": "A response that includes a user token",
       "type": "object",
       "properties": {
+        "channelId": {
+          "description": "The channelId of the TokenResponse",
+          "type": "string"
+        },
         "connectionName": {
           "description": "The connection name",
           "type": "string"
