@@ -7,12 +7,10 @@
         <Configuration>
           <CodeCoverage>
             <ModulePaths>
-              <Include>
-                <ModulePath>Microsoft.Bot.*.dll</ModulePath>
-              </Include>
               <Exclude>
                 <ModulePath>.*moq.dll</ModulePath>
                 <ModulePath>.*tests.dll</ModulePath>
+                <ModulePath>.*Microsoft.Azure.Storage.*</ModulePath>
                 <ModulePath>.*fluentassertions.dll</ModulePath>
               </Exclude>
             </ModulePaths>
