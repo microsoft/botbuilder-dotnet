@@ -8,7 +8,7 @@
           <CodeCoverage>
             <ModulePaths>
               <Include>
-                <ModulePath>Microsoft.Bot*.dll$</ModulePath>
+                <ModulePath>Microsoft.Bot.*.dll</ModulePath>
               </Include>
               <Exclude>
                 <ModulePath>.*moq.dll</ModulePath>
