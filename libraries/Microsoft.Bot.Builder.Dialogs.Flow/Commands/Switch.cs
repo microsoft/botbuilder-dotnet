@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
                 return await this.DefaultAction.Execute(dialogContext, options, result, cancellationToken);
             }
 
-            // just return original result
+            // Just return original result
             return result;
         }
     }

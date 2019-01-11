@@ -11,10 +11,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader
     {
         public static IDialog Load(string json)
         {
-            var flowInfo = JsonConvert.DeserializeObject<DialogsInfo>(
+            var dialog = JsonConvert.DeserializeObject<ComponentDialog>(
                 json, new JsonSerializerSettings()
                 {
-                    Binder = new Binder(),
+                    SerializationBinder = new UriTypeBinder(),
                     TypeNameHandling = TypeNameHandling.Auto,
                     Converters = new List<JsonConverter>()
                     {
@@ -22,33 +22,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader
                         new DialogConverter(),
                         new ExpressionConverter(),
                         new ActivityConverter()
+                    },
+                    Error = (sender, args) =>
+                    {
+                        var ctx = args.ErrorContext;
                     }
                 });
-
-            var rootDialog = new ComponentDialog()
-            {
-                Id = Guid.NewGuid().ToString(),
-                InitialDialogId = flowInfo.InitialNodeId
-            };
-
-            foreach (var flowNodeInfo in flowInfo.Dialogs)
-            {
-                rootDialog.AddDialog(flowNodeInfo.Dialog);
-
-                var flowDialog = new CommandDialog()
-                {
-                    Id = flowNodeInfo.Id,
-                    DialogId = flowNodeInfo.Dialog.Id,
-                    Command = new CommandSet()
-                    {
-                        Commands = flowNodeInfo.Commands
-                    }
-                };
-
-                rootDialog.AddDialog(flowDialog);
-            }
-
-            return rootDialog;
+            return dialog;
         }
     }
 }

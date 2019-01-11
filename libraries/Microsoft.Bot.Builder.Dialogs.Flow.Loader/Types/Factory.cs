@@ -23,8 +23,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types
             Register("http://schemas.botframework.com/Switch", typeof(Switch));
             Register("http://schemas.botframework.com/CallDialog", typeof(CallDialog));
             Register("http://schemas.botframework.com/SendActivity", typeof(SendActivity));
+            Register("http://schemas.botframework.com/CommandSet", typeof(CommandSet));
 
             // Dialogs
+            Register("http://schemas.botframework.com/ComponentDialog", typeof(ComponentDialog), new ComponentDialogLoader());
+            Register("http://schemas.botframework.com/CommandDialog", typeof(CommandDialog), new CommandDialogLoader());
             Register("http://schemas.botframework.com/TextPrompt", typeof(TextPrompt));
             Register("http://schemas.botframework.com/IntNumberPrompt", typeof(NumberPrompt<Int32>));
 
@@ -48,12 +51,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types
         {
             ILoader builder;
             var type = TypeFromName(name);
+
+            if (type == null)
+            {
+                throw new ArgumentException($"Type {name} not registered in factory.");
+            }
             var found = builders.TryGetValue(type, out builder);
 
             if (!found)
             {
-                // TODO: This is probably too rigid. If there is a type we don't know, consider just ignoring 
-                // or a smarter strategy. Write a test for this scenario and revisit this code.
                 throw new ArgumentException($"Type {name} not registered in factory.");
             }
 

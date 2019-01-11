@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Converters
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(IDialog);
+            return objectType == typeof(IDialog) || objectType == typeof(ComponentDialog);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)

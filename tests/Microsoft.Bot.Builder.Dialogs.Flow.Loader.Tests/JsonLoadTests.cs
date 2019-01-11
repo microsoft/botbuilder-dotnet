@@ -46,8 +46,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                     results = await dialogContext.BeginDialogAsync(dialog.Id, null, cancellationToken);
             })
             .Send("hello")
-            .AssertReply("What is your name?")
-            .Send("x")
+            //.AssertReply("What is your name?")
+            //.Send("x")
             .AssertReply("What is your name?")
             .Send("Joe")
             .AssertReply("What is your age?")

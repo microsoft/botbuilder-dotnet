@@ -1,81 +1,93 @@
 {
-  "initialNodeId": "NameFlowNode",
+  "$type": "http://schemas.botframework.com/ComponentDialog",
+  "Id": "rootDialog",
+  "InitialDialogId": "NameCommandDialog",
   "Dialogs": [
     {
-      "Id": "NameFlowNode",
-      "Dialog": {
-        "$type": "http://schemas.botframework.com/TextPrompt",
-        "Id": "NamePrompt",
-        "DefaultOptions": {
-          "Prompt": {
-            "type": "message",
-            "text": "What is your name?"
-          },
-          "RetryPrompt": {
-            "type": "message",
-            "text": "Reprompt: What is your name?"
-          }
-        }
-      },
-      "Commands": [
-        {
-          "$type": "http://schemas.botframework.com/SetVariable",
-          "Name": "Name",
-          "Value": "DialogTurnResult.Result"
+      "$type": "http://schemas.botframework.com/TextPrompt",
+      "Id": "NamePrompt",
+      "DefaultOptions": {
+        "Prompt": {
+          "type": "message",
+          "text": "What is your name?"
         },
-        {
-          "$type": "http://schemas.botframework.com/Switch",
-          "IgnoreCase": false,
-          "Condition": "Name.Length > 2",
-          "Cases": {
-            "true": {
-              "$type": "http://schemas.botframework.com/CallDialog",
-              "DialogId": "NumberFlowNode"
-            },
-            "false": {
-              "$type": "http://schemas.botframework.com/CallDialog",
-              "DialogId": "NameFlowNode"
-            }
-          },
-          "DefaultAction": {
-            "$type": "http://schemas.botframework.com/SendActivity",
-            "Text": "default"
-          }
+        "RetryPrompt": {
+          "type": "message",
+          "text": "Reprompt: What is your name?"
         }
-      ]
+      }
     },
     {
-      "Id": "NumberFlowNode",
-      "Dialog": {
-        "$type": "http://schemas.botframework.com/IntNumberPrompt",
-        "Id": "NumberPrompt",
-        "DefaultOptions": {
-          "Prompt": {
-            "type": "message",
-            "text": "What is your age?"
+      "$type": "http://schemas.botframework.com/IntNumberPrompt",
+      "Id": "NumberPrompt",
+      "DefaultOptions": {
+        "Prompt": {
+          "type": "message",
+          "text": "What is your age?"
+        },
+        "RetryPrompt": {
+          "type": "message",
+          "text": "Reprompt: What is your age?"
+        }
+      }
+    },
+    {
+      "$type": "http://schemas.botframework.com/CommandDialog",
+      "Id": "NameCommandDialog",
+      "DialogId": "NamePrompt",
+      "Command": {
+        "$type": "http://schemas.botframework.com/CommandSet",
+        "Actions": [
+          {
+            "$type": "http://schemas.botframework.com/SetVariable",
+            "Name": "Name",
+            "Value": "DialogTurnResult.Result"
           },
-          "RetryPrompt": {
-            "type": "message",
-            "text": "Reprompt: What is your age?"
+          {
+            "$type": "http://schemas.botframework.com/Switch",
+            "IgnoreCase": false,
+            "Condition": "Name.Length > 2",
+            "Cases": {
+              "true": {
+                "$type": "http://schemas.botframework.com/CallDialog",
+                "DialogId": "NumberCommandDialog"
+              },
+              "false": {
+                "$type": "http://schemas.botframework.com/CallDialog",
+                "DialogId": "NameCommandDialog"
+              }
+            },
+            "DefaultAction": {
+              "$type": "http://schemas.botframework.com/SendActivity",
+              "Text": "default"
+            }
           }
-        }
-      },
-      "Commands": [
-        {
-          "$type": "http://schemas.botframework.com/SetVariable",
-          "Name": "Age",
-          "Value": "DialogTurnResult.Result"
-        },
-        {
-          "$type": "http://schemas.botframework.com/SetVariable",
-          "Name": "IsChild",
-          "Value": "Age < 18"
-        },
-        {
-          "$type": "http://schemas.botframework.com/SendActivity",
-          "Text": "Done"
-        }
-      ]
+        ]
+      }
+    },
+    {
+      "$type": "http://schemas.botframework.com/CommandDialog",
+      "Id": "NumberCommandDialog",
+      "DialogId": "NumberPrompt",
+      "Command": {
+        "$type": "http://schemas.botframework.com/CommandSet",
+        "Actions": [
+          {
+            "$type": "http://schemas.botframework.com/SetVariable",
+            "Name": "Age",
+            "Value": "DialogTurnResult.Result"
+          },
+          {
+            "$type": "http://schemas.botframework.com/SetVariable",
+            "Name": "IsChild",
+            "Value": "Age < 18"
+          },
+          {
+            "$type": "http://schemas.botframework.com/SendActivity",
+            "Text": "Done"
+          }
+        ]
+      }
     }
   ]
 }

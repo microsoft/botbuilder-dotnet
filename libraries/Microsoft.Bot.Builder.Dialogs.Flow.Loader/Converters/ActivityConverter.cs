@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Converters
         {
             if (reader.ValueType == typeof(string))
             {
-                // If we expect an activity but find text, it is a short expression for a message activity
+                // If we expect an activity but find text, it is a short expression for a message activity.
                 return new Activity()
                 {
                     Type = ActivityTypes.Message,

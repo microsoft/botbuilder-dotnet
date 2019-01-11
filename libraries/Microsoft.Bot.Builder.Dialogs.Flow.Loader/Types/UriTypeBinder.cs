@@ -5,7 +5,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types
 {
-    public class Binder : DefaultSerializationBinder
+    public class UriTypeBinder : DefaultSerializationBinder
     {
         public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
         {
