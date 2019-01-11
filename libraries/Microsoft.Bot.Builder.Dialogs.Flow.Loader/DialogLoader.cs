@@ -11,15 +11,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader
     {
         public static IDialog Load(string json)
         {
-            var dialog = JsonConvert.DeserializeObject<ComponentDialog>(
+            var dialog = JsonConvert.DeserializeObject<IDialog>(
                 json, new JsonSerializerSettings()
                 {
                     SerializationBinder = new UriTypeBinder(),
                     TypeNameHandling = TypeNameHandling.Auto,
                     Converters = new List<JsonConverter>()
                     {
-                        new DialogCommandConverter(),
-                        new DialogConverter(),
+                        new InterfaceConverter<IDialog>(),
+                        new InterfaceConverter<IDialogCommand>(),
+                        new InterfaceConverter<IRecognizer>(),
                         new ExpressionConverter(),
                         new ActivityConverter()
                     },

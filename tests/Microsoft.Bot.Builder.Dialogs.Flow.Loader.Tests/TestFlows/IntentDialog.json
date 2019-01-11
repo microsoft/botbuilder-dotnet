@@ -1,0 +1,45 @@
+{
+  "@type": "http://schemas.botframework.com/IntentDialog",
+  "Id": "intentDialog",
+  "Recognizer": {
+    "@type": "http://schemas.botframework.com/RuleRecognizer",
+    "Rules": {
+      "name": "name",
+      "age": "age"
+    }
+  },
+  "Routes": {
+    "name": "NamePrompt",
+    "age": "NumberPrompt"
+  },
+  "Dialogs": [
+    {
+      "@type": "http://schemas.botframework.com/TextPrompt",
+      "Id": "NamePrompt",
+      "DefaultOptions": {
+        "Prompt": {
+          "type": "message",
+          "text": "What is your name?"
+        },
+        "RetryPrompt": {
+          "type": "message",
+          "text": "Reprompt: What is your name?"
+        }
+      }
+    },
+    {
+      "@type": "http://schemas.botframework.com/IntNumberPrompt",
+      "Id": "NumberPrompt",
+      "DefaultOptions": {
+        "Prompt": {
+          "type": "message",
+          "text": "What is your age?"
+        },
+        "RetryPrompt": {
+          "type": "message",
+          "text": "Reprompt: What is your age?"
+        }
+      }
+    }
+  ]
+}

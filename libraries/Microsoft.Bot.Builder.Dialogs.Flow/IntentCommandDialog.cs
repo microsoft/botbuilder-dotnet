@@ -30,6 +30,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         /// <returns></returns>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            var dialogState = new DialogState();
+            outerDc.ActiveDialog.State[PersistedDialogState] = dialogState;
+
             if (this.Recognizer == null)
             {
                 throw new ArgumentNullException("Recognizer");
@@ -39,13 +42,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
 
             var topIntent = result.GetTopScoringIntent();
 
-            // look up route
+            // Look up route
             if (Commands.TryGetValue(topIntent.intent, out IDialogCommand command))
             {
                 return await command.Execute(outerDc, options, null, cancellationToken);
             }
 
-            // no match
+            // No match
             return new DialogTurnResult(DialogTurnStatus.Complete);
         }
     }

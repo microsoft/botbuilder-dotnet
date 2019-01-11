@@ -19,9 +19,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TestFlows\ChainedPromptsAndSwitch.json">
+    <None Update="TestFlows\IntentDialog.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestFlows\IntentCommandDialog_WithChildPrompts.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\IntentCommandDialog_OnlyCommands.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\CommandDialog.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Dialogs\" />
   </ItemGroup>
 
 </Project>

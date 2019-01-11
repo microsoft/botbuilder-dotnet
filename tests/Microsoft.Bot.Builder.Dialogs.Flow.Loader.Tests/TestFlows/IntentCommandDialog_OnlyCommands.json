@@ -1,0 +1,25 @@
+{
+  "@type": "http://schemas.botframework.com/IntentCommandDialog",
+  "Id": "intentDialog",
+  "Recognizer": {
+    "@type": "http://schemas.botframework.com/RuleRecognizer",
+    "Rules": {
+      "help": "help",
+      "hi": "greet"
+    }
+  },
+  "Commands": {
+    "help": {
+      "@type": "http://schemas.botframework.com/SendActivity",
+      "Text": "I can greet and give help. Say 'hi' and I will greet you back"
+    },
+    "greet": {
+      "@type": "http://schemas.botframework.com/SendActivity",
+      "Text": "Howdy!"
+    },
+    "None": {
+      "@type": "http://schemas.botframework.com/SendActivity",
+      "Text": "Sorry, I didn't get that"
+    }
+  }
+}

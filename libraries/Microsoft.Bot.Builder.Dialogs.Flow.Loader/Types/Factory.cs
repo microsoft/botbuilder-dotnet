@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Bot.Builder.Dialogs.Composition;
 using Microsoft.Bot.Builder.Dialogs.Flow.Loader.Loaders;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -28,6 +29,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types
             // Dialogs
             Register("http://schemas.botframework.com/ComponentDialog", typeof(ComponentDialog), new ComponentDialogLoader());
             Register("http://schemas.botframework.com/CommandDialog", typeof(CommandDialog), new CommandDialogLoader());
+            Register("http://schemas.botframework.com/IntentCommandDialog", typeof(IntentCommandDialog), new IntentCommandDialogLoader());
+            Register("http://schemas.botframework.com/IntentDialog", typeof(IntentDialog));
             Register("http://schemas.botframework.com/TextPrompt", typeof(TextPrompt));
             Register("http://schemas.botframework.com/IntNumberPrompt", typeof(NumberPrompt<Int32>));
 

@@ -13,37 +13,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Loaders
     /// Type loader specifically for ComponentDialog since
     /// needs custom loading of the dialogs collection.
     /// </summary>
-    public class ComponentDialogLoader : ILoader
+    public class ComponentDialogLoader : DefaultLoader
     {
-        public object Load(JObject obj, JsonSerializer serializer, Type type)
+        public override object Load(JObject obj, JsonSerializer serializer, Type type)
         {
-            if (obj["InitialDialogId"].Type != JTokenType.String)
+            ComponentDialog dialog = base.Load(obj, serializer, type) as ComponentDialog;
+
+            // Dialogs are not a public property of ComponentDialog so we read the dialog
+            // collection from the json and call AddDialog() on each dialog.
+            if (dialog != null)
             {
-                throw new JsonSerializationException("Expected string property \"InitialDialogId\" in ComponentDialog");
+                var dialogs = obj["Dialogs"];
+
+                // If there are dialogs, load them.
+                if (dialogs != null)
+                {
+                    if (obj["Dialogs"].Type != JTokenType.Array)
+                    {
+                        throw new JsonSerializationException("Expected array property \"Dialogs\" in ComponentDialog");
+                    }
+
+                    foreach (var dialogJObj in dialogs)
+                    {
+                        var innerDialog = dialogJObj.ToObject<IDialog>(serializer);
+                        dialog.AddDialog(innerDialog);
+                    }
+                }
             }
 
-            if (obj["Dialogs"].Type != JTokenType.Array)
-            {
-                throw new JsonSerializationException("Expected array property \"Dialogs\" in ComponentDialog");
-            }
-
-            var dialogId = obj["Id"].Value<string>();
-            var initialDialogId = obj["InitialDialogId"].Value<string>();
-            var dialogs = obj["Dialogs"];
-
-            var componentDialog = new ComponentDialog()
-            {
-                Id = dialogId,
-                InitialDialogId = initialDialogId
-            };
-
-            foreach (var dialogJObj in dialogs)
-            {
-                var innerDialog = dialogJObj.ToObject<IDialog>(serializer);
-                componentDialog.AddDialog(innerDialog);
-            }
-
-            return componentDialog;
+            return dialog;
         }
     }
 }

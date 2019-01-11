@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     public class ComponentDialog : Dialog
     {
-        private const string PersistedDialogState = "dialogs";
+        protected const string PersistedDialogState = "dialogs";
 
         private DialogSet _dialogs;
 

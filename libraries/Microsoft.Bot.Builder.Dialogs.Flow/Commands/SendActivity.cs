@@ -16,10 +16,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
 
         public string Text { get; set; }
 
-        // public Activity Activity { get; set; }
-
         public async Task<DialogTurnResult> Execute(DialogContext dialogContext, object options, DialogTurnResult result, CancellationToken cancellationToken)
         {
+            result = result ?? new DialogTurnResult(DialogTurnStatus.Complete);
+
             if (this.Text.StartsWith("{") && this.Text.EndsWith("}"))
             {
                 var var = this.Text.Trim('{', '}');
