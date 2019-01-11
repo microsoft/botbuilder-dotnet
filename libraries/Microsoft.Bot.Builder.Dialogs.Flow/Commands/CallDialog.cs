@@ -28,8 +28,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
 
         public Task<DialogTurnResult> Execute(DialogContext dialogContext, object options, DialogTurnResult result, CancellationToken cancellationToken)
         {
-            var state = dialogContext.ActiveDialog.State;
-            state["DialogTurnResult"] = result;
+            // Commands not always follow dialogs, like in IntentCommandDialog.
+            // In those cases, there is no active dialog or result.
+            if (dialogContext.ActiveDialog != null && result != null)
+            {
+                var state = dialogContext.ActiveDialog.State;
+                state["DialogTurnResult"] = result;
+            }
+            
             return dialogContext.BeginDialogAsync(DialogId, Options, cancellationToken);
         }
     }

@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     {
         protected const string PersistedDialogState = "dialogs";
 
-        private DialogSet _dialogs;
+        protected DialogSet _dialogs;
 
         public ComponentDialog(string dialogId=null)
             : base(dialogId)
