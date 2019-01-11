@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Converters
         {
             var jsonObject = JObject.Load(reader);
 
-            var typeName = jsonObject["$type"].ToString();
+            var typeName = jsonObject["@type"].ToString();
             var dialogCommand = Factory.Build<IDialogCommand>(typeName, jsonObject, serializer);
 
             return dialogCommand;

@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Converters
             var jsonObject = JObject.Load(reader);
             var dialog = default(IDialog);
 
-            var typeName = jsonObject["$type"].ToString();
+            var typeName = jsonObject["@type"].ToString();
             IDialog dialogCommand = Factory.Build<IDialog>(typeName, jsonObject, serializer);
 
             return dialogCommand;
