@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
     /// <summary>
     /// IntentDialog - Dispatches to Dialog based on intent out of a recognizer
     /// </summary>
-    public class IntentDialog : ComponentDialog, IDispatchDialog
+    public class IntentDialog : ComponentDialog, IRecognizerDialog
     {
         /// <summary>
         /// Recognizer to use to get intents/entities

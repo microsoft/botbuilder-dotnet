@@ -5,7 +5,10 @@ using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.Dialogs.Composition
 {
-    interface IDispatchDialog 
+    /// <summary>
+    /// A dialog which has a Recognizer
+    /// </summary>
+    public interface IRecognizerDialog 
     {
         /// <summary>
         /// Recognizer
