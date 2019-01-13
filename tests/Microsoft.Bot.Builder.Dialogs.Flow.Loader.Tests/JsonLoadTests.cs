@@ -77,6 +77,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         /// several commands
         /// </summary>
         [TestMethod]
+        public async Task JsonDialogLoad_CommandDialog_WithImplicitArrayCommandSet()
+        {
+            string json = File.ReadAllText("TestFlows/CommandDialog_WithImplicitArrayCommandSet.json");
+
+            await BuildTestFlow(json)
+            .Send("hello")
+            .AssertReply("What is your name?")
+            .Send("x")
+            .AssertReply("What is your name?") // Should reprompt since we are validating length(name) > 2
+            .Send("Joe")
+            .AssertReply("What is your age?")
+            .Send("whassssuuuupp")
+            .AssertReply("Reprompt: What is your age?") // Should reprompt since the age provided was not numeric
+            .Send("64")
+            .AssertReply("Done")
+            .StartTestAsync();
+        }
+
+        /// <summary>
+        /// A workflow style command dialog defined with 2 nodes, each with one dialog and
+        /// several commands
+        /// </summary>
+        [TestMethod]
         public async Task JsonDialogLoad_CommandDialog()
         {
             string json = File.ReadAllText("TestFlows/CommandDialog.json");

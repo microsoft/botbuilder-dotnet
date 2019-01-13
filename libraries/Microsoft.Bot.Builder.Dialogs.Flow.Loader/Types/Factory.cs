@@ -35,6 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types
             Register("http://schemas.botframework.com/IntNumberPrompt", typeof(NumberPrompt<Int32>));
 
             // Recognizers
+            //TODO: LuisRecognizer
         }
 
         public static void Register(string name, Type type, ILoader loader = null)

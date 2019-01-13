@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader
                     Converters = new List<JsonConverter>()
                     {
                         new InterfaceConverter<IDialog>(),
-                        new InterfaceConverter<IDialogCommand>(),
+                        new DialogCommandConverter(),
                         new InterfaceConverter<IRecognizer>(),
                         new ExpressionConverter(),
                         new ActivityConverter()

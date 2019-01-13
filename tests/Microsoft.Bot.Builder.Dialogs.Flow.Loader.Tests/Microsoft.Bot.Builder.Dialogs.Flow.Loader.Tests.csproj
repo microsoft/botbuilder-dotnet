@@ -19,6 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="TestFlows\CommandDialog_WithImplicitArrayCommandSet.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestFlows\IntentDialog.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
