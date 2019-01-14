@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Loaders
                 }
             }
 
-            return dialog;
+            return dialog; 
         }
     }
 }

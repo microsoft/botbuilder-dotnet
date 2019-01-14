@@ -43,12 +43,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             Factory.Register("http://schemas.botframework.com/RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
-            .Send("hello")
+            .Send("yo")
             .AssertReply("Sorry, I didn't get that") // The json defines no rule for hello, so it hits the None rule
             .Send("name")
             .AssertReply("What is your name?") 
             .Send("Carlos")
-            .AssertReply("I can greet and give help. Say 'hi' and I will greet you back") // Help rule
             .StartTestAsync();
         }
 

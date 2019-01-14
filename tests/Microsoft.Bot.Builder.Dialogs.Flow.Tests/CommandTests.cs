@@ -143,7 +143,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             {
                 Id = "TestDialog",
                 DialogId = "OneDialog",
-                Command = new CallDialog("TwoDialog")
+                OnCompleted = new CallDialog("TwoDialog")
             };
             dialogs.Add(flowDialog);
 
@@ -176,7 +176,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             {
                 Id = "TestDialog",
                 DialogId = "OneDialog",
-                Command = new GotoDialog("TwoDialog")
+                OnCompleted = new GotoDialog("TwoDialog")
             };
             dialogs.Add(flowDialog);
 
@@ -201,7 +201,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             {
                 Id = "TestDialog",
                 DialogId = "OneDialog",
-                Command = new CommandSet()
+                OnCompleted = new CommandSet()
                 {
                     Commands = {
                         // set the test=123
@@ -235,7 +235,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             {
                 Id = $"TestDialog",
                 DialogId = "ReturnText",
-                Command = new Switch()
+                OnCompleted = new Switch()
                 {
                     Condition = new CommonExpression("DialogTurnResult.Result"),
                     Cases = new Dictionary<string, IDialogCommand>
@@ -295,7 +295,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                 Id = "TestDialog",
                 // no dialog is same as dialog completing
                 // CallDialogId = null
-                Command = new SendActivity("done")
+                OnCompleted = new SendActivity("done")
             };
             dialogs.Add(flowDialog);
 
@@ -314,7 +314,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             {
                 Id = "TestDialog",
                 // CallDialogId = null
-                Command = new SendActivity("done")
+                OnCompleted = new SendActivity("done")
             };
             dialogs.Add(flowDialog);
 
@@ -334,7 +334,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             {
                 Id = $"TestDialog",
                 DialogId = "EchoDialog",
-                Command = new Switch()
+                OnCompleted = new Switch()
                 {
                     Condition = new CommonExpression("DialogTurnResult.Result"),
                     Cases = new Dictionary<string, IDialogCommand>

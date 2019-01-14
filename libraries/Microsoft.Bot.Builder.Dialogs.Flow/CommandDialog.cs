@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         /// <summary>
         /// Command to perform when dialog is completed
         /// </summary>
-        public IDialogCommand Command { get; set; }
+        public IDialogCommand OnCompleted { get; set; }
 
         /// <summary>
         /// When this dialog is started we start the inner dialog
@@ -89,11 +89,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
                 case DialogReason.EndCalled:
                     // call the OnCommand handler
                     bool CommandCalled = (bool)state[$"{this.Id}.CommandCalled"];
-                    if (this.Command != null && !CommandCalled)
+                    if (this.OnCompleted != null && !CommandCalled)
                     {
                         state[$"{this.Id}.CommandCalled"] = true;
                         state["DialogTurnResult"] = dialogTurnResult;
-                        return await this.Command.Execute(dialogContext, options, dialogTurnResult, cancellationToken);
+                        return await this.OnCompleted.Execute(dialogContext, options, dialogTurnResult, cancellationToken);
                     }
                     break;
             }
@@ -117,11 +117,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
             // call the OnCompleted handler
             var dialogTurnResult = new DialogTurnResult(DialogTurnStatus.Complete);
 
-            if (this.Command != null)
+            if (this.OnCompleted != null)
             {
                 state[$"{this.Id}.CommandCalled"] = true;
                 state["DialogTurnResult"] = dialogTurnResult;
-                return await this.Command.Execute(dialogContext, options, dialogTurnResult, cancellationToken);
+                return await this.OnCompleted.Execute(dialogContext, options, dialogTurnResult, cancellationToken);
             }
 
             // no routing, return the result as our result 

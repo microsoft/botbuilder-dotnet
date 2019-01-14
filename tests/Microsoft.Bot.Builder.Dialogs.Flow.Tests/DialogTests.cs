@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             {
                 Id = "GetNameDialog",
                 DialogId = "NamePrompt",
-                Command = new CommandSet()
+                OnCompleted = new CommandSet()
                 {
                     Commands = {
                         new SetVariable() { Name="Name", Value= new CommonExpression("DialogTurnResult.Result")},
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                     Prompt = new Activity(type: ActivityTypes.Message, text: "What is your age?"),
                     RetryPrompt = new Activity(type: ActivityTypes.Message, text: "Reprompt: What is your age?")
                 },
-                Command = new CommandSet()
+                OnCompleted = new CommandSet()
                 {
                     Commands = {
                         new SetVariable() { Name = "Age", Value = new CommonExpression("DialogTurnResult.Result") },
