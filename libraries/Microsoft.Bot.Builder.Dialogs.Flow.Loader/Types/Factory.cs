@@ -19,26 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types
 
         static Factory()
         {
-            //TODO: we don't want this static initialization, leaving it here for convenience now
-            // while things are changing rapidly still
-
-            // Commands
-            Register("http://schemas.botframework.com/SetVariable", typeof(SetVariable), new SetVariableCommandLoader());
-            Register("http://schemas.botframework.com/Switch", typeof(Switch));
-            Register("http://schemas.botframework.com/CallDialog", typeof(CallDialog));
-            Register("http://schemas.botframework.com/SendActivity", typeof(SendActivity));
-            Register("http://schemas.botframework.com/CommandSet", typeof(CommandSet));
-
-            // Dialogs
-            Register("http://schemas.botframework.com/ComponentDialog", typeof(ComponentDialog), new ComponentDialogLoader());
-            Register("http://schemas.botframework.com/IntentCommandDialog", typeof(IntentCommandDialog), new ComponentDialogLoader());
-            Register("http://schemas.botframework.com/IntentDialog", typeof(IntentDialog), new ComponentDialogLoader());
-            Register("http://schemas.botframework.com/CommandDialog", typeof(CommandDialog), new CommandDialogLoader());
-            Register("http://schemas.botframework.com/TextPrompt", typeof(TextPrompt));
-            Register("http://schemas.botframework.com/IntNumberPrompt", typeof(NumberPrompt<Int32>));
-
-            // Recognizers
-            //TODO: LuisRecognizer
+            RegisterDefaults();   
         }
 
         public static void Register(string name, Type type, ILoader loader = null)
@@ -94,10 +75,42 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types
             return names.TryGetValue(type, out name) ? name: default(string);
         }
 
+        public static void Reset()
+        {
+            types.Clear();
+            names.Clear();
+            builders.Clear();
+            RegisterDefaults();
+        }
+
         // Plugins
         //public static void Register<T>(string friendlyName, Type dotnetType, Assembly assembly, Func<JsonReader, JsonSerializer, T> builder)
         //{
 
         //}
+
+        private static void RegisterDefaults()
+        {
+            //TODO: we don't want this static initialization, leaving it here for convenience now
+            // while things are changing rapidly still
+
+            // Commands
+            Register("http://schemas.botframework.com/SetVariable", typeof(SetVariable), new SetVariableCommandLoader());
+            Register("http://schemas.botframework.com/Switch", typeof(Switch));
+            Register("http://schemas.botframework.com/CallDialog", typeof(CallDialog));
+            Register("http://schemas.botframework.com/SendActivity", typeof(SendActivity));
+            Register("http://schemas.botframework.com/CommandSet", typeof(CommandSet));
+
+            // Dialogs
+            Register("http://schemas.botframework.com/ComponentDialog", typeof(ComponentDialog), new ComponentDialogLoader());
+            Register("http://schemas.botframework.com/IntentCommandDialog", typeof(IntentCommandDialog), new ComponentDialogLoader());
+            Register("http://schemas.botframework.com/IntentDialog", typeof(IntentDialog), new ComponentDialogLoader());
+            Register("http://schemas.botframework.com/CommandDialog", typeof(CommandDialog), new CommandDialogLoader());
+            Register("http://schemas.botframework.com/TextPrompt", typeof(TextPrompt));
+            Register("http://schemas.botframework.com/IntNumberPrompt", typeof(NumberPrompt<Int32>));
+
+            // Recognizers
+            //TODO: LuisRecognizer
+        }
     }
 }

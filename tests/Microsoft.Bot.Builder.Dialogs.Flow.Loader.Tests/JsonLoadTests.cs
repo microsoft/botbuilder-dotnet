@@ -11,6 +11,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
     [TestClass]
     public class JsonLoadTests
     {
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            Factory.Reset();
+        }
+
         /// <summary>
         /// An intent command dialog that has no inner dialogs. Only commands and a
         /// rule based simple recognizer that is defined inline
