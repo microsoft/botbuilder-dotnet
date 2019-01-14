@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         public TestBot(TestBotAccessors accessors)
         {
             // create the DialogSet from accessor
-            rootDialog = DialogLoader.Load(File.ReadAllText("bot.json"));
+            rootDialog = DialogLoader.Load(File.ReadAllText("main.dialog"));
 
             _dialogs = new DialogSet(accessors.ConversationDialogState);
             _dialogs.Add(rootDialog);
@@ -29,8 +29,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-
-
             if (turnContext.Activity.Type == ActivityTypes.Message && turnContext.Activity.Text == "throw")
             {
                 throw new Exception("oh dear");
