@@ -19,8 +19,6 @@ namespace Microsoft.Bot.Builder
         private static JsonSerializerSettings _jsonSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore };
         private ITranscriptLogger logger;
 
-        private Queue<IActivity> transcript = new Queue<IActivity>();
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TranscriptLoggerMiddleware"/> class.
         /// </summary>
@@ -42,6 +40,8 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="Bot.Schema.IActivity"/>
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate nextTurn, CancellationToken cancellationToken)
         {
+            Queue<IActivity> transcript = new Queue<IActivity>();
+
             // log incoming activity at beginning of turn
             if (turnContext.Activity != null)
             {
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder
                     turnContext.Activity.From.Properties["role"] = "user";
                 }
 
-                LogActivity(CloneActivity(turnContext.Activity));
+                LogActivity(transcript, CloneActivity(turnContext.Activity));
             }
 
             // hook up onSend pipeline
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder
 
                 foreach (var activity in activities)
                 {
-                    LogActivity(CloneActivity(activity));
+                    LogActivity(transcript, CloneActivity(activity));
                 }
 
                 return responses;
@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder
                 // add Message Update activity
                 var updateActivity = CloneActivity(activity);
                 updateActivity.Type = ActivityTypes.MessageUpdate;
-                LogActivity(updateActivity);
+                LogActivity(transcript, updateActivity);
                 return response;
             });
 
@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder
                 .ApplyConversationReference(reference, isIncoming: false)
                 .AsMessageDeleteActivity();
 
-                LogActivity(deleteActivity);
+                LogActivity(transcript, deleteActivity);
             });
 
             // process bot logic
@@ -134,17 +134,14 @@ namespace Microsoft.Bot.Builder
             return activity;
         }
 
-        private void LogActivity(IActivity activity)
+        private void LogActivity(Queue<IActivity> transcript, IActivity activity)
         {
-            lock (transcript)
+            if (activity.Timestamp == null)
             {
-                if (activity.Timestamp == null)
-                {
-                    activity.Timestamp = DateTime.UtcNow;
-                }
-
-                transcript.Enqueue(activity);
+                activity.Timestamp = DateTime.UtcNow;
             }
+
+            transcript.Enqueue(activity);
         }
     }
 }
