@@ -281,7 +281,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             // Platform information: OS and language runtime
             var framework = Assembly
-                .GetEntryAssembly()
+                .GetEntryAssembly()?
                 .GetCustomAttribute<TargetFrameworkAttribute>()?
                 .FrameworkName;
             var comment = $"({Environment.OSVersion.VersionString};{framework})";
