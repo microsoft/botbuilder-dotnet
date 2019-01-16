@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Flow
 {
@@ -12,21 +13,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     {
         public SendActivity() { }
 
-        public SendActivity(string text) { this.Text = text; }
-
-        public string Text { get; set; }
-
-        public async Task<DialogTurnResult> Execute(DialogContext dialogContext, object options, DialogTurnResult result, CancellationToken cancellationToken)
+        public SendActivity(string text)
         {
-            result = result ?? new DialogTurnResult(DialogTurnStatus.Complete);
-
-            if (this.Text.StartsWith("{") && this.Text.EndsWith("}"))
+            this.Activity = new Activity()
             {
-                var var = this.Text.Trim('{', '}');
+                Type = ActivityTypes.Message,
+                Text = text
+            };
+        }
+
+        /// <summary>
+        /// (OPTIONAL) Id of the command
+        /// </summary>
+        public string Id { get; set; } = Guid.NewGuid().ToString("n");
+
+        public Activity Activity { get; set; }
+
+        public async Task<object> Execute(DialogContext dialogContext, CancellationToken cancellationToken)
+        {
+            var activity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(Activity));
+            if (activity.Text.StartsWith("{") && activity.Text.EndsWith("}"))
+            {
+                var var = activity.Text.Trim('{', '}');
                 var state = dialogContext.ActiveDialog.State;
                 if (state.TryGetValue(var, out object val))
                 {
-                    Activity activity = dialogContext.Context.Activity.CreateReply(Convert.ToString(state[var]));
+                    activity.Text = Convert.ToString(state[var]);
                     await dialogContext.Context.SendActivityAsync(activity, cancellationToken);
                 }
                 else
@@ -36,10 +48,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
             }
             else
             {
-                Activity activity = dialogContext.Context.Activity.CreateReply(this.Text);
                 await dialogContext.Context.SendActivityAsync(activity, cancellationToken);
             }
-            return result;
+            return null;
         }
     }
 }

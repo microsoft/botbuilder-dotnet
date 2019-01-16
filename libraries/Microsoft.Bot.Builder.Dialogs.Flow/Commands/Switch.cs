@@ -16,6 +16,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         public Switch() { }
 
         /// <summary>
+        /// (OPTIONAL) Id of the command
+        /// </summary>
+        public string Id { get; set; } = Guid.NewGuid().ToString("n");
+
+        /// <summary>
         /// Control whether case sensitive or not
         /// </summary>
         public bool IgnoreCase { get; set; }
@@ -35,10 +40,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         /// </summary>
         public IDialogCommand DefaultAction { get; set; }
 
-        public async Task<DialogTurnResult> Execute(DialogContext dialogContext, object options, DialogTurnResult result, CancellationToken cancellationToken)
+        public async Task<object> Execute(DialogContext dialogContext, CancellationToken cancellationToken)
         {
             var state = dialogContext.ActiveDialog.State;
-            state["DialogTurnResult"] = result;
+            if (Condition == null)
+            {
+                throw new ArgumentNullException(nameof(Condition));
+            }
 
             var conditionResult = await Condition.Evaluate(state);
 
@@ -48,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
                 {
                     if (String.Equals((string)conditionResult, key, StringComparison.CurrentCultureIgnoreCase))
                     {
-                        return await this.Cases[key].Execute(dialogContext, options, result, cancellationToken);
+                        return await this.Cases[key].Execute(dialogContext, cancellationToken);
                     }
                 }
                 else
@@ -56,18 +64,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
                     var typeCode = Type.GetTypeCode(conditionResult.GetType());
                     if (conditionResult.Equals(Convert.ChangeType(key, typeCode)))
                     {
-                        return await this.Cases[key].Execute(dialogContext, options, result, cancellationToken);
+                        return await this.Cases[key].Execute(dialogContext, cancellationToken);
                     }
                 }
             }
 
             if (DefaultAction != null)
             {
-                return await this.DefaultAction.Execute(dialogContext, options, result, cancellationToken);
+                return await this.DefaultAction.Execute(dialogContext, cancellationToken);
             }
 
-            // Just return original result
-            return result;
+            // fall through
+            return null;
         }
     }
 }

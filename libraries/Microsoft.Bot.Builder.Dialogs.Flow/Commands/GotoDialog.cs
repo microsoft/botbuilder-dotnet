@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs.Flow
@@ -10,27 +11,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     {
         public GotoDialog() { }
 
-        public GotoDialog(string dialogId, object options = null)
-        {
-            this.DialogId = dialogId;
-            this.Options = options;
-        }
-
         /// <summary>
-        /// The dialog Id to call
+        /// (OPTIONAL) Id of the command
         /// </summary>
-        public string DialogId { get; set; }
+        public string Id { get; set; } = Guid.NewGuid().ToString("n");
 
         /// <summary>
-        /// The options for calling the dilaog
+        /// The dialog to call
+        /// </summary>
+        public IDialog Dialog { get; set; }
+
+        /// <summary>
+        /// The options for calling the dialog
         /// </summary>
         public object Options { get; set; }
 
-        public Task<DialogTurnResult> Execute(DialogContext dialogContext, object options, DialogTurnResult result, CancellationToken cancellationToken)
+        public async Task<object> Execute(DialogContext dialogContext, CancellationToken cancellationToken)
         {
-            var state = dialogContext.ActiveDialog.State;
-            state["DialogTurnResult"] = result;
-            return dialogContext.ReplaceDialogAsync(DialogId, Options, cancellationToken);
+            return await dialogContext.ReplaceDialogAsync(this.Dialog.Id, Options, cancellationToken);
         }
     }
 }

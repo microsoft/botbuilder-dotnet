@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
         /// <summary>
         /// Route of Intent -> DialogId 
         /// </summary>
-        public Dictionary<string, string> Routes { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, IDialog> Routes { get; set; } = new Dictionary<string, IDialog>();
 
         /// <summary>
         /// Use recognizer intent to invoke sub dialog
@@ -45,9 +45,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
             var topIntent = result.GetTopScoringIntent();
 
             // look up route
-            if (Routes.TryGetValue(topIntent.intent, out string dialogId))
+            if (Routes.TryGetValue(topIntent.intent, out IDialog dialog))
             {
-                return await innerDc.BeginDialogAsync(dialogId, null, cancellationToken).ConfigureAwait(false);
+                return await innerDc.BeginDialogAsync(dialog.Id, null, cancellationToken).ConfigureAwait(false);
             }
 
             // no match

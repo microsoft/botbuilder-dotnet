@@ -13,11 +13,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     public interface IDialogCommand
     {
         /// <summary>
+        /// Id of a command
+        /// </summary>
+        string Id { get; set; }
+
+        /// <summary>
         /// Execute an commmand 
         /// </summary>
         /// <param name="context"></param>
-        /// <returns>DialogTurnResult</returns>
-        Task<DialogTurnResult> Execute(DialogContext dialogContext, object options, DialogTurnResult result, CancellationToken cancellationToken);
+        /// <returns>DialogTurnResult or tring</returns>
+        Task<object> Execute(DialogContext dialogContext, CancellationToken cancellationToken);
     }
 
 }

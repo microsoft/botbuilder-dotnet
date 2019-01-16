@@ -39,7 +39,7 @@
         {
           "@type": "http://schemas.botframework.com/SetVariable",
           "Name": "Name",
-          "Value": "DialogTurnResult.Result"
+          "Value": "DialogTurnResult"
         },
         {
           "@type": "http://schemas.botframework.com/Switch",
@@ -72,7 +72,7 @@
           {
             "@type": "http://schemas.botframework.com/SetVariable",
             "Name": "Age",
-            "Value": "DialogTurnResult.Result"
+            "Value": "DialogTurnResult"
           },
           {
             "@type": "http://schemas.botframework.com/SetVariable",

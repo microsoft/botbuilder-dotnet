@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using Microsoft.Bot.Builder.Dialogs.Composition.Expressions;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Flow
@@ -8,21 +8,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// <summary>
     /// CommandDialog - Call a IDialog and then execute Command when completed
     /// </summary>
-    public class CommandDialog : Dialog, IDialog
+    public class CommandDialog : ComponentDialog, IDialog
     {
         public CommandDialog(string dialogId = null) : base(dialogId)
         {
         }
 
         /// <summary>
-        /// Innner dialog to call
+        /// Command to perform for the dialog
         /// </summary>
-        public string DialogId { get; set; }
+        public IDialogCommand Command { get; set; }
 
         /// <summary>
-        /// Command to perform when dialog is completed
+        /// Define the expression which gets the result of this dialog
         /// </summary>
-        public IDialogCommand OnCompleted { get; set; }
+        public IExpressionEval Result { get; set; }
 
         /// <summary>
         /// When this dialog is started we start the inner dialog
@@ -34,10 +34,74 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dialogContext, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var state = dialogContext.ActiveDialog?.State;
+            if (this.Command == null)
+            {
+                return await EndThisDialog(dialogContext, null, state, cancellationToken);
+            }
+
+            if (this.Command.Id == null)
+            {
+                this.Command.Id = this.Id;
+            }
+
             options = MergeDefaultOptions(options);
             state[$"{this.Id}.options"] = options;
-            state[$"{this.Id}.CommandCalled"] = false;
-            return await BeginInnerDialog(dialogContext, options, cancellationToken);
+            state[$"{this.Id}.CurrentCommandId"] = null;
+            state[$"{this.Id}.Result"] = new JObject();
+            return await OnTurnAsync(dialogContext, DialogReason.BeginCalled, null, cancellationToken);
+        }
+
+        /// <summary>
+        /// The only time we continue is when a ContinueDialogAction is executed, in which case we start the inner dialog again (since it ended already)
+        /// </summary>
+        /// <param name="dialogContext"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dialogContext, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return await OnTurnAsync(dialogContext, DialogReason.ContinueCalled, null, cancellationToken);
+        }
+
+        /// <summary>
+        /// Inner dialog has completed
+        /// </summary>
+        /// <param name="dialogContext"></param>
+        /// <param name="reason"></param>
+        /// <param name="result"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dialogContext, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var state = dialogContext.ActiveDialog.State;
+            state["DialogTurnResult"] = result;
+            return await OnTurnAsync(dialogContext, DialogReason.NextCalled, result, cancellationToken);
+        }
+
+
+        private async Task<DialogTurnResult> OnTurnAsync(DialogContext dialogContext, DialogReason reason, object result, CancellationToken cancellationToken)
+        {
+            var state = dialogContext.ActiveDialog.State;
+
+            var commandResult = await this.Command.Execute(dialogContext, cancellationToken);
+            if (commandResult is DialogTurnResult dialogTurnResult)
+            {
+                return dialogTurnResult;
+            }
+            else
+            {
+                // hit end of command, treat this as a end of dialog
+                return await EndThisDialog(dialogContext, result, state, cancellationToken);
+            }
+        }
+
+        private async Task<DialogTurnResult> EndThisDialog(DialogContext dialogContext, object result, System.Collections.Generic.IDictionary<string, object> state, CancellationToken cancellationToken)
+        {
+            object dialogResult = result;
+            if (this.Result != null)
+            {
+                dialogResult = await this.Result.Evaluate(state);
+            }
+            return await dialogContext.EndDialogAsync(dialogResult, cancellationToken).ConfigureAwait(false);
         }
 
         private object MergeDefaultOptions(object options)
@@ -56,77 +120,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
             options = options ?? this.DefaultOptions;
             return options;
         }
-
-        /// <summary>
-        /// The only time we continue is when a ContinueDialogAction is executed, in which case we start the inner dialog again (since it ended already)
-        /// </summary>
-        /// <param name="dialogContext"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dialogContext, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var state = dialogContext.ActiveDialog.State;
-            dynamic options = state[$"{this.Id}.options"];
-            state[$"{this.Id}.CommandCalled"] = false;
-            return await BeginInnerDialog(dialogContext, options, cancellationToken);
-        }
-
-        /// <summary>
-        /// Inner dialog has completed
-        /// </summary>
-        /// <param name="dialogContext"></param>
-        /// <param name="reason"></param>
-        /// <param name="result"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dialogContext, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var state = dialogContext.ActiveDialog.State;
-            var options = state[$"{this.Id}.options"];
-            var dialogTurnResult = new DialogTurnResult(DialogTurnStatus.Complete, result);
-            switch (reason)
-            {
-                case DialogReason.EndCalled:
-                    // call the OnCommand handler
-                    bool CommandCalled = (bool)state[$"{this.Id}.CommandCalled"];
-                    if (this.OnCompleted != null && !CommandCalled)
-                    {
-                        state[$"{this.Id}.CommandCalled"] = true;
-                        state["DialogTurnResult"] = dialogTurnResult;
-                        return await this.OnCompleted.Execute(dialogContext, options, dialogTurnResult, cancellationToken);
-                    }
-                    break;
-            }
-
-            // no routing, return the result as our result 
-            state.Remove($"{this.Id}.CommandCalled");
-            return await dialogContext.EndDialogAsync(result, cancellationToken);
-        }
-
-
-        private async Task<DialogTurnResult> BeginInnerDialog(DialogContext dialogContext, object options, CancellationToken cancellationToken)
-        {
-            var state = dialogContext.ActiveDialog.State;
-
-            if (!string.IsNullOrEmpty(this.DialogId))
-            {
-                // start the inner dialog
-                return await dialogContext.BeginDialogAsync(this.DialogId, options, cancellationToken);
-            }
-
-            // call the OnCompleted handler
-            var dialogTurnResult = new DialogTurnResult(DialogTurnStatus.Complete);
-
-            if (this.OnCompleted != null)
-            {
-                state[$"{this.Id}.CommandCalled"] = true;
-                state["DialogTurnResult"] = dialogTurnResult;
-                return await this.OnCompleted.Execute(dialogContext, options, dialogTurnResult, cancellationToken);
-            }
-
-            // no routing, return the result as our result 
-            return dialogTurnResult;
-        }
-
     }
 }
+//var state = dialogContext.ActiveDialog.State;
+//var options = state[$"{this.Id}.options"];
+
+//var currentId = ((string)state[$"{this.Id}.CurrentCommandId"]);
+
+//// While we are in completed state process the commandSet.  
+//while (true)
+//{
+//    foreach (var command in Commands
+//        .SkipWhile(command => currentId != null && command.Id != currentId)
+//        .SkipWhile(command => currentId != null && command.Id == currentId))
+//    {
+//        state[$"{this.Id}.CurrentCommandId"] = command.Id;
+//        // execute dialog command
+//        var commandResult = await command.Execute(dialogContext, cancellationToken).ConfigureAwait(false);
+//        if (commandResult is DialogTurnResult)
+//        {
+//            return commandResult as DialogTurnResult;
+//        }
+//        if (commandResult is string && !String.IsNullOrEmpty((string)commandResult))
+//        {
+//            currentId = (string)commandResult;
+//            continue; // go up and restart the command loop with new starting point
+//        }
+//    }
+//    // hit end of command, treat this as a end of dialog
+//    return await dialogContext.EndDialogAsync(state[$"{this.Id}.Result"], cancellationToken).ConfigureAwait(false);
+//}

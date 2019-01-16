@@ -23,12 +23,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Converters
                 foreach (var comamndObj in jToken as JArray)
                 {
                     var command = comamndObj.ToObject<IDialogCommand>(serializer);
-                    commandSet.Commands.Add(command);
+                    commandSet.Add(command);
                 }
 
                 return commandSet;
             }
-            
+
             // If we have a single command, call the generic InterfaceConverter<IDialogCommand>.
             // Note that since we did JToken.Load(reader) above, we already 'consumed' the json
             // in the deserialization process, so we want to create a new reader or otherwise

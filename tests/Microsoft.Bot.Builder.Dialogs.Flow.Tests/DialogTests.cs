@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Composition.Expressions;
-using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
-using Microsoft.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
 {
@@ -18,11 +15,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
 
         public IDialog CreateTestDialog()
         {
-            var dialog = new ComponentDialog() { Id = "TestDialog" };
+            var dialogs = new ComponentDialog() { Id = "TestDialog" };
 
             // add prompts
-            dialog.AddDialog(new NumberPrompt<Int32>());
-            dialog.AddDialog(new TextPrompt()
+            dialogs.AddDialog(new NumberPrompt<Int32>()
+            {
+                Id = "AgePrompt",
+                DefaultOptions = new PromptOptions()
+                {
+                    Prompt = new Activity(type: ActivityTypes.Message, text: "What is your age?"),
+                    RetryPrompt = new Activity(type: ActivityTypes.Message, text: "Reprompt: What is your age?")
+                }
+            });
+
+            dialogs.AddDialog(new TextPrompt()
             {
                 Id = "NamePrompt",
                 DefaultOptions = new PromptOptions()
@@ -32,53 +38,38 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                 }
             });
 
+            var flowDialog2 = new CommandDialog()
+            {
+                Id = "FlowDialog2",
+                Command = new CommandSet("Dialog2")
+                {
+                    new CallDialog() { Dialog = dialogs.FindDialog("AgePrompt") },
+                    new SetVar() { Name = "Age", Value = new CommonExpression("DialogTurnResult") },
+                    new SetVar() { Name = "IsChild", Value = new CommonExpression("Age < 18") },
+                    new SendActivity("Done"),
+                }
+            };
+            dialogs.AddDialog(flowDialog2);
+
             // define GetNameDialog
             var flowDialog = new CommandDialog()
             {
-                Id = "GetNameDialog",
-                DialogId = "NamePrompt",
-                OnCompleted = new CommandSet()
-                {
-                    Commands = {
-                        new SetVariable() { Name="Name", Value= new CommonExpression("DialogTurnResult.Result")},
-                        new Switch()
-                        {
-                            Condition = new CommonExpression() { Expression="Name.Length > 2" },
-                            Cases = new Dictionary<string, IDialogCommand>
-                            {
-                                { "true", new CallDialog("GetAgeDialog")  },
-                                { "false", new CallDialog("GetNameDialog") }
-                            },
-                            DefaultAction = new SendActivity("default")
-                        }
-                    }
+                Id = "FlowDialog",
+                Command = new CommandSet("Dialog") {
+                    new CallDialog() { Id = "CallNamePrompt", Dialog = dialogs.FindDialog("NamePrompt") },
+                    new SetVar() { Name ="Name", Value = new CommonExpression("DialogTurnResult") },
+                    new IfElse()
+                    {
+                        Condition = new CommonExpression() { Expression ="Name.Length > 2" },
+                        True = new CallDialog() { Dialog = flowDialog2 },
+                        Else = new GotoCommand() { CommandId = "CallNamePrompt" },
+                    },
                 }
             };
-            dialog.InitialDialogId = flowDialog.Id;
-            dialog.AddDialog(flowDialog);
+            dialogs.InitialDialogId = flowDialog.Id;
+            dialogs.AddDialog(flowDialog);
 
-            // define GetAgeDialog
-            flowDialog = new CommandDialog()
-            {
-                Id = "GetAgeDialog",
-                DialogId = "NumberPrompt",
-                DefaultOptions = new PromptOptions()
-                {
-                    Prompt = new Activity(type: ActivityTypes.Message, text: "What is your age?"),
-                    RetryPrompt = new Activity(type: ActivityTypes.Message, text: "Reprompt: What is your age?")
-                },
-                OnCompleted = new CommandSet()
-                {
-                    Commands = {
-                        new SetVariable() { Name = "Age", Value = new CommonExpression("DialogTurnResult.Result") },
-                        new SetVariable() { Name = "IsChild", Value = new CommonExpression("Age < 18") },
-                        new SendActivity() { Text = "Done" }
-                    }
-                }
-            };
-            dialog.AddDialog(flowDialog);
-
-            return dialog;
+            return dialogs;
         }
 
         [TestMethod]

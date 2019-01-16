@@ -95,15 +95,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types
             // while things are changing rapidly still
 
             // Commands
-            Register("http://schemas.botframework.com/SetVariable", typeof(SetVariable), new SetVariableCommandLoader());
+            Register("http://schemas.botframework.com/SetVariable", typeof(SetVar), new SetVariableCommandLoader());
             Register("http://schemas.botframework.com/Switch", typeof(Switch));
             Register("http://schemas.botframework.com/CallDialog", typeof(CallDialog));
             Register("http://schemas.botframework.com/SendActivity", typeof(SendActivity));
-            Register("http://schemas.botframework.com/CommandSet", typeof(CommandSet));
+            //Register("http://schemas.botframework.com/CommandSet", typeof(DialogCommandSet));
 
             // Dialogs
             Register("http://schemas.botframework.com/ComponentDialog", typeof(ComponentDialog), new ComponentDialogLoader());
-            Register("http://schemas.botframework.com/IntentCommandDialog", typeof(IntentCommandDialog), new ComponentDialogLoader());
+            //Register("http://schemas.botframework.com/IntentCommandDialog", typeof(IntentCommandDialog), new ComponentDialogLoader());
             Register("http://schemas.botframework.com/IntentDialog", typeof(IntentDialog), new ComponentDialogLoader());
             Register("http://schemas.botframework.com/CommandDialog", typeof(CommandDialog), new CommandDialogLoader());
             Register("http://schemas.botframework.com/TextPrompt", typeof(TextPrompt));

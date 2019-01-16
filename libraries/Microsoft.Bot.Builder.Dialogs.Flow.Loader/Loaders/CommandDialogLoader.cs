@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Loaders
 
             if (result != null)
             {
-                result.DialogId = obj["DialogId"].Value<string>();
+                //result.Dialog = obj["DialogId"].Value<string>();
             }
 
             return result;

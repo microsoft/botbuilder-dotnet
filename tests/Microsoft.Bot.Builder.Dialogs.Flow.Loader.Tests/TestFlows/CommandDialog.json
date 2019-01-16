@@ -34,60 +34,61 @@
     {
       "@type": "http://schemas.botframework.com/CommandDialog",
       "Id": "NameCommandDialog",
-      "DialogId": "NamePrompt",
-      "OnCompleted": {
-        "@type": "http://schemas.botframework.com/CommandSet",
-        "Actions": [
-          {
-            "@type": "http://schemas.botframework.com/SetVariable",
-            "Name": "Name",
-            "Value": "DialogTurnResult.Result"
-          },
-          {
-            "@type": "http://schemas.botframework.com/Switch",
-            "IgnoreCase": false,
-            "Condition": "Name.Length > 2",
-            "Cases": {
-              "true": {
-                "@type": "http://schemas.botframework.com/CallDialog",
-                "DialogId": "NumberCommandDialog"
-              },
-              "false": {
-                "@type": "http://schemas.botframework.com/CallDialog",
-                "DialogId": "NameCommandDialog"
-              }
+      "Command": [
+        {
+          "@type": "http://schemas.botframework.com/CallDialog",
+          "Dialog": "NamePrompt"
+        },
+        {
+          "@type": "http://schemas.botframework.com/SetVariable",
+          "Name": "Name",
+          "Value": "DialogTurnResult"
+        },
+        {
+          "@type": "http://schemas.botframework.com/Switch",
+          "IgnoreCase": false,
+          "Condition": "Name.Length > 2",
+          "Cases": {
+            "true": {
+              "@type": "http://schemas.botframework.com/CallDialog",
+              "Dialog": "NumberCommandDialog"
             },
-            "DefaultAction": {
-              "@type": "http://schemas.botframework.com/SendActivity",
-              "Text": "default"
+            "false": {
+              "@type": "http://schemas.botframework.com/CallDialog",
+              "Dialog": "NameCommandDialog"
             }
+          },
+          "DefaultAction": {
+            "@type": "http://schemas.botframework.com/SendActivity",
+            "Text": "default"
           }
-        ]
-      }
+        }
+      ]
     },
     {
       "@type": "http://schemas.botframework.com/CommandDialog",
       "Id": "NumberCommandDialog",
       "DialogId": "NumberPrompt",
-      "OnCompleted": {
-        "@type": "http://schemas.botframework.com/CommandSet",
-        "Actions": [
-          {
-            "@type": "http://schemas.botframework.com/SetVariable",
-            "Name": "Age",
-            "Value": "DialogTurnResult.Result"
-          },
-          {
-            "@type": "http://schemas.botframework.com/SetVariable",
-            "Name": "IsChild",
-            "Value": "Age < 18"
-          },
-          {
-            "@type": "http://schemas.botframework.com/SendActivity",
-            "Text": "Done"
-          }
-        ]
-      }
+      "OnCompleted": [
+        {
+          "@type": "http://schemas.botframework.com/CallDialog",
+          "Dialog": "NamePrompt"
+        },
+        {
+          "@type": "http://schemas.botframework.com/SetVariable",
+          "Name": "Age",
+          "Value": "DialogTurnResult"
+        },
+        {
+          "@type": "http://schemas.botframework.com/SetVariable",
+          "Name": "IsChild",
+          "Value": "Age < 18"
+        },
+        {
+          "@type": "http://schemas.botframework.com/SendActivity",
+          "Text": "Done"
+        }
+      ]
     }
   ]
 }

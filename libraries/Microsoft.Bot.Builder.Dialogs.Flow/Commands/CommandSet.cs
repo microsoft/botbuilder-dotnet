@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.Dialogs.Flow
 {
@@ -11,45 +12,79 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// <remarks>
     /// Commands will be processed as long as there DialogTurnResult.Status == Complete
     /// </remarks>
-    public class CommandSet : IDialogCommand
+    public class CommandSet : List<IDialogCommand>, IDialogCommand
     {
-        public CommandSet(List<IDialogCommand> actions = null)
+        public CommandSet(string id = null)
         {
-            if (actions != null)
-                this.Commands = actions;
+            this.Id = id;
         }
 
-        public IList<IDialogCommand> Commands { get; set; } = new List<IDialogCommand>();
+        /// <summary>
+        /// Id of the command
+        /// </summary>
+        public string Id { get; set; }
 
-        public async Task<DialogTurnResult> Execute(DialogContext dialogContext, object options, DialogTurnResult result, CancellationToken cancellationToken)
+        private string currentIdLabel {  get { return $"{this.Id}.CurrentCommandId"; } }
+
+        public async Task<object> Execute(DialogContext dialogContext, CancellationToken cancellationToken)
         {
+            if (String.IsNullOrEmpty(this.Id))
+            {
+                throw new ArgumentNullException(nameof(this.Id));
+            }
+
             var state = dialogContext.ActiveDialog.State;
+            state.TryGetValue(this.currentIdLabel, out object obj);
+            string currentId = (string)obj;
+
+            if (currentId == "END_DIALOG")
+            {
+                // done
+                return null; 
+            }
 
             // While we are in completed state process the commandSet.  
-            foreach (var action in Commands)
+            bool done = true;
+            do
             {
-                state["DialogTurnResult"] = result;
-                switch (result.Status)
+                done = true;
+                for (int i = 0; i < this.Count; )
                 {
-                    case DialogTurnStatus.Complete:
-                        // We are in a completed state, execute the next command
-                        result = await action.Execute(dialogContext, options, result, cancellationToken);
-                        break;
+                    var command = this[i++];
+                    if (currentId == null || command.Id == currentId)
+                    {
+                        System.Diagnostics.Trace.WriteLine($"{command.GetType().Name}.{currentId}");
+                        
+                        // save next command
+                        if (i < this.Count)
+                        {
+                            currentId = this[i].Id;
+                            state[this.currentIdLabel] = currentId;
+                        }
+                        else
+                        {
+                            state[this.currentIdLabel] = "END_DIALOG";
+                        }
 
-                    case DialogTurnStatus.Waiting:
-                        // a new dialog was placed on the stack and we are waiting on it
-                        return result;
+                        // execute dialog command
+                        var commandResult = await command.Execute(dialogContext, cancellationToken).ConfigureAwait(false);
+                        if (commandResult is DialogTurnResult)
+                        {
+                            return commandResult as DialogTurnResult;
+                        }
 
-                    case DialogTurnStatus.Cancelled:
-                        // stop processing when we get canceled
-                        return result;
-
-                    case DialogTurnStatus.Empty:
-                        // ERROR: Dialog stack is empty, but we are still operating...what the?
-                        throw new System.Exception("The dialog stack is empty but there should still be a dialog on the stack! Somebody called EndDialog multiple times for the current turn.");
+                        if (commandResult is string && !String.IsNullOrEmpty((string)commandResult))
+                        {
+                            currentId = (string)commandResult;
+                            done = false;
+                            break; // go up and restart the command loop with new starting point
+                        }
+                    }
                 }
-            }
-            return result;
+            } while (!done);
+            // hit end of command, remove state 
+            state.Remove(this.currentIdLabel);
+            return null;
         }
     }
 }
