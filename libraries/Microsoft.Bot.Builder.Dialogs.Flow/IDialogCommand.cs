@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     public interface IDialogCommand
     {
         /// <summary>
-        /// Id of a command
+        /// (OPTIONAL) Id of a command
         /// </summary>
         string Id { get; set; }
 
