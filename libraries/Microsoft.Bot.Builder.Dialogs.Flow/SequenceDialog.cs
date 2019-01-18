@@ -15,24 +15,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         }
 
         /// <summary>
-        /// Command to perform for the dialog
+        /// Sequence of steps to use for the dialogs logic
         /// </summary>
-        public IDialogStep Sequence { get; set; }
+        public Sequence Sequence { get; set; }
 
         /// <summary>
-        /// Define the expression which gets the result of this dialog
+        /// Define the expression which is the result of this dialog when it ends
         /// </summary>
         public IExpressionEval Result { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            this.InitialDialogId = this.Id + ".inner";
+            this.InitialDialogId = this.Id + ".stepDialog";
 
+            // if the StepDialog hasn't been added yet, add it.
             if (this.FindDialog(InitialDialogId) == null)
             {
                 var innerDialog = new StepDialog(InitialDialogId)
                 {
-                    Command = this.Sequence,
+                    Sequence = this.Sequence,
                     Result = this.Result
                 };
                 this.AddDialog(innerDialog);
@@ -45,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
             internal StepDialog(string dialogId) : base(dialogId)
             { }
 
-            public IDialogStep Command { get; set; }
+            public Sequence Sequence { get; set; }
 
             public IExpressionEval Result { get; set; }
 
@@ -59,14 +60,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
             public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dialogContext, object options = null, CancellationToken cancellationToken = default(CancellationToken))
             {
                 var state = dialogContext.ActiveDialog?.State;
-                if (this.Command == null)
+                if (this.Sequence == null)
                 {
                     return await EndThisDialog(dialogContext, null, state, cancellationToken);
                 }
 
-                if (this.Command.Id == null)
+                if (this.Sequence.Id == null)
                 {
-                    this.Command.Id = this.Id;
+                    this.Sequence.Id = this.Id;
                 }
 
                 options = MergeDefaultOptions(options);
@@ -106,10 +107,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
             private async Task<DialogTurnResult> OnTurnAsync(DialogContext dialogContext, DialogReason reason, object result, CancellationToken cancellationToken)
             {
                 var state = dialogContext.ActiveDialog.State;
-                var commandResult = await this.Command.Execute(dialogContext, cancellationToken);
-                if (commandResult is DialogTurnResult dialogTurnResult)
+                var stepResult = await this.Sequence.Execute(dialogContext, cancellationToken);
+                if (stepResult is DialogTurnResult dialogTurnResult)
                 {
-                    return dialogTurnResult;
+                    switch(dialogTurnResult.Status)
+                    {
+                        case DialogTurnStatus.Waiting:
+                        case DialogTurnStatus.Cancelled:
+                            return dialogTurnResult;
+                        case DialogTurnStatus.Empty:
+                        case DialogTurnStatus.Complete:
+                        default:
+                            return await EndThisDialog(dialogContext, result, state, cancellationToken);
+                    }
                 }
                 else
                 {
@@ -147,31 +157,3 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         }
     }
 }
-//var state = dialogContext.ActiveDialog.State;
-//var options = state[$"{this.Id}.options"];
-
-//var currentId = ((string)state[$"{this.Id}.CurrentCommandId"]);
-
-//// While we are in completed state process the commandSet.  
-//while (true)
-//{
-//    foreach (var command in Commands
-//        .SkipWhile(command => currentId != null && command.Id != currentId)
-//        .SkipWhile(command => currentId != null && command.Id == currentId))
-//    {
-//        state[$"{this.Id}.CurrentCommandId"] = command.Id;
-//        // execute dialog command
-//        var commandResult = await command.Execute(dialogContext, cancellationToken).ConfigureAwait(false);
-//        if (commandResult is DialogTurnResult)
-//        {
-//            return commandResult as DialogTurnResult;
-//        }
-//        if (commandResult is string && !String.IsNullOrEmpty((string)commandResult))
-//        {
-//            currentId = (string)commandResult;
-//            continue; // go up and restart the command loop with new starting point
-//        }
-//    }
-//    // hit end of command, treat this as a end of dialog
-//    return await dialogContext.EndDialogAsync(state[$"{this.Id}.Result"], cancellationToken).ConfigureAwait(false);
-//}

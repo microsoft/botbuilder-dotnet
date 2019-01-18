@@ -18,13 +18,23 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialogs">Parent dialog set.</param>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
         /// <param name="state">Current dialog state.</param>
-        public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state)
+        public DialogContext(DialogSet dialogs, DialogContext parentDialogContext, DialogState state)
         {
-            Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
-            Context = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
-
+            Dialogs = dialogs;
+            ParentContext = parentDialogContext ?? throw new ArgumentNullException(nameof(parentDialogContext));
+            Context = ParentContext.Context;
             Stack = state.DialogStack;
         }
+
+        public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state)
+        {
+            ParentContext = null;
+            Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
+            Context = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
+            Stack = state.DialogStack;
+        }
+
+        public DialogContext ParentContext { get; private set; }
 
         public DialogSet Dialogs { get; private set; }
 
@@ -66,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Lookup dialog
-            var dialog = Dialogs.Find(dialogId);
+            var dialog = this.FindDialog(dialogId);
             if (dialog == null)
             {
                 throw new Exception($"DialogContext.BeginDialogAsync(): A dialog with an id of '{dialogId}' wasn't found.");
@@ -121,7 +131,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (ActiveDialog != null)
             {
                 // Lookup dialog
-                var dialog = Dialogs.Find(ActiveDialog.Id);
+                var dialog = this.FindDialog(ActiveDialog.Id);
                 if (dialog == null)
                 {
                     throw new Exception($"DialogContext.ContinueDialogAsync(): Can't continue dialog. A dialog with an id of '{ActiveDialog.Id}' wasn't found.");
@@ -154,7 +164,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (Stack.Any())
             {
                 var dialogId = Stack[0].Id;
-                var dialog = Dialogs.Find(dialogId);
+                var dialog = this.FindDialog(dialogId);
                 await dialog.EndDialogAsync(this.Context, Stack[0], DialogReason.EndCalled).ConfigureAwait(false);
                 Stack.RemoveAt(0);
             }
@@ -163,7 +173,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (ActiveDialog != null)
             {
                 // Lookup dialog
-                var dialog = Dialogs.Find(ActiveDialog.Id);
+                var dialog = this.FindDialog(ActiveDialog.Id);
                 if (dialog == null)
                 {
                     throw new Exception($"DialogContext.EndDialogAsync(): Can't resume previous dialog. A dialog with an id of '{ActiveDialog.Id}' wasn't found.");
@@ -231,7 +241,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (ActiveDialog != null)
             {
                 // Lookup dialog
-                var dialog = Dialogs.Find(ActiveDialog.Id);
+                var dialog = this.FindDialog(ActiveDialog.Id);
                 if (dialog == null)
                 {
                     throw new Exception($"DialogSet.RepromptDialogAsync(): Can't find A dialog with an id of '{ActiveDialog.Id}'.");
@@ -240,6 +250,29 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // Ask dialog to re-prompt if supported
                 await dialog.RepromptDialogAsync(Context, ActiveDialog, cancellationToken).ConfigureAwait(false);
             }
+        }
+
+        /// <summary>
+        /// Find the dialog id for the given context. 
+        /// </summary>
+        /// <param name="dialogId">dialog id to find</param>
+        /// <returns>dialog with that id</returns>
+        public IDialog FindDialog(string dialogId)
+        {
+            if (this.Dialogs != null)
+            {
+                var dialog = this.Dialogs.Find(dialogId);
+                if (dialog != null)
+                {
+                    return dialog;
+                }
+            }
+
+            if (this.ParentContext != null)
+            {
+                return this.ParentContext.FindDialog(dialogId);
+            }
+            return null;
         }
 
         private async Task EndActiveDialogAsync(DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
@@ -259,5 +292,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 Stack.RemoveAt(0);
             }
         }
+
     }
 }

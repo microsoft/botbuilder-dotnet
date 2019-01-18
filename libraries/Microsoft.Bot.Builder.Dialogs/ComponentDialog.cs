@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+﻿// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
 using System.Threading;
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Start the inner dialog.
             var dialogState = new DialogState();
             outerDc.ActiveDialog.State[PersistedDialogState] = dialogState;
-            var innerDc = new DialogContext(_dialogs, outerDc.Context, dialogState);
+            var innerDc = new DialogContext(_dialogs, outerDc, dialogState);
             var turnResult = await OnBeginDialogAsync(innerDc, options, cancellationToken).ConfigureAwait(false);
 
             // Check for end of inner dialog
@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Continue execution of inner dialog.
             var dialogState = (DialogState)outerDc.ActiveDialog.State[PersistedDialogState];
-            var innerDc = new DialogContext(_dialogs, outerDc.Context, dialogState);
+            var innerDc = new DialogContext(_dialogs, outerDc, dialogState);
             var turnResult = await OnContinueDialogAsync(innerDc, cancellationToken).ConfigureAwait(false);
 
             if (turnResult.Status != DialogTurnStatus.Waiting)
@@ -151,7 +151,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Finds a dialog by ID.
+        /// Finds a dialog by ID (ONLY in this ComponentDialog, use DialogContext.FindDialog to get scoped dialogs)
         /// </summary>
         /// <param name="dialogId">The ID of the dialog to find.</param>
         /// <returns>The dialog; or <c>null</c> if there is not a match for the ID.</returns>

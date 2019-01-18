@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
 
 
     [TestClass]
-    public class ActionTests
+    public class DialogStepTests
     {
         private static JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };
 
@@ -405,5 +405,41 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                 .AssertReply("falseResult")
                 .StartTestAsync();
         }
+
+        [TestMethod]
+        public async Task FindDialog_Test()
+        {
+            var oneDialog = new SendIdDialog("OneDialog");
+            var twoDialog = new SendIdUntilStop("TwoDialog");
+            var threeDialog = new SendIdDialog("ThreeDialog");
+            var testDialog = new SequenceDialog()
+            {
+                Id = "TestDialog",
+                Sequence = new Sequence()
+                {
+                    new CallDialog() { Id = "Start", Dialog = oneDialog},
+                    new CallDialog() { Dialog = twoDialog },
+                    new CallDialog() { Dialog = threeDialog },
+                },
+            };
+            testDialog.AddDialog(threeDialog);
+
+            var testAdapter = CreateTestAdapter("TestDialog", new IDialog[] { testDialog, oneDialog, twoDialog }, out var botHandler);
+
+            await new TestFlow(testAdapter, botHandler)
+                .Send("hello")
+                .AssertReply("OneDialog")
+                .AssertReply("TwoDialog")
+                .Send("hello")
+                .AssertReply("TwoDialog")
+                .Send("stop")
+                .AssertReply("stop")
+                .AssertReply("ThreeDialog")
+                .Send("hello")
+                .AssertReply("OneDialog")
+                .AssertReply("TwoDialog")
+                .StartTestAsync();
+        }
     }
+
 }

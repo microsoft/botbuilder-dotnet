@@ -38,8 +38,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
             var dialogState = new DialogState();
             outerDc.ActiveDialog.State[PersistedDialogState] = dialogState;
 
-            var innerDc = new DialogContext(_dialogs, outerDc.Context, dialogState);
-
             var result = await this.Recognizer.RecognizeAsync(outerDc.Context, cancellationToken);
 
             var topIntent = result.GetTopScoringIntent();
@@ -47,6 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
             // look up route
             if (Routes.TryGetValue(topIntent.intent, out IDialog dialog))
             {
+                var innerDc = new DialogContext(_dialogs, outerDc, dialogState);
                 return await innerDc.BeginDialogAsync(dialog.Id, null, cancellationToken).ConfigureAwait(false);
             }
 
