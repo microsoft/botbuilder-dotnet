@@ -95,10 +95,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types
             // while things are changing rapidly still
 
             // Commands
-            Register("http://schemas.botframework.com/SetVariable", typeof(SetVar), new SetVariableCommandLoader());
-            Register("http://schemas.botframework.com/Switch", typeof(Switch));
+            Register("http://schemas.botframework.com/SetVariable", typeof(SetVarStep), new SetVariableCommandLoader());
+            Register("http://schemas.botframework.com/Switch", typeof(SwitchStep));
             Register("http://schemas.botframework.com/CallDialog", typeof(CallDialog));
-            Register("http://schemas.botframework.com/SendActivity", typeof(SendActivity));
+            Register("http://schemas.botframework.com/SendActivity", typeof(SendActivityStep));
             //Register("http://schemas.botframework.com/CommandSet", typeof(DialogCommandSet));
 
             // Dialogs

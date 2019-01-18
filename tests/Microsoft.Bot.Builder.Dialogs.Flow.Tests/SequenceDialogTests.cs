@@ -39,12 +39,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             var flowDialog2 = new SequenceDialog()
             {
                 Id = "FlowDialog2",
-                Command = new CommandSet("Dialog2")
+                Sequence = new Sequence("Dialog2")
                 {
                     new CallDialog() { Dialog = agePrompt },
-                    new SetVar() { Name = "Age", Value = new CommonExpression("DialogTurnResult") },
-                    new SetVar() { Name = "IsChild", Value = new CommonExpression("Age < 18") },
-                    new SendActivity("Done"),
+                    new SetVarStep() { Name = "Age", Value = new CommonExpression("DialogTurnResult") },
+                    new SetVarStep() { Name = "IsChild", Value = new CommonExpression("Age < 18") },
+                    new SendActivityStep("Done"),
                 }
             };
             flowDialog2.AddDialog(agePrompt);
@@ -52,14 +52,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             var flowDialog = new SequenceDialog()
             {
                 Id = "FlowDialog",
-                Command = new CommandSet("Dialog") {
+                Sequence = new Sequence("Dialog") {
                     new CallDialog() { Id = "CallNamePrompt", Dialog = namePrompt },
-                    new SetVar() { Name ="Name", Value = new CommonExpression("DialogTurnResult") },
-                    new IfElse()
+                    new SetVarStep() { Name ="Name", Value = new CommonExpression("DialogTurnResult") },
+                    new IfElseStep()
                     {
                         Condition = new CommonExpression() { Expression ="Name.Length > 2" },
-                        True = new CallDialog() { Dialog = flowDialog2 },
-                        Else = new GotoCommand() { CommandId = "CallNamePrompt" },
+                        IfTrue = new CallDialog() { Dialog = flowDialog2 },
+                        IfFalse = new GotoStep() { CommandId = "CallNamePrompt" },
                     },
                 }
             };

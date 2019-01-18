@@ -10,9 +10,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// <summary>
     /// Wait for input from the user
     /// </summary>
-    public class Waiting : IDialogAction
+    public class EndOfTurnStep : IDialogStep
     {
-        public Waiting() { }
+        public EndOfTurnStep() { }
 
         /// <summary>
         /// (OPTIONAL) Id of the command

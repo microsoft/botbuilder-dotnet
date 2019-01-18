@@ -144,12 +144,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             var testDialog = new SequenceDialog()
             {
                 Id = "TestDialog",
-                Command = new CommandSet()
+                Sequence = new Sequence()
                 {
-                    new CallDialog() { Id="Start", Dialog = oneDialog },
+                    new CallDialog() { Id = "Start", Dialog = oneDialog},
                     new CallDialog() { Dialog = twoDialog },
-                    new Waiting(),
-                    new GotoCommand() { CommandId = "Start" }
                 },
             };
             testDialog.AddDialog(oneDialog);
@@ -183,7 +181,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             var testDialog = new SequenceDialog()
             {
                 Id = "TestDialog",
-                Command = new CommandSet()
+                Sequence = new Sequence()
                     {
                         new CallDialog() { Id="Start", Dialog = oneDialog },
                         new GotoDialog() { Dialog = twoDialog },
@@ -212,16 +210,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             var testDialog = new SequenceDialog()
             {
                 Id = "TestDialog",
-                Command = new CommandSet()
+                Sequence = new Sequence()
                 {
                     // set the test=123
-                    new SetVar() { Name = "test", Value = new CommonExpression("123") },
+                    new SetVarStep() { Name = "test", Value = new CommonExpression("123") },
                     // send the value of test
-                    new SendActivity("{test}"),
+                    new SendActivityStep("{test}"),
                     // set test=
-                    new ClearVar() { Name = "test" },
+                    new ClearVarStep() { Name = "test" },
                     // send the value of test
-                    new SendActivity("{test}"),
+                    new SendActivityStep("{test}"),
                 }
             };
             var testAdapter = CreateTestAdapter("TestDialog", new[] { testDialog }, out var botHandler);
@@ -241,18 +239,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             var testDialog = new SequenceDialog()
             {
                 Id = $"TestDialog",
-                Command = new CommandSet() {
+                Sequence = new Sequence() {
                     new CallDialog() { Dialog = returnTextDlg },
-                    new Switch()
+                    new SwitchStep()
                     {
                         Condition = new CommonExpression("DialogTurnResult"),
-                        Cases = new Dictionary<string, IDialogAction>
+                        Cases = new Dictionary<string, IDialogStep>
                         {
                             // case "end" 
-                            { "end", new SendActivity("Done") },
+                            { "end", new SendActivityStep("Done") },
                         },
                         // keep running the dialog
-                        DefaultAction = new Waiting()
+                        DefaultAction = new EndOfTurnStep()
                     }
                 }
             };
@@ -275,7 +273,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             var testDialog = new SequenceDialog()
             {
                 Id = "TestDialog",
-                Command = new CommandSet()
+                Sequence = new Sequence()
                 {
                     { new CallDialog() { Dialog = oneDialog } },
                 }
@@ -298,9 +296,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                 Id = "TestDialog",
                 // no dialog is same as dialog completing
                 // CallDialogId = null
-                Command = new CommandSet()
+                Sequence = new Sequence()
                 {
-                    new SendActivity("done")
+                    new SendActivityStep("done")
                 }
             };
             var testAdapter = CreateTestAdapter("TestDialog", new[] { testDialog }, out var botHandler);
@@ -319,9 +317,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             {
                 Id = "TestDialog",
                 // CallDialogId = null
-                Command = new CommandSet()
+                Sequence = new Sequence()
                 {
-                    new SendActivity("done")
+                    new SendActivityStep("done")
                 }
             };
             var testAdapter = CreateTestAdapter("TestDialog", new[] { testDialog }, out var botHandler);
@@ -340,21 +338,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             var testDialog = new SequenceDialog()
             {
                 Id = $"TestDialog",
-                Command = new CommandSet()
+                Sequence = new Sequence()
                 {
                     new CallDialog() { Dialog = echoDialog},
-                    new Switch()
+                    new SwitchStep()
                     {
                         Condition = new CommonExpression("DialogTurnResult"),
-                        Cases = new Dictionary<string, IDialogAction>
+                        Cases = new Dictionary<string, IDialogStep>
                                 {
-                                    { $"one", new SendActivity("response:1") },
-                                    { $"two", new SendActivity("response:2") },
-                                    { $"three", new SendActivity("response:3") },
-                                    { $"four", new SendActivity("response:4") },
-                                    { $"five", new SendActivity("response:5") }
+                                    { $"one", new SendActivityStep("response:1") },
+                                    { $"two", new SendActivityStep("response:2") },
+                                    { $"three", new SendActivityStep("response:3") },
+                                    { $"four", new SendActivityStep("response:4") },
+                                    { $"five", new SendActivityStep("response:5") }
                                 },
-                        DefaultAction = new SendActivity("response:default")
+                        DefaultAction = new SendActivityStep("response:default")
                     }
                 }
             };
@@ -375,5 +373,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                 .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task IfElse_Test()
+        {
+
+            var echoDialog = new EchoDialog($"EchoDialog");
+            var testDialog = new SequenceDialog()
+            {
+                Id = $"TestDialog",
+                Sequence = new Sequence()
+                {
+                    new CallDialog() { Dialog = echoDialog},
+                    new IfElseStep()
+                    {
+                        Condition = new CommonExpression("DialogTurnResult == 'hello'"),
+                        IfTrue = new SendActivityStep("trueResult"),
+                        IfFalse = new SendActivityStep("falseResult"),
+                    }
+                }
+            };
+            testDialog.AddDialog(echoDialog);
+
+            var testAdapter = CreateTestAdapter("TestDialog", new[] { testDialog }, out var botHandler);
+
+            await new TestFlow(testAdapter, botHandler)
+                .Send("hello")
+                .AssertReply("hello")
+                .AssertReply("trueResult")
+                .Send("goodbye")
+                .AssertReply("goodbye")
+                .AssertReply("falseResult")
+                .StartTestAsync();
+        }
     }
 }

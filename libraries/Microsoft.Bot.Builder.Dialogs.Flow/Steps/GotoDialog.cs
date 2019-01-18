@@ -7,7 +7,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// <summary>
     /// Replace the current Dialog with another dialog as an action
     /// </summary>
-    public class GotoDialog : IDialogAction
+    public class GotoDialog : IDialogStep
     {
         public GotoDialog() { }
 

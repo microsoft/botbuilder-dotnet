@@ -11,9 +11,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// Evaluate expression and execute actions based on the result
     /// </summary>
     /// <typeparam name="ValueT"></typeparam>
-    public class Switch : IDialogAction
+    public class SwitchStep : IDialogStep
     {
-        public Switch() { }
+        public SwitchStep() { }
 
         /// <summary>
         /// (OPTIONAL) Id of the command
@@ -33,12 +33,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         /// <summary>
         /// Cases to compare against result of condition expression
         /// </summary>
-        public Dictionary<string, IDialogAction> Cases { get; set; } = new Dictionary<string, IDialogAction>();
+        public Dictionary<string, IDialogStep> Cases { get; set; } = new Dictionary<string, IDialogStep>();
 
         /// <summary>
         /// Default action to take if no match
         /// </summary>
-        public IDialogAction DefaultAction { get; set; }
+        public IDialogStep DefaultAction { get; set; }
 
         public async Task<object> Execute(DialogContext dialogContext, CancellationToken cancellationToken)
         {

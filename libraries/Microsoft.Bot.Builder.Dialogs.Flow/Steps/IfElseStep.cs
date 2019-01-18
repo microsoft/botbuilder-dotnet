@@ -9,9 +9,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// Evaluate expression and execute actions based on the result
     /// </summary>
     /// <typeparam name="ValueT"></typeparam>
-    public class IfElse : IDialogAction
+    public class IfElseStep : IDialogStep
     {
-        public IfElse() { }
+        public IfElseStep() { }
 
         /// <summary>
         /// (OPTIONAL) Id of the command
@@ -26,12 +26,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         /// <summary>
         /// Command to execute if true
         /// </summary>
-        public IDialogAction True { get; set; }
+        public IDialogStep IfTrue { get; set; }
 
         /// <summary>
         /// Commmand to execute if false
         /// </summary>
-        public IDialogAction Else { get; set; }
+        public IDialogStep IfFalse { get; set; }
 
 
         public async Task<object> Execute(DialogContext dialogContext, CancellationToken cancellationToken)
@@ -42,19 +42,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
                 throw new ArgumentNullException(nameof(Condition));
             }
 
-            if (True == null)
+            if (IfTrue == null)
             {
-                throw new ArgumentNullException(nameof(True));
+                throw new ArgumentNullException(nameof(IfTrue));
             }
 
             var conditionResult = (bool)await Condition.Evaluate(state);
             if (conditionResult == true)
             {
-                return await this.True.Execute(dialogContext, cancellationToken);
+                return await this.IfTrue.Execute(dialogContext, cancellationToken);
             }
-            else if (this.Else != null)
+            else if (this.IfFalse != null)
             {
-                return await this.Else.Execute(dialogContext, cancellationToken);
+                return await this.IfFalse.Execute(dialogContext, cancellationToken);
             }
 
             // do nothing

@@ -12,9 +12,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// <remarks>
     /// Commands will be processed as long as there DialogTurnResult.Status == Complete
     /// </remarks>
-    public class CommandSet : List<IDialogAction>, IDialogAction
+    public class Sequence : List<IDialogStep>, IDialogStep
     {
-        public CommandSet(string id = null)
+        public Sequence(string id = null)
         {
             this.Id = id;
         }
@@ -37,9 +37,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
             state.TryGetValue(this.currentIdLabel, out object obj);
             string currentId = (string)obj;
 
-            if (currentId == "END_DIALOG")
+            if (currentId == "END_SEQUENCE")
             {
-                // done
+                // sequence is done
                 return null; 
             }
 
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
                     {
                         System.Diagnostics.Trace.WriteLine($"{command.GetType().Name}.{currentId}");
                         
-                        // save next command
+                        // remember next step to process
                         if (i < this.Count)
                         {
                             currentId = this[i].Id;
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
                         }
                         else
                         {
-                            state[this.currentIdLabel] = "END_DIALOG";
+                            state[this.currentIdLabel] = "END_SEQUENCE";
                         }
 
                         // execute dialog command

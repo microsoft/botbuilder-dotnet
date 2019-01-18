@@ -8,9 +8,9 @@ using Microsoft.Bot.Builder.Dialogs;
 namespace Microsoft.Bot.Builder.Dialogs.Flow
 {
     /// <summary>
-    /// Defines a dialog command 
+    /// Defines a dialog step  
     /// </summary>
-    public interface IDialogAction
+    public interface IDialogStep
     {
         /// <summary>
         /// (OPTIONAL) Id of a command
@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         string Id { get; set; }
 
         /// <summary>
-        /// Execute an commmand 
+        /// Execute an step 
         /// </summary>
         /// <param name="context"></param>
         /// <returns>DialogTurnResult or string</returns>

@@ -9,11 +9,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// <summary>
     /// Send an activity as an action
     /// </summary>
-    public class SendActivity : IDialogAction
+    public class SendActivityStep : IDialogStep
     {
-        public SendActivity() { }
+        public SendActivityStep() { }
 
-        public SendActivity(string text)
+        public SendActivityStep(string text)
         {
             this.Activity = new Activity()
             {

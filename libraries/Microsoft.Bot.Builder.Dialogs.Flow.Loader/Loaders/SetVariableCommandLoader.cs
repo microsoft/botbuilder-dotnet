@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Loaders
             // "Value": "DialogTurnResult.Result"
             if (obj["Value"].Type == JTokenType.String)
             {
-                return new SetVar()
+                return new SetVarStep()
                 {
                     Name = obj.Value<string>("Name"),
                     Value = new CommonExpression(obj.Value<string>("Value"))

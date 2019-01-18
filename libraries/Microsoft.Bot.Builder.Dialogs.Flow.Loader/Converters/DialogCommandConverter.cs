@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Converters
 {
-    public class DialogCommandConverter : InterfaceConverter<IDialogAction>
+    public class DialogCommandConverter : InterfaceConverter<IDialogStep>
     {
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
@@ -18,11 +18,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Converters
                 // If we have an array of IDialogCommands, create a CommandSet
                 // and add all the array elements to make for a more compact format.
                 // Users can still specify a CommandSet explicitly if they prefer so.
-                var commandSet = new CommandSet();
+                var commandSet = new Sequence();
 
                 foreach (var comamndObj in jToken as JArray)
                 {
-                    var command = comamndObj.ToObject<IDialogAction>(serializer);
+                    var command = comamndObj.ToObject<IDialogStep>(serializer);
                     commandSet.Add(command);
                 }
 

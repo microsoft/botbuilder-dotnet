@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// <summary>
     /// end the current dialog 
     /// </summary>
-    public class EndDialog : IDialogAction
+    public class EndDialog : IDialogStep
     {
         public EndDialog() { }
 

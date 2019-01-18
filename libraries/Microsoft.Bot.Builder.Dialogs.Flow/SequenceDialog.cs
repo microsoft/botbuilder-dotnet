@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         /// <summary>
         /// Command to perform for the dialog
         /// </summary>
-        public IDialogAction Command { get; set; }
+        public IDialogStep Sequence { get; set; }
 
         /// <summary>
         /// Define the expression which gets the result of this dialog
@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
             {
                 var innerDialog = new StepDialog(InitialDialogId)
                 {
-                    Command = this.Command,
+                    Command = this.Sequence,
                     Result = this.Result
                 };
                 this.AddDialog(innerDialog);
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
             internal StepDialog(string dialogId) : base(dialogId)
             { }
 
-            public IDialogAction Command { get; set; }
+            public IDialogStep Command { get; set; }
 
             public IExpressionEval Result { get; set; }
 
