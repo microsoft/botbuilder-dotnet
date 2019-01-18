@@ -97,27 +97,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
 
 
     [TestClass]
-    public class CommandTests
+    public class ActionTests
     {
         private static JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };
 
         /// <summary>
         /// Create test flow
         /// </summary>
-        private static TestAdapter CreateTestAdapter(string initialDialog, out DialogSet dialogs, out BotCallbackHandler botHandler)
+        private static TestAdapter CreateTestAdapter(string initialDialog, IDialog[] dialogs, out BotCallbackHandler botHandler)
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
             var adapter = new TestAdapter()
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger()))
                 .Use(new AutoSaveStateMiddleware(convoState));
-            var dlgs = new DialogSet(dialogState);
-            dialogs = dlgs;
+
+            var dialogSet = new DialogSet(dialogState);
+            foreach (var dialog in dialogs)
+            {
+                dialogSet.Add(dialog);
+            }
+
             botHandler = async (turnContext, cancellationToken) =>
            {
                var state = await dialogState.GetAsync(turnContext, () => new DialogState());
 
-               var dialogContext = await dlgs.CreateContextAsync(turnContext, cancellationToken);
+               var dialogContext = await dialogSet.CreateContextAsync(turnContext, cancellationToken);
 
                var results = await dialogContext.ContinueDialogAsync(cancellationToken);
                if (results.Status == DialogTurnStatus.Empty)
@@ -132,26 +137,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         [TestMethod]
         public async Task CallDialog_Test()
         {
-            var testAdapter = CreateTestAdapter("TestDialog", out var dialogs, out var botHandler);
+            var oneDialog = new SendIdDialog("OneDialog");
+            var twoDialog = new SendIdUntilStop("TwoDialog");
+            var threeDialog = new SendIdDialog("ThreeDialog");
 
-            dialogs.Add(new SendIdDialog("OneDialog"));
-            dialogs.Add(new SendIdUntilStop("TwoDialog"));
-            dialogs.Add(new SendIdDialog("ThreeDialog"));
-
-
-            // when oneDialog finishes, call TwoDialog
-            var flowDialog = new CommandDialog()
+            var testDialog = new SequenceDialog()
             {
                 Id = "TestDialog",
                 Command = new CommandSet()
                 {
-                    new CallDialog() { Id="Start", Dialog = dialogs.Find("OneDialog") },
-                    new CallDialog() { Dialog = dialogs.Find("TwoDialog") },
-                    new WaitForActivity(),
+                    new CallDialog() { Id="Start", Dialog = oneDialog },
+                    new CallDialog() { Dialog = twoDialog },
+                    new Waiting(),
                     new GotoCommand() { CommandId = "Start" }
-                }
+                },
             };
-            dialogs.Add(flowDialog);
+            testDialog.AddDialog(oneDialog);
+            testDialog.AddDialog(twoDialog);
+            testDialog.AddDialog(threeDialog);
+
+            var testAdapter = CreateTestAdapter("TestDialog", new[] { testDialog }, out var botHandler);
 
             await new TestFlow(testAdapter, botHandler)
                 .Send("hello")
@@ -170,24 +175,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         [TestMethod]
         public async Task GotoDialog_Test()
         {
-            var testAdapter = CreateTestAdapter("TestDialog", out var dialogs, out var botHandler);
-
-            dialogs.Add(new SendIdDialog("OneDialog"));
-            dialogs.Add(new SendIdUntilStop("TwoDialog"));
-            dialogs.Add(new SendIdDialog("ThreeDialog"));
-
+            var oneDialog = new SendIdDialog("OneDialog");
+            var twoDialog = new SendIdUntilStop("TwoDialog");
+            var threeDialog = new SendIdDialog("ThreeDialog");
 
             // when oneDialog finishes, call TwoDialog
-            var flowDialog = new CommandDialog()
+            var testDialog = new SequenceDialog()
             {
                 Id = "TestDialog",
                 Command = new CommandSet()
                     {
-                        new CallDialog() { Id="Start", Dialog = dialogs.Find("OneDialog") },
-                        new GotoDialog() { Dialog = dialogs.Find("TwoDialog") },
+                        new CallDialog() { Id="Start", Dialog = oneDialog },
+                        new GotoDialog() { Dialog = twoDialog },
                     }
             };
-            dialogs.Add(flowDialog);
+            testDialog.AddDialog(oneDialog);
+            testDialog.AddDialog(twoDialog);
+            testDialog.AddDialog(threeDialog);
+
+            var testAdapter = CreateTestAdapter("TestDialog", new IDialog[] { testDialog }, out var botHandler);
 
             await new TestFlow(testAdapter, botHandler)
                 .Send("hello")
@@ -203,16 +209,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         [TestMethod]
         public async Task SetClearVal_Test()
         {
-            var testAdapter = CreateTestAdapter("TestDialog", out var dialogs, out var botHandler);
-
-            dialogs.Add(new SendIdDialog("OneDialog"));
-            var flowDialog = new CommandDialog()
+            var testDialog = new SequenceDialog()
             {
                 Id = "TestDialog",
                 Command = new CommandSet()
                 {
                     // set the test=123
-                    new SetVar() { Name = "test", Value=new CommonExpression("123") },
+                    new SetVar() { Name = "test", Value = new CommonExpression("123") },
                     // send the value of test
                     new SendActivity("{test}"),
                     // set test=
@@ -221,7 +224,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                     new SendActivity("{test}"),
                 }
             };
-            dialogs.Add(flowDialog);
+            var testAdapter = CreateTestAdapter("TestDialog", new[] { testDialog }, out var botHandler);
 
             await new TestFlow(testAdapter, botHandler)
                 .Send("hello")
@@ -233,28 +236,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         [TestMethod]
         public async Task ContinueAndEnd_Test()
         {
-            var testAdapter = CreateTestAdapter("TestDialog", out var dialogs, out var botHandler);
 
-            dialogs.Add(new ReturnTextDialog($"ReturnText"));
-            var flowDialog = new CommandDialog()
+            var returnTextDlg = new ReturnTextDialog($"ReturnText");
+            var testDialog = new SequenceDialog()
             {
                 Id = $"TestDialog",
                 Command = new CommandSet() {
-                    new CallDialog() { Dialog = dialogs.Find("ReturnText") },
+                    new CallDialog() { Dialog = returnTextDlg },
                     new Switch()
                     {
                         Condition = new CommonExpression("DialogTurnResult"),
-                        Cases = new Dictionary<string, IDialogCommand>
+                        Cases = new Dictionary<string, IDialogAction>
                         {
                             // case "end" 
                             { "end", new SendActivity("Done") },
                         },
                         // keep running the dialog
-                        DefaultAction = new WaitForActivity()
+                        DefaultAction = new Waiting()
                     }
                 }
             };
-            dialogs.Add(flowDialog);
+            testDialog.AddDialog(returnTextDlg);
+            var testAdapter = CreateTestAdapter("TestDialog", new[] { testDialog }, out var botHandler);
 
             await new TestFlow(testAdapter, botHandler)
                 .Send("hello") // ContinueDialog()
@@ -267,18 +270,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         [TestMethod]
         public async Task NoCommand_Test()
         {
-            var testAdapter = CreateTestAdapter("TestDialog", out var dialogs, out var botHandler);
 
-            dialogs.Add(new SendIdDialog("OneDialog"));
-            var flowDialog = new CommandDialog()
+            var oneDialog = new SendIdDialog("OneDialog");
+            var testDialog = new SequenceDialog()
             {
                 Id = "TestDialog",
                 Command = new CommandSet()
                 {
-                    { new CallDialog() { Dialog = dialogs.Find("OneDialog") } },
+                    { new CallDialog() { Dialog = oneDialog } },
                 }
             };
-            dialogs.Add(flowDialog);
+            testDialog.AddDialog(oneDialog);
+
+            var testAdapter = CreateTestAdapter("TestDialog", new[] { testDialog }, out var botHandler);
 
             await new TestFlow(testAdapter, botHandler)
                 .Send("hello")
@@ -289,9 +293,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         [TestMethod]
         public async Task NoDialog_Test()
         {
-            var testAdapter = CreateTestAdapter("TestDialog", out var dialogs, out var botHandler);
-
-            var flowDialog = new CommandDialog()
+            var testDialog = new SequenceDialog()
             {
                 Id = "TestDialog",
                 // no dialog is same as dialog completing
@@ -301,7 +303,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                     new SendActivity("done")
                 }
             };
-            dialogs.Add(flowDialog);
+            var testAdapter = CreateTestAdapter("TestDialog", new[] { testDialog }, out var botHandler);
 
             await new TestFlow(testAdapter, botHandler)
                 .Send("hello")
@@ -312,9 +314,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         [TestMethod]
         public async Task SendActivity_Test()
         {
-            var testAdapter = CreateTestAdapter("TestDialog", out var dialogs, out var botHandler);
 
-            var flowDialog = new CommandDialog()
+            var testDialog = new SequenceDialog()
             {
                 Id = "TestDialog",
                 // CallDialogId = null
@@ -323,7 +324,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                     new SendActivity("done")
                 }
             };
-            dialogs.Add(flowDialog);
+            var testAdapter = CreateTestAdapter("TestDialog", new[] { testDialog }, out var botHandler);
 
             await new TestFlow(testAdapter, botHandler)
                 .Send("hello")
@@ -334,19 +335,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         [TestMethod]
         public async Task Switch_Test()
         {
-            var testAdapter = CreateTestAdapter("TestDialog", out var dialogs, out var botHandler);
 
-            dialogs.Add(new EchoDialog($"EchoDialog"));
-            var flowDialog = new CommandDialog()
+            var echoDialog = new EchoDialog($"EchoDialog");
+            var testDialog = new SequenceDialog()
             {
                 Id = $"TestDialog",
                 Command = new CommandSet()
                 {
-                    new CallDialog() { Dialog = dialogs.Find("EchoDialog")},
+                    new CallDialog() { Dialog = echoDialog},
                     new Switch()
                     {
                         Condition = new CommonExpression("DialogTurnResult"),
-                        Cases = new Dictionary<string, IDialogCommand>
+                        Cases = new Dictionary<string, IDialogAction>
                                 {
                                     { $"one", new SendActivity("response:1") },
                                     { $"two", new SendActivity("response:2") },
@@ -358,7 +358,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                     }
                 }
             };
-            dialogs.Add(flowDialog);
+            testDialog.AddDialog(echoDialog);
+
+            var testAdapter = CreateTestAdapter("TestDialog", new[] { testDialog }, out var botHandler);
 
             await new TestFlow(testAdapter, botHandler)
                 .Send("hello")

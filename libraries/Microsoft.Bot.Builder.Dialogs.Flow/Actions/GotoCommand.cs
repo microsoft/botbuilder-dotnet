@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// <summary>
     /// Set State variable as an action
     /// </summary>
-    public class GotoCommand : IDialogCommand
+    public class GotoCommand : IDialogAction
     {
         public GotoCommand() { }
 

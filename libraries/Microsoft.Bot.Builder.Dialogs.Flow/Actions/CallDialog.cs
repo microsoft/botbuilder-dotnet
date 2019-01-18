@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// <summary>
     /// Replace the current Dialog with another dialog as an action
     /// </summary>
-    public class CallDialog : IDialogCommand
+    public class CallDialog : IDialogAction
     {
         public CallDialog() { }
 

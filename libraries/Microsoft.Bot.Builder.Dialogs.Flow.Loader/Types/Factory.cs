@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types
             Register("http://schemas.botframework.com/ComponentDialog", typeof(ComponentDialog), new ComponentDialogLoader());
             //Register("http://schemas.botframework.com/IntentCommandDialog", typeof(IntentCommandDialog), new ComponentDialogLoader());
             Register("http://schemas.botframework.com/IntentDialog", typeof(IntentDialog), new ComponentDialogLoader());
-            Register("http://schemas.botframework.com/CommandDialog", typeof(CommandDialog), new CommandDialogLoader());
+            Register("http://schemas.botframework.com/SequenceDialog", typeof(SequenceDialog), new SequenceDialogLoader());
             Register("http://schemas.botframework.com/TextPrompt", typeof(TextPrompt));
             Register("http://schemas.botframework.com/IntNumberPrompt", typeof(NumberPrompt<Int32>));
 

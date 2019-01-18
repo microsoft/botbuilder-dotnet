@@ -5,18 +5,29 @@ using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.Dialogs.Composition
 {
-    interface IComposableDialog 
+    public interface IComposableDialog : IDialog
     {
         /// <summary>
         ///  Interuption Dialog
         /// </summary>
         /// <remarks>configurable dialog which allows global intents to be handled</remarks>
-        string InterruptionDialogId { get; set; }
+        IDialog InterruptionDialog { get; set; }
 
         ///<summary>
         /// Fallback Dialog
         /// </summary>
         /// <remarks>Configured dialog which may be called by the dialog </remarks>
-        string FallbackDialogId { get; set; }
+        IDialog FallbackDialog { get; set; }
+
+        /// <summary>
+        /// Dialog resources
+        /// </summary>
+        IDictionary<string, IDialog> Dialogs { get; set; }
+
+        /// <summary>
+        /// Slot definitions
+        /// </summary>
+        IDictionary<string, ISlot> Slots { get; set; }
     }
+
 }

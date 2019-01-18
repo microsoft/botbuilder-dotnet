@@ -9,16 +9,14 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
 {
     [TestClass]
-    public class DialogTests
+    public class SequenceDialogTests
     {
         private static JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };
 
         public IDialog CreateTestDialog()
         {
-            var dialogs = new ComponentDialog() { Id = "TestDialog" };
-
             // add prompts
-            dialogs.AddDialog(new NumberPrompt<Int32>()
+            var agePrompt = new NumberPrompt<Int32>()
             {
                 Id = "AgePrompt",
                 DefaultOptions = new PromptOptions()
@@ -26,9 +24,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                     Prompt = new Activity(type: ActivityTypes.Message, text: "What is your age?"),
                     RetryPrompt = new Activity(type: ActivityTypes.Message, text: "Reprompt: What is your age?")
                 }
-            });
+            };
 
-            dialogs.AddDialog(new TextPrompt()
+            var namePrompt = new TextPrompt()
             {
                 Id = "NamePrompt",
                 DefaultOptions = new PromptOptions()
@@ -36,27 +34,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                     Prompt = new Activity(type: ActivityTypes.Message, text: "What is your name?"),
                     RetryPrompt = new Activity(type: ActivityTypes.Message, text: "Reprompt: What is your name?")
                 }
-            });
+            };
 
-            var flowDialog2 = new CommandDialog()
+            var flowDialog2 = new SequenceDialog()
             {
                 Id = "FlowDialog2",
                 Command = new CommandSet("Dialog2")
                 {
-                    new CallDialog() { Dialog = dialogs.FindDialog("AgePrompt") },
+                    new CallDialog() { Dialog = agePrompt },
                     new SetVar() { Name = "Age", Value = new CommonExpression("DialogTurnResult") },
                     new SetVar() { Name = "IsChild", Value = new CommonExpression("Age < 18") },
                     new SendActivity("Done"),
                 }
             };
-            dialogs.AddDialog(flowDialog2);
-
+            flowDialog2.AddDialog(agePrompt);
             // define GetNameDialog
-            var flowDialog = new CommandDialog()
+            var flowDialog = new SequenceDialog()
             {
                 Id = "FlowDialog",
                 Command = new CommandSet("Dialog") {
-                    new CallDialog() { Id = "CallNamePrompt", Dialog = dialogs.FindDialog("NamePrompt") },
+                    new CallDialog() { Id = "CallNamePrompt", Dialog = namePrompt },
                     new SetVar() { Name ="Name", Value = new CommonExpression("DialogTurnResult") },
                     new IfElse()
                     {
@@ -66,10 +63,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                     },
                 }
             };
-            dialogs.InitialDialogId = flowDialog.Id;
-            dialogs.AddDialog(flowDialog);
+            flowDialog.AddDialog(namePrompt);
+            flowDialog.AddDialog(flowDialog2);
 
-            return dialogs;
+            return flowDialog;
         }
 
         [TestMethod]

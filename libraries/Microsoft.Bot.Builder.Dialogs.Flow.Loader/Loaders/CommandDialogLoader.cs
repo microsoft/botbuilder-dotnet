@@ -7,14 +7,14 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Loaders
 {
-    public class CommandDialogLoader : ILoader
+    public class SequenceDialogLoader : ILoader
     {
         public object Load(JObject obj, JsonSerializer serializer, Type type)
         {
             // TODO: ccastro to debug and remove this class. 
             // Temporary custom loader. To be removed. The DialogId is not getting 
             // to the hydrated object so adding custom logic here. 
-            var result = obj.ToObject(type, serializer) as CommandDialog;
+            var result = obj.ToObject(type, serializer) as SequenceDialog;
 
             if (result != null)
             {

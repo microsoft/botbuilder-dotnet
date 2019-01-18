@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// Evaluate expression and execute actions based on the result
     /// </summary>
     /// <typeparam name="ValueT"></typeparam>
-    public class IfElse : IDialogCommand
+    public class IfElse : IDialogAction
     {
         public IfElse() { }
 
@@ -26,12 +26,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         /// <summary>
         /// Command to execute if true
         /// </summary>
-        public IDialogCommand True { get; set; }
+        public IDialogAction True { get; set; }
 
         /// <summary>
         /// Commmand to execute if false
         /// </summary>
-        public IDialogCommand Else { get; set; }
+        public IDialogAction Else { get; set; }
 
 
         public async Task<object> Execute(DialogContext dialogContext, CancellationToken cancellationToken)

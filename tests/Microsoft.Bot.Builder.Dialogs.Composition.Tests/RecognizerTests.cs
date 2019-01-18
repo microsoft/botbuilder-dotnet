@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Tests
             return adapter;
         }
 
-        public class RecognizerDialog : Dialog, IDialog, IRecognizerDialog
+        public class RecognizerDialog : Dialog, IDialog
         {
             public IRecognizer Recognizer { get; set; }
 

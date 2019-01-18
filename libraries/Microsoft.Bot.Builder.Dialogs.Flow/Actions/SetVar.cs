@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// <summary>
     /// Set State variable as an action
     /// </summary>
-    public class SetVar : IDialogCommand
+    public class SetVar : IDialogAction
     {
         public SetVar() { }
 

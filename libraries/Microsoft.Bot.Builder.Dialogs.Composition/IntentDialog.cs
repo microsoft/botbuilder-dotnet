@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
     /// <summary>
     /// IntentDialog - Dispatches to Dialog based on intent out of a recognizer
     /// </summary>
-    public class IntentDialog : ComponentDialog, IRecognizerDialog
+    public class IntentDialog : ComponentDialog, IRecognizerDialog<IDialog>
     {
         /// <summary>
         /// Recognizer to use to get intents/entities
@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
         /// <summary>
         /// Route of Intent -> DialogId 
         /// </summary>
-        public Dictionary<string, IDialog> Routes { get; set; } = new Dictionary<string, IDialog>();
+        public IDictionary<string, IDialog> Routes { get; set; } = new Dictionary<string, IDialog>();
 
         /// <summary>
         /// Use recognizer intent to invoke sub dialog

@@ -8,11 +8,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
     /// <summary>
     /// A dialog which has a Recognizer
     /// </summary>
-    public interface IRecognizerDialog 
+    public interface IRecognizerDialog<T> 
     {
         /// <summary>
         /// Recognizer
         /// </summary>
         IRecognizer Recognizer { get; set; }
+
+        IDictionary<string, T> Routes { get; set; }
     }
 }
