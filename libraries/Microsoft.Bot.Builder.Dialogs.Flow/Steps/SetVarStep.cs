@@ -8,14 +8,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// <summary>
     /// Set State variable as an action
     /// </summary>
-    public class SetVarStep : IDialogStep
+    public class SetVarStep : IStep
     {
         public SetVarStep() { }
 
         /// <summary>
         /// (OPTIONAL) Id of the command
         /// </summary>
-        public string Id { get; set; } = Guid.NewGuid().ToString("n");
+        public string Id { get; set; }
 
         public string Name { get; set; }
 

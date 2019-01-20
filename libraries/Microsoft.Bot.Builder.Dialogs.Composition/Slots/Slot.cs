@@ -10,7 +10,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Slots
             this.ValueType = typeof(ValueType);
         }
 
-
         public string Id { get; set; }
 
         public Type ValueType { get; set; }
@@ -18,9 +17,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Slots
         public ValueT DefaultValue { get; set; } = default(ValueT);
 
         public string NameText { get; set; }
+
         public string DescriptionText { get; set; }
+
         public string ValueText { get; set; }
+
         public string CurrentValueDescription { get; set; }
+
         public string PromptText { get; set; }
 
         public string BindToText(string expression, params object[] args)

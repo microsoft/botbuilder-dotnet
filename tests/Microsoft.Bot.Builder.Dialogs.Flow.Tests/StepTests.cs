@@ -13,13 +13,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
     /// </summary>
     public class SendIdDialog : Dialog
     {
-        public SendIdDialog(string id) : base(id)
+        public SendIdDialog(string id, string altText=null) : base(id)
         {
+            AltText = altText;
         }
+
+        private string AltText { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await dc.Context.SendActivityAsync(dc.Context.Activity.CreateReply(this.Id));
+            await dc.Context.SendActivityAsync(dc.Context.Activity.CreateReply(this.AltText ?? this.Id));
             return await dc.EndDialogAsync(this.Id);
         }
     }
@@ -62,9 +65,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
     /// </summary>
     public class SendIdUntilStop : Dialog
     {
-        public SendIdUntilStop(string id) : base(id)
+        public SendIdUntilStop(string id, string altText = null) : base(id)
         {
+            this.AltText = altText;
         }
+
+        public string AltText { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -75,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             }
             else
             {
-                await dc.Context.SendActivityAsync(dc.Context.Activity.CreateReply(this.Id));
+                await dc.Context.SendActivityAsync(dc.Context.Activity.CreateReply(this.AltText ?? this.Id));
                 return new DialogTurnResult(DialogTurnStatus.Waiting);
             }
         }
@@ -89,7 +95,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             }
             else
             {
-                await dc.Context.SendActivityAsync(dc.Context.Activity.CreateReply(this.Id));
+                await dc.Context.SendActivityAsync(dc.Context.Activity.CreateReply(this.AltText ?? this.Id));
                 return new DialogTurnResult(DialogTurnStatus.Waiting);
             }
         }
@@ -137,22 +143,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         [TestMethod]
         public async Task CallDialog_Test()
         {
-            var oneDialog = new SendIdDialog("OneDialog");
-            var twoDialog = new SendIdUntilStop("TwoDialog");
-            var threeDialog = new SendIdDialog("ThreeDialog");
-
             var testDialog = new SequenceDialog()
             {
                 Id = "TestDialog",
                 Sequence = new Sequence()
                 {
-                    new CallDialog() { Id = "Start", Dialog = oneDialog},
-                    new CallDialog() { Dialog = twoDialog },
+                    new CallDialog() { Dialog = new SendIdDialog("OneDialog")},
+                    new CallDialog() { Dialog = new SendIdUntilStop("TwoDialog")},
                 },
             };
-            testDialog.AddDialog(oneDialog);
-            testDialog.AddDialog(twoDialog);
-            testDialog.AddDialog(threeDialog);
 
             var testAdapter = CreateTestAdapter("TestDialog", new[] { testDialog }, out var botHandler);
 
@@ -170,6 +169,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                 .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task CallDialog_NoIdTest()
+        {
+            var testDialog = new SequenceDialog()
+            {
+                Id = "TestDialog",
+                Sequence = new Sequence()
+                {
+                    new CallDialog() { Dialog = new SendIdDialog(null, "OneDialog")},
+                    new CallDialog() { Dialog = new SendIdUntilStop(null, "TwoDialog")},
+                },
+            };
+
+            var testAdapter = CreateTestAdapter("TestDialog", new[] { testDialog }, out var botHandler);
+
+            await new TestFlow(testAdapter, botHandler)
+                .Send("hello")
+                .AssertReply("OneDialog")
+                .AssertReply("TwoDialog")
+                .Send("hello")
+                .AssertReply("TwoDialog")
+                .Send("stop")
+                .AssertReply("stop")
+                .Send("hello")
+                .AssertReply("OneDialog")
+                .AssertReply("TwoDialog")
+                .StartTestAsync();
+        }
         [TestMethod]
         public async Task GotoDialog_Test()
         {
@@ -244,7 +271,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                     new SwitchStep()
                     {
                         Condition = new CommonExpression("DialogTurnResult"),
-                        Cases = new Dictionary<string, IDialogStep>
+                        Cases = new Dictionary<string, IStep>
                         {
                             // case "end" 
                             { "end", new SendActivityStep("Done") },
@@ -344,7 +371,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                     new SwitchStep()
                     {
                         Condition = new CommonExpression("DialogTurnResult"),
-                        Cases = new Dictionary<string, IDialogStep>
+                        Cases = new Dictionary<string, IStep>
                                 {
                                     { $"one", new SendActivityStep("response:1") },
                                     { $"two", new SendActivityStep("response:2") },

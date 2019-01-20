@@ -24,9 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Unique id for the dialog
         /// </summary>
-        private string _id;
-
-        public string Id { get { return String.IsNullOrEmpty(_id) ? throw new ArgumentNullException(nameof(Id)) : _id; } set { this._id = value; } }
+        public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets default options for the dialog

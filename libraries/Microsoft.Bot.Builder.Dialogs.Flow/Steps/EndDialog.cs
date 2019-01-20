@@ -8,14 +8,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// <summary>
     /// end the current dialog 
     /// </summary>
-    public class EndDialog : IDialogStep
+    public class EndDialog : IStep
     {
         public EndDialog() { }
 
         /// <summary>
         /// (OPTIONAL) Id of the command
         /// </summary>
-        public string Id { get; set; } = Guid.NewGuid().ToString("n");
+        public string Id { get; set; }
 
         /// <summary>
         /// Expression to evaluate to get the result for the dialog

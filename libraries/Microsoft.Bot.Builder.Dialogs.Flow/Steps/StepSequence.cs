@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// <remarks>
     /// Commands will be processed as long as there DialogTurnResult.Status == Complete
     /// </remarks>
-    public class Sequence : List<IDialogStep>, IDialogStep
+    public class Sequence : List<IStep>, IStep
     {
         public Sequence(string id = null)
         {

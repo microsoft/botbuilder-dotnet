@@ -9,14 +9,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// Evaluate expression and execute actions based on the result
     /// </summary>
     /// <typeparam name="ValueT"></typeparam>
-    public class IfElseStep : IDialogStep
+    public class IfElseStep : IStep
     {
         public IfElseStep() { }
 
         /// <summary>
         /// (OPTIONAL) Id of the command
         /// </summary>
-        public string Id { get; set; } = Guid.NewGuid().ToString("n");
+        public string Id { get; set; }
 
         /// <summary>
         /// Expression to evalute
@@ -26,12 +26,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         /// <summary>
         /// Command to execute if true
         /// </summary>
-        public IDialogStep IfTrue { get; set; }
+        public IStep IfTrue { get; set; }
 
         /// <summary>
         /// Commmand to execute if false
         /// </summary>
-        public IDialogStep IfFalse { get; set; }
+        public IStep IfFalse { get; set; }
 
 
         public async Task<object> Execute(DialogContext dialogContext, CancellationToken cancellationToken)

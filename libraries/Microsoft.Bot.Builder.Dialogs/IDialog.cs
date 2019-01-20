@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Unique id for the dialog
         /// </summary>
-        string Id { get; }
+        string Id { get; set; }
 
         /// <summary>
         /// Default options for this dialog

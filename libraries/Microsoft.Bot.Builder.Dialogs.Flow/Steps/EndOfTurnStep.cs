@@ -10,14 +10,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// <summary>
     /// Wait for input from the user
     /// </summary>
-    public class EndOfTurnStep : IDialogStep
+    public class EndOfTurnStep : IStep
     {
         public EndOfTurnStep() { }
 
         /// <summary>
         /// (OPTIONAL) Id of the command
         /// </summary>
-        public string Id { get; set; } = Guid.NewGuid().ToString("n");
+        public string Id { get; set; }
 
         public async Task<object> Execute(DialogContext dialogContext, CancellationToken cancellationToken)
         {

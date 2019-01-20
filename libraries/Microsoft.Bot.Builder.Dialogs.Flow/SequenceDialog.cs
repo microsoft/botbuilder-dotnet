@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Composition.Expressions;
 using Newtonsoft.Json.Linq;
@@ -28,17 +29,51 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         {
             this.InitialDialogId = this.Id + ".stepDialog";
 
-            // if the StepDialog hasn't been added yet, add it.
-            if (this.FindDialog(InitialDialogId) == null)
+            // if the StepDialog hasn't been added yet, add it to the dialogset
+            lock (Sequence)
             {
-                var innerDialog = new StepDialog(InitialDialogId)
+                if (this.FindDialog(InitialDialogId) == null)
                 {
-                    Sequence = this.Sequence,
-                    Result = this.Result
-                };
-                this.AddDialog(innerDialog);
+                    var innerDialog = new StepDialog(InitialDialogId)
+                    {
+                        Sequence = this.Sequence,
+                        Result = this.Result
+                    };
+                    this.AddDialog(innerDialog);
+
+                    // make sure each step has a unique id
+                    for (int i = 0; i < this.Sequence.Count; i++)
+                    {
+                        var step = this.Sequence[i];
+                        if (String.IsNullOrEmpty(step.Id))
+                        {
+                            step.Id = $"{this.Id}.{i}";
+                        }
+
+                        // add dialogs to my dialogset
+                        if (step is IDialogStep dialogStep)
+                        {
+                            if (String.IsNullOrEmpty(dialogStep.Dialog.Id))
+                            {
+                                dialogStep.Dialog.Id = $"{this.Id}.d{i}";
+                            }
+
+                            autoAddDialog(outerDc, dialogStep.Dialog);
+                        }
+                    }
+                }
             }
+            // start the InitialDialogId
             return await base.BeginDialogAsync(outerDc, options, cancellationToken);
+        }
+
+        private void autoAddDialog(DialogContext outerDc, IDialog dialog)
+        {
+            if (this.FindDialog(dialog.Id) == null &&
+                outerDc.FindDialog(dialog.Id) == null)
+            {
+                this.AddDialog(dialog);
+            }
         }
 
         internal class StepDialog : Dialog, IDialog
@@ -110,7 +145,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
                 var stepResult = await this.Sequence.Execute(dialogContext, cancellationToken);
                 if (stepResult is DialogTurnResult dialogTurnResult)
                 {
-                    switch(dialogTurnResult.Status)
+                    switch (dialogTurnResult.Status)
                     {
                         case DialogTurnStatus.Waiting:
                         case DialogTurnStatus.Cancelled:

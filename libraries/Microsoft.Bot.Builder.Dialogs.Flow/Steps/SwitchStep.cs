@@ -11,14 +11,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// Evaluate expression and execute actions based on the result
     /// </summary>
     /// <typeparam name="ValueT"></typeparam>
-    public class SwitchStep : IDialogStep
+    public class SwitchStep : IStep
     {
         public SwitchStep() { }
 
         /// <summary>
         /// (OPTIONAL) Id of the command
         /// </summary>
-        public string Id { get; set; } = Guid.NewGuid().ToString("n");
+        public string Id { get; set; }
 
         /// <summary>
         /// Control whether case sensitive or not
@@ -33,12 +33,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         /// <summary>
         /// Cases to compare against result of condition expression
         /// </summary>
-        public Dictionary<string, IDialogStep> Cases { get; set; } = new Dictionary<string, IDialogStep>();
+        public Dictionary<string, IStep> Cases { get; set; } = new Dictionary<string, IStep>();
 
         /// <summary>
         /// Default action to take if no match
         /// </summary>
-        public IDialogStep DefaultAction { get; set; }
+        public IStep DefaultAction { get; set; }
 
         public async Task<object> Execute(DialogContext dialogContext, CancellationToken cancellationToken)
         {

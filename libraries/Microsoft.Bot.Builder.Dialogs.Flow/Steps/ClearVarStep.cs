@@ -11,14 +11,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// <summary>
     /// Clear a variable as an action
     /// </summary>
-    public class ClearVarStep : IDialogStep
+    public class ClearVarStep : IStep
     {
         public ClearVarStep() { }
 
         /// <summary>
         /// (OPTIONAL) Id of the command
         /// </summary>
-        public string Id { get; set; } = Guid.NewGuid().ToString("n");
+        public string Id { get; set; }
 
         public string Name { get; set; }
         

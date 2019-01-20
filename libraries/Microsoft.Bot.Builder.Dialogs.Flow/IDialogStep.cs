@@ -7,10 +7,11 @@ using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.Dialogs.Flow
 {
+
     /// <summary>
     /// Defines a dialog step  
     /// </summary>
-    public interface IDialogStep
+    public interface IStep 
     {
         /// <summary>
         /// (OPTIONAL) Id of a command
@@ -25,4 +26,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         Task<object> Execute(DialogContext dialogContext, CancellationToken cancellationToken);
     }
 
+    public interface IDialogStep : IStep
+    {
+        IDialog Dialog { get; set; }
+    }
 }

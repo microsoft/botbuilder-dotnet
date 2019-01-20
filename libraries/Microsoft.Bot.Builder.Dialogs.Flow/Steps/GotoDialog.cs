@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         /// <summary>
         /// (OPTIONAL) Id of the command
         /// </summary>
-        public string Id { get; set; } = Guid.NewGuid().ToString("n");
+        public string Id { get; set; }
 
         /// <summary>
         /// The dialog to call

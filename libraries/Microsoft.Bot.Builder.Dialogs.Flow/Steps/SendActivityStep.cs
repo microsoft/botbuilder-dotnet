@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// <summary>
     /// Send an activity as an action
     /// </summary>
-    public class SendActivityStep : IDialogStep
+    public class SendActivityStep : IStep
     {
         public SendActivityStep() { }
 
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         /// <summary>
         /// (OPTIONAL) Id of the command
         /// </summary>
-        public string Id { get; set; } = Guid.NewGuid().ToString("n");
+        public string Id { get; set; }
 
         public Activity Activity { get; set; }
 

@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         /// <summary>
         /// (OPTIONAL) Id of the command
         /// </summary>
-        public string Id { get; set; } = Guid.NewGuid().ToString("n");
+        public string Id { get; set; }
 
         /// <summary>
         /// The dialog to call
@@ -39,7 +39,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
 
         public async Task<object> Execute(DialogContext dialogContext, CancellationToken cancellationToken)
         {
-            return await dialogContext.BeginDialogAsync(this.Dialog.Id, Options, cancellationToken);
+            if (this.Dialog != null)
+            {
+                return await dialogContext.BeginDialogAsync(this.Dialog.Id, Options, cancellationToken);
+            }
+            // nothing to do
+            return null;
         }
 
     }

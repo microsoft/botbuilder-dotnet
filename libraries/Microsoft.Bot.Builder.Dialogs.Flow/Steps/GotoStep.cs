@@ -12,14 +12,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// <summary>
     /// Set State variable as an action
     /// </summary>
-    public class GotoStep : IDialogStep
+    public class GotoStep : IStep
     {
         public GotoStep() { }
 
         /// <summary>
         /// Id of the command
         /// </summary>
-        public string Id { get; set; } = Guid.NewGuid().ToString("n");
+        public string Id { get; set; }
 
         /// <summary>
         /// Command to go to 

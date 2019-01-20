@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Converters
 {
-    public class DialogCommandConverter : InterfaceConverter<IDialogStep>
+    public class DialogCommandConverter : InterfaceConverter<IStep>
     {
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Converters
 
                 foreach (var comamndObj in jToken as JArray)
                 {
-                    var command = comamndObj.ToObject<IDialogStep>(serializer);
+                    var command = comamndObj.ToObject<IStep>(serializer);
                     commandSet.Add(command);
                 }
 
