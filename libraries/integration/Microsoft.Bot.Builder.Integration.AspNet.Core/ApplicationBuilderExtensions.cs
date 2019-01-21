@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// </summary>
         /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
-        public static IApplicationBuilder UseBotFrameworkV4(this IApplicationBuilder applicationBuilder)
+        public static IApplicationBuilder UseBotFramework(this IApplicationBuilder applicationBuilder)
         {
             if (applicationBuilder == null)
             {
