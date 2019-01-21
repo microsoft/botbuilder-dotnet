@@ -1,0 +1,21 @@
+
+> Welcome Phrase template
+> LG runtime will pick a text value from the one-of collection list at random.
+# wPhrase
+- Hi
+- Hello
+- Hiya
+ 
+> Using a template in another template
+> Sometimes the bot will say 'Hi' and other times it will say 'Hi :)'
+
+# welcome-user
+> You can use link reference for better rendering in markdown editors
+- [wPhrase](#wPhrase)
+- [wPhrase](#wPhrase) :)
+
+> You can define entity types anywhere. Valid types are String, Int, Long, Float, Double, Bool, DateTime
+$timeOfDay : datetime
+
+> You can add say-as attributions on entities like this. This is particularly helpful for text to speech synthesis in being able to read out the entity correctly.
+$ address : string say-as = Address
