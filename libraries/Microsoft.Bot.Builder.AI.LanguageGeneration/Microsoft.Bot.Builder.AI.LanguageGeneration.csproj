@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\libraries\Microsoft.CommonExpressions\Microsoft.Expressions.csproj" />
+    <ProjectReference Include="..\Microsoft.CommonExpressions\Microsoft.Expressions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
