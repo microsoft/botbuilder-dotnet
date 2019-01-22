@@ -12,11 +12,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
     {
         private string TemplateName { get; set; }
         private object Scope { get; set; }
+        private readonly TemplateEngine _engine;
 
-        public LGFileVisitor(string templateName, object scope)
+        public LGFileVisitor(string templateName, object scope, TemplateEngine engine )
         {
             TemplateName = templateName;
             Scope = scope;
+            _engine = engine;
         }
 
         public override string VisitFile([NotNull] LGFileParser.FileContext context)
@@ -81,7 +83,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
         private string EvalTemplateRef(string exp)
         {
-            throw new NotImplementedException();
+            exp = exp.TrimStart('[').TrimEnd(']').Trim();
+            return _engine.Evaluate(exp, Scope);
         }
     }
 }

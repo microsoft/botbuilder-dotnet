@@ -17,10 +17,27 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         [TestMethod]
         public void TestBasic()
-        {
-            
+        {   
             var engine = TemplateEngine.FromFile(GetExampleFilePath("2.lg"));
-            Assert.AreEqual(engine.Evaluate("wPhrase", null), "Hi", "");
+
+            var evaled = engine.Evaluate("wPhrase", null);
+            var options = new List<string> { "Hi", "Hello", "Hiya " };
+
+            Assert.IsTrue(options.Contains(evaled), $"The result `{evaled}` is not in those options [{string.Join(",", options)}]");
+        }
+
+        [TestMethod]
+        public void TestBasicTemplateReference()
+        {
+            var engine = TemplateEngine.FromFile(GetExampleFilePath("3.lg"));
+
+            var evaled = engine.Evaluate("welcome-user", null);
+            var options = new List<string> { "Hi", "Hello", "Hiya ", "Hi :)", "Hello :)", "Hiya  :)"};
+
+            Assert.IsTrue(options.Contains(evaled), $"The result {evaled} is not in those options {options}");
+
+
+
         }
     }
 }

@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         
         public string Evaluate(string templateName, object scope)
         {
-            var visitor = new LGFileVisitor(templateName, scope);
+            var visitor = new LGFileVisitor(templateName, scope, this);
             return visitor.Visit(_context);
         }
 
