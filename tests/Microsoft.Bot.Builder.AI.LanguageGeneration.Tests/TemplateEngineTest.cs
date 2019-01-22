@@ -35,9 +35,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var options = new List<string> { "Hi", "Hello", "Hiya ", "Hi :)", "Hello :)", "Hiya  :)"};
 
             Assert.IsTrue(options.Contains(evaled), $"The result {evaled} is not in those options {options}");
+        }
 
+        [TestMethod]
+        public void TestBasicTemplateRefAndEntityRef()
+        {
+            var engine = TemplateEngine.FromFile(GetExampleFilePath("4.lg"));
 
+            var userName = "DL";
+            var evaled = engine.Evaluate("welcome-user", new { userName = userName});
+            var options = new List<string> { "Hi", "Hello", "Hiya ", "Hi :)", "Hello :)", "Hiya  :)" };
 
+            Assert.IsTrue(evaled.Contains(userName),  $"The result {evaled} does not contiain `{userName}`");
         }
     }
 }

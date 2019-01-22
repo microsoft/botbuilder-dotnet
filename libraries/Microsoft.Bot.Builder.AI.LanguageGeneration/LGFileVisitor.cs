@@ -77,6 +77,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
         private string EvalExpression(string exp)
         {
+            exp = exp.TrimStart('{').TrimEnd('}');
             var result = ExpressionEngine.Evaluate(exp, Scope);
             return result.ToString();
         }
