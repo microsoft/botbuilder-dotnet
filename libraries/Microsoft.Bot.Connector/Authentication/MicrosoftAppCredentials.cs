@@ -35,8 +35,6 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         public const string MicrosoftAppPasswordKey = "MicrosoftAppPassword";
 
-        private static readonly HttpClient DefaultHttpClient = new HttpClient();
-
         private static readonly IDictionary<string, DateTime> TrustedHostNames = new Dictionary<string, DateTime>()
         {
             // { "state.botframework.com", DateTime.MaxValue }, // deprecated state api
@@ -56,7 +54,8 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="appId">The Microsoft app ID.</param>
         /// <param name="password">The Microsoft app password.</param>
-        public MicrosoftAppCredentials(string appId, string password)
+        /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
+        public MicrosoftAppCredentials(string appId, string password, HttpClient customHttpClient = null)
         {
             this.MicrosoftAppId = appId;
             this.MicrosoftAppPassword = password;
@@ -64,7 +63,8 @@ namespace Microsoft.Bot.Connector.Authentication
             authenticator = new Lazy<AdalAuthenticator>(() =>
                 new AdalAuthenticator(
                     new ClientCredential(MicrosoftAppId, MicrosoftAppPassword),
-                    new OAuthConfiguration() { Authority = OAuthEndpoint, Scope = OAuthScope }),
+                    new OAuthConfiguration() { Authority = OAuthEndpoint, Scope = OAuthScope },
+                    customHttpClient),
                 LazyThreadSafetyMode.ExecutionAndPublication);
         }
 
@@ -176,22 +176,6 @@ namespace Microsoft.Bot.Connector.Authentication
                     }
                 }
                 return false;
-            }
-        }
-
-        /// <summary>
-        /// Represents an OAuth exception.
-        /// </summary>
-        public sealed class OAuthException : Exception
-        {
-            /// <summary>
-            /// Creates a new instance of the <see cref="OAuthException"/> class.
-            /// </summary>
-            /// <param name="body">The OAuth response body or reason.</param>
-            /// <param name="inner">The exception thown during the OAuth request.</param>
-            public OAuthException(string body, Exception inner)
-                : base(body, inner)
-            {
             }
         }
     }
