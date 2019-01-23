@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Choices
@@ -66,22 +67,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 
             // Format list of choices
             var connector = string.Empty;
-            var txt = text ?? string.Empty;
-            txt += " ";
-
+            var txtBuilder = new StringBuilder(text)
+                .Append(' ');
             for (var index = 0; index < choices.Count; index++)
             {
                 var choice = choices[index];
 
                 var title = choice.Action != null && choice.Action.Title != null ? choice.Action.Title : choice.Value;
 
-                txt += $"{connector}";
+
+                txtBuilder.Append(connector);
                 if (opt.IncludeNumbers.Value)
                 {
-                    txt += "(" + (index + 1).ToString() + ") ";
+                    txtBuilder
+                        .Append('(')
+                        .Append(index + 1)
+                        .Append(") ");
                 }
 
-                txt += $"{title}";
+                txtBuilder.Append(title);
                 if (index == (choices.Count - 2))
                 {
                     connector = (index == 0 ? opt.InlineOr : opt.InlineOrMore) ?? string.Empty;
@@ -92,10 +96,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 }
             }
 
-            txt += string.Empty;
-
             // Return activity with choices as an inline list.
-            return MessageFactory.Text(txt, speak, InputHints.ExpectingInput);
+            return MessageFactory.Text(txtBuilder.ToString(), speak, InputHints.ExpectingInput);
         }
 
         public static Activity List(IList<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
@@ -112,8 +114,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 
             // Format list of choices
             var connector = string.Empty;
-            var txt = text ?? string.Empty;
-            txt += "\n\n   ";
+            var txtBuilder = new StringBuilder(text)
+                .Append("\n\n   ");
 
             for (var index = 0; index < choices.Count; index++)
             {
@@ -121,22 +123,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 
                 var title = choice.Action != null && choice.Action.Title != null ? choice.Action.Title : choice.Value;
 
-                txt += connector;
+                txtBuilder.Append(connector);
                 if (includeNumbers)
                 {
-                    txt += (index + 1).ToString() + ". ";
+                    txtBuilder
+                        .Append(index + 1)
+                        .Append(". ");
                 }
                 else
                 {
-                    txt += "- ";
+                    txtBuilder.Append("- ");
                 }
 
-                txt += title;
+                txtBuilder.Append(title);
                 connector = "\n   ";
             }
 
             // Return activity with choices as a numbered list.
-            return MessageFactory.Text(txt, speak, InputHints.ExpectingInput);
+            return MessageFactory.Text(txtBuilder.ToString(), speak, InputHints.ExpectingInput);
         }
 
         public static IMessageActivity SuggestedAction(IList<string> choices, string text = null, string speak = null)
@@ -147,7 +151,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         public static IMessageActivity SuggestedAction(IList<Choice> choices, string text = null, string speak = null)
         {
             choices = choices ?? new List<Choice>();
-
+            
             // Map choices to actions
             var actions = choices.Select((choice) =>
             {
