@@ -29,6 +29,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        public void ShouldRenderUnincludedNumbersChoicesAsAList()
+        {
+            var activity = ChoiceFactory.List(colorChoices, "select from:", options: new ChoiceFactoryOptions { IncludeNumbers = false });
+            Assert.AreEqual("select from:\n\n   - red\n   - green\n   - blue", activity.Text);
+        }
+
+        [TestMethod]
         public void ShouldRenderChoicesAsSuggestedActions()
         {
             var activity = ChoiceFactory.SuggestedAction(colorChoices, "select from:");
