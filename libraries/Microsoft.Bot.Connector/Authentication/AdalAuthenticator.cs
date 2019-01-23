@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
@@ -38,15 +39,23 @@ namespace Microsoft.Bot.Connector.Authentication
         private static volatile RetryParams currentRetryPolicy;
 
         private readonly ClientCredential clientCredential;
-        private readonly IOAuthConfiguration oAuthConfig;
+        private readonly OAuthConfiguration oAuthConfig;
 
         private const string msalTemporarilyUnavailable = "temporarily_unavailable";
 
-        public AdalAuthenticator(ClientCredential clientCredential, IOAuthConfiguration oAuthConfig)
+        public AdalAuthenticator(ClientCredential clientCredential, OAuthConfiguration oAuthConfig, HttpClient customHttpClient = null)
         {
-            this.oAuthConfig = oAuthConfig;
+            this.oAuthConfig = oAuthConfig ?? throw new ArgumentNullException(nameof(oAuthConfig));
             this.clientCredential = clientCredential ?? throw new ArgumentNullException(nameof(clientCredential));
-            this.authContext = new AuthenticationContext(oAuthConfig.Authority);
+
+            if (customHttpClient != null)
+            {
+                this.authContext = new AuthenticationContext(oAuthConfig.Authority, true, new TokenCache(), customHttpClient);
+            }
+            else
+            {
+                this.authContext = new AuthenticationContext(oAuthConfig.Authority);
+            }
         }
 
         public async Task<AuthenticationResult> GetTokenAsync(bool forceRefresh = false)
@@ -109,7 +118,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 {
                     currentRetryPolicy = ComputeAdalRetry(ex);
                 }
-                throw ex;
+                throw;
             }
             finally
             {
