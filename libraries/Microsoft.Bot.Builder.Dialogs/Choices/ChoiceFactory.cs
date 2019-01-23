@@ -67,8 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 
             // Format list of choices
             var connector = string.Empty;
-            var txtBuilder = new StringBuilder()
-                .Append(text)
+            var txtBuilder = new StringBuilder(text)
                 .Append(' ');
             for (var index = 0; index < choices.Count; index++)
             {
@@ -115,8 +114,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 
             // Format list of choices
             var connector = string.Empty;
-            var txtBuilder = new StringBuilder()
-                .Append(text)
+            var txtBuilder = new StringBuilder(text)
                 .Append("\n\n   ");
 
             for (var index = 0; index < choices.Count; index++)
