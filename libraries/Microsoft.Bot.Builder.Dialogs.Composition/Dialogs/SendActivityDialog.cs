@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
     /// <summary>
     /// Send an activity and finish
     /// </summary>
-    public class SendActivityDialog : Dialog, IDialog
+    public class SendActivityDialog : Dialog, IDialog 
     {
         public SendActivityDialog(string id = null) : base(id) { }
 

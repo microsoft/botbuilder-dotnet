@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
         /// <summary>
         /// Slot definitions
         /// </summary>
-        IDictionary<string, ISlot> Slots { get; set; }
+        IDictionary<string, IValue> Slots { get; set; }
     }
 
 }

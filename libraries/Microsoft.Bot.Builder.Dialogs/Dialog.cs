@@ -27,11 +27,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         public string Id { get; set; }
 
         /// <summary>
-        /// Gets or sets default options for the dialog
-        /// </summary>
-        public object DefaultOptions { get; set; }
-
-        /// <summary>
         /// Gets or sets the telemetry client for logging events.
         /// </summary>
         /// <value>The Telemetry Client logger.</value>

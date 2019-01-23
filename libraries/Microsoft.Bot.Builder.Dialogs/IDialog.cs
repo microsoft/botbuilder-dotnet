@@ -11,11 +11,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         string Id { get; set; }
 
         /// <summary>
-        /// Default options for this dialog
-        /// </summary>
-        object DefaultOptions { get; set; }
-
-        /// <summary>
         /// Telemetry client
         /// </summary>
         IBotTelemetryClient TelemetryClient { get; set; }

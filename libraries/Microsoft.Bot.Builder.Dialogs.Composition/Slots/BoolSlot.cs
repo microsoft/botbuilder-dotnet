@@ -1,16 +1,16 @@
-﻿using System.Threading.Tasks;
+﻿//using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Dialogs.Composition.Slots
-{
+//namespace Microsoft.Bot.Builder.Dialogs.Composition.Slots
+//{
 
-    /// <summary>
-    /// Slot captures boolean value
-    /// </summary>
-    public class BoolSlot : Slot<bool>
-    {
-        public BoolSlot() 
-        {
-        }
+//    /// <summary>
+//    /// Slot captures boolean value
+//    /// </summary>
+//    public class BoolSlot : Slot<bool>
+//    {
+//        public BoolSlot() 
+//        {
+//        }
 
-    }
-}
+//    }
+//}
