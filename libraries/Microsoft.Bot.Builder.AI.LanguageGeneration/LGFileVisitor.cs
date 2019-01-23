@@ -21,19 +21,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             _engine = engine;
         }
 
-        public override string VisitFile([NotNull] LGFileParser.FileContext context)
-        {
-            // return the first template matched result
-            return context.paragraph().Select(p => VisitParagraph(p))
-                                      .First(s => !string.IsNullOrEmpty(s));
-        }
-
-        public override string VisitParagraph([NotNull] LGFileParser.ParagraphContext context)
-        {
-            var templateDef = context.templateDefinition();
-            return templateDef == null ? null : VisitTemplateDefinition(templateDef);
-        }
-
         public override string VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
         {
             var templateNameContext = context.templateName();

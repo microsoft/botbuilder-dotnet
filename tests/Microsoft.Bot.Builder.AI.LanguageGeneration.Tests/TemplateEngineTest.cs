@@ -48,5 +48,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.IsTrue(evaled.Contains(userName),  $"The result {evaled} does not contiain `{userName}`");
         }
+
+        [TestMethod]
+        public void TestBaicConditionalTemplate()
+        {
+            var engine = TemplateEngine.FromFile(GetExampleFilePath("4.lg"));
+
+
+        }
+
     }
 }
