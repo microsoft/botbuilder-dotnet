@@ -3,7 +3,7 @@ lexer grammar LGFileLexer;
 // usually we don't define pattern of a complete TOKEN as fragment, since fragment don't generate token directly
 // the reason we do it here is to share pattern across multiple modes
 fragment F_EXPRESSION: '{' ~('\r'|'\n'|'{'|'}')* '}';
-fragment F_TEMPLATE_REF: '[' ~('\r'|'\n'|'['|']')* ']';
+fragment F_TEMPLATE_REF: '[' (~('\r'|'\n'|']') | F_TEMPLATE_REF)* ']';
 fragment F_TEXT: ~('\r'|'\n'|' '|'\t'|'('|')'|',')+;
 fragment F_NEW_LINE: '\r'?'\n';
 fragment F_WS: ' '|'\t';
@@ -93,6 +93,7 @@ DEFAULT
   : 'DEFAULT:' -> mode(DEFAULT_MODE)
   ;
 
+// encounter anything other than CASE: and DEFAULT: will go to TEMPLATE_MODE
 S_EXPRESSION
   : F_EXPRESSION -> type(EXPRESSION), mode(TEMPLATE_MODE)
   ;
@@ -105,6 +106,17 @@ S_TEXT
   : F_TEXT -> type(TEXT), mode(TEMPLATE_MODE)
   ; 
 
+S_OPEN_PARETHESES
+  : F_OPEN_PARETHESES -> type(OPEN_PARETHESES), mode(TEMPLATE_MODE)
+  ;
+
+S_CLOSE_PARETHESES
+  : F_CLOSE_PARETHESES -> type(CLOSE_PARETHESES), mode(TEMPLATE_MODE)
+  ;
+
+S_COMMA
+  : F_COMMA -> type(COMMA), mode(TEMPLATE_MODE)
+  ;
 
 
 /*

@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 throw new Exception($"No such template defined with name: {templateName}");
             }
 
-            var visitor = new LGFileVisitor(templateName, scope, this);
+            var visitor = new LGFileVisitor(templateName, scope, this, _templates);
             return visitor.Visit(_templates[templateName]) ?? throw new Exception("Evaluation error");
         }
 

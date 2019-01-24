@@ -7,33 +7,20 @@
  
 > Using a template in another template
 > Sometimes the bot will say 'Hi' and other times it will say 'Hi :)'
-# welcome-user
-- [wPhrase]
-- [wPhrase] :)
+# welcome-user(userName)
+- Hi {userName} :)
  
 > Using entity references
-# welcome-user
-- [wPhrase]
-- [wPhrase] {userName}
-- [wPhrase] {userName} :)
+# welcome
+- CASE: {userName}
+    - [welcome-user(userName)]
+- DEFAULT:
+    - [welcome-user('DongLei')]
 
-> Conditional response template
-> Outer list is condition expression; L2 list is one-of collection
-# time-of-day-readout
-- CASE: {timeOfDay} = morning
-    - Good morning
-    - Morning! 
-- DEFAULT:
-    - Good evening
-    - Evening! 
-    
-> Using template references within text values
-# time-of-day-readout
-- CASE: {timeOfDay} = morning
-    - [wPhrase] Good morning
-    - Morning! 
-- CASE: {timeOfDay} = evening
-    - [wPhrase] Good evening
-    - Evening!
-- DEFAULT:
-    - [wPhrase] Good night 
+
+
+# ShowAlarm(alarm)
+- You have an alarm at {alarm.time} {alarm.date}
+
+# ShowAlarms
+- [ShowAlarm(alarms[0])], [ShowAlarm(alarms[1])]

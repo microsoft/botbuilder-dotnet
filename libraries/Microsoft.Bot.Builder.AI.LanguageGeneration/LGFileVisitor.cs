@@ -14,12 +14,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         private string TemplateName { get; set; }
         private object Scope { get; set; }
         private readonly TemplateEngine _engine;
+        private readonly Dictionary<string, LGFileParser.TemplateDefinitionContext> _templates = null;
 
-        public LGFileVisitor(string templateName, object scope, TemplateEngine engine )
+
+        public LGFileVisitor(string templateName, object scope, TemplateEngine engine, Dictionary<string, LGFileParser.TemplateDefinitionContext> templates)
         {
             TemplateName = templateName;
             Scope = scope;
             _engine = engine;
+            _templates = templates;
         }
 
         public override string VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
@@ -116,7 +119,47 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         private string EvalTemplateRef(string exp)
         {
             exp = exp.TrimStart('[').TrimEnd(']').Trim();
+
+            var argsStartPos = exp.IndexOf('(');
+            if (argsStartPos > 0) // Do have args
+            {
+                // Evaluate all arguments using ExpressoinEngine
+                var argsEndPos = exp.LastIndexOf(')');
+                if (argsEndPos < 0 || argsEndPos < argsStartPos+1)
+                {
+                    throw new Exception($"Not a valid template ref: {exp}");
+                }
+                var argExpressions = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(",");
+                var args = argExpressions.Select(x => ExpressionEngine.Evaluate(x, Scope)).ToList();
+
+                // Construct a new Scope for this template reference
+                // Bind all arguments to parameters
+                var templateName = exp.Substring(0, argsStartPos);
+                var paramters = ExtractParameters(templateName);
+
+                if (paramters.Count != args.Count)
+                {
+                    throw new Exception($"Arguments count mismatch for template ref {exp}, expected {paramters.Count}, actual {args.Count}");
+                }
+
+                var newScope = paramters.Zip(args, (k, v) => new { k, v })
+                                        .ToDictionary(x => x.k, x => x.v);
+
+                return _engine.Evaluate(templateName, newScope);
+                
+            }
             return _engine.Evaluate(exp, Scope);
+        }
+
+        private List<string> ExtractParameters(string templateName)
+        {
+            if (!_templates.ContainsKey(templateName))
+            {
+                throw new Exception($"No such template: {templateName}");
+            }
+
+            var context = _templates[templateName];
+            return context.templateName().parameters().IDENTIFIER().Select(x => x.GetText()).ToList();
         }
     }
 }

@@ -50,13 +50,44 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
-        public void TestBaicConditionalTemplate()
+        public void TestBasicConditionalTemplate()
         {
             var engine = TemplateEngine.FromFile(GetExampleFilePath("5.lg"));
 
             string evaled = engine.Evaluate("time-of-day-readout", new { timeOfDay = "morning" });
             Assert.IsTrue(evaled == "Good morning" || evaled == "Morning! ", $"Evaled is {evaled}");
+        }
 
+        [TestMethod]
+        public void TestBasicTemplateRefWithParameters()
+        {
+            var engine = TemplateEngine.FromFile(GetExampleFilePath("6.lg"));
+
+            string evaled = engine.Evaluate("welcome", null);
+            Assert.AreEqual("Hi DongLei :)", evaled);
+
+            evaled = engine.Evaluate("welcome", new { userName = "DL" });
+            Assert.AreEqual("Hi DL :)", evaled);
+
+
+            var alarmsScope = new
+            {
+                alarms = new[]
+                {
+                    new
+                    {
+                        time = "7 am",
+                        date = "tomorrow"
+                    },
+                    new
+                    {
+                        time = "8 pm",
+                        date = "tomorrow"
+                    }
+                }
+            };
+            evaled = engine.Evaluate("ShowAlarms", alarmsScope);
+            Assert.AreEqual("Hi", evaled);
         }
 
     }
