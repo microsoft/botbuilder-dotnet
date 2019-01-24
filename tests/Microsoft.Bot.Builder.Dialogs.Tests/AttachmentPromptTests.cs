@@ -14,16 +14,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     public class AttachmentPromptTests
     {
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void AttachmentPromptWithEmptyIdShouldFail()
+        public void AttachmentPromptWithEmptyIdShouldNotFail()
         {
             var emptyId = "";
             var attachmentPrompt = new AttachmentPrompt(emptyId);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void AttachmentPromptWithNullIdShouldFail()
+        public void AttachmentPromptWithNullIdShouldNotFail()
         {
             var nullId = "";
             nullId = null;

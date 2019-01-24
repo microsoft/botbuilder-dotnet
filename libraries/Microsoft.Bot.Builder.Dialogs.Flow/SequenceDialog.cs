@@ -105,7 +105,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
                     this.Sequence.Id = this.Id;
                 }
 
-                options = MergeDefaultOptions(options);
                 state[$"{this.Id}.options"] = options;
                 state[$"{this.Id}.CurrentCommandId"] = null;
                 state[$"{this.Id}.Result"] = new JObject();
@@ -173,22 +172,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
                 return await dialogContext.EndDialogAsync(dialogResult, cancellationToken).ConfigureAwait(false);
             }
 
-            private object MergeDefaultOptions(object options)
-            {
-                dynamic opts;
-                if (options != null && DefaultOptions != null)
-                {
-                    opts = JObject.FromObject(options);
-                    opts.Merge(this.DefaultOptions);
-                }
-                else
-                {
-                    opts = options ?? this.DefaultOptions;
-                }
-
-                options = options ?? this.DefaultOptions;
-                return options;
-            }
         }
     }
 }

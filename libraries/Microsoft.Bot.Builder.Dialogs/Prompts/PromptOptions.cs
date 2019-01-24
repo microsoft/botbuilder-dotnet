@@ -10,6 +10,11 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class PromptOptions
     {
         /// <summary>
+        /// The value for the prompt to work with.
+        /// </summary>
+        public object Value { get; set; }
+
+        /// <summary>
         /// Gets or sets the initial prompt to send the user as <seealso cref="Activity"/>Activity.
         /// </summary>
         /// <value>
@@ -26,7 +31,5 @@ namespace Microsoft.Bot.Builder.Dialogs
         public Activity RetryPrompt { get; set; }
 
         public IList<Choice> Choices { get; set; }
-
-        public object Validations { get; set; }
     }
 }

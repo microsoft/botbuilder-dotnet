@@ -12,6 +12,10 @@ using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
+    public class ConfirmPromptOptions : PromptOptions
+    {
+    }
+
     /// <summary>
     /// Prompts a user to confirm something with a yes/no response.
     ///
@@ -24,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// callers next waterfall step
     /// </remarks>
     /// </summary>
-    public class ConfirmPrompt : Prompt<bool>
+    public class ConfirmPrompt : Prompt<bool, ConfirmPromptOptions>
     {
         private static readonly Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> ChoiceDefaults = new Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)>()
         {
@@ -47,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="defaultLocale">The default culture or locale to use if the <see cref="Activity.Locale"/>
         /// of the <see cref="DialogContext"/>.<see cref="DialogContext.Context"/>.<see cref="ITurnContext.Activity"/>
         /// is not specified.</param>
-        public ConfirmPrompt(string dialogId, PromptValidator<bool> validator = null, string defaultLocale = null)
+        public ConfirmPrompt(string dialogId=null, PromptValidator<bool> validator = null, string defaultLocale = null)
             : base(dialogId, validator)
         {
             Style = ListStyle.Auto;
@@ -77,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public Tuple<Choice, Choice> ConfirmChoices { get; set; }
 
-        protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
+        protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, ConfirmPromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -110,7 +114,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             await turnContext.SendActivityAsync(prompt, cancellationToken).ConfigureAwait(false);
         }
 
-        protected override Task<PromptRecognizerResult<bool>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
+        protected override Task<PromptRecognizerResult<bool>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, ConfirmPromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {

@@ -3,25 +3,44 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Prompts;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.DateTime;
 using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public class DateTimePrompt : Prompt<IList<DateTimeResolution>>
+    public class DateTimePromptOptions : PromptOptions
     {
-        public DateTimePrompt(string dialogId, PromptValidator<IList<DateTimeResolution>> validator = null, string defaultLocale = null)
+        public DateTime? MinValue { get; set; }
+
+        public DateTime? MaxValue { get; set; }
+    }
+
+    public class DateTimePrompt : Prompt<IList<DateTimeResolution>, DateTimePromptOptions>, IRangePromptOptions<DateTime>
+    {
+        public DateTimePrompt(string dialogId = null, PromptValidator<IList<DateTimeResolution>> validator = null, string defaultLocale = null)
             : base(dialogId, validator)
         {
             DefaultLocale = defaultLocale;
+            MinValue = DateTime.MinValue;
+            MaxValue = DateTime.MaxValue;
         }
 
         public string DefaultLocale { get; set; }
 
-        protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
+        public DateTime MinValue { get; set; }
+
+        public DateTime MaxValue { get; set; }
+
+        public Activity TooSmallResponse { get; set; }
+
+        public Activity TooLargeResponse { get; set; }
+
+        protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, DateTimePromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -33,6 +52,71 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(options));
             }
 
+            if (options.MinValue == null)
+            {
+                options.MinValue = this.MinValue;
+            }
+
+            if (options.MaxValue == null)
+            {
+                options.MaxValue = this.MaxValue;
+            }
+
+            if (_validator == null)
+            {
+                _validator = new PromptValidator<IList<DateTimeResolution>>(async (promptContext, cancel) =>
+                {
+                    if (!promptContext.Recognized.Succeeded)
+                    {
+                        if (this.NoMatchResponse != null)
+                        {
+                            await promptContext.Context.SendActivityAsync(this.NoMatchResponse).ConfigureAwait(false);
+                        }
+
+                        await promptContext.Context.SendActivityAsync(options.RetryPrompt ?? this.RetryPrompt ?? options.Prompt ?? this.InitialPrompt).ConfigureAwait(false);
+                        return false;
+                    }
+
+                    var result = promptContext.Recognized.Value.FirstOrDefault();
+                    if (DateTime.TryParse(result.Value, out DateTime value))
+                    {
+
+                        if (value < options.MinValue.Value)
+                        {
+                            if (this.TooSmallResponse != null)
+                            {
+                                await promptContext.Context.SendActivityAsync(this.TooSmallResponse).ConfigureAwait(false);
+                            }
+
+                            await promptContext.Context.SendActivityAsync(options.RetryPrompt ?? this.RetryPrompt ?? options.Prompt ?? this.InitialPrompt).ConfigureAwait(false);
+                            return false;
+                        }
+
+                        if (value > options.MaxValue.Value)
+                        {
+                            if (this.TooLargeResponse != null)
+                            {
+                                await promptContext.Context.SendActivityAsync(this.TooLargeResponse).ConfigureAwait(false);
+                            }
+
+                            await promptContext.Context.SendActivityAsync(options.RetryPrompt ?? this.RetryPrompt ?? options.Prompt ?? this.InitialPrompt).ConfigureAwait(false);
+                            return false;
+                        }
+
+                        return true;
+                    }
+
+                    if (this.NoMatchResponse != null)
+                    {
+                        await promptContext.Context.SendActivityAsync(this.NoMatchResponse).ConfigureAwait(false);
+                    }
+
+                    await promptContext.Context.SendActivityAsync(options.RetryPrompt ?? this.RetryPrompt ?? options.Prompt ?? this.InitialPrompt).ConfigureAwait(false);
+                    return false;
+                });
+            }
+
+
             if (isRetry && options.RetryPrompt != null)
             {
                 await turnContext.SendActivityAsync(options.RetryPrompt, cancellationToken).ConfigureAwait(false);
@@ -43,7 +127,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        protected override Task<PromptRecognizerResult<IList<DateTimeResolution>>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
+        protected override Task<PromptRecognizerResult<IList<DateTimeResolution>>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, DateTimePromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {

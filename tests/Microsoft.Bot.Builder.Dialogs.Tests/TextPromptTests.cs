@@ -13,16 +13,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     public class TextPromptTests
     {
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void TextPromptWithEmptyIdShouldFail()
+        public void TextPromptWithEmptyIdShouldNotFail()
         {
             var emptyId = "";
             var textPrompt = new TextPrompt(emptyId);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void TextPromptWithNullIdShouldFail()
+        public void TextPromptWithNullIdShouldNotFail()
         {
             var nullId = "";
             nullId = null;
@@ -116,6 +114,65 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("Make sure the text is greater than three characters.")
             .Send("hello")
             .AssertReply("Bot received the text 'hello'.")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task TextPromptDataValidator()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var dialogs = new DialogSet(dialogState);
+
+            PromptValidator<string> validator = async (promptContext, cancellationToken) =>
+            {
+                var value = promptContext.Recognized.Value;
+                if (value.Length <= 3)
+                {
+                    await promptContext.Context.SendActivityAsync(MessageFactory.Text("Make sure the text is greater than three characters."), cancellationToken);
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            };
+
+            var textPrompt = new TextPrompt()
+            {
+                Id = "TextPrompt",
+                Match = @"\w{3,7}", // must be between 3 and 7 non-space chars
+                InitialPrompt = new Activity { Type = ActivityTypes.Message, Text = "Enter some text." },
+                NotMatchedActivity = new Activity { Type = ActivityTypes.Message, Text = "Make sure the text is greater than three characters." },
+            };
+            dialogs.Add(textPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    var options = new PromptOptions { };
+                    await dc.PromptAsync("TextPrompt", options, cancellationToken);
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    var textResult = (string)results.Result;
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the text '{textResult}'."), cancellationToken);
+                }
+            })
+            .Send("hello")
+                .AssertReply("Enter some text.")
+            .Send("hi")
+                .AssertReply("Make sure the text is greater than three characters.")
+            .Send("hello")
+                .AssertReply("Bot received the text 'hello'.")
             .StartTestAsync();
         }
 

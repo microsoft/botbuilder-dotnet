@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public ActivityPrompt(string dialogId, PromptValidator<Activity> validator)
             : base(dialogId)
         {
-            _validator = validator ?? throw new ArgumentNullException(nameof(validator));
+            _validator = validator;
         }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
@@ -33,11 +33,12 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            var promptOptions = Object.Assign<PromptOptions>(this.DefaultOptions, options);
-            if (!(promptOptions is PromptOptions))
+            if (!(options is PromptOptions))
             {
                 throw new ArgumentOutOfRangeException(nameof(options), "Prompt options are required for Prompt dialogs");
             }
+
+            var promptOptions = (PromptOptions)options;
 
             // Ensure prompts have input hint set
             if (promptOptions.Prompt != null && string.IsNullOrEmpty(promptOptions.Prompt.InputHint))
@@ -75,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Validate the return value
             var promptContext = new PromptValidatorContext<Activity>(dc.Context, recognized, state, options);
-            var isValid = await _validator(promptContext, cancellationToken).ConfigureAwait(false);
+            var isValid = (_validator == null) ? true : await _validator(promptContext, cancellationToken).ConfigureAwait(false);
 
             // Return recognized value or re-prompt
             if (isValid)

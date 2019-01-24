@@ -9,14 +9,18 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public class AttachmentPrompt : Prompt<IList<Attachment>>
+    public class AttachmentPromptOptions : PromptOptions
+    {
+    }
+
+    public class AttachmentPrompt : Prompt<IList<Attachment>, AttachmentPromptOptions>
     {
         public AttachmentPrompt(string dialogId, PromptValidator<IList<Attachment>> validator = null)
             : base(dialogId, validator)
         {
         }
 
-        protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
+        protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, AttachmentPromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -38,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        protected override Task<PromptRecognizerResult<IList<Attachment>>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
+        protected override Task<PromptRecognizerResult<IList<Attachment>>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, AttachmentPromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {

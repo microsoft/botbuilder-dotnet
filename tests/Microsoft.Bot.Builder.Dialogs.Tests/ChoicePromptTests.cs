@@ -62,16 +62,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void ChoicePromptWithEmptyIdShouldFail()
+        public void ChoicePromptWithEmptyIdShouldNotFail()
         {
             var emptyId = "";
             var choicePrompt = new ChoicePrompt(emptyId);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void ChoicePromptWithNullIdShouldFail()
+        public void ChoicePromptWithNullIdShouldNotFail()
         {
             var nullId = "";
             nullId = null;

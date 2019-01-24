@@ -19,21 +19,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             var agePrompt = new NumberPrompt<Int32>()
             {
                 Id = "AgePrompt",
-                DefaultOptions = new PromptOptions()
-                {
-                    Prompt = new Activity(type: ActivityTypes.Message, text: "What is your age?"),
-                    RetryPrompt = new Activity(type: ActivityTypes.Message, text: "Reprompt: What is your age?")
-                }
+                InitialPrompt = new Activity(type: ActivityTypes.Message, text: "What is your age?"),
+                RetryPrompt = new Activity(type: ActivityTypes.Message, text: "Reprompt: What is your age?")
             };
 
             var namePrompt = new TextPrompt()
             {
                 Id = "NamePrompt",
-                DefaultOptions = new PromptOptions()
-                {
-                    Prompt = new Activity(type: ActivityTypes.Message, text: "What is your name?"),
-                    RetryPrompt = new Activity(type: ActivityTypes.Message, text: "Reprompt: What is your name?")
-                }
+                InitialPrompt = new Activity(type: ActivityTypes.Message, text: "What is your name?"),
+                RetryPrompt = new Activity(type: ActivityTypes.Message, text: "Reprompt: What is your name?")
             };
 
             var flowDialog2 = new SequenceDialog()

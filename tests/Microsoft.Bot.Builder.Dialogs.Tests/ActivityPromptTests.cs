@@ -32,8 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void ActivityPromptWithEmptyIdShouldFail()
+        public void ActivityPromptWithEmptyIdShouldNotFail()
         {
             var emptyId = "";
             var textPrompt = new EventActivityPrompt(emptyId, _validator);
@@ -41,8 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void ActivityPromptWithNullIdShouldFail()
+        public void ActivityPromptWithNullIdShouldNotFail()
         {
             var nullId = "";
             nullId = null;
@@ -51,8 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
         
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void ActivityPromptWithNullValidatorShouldFail()
+        public void ActivityPromptWithNullValidatorShouldNotFail()
         {
             var validator = (PromptValidator<Activity>)_validator;
             validator = null;
