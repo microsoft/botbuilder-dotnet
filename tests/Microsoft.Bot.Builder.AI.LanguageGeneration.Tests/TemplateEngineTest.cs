@@ -32,9 +32,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var engine = TemplateEngine.FromFile(GetExampleFilePath("3.lg"));
 
             var evaled = engine.Evaluate("welcome-user", null);
-            var options = new List<string> { "Hi", "Hello", "Hiya ", "Hi :)", "Hello :)", "Hiya  :)"};
+            var options = new List<string> { "Hi", "Hello", "Hiya", "Hi :)", "Hello :)", "Hiya :)"};
 
-            Assert.IsTrue(options.Contains(evaled), $"The result {evaled} is not in those options {options}");
+            Assert.IsTrue(options.Contains(evaled), $"The result {evaled} is not in those options [{string.Join(",", options)}]");
         }
 
         [TestMethod]
@@ -52,8 +52,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestBaicConditionalTemplate()
         {
-            var engine = TemplateEngine.FromFile(GetExampleFilePath("4.lg"));
+            var engine = TemplateEngine.FromFile(GetExampleFilePath("5.lg"));
 
+            string evaled = engine.Evaluate("time-of-day-readout", new { timeOfDay = "morning" });
+            Assert.IsTrue(evaled == "Good morning" || evaled == "Morning! ");
 
         }
 

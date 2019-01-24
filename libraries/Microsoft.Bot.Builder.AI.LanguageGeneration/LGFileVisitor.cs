@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Antlr4.Runtime.Misc;
@@ -33,10 +34,30 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
         public override string VisitNormalBody([NotNull] LGFileParser.NormalBodyContext context)
         {
-            var normalTemplateStrs = context.normalTemplateBody().normalTemplateString();
+            return Visit(context.normalTemplateBody());
+        }
+
+        public override string VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
+        {
+            var normalTemplateStrs = context.normalTemplateString();
             Random rd = new Random();
             return Visit(normalTemplateStrs[rd.Next(normalTemplateStrs.Length)]);
         }
+
+        public override string VisitConditionalBody([NotNull] LGFileParser.ConditionalBodyContext context)
+        {
+            var caseRules = context.conditionalTemplateBody().caseRule();
+            foreach (var caseRule in caseRules)
+            {
+                var conditionExpression = caseRule.caseCondition().EXPRESSION().GetText();
+                if (EvalCondition(conditionExpression))
+                {
+                    return Visit(caseRule.normalTemplateBody());
+                }
+            }
+            return Visit(context.conditionalTemplateBody().defaultRule().normalTemplateBody());
+        }
+        
 
         public override string VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
         {
@@ -61,6 +82,29 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return builder.ToString();
         }
         
+
+        private bool EvalCondition(string exp)
+        {
+            try
+            {
+                exp = exp.TrimStart('{').TrimEnd('}');
+                var result = ExpressionEngine.Evaluate(exp, Scope);
+
+                if ((result is Boolean r1 && r1 == false) ||
+                    (result is int r2 && r2 == 0))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"Expression {exp} evaled as false due to exception");
+                Debug.WriteLine(e.Message);
+                return false;
+            }
+        }
 
         private string EvalExpression(string exp)
         {

@@ -12,7 +12,7 @@
 - [wPhrase] :)
  
 > Using entity references
-# welcome-user
+# welcome-user2
 - [wPhrase]
 - [wPhrase] {userName}
 - [wPhrase] {userName} :)
@@ -20,7 +20,7 @@
 > Conditional response template
 > Outer list is condition expression; L2 list is one-of collection
 # time-of-day-readout
-- CASE: {timeOfDay = 'morning'}
+- CASE: {timeOfDay == 'morning'}
     - Good morning
     - Morning! 
 - DEFAULT:
