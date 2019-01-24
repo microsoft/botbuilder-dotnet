@@ -1,4 +1,7 @@
 <Project>
+  <ItemGroup>
+    <PackageReference Update="Microsoft.NETCore.App" Version="2.1.0" />
+  </ItemGroup>
 
   <PropertyGroup>
     <PackageOutputPath>$(MSBuildThisFileDirectory)outputpackages\</PackageOutputPath>
