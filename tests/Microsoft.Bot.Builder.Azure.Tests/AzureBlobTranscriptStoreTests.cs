@@ -68,13 +68,12 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             Assert.IsNotNull(_transcriptStore);
         }
 
-
-
         // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public async Task TranscriptsEmptyTest()
-        {
-            var transcripts = await _transcriptStore.ListTranscriptsAsync(ChannelId);
+        {            
+            var unusedChannelId = Guid.NewGuid().ToString();
+            var transcripts = await _transcriptStore.ListTranscriptsAsync(unusedChannelId);
             Assert.AreEqual(transcripts.Items.Length, 0);
         }
 
@@ -155,21 +154,25 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task ActivityAddPagedResultTest()
         {
+            var cleanChanel = Guid.NewGuid().ToString();
+
             var loggedPagedResult = new PagedResult<IActivity>();
             var activities = new List<IActivity>();
 
             for (var i = 0; i < ConversationIds.Length; i++)
             {
                 var a = CreateActivity(0, i, ConversationIds);
+                a.ChannelId = cleanChanel;
+
                 await _transcriptStore.LogActivityAsync(a);
                 activities.Add(a);
             }
-            loggedPagedResult = _transcriptStore.GetTranscriptActivitiesAsync(ChannelId, ConversationIds[0]).Result;
+            loggedPagedResult = _transcriptStore.GetTranscriptActivitiesAsync(cleanChanel, ConversationIds[0]).Result;
             var ct = loggedPagedResult.ContinuationToken;
             Assert.AreEqual(20, loggedPagedResult.Items.Length);
             Assert.IsNotNull(ct);
             Assert.IsTrue(loggedPagedResult.ContinuationToken.Length > 0);
-            loggedPagedResult = _transcriptStore.GetTranscriptActivitiesAsync(ChannelId, ConversationIds[0], ct).Result;
+            loggedPagedResult = _transcriptStore.GetTranscriptActivitiesAsync(cleanChanel, ConversationIds[0], ct).Result;
             ct = loggedPagedResult.ContinuationToken;
             Assert.AreEqual(10, loggedPagedResult.Items.Length);
             Assert.IsNull(ct);
@@ -278,10 +281,17 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         public static int ExecuteStorageEmulatorCommand(StorageEmulatorCommand command)
         {
+            var emulatorPath = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+                "Microsoft SDKs",
+                "Azure",
+                "Storage Emulator",
+                "AzureStorageEmulator.exe");
+
             var start = new ProcessStartInfo
             {
                 Arguments = command.ToString(),
-                FileName = @"C:\Program Files (x86)\Microsoft SDKs\Azure\Storage Emulator\AzureStorageEmulator.exe"
+                FileName = emulatorPath
             };
             var exitCode = ExecuteProcess(start);
             return exitCode;
