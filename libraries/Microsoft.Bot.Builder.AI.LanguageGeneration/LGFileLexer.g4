@@ -4,10 +4,17 @@ lexer grammar LGFileLexer;
 // the reason we do it here is to share pattern across multiple modes
 fragment F_EXPRESSION: '{' ~('\r'|'\n'|'{'|'}')* '}';
 fragment F_TEMPLATE_REF: '[' ~('\r'|'\n'|'['|']')* ']';
-fragment F_TEXT: ~('\r'|'\n'|' '|'\t')+;
+fragment F_TEXT: ~('\r'|'\n'|' '|'\t'|'('|')'|',')+;
 fragment F_NEW_LINE: '\r'?'\n';
 fragment F_WS: ' '|'\t';
 
+// those are text seperators
+fragment F_OPEN_PARETHESES: '(';
+fragment F_CLOSE_PARETHESES: ')';
+fragment F_COMMA: ',';
+
+fragment LETTER: 'a'..'z' | 'A'..'Z';
+fragment NUMBER: '0'..'9';
 
 // in comment mode, eveyting is skip until newline is encoutner
 // we just treat $... as comment here before we handle type notation in parser
@@ -19,10 +26,26 @@ HASH
   : '#'
   ;
 
+COMMA
+  : ','
+  ;
 
 DASH
   : '-' -> mode(START_TEMPLATE_MODE)
   ;
+
+OPEN_PARETHESES
+  : F_OPEN_PARETHESES
+  ;
+
+CLOSE_PARETHESES
+  : F_CLOSE_PARETHESES
+  ;
+
+IDENTIFIER
+  : (LETTER | NUMBER | '_') (LETTER | NUMBER | '-' | '_')*
+  ;
+
 
 /*
  * Treat anything inside bracket as expression
@@ -106,6 +129,18 @@ T_TEMPLATE_REF
 
 T_TEXT
   : F_TEXT -> type(TEXT)
+  ;
+
+T_OPEN_PARETHESES
+  : F_OPEN_PARETHESES -> type(OPEN_PARETHESES)
+  ;
+
+T_CLOSE_PARETHESES
+  : F_CLOSE_PARETHESES -> type(CLOSE_PARETHESES)
+  ;
+
+T_COMMA
+  : F_COMMA -> type(COMMA)
   ;
 
 T_NEWLINE

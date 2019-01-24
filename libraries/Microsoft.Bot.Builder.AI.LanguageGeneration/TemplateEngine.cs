@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var templateContexts = _context.paragraph().Select(x => x.templateDefinition()).Where(x => x != null);
             foreach (var templateContext in templateContexts)
             {
-                var templateName = templateContext.templateName().TEXT().GetText();
+                var templateName = templateContext.templateName().IDENTIFIER().GetText();
                 if (!_templates.ContainsKey(templateName))
                 {
                     _templates.Add(templateName, templateContext);

@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var engine = TemplateEngine.FromFile(GetExampleFilePath("5.lg"));
 
             string evaled = engine.Evaluate("time-of-day-readout", new { timeOfDay = "morning" });
-            Assert.IsTrue(evaled == "Good morning" || evaled == "Morning! ");
+            Assert.IsTrue(evaled == "Good morning" || evaled == "Morning! ", $"Evaled is {evaled}");
 
         }
 

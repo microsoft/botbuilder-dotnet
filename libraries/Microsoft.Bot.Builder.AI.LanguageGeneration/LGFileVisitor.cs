@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         public override string VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
         {
             var templateNameContext = context.templateName();
-            if (templateNameContext.TEXT().GetText().Equals(TemplateName))
+            if (templateNameContext.IDENTIFIER().GetText().Equals(TemplateName))
             {
                 return Visit(context.templateBody());
             }

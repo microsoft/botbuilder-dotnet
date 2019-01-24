@@ -24,8 +24,12 @@ templateDefinition
 	;
 
 templateName
-	: HASH TEXT
+	: HASH IDENTIFIER parameters?
 	;
+
+parameters
+    : OPEN_PARETHESES IDENTIFIER (COMMA IDENTIFIER)* CLOSE_PARETHESES
+    ;
 
 templateBody
 	: normalTemplateBody						#normalBody
@@ -36,8 +40,9 @@ normalTemplateBody
     : (normalTemplateString newline)+
     ;
 
+
 normalTemplateString
-	: DASH (WS|TEXT|EXPRESSION|TEMPLATE_REF)+
+	: DASH (WS|TEXT|EXPRESSION|TEMPLATE_REF|OPEN_PARETHESES|CLOSE_PARETHESES|COMMA)+
 	;
 
 conditionalTemplateBody
