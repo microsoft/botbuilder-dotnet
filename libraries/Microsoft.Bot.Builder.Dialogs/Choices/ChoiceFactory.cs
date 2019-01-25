@@ -72,9 +72,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             for (var index = 0; index < choices.Count; index++)
             {
                 var choice = choices[index];
-
                 var title = choice.Action != null && choice.Action.Title != null ? choice.Action.Title : choice.Value;
-
 
                 txtBuilder.Append(connector);
                 if (opt.IncludeNumbers.Value)
@@ -151,7 +149,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         public static IMessageActivity SuggestedAction(IList<Choice> choices, string text = null, string speak = null)
         {
             choices = choices ?? new List<Choice>();
-            
+
             // Map choices to actions
             var actions = choices.Select((choice) =>
             {

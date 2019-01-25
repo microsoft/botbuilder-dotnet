@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => sd.ServiceType == typeof(IAdapterIntegration))), Times.Exactly(2));
             }
 
-            public static void VerifyBotFrameworkAdapterIntegrationIsRegistered(Mock<IServiceCollection> serviceCollectionMock)
+            private static void VerifyBotFrameworkAdapterIntegrationIsRegistered(Mock<IServiceCollection> serviceCollectionMock)
             {
                 serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => sd.ServiceType == typeof(IAdapterIntegration) && sd.ImplementationFactory != null)));
             }
