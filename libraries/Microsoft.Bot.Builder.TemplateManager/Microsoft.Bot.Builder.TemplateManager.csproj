@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
 	<PropertyGroup>
 		<Version Condition=" '$(PackageVersion)' == '' ">4.0.0-local</Version>
 		<Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
@@ -16,24 +15,9 @@
   </PropertyGroup>
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
-		<PackageId>Microsoft.Bot.Builder.TemplateManager</PackageId>
+		<TargetFramework>netstandard2.0</TargetFramework>		
 		<Description>This library implements .NET TemplateManager classes to manage libraries of template renderers in Microsoft Bot Builder SDK v4</Description>
 		<Summary>This library implements .NET TemplateManager classes to manage libraries of template renderers in Microsoft Bot Builder SDK v4</Summary>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <NoWarn>1701;1702;1705;CS1998</NoWarn>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
-	  <NoWarn>1701;1702;1705;CS1998</NoWarn>
-	  <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.TemplateManager.xml</DocumentationFile>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<NoWarn>1701;1702;1705;CS1998</NoWarn>
-		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.TemplateManager.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -46,5 +30,4 @@
 	<ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
 	</ItemGroup>
-
 </Project>

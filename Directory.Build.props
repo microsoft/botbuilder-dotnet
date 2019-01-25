@@ -10,6 +10,21 @@
     <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>        
+    <NoWarn>$(NoWarn),1573,1591,1712</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
+	  <GenerateDocumentationFile>true</GenerateDocumentationFile>    
+    <NoWarn>$(NoWarn),1573,1591,1712</NoWarn>
+	</PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
   <PropertyGroup>
     <PackageProjectUrl>https://github.com/Microsoft/botbuilder-dotnet</PackageProjectUrl>
     <PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>

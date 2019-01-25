@@ -15,17 +15,8 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
-		<PackageId>Microsoft.Bot.Builder.Azure</PackageId>
+		<TargetFramework>netstandard2.0</TargetFramework>		
 		<Description>Azure classes for using Azure Services on the Microsoft Bot Builder SDK</Description>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Azure.xml</DocumentationFile>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Azure.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -48,5 +39,4 @@
 	<ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
 	</ItemGroup>
-
 </Project>

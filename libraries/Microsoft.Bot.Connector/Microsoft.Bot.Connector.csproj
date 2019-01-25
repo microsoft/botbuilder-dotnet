@@ -15,18 +15,9 @@
   </PropertyGroup>
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
-		<PackageId>Microsoft.Bot.Connector</PackageId>
+		<TargetFramework>netstandard2.0</TargetFramework>		
 		<Description>This library implements C# classes for using the Bot Framework Connector REST API.</Description>
 		<Summary>Client REST API library for Microsoft Bot Framework Connector</Summary>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
-	  <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Connector.xml</DocumentationFile>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Connector.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>

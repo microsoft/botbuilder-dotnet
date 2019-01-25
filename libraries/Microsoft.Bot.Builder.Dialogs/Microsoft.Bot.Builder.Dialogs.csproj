@@ -16,26 +16,13 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
-		<PackageId>Microsoft.Bot.Builder.Dialogs</PackageId>
+		<TargetFramework>netstandard2.0</TargetFramework>		
 		<Description>This library implements .NET Simple Dialog classes </Description>
 		<Summary>This library implements .NET Simple Dialog classes </Summary>
 	</PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Dialogs.xml</DocumentationFile>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Dialogs.xml</DocumentationFile>
-	</PropertyGroup>
-  
+ 
 	<PropertyGroup>
 	  <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Dialogs.ruleset</CodeAnalysisRuleSet>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <DebugType>full</DebugType>
-	  <DebugSymbols>true</DebugSymbols>
 	</PropertyGroup>
 
 	<ItemGroup>
