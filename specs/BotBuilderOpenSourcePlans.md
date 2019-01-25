@@ -9,7 +9,7 @@ The BotBuilder SDK is an open-source project on GitHub that aspires to:
 * Leverage existing best-practices wherever they are found. 
 * Keep all platform implementations of the BotBuilder in Sync.
 
-## Non-Goals:
+## Non-Goals
 * TBD
 
 # Exemplar Projects
