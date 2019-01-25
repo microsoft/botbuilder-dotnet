@@ -45,9 +45,9 @@ namespace Microsoft.Bot.Builder.Integration
         /// before the bot can send activities to the user.</remarks>
         /// <seealso cref="BotAdapter.ContinueConversationAsync(string, ConversationReference, BotCallbackHandler, CancellationToken)"/>
         Task ContinueConversationAsync(
-            string botId, 
-            ConversationReference reference, 
-            BotCallbackHandler callback, 
+            string botId,
+            ConversationReference reference,
+            BotCallbackHandler callback,
             CancellationToken cancellationToken = default(CancellationToken));
     }
 }
