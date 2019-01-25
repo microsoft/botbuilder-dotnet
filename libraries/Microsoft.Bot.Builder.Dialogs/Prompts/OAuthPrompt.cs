@@ -52,8 +52,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string PersistedState = "state";
         private const string PersistedExpires = "expires";
 
-            // Default prompt timeout of 15 minutes (in ms)
-        private const int DefaultPromptTimeout = 54000000;
+        // Default prompt timeout of 15 minutes (in ms)
+        private const int DefaultPromptTimeout = 900000;
 
         // regex to check if code supplied is a 6 digit numerical code (hence, a magic code).
         private readonly Regex _magicCodeRegex = new Regex(@"(\d{6})");
