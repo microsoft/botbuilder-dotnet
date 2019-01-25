@@ -178,7 +178,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 MinValue = 0,
                 MaxValue = 100,
                 InitialPrompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." },
-                RetryPrompt = new Activity { Type = ActivityTypes.Message, Text = "Please try again. Enter a number." },
+                RetryPrompt = new Activity { Type = ActivityTypes.Message, Text = "Let's try again. Enter a number." },
+                NoMatchResponse = new Activity { Type = ActivityTypes.Message, Text = "That's not a number." },
                 TooSmallResponse = new Activity { Type = ActivityTypes.Message, Text = "You must enter a positive number." },
                 TooLargeResponse = new Activity { Type = ActivityTypes.Message, Text = "You must enter a less than 100." },
             };
@@ -204,12 +205,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             })
             .Send("hello")
                 .AssertReply("Enter a number.")
+            .Send("xyz")
+                .AssertReply("That's not a number.")
+                .AssertReply("Let's try again. Enter a number.")
             .Send("150")
                 .AssertReply("You must enter a less than 100.")
-                .AssertReply("Please try again. Enter a number.")
+                .AssertReply("Let's try again. Enter a number.")
             .Send("-30")
                 .AssertReply("You must enter a positive number.")
-                .AssertReply("Please try again. Enter a number.")
+                .AssertReply("Let's try again. Enter a number.")
             .Send("64")
                 .AssertReply("Bot received the number '64'.")
             .StartTestAsync();

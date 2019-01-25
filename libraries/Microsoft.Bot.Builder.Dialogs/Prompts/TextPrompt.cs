@@ -24,9 +24,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Regex Match expression to match.
         /// </summary>
-        private Regex _match;
+        private Regex _patternMatcher;
 
-        public string Match { get { return _match.ToString(); } set { _match = new Regex(value); } }
+        public string Pattern { get { return _patternMatcher.ToString(); } set { _patternMatcher = new Regex(value); } }
 
         public Activity NotMatchedActivity { get; set; }
 
@@ -51,14 +51,14 @@ namespace Microsoft.Bot.Builder.Dialogs
                         return false;
                     }
 
-                    if (_match == null)
+                    if (_patternMatcher == null)
                     {
                         return true;
                     }
 
                     var value = promptContext.Recognized.Value;
 
-                    if (!_match.IsMatch(value))
+                    if (!_patternMatcher.IsMatch(value))
                     {
                         if (this.NotMatchedActivity != null)
                         {
