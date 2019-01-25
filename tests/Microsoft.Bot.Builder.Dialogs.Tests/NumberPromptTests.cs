@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(convoState))
-                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new SimpleTextLogger()));
 
             var dialogs = new DialogSet(dialogState);
 

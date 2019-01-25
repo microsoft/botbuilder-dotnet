@@ -56,6 +56,12 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     if (!promptContext.Recognized.Succeeded)
                     {
+                        if (this.NoMatchResponse != null)
+                        {
+                            await promptContext.Context.SendActivityAsync(this.NoMatchResponse).ConfigureAwait(false);
+                        }
+
+                        await promptContext.Context.SendActivityAsync(this.RetryPrompt).ConfigureAwait(false);
                         return false;
                     }
 
