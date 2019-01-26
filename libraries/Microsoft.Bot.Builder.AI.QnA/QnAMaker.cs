@@ -128,22 +128,22 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (queryOptions != null)
             {
-                if (HasScoreThresholdQueryOption(hydratedOptions, queryOptions))
+                if (queryOptions.ScoreThreshold != hydratedOptions.ScoreThreshold && queryOptions.ScoreThreshold != 0)
                 {
                     hydratedOptions.ScoreThreshold = queryOptions.ScoreThreshold;
                 }
 
-                if (HasTopQueryOption(hydratedOptions, queryOptions))
+                if (queryOptions.Top != hydratedOptions.Top && queryOptions.Top != 0)
                 {
                     hydratedOptions.Top = queryOptions.Top;
                 }
 
-                if (HasStrictFiltersQueryOption(queryOptions))
+                if (queryOptions.StrictFilters?.Length > 0)
                 {
                    hydratedOptions.StrictFilters = queryOptions.StrictFilters;
                 }
 
-                if (HasMetadataBoostQueryOption(queryOptions))
+                if (queryOptions.MetadataBoost?.Length > 0)
                 {
                    hydratedOptions.MetadataBoost = queryOptions.MetadataBoost;
                 }
@@ -306,18 +306,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     })
                     .ToArray(),
         };
-
-        private bool HasScoreThresholdQueryOption(QnAMakerOptions serviceOptions, QnAMakerOptions queryOptions) =>
-            queryOptions.ScoreThreshold != serviceOptions.ScoreThreshold
-            && queryOptions.ScoreThreshold != 0;
-
-        private bool HasTopQueryOption(QnAMakerOptions serviceOptions, QnAMakerOptions queryOptions) =>
-            queryOptions.Top != serviceOptions.Top
-            && queryOptions.Top != 0;
-
-        private bool HasStrictFiltersQueryOption(QnAMakerOptions queryOptions) => queryOptions.StrictFilters?.Length > 0;
-
-        private bool HasMetadataBoostQueryOption(QnAMakerOptions queryOptions) => queryOptions.MetadataBoost?.Length > 0;
 
         private class InternalQueryResult : QueryResult
         {
