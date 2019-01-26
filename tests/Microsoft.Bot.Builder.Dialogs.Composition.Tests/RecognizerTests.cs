@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using System;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Composition.Recognizers;
@@ -36,13 +38,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Tests
         /// <summary>
         /// Create test flow
         /// </summary>
-        private static TestAdapter CreateTestAdapter(string initialDialog, out DialogSet dialogs, out BotCallbackHandler botHandler)
+        private TestAdapter CreateTestAdapter(string initialDialog, out DialogSet dialogs, out BotCallbackHandler botHandler)
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
             var adapter = new TestAdapter()
-                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger()))
-                .Use(new AutoSaveStateMiddleware(convoState));
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger(Path.Combine(Environment.CurrentDirectory, TestContext.TestName))));
             var dlgs = new DialogSet(dialogState);
             dialogs = dlgs;
             botHandler = async (turnContext, cancellationToken) =>
@@ -58,6 +60,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Tests
 
             return adapter;
         }
+
+        public TestContext TestContext { get; set; }
 
         public class RecognizerDialog : Dialog, IDialog
         {

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -110,13 +112,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
         /// <summary>
         /// Create test flow
         /// </summary>
-        private static TestAdapter CreateTestAdapter(string initialDialog, IDialog[] dialogs, out BotCallbackHandler botHandler)
+        private TestAdapter CreateTestAdapter(string initialDialog, IDialog[] dialogs, out BotCallbackHandler botHandler)
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
             var adapter = new TestAdapter()
-                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger()))
-                .Use(new AutoSaveStateMiddleware(convoState));
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger(Path.Combine(Environment.CurrentDirectory, TestContext.TestName))));
 
             var dialogSet = new DialogSet(dialogState);
             foreach (var dialog in dialogs)
@@ -138,7 +140,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             return adapter;
         }
 
-
+        public TestContext TestContext { get; set; }
+        
 
         [TestMethod]
         public async Task CallDialog_Test()

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -13,6 +14,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestClass]
     public class ConfirmPromptTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public void ConfirmPromptWithEmptyIdShouldNotFail()
         {
@@ -34,7 +37,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
             var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger(Path.Combine(Environment.CurrentDirectory, TestContext.TestName))));
 
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
@@ -75,7 +79,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
             var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger(Path.Combine(Environment.CurrentDirectory, TestContext.TestName))));
 
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
@@ -123,7 +128,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
             var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger(Path.Combine(Environment.CurrentDirectory, TestContext.TestName))));
 
             var dialogs = new DialogSet(dialogState);
             dialogs.Add(new ConfirmPrompt("ConfirmPrompt", defaultLocale: Culture.English));
@@ -178,7 +184,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
             var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger(Path.Combine(Environment.CurrentDirectory, TestContext.TestName))));
 
             var dialogs = new DialogSet(dialogState);
             dialogs.Add(new ConfirmPrompt("ConfirmPrompt", defaultLocale: Culture.English));
@@ -221,7 +228,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
             var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger(Path.Combine(Environment.CurrentDirectory, TestContext.TestName))));
 
             var dialogs = new DialogSet(dialogState);
             var prompt = new ConfirmPrompt("ConfirmPrompt", defaultLocale: Culture.English);
@@ -280,7 +288,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
             var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger(Path.Combine(Environment.CurrentDirectory, TestContext.TestName))));
 
             var dialogs = new DialogSet(dialogState);
             var prompt = new ConfirmPrompt("ConfirmPrompt", defaultLocale: Culture.English);
@@ -341,7 +350,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
             var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger(Path.Combine(Environment.CurrentDirectory, TestContext.TestName))));
 
             var dialogs = new DialogSet(dialogState);
             var prompt = new ConfirmPrompt("ConfirmPrompt", defaultLocale: Culture.English);

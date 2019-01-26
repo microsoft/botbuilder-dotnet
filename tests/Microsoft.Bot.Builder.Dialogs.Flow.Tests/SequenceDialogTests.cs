@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Composition.Expressions;
@@ -12,6 +13,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
     public class SequenceDialogTests
     {
         private static JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };
+
+        public TestContext TestContext { get; set; }
 
         public IDialog CreateTestDialog()
         {
@@ -70,8 +73,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
             var adapter = new TestAdapter()
-                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger()))
-                .Use(new AutoSaveStateMiddleware(convoState));
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger(Path.Combine(Environment.CurrentDirectory, TestContext.TestName))));
 
             var dialogs = new DialogSet(dialogState);
 
