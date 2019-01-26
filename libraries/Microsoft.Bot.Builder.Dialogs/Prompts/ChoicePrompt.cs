@@ -14,8 +14,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
     public class ChoicePromptOptions : PromptOptions
     {
+        public IList<Choice> Choices { get; set; }
     }
-
 
     public class ChoicePrompt : Prompt<FoundChoice, ChoicePromptOptions>
     {
@@ -37,6 +37,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             Style = ListStyle.Auto;
             DefaultLocale = defaultLocale;
         }
+
+        public IList<Choice> Choices { get; set; }
 
         public ListStyle Style { get; set; }
 

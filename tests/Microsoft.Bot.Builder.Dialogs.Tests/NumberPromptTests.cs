@@ -169,11 +169,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(convoState))
-                .Use(new TranscriptLoggerMiddleware(new SimpleTextLogger()));
+                .Use(new TranscriptLoggerMiddleware(new SimpleChatLogger()));
 
             var dialogs = new DialogSet(dialogState);
 
-            var numberPrompt = new NumberPrompt<int>(defaultLocale: Culture.English)
+            var numberPrompt = new IntegerPrompt(defaultLocale: Culture.English)
             {
                 MinValue = 0,
                 MaxValue = 100,
@@ -230,7 +230,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var dialogs = new DialogSet(dialogState);
 
-            var numberPrompt = new NumberPrompt<float>("NumberPrompt", defaultLocale: Culture.English);
+            var numberPrompt = new FloatPrompt("NumberPrompt", defaultLocale: Culture.English);
             dialogs.Add(numberPrompt);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>

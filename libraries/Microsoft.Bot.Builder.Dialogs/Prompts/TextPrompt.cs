@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         private Regex _patternMatcher;
 
-        public string Pattern { get { return _patternMatcher.ToString(); } set { _patternMatcher = new Regex(value); } }
+        public string Pattern { get { return _patternMatcher?.ToString(); } set { _patternMatcher = new Regex(value); } }
 
         public Activity NotMatchedActivity { get; set; }
 

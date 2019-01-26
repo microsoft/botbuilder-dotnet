@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                             await promptContext.Context.SendActivityAsync(this.NoMatchResponse).ConfigureAwait(false);
                         }
 
-                        await promptContext.Context.SendActivityAsync(this.RetryPrompt).ConfigureAwait(false);
+                        await promptContext.Context.SendActivityAsync(options.RetryPrompt).ConfigureAwait(false);
                         return false;
                     }
 
@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                             await promptContext.Context.SendActivityAsync(this.TooSmallResponse).ConfigureAwait(false);
                         }
 
-                        await promptContext.Context.SendActivityAsync(this.RetryPrompt).ConfigureAwait(false);
+                        await promptContext.Context.SendActivityAsync(options.RetryPrompt).ConfigureAwait(false);
                         return false;
                     }
 
@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                             await promptContext.Context.SendActivityAsync(this.TooLargeResponse).ConfigureAwait(false);
                         }
 
-                        await promptContext.Context.SendActivityAsync(this.RetryPrompt).ConfigureAwait(false);
+                        await promptContext.Context.SendActivityAsync(options.RetryPrompt).ConfigureAwait(false);
                         return false;
                     }
 

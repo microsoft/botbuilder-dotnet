@@ -29,7 +29,5 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// The retry prompt to send the user as <seealso cref="Activity"/>Activity.
         /// </value>
         public Activity RetryPrompt { get; set; }
-
-        public IList<Choice> Choices { get; set; }
     }
 }

@@ -10,27 +10,9 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    /// <summary>
-    /// Representas a transcript logger that writes activites to a <see cref="Trace"/> object.
-    /// </summary>
-    public class SimpleTextLogger : ITranscriptLogger
-    {
-        /// <summary>
-        /// Log an activity to the transcript.
-        /// </summary>
-        /// <param name="activity">The activity to transcribe.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        public Task LogActivityAsync(IActivity activity)
-        {
-            BotAssert.ActivityNotNull(activity);
-            System.Diagnostics.Trace.TraceInformation($"{activity.Type}:{((Activity)activity).Text}");
-            return Task.CompletedTask;
-        }
-    }
 
     [TestClass]
     public class DateTimePromptTests
@@ -163,7 +145,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
             TestAdapter adapter = new TestAdapter()
-                .Use(new TranscriptLoggerMiddleware(new SimpleTextLogger()))
+                .Use(new TranscriptLoggerMiddleware(new SimpleChatLogger()))
                 .Use(new AutoSaveStateMiddleware(convoState));
 
             // Create new DialogSet.
@@ -174,7 +156,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 Id = "DateTimePrompt",
                 DefaultLocale = Culture.English,
-                MinValue = new DateTime(1920, 1,1,0,0,0),
+                MinValue = new DateTime(1920, 1, 1, 0, 0, 0),
                 MaxValue = new DateTime(2050, 1, 1, 0, 0, 0),
                 InitialPrompt = new Activity { Type = ActivityTypes.Message, Text = "What date would you like?" },
                 RetryPrompt = new Activity { Type = ActivityTypes.Message, Text = "So...What date would you like?" },
