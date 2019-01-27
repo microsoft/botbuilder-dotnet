@@ -11,11 +11,13 @@ namespace Microsoft.Bot.Builder.Tests
     [TestClass]
     public class OnTurnErrorTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         [TestCategory("Middleware")]
         public async Task OnTurnError_Test()
         {
-            TestAdapter adapter = new TestAdapter();
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             adapter.OnTurnError = async (context, exception) =>
             {
                 if (exception is NotImplementedException)

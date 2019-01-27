@@ -17,6 +17,8 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("Message")]
     public class MessageFactoryTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public void NullText()
         {
@@ -388,7 +390,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task ValidateIMBackWithText()
         {
-            TestAdapter adapter = new TestAdapter();                 
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));                 
 
             async Task ReplyWithimBackBack(ITurnContext ctx, CancellationToken cancellationToken)
             {
@@ -425,7 +427,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task ValidateIMBackWithNoTest()
         {
-            TestAdapter adapter = new TestAdapter();
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
 
             async Task ReplyWithimBackBack(ITurnContext ctx, CancellationToken cancellationToken)
             {

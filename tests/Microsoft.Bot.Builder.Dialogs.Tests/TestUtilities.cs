@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {

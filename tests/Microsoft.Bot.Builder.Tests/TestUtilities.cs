@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Tests
         /*
         public static T CreateEmptyContext<T>() where T:ITurnContext
         {
-            TestAdapter b = new TestAdapter();
+            TestAdapter b = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             Activity a = new Activity();
             if (typeof(T).IsAssignableFrom(typeof(ITurnContext)))
             {

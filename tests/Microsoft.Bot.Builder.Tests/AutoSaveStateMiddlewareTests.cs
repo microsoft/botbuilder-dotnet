@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -14,6 +12,8 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("State Management")]
     public class AutoSaveStateMiddlewareTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public async Task AutoSaveStateMiddleware_DualReadWrite()
         {
@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Tests
             var convState = new ConversationState(storage);
             var convProperty = convState.CreateProperty<int>("convCount");
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(userState, convState));
 
             const int USER_INITITAL_COUNT = 100;
@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Tests
                 // get userCount and convCount from hSet
                 var userCount = await userProperty.GetAsync(context, () => USER_INITITAL_COUNT).ConfigureAwait(false);
                 var convCount = await convProperty.GetAsync(context, () => CONVERSATION_INITIAL_COUNT).ConfigureAwait(false);
-                            
+
                 // System.Diagnostics.Debug.WriteLine($"{context.Activity.Id} UserCount({context.Activity.From.Id}):{userCount} convCount({context.Activity.Conversation.Id}):{convCount}");
 
                 if (context.Activity.Type == ActivityTypes.Message)
@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Tests
             var bss = new AutoSaveStateMiddleware()
                 .Add(userState)
                 .Add(convState);
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(bss);
 
             const int USER_INITITAL_COUNT = 100;

@@ -13,12 +13,14 @@ namespace Microsoft.Bot.Builder.Tests
     [TestClass]
     public class Transcript_MiddlewareTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         [TestCategory("Middleware")]
         public async Task Transcript_LogActivities()
         {
             var transcriptStore = new MemoryTranscriptStore();
-            TestAdapter adapter = new TestAdapter()
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new TranscriptLoggerMiddleware(transcriptStore));
             string conversationId = null;
 
@@ -62,7 +64,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Transcript_LogUpdateActivities()
         {
             var transcriptStore = new MemoryTranscriptStore();
-            TestAdapter adapter = new TestAdapter()
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new TranscriptLoggerMiddleware(transcriptStore));
             string conversationId = null;
             Activity activityToUpdate = null;
@@ -107,7 +109,7 @@ namespace Microsoft.Bot.Builder.Tests
             
 
             var transcriptStore = new MemoryTranscriptStore();
-            TestAdapter adapter = new TestAdapter()
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new TranscriptLoggerMiddleware(transcriptStore));
             string conversationId = null;
             Activity activityToUpdate = null;
@@ -163,7 +165,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Transcript_LogDeleteActivities()
         {
             var transcriptStore = new MemoryTranscriptStore();
-            TestAdapter adapter = new TestAdapter()
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new TranscriptLoggerMiddleware(transcriptStore));
             string conversationId = null;
             string activityId = null;

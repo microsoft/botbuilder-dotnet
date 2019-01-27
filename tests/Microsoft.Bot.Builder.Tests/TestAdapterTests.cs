@@ -15,6 +15,8 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("Adapter")]
     public class TestAdapterTests
     {
+        public TestContext TestContext { get; set; }
+
         public async Task MyBotLogic(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             switch (turnContext.Activity.AsMessageActivity().Text)
@@ -37,7 +39,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task TestAdapter_ExceptionTypesOnTest()
         {
             string uniqueExceptionId = Guid.NewGuid().ToString();
-            TestAdapter adapter = new TestAdapter();
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
 
             try
             {
@@ -60,7 +62,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task TestAdapter_ExceptionInBotOnReceive()
         {
             string uniqueExceptionId = Guid.NewGuid().ToString();
-            TestAdapter adapter = new TestAdapter();
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
 
             try
             {
@@ -80,7 +82,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task TestAdapter_ExceptionTypesOnAssertReply()
         {
             string uniqueExceptionId = Guid.NewGuid().ToString();
-            TestAdapter adapter = new TestAdapter();
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
 
             try
             {
@@ -104,7 +106,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task TestAdapter_SaySimple()
         {
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             await new TestFlow(adapter, MyBotLogic)
                 .Test("foo", "echo:foo", "say with string works")
                 .StartTestAsync();
@@ -113,7 +115,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task TestAdapter_Say()
         {
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             await new TestFlow(adapter, MyBotLogic)
                 .Test("foo", "echo:foo", "say with string works")
                 .Test("foo", new Activity(ActivityTypes.Message, text: "echo:foo"), "say with activity works")
@@ -125,7 +127,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task TestAdapter_SendReply()
         {
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             await new TestFlow(adapter, MyBotLogic)
                 .Send("foo").AssertReply("echo:foo", "send/reply with string works")
                 .Send("foo").AssertReply(new Activity(ActivityTypes.Message, text: "echo:foo"), "send/reply with activity works")
@@ -136,7 +138,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task TestAdapter_ReplyOneOf()
         {
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             await new TestFlow(adapter, MyBotLogic)
                 .Send("foo").AssertReplyOneOf(new string[] { "echo:bar", "echo:foo", "echo:blat" }, "say with string works")
                 .StartTestAsync();
@@ -146,7 +148,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task TestAdapter_MultipleReplies()
         {
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             await new TestFlow(adapter, MyBotLogic)
                 .Send("foo").AssertReply("echo:foo")
                 .Send("bar").AssertReply("echo:bar")
@@ -164,7 +166,7 @@ namespace Microsoft.Bot.Builder.Tests
         [DataRow(typeof(ArgumentNullException))]
         public async Task TestAdapter_TestFlow(Type exceptionType)
         {
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
 
             TestFlow testFlow = new TestFlow(adapter, (ctx, cancellationToken) =>
                 {

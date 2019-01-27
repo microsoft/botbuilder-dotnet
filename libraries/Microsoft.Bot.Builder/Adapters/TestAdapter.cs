@@ -50,6 +50,25 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
+        /// Create a ConversationReference 
+        /// </summary>
+        /// <param name="name">name of the conversation (also id)</param>
+        /// <param name="user">name of the user (also id) default:User1.</param>
+        /// <param name="bot">name of the bot (also id) default:Bot.</param>
+        /// <returns>ConversationReference</returns>
+        public static ConversationReference CreateConversation(string name, string user = "User1", string bot = "Bot")
+        {
+            return new ConversationReference
+            {
+                ChannelId = "test",
+                ServiceUrl = "https://test.com",
+                Conversation = new ConversationAccount(false, name, name),
+                User = new ChannelAccount(id: user.ToLower(), name: user),
+                Bot = new ChannelAccount(id: bot.ToLower(), name: bot),
+            };
+        }
+
+        /// <summary>
         /// Gets the queue of responses from the bot.
         /// </summary>
         /// <value>The queue of responses from the bot.</value>
@@ -125,7 +144,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// an array of <see cref="ResourceResponse"/> objects containing the IDs that
         /// the receiving channel assigned to the activities.</remarks>
         /// <seealso cref="ITurnContext.OnSendActivities(SendActivitiesHandler)"/>
-        public async override Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
+        public override async Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
         {
             if (turnContext == null)
             {

@@ -17,6 +17,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             Factory.Reset();
         }
 
+        public TestContext TestContext { get; set; }
+
         /// <summary>
         /// An intent command dialog that has no inner dialogs. Only commands and a
         /// rule based simple recognizer that is defined inline
@@ -130,7 +132,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger()))
                 .Use(new AutoSaveStateMiddleware(convoState));
 

@@ -15,13 +15,14 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
     [TestClass]
     public class TelemetryWaterfallTests
     {
+        public TestContext TestContext { get; set; }
 
         [TestMethod]
         public async Task Waterfall()
         {
             var convoState = new ConversationState(new MemoryStorage());
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(convoState));
 
             var telemetryClient = new Mock<IBotTelemetryClient>();
@@ -62,7 +63,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
         {
             var convoState = new ConversationState(new MemoryStorage());
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(convoState));
 
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
@@ -113,7 +114,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
         {
             var convoState = new ConversationState(new MemoryStorage());
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(convoState));
 
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
@@ -175,7 +176,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
         {
             var convoState = new ConversationState(new MemoryStorage());
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(convoState));
 
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");

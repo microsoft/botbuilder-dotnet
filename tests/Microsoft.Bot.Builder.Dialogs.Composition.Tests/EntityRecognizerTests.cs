@@ -37,10 +37,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers.Tests
             return set;
         });
 
-        private static TurnContext GetTurnContext(string text, string locale = "en-us")
+        private TurnContext GetTurnContext(string text, string locale = "en-us")
         {
-            return new TurnContext(new TestAdapter(), new Schema.Activity(type: Schema.ActivityTypes.Message, text: text, locale: locale));
+            return new TurnContext(new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName)), new Schema.Activity(type: Schema.ActivityTypes.Message, text: text, locale: locale));
         }
+
+        public TestContext TestContext { get; set; }
 
         [TestMethod]
         public void TestAge()

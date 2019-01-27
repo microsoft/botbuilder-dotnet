@@ -23,6 +23,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         private const string _endpointKey = "dummy-key";
         private const string _hostname = "https://dummy-hostname.azurewebsites.net/qnamaker";
 
+        public TestContext TestContext { get; set; }
 
         [TestMethod]
         [TestCategory("AI")]
@@ -47,7 +48,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             // Invoke flow which uses mock
             var transcriptStore = new MemoryTranscriptStore();
-            TestAdapter adapter = new TestAdapter()
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new TranscriptLoggerMiddleware(transcriptStore));
             string conversationId = null;
 
@@ -110,7 +111,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var qna = QnaReturnsAnswer();
 
             // No text
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
@@ -135,7 +136,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var qna = QnaReturnsAnswer();
 
             // No text
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
@@ -171,7 +172,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var qna = QnaReturnsAnswer();
 
             // No text
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             var activity = new Activity
             {
                 Type = ActivityTypes.Trace,
@@ -196,7 +197,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var qna = QnaReturnsAnswer();
 
             // No text
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             var context = new MyTurnContext(adapter, null);
 
 
@@ -443,9 +444,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             return new QnAMaker(endpoint, options, client);
         }
 
-        private static TurnContext GetContext(string utterance)
+        private TurnContext GetContext(string utterance)
         {
-            var b = new TestAdapter();
+            var b = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             var a = new Activity
             {
                 Type = ActivityTypes.Message,

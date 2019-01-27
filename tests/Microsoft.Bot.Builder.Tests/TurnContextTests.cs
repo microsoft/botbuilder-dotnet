@@ -19,6 +19,8 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("Middleware")]
     public class TurnContextTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void ConstructorNullAdapter()
@@ -31,28 +33,28 @@ namespace Microsoft.Bot.Builder.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void ConstructorNullActivity()
         {
-            var a = new TestAdapter();
+            var a = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             var c = new TurnContext(a, null);
             Assert.Fail("Should Fail due to null Activty");
         }
         [TestMethod]
         public void Constructor()
         {
-            var c = new TurnContext(new TestAdapter(), new Activity());
+            var c = new TurnContext(new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName)), new Activity());
             Assert.IsNotNull(c);
         }
 
         [TestMethod]
         public void RespondedIsFalse()
         {
-            var c = new TurnContext(new TestAdapter(), new Activity());
+            var c = new TurnContext(new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName)), new Activity());
             Assert.IsFalse(c.Responded);
         }
 
         [TestMethod]
         public async Task CacheValueUsingSetAndGet()
         {
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             await new TestFlow(adapter, MyBotLogic)
                     .Send("TestResponded")
                     .StartTestAsync();

@@ -49,6 +49,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         private IStorage _storage;
 
+        public TestContext TestContext { get; set; }
+
         [TestInitialize]
         public void TestInit()
         {
@@ -364,7 +366,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             {
                 var convoState = new ConversationState(_storage);
 
-                var adapter = new TestAdapter()
+                var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                     .Use(new AutoSaveStateMiddleware(convoState));
 
                 var dialogState = convoState.CreateProperty<DialogState>("dialogState");

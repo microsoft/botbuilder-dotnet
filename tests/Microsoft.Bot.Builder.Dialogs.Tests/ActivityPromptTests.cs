@@ -65,9 +65,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(convoState))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger(Path.Combine(Environment.CurrentDirectory, TestContext.TestName))));
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
@@ -108,9 +108,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(convoState))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger(Path.Combine(Environment.CurrentDirectory, TestContext.TestName))));
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             var dialogs = new DialogSet(dialogState);
 
@@ -149,9 +149,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(convoState))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger(Path.Combine(Environment.CurrentDirectory, TestContext.TestName))));
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             var dialogs = new DialogSet(dialogState);
 
@@ -196,9 +196,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(convoState))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger(Path.Combine(Environment.CurrentDirectory, TestContext.TestName))));
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             var dialogs = new DialogSet(dialogState);
 

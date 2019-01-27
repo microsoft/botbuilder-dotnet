@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var convState = new ConversationState(new MemoryStorage());
             var testProperty = convState.CreateProperty<Dictionary<string, object>>("test");
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(convState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var convState = new ConversationState(new MemoryStorage());
             var testProperty = convState.CreateProperty<Dictionary<string, object>>("test");
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(convState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var convState = new ConversationState(new MemoryStorage());
             var testProperty = convState.CreateProperty<Dictionary<string, object>>("test");
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(convState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
@@ -167,7 +167,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var convState = new ConversationState(new MemoryStorage());
             var testProperty = convState.CreateProperty<Dictionary<string, object>>("test");
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(convState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
@@ -213,7 +213,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var convState = new ConversationState(new MemoryStorage());
             var testProperty = convState.CreateProperty<Dictionary<string, object>>("test");
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(convState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
@@ -259,7 +259,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var convState = new ConversationState(new MemoryStorage());
             var testProperty = convState.CreateProperty<Dictionary<string, object>>("test");
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(convState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
@@ -299,7 +299,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var convState = new ConversationState(new MemoryStorage());
             var testProperty = convState.CreateProperty<Dictionary<string, object>>("test");
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(convState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
@@ -336,7 +336,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var convState = new ConversationState(new MemoryStorage());
             var testProperty = convState.CreateProperty<Dictionary<string, object>>("test");
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(convState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
@@ -406,7 +406,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var convState = new ConversationState(new MemoryStorage());
             var testProperty = convState.CreateProperty<Dictionary<string, object>>("test");
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(convState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
