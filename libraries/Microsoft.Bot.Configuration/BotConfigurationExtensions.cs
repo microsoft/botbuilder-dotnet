@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Configuration
         /// </summary>
         /// <param name="botConfiguration">BotConfiguration object to extend.</param>
         /// <returns>Tuple with a boolean that indicates if a bot configuration file's Luis keys are present and its Error message.</returns>
-        public static (bool isValid, string errMsg) ValidateLuisKeyExistence(this BotConfiguration botConfiguration)
+        public static (bool IsValid, string ErrMsg) ValidateLuisKeyExistence(this BotConfiguration botConfiguration)
         {
             // Get all the luis types in the service list
             var luisServices = botConfiguration.Services.OfType<LuisService>();
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Configuration
         /// </summary>
         /// <param name="botConfiguration">BotConfiguration object to extend.</param>
         /// <returns>Boolean that indicates if a bot configuration file's QnAMaker keys are present.</returns>
-        public static (bool isValid, string errMsg) ValidateQnAKeyExistence(this BotConfiguration botConfiguration)
+        public static (bool IsValid, string ErrMsg) ValidateQnAKeyExistence(this BotConfiguration botConfiguration)
         {
             // Get all the QnA types in the service list
             var qnaServices = botConfiguration.Services.OfType<QnAMakerService>();
