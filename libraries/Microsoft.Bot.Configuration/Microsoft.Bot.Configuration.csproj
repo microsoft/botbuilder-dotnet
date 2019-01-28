@@ -15,26 +15,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>Microsoft.Bot.Configuration</PackageId>
+    <TargetFramework>netstandard2.0</TargetFramework>    
     <Description>Classes for loading and saving bot configuration files</Description>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
-    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Configuration.xml</DocumentationFile>
-    <CodeAnalysisRuleSet>Microsoft.Bot.Configuration.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Configuration.xml</DocumentationFile>
-    <CodeAnalysisRuleSet>Microsoft.Bot.Configuration.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <CodeAnalysisRuleSet>Microsoft.Bot.Configuration.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - NuGet Packages|AnyCPU'">
     <CodeAnalysisRuleSet>Microsoft.Bot.Configuration.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
@@ -49,5 +31,4 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
-
 </Project>

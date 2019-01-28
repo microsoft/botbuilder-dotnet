@@ -15,23 +15,13 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
-		<PackageId>Microsoft.Bot.Schema</PackageId>
+		<TargetFramework>netstandard2.0</TargetFramework>		
 		<Description>This library implements C# schema classes for using the Bot Framework.</Description>
 		<Summary>This library implements C# schema classes for using the Bot Framework.</Summary>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Schema.xml</DocumentationFile>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Schema.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
 		<PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.1" />
 	</ItemGroup>
-
 </Project>

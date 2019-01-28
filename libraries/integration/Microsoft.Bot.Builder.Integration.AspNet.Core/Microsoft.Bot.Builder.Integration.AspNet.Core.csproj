@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
 	<PropertyGroup>
 		<Version Condition=" '$(PackageVersion)' == '' ">4.0.0-local</Version>
 		<Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
@@ -9,29 +8,17 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
-		<PackageId>Microsoft.Bot.Builder.Integration.AspNet.Core</PackageId>
+		<TargetFramework>netstandard2.0</TargetFramework>		
 		<Description>This library integrates the Microsoft Bot Builder SDK with ASP.NET Core. It offers idiomatic configuration APIs in addition to providing all the plumbing to direct incoming bot messages to a configured bot.</Description>
 		<Summary>This library provides integration between the Microsoft Bot Builder SDK and ASP.NET Core.</Summary>
-	</PropertyGroup>
+    <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Integration.AspNet.Core.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 		<SignAssembly>true</SignAssembly>
 		<DelaySign>true</DelaySign>
 		<AssemblyOriginatorKeyFile>..\..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Integration.AspNet.Core.xml</DocumentationFile>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Integration.AspNet.Core.xml</DocumentationFile>
-	</PropertyGroup>
-
-	<PropertyGroup>
-	  <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Integration.AspNet.Core.ruleset</CodeAnalysisRuleSet>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -49,6 +36,5 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
 		<ProjectReference Include="..\..\Microsoft.Bot.Configuration\Microsoft.Bot.Configuration.csproj" />
-	</ItemGroup>
-  
+	</ItemGroup>  
 </Project>

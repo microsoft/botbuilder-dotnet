@@ -1,19 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
 	<PropertyGroup>
 		<TargetFramework>netcoreapp2.0</TargetFramework>
-
-		<IsPackable>false</IsPackable>
-
-		<Configurations>Debug;Release;Documentation</Configurations>
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <NoWarn>1701;1702;17051908</NoWarn>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
-	  <NoWarn>1701;1702;17051908</NoWarn>
+	  <NoWarn>1701;1702;1705;1908</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -26,5 +19,4 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.TemplateManager\Microsoft.Bot.Builder.TemplateManager.csproj" />
 	</ItemGroup>
-
 </Project>

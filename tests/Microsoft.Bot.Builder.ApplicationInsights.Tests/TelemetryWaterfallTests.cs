@@ -15,7 +15,6 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
     [TestClass]
     public class TelemetryWaterfallTests
     {
-
         [TestMethod]
         public async Task Waterfall()
         {

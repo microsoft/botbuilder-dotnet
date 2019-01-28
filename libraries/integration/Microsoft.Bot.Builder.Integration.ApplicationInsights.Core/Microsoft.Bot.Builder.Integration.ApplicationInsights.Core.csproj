@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <Version Condition=" '$(PackageVersion)' == '' ">4.0.0-local</Version>
     <Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
@@ -12,7 +11,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>Microsoft.Bot.Builder.Integration.ApplicationInsights.Core</PackageId>
     <Description>This library integrates the Microsoft Bot Builder SDK with Application Insights.</Description>
-    <Summary>This library provides integration between the Microsoft Bot Builder SDK and Application Insights.</Summary>
+    <Summary>This library provides integration between the Microsoft Bot Builder SDK and Application Insights.</Summary>   
   </PropertyGroup>
   
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -21,19 +20,7 @@
 		<AssemblyOriginatorKeyFile>..\..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</PropertyGroup>
-
-  <PropertyGroup>
-		<AssemblyName>Microsoft.Bot.Builder.Integration.ApplicationInsights.Core</AssemblyName>
-	</PropertyGroup>
-  
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.xml</DocumentationFile>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.xml</DocumentationFile>
-	</PropertyGroup>
-
+ 
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.5.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.1" />    
@@ -44,5 +31,4 @@
     <ProjectReference Include="..\..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
     <ProjectReference Include="..\..\Microsoft.Bot.Configuration\Microsoft.Bot.Configuration.csproj" />
   </ItemGroup>
-
 </Project>
