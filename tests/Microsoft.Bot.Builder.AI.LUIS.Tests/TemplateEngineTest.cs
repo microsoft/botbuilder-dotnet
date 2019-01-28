@@ -101,7 +101,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var engine = TemplateEngine.FromFile(GetExampleFilePath("7.lg"));
             var evaled = engine.Evaluate("wPhrase", "");
-            Assert.AreEqual(evaled, "你好");
         }
     }
 }

@@ -9,20 +9,40 @@ using Microsoft.Expressions;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
-    class LGFileVisitor: LGFileParserBaseVisitor<string>
+    class Evaluator: LGFileParserBaseVisitor<string>
     {
         private string TemplateName { get; set; }
         private object Scope { get; set; }
-        private readonly TemplateEngine _engine;
-        private readonly Dictionary<string, LGFileParser.TemplateDefinitionContext> _templates = null;
 
+        private readonly EvaluationContext Context;
+        private Stack<string> templateNameStack = new Stack<string>();
 
-        public LGFileVisitor(string templateName, object scope, TemplateEngine engine, Dictionary<string, LGFileParser.TemplateDefinitionContext> templates)
+        public Evaluator(EvaluationContext context)
+        {
+            Context = context;
+        }
+
+        public string Evaluate(string templateName, object scope)
         {
             TemplateName = templateName;
             Scope = scope;
-            _engine = engine;
-            _templates = templates;
+
+            if (!Context.TemplateContexts.ContainsKey(templateName))
+            {
+                throw new Exception($"No such template: {templateName}");
+            }
+
+            if (templateNameStack.Contains(templateName))
+            {
+                throw new Exception($"Loop deteced: {String.Join(" => ", templateNameStack.Reverse())} => {templateName}");
+            }
+
+            // Using a stack to track the template evalution trace
+            templateNameStack.Push(templateName); 
+            string result = Visit(Context.TemplateContexts[templateName]);
+            templateNameStack.Pop();
+
+            return result;
         }
 
         public override string VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
@@ -145,21 +165,16 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 var newScope = paramters.Zip(args, (k, v) => new { k, v })
                                         .ToDictionary(x => x.k, x => x.v);
 
-                return _engine.Evaluate(templateName, newScope);
+                return Evaluate(templateName, newScope);
                 
             }
-            return _engine.Evaluate(exp, Scope);
+            return Evaluate(exp, Scope);
         }
 
         private List<string> ExtractParameters(string templateName)
         {
-            if (!_templates.ContainsKey(templateName))
-            {
-                throw new Exception($"No such template: {templateName}");
-            }
-
-            var context = _templates[templateName];
-            return context.templateName().parameters().IDENTIFIER().Select(x => x.GetText()).ToList();
+            bool hasParameters = Context.TemplateParameters.TryGetValue(templateName, out List<string> parameters);
+            return hasParameters ? parameters : new List<string>();
         }
 
     }
