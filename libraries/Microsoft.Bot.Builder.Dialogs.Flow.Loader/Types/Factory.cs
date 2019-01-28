@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types
             builders.Add(type, loader);
         }
 
-        public static T Build<T>(string name, JObject obj, JsonSerializer serializer) where T : class
+        public static T Build<T>(string name, JToken obj, JsonSerializer serializer) where T : class
         {
             ILoader builder;
             var type = TypeFromName(name);
@@ -95,19 +95,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types
             // while things are changing rapidly still
 
             // Commands
-            Register("http://schemas.botframework.com/SetVariable", typeof(SetVarStep), new SetVariableCommandLoader());
+            Register("http://schemas.botframework.com/SetVariable", typeof(SetVarStep), new SetVarStepLoader());
             Register("http://schemas.botframework.com/Switch", typeof(SwitchStep));
             Register("http://schemas.botframework.com/CallDialog", typeof(CallDialog));
             Register("http://schemas.botframework.com/SendActivity", typeof(SendActivityStep));
-            //Register("http://schemas.botframework.com/CommandSet", typeof(DialogCommandSet));
+            Register("http://schemas.botframework.com/EndDialog", typeof(EndDialog));
 
             // Dialogs
             Register("http://schemas.botframework.com/ComponentDialog", typeof(ComponentDialog), new ComponentDialogLoader());
-            //Register("http://schemas.botframework.com/IntentCommandDialog", typeof(IntentCommandDialog), new ComponentDialogLoader());
             Register("http://schemas.botframework.com/IntentDialog", typeof(IntentDialog), new ComponentDialogLoader());
-            Register("http://schemas.botframework.com/SequenceDialog", typeof(SequenceDialog), new SequenceDialogLoader());
+            Register("http://schemas.botframework.com/SequenceDialog", typeof(SequenceDialog));
             Register("http://schemas.botframework.com/TextPrompt", typeof(TextPrompt));
-            Register("http://schemas.botframework.com/IntNumberPrompt", typeof(NumberPrompt<Int32>));
+            Register("http://schemas.botframework.com/IntegerPrompt", typeof(IntegerPrompt));
 
             // Recognizers
             //TODO: LuisRecognizer

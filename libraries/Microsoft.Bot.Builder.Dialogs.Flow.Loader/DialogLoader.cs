@@ -3,8 +3,11 @@
 
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Flow.Loader.Converters;
+using Microsoft.Bot.Builder.Dialogs.Flow.Loader.Resolvers;
 using Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader
 {
@@ -12,6 +15,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader
     {
         public static IDialog Load(string json)
         {
+            IRefResolver refResolver = new JPointerRefResolver(JToken.Parse(json));
+
             var dialog = JsonConvert.DeserializeObject<IDialog>(
                 json, new JsonSerializerSettings()
                 {
@@ -19,15 +24,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader
                     TypeNameHandling = TypeNameHandling.Auto,
                     Converters = new List<JsonConverter>()
                     {
-                        new InterfaceConverter<IDialog>(),
-                        new DialogCommandConverter(),
-                        new InterfaceConverter<IRecognizer>(),
+                        new InterfaceConverter<IDialog>(refResolver),
+                        new InterfaceConverter<IStep>(refResolver),
+                        new StepConverter(refResolver),
+                        new InterfaceConverter<IRecognizer>(refResolver),
                         new ExpressionConverter(),
                         new ActivityConverter()
                     },
                     Error = (sender, args) =>
                     {
                         var ctx = args.ErrorContext;
+                    },
+                    ContractResolver = new DefaultContractResolver
+                    {
+                        NamingStrategy = new CamelCaseNamingStrategy()
                     }
                 });
             return dialog;

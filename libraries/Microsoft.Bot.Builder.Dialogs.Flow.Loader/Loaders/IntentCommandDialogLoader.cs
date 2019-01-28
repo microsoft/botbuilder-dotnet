@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Loaders
 {
     public class IntentCommandDialogLoader : ComponentDialogLoader
     {
-        public override object Load(JObject obj, JsonSerializer serializer, Type type)
+        public override object Load(JToken obj, JsonSerializer serializer, Type type)
         {
             return base.Load(obj, serializer, type);
         }

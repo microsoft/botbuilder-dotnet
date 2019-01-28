@@ -24,49 +24,135 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         /// rule based simple recognizer that is defined inline
         /// </summary>
         [TestMethod]
-        public async Task JsonDialogLoad_IntentCommandDialog_OnlyCommands()
+        public async Task JsonDialogLoad_TextPromptWithMatchValidator()
         {
-            string json = File.ReadAllText("TestFlows/IntentCommandDialog_OnlyCommands.json");
+            string json = File.ReadAllText("TestFlows/TextPrompt.json");
 
             Factory.Register("http://schemas.botframework.com/RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
             .Send("hello")
-            .AssertReply("Sorry, I didn't get that") // The json defines no rule for hello, so it hits the None rule
-            .Send("hi")
-            .AssertReply("Howdy!") // Greeting rule
-            .Send("help")
-            .AssertReply("I can greet and give help. Say 'hi' and I will greet you back") // Help rule
-            .StartTestAsync();
-        }
-
-        /// <summary>
-        /// An intent command dialog that has two inner dialogs and commands with CallDialog.
-        /// </summary>
-        [TestMethod]
-        public async Task JsonDialogLoad_IntentCommandDialog_WithChildPrompts()
-        {
-            string json = File.ReadAllText("TestFlows/IntentCommandDialog_WithChildPrompts.json");
-
-            Factory.Register("http://schemas.botframework.com/RuleRecognizer", typeof(RuleRecognizer));
-
-            await BuildTestFlow(json)
-            .Send("yo")
-            .AssertReply("Sorry, I didn't get that") // The json defines no rule for hello, so it hits the None rule
-            .Send("name")
             .AssertReply("What is your name?") 
+            .Send("x")
+            .AssertReply("You need to give me at least 3 chars to 30 chars as a name.")
             .Send("Carlos")
             .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task JsonDialogLoad_NumberPromptWithMatchValidator()
+        {
+            string json = File.ReadAllText("TestFlows/NumberPrompt.json");
+
+            Factory.Register("http://schemas.botframework.com/RuleRecognizer", typeof(RuleRecognizer));
+
+            await BuildTestFlow(json)
+            .Send("hello")
+                .AssertReply("What is your age?")
+            .Send("x")
+                .AssertReply("I didn't recognize a number in your response.")
+                .AssertReply("Let's try again, what's your age?")
+            .Send("-250")
+                .AssertReply("Nobody can be negative aged!")
+                .AssertReply("Let's try again, what's your age?")
+            .Send("250")
+                .AssertReply("I don't think anyone can be that old.")
+                .AssertReply("Let's try again, what's your age?")
+            .Send("31")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task JsonDialogLoad_SequenceWithRefPrompts()
+        {
+            string json = File.ReadAllText("TestFlows/SequenceWithPrompts/SequenceWithRefPrompts.json");
+
+            Factory.Register("http://schemas.botframework.com/RuleRecognizer", typeof(RuleRecognizer));
+
+            await BuildTestFlow(json)
+            .Send("hello")
+                .AssertReply("What is your name?")
+            .Send("x")
+                .AssertReply("You need to give me at least 3 chars to 30 chars as a name.")
+            .Send("Carlos")
+                .AssertReply("What is your age?")
+            .Send("x")
+                .AssertReply("I didn't recognize a number in your response.")
+                .AssertReply("Let's try again, what's your age?")
+            .Send("-250")
+                .AssertReply("Nobody can be negative aged!")
+                .AssertReply("Let's try again, what's your age?")
+            .Send("250")
+                .AssertReply("I don't think anyone can be that old.")
+                .AssertReply("Let's try again, what's your age?")
+            .Send("31")
+
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task JsonDialogLoad_SequenceWithRefPromptsOverrides()
+        {
+            string json = File.ReadAllText("TestFlows/SequenceWithPrompts/SequenceWithRefPromptsOverrides.json");
+
+            Factory.Register("http://schemas.botframework.com/RuleRecognizer", typeof(RuleRecognizer));
+
+            await BuildTestFlow(json)
+            .Send("hello")
+                .AssertReply("What is your name?")
+            .Send("x")
+                .AssertReply("You need to give me at least 3 chars to 30 chars as a name.")
+            .Send("Carlos")
+                .AssertReply("What is your age?")
+            .Send("x")
+                .AssertReply("I didn't recognize a number in your response.")
+                .AssertReply("C'mon, tell me your age, I won't tell!")
+            .Send("-250")
+                .AssertReply("Nobody can be negative aged!")
+                .AssertReply("C'mon, tell me your age, I won't tell!")
+            .Send("250")
+                .AssertReply("I don't think anyone can be that old.")
+                .AssertReply("C'mon, tell me your age, I won't tell!")
+            .Send("31")
+
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task JsonDialogLoad_SequenceWithInlinePrompts()
+        {
+            string json = File.ReadAllText("TestFlows/SequenceWithPrompts/SequenceWithInlinePrompts.json");
+
+            Factory.Register("http://schemas.botframework.com/RuleRecognizer", typeof(RuleRecognizer));
+
+            await BuildTestFlow(json)
+            .Send("hello")
+                .AssertReply("What is your name?")
+            .Send("x")
+                .AssertReply("You need to give me at least 3 chars to 30 chars as a name.")
+            .Send("Carlos")
+                .AssertReply("What is your age?")
+            .Send("x")
+                .AssertReply("I didn't recognize a number in your response.")
+                .AssertReply("Let's try again, what's your age?")
+            .Send("-250")
+                .AssertReply("Nobody can be negative aged!")
+                .AssertReply("Let's try again, what's your age?")
+            .Send("250")
+                .AssertReply("I don't think anyone can be that old.")
+                .AssertReply("Let's try again, what's your age?")
+            .Send("31")
+
+            .StartTestAsync();
+        }
 
         /// <summary>
         /// An intent dialog that with a simple recognizer and two child dialogs.
         /// </summary>
         [TestMethod]
-        public async Task JsonDialogLoad_IntentDialog()
+        public async Task JsonDialogLoad_IntentDialogRelativeReferences()
         {
-            string json = File.ReadAllText("TestFlows/IntentDialog.json");
+            string json = File.ReadAllText("TestFlows/IntentDialogRelativeReferences.json");
 
             Factory.Register("http://schemas.botframework.com/RuleRecognizer", typeof(RuleRecognizer));
 
@@ -79,49 +165,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             .StartTestAsync();
         }
 
-        /// <summary>
-        /// A workflow style command dialog defined with 2 nodes, each with one dialog and
-        /// several commands
-        /// </summary>
         [TestMethod]
-        public async Task JsonDialogLoad_CommandDialog_WithImplicitArrayCommandSet()
+        public async Task JsonDialogLoad_IntentDialogFileReferences()
         {
-            string json = File.ReadAllText("TestFlows/CommandDialog_WithImplicitArrayCommandSet.json");
+            string json = File.ReadAllText("TestFlows/IntentDialogRelativeReferences.json");
+
+            Factory.Register("http://schemas.botframework.com/RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
-            .Send("hello")
+            .Send("name")
             .AssertReply("What is your name?")
-            .Send("x")
-            .AssertReply("What is your name?") // Should reprompt since we are validating length(name) > 2
-            .Send("Joe")
+            .Send("Carlos")
+            .Send("age")
             .AssertReply("What is your age?")
-            .Send("whassssuuuupp")
-            .AssertReply("Reprompt: What is your age?") // Should reprompt since the age provided was not numeric
-            .Send("64")
-            .AssertReply("Done")
-            .StartTestAsync();
-        }
-
-        /// <summary>
-        /// A workflow style command dialog defined with 2 nodes, each with one dialog and
-        /// several commands
-        /// </summary>
-        [TestMethod]
-        public async Task JsonDialogLoad_CommandDialog()
-        {
-            string json = File.ReadAllText("TestFlows/CommandDialog.json");
-
-            await BuildTestFlow(json)
-            .Send("hello")
-            .AssertReply("What is your name?")
-            .Send("x") 
-            .AssertReply("What is your name?") // Should reprompt since we are validating length(name) > 2
-            .Send("Joe")
-            .AssertReply("What is your age?")
-            .Send("whassssuuuupp") 
-            .AssertReply("Reprompt: What is your age?") // Should reprompt since the age provided was not numeric
-            .Send("64")
-            .AssertReply("Done")
             .StartTestAsync();
         }
 
