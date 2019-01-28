@@ -90,14 +90,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             };
 
 
-            var alarmStrs = alarms.Select(x => engine.Evaluate("ShowAlarm", x)).ToList() ;
-
-            var evaled = engine.Evaluate("ShowAlarms", new
-            {
-                alarms = alarmStrs
-            }
-            );
-            Assert.AreEqual("Hi", evaled);
+            var alarmStrs = alarms.Select(x => engine.Evaluate("ShowAlarm", new { alarm = x })).ToList() ;
+            var evaled = engine.Evaluate("ShowAlarms", new { alarms = alarmStrs });
+            Assert.AreEqual("You have 2 alarms, 7 am at tomorrow and 8 pm at tomorrow", evaled);
 
         }
 
