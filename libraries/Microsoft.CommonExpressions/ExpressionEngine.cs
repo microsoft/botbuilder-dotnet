@@ -23,10 +23,10 @@ namespace Microsoft.Expressions
         /// <param name="scope"></param>
         /// <param name="getValue"></param>
         /// <returns></returns>
-        public static object Evaluate(string expression, object scope, GetValueDelegate getValue = null)
+        public static object Evaluate(string expression, object scope, GetValueDelegate getValue = null, GetMethodDelegate getMethod = null)
         {
             var term = Parse(expression);
-            return Evaluate(term, scope, getValue);
+            return Evaluate(term, scope, getValue, getMethod);
         }
 
         /// <summary>
@@ -78,20 +78,20 @@ namespace Microsoft.Expressions
             {
                 case ".":
                     {
-                        var instance = Evaluate(term.Terms[0], scope, getValue);
+                        var instance = Evaluate(term.Terms[0], scope, getValue, getMethod);
                         return getValue(instance, term.Terms[1].Token.Input);
                     }
                 case "[":
                     {
-                        var instance = Evaluate(term.Terms[0], scope, getValue);
-                        var index = Evaluate(term.Terms[1], scope, getValue);
+                        var instance = Evaluate(term.Terms[0], scope, getValue, getMethod);
+                        var index = Evaluate(term.Terms[1], scope, getValue, getMethod);
                         return getValue(instance, index);
                     }
                 case "(":
                     {
                         var name = term.Terms[0].Token.Input;
                         var method = getMethod(name);
-                        var parameters = term.Terms.Skip(1).Select(t => Evaluate(t, scope, getValue)).ToArray();
+                        var parameters = term.Terms.Skip(1).Select(t => Evaluate(t, scope, getValue, getMethod)).ToArray();
                         return method(parameters);
                     }
             }
@@ -103,7 +103,7 @@ namespace Microsoft.Expressions
                 var eager = entry.Evaluate;
                 if (eager != null)
                 {
-                    var terms = term.Terms.Select(t => Evaluate(t, scope, getValue)).ToArray();
+                    var terms = term.Terms.Select(t => Evaluate(t, scope, getValue, getMethod)).ToArray();
                     if (terms.Length < entry.MinArgs || terms.Length > entry.MaxArgs)
                     {
                         throw new Exception();
