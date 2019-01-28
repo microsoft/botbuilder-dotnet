@@ -29,12 +29,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 
             // Determine list style
             var supportsSuggestedActions = Channel.SupportsSuggestedActions(channelId, list.Count);
-            var supportsCardActions = Channel.SupportsCardActions(channelId, list.Count);
             var maxActionTitleLength = Channel.MaxActionTitleLength(channelId);
-            var hasMessageFeed = Channel.HasMessageFeed(channelId);
             var longTitles = maxTitleLength > maxActionTitleLength;
 
-            if (!longTitles && (supportsSuggestedActions || (!hasMessageFeed && supportsCardActions)))
+            if (!longTitles && supportsSuggestedActions)
             {
                 // We always prefer showing choices using suggested actions. If the titles are too long, however,
                 // we'll have to show them as a text list.
