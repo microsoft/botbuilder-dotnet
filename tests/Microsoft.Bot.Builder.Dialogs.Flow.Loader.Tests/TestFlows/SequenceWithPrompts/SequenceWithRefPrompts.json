@@ -1,6 +1,6 @@
 {
   "$schema": "http://schemas.botframework.com/SequenceDialog",
-  "id": "getUserInfo",
+  "$id": "getUserInfo",
   "sequence": [
     {
       "$schema": "http://schemas.botframework.com/CallDialog",

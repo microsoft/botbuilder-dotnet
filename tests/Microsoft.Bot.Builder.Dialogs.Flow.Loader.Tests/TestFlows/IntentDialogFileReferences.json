@@ -1,7 +1,6 @@
 {
   "$schema": "http://schemas.botframework.com/IntentDialog",
   "$id": "intentDialog",
-  "id": "intentDialog",
   "recognizer": {
     "$schema": "http://schemas.botframework.com/RuleRecognizer",
     "rules": {

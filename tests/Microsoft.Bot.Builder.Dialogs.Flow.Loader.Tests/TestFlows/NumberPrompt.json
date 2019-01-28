@@ -1,6 +1,6 @@
 {
   "$schema": "http://schemas.botframework.com/IntegerPrompt",
-  "id": "agePrompt",
+  "$id": "agePrompt",
   "property": "value.age",
   "minValue": 0,
   "maxValue": 125,
