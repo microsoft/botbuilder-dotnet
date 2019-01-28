@@ -3,12 +3,12 @@
 # wPhrase
 - Hi
 - Hello
-- Hiya
+- Hey
  
 > Using a template in another template
 > Sometimes the bot will say 'Hi' and other times it will say 'Hi :)'
 # welcome-user(userName)
-- Hi {userName} :)
+- [wPhrase] {userName} :)
  
 > Using entity references
 # welcome
@@ -20,7 +20,12 @@
 
 
 # ShowAlarm(alarm)
-- You have an alarm at {alarm.time} {alarm.date}
+- {alarm.time} at {alarm.date}
 
 # ShowAlarms
-- [ShowAlarm(alarms[0])], [ShowAlarm(alarms[1])]
+- CASE: {count(alarms) == 1}
+   - [ShowAlarm(alarms[0])]
+- CASE: {count(alarms) == 2}
+  - You have {count(alarms)}, {join(alarms, ',', 'and')}
+- DEFAULT:
+  - You don't have any alarms

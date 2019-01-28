@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             try
             {
                 exp = exp.TrimStart('{').TrimEnd('}');
-                var result = ExpressionEngine.Evaluate(exp, Scope);
+                var result = ExpressionEngine.Evaluate(exp, Scope, null, ExtendedFunctions.ExtendedMethod);
 
                 if ((result is Boolean r1 && r1 == false) ||
                     (result is int r2 && r2 == 0))
@@ -112,7 +112,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         private string EvalExpression(string exp)
         {
             exp = exp.TrimStart('{').TrimEnd('}');
-            var result = ExpressionEngine.Evaluate(exp, Scope);
+            var result = ExpressionEngine.Evaluate(exp, Scope, null, ExtendedFunctions.ExtendedMethod);
             return result.ToString();
         }
 
@@ -130,7 +130,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     throw new Exception($"Not a valid template ref: {exp}");
                 }
                 var argExpressions = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(",");
-                var args = argExpressions.Select(x => ExpressionEngine.Evaluate(x, Scope)).ToList();
+                var args = argExpressions.Select(x => ExpressionEngine.Evaluate(x, Scope, null, ExtendedFunctions.ExtendedMethod)).ToList();
 
                 // Construct a new Scope for this template reference
                 // Bind all arguments to parameters
@@ -161,5 +161,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var context = _templates[templateName];
             return context.templateName().parameters().IDENTIFIER().Select(x => x.GetText()).ToList();
         }
+
     }
 }

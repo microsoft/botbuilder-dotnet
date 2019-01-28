@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
+using System.Linq;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 {
@@ -68,26 +69,36 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = engine.Evaluate("welcome", new { userName = "DL" });
             Assert.AreEqual("Hi DL :)", evaled);
+        }
 
-
-            var alarmsScope = new
+        [TestMethod]
+        public void TestBasicExtendedFunctions()
+        {
+            var engine = TemplateEngine.FromFile(GetExampleFilePath("6.lg"));
+            var alarms = new[]
             {
-                alarms = new[]
+                new
                 {
-                    new
-                    {
-                        time = "7 am",
-                        date = "tomorrow"
-                    },
-                    new
-                    {
-                        time = "8 pm",
-                        date = "tomorrow"
-                    }
+                    time = "7 am",
+                    date = "tomorrow"
+                },
+                new
+                {
+                    time = "8 pm",
+                    date = "tomorrow"
                 }
             };
-            evaled = engine.Evaluate("ShowAlarms", alarmsScope);
+
+
+            var alarmStrs = alarms.Select(x => engine.Evaluate("ShowAlarm", x)).ToList() ;
+
+            var evaled = engine.Evaluate("ShowAlarms", new
+            {
+                alarms = alarmStrs
+            }
+            );
             Assert.AreEqual("Hi", evaled);
+
         }
 
     }
