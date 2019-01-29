@@ -168,6 +168,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             AssertChoice(found[1], "blue", 2, 1.0f);
         }
 
+        [TestMethod]
+        public void ShouldAcceptNullForUtterance()
+        {
+            var found = ChoiceRecognizers.RecognizeChoices(null, colorChoices);
+            Assert.AreEqual(0, found.Count);
+        }
+
         // Helper functions
 
         private static void AssertResult<T>(ModelResult<T> result, int start, int end, string text)

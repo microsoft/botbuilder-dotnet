@@ -17,6 +17,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 
         public static List<ModelResult<FoundChoice>> RecognizeChoices(string utterance, IList<Choice> list, FindChoicesOptions options = null)
         {
+            if (utterance == null)
+            {
+                utterance = string.Empty;
+            }
+
             // Try finding choices by text search first
             // - We only want to use a single strategy for returning results to avoid issues where utterances
             //   like the "the third one" or "the red one" or "the first division book" would miss-recognize as
