@@ -776,7 +776,9 @@ namespace Microsoft.Bot.Builder
             if (OAuthClient.EmulateOAuthCards)
             {
                 var oauthClient = new OAuthClient(client, turnContext.Activity.ServiceUrl);
-                Task.Run(async () => await oauthClient.SendEmulateOAuthCardsAsync(OAuthClient.EmulateOAuthCards).ConfigureAwait(false)).Wait();
+
+                // do not await task - we want this to run in the background
+                var task = Task.Run(() => oauthClient.SendEmulateOAuthCardsAsync(OAuthClient.EmulateOAuthCards));
                 return oauthClient;
             }
 
