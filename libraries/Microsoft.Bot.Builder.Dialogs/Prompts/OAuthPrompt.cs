@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
@@ -361,10 +362,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             switch (channelId)
             {
-                case "msteams":
-                case "cortana":
-                case "skype":
-                case "skypeforbusiness":
+                case Channels.Cortana:
+                case Channels.Msteams:
+                case Channels.Skype:
+                case Channels.Skypeforbusiness:
                     return false;
             }
 
