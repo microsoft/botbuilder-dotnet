@@ -14,12 +14,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         private string TemplateName { get; set; }
         private object Scope { get; set; }
 
-        private readonly EvaluationContext Context;
+        public readonly EvaluationContext Context;
+
+        private readonly GetMethodExtensions GetMethodX;
+        private readonly GetValueExtensions GetValueX;
+
         private Stack<string> templateNameStack = new Stack<string>();
 
         public Evaluator(EvaluationContext context)
         {
             Context = context;
+            GetMethodX = new GetMethodExtensions(this);
+            GetValueX = new GetValueExtensions(this);
         }
 
         public string Evaluate(string templateName, object scope)
@@ -111,7 +117,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             try
             {
                 exp = exp.TrimStart('{').TrimEnd('}');
-                var result = ExpressionEngine.Evaluate(exp, Scope, null, ExtendedFunctions.ExtendedMethod);
+                var result = EvalByExpressionEngine(exp, Scope); 
 
                 if ((result is Boolean r1 && r1 == false) ||
                     (result is int r2 && r2 == 0))
@@ -132,7 +138,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         private string EvalExpression(string exp)
         {
             exp = exp.TrimStart('{').TrimEnd('}');
-            var result = ExpressionEngine.Evaluate(exp, Scope, null, ExtendedFunctions.ExtendedMethod);
+            var result = EvalByExpressionEngine(exp, Scope);
             return result.ToString();
         }
 
@@ -150,20 +156,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     throw new Exception($"Not a valid template ref: {exp}");
                 }
                 var argExpressions = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(",");
-                var args = argExpressions.Select(x => ExpressionEngine.Evaluate(x, Scope, null, ExtendedFunctions.ExtendedMethod)).ToList();
+                var args = argExpressions.Select(x => EvalByExpressionEngine(x, Scope)).ToList();
 
                 // Construct a new Scope for this template reference
                 // Bind all arguments to parameters
                 var templateName = exp.Substring(0, argsStartPos);
-                var paramters = ExtractParameters(templateName);
-
-                if (paramters.Count != args.Count)
-                {
-                    throw new Exception($"Arguments count mismatch for template ref {exp}, expected {paramters.Count}, actual {args.Count}");
-                }
-
-                var newScope = paramters.Zip(args, (k, v) => new { k, v })
-                                        .ToDictionary(x => x.k, x => x.v);
+                var newScope = ConstructScope(templateName, args);
 
                 return Evaluate(templateName, newScope);
                 
@@ -175,6 +173,33 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         {
             bool hasParameters = Context.TemplateParameters.TryGetValue(templateName, out List<string> parameters);
             return hasParameters ? parameters : new List<string>();
+        }
+
+        private object EvalByExpressionEngine(string exp, object scope)
+        {
+            return ExpressionEngine.Evaluate(exp, scope, GetValueX.GetValueX, GetMethodX.GetMethodX);
+        }
+
+        public object ConstructScope(string templateName, List<object> args)
+        {
+            if (args.Count == 1 && 
+                !Context.TemplateParameters.ContainsKey(templateName))
+            {
+                // Special case, if no parameters defined, and only one arg, don't wrap
+                return args[0];
+            }
+
+            var paramters = ExtractParameters(templateName);
+
+            if (paramters.Count != args.Count)
+            {
+                throw new Exception($"Arguments count mismatch for template ref {templateName}, expected {paramters.Count}, actual {args.Count}");
+            }
+
+            var newScope = paramters.Zip(args, (k, v) => new { k, v })
+                                    .ToDictionary(x => x.k, x => x.v);
+
+            return newScope;
         }
 
     }

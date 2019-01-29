@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestBasicExtendedFunctions()
         {
             var engine = TemplateEngine.FromFile(GetExampleFilePath("6.lg"));
-            var alarms = new[]
+            var alarms = new []
             {
                 new
                 {
@@ -90,8 +90,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             };
 
 
-            var alarmStrs = alarms.Select(x => engine.Evaluate("ShowAlarm", new { alarm = x })).ToList() ;
-            var evaled = engine.Evaluate("ShowAlarms", new { alarms = alarmStrs });
+            //var alarmStrs = alarms.Select(x => engine.Evaluate("ShowAlarm", new { alarm = x })).ToList() ;
+            //var evaled = engine.Evaluate("ShowAlarms", new { alarms = alarmStrs });
+            //Assert.AreEqual("You have 2 alarms, 7 am at tomorrow and 8 pm at tomorrow", evaled);
+
+
+            var evaled = engine.Evaluate("ShowAlarmsWithForeach", new { alarms = alarms });
             Assert.AreEqual("You have 2 alarms, 7 am at tomorrow and 8 pm at tomorrow", evaled);
 
         }
@@ -101,6 +105,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var engine = TemplateEngine.FromFile(GetExampleFilePath("7.lg"));
             var evaled = engine.Evaluate("wPhrase", "");
+            Assert.AreEqual(evaled, "你好");
+        }
+
+        [TestMethod]
+        public void TestListWithOnlyOneElement()
+        {
+            var engine = TemplateEngine.FromFile(GetExampleFilePath("8.lg"));
+            var evaled = engine.Evaluate("RecentTasks", new { recentTasks = new[] { "Task1" } });
             Assert.AreEqual(evaled, "你好");
         }
     }
