@@ -258,7 +258,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                                 {
                                     Title = _settings.Title,
                                     Value = link,
-                                    Type = ActionTypes.Signin,
+                                    Type = turnContext.Activity.ChannelId == "msteams" ? ActionTypes.OpenUrl : ActionTypes.Signin,
                                 },
                             },
                         },
