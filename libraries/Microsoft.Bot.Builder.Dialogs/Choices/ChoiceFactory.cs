@@ -172,6 +172,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             return MessageFactory.SuggestedActions(actions, text, speak, InputHints.ExpectingInput);
         }
 
+        public static IMessageActivity HeroCard(IList<Choice> choices, string text = null, string speak = null)
+        {
+            choices = choices ?? new List<Choice>();
+
+            var actions = new List<CardAction>();
+            foreach (var choice in choices)
+            {
+                actions.Add(new CardAction
+                {
+                    Type = ActionTypes.ImBack,
+                    Title = choice.Value,
+                    Value = choice.Value
+                });
+            }
+
+            var attachments = new List<Attachment>
+            {
+                new HeroCard(text: text, buttons: actions).ToAttachment()
+            };
+
+            // Return activity with choices as HeroCard with buttons
+            return MessageFactory.Attachment(attachments, null, speak, InputHints.ExpectingInput);
+        }
+
         public static IList<Choice> ToChoices(IList<string> choices)
         {
             return (choices == null)

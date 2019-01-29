@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
@@ -152,6 +153,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                     msg = ChoiceFactory.SuggestedAction(choices, text);
                     break;
 
+                case ListStyle.HeroCard:
+                    msg = ChoiceFactory.HeroCard(choices, text);
+                    break;
+
                 case ListStyle.None:
                     msg = Activity.CreateMessageActivity();
                     msg.Text = text;
@@ -162,16 +167,22 @@ namespace Microsoft.Bot.Builder.Dialogs
                     break;
             }
 
-            // Update prompt with text and actions
+            // Update prompt with text, actions and attachments
             if (prompt != null)
             {
                 // clone the prompt the set in the options (note ActivityEx has Properties so this is the safest mechanism)
                 prompt = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(prompt));
 
                 prompt.Text = msg.Text;
+
                 if (msg.SuggestedActions != null && msg.SuggestedActions.Actions != null && msg.SuggestedActions.Actions.Count > 0)
                 {
                     prompt.SuggestedActions = msg.SuggestedActions;
+                }
+
+                if (msg.Attachments != null && msg.Attachments.Any())
+                {
+                    prompt.Attachments = msg.Attachments;
                 }
 
                 return prompt;
