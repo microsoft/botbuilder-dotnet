@@ -4,13 +4,17 @@ lexer grammar LGFileLexer;
 // the reason we do it here is to share pattern across multiple modes
 fragment F_EXPRESSION: '{' ~('\r'|'\n'|'{'|'}')* '}';
 fragment F_TEMPLATE_REF: '[' (~('\r'|'\n'|']') | F_TEMPLATE_REF)* ']';
-fragment F_TEXT: ~('\r'|'\n'|' '|'\t'|'('|')'|',')+;
+fragment F_TEXT: ~('\r'|'\n'|' '|'\t'|'('|')'|','|'{'|'}'|'['|']')+;
 fragment F_NEW_LINE: '\r'?'\n';
 fragment F_WS: ' '|'\t';
 
 // those are text seperators
-fragment F_OPEN_PARETHESES: '(';
-fragment F_CLOSE_PARETHESES: ')';
+fragment F_OPEN_CURLY: '{';
+fragment F_CLOSE_CURLY: '}';
+fragment F_OPEN_BRACKET: '[';
+fragment F_CLOSE_BRACKET: ']';
+fragment F_OPEN_PARENTHESIS: '(';
+fragment F_CLOSE_PARENTHESIS: ')';
 fragment F_COMMA: ',';
 
 fragment LETTER: 'a'..'z' | 'A'..'Z';
@@ -34,12 +38,28 @@ DASH
   : '-' -> mode(START_TEMPLATE_MODE)
   ;
 
-OPEN_PARETHESES
-  : F_OPEN_PARETHESES
+OPEN_PARENTHESIS
+  : F_OPEN_PARENTHESIS
   ;
 
-CLOSE_PARETHESES
-  : F_CLOSE_PARETHESES
+CLOSE_PARENTHESIS
+  : F_CLOSE_PARENTHESIS
+  ;
+
+OPEN_CURLY
+  : F_OPEN_CURLY
+  ;
+
+CLOSE_CURLY
+  : F_CLOSE_CURLY
+  ;
+
+OPEN_BRACKET
+  : F_OPEN_BRACKET
+  ;
+
+CLOSE_BRACKET
+  : F_CLOSE_BRACKET
   ;
 
 IDENTIFIER
@@ -106,13 +126,26 @@ S_TEXT
   : F_TEXT -> type(TEXT), mode(TEMPLATE_MODE)
   ; 
 
-S_OPEN_PARETHESES
-  : F_OPEN_PARETHESES -> type(OPEN_PARETHESES), mode(TEMPLATE_MODE)
+S_OPEN_PARENTHESIS
+  : F_OPEN_PARENTHESIS -> type(OPEN_PARENTHESIS), mode(TEMPLATE_MODE)
   ;
 
-S_CLOSE_PARETHESES
-  : F_CLOSE_PARETHESES -> type(CLOSE_PARETHESES), mode(TEMPLATE_MODE)
+S_CLOSE_PARENTHESIS
+  : F_CLOSE_PARENTHESIS -> type(CLOSE_PARENTHESIS), mode(TEMPLATE_MODE)
   ;
+
+S_OPEN_CURLY
+  : F_OPEN_CURLY -> type(OPEN_CURLY), mode(TEMPLATE_MODE);
+
+S_CLOSE_CURLY
+  : F_CLOSE_CURLY -> type(CLOSE_CURLY), mode(TEMPLATE_MODE);
+
+S_OPEN_BRACKET
+  : F_OPEN_BRACKET -> type(OPEN_BRACKET), mode(TEMPLATE_MODE);
+
+S_CLOSE_BRACKET
+  : F_CLOSE_BRACKET -> type(CLOSE_BRACKET), mode(TEMPLATE_MODE);
+
 
 S_COMMA
   : F_COMMA -> type(COMMA), mode(TEMPLATE_MODE)
@@ -143,12 +176,31 @@ T_TEXT
   : F_TEXT -> type(TEXT)
   ;
 
-T_OPEN_PARETHESES
-  : F_OPEN_PARETHESES -> type(OPEN_PARETHESES)
+
+
+T_OPEN_PARENTHESIS
+  : F_OPEN_PARENTHESIS -> type(OPEN_PARENTHESIS)
   ;
 
-T_CLOSE_PARETHESES
-  : F_CLOSE_PARETHESES -> type(CLOSE_PARETHESES)
+T_CLOSE_PARENTHESIS
+  : F_CLOSE_PARENTHESIS -> type(OPEN_PARENTHESIS)
+  ;
+
+T_OPEN_CURLY
+  : F_OPEN_CURLY -> type(OPEN_CURLY)
+  ;
+
+T_CLOSE_CURLY
+  : F_CLOSE_CURLY -> type(CLOSE_CURLY)
+  ;
+
+
+T_OPEN_BRACKET
+  : F_OPEN_BRACKET -> type(OPEN_BRACKET)
+  ;
+
+T_CLOSE_BRACKET
+  : F_CLOSE_BRACKET -> type(CLOSE_BRACKET)
   ;
 
 T_COMMA
