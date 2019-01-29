@@ -312,7 +312,7 @@ namespace Microsoft.Bot.Builder
                     // ask for default value from factory
                     if (defaultValueFactory == null)
                     {
-                        throw new MissingMemberException("Property not set and no default provided.");
+                        return default(T);
                     }
 
                     var result = defaultValueFactory();

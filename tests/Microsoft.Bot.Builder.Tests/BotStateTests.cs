@@ -151,7 +151,6 @@ namespace Microsoft.Bot.Builder.Tests
 
         [TestMethod,
          Description("Cannot get a string with no default set")]
-        [ExpectedException(typeof(MissingMemberException), "Get on unset member should throw MissingMemberException")]
         public async Task State_GetNoLoadNoDefault()
         {
             // Arrange
@@ -162,51 +161,61 @@ namespace Microsoft.Bot.Builder.Tests
             // Act
             var propertyA = userState.CreateProperty<string>("propertyA");
             var valueA = await propertyA.GetAsync(context);
+
+            // Assert
+            Assert.IsNull(valueA);
         }
 
         [TestMethod,
          Description("Cannot get a POCO with no default set")]
-        [ExpectedException(typeof(MissingMemberException), "Get on unset member should throw MissingMemberException")]
         public async Task State_POCO_NoDefault()
         {
+            // Arrange
             var dictionary = new Dictionary<string, JObject>();
             var userState = new UserState(new MemoryStorage(dictionary));
             var context = TestUtilities.CreateEmptyContext();
 
+            // Act
             var testProperty = userState.CreateProperty<TestPocoState>("test");
-
             var value = await testProperty.GetAsync(context);
+
+            // Assert
+            Assert.IsNull(value);
         }
 
 
         [TestMethod,
          Description("Cannot get a bool with no default set")]
-        [ExpectedException(typeof(MissingMemberException), "Get on unset member should throw MissingMemberException")]
         public async Task State_bool_NoDefault()
         {
+            // Arange
             var dictionary = new Dictionary<string, JObject>();
             var userState = new UserState(new MemoryStorage(dictionary));
             var context = TestUtilities.CreateEmptyContext();
 
+            // Act
             var testProperty = userState.CreateProperty<bool>("test");
-
             var value = await testProperty.GetAsync(context);
-            Assert.IsFalse(value);
 
+            // Assert
+            Assert.IsFalse(value);
         }
 
         [TestMethod,
          Description("Cannot get a int with no default set")]
-        [ExpectedException(typeof(MissingMemberException), "Get on unset member should throw MissingMemberException")]
         public async Task State_int_NoDefault()
         {
+            // Arrange
             var dictionary = new Dictionary<string, JObject>();
             var userState = new UserState(new MemoryStorage(dictionary));
             var context = TestUtilities.CreateEmptyContext();
 
+            // Act
             var testProperty = userState.CreateProperty<int>("test");
             var value = await testProperty.GetAsync(context);
 
+            // Assert
+            Assert.AreEqual(0, value);
         }
 
 
