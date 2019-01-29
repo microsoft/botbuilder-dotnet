@@ -59,15 +59,6 @@ namespace Microsoft.Bot.Builder
         {
             if (activity != null)
             {
-                if (activity.Type == ActivityTypes.Message)
-                {
-                    System.Diagnostics.Trace.TraceInformation($"{activity.From.Name ?? activity.From.Id ?? activity.From.Role}: {((Activity)activity).Text}");
-                }
-                else
-                {
-                    System.Diagnostics.Trace.TraceInformation($"{activity.From.Name ?? activity.From.Id ?? activity.From.Role} [{activity.Type}]");
-                }
-
                 string transcriptFile = Path.Combine(folder, activity.Conversation.Id + ".transcript");
 
                 List<Activity> transcript = null;
@@ -86,7 +77,16 @@ namespace Microsoft.Bot.Builder
                 if (transcript == null)
                 {
                     transcript = new List<Activity>();
-                    System.Diagnostics.Trace.TraceInformation($"Transcript file is: file://{transcriptFile.Replace("\\", "/")}");
+                    System.Diagnostics.Trace.TraceInformation($"file://{transcriptFile.Replace("\\", "/")}");
+                }
+
+                if (activity.Type == ActivityTypes.Message)
+                {
+                    System.Diagnostics.Trace.TraceInformation($"{activity.From.Name ?? activity.From.Id ?? activity.From.Role}: {((Activity)activity).Text}");
+                }
+                else
+                {
+                    System.Diagnostics.Trace.TraceInformation($"{activity.From.Name ?? activity.From.Id ?? activity.From.Role} [{activity.Type}]");
                 }
 
                 transcript.Add((Activity)activity);
