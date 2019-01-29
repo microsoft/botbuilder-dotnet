@@ -15,12 +15,19 @@ namespace Microsoft.Bot.Builder.TemplateManager
     /// </remarks>
     public class TemplateManager
     {
-        private List<ITemplateRenderer> _templateRenderers = new List<ITemplateRenderer>();
-        private List<string> _languageFallback = new List<string>();
-
         public TemplateManager()
         {
         }
+
+        /// <summary>
+        /// Template Renderers
+        /// </summary>
+        public List<ITemplateRenderer> Renderers { get; set; } = new List<ITemplateRenderer>();
+
+        /// <summary>
+        /// Language fallback policy
+        /// </summary>
+        public List<string> LanguageFallback { get; set; } = new List<string>();
 
         /// <summary>
         /// Add a template engine for binding templates
@@ -29,9 +36,22 @@ namespace Microsoft.Bot.Builder.TemplateManager
 
         public TemplateManager Register(ITemplateRenderer renderer)
         {
-            if (!_templateRenderers.Contains(renderer))
-                _templateRenderers.Add(renderer);
+            if (!this.Renderers.Contains(renderer))
+                this.Renderers.Add(renderer);
             return this;
+        }
+
+        public static Activity CreateTemplateActivity(string templateId, object data)
+        {
+            return new Activity()
+            {
+                Type = "Template",
+                ChannelData = new TemplateOptions()
+                {
+                    TemplateId = templateId,
+                    Data = data
+                }
+            };
         }
 
         /// <summary>
@@ -40,17 +60,17 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <returns></returns>
         public IList<ITemplateRenderer> List()
         {
-            return _templateRenderers;
+            return this.Renderers;
         }
 
         public void SetLanguagePolicy(IEnumerable<string> languageFallback)
         {
-            _languageFallback = new List<string>(languageFallback);
+            LanguageFallback = new List<string>(languageFallback);
         }
 
         public IEnumerable<string> GetLanguagePolicy()
         {
-            return _languageFallback;
+            return LanguageFallback;
         }
 
         /// <summary>
@@ -85,7 +105,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <returns></returns>
         public async Task<Activity> RenderTemplate(ITurnContext turnContext, string language, string templateId, object data = null)
         {
-            var fallbackLocales = new List<string>(_languageFallback);
+            var fallbackLocales = new List<string>(LanguageFallback);
 
             if (!string.IsNullOrEmpty(language))
             {
@@ -97,7 +117,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
             // try each locale until successful
             foreach (var locale in fallbackLocales)
             {
-                foreach (var renderer in _templateRenderers)
+                foreach (var renderer in this.Renderers)
                 {
                     object templateOutput = await renderer.RenderTemplate(turnContext, locale, templateId, data);
                     if (templateOutput != null)
