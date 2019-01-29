@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.Dialogs.Composition
 {
@@ -20,6 +19,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
         /// Route of Intent -> DialogId 
         /// </summary>
         public IDictionary<string, IDialog> Routes { get; set; } = new Dictionary<string, IDialog>();
+
+
+        // autoregister dialogs in the routes
+        protected override Task OnInitialize(DialogContext outerDc)
+        {
+            foreach(var route in Routes)
+            {
+                var dialog = route.Value;
+                if (String.IsNullOrEmpty(dialog.Id))
+                {
+                    dialog.Id = $"{this.Id}.{route.Key}";
+                }
+
+                if (this.FindDialog(dialog.Id) == null && outerDc.FindDialog(dialog.Id) == null)
+                {
+                    this.AddDialog(dialog);
+                }
+            }
+            return base.OnInitialize(outerDc);
+        }
 
         /// <summary>
         /// Use recognizer intent to invoke sub dialog

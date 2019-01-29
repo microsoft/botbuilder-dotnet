@@ -11,9 +11,5 @@
   "routes": {
     "name": { "$ref": "TestFlows/TextPrompt.json" },
     "age": { "$ref": "TestFlows/NumberPrompt.json" }
-  },
-  "dialogs": [
-    { "$ref": "TestFlows/TextPrompt.json" },
-    { "$ref": "TestFlows/NumberPrompt.json" }
-  ]
+  }
 }

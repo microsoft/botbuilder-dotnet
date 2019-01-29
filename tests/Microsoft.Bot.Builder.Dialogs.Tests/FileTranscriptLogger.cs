@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -34,8 +35,13 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="folder">folder to place the transcript files</param>
         /// <param name="unitTestMode">unitTestMode will overwrite transcript files</param>
-        public FileTranscriptLogger(string folder, bool unitTestMode = true)
+        public FileTranscriptLogger(string folder=null, bool unitTestMode = true)
         {
+            if (folder == null)
+            {
+                folder = Environment.CurrentDirectory;
+            }
+
             if (!Directory.Exists(folder))
             {
                 Directory.CreateDirectory(folder);

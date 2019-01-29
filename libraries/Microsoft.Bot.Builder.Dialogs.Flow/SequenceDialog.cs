@@ -25,55 +25,51 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         /// </summary>
         public IExpressionEval Result { get; set; }
 
-        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        protected override Task OnInitialize(DialogContext outerDc)
         {
             this.InitialDialogId = this.Id + ".stepDialog";
 
             // if the StepDialog hasn't been added yet, add it to the dialogset
-            lock (Sequence)
+            if (this.FindDialog(InitialDialogId) == null)
             {
-                if (this.FindDialog(InitialDialogId) == null)
+                var innerDialog = new StepDialog(InitialDialogId)
                 {
-                    var innerDialog = new StepDialog(InitialDialogId)
+                    Sequence = this.Sequence,
+                    Result = this.Result
+                };
+                this.AddDialog(innerDialog);
+            }
+            // make sure each step has a unique id
+            for (int i = 0; i < this.Sequence.Count; i++)
+            {
+                var step = this.Sequence[i];
+                if (String.IsNullOrEmpty(step.Id))
+                {
+                    step.Id = $"{this.Id}.{i}";
+                }
+
+                // add dialogs to my dialogset
+                if (step is IDialogStep dialogStep)
+                {
+                    if (String.IsNullOrEmpty(dialogStep.Dialog.Id))
                     {
-                        Sequence = this.Sequence,
-                        Result = this.Result
-                    };
-                    this.AddDialog(innerDialog);
+                        dialogStep.Dialog.Id = $"{this.Id}.d{i}";
+                    }
 
-                    // make sure each step has a unique id
-                    for (int i = 0; i < this.Sequence.Count; i++)
+                    if (this.FindDialog(dialogStep.Dialog.Id) == null && outerDc.FindDialog(dialogStep.Dialog.Id) == null)
                     {
-                        var step = this.Sequence[i];
-                        if (String.IsNullOrEmpty(step.Id))
-                        {
-                            step.Id = $"{this.Id}.{i}";
-                        }
-
-                        // add dialogs to my dialogset
-                        if (step is IDialogStep dialogStep)
-                        {
-                            if (String.IsNullOrEmpty(dialogStep.Dialog.Id))
-                            {
-                                dialogStep.Dialog.Id = $"{this.Id}.d{i}";
-                            }
-
-                            autoAddDialog(outerDc, dialogStep.Dialog);
-                        }
+                        this.AddDialog(dialogStep.Dialog);
                     }
                 }
             }
-            // start the InitialDialogId
-            return await base.BeginDialogAsync(outerDc, options, cancellationToken);
+
+            return base.OnInitialize(outerDc);
         }
 
-        private void autoAddDialog(DialogContext outerDc, IDialog dialog)
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (this.FindDialog(dialog.Id) == null &&
-                outerDc.FindDialog(dialog.Id) == null)
-            {
-                this.AddDialog(dialog);
-            }
+            // start the InitialDialogId
+            return await base.BeginDialogAsync(outerDc, options, cancellationToken);
         }
 
         internal class StepDialog : Dialog, IDialog

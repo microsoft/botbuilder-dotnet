@@ -13,6 +13,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         protected DialogSet _dialogs;
 
+        private bool initialized = false;
+
         public ComponentDialog(string dialogId=null)
             : base(dialogId)
         {
@@ -40,6 +42,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public string InitialDialogId { get; set; }
 
+        protected virtual Task OnInitialize(DialogContext dc)
+        {
+            return Task.CompletedTask;
+        }
+
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (outerDc == null)
@@ -50,6 +57,13 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Start the inner dialog.
             var dialogState = new DialogState();
             outerDc.ActiveDialog.State[PersistedDialogState] = dialogState;
+
+            if (!this.initialized)
+            {
+                this.initialized = true;
+                await OnInitialize(outerDc).ConfigureAwait(false);
+            }
+
             var innerDc = new DialogContext(_dialogs, outerDc, dialogState);
             var turnResult = await OnBeginDialogAsync(innerDc, options, cancellationToken).ConfigureAwait(false);
 
