@@ -10,7 +10,6 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder
 {
-
     /// <summary>
     /// FileTranscriptLogger which creates a .transcript file for each conversationId
     /// </summary>
@@ -96,4 +95,3 @@ namespace Microsoft.Bot.Builder
         }
     }
 }
-
