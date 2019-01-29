@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Integration
         /// <seealso cref="BotAdapter.Use(IMiddleware)"/>
         public IList<IMiddleware> Middleware { get; } = new List<IMiddleware>();
 
-#pragma warning disable SA1623
+#pragma warning disable SA1623, SA1515, SA1516
         /// <summary>
         /// OBSOLETE: This property is no longer used by the framework.
         /// </summary>
@@ -66,7 +66,8 @@ namespace Microsoft.Bot.Builder.Integration
         [Obsolete("This property is no longer used by the framework. Please see documentation for more details.")]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public IList<BotState> State { get; } = new List<BotState>();
-#pragma warning restore SA1623
+#pragma warning restore SA1623, SA1515, SA1516
+
         /// <summary>
         /// Gets or sets the retry policy to use in case of errors from Bot Framework Service.
         /// </summary>
