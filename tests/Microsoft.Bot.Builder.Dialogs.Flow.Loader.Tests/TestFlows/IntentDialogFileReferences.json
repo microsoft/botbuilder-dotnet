@@ -1,0 +1,19 @@
+{
+  "$schema": "http://schemas.botframework.com/IntentDialog",
+  "$id": "intentDialog",
+  "recognizer": {
+    "$schema": "http://schemas.botframework.com/RuleRecognizer",
+    "rules": {
+      "name": "name",
+      "age": "age"
+    }
+  },
+  "routes": {
+    "name": { "$ref": "TestFlows/TextPrompt.json" },
+    "age": { "$ref": "TestFlows/NumberPrompt.json" }
+  },
+  "dialogs": [
+    { "$ref": "TestFlows/TextPrompt.json" },
+    { "$ref": "TestFlows/NumberPrompt.json" }
+  ]
+}

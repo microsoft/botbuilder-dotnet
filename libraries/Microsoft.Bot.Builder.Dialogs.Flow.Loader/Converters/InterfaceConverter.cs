@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using Microsoft.Bot.Builder.Dialogs.Flow.Loader.Resolvers;
 using Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -10,6 +11,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Converters
 {
     public class InterfaceConverter<T> : JsonConverter where T : class
     {
+        private readonly IRefResolver refResolver;
+
+        public InterfaceConverter(IRefResolver refResolver)
+        {
+            this.refResolver = refResolver ?? throw new ArgumentNullException(nameof(refResolver));
+        }
+
         public override bool CanRead => true;
 
         public override bool CanConvert(Type objectType)
@@ -19,9 +27,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Converters
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var jsonObject = JObject.Load(reader);
+            var jsonObject = JToken.Load(reader);
 
-            var typeName = jsonObject["@type"].ToString();
+            if (refResolver.IsRef(jsonObject))
+            {
+                jsonObject = refResolver.Resolve(jsonObject);
+            }
+
+            jsonObject["id"] = jsonObject["id"] ?? jsonObject["$id"];
+
+            var typeName = jsonObject["$schema"].ToString();
             T result = Factory.Build<T>(typeName, jsonObject, serializer);
 
             return result;

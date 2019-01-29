@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Converters
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(IActivity);
+            return typeof(IActivity).IsAssignableFrom(objectType);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -42,5 +42,4 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Converters
             serializer.Serialize(writer, value);
         }
     }
-
 }

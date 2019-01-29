@@ -11,6 +11,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Loaders
 {
     public interface ILoader
     {
-        object Load(JObject obj, JsonSerializer serializer, Type type);
+        object Load(JToken obj, JsonSerializer serializer, Type type);
     }
 }

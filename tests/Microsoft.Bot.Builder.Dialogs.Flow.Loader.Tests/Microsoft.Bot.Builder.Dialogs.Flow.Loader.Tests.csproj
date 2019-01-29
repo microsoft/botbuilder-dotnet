@@ -19,19 +19,31 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TestFlows\CommandDialog_WithImplicitArrayCommandSet.json">
+    <None Update="TestFlows\IntentDialogRelativeReferences.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFlows\IntentDialog.json">
+    <None Update="TestFlows\SequenceWithPrompts\NumberPrompt.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFlows\IntentCommandDialog_WithChildPrompts.json">
+    <None Update="TestFlows\SequenceWithPrompts\SequenceWithInlinePrompts.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFlows\IntentCommandDialog_OnlyCommands.json">
+    <None Update="TestFlows\SequenceWithPrompts\SequenceWithRefPromptsOverrides.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFlows\CommandDialog.json">
+    <None Update="TestFlows\SequenceWithPrompts\SequenceWithRefPrompts.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\NumberPrompt.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\SequenceWithPrompts\TextPrompt.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\TextPrompt.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\IntentDialogFileReferences.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

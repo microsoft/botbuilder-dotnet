@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Loaders
 {
     public class DefaultLoader : ILoader
     {
-        public virtual object Load(JObject obj, JsonSerializer serializer, Type type)
+        public virtual object Load(JToken obj, JsonSerializer serializer, Type type)
         {
             return obj.ToObject(type, serializer);
         }
