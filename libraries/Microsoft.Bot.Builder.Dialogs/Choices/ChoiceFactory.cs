@@ -34,7 +34,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             var hasMessageFeed = Channel.HasMessageFeed(channelId);
             var longTitles = maxTitleLength > maxActionTitleLength;
 
-            if (!longTitles && (supportsSuggestedActions || (!hasMessageFeed && supportsCardActions)))
+            if (!longTitles && !supportsSuggestedActions && supportsCardActions && !hasMessageFeed)
+            {
+                // SuggestedActions is the preferred approach, but for channels that don't
+                // support them (e.g. Teams) we should use a HeroCard with CardActions
+                return HeroCard(list, text, speak);
+            }
+            else if (!longTitles && supportsSuggestedActions)
             {
                 // We always prefer showing choices using suggested actions. If the titles are too long, however,
                 // we'll have to show them as a text list.
