@@ -83,9 +83,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Generates an answer from the knowledge base.
         /// </summary>
         /// <param name="turnContext">The Turn Context that contains the user question to be queried against your knowledge base.</param>
-        /// <param name="queryOptions">The options for the QnA Maker knowledge base. If null, constructor option is used for this instance.</param>
+        /// <param name="options">The options for the QnA Maker knowledge base. If null, constructor option is used for this instance.</param>
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
-        public async Task<QueryResult[]> GetAnswersAsync(ITurnContext turnContext, QnAMakerOptions queryOptions = null)
+        public async Task<QueryResult[]> GetAnswersAsync(ITurnContext turnContext, QnAMakerOptions options = null)
         {
             if (turnContext == null)
             {
@@ -108,12 +108,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentException("Null or empty text");
             }
 
-            var options = HydrateOptions(queryOptions);
-            ValidateOptions(options);
+            var hydratedOptions = HydrateOptions(options);
+            ValidateOptions(hydratedOptions);
 
-            var result = await QueryQnaServiceAsync((Activity)messageActivity, options).ConfigureAwait(false);
+            var result = await QueryQnaServiceAsync((Activity)messageActivity, hydratedOptions).ConfigureAwait(false);
 
-            await EmitTraceInfoAsync(turnContext, (Activity)messageActivity, result, options).ConfigureAwait(false);
+            await EmitTraceInfoAsync(turnContext, (Activity)messageActivity, result, hydratedOptions).ConfigureAwait(false);
 
             return result;
         }
@@ -193,9 +193,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (!response.IsSuccessStatusCode)
             {
-                return null;
+                throw new HttpRequestException($"Request to QnA Maker service was unsuccessful - {(int)response.StatusCode} {response.ReasonPhrase}");
             }
-
+            
             var result = await FormatQnaResultAsync(response, options).ConfigureAwait(false);
 
             return result;

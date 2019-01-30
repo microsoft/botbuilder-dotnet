@@ -606,6 +606,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
+        [ExpectedException(typeof(HttpRequestException))]
         public async Task QnaMaker_Test_UnsuccessfulResponse()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -622,8 +623,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 });
             
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
-
-            Assert.IsNull(results);
         }        
 
         private string GetV3LegacyRequestUrl() => $"{_hostname}/v3.0/knowledgebases/{_knowlegeBaseId}/generateanswer";
