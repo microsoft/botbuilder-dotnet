@@ -24,7 +24,7 @@
 
 	<PropertyGroup>
 		<Company>Microsoft</Company>
-		<Authors>microsoft,BotFramework,nugetbotbuilder</Authors>
+		<Authors>Microsoft</Authors>
 		<Product>Microsoft Bot Builder SDK</Product>
 		<Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
 		<PackageProjectUrl>https://github.com/Microsoft/botbuilder-dotnet</PackageProjectUrl>
