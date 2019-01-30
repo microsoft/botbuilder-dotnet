@@ -191,11 +191,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new HttpRequestException($"Request to QnA Maker service was unsuccessful - {(int)response.StatusCode} {response.ReasonPhrase}");
-            }
-            
+            response.EnsureSuccessStatusCode();
+
             var result = await FormatQnaResultAsync(response, options).ConfigureAwait(false);
 
             return result;
