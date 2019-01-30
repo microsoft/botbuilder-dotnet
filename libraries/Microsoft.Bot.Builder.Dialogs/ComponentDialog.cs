@@ -56,6 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var dialogState = new DialogState();
             outerDc.ActiveDialog.State[PersistedDialogState] = dialogState;
             var innerDc = new DialogContext(_dialogs, outerDc.Context, dialogState);
+            innerDc.Parent = outerDc;
             var turnResult = await OnBeginDialogAsync(innerDc, options, cancellationToken).ConfigureAwait(false);
 
             // Check for end of inner dialog
@@ -81,6 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Continue execution of inner dialog.
             var dialogState = (DialogState)outerDc.ActiveDialog.State[PersistedDialogState];
             var innerDc = new DialogContext(_dialogs, outerDc.Context, dialogState);
+            innerDc.Parent = outerDc;
             var turnResult = await OnContinueDialogAsync(innerDc, cancellationToken).ConfigureAwait(false);
 
             if (turnResult.Status != DialogTurnStatus.Waiting)

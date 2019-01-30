@@ -18,6 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             _parent = parent;
             _nextCalled = false;
+            Parent = dc.Parent;
             Index = index;
             Options = options;
             Reason = reason;
