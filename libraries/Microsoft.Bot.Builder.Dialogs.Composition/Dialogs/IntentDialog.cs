@@ -57,6 +57,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
             var dialogState = new DialogState();
             outerDc.ActiveDialog.State[PersistedDialogState] = dialogState;
 
+            await EnsureInitialized(outerDc).ConfigureAwait(false);
+
             var result = await this.Recognizer.RecognizeAsync(outerDc.Context, cancellationToken);
 
             var topIntent = result.GetTopScoringIntent();

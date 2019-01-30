@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        private async Task EnsureInitialized(DialogContext outerDc)
+        protected async Task EnsureInitialized(DialogContext outerDc)
         {
             if (!this.initialized)
             {
