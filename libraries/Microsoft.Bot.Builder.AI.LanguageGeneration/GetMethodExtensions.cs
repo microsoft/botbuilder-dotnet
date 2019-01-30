@@ -29,7 +29,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 case "join":
                     return this.Join;
                 case "foreach":
+                case "map":
                     return this.Foreach;
+                case "mapjoin":
+                case "humanize":
+                    return this.ForeachThenJoin;
                 default:
                     return MethodBinder.All(name);
             }
@@ -93,6 +97,33 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 }).ToList();
 
                 return result;
+            }
+
+            throw new NotImplementedException();
+        }
+
+        public object ForeachThenJoin(IReadOnlyList<object> parameters)
+        {
+            if (parameters.Count >= 2 &&
+                parameters[0] is IList li &&
+                parameters[1] is string func)
+            {
+                if (!_evaluator.Context.TemplateContexts.ContainsKey(func))
+                {
+                    throw new Exception($"No such template defined: {func}");
+                }
+
+                var result = li.OfType<object>().Select(x =>
+                {
+                    var newScope = _evaluator.ConstructScope(func, new List<object>() { x });
+                    var evaled = _evaluator.Evaluate(func, newScope);
+                    return evaled;
+                }).ToList();
+
+                var newParameter = parameters.Skip(2).ToList();
+                newParameter.Insert(0, result);
+                return this.Join(newParameter);
+                
             }
 
             throw new NotImplementedException();
