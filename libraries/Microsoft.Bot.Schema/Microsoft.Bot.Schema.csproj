@@ -20,6 +20,10 @@
 		<Summary>This library implements C# schema classes for using the Bot Framework.</Summary>
 	</PropertyGroup>
 
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);CS0108</NoWarn>
+  </PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
 		<PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
