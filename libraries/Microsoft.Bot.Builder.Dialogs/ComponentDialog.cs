@@ -58,11 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var dialogState = new DialogState();
             outerDc.ActiveDialog.State[PersistedDialogState] = dialogState;
 
-            if (!this.initialized)
-            {
-                this.initialized = true;
-                await OnInitialize(outerDc).ConfigureAwait(false);
-            }
+            await EnsureInitialized(outerDc).ConfigureAwait(false);
 
             var innerDc = new DialogContext(_dialogs, outerDc, dialogState);
             var turnResult = await OnBeginDialogAsync(innerDc, options, cancellationToken).ConfigureAwait(false);
@@ -80,12 +76,23 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
+        private async Task EnsureInitialized(DialogContext outerDc)
+        {
+            if (!this.initialized)
+            {
+                this.initialized = true;
+                await OnInitialize(outerDc).ConfigureAwait(false);
+            }
+        }
+
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext outerDc, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (outerDc == null)
             {
                 throw new ArgumentNullException(nameof(outerDc));
             }
+
+            await EnsureInitialized(outerDc).ConfigureAwait(false);
 
             // Continue execution of inner dialog.
             var dialogState = (DialogState)outerDc.ActiveDialog.State[PersistedDialogState];
@@ -104,6 +111,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext outerDc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            await EnsureInitialized(outerDc).ConfigureAwait(false);
+
             // Containers are typically leaf nodes on the stack but the dev is free to push other dialogs
             // on top of the stack which will result in the container receiving an unexpected call to
             // dialogResume() when the pushed on dialog ends.

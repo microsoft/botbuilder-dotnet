@@ -32,6 +32,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
             // if the StepDialog hasn't been added yet, add it to the dialogset
             if (this.FindDialog(InitialDialogId) == null)
             {
+                if (this.Sequence.Id == null)
+                {
+                    this.Sequence.Id = $"Sequence.{this.Id}";
+                }
+
                 var innerDialog = new StepDialog(InitialDialogId)
                 {
                     Sequence = this.Sequence,
@@ -94,11 +99,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
                 if (this.Sequence == null)
                 {
                     return await EndThisDialog(dialogContext, null, state, cancellationToken);
-                }
-
-                if (this.Sequence.Id == null)
-                {
-                    this.Sequence.Id = this.Id;
                 }
 
                 state[$"{this.Id}.options"] = options;
