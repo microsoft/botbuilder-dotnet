@@ -95,7 +95,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             //Assert.AreEqual("You have 2 alarms, 7 am at tomorrow and 8 pm at tomorrow", evaled);
 
 
-            var evaled = engine.Evaluate("ShowAlarmsWithForeach", new { alarms = alarms });
+            //var evaled = engine.Evaluate("ShowAlarmsWithForeach", new { alarms = alarms });
+            //Assert.AreEqual("You have 2 alarms, 7 am at tomorrow and 8 pm at tomorrow", evaled);
+
+            var evaled = engine.Evaluate("ShowAlarmsWithMemberForeach", new { alarms = alarms });
             Assert.AreEqual("You have 2 alarms, 7 am at tomorrow and 8 pm at tomorrow", evaled);
 
         }

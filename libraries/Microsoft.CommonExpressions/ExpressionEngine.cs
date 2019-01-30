@@ -90,9 +90,21 @@ namespace Microsoft.Expressions
                 case "(":
                     {
                         var name = term.Terms[0].Token.Input;
-                        var method = getMethod(name);
-                        var parameters = term.Terms.Skip(1).Select(t => Evaluate(t, scope, getValue, getMethod)).ToArray();
-                        return method(parameters);
+
+                        if (name.Equals("."))
+                        {
+                            var method = getMethod(term.Terms[0].Terms[1].Token.Input);
+                            var instance = Evaluate(term.Terms[0].Terms[0], scope, getValue, getMethod);
+                            var parameters = term.Terms.Skip(1).Select(t => Evaluate(t, scope, getValue, getMethod)).ToList();
+                            parameters.Insert(0, instance);
+                            return method(parameters);
+                        }
+                        else
+                        {
+                            var method = getMethod(name);
+                            var parameters = term.Terms.Skip(1).Select(t => Evaluate(t, scope, getValue, getMethod)).ToArray();
+                            return method(parameters);
+                        }
                     }
             }
 
