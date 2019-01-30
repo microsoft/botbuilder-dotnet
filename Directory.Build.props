@@ -5,7 +5,11 @@
 
   <PropertyGroup>
     <Company>Microsoft</Company>
-    <Authors>microsoft,BotFramework,nugetbotbuilder</Authors>
+
+    <!-- Rules found at: https://aka.ms/Microsoft-NuGet-Compliance -->
+    
+    <!-- Per rules,this must be *EXACTLY* "Microsoft. Otherwise Nuget.org will reject the packages." -->
+    <Authors>Microsoft</Authors>
     <Product>Microsoft Bot Builder SDK</Product>
     <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
   </PropertyGroup>
@@ -26,6 +30,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <!-- Rules found at: https://aka.ms/Microsoft-NuGet-Compliance -->
     <PackageProjectUrl>https://github.com/Microsoft/botbuilder-dotnet</PackageProjectUrl>
     <PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
     <PackageLicenseUrl>https://github.com/Microsoft/BotBuilder/blob/master/LICENSE</PackageLicenseUrl>

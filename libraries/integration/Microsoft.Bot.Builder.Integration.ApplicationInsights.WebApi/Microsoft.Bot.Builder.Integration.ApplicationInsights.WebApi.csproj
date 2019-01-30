@@ -21,20 +21,7 @@
     <Summary>This library provides integration between the Microsoft Bot Builder SDK and Application Insights.</Summary>
   </PropertyGroup>
 
-	<PropertyGroup>
-		<Company>Microsoft</Company>
-		<Authors>microsoft,BotFramework,nugetbotbuilder</Authors>
-		<Product>Microsoft Bot Builder SDK</Product>
-		<Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
-		<PackageProjectUrl>https://github.com/Microsoft/botbuilder-dotnet</PackageProjectUrl>
-		<PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
-		<PackageLicenseUrl>https://github.com/Microsoft/BotBuilder/blob/master/LICENSE</PackageLicenseUrl>
-		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<RepositoryUrl>https://github.com/Microsoft/botbuilder-dotnet</RepositoryUrl>
-		<LicenseUrl>https://github.com/Microsoft/BotBuilder-dotnet/blob/master/LICENSE</LicenseUrl>
-		<RepositoryType />
-		<PackageTags>bots;ai;botframework;botbuilder</PackageTags>
-		<NeutralLanguage />
+	<PropertyGroup>		
 		<AssemblyName>Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi</AssemblyName>
 		<RootNamespace>Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi</RootNamespace>
 	</PropertyGroup>
