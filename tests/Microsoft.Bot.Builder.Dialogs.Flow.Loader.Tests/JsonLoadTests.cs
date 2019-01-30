@@ -5,6 +5,7 @@ using Microsoft.Bot.Builder.Dialogs.Flow.Loader;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types;
 using Microsoft.Bot.Builder.Dialogs.Flow.Loader.Tests.Recognizers;
+using Microsoft.Bot.Builder.Dialogs.Flow.Loader.Plugins;
 
 namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 {
@@ -162,6 +163,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             .Send("Carlos")
             .Send("age")
             .AssertReply("What is your age?") 
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task JsonDialogLoad_FileDependencyPlugin()
+        {
+            string json = File.ReadAllText("TestFlows/FilePluginEchoDialog.json");
+
+            IPlugin filePlugin = new FilePlugin(
+                new FileDependencyInfo()
+                {
+                    AssemblyPath =
+                    @"..\..\..\..\Microsoft.Bot.Builder.Dialogs.Flow.Tests\bin\Debug\netcoreapp2.1\Microsoft.Bot.Builder.Dialogs.Flows.Tests.dll",
+                    ClassName = "EchoDialog",
+                    SchemaUri = "custom::EchoDialog"
+                });
+
+            await Factory.RegisterPlugin(filePlugin);
+
+            await BuildTestFlow(json)
+            .Send("howdy")
+            .AssertReply("howdy")
+            .Send("echo")
+            .AssertReply("echo")
             .StartTestAsync();
         }
 

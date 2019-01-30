@@ -1,8 +1,8 @@
 {
-  "$schema": "http://schemas.botframework.com/IntentDialog",
+  "$type": "http://schemas.botframework.com/IntentDialog",
   "$id": "intentDialog",
   "recognizer": {
-    "$schema": "http://schemas.botframework.com/RuleRecognizer",
+    "$type": "http://schemas.botframework.com/RuleRecognizer",
     "rules": {
       "name": "name",
       "age": "age"

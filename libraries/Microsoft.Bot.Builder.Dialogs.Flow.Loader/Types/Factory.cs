@@ -4,8 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Composition;
 using Microsoft.Bot.Builder.Dialogs.Flow.Loader.Loaders;
+using Microsoft.Bot.Builder.Dialogs.Flow.Loader.Plugins;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -33,6 +35,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types
             types.Add(name, type);
             names.Add(type, name);
             builders.Add(type, loader);
+        }
+
+        public static async Task RegisterPlugin(IPlugin plugin)
+        {
+            await plugin.Load();
+            Register(plugin.SchemaUri, plugin.Type, plugin.Loader);
         }
 
         public static T Build<T>(string name, JToken obj, JsonSerializer serializer) where T : class
@@ -83,27 +91,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types
             RegisterDefaults();
         }
 
-        // Plugins
-        //public static void Register<T>(string friendlyName, Type dotnetType, Assembly assembly, Func<JsonReader, JsonSerializer, T> builder)
-        //{
-
-        //}
-
         private static void RegisterDefaults()
         {
             //TODO: we don't want this static initialization, leaving it here for convenience now
             // while things are changing rapidly still
 
-            // Commands
-            Register("http://schemas.botframework.com/SetVariable", typeof(SetVarStep), new SetVarStepLoader());
-            Register("http://schemas.botframework.com/Switch", typeof(SwitchStep));
+            // Steps
+            Register("http://schemas.botframework.com/SetVarStep", typeof(SetVarStep));
+            Register("http://schemas.botframework.com/SwitchStep", typeof(SwitchStep));
             Register("http://schemas.botframework.com/CallDialog", typeof(CallDialog));
-            Register("http://schemas.botframework.com/SendActivity", typeof(SendActivityStep));
+            Register("http://schemas.botframework.com/SendActivityStep", typeof(SendActivityStep));
             Register("http://schemas.botframework.com/EndDialog", typeof(EndDialog));
+            Register("http://schemas.botframework.com/ClearVarStep", typeof(ClearVarStep));
+            Register("http://schemas.botframework.com/EndOfTurnStep", typeof(EndOfTurnStep));
+            Register("http://schemas.botframework.com/GotoDialog", typeof(GotoDialog));
+            Register("http://schemas.botframework.com/IfElseStep", typeof(IfElseStep));
 
             // Dialogs
             Register("http://schemas.botframework.com/ComponentDialog", typeof(ComponentDialog), new ComponentDialogLoader());
-            Register("http://schemas.botframework.com/IntentDialog", typeof(IntentDialog), new ComponentDialogLoader());
+            Register("http://schemas.botframework.com/IntentDialog", typeof(IntentDialog));
             Register("http://schemas.botframework.com/SequenceDialog", typeof(SequenceDialog));
             Register("http://schemas.botframework.com/TextPrompt", typeof(TextPrompt));
             Register("http://schemas.botframework.com/IntegerPrompt", typeof(IntegerPrompt));

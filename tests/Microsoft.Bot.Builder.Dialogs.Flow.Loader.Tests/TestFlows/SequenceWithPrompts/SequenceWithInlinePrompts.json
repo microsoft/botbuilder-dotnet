@@ -1,11 +1,11 @@
 {
-  "$schema": "http://schemas.botframework.com/SequenceDialog",
+  "$type": "http://schemas.botframework.com/SequenceDialog",
   "$id": "getUserInfo",
   "sequence": [
     {
-      "$schema": "http://schemas.botframework.com/CallDialog",
+      "$type": "http://schemas.botframework.com/CallDialog",
       "dialog": {
-        "$schema": "http://schemas.botframework.com/TextPrompt",
+        "$type": "http://schemas.botframework.com/TextPrompt",
         "$id": "namePrompt",
         "property": "value.name",
         "pattern": "\\w{3,50}",
@@ -16,9 +16,9 @@
       "property": "value.name"
     },
     {
-      "$schema": "http://schemas.botframework.com/CallDialog",
+      "$type": "http://schemas.botframework.com/CallDialog",
       "dialog": {
-        "$schema": "http://schemas.botframework.com/IntegerPrompt",
+        "$type": "http://schemas.botframework.com/IntegerPrompt",
         "$id": "agePrompt",
         "property": "value.age",
         "minValue": 0,
@@ -32,7 +32,7 @@
       "property": "value.age"
     },
     {
-      "$schema": "http://schemas.botframework.com/EndDialog",
+      "$type": "http://schemas.botframework.com/EndDialog",
       "result": "value"
     }
   ]

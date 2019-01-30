@@ -1,0 +1,4 @@
+{
+  "$type": "custom::EchoDialog",
+  "$id": "echoDialog"
+}

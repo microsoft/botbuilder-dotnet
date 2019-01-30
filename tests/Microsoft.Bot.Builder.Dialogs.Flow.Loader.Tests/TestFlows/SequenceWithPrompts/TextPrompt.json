@@ -1,5 +1,5 @@
 {
-  "$schema": "http://schemas.botframework.com/TextPrompt",
+  "$type": "http://schemas.botframework.com/TextPrompt",
   "$id": "namePrompt",
   "property": "value.name",
   "pattern": "\\w{3,50}",

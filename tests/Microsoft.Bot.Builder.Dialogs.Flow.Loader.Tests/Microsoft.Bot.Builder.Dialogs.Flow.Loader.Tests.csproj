@@ -40,6 +40,9 @@
     <None Update="TestFlows\SequenceWithPrompts\TextPrompt.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestFlows\FilePluginEchoDialog.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestFlows\TextPrompt.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
