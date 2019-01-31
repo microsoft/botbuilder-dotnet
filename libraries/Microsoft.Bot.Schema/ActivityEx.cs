@@ -394,7 +394,8 @@ namespace Microsoft.Bot.Schema
                 Bot = this.Recipient,
                 Conversation = this.Conversation,
                 ChannelId = this.ChannelId,
-                ServiceUrl = this.ServiceUrl
+                ServiceUrl = this.ServiceUrl,
+                ChannelData = this.ChannelData
             };
 
             return reference;

@@ -725,7 +725,7 @@ namespace Microsoft.Bot.Builder
         /// specified users, the ID of the activity's <see cref="IActivity.Conversation"/>
         /// will contain the ID of the new conversation.</para>
         /// </remarks>
-        public virtual async Task CreateConversationAsync(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, BotCallbackHandler callback, CancellationToken cancellationToken)
+        public virtual async Task CreateConversationAsync(ConversationReference reference, string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             var connectorClient = CreateConnectorClient(serviceUrl, credentials);
 
@@ -739,6 +739,11 @@ namespace Microsoft.Bot.Builder
             eventActivity.Id = result.ActivityId ?? Guid.NewGuid().ToString("n");
             eventActivity.Conversation = new ConversationAccount(id: result.Id);
             eventActivity.Recipient = conversationParameters.Bot;
+
+            if (reference.ChannelData != null)
+            {
+                eventActivity.ChannelData.set (tenant : reference.ChannelData);
+            }
 
             using (TurnContext context = new TurnContext(this, (Activity)eventActivity))
             {
