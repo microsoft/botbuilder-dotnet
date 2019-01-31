@@ -506,6 +506,31 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
+        [ExpectedException(typeof(NotSupportedException))]
+        public async Task QnaMaker_V2LegacyEndpoint_ConvertsToHaveIdPropertyInResult()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetV2LegacyRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_LegacyEndpointAnswer.json"));
+            
+            var v2LegacyEndpoint = new QnAMakerEndpoint
+            {
+                KnowledgeBaseId = _knowlegeBaseId,
+                EndpointKey = _endpointKey,
+                Host = $"{_hostname}/v2.0"
+            };
+
+            var v2Qna = GetQnAMaker(mockHttp, v2LegacyEndpoint);
+            
+            var v2legacyResult = await v2Qna.GetAnswersAsync(GetContext("How do I be the best?"));
+
+            Assert.IsNotNull(v2legacyResult);
+            Assert.IsTrue(v2legacyResult[0]?.Id != null);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
         public async Task QnaMaker_V3LegacyEndpoint_ConvertsToHaveIdPropertyInResult()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -625,6 +650,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
         }        
 
+        private string GetV2LegacyRequestUrl() => $"{_hostname}/v2.0/knowledgebases/{_knowlegeBaseId}/generateanswer";
         private string GetV3LegacyRequestUrl() => $"{_hostname}/v3.0/knowledgebases/{_knowlegeBaseId}/generateanswer";
 
         private string GetRequestUrl() => $"{_hostname}/knowledgebases/{_knowlegeBaseId}/generateanswer";

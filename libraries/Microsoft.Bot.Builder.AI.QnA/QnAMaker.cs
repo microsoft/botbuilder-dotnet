@@ -60,7 +60,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentException(nameof(endpoint.EndpointKey));
             }
 
-            _isLegacyProtocol = _endpoint.Host.EndsWith("v2.0") || _endpoint.Host.EndsWith("v3.0");
+            if (_endpoint.Host.EndsWith("v2.0"))
+            {
+                throw new NotSupportedException("v2.0 of QnA Maker service is no longer supported in the Bot Framework. Please upgrade your QnA Maker service at www.qnamaker.ai.");
+            }
+
+            _isLegacyProtocol = _endpoint.Host.EndsWith("v3.0");
 
             _options = options ?? new QnAMakerOptions();
 
