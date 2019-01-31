@@ -14,6 +14,8 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
     [TestCategory("ApplicationInsights")]
     public class ServiceResolutionTests
     {
+        public TestContext TestContext { get; set; }
+
         public ServiceResolutionTests()
         {
             // Arrange

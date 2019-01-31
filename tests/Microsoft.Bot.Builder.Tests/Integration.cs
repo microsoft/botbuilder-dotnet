@@ -14,6 +14,8 @@ namespace Microsoft.Bot.Builder.Tests
 
     public class Integration
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public void CheckSerializerSettings()
         {

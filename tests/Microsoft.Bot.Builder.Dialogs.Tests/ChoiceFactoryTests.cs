@@ -18,6 +18,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         private static List<Choice> colorChoices = new List<Choice> { new Choice("red"), new Choice("green"), new Choice("blue") };
         private static List<Choice> extraChoices = new List<Choice> { new Choice("red"), new Choice("green"), new Choice("blue"), new Choice("alpha") };
 
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public void ShouldRenderChoicesInline()
         {

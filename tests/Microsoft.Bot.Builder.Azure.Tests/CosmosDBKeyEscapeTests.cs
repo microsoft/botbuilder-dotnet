@@ -11,6 +11,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
     [TestCategory("Storage - CosmosDB")]
     public class CosmosDBKeyEscapeTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public void Sanitize_Key_Should_Fail_With_Null_Key()
         {

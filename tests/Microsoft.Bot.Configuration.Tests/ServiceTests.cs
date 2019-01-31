@@ -6,6 +6,8 @@ namespace Microsoft.Bot.Configuration.Tests
     [TestClass]
     public class ServiceTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public void LuisReturnsCorrectUrl()
         {

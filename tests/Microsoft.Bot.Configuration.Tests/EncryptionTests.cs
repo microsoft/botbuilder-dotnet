@@ -8,6 +8,8 @@ namespace Microsoft.Bot.Configuration.Tests
     [TestClass]
     public class EncryptionTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public void EncryptDecrypt()
         {

@@ -9,6 +9,8 @@ namespace Microsoft.Bot.Schema.Tests
     [TestClass]
     public class CardActionTest
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public void TestImplicitConversation()
         {

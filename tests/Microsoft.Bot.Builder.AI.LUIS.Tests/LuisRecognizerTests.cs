@@ -49,6 +49,8 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         // This is useful in order to see if the oracles for mocking or testing have changed.
         private readonly bool _mock = true;
 
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public async Task LuisRecognizer_Configuration()
         {
@@ -560,9 +562,9 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             Assert.IsTrue(score <= 1);
         }
 
-        private static TurnContext GetContext(string utterance)
+        private TurnContext GetContext(string utterance)
         {
-            var b = new TestAdapter();
+            var b = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             var a = new Activity
             {
                 Type = ActivityTypes.Message,

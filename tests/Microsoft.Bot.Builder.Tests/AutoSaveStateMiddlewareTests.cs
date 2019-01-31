@@ -14,6 +14,8 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("State Management")]
     public class AutoSaveStateMiddlewareTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public async Task AutoSaveStateMiddleware_DualReadWrite()
         {
@@ -27,8 +29,9 @@ namespace Microsoft.Bot.Builder.Tests
             var convState = new ConversationState(storage);
             var convProperty = convState.CreateProperty<int>("convCount");
 
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(userState, convState));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new AutoSaveStateMiddleware(userState, convState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             const int USER_INITITAL_COUNT = 100;
             const int CONVERSATION_INITIAL_COUNT = 10;
@@ -78,9 +81,10 @@ namespace Microsoft.Bot.Builder.Tests
                 ServiceUrl = "https://test.com",
                 User = new ChannelAccount("user1", "User1"),
                 Bot = new ChannelAccount("bot", "Bot"),
-                Conversation = new ConversationAccount(false, "convo2", "Conversation2")
+                Conversation = new ConversationAccount(false, $"{TestContext.TestName}2", $"{TestContext.TestName}2")
             })
-                .Use(new AutoSaveStateMiddleware(userState, convState));
+                .Use(new AutoSaveStateMiddleware(userState, convState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             await new TestFlow(adapter, botLogic)
                 .Send("get userCount")
@@ -105,8 +109,9 @@ namespace Microsoft.Bot.Builder.Tests
             var bss = new AutoSaveStateMiddleware()
                 .Add(userState)
                 .Add(convState);
-            var adapter = new TestAdapter()
-                .Use(bss);
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(bss)
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             const int USER_INITITAL_COUNT = 100;
             const int CONVERSATION_INITIAL_COUNT = 10;
@@ -158,9 +163,10 @@ namespace Microsoft.Bot.Builder.Tests
                 ServiceUrl = "https://test.com",
                 User = new ChannelAccount("user1", "User1"),
                 Bot = new ChannelAccount("bot", "Bot"),
-                Conversation = new ConversationAccount(false, "convo2", "Conversation2")
+                Conversation = new ConversationAccount(false, $"{TestContext.TestName}2", $"{TestContext.TestName}2")
             })
-                .Use(bss2);
+                .Use(bss2)
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             await new TestFlow(adapter, botLogic)
                 .Send("get userCount")

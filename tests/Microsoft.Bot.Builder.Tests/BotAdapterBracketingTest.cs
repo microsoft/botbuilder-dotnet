@@ -13,6 +13,8 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("Middleware")]
     public class BotAdapterBracketingTest
     {
+        public TestContext TestContext { get; set; }
+
 
         /// <summary>
         /// Developer authored Middleware that looks like this:
@@ -31,8 +33,9 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task Middlware_BracketingValidation()
         {
-            TestAdapter adapter = new TestAdapter()
-                .Use(new BeforeAFterMiddlware());
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new BeforeAFterMiddlware())
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             async Task Echo(ITurnContext ctx, CancellationToken cancellationToken)
             {
@@ -59,8 +62,9 @@ namespace Microsoft.Bot.Builder.Tests
         {
             string uniqueId = Guid.NewGuid().ToString();
 
-            TestAdapter adapter = new TestAdapter()
-                .Use(new CatchExceptionMiddleware());
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new CatchExceptionMiddleware())
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             async Task EchoWithException(ITurnContext ctx, CancellationToken cancellationToken)
             {

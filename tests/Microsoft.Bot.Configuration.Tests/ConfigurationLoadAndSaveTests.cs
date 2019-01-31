@@ -13,6 +13,8 @@ namespace Microsoft.Bot.Configuration.Tests
         private const string TestBotFileName = @"..\..\..\test.bot";
         private const string OutputBotFileName = "save.bot";
 
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public async Task DeserializeBotFile()
         {

@@ -11,6 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestClass]
     public class DialogSetTests
     {
+        public TestContext TestContext { get; set; }
 
         [TestMethod]
         public void DialogSet_ConstructorValid()
@@ -33,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogStateProperty = convoState.CreateProperty<DialogState>("dialogstate");
             var ds = new DialogSet(dialogStateProperty);
-            var context = TestUtilities.CreateEmptyContext();
+            var context = TestUtilities.CreateEmptyContext(TestContext);
             var dc = await ds.CreateContextAsync(context);
         }
 
@@ -43,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogStateProperty = convoState.CreateProperty<DialogState>("dialogstate");
             var ds = new DialogSet(dialogStateProperty);
-            var context = TestUtilities.CreateEmptyContext();
+            var context = TestUtilities.CreateEmptyContext(TestContext);
             var dc = await ds.CreateContextAsync(context);
         }
 

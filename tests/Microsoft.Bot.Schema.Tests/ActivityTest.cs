@@ -9,6 +9,8 @@ namespace Microsoft.Bot.Schema.Tests
     [TestClass]
     public class ActivityTest
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public void GetConversationReference()
         {

@@ -5,14 +5,16 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Integration.ApplicationInsights.WebApi.Tests
 {
-        [TestClass]
-        [TestCategory("ApplicationInsights")]
-        public class ServiceResolutionTests
+    [TestClass]
+    [TestCategory("ApplicationInsights")]
+    public class ServiceResolutionTests
+    {
+        public TestContext TestContext { get; set; }
+
+        public ServiceResolutionTests()
         {
-            public ServiceResolutionTests()
-            {
-                // TEST: See if this unblocks the build.
-            }
+            // TEST: See if this unblocks the build.
         }
+    }
 
 }

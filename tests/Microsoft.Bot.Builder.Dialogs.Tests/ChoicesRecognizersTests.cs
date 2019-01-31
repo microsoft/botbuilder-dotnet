@@ -30,8 +30,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             new SortedValue { Value = "option C", Index = 2 }
         };
 
+        public TestContext TestContext { get; set; }
+
         // FindValues
-    
+
         [TestMethod]
         public void ShouldFindASimpleValueInAnSingleWordUtterance()
         {

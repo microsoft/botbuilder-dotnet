@@ -13,6 +13,8 @@ namespace Microsoft.Bot.Schema.Tests
     /// </summary>
     public class EntitySchemaValidationTest
     {
+        public TestContext TestContext { get; set; }
+
         /// <summary>
         /// Ensures that <see cref="GeoCoordinates"/> class can be serialized and deserialized properly.
         /// </summary>

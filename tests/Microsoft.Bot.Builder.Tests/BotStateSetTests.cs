@@ -12,6 +12,8 @@ namespace Microsoft.Bot.Builder.Tests
     public class BotStateSetTests
     {
 
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public void BotStateSet_Properties()
         {
@@ -37,7 +39,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var storage = new MemoryStorage();
 
-            var turnContext = TestUtilities.CreateEmptyContext();
+            var turnContext = TestUtilities.CreateEmptyContext(TestContext);
             {
                 // setup userstate
                 var userState = new UserState(storage);
@@ -99,7 +101,7 @@ namespace Microsoft.Bot.Builder.Tests
             var stateSet = new BotStateSet(userState, convState);
 
             Assert.AreEqual(stateSet.BotStates.Count, 2);
-            var context = TestUtilities.CreateEmptyContext();
+            var context = TestUtilities.CreateEmptyContext(TestContext);
             await stateSet.LoadAllAsync(context);
 
             var userCount = await userProperty.GetAsync(context, () => 0);

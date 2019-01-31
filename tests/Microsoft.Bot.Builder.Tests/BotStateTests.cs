@@ -29,6 +29,8 @@ namespace Microsoft.Bot.Builder.Tests
     public class BotStateTests
     {
 
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException), "Cannot have empty/null property name")]
         public void State_EmptyName()
@@ -72,7 +74,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Arrange
             var userState = new UserState(mock.Object);
-            var context = TestUtilities.CreateEmptyContext();
+            var context = TestUtilities.CreateEmptyContext(TestContext);
 
             // Act
             var propertyA = userState.CreateProperty<string>("propertyA");
@@ -110,7 +112,7 @@ namespace Microsoft.Bot.Builder.Tests
             // Arrange
             var dictionary = new Dictionary<string, JObject>();
             var userState = new UserState(new MemoryStorage(dictionary));
-            var context = TestUtilities.CreateEmptyContext();
+            var context = TestUtilities.CreateEmptyContext(TestContext);
 
             // Act
             var propertyA = userState.CreateProperty<string>("propertyA");
@@ -125,7 +127,7 @@ namespace Microsoft.Bot.Builder.Tests
             // Arrange
             var dictionary = new Dictionary<string, JObject>();
             var userState = new UserState(new MemoryStorage(dictionary));
-            var context = TestUtilities.CreateEmptyContext();
+            var context = TestUtilities.CreateEmptyContext(TestContext);
 
             // Act
             var propertyA = userState.CreateProperty<string>("propertyA");
@@ -140,7 +142,7 @@ namespace Microsoft.Bot.Builder.Tests
             // Arrange
             var dictionary = new Dictionary<string, JObject>();
             var userState = new UserState(new MemoryStorage(dictionary));
-            var context = TestUtilities.CreateEmptyContext();
+            var context = TestUtilities.CreateEmptyContext(TestContext);
 
             // Act
             var propertyA = userState.CreateProperty<string>("propertyA");
@@ -156,7 +158,7 @@ namespace Microsoft.Bot.Builder.Tests
             // Arrange
             var dictionary = new Dictionary<string, JObject>();
             var userState = new UserState(new MemoryStorage(dictionary));
-            var context = TestUtilities.CreateEmptyContext();
+            var context = TestUtilities.CreateEmptyContext(TestContext);
 
             // Act
             var propertyA = userState.CreateProperty<string>("propertyA");
@@ -173,7 +175,7 @@ namespace Microsoft.Bot.Builder.Tests
             // Arrange
             var dictionary = new Dictionary<string, JObject>();
             var userState = new UserState(new MemoryStorage(dictionary));
-            var context = TestUtilities.CreateEmptyContext();
+            var context = TestUtilities.CreateEmptyContext(TestContext);
 
             // Act
             var testProperty = userState.CreateProperty<TestPocoState>("test");
@@ -191,7 +193,7 @@ namespace Microsoft.Bot.Builder.Tests
             // Arange
             var dictionary = new Dictionary<string, JObject>();
             var userState = new UserState(new MemoryStorage(dictionary));
-            var context = TestUtilities.CreateEmptyContext();
+            var context = TestUtilities.CreateEmptyContext(TestContext);
 
             // Act
             var testProperty = userState.CreateProperty<bool>("test");
@@ -208,7 +210,7 @@ namespace Microsoft.Bot.Builder.Tests
             // Arrange
             var dictionary = new Dictionary<string, JObject>();
             var userState = new UserState(new MemoryStorage(dictionary));
-            var context = TestUtilities.CreateEmptyContext();
+            var context = TestUtilities.CreateEmptyContext(TestContext);
 
             // Act
             var testProperty = userState.CreateProperty<int>("test");
@@ -228,7 +230,7 @@ namespace Microsoft.Bot.Builder.Tests
             // Arrange
             var dictionary = new Dictionary<string, JObject>();
             var userState = new UserState(new MemoryStorage(dictionary));
-            var context = TestUtilities.CreateEmptyContext();
+            var context = TestUtilities.CreateEmptyContext(TestContext);
 
             // Act
             var propertyA = userState.CreateProperty<string>("property-a");
@@ -250,7 +252,7 @@ namespace Microsoft.Bot.Builder.Tests
             // Arrange
             var dictionary = new Dictionary<string, JObject>();
             var userState = new UserState(new MemoryStorage(dictionary));
-            var context = TestUtilities.CreateEmptyContext();
+            var context = TestUtilities.CreateEmptyContext(TestContext);
 
             // Act
             var propertyA = userState.CreateProperty<string>("property-a");
@@ -274,7 +276,7 @@ namespace Microsoft.Bot.Builder.Tests
             // Arrange
             var dictionary = new Dictionary<string, JObject>();
             var userState = new UserState(new MemoryStorage(dictionary));
-            var context = TestUtilities.CreateEmptyContext();
+            var context = TestUtilities.CreateEmptyContext(TestContext);
 
             // Act
             var propertyA = userState.CreateProperty<string>("property-a");
@@ -296,7 +298,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             // Arrange
             var dictionary = new Dictionary<string, JObject>();
-            var context = TestUtilities.CreateEmptyContext();
+            var context = TestUtilities.CreateEmptyContext(TestContext);
 
             // Act
             var userState = new UserState(new MemoryStorage(dictionary));
@@ -339,7 +341,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             // Arrange
             var dictionary = new Dictionary<string, JObject>();
-            var context = TestUtilities.CreateEmptyContext();
+            var context = TestUtilities.CreateEmptyContext(TestContext);
 
             // Act
             var userState = new UserState(new MemoryStorage(dictionary));
@@ -378,7 +380,8 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task State_DoNOTRememberContextState()
         {
 
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             await new TestFlow(adapter, (context, cancellationToken) =>
                    {
@@ -396,8 +399,9 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var userState = new UserState(new MemoryStorage());
             var testProperty = userState.CreateProperty<TestPocoState>("test");
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(userState));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new AutoSaveStateMiddleware(userState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             await new TestFlow(adapter,
                     async (context, cancellationToken) =>
@@ -426,8 +430,9 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var userState = new UserState(new MemoryStorage());
             var testPocoProperty = userState.CreateProperty<TestPocoState>("testPoco");
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(userState));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new AutoSaveStateMiddleware(userState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
             await new TestFlow(adapter,
                     async (context, cancellationToken) =>
                     {
@@ -456,8 +461,9 @@ namespace Microsoft.Bot.Builder.Tests
             var userState = new UserState(new MemoryStorage());
             var testProperty = userState.CreateProperty<TestState>("test");
 
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(userState));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new AutoSaveStateMiddleware(userState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             await new TestFlow(adapter,
                     async (context, cancellationToken) =>
@@ -486,8 +492,9 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var userState = new UserState(new MemoryStorage());
             var testPocoProperty = userState.CreateProperty<TestPocoState>("testPoco");
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(userState));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new AutoSaveStateMiddleware(userState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             await new TestFlow(adapter,
                     async (context, cancellationToken) =>
@@ -516,8 +523,9 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var privateConversationState = new PrivateConversationState(new MemoryStorage());
             var testPocoProperty = privateConversationState.CreateProperty<TestPocoState>("testPoco");
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(privateConversationState));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new AutoSaveStateMiddleware(privateConversationState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             await new TestFlow(adapter,
                     async (context, cancellationToken) =>
@@ -551,8 +559,9 @@ namespace Microsoft.Bot.Builder.Tests
 
             var testProperty = customState.CreateProperty<TestPocoState>("test");
 
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(customState));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new AutoSaveStateMiddleware(customState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
                     {
@@ -585,8 +594,9 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var convoState = new ConversationState(new MemoryStorage());
             var testProperty = convoState.CreateProperty<TypedObject>("typed");
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             await new TestFlow(adapter,
                     async (context, cancellationToken) =>
@@ -613,7 +623,8 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task State_UseBotStateDirectly()
         {
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             await new TestFlow(adapter,
                     async (context, cancellationToken) =>
@@ -654,7 +665,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var dictionary = new Dictionary<string, JObject>();
             var userState = new UserState(new MemoryStorage(dictionary));
-            var context = TestUtilities.CreateEmptyContext();
+            var context = TestUtilities.CreateEmptyContext(TestContext);
             context.Activity.From = null;
             var testProperty = userState.CreateProperty<TestPocoState>("test");
             var value = await testProperty.GetAsync(context);
@@ -666,7 +677,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var dictionary = new Dictionary<string, JObject>();
             var userState = new ConversationState(new MemoryStorage(dictionary));
-            var context = TestUtilities.CreateEmptyContext();
+            var context = TestUtilities.CreateEmptyContext(TestContext);
             context.Activity.Conversation = null;
             var testProperty = userState.CreateProperty<TestPocoState>("test");
             var value = await testProperty.GetAsync(context);
@@ -678,7 +689,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var dictionary = new Dictionary<string, JObject>();
             var userState = new PrivateConversationState(new MemoryStorage(dictionary));
-            var context = TestUtilities.CreateEmptyContext();
+            var context = TestUtilities.CreateEmptyContext(TestContext);
             context.Activity.Conversation = null;
             context.Activity.From = null;
             var testProperty = userState.CreateProperty<TestPocoState>("test");
@@ -691,7 +702,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var dictionary = new Dictionary<string, JObject>();
             var userState = new PrivateConversationState(new MemoryStorage(dictionary));
-            var context = TestUtilities.CreateEmptyContext();
+            var context = TestUtilities.CreateEmptyContext(TestContext);
             context.Activity.Conversation = null;
             var testProperty = userState.CreateProperty<TestPocoState>("test");
             var value = await testProperty.GetAsync(context);
@@ -700,7 +711,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task ClearAndSave()
         {
-            var turnContext = TestUtilities.CreateEmptyContext();
+            var turnContext = TestUtilities.CreateEmptyContext(TestContext);
             turnContext.Activity.Conversation = new ConversationAccount { Id = "1234" };
 
             var storage = new MemoryStorage(new Dictionary<string, JObject>());
@@ -737,7 +748,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task BotStateDelete()
         {
-            var turnContext = TestUtilities.CreateEmptyContext();
+            var turnContext = TestUtilities.CreateEmptyContext(TestContext);
             turnContext.Activity.Conversation = new ConversationAccount { Id = "1234" };
 
             var storage = new MemoryStorage(new Dictionary<string, JObject>());

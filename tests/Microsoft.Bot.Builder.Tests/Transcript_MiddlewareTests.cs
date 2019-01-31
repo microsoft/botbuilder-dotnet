@@ -13,13 +13,16 @@ namespace Microsoft.Bot.Builder.Tests
     [TestClass]
     public class Transcript_MiddlewareTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         [TestCategory("Middleware")]
         public async Task Transcript_LogActivities()
         {
             var transcriptStore = new MemoryTranscriptStore();
-            TestAdapter adapter = new TestAdapter()
-                .Use(new TranscriptLoggerMiddleware(transcriptStore));
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new TranscriptLoggerMiddleware(transcriptStore))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
             string conversationId = null;
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
@@ -62,8 +65,9 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Transcript_LogUpdateActivities()
         {
             var transcriptStore = new MemoryTranscriptStore();
-            TestAdapter adapter = new TestAdapter()
-                .Use(new TranscriptLoggerMiddleware(transcriptStore));
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new TranscriptLoggerMiddleware(transcriptStore))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
             string conversationId = null;
             Activity activityToUpdate = null;
             await new TestFlow(adapter, async (context, cancellationToken) =>
@@ -107,8 +111,9 @@ namespace Microsoft.Bot.Builder.Tests
             
 
             var transcriptStore = new MemoryTranscriptStore();
-            TestAdapter adapter = new TestAdapter()
-                .Use(new TranscriptLoggerMiddleware(transcriptStore));
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new TranscriptLoggerMiddleware(transcriptStore))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
             string conversationId = null;
             Activity activityToUpdate = null;
             await new TestFlow(adapter, async (context, cancellationToken) =>
@@ -163,8 +168,9 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Transcript_LogDeleteActivities()
         {
             var transcriptStore = new MemoryTranscriptStore();
-            TestAdapter adapter = new TestAdapter()
-                .Use(new TranscriptLoggerMiddleware(transcriptStore));
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new TranscriptLoggerMiddleware(transcriptStore))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
             string conversationId = null;
             string activityId = null;
             await new TestFlow(adapter, async (context, cancellationToken) =>

@@ -15,6 +15,8 @@ namespace Microsoft.Bot.Builder.Tests
 
         public MemoryStorageTests() { }
 
+        public TestContext TestContext { get; set; }
+
         [TestInitialize]
         public void initialize()
         {

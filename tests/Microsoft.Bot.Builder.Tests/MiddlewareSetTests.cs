@@ -12,6 +12,8 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("Russian Doll Middleware, Nested Middleware sets")]
     public class MiddlewareSetTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public async Task NestedSet_OnReceive()
         {

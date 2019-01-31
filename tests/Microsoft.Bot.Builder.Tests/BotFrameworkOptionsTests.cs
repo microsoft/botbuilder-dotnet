@@ -18,6 +18,8 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("BotFrameworkOptions")]
     public class BotFrameworkOptionsTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public void EnsureProperties()
         {

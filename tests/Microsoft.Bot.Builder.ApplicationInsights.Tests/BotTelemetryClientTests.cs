@@ -18,6 +18,8 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
         [TestClass]
         public class ConstructorTests
         {
+            public TestContext TestContext { get; set; }
+
             [TestMethod]
             public void NullTelemetryClientThrows()
             {
@@ -53,6 +55,8 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
         {
             private BotTelemetryClient _botTelemetryClient;
             private Mock<ITelemetryChannel> _mockTelemetryChannel;
+
+            public TestContext TestContext { get; set; }
 
             [TestInitialize]
             public void TestInitialize()

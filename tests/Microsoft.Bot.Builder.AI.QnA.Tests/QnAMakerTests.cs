@@ -10,7 +10,6 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RichardSzalay.MockHttp;
 
@@ -23,6 +22,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         private const string _endpointKey = "dummy-key";
         private const string _hostname = "https://dummy-hostname.azurewebsites.net/qnamaker";
 
+        public TestContext TestContext { get; set; }
 
         [TestMethod]
         [TestCategory("AI")]
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             // Invoke flow which uses mock
             var transcriptStore = new MemoryTranscriptStore();
-            TestAdapter adapter = new TestAdapter()
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new TranscriptLoggerMiddleware(transcriptStore));
             string conversationId = null;
 
@@ -110,7 +110,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var qna = QnaReturnsAnswer();
 
             // No text
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
@@ -135,7 +136,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var qna = QnaReturnsAnswer();
 
             // No text
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
@@ -171,7 +173,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var qna = QnaReturnsAnswer();
 
             // No text
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));            ;
             var activity = new Activity
             {
                 Type = ActivityTypes.Trace,
@@ -196,7 +199,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var qna = QnaReturnsAnswer();
 
             // No text
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
             var context = new MyTurnContext(adapter, null);
 
 
@@ -310,7 +314,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
                 .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
-            
+
             var qnaWithZeroValueThreshold = GetQnAMaker(mockHttp,
                 new QnAMakerEndpoint
                 {
@@ -322,10 +326,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 {
                     ScoreThreshold = 0.0F
                 });
-            
+
             var results = await qnaWithZeroValueThreshold
                 .GetAnswersAsync(GetContext("how do I clean the stove?"), new QnAMakerOptions() { Top = 1 });
-            
+
             Assert.IsNotNull(results);
             Assert.AreEqual(1, results.Length);
         }
@@ -511,7 +515,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetV3LegacyRequestUrl())
                 .Respond("application/json", GetResponse("QnaMaker_LegacyEndpointAnswer.json"));
-            
+
             var v3LegacyEndpoint = new QnAMakerEndpoint
             {
                 KnowledgeBaseId = _knowlegeBaseId,
@@ -520,7 +524,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             };
 
             var v3Qna = GetQnAMaker(mockHttp, v3LegacyEndpoint);
-            
+
             var v3legacyResult = await v3Qna.GetAnswersAsync(GetContext("How do I be the best?"));
 
             Assert.IsNotNull(v3legacyResult);
@@ -546,7 +550,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     EndpointKey = _endpointKey,
                     Host = _hostname
                 });
-            
+
             var options = new QnAMakerOptions
             {
                 MetadataBoost = new Metadata[]
@@ -557,7 +561,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             };
 
             var results = await qna.GetAnswersAsync(GetContext("who loves me?"), options);
-            
+
             Assert.IsNotNull(results);
             Assert.AreEqual(results.Length, 1, "should get one result");
             StringAssert.StartsWith(results[0].Answer, "Kiki");
@@ -573,18 +577,18 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
                 .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_GivenScoreThresholdQueryOption.json"));
-            
+
             var interceptHttp = new InterceptRequestHandler(mockHttp);
 
             var qna = GetQnAMaker(
-                interceptHttp, 
+                interceptHttp,
                 new QnAMakerEndpoint()
                 {
                     KnowledgeBaseId = _knowlegeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname
                 });
-            
+
             var queryOptionsWithScoreThreshold = new QnAMakerOptions()
             {
                 ScoreThreshold = 0.5F,
@@ -592,7 +596,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             };
 
             var result = await qna.GetAnswersAsync(
-                    GetContext("What happens when you hug a porcupine?"), 
+                    GetContext("What happens when you hug a porcupine?"),
                     queryOptionsWithScoreThreshold
             );
 
@@ -612,7 +616,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
                 .Respond(System.Net.HttpStatusCode.BadGateway);
-            
+
             var qna = GetQnAMaker(
                 mockHttp,
                 new QnAMakerEndpoint()
@@ -621,9 +625,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     EndpointKey = _endpointKey,
                     Host = _hostname
                 });
-            
+
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
-        }        
+        }
 
         private string GetV3LegacyRequestUrl() => $"{_hostname}/v3.0/knowledgebases/{_knowlegeBaseId}/generateanswer";
 
@@ -667,9 +671,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             return new QnAMaker(endpoint, options, client);
         }
 
-        private static TurnContext GetContext(string utterance)
+        private TurnContext GetContext(string utterance)
         {
-            var b = new TestAdapter();
+            var b = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
             var a = new Activity
             {
                 Type = ActivityTypes.Message,
@@ -683,7 +688,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         }
     }
 
-    class MyTurnContext : ITurnContext
+    internal class MyTurnContext : ITurnContext
     {
 
         public MyTurnContext(BotAdapter adapter, Activity activity)

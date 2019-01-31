@@ -14,6 +14,8 @@ namespace Microsoft.Bot.Builder.Tests
             this.store = new MemoryTranscriptStore();
         }
 
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public async Task MemoryTranscript_BadArgs()
         {

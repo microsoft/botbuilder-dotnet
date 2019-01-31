@@ -46,6 +46,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             "21", "22", "23", "24", "25", "26", "27", "28", "29", "30",
         };
 
+        public TestContext TestContext { get; set; }
+
         // These tests require Azure Storage Emulator v5.7
         [TestInitialize]
         public void TestInit()

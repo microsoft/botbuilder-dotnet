@@ -11,6 +11,8 @@ namespace Microsoft.Bot.Configuration.Tests
     {
         private const string TestBotFileName = @"..\..\..\test.bot";
 
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public async Task ConnectAssignsUniqueIds()
         {

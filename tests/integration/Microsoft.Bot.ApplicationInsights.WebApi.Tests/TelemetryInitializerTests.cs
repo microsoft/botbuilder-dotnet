@@ -21,6 +21,8 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
     [TestCategory("ApplicationInsights")]
     public class TelemetryInitializerTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public void VerifyAllTelemtryPropoerties()
         {

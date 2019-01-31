@@ -7,14 +7,15 @@ using System.IO;
 using System.Linq;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Tests
 {
     public class TestUtilities
     {
-        public static TurnContext CreateEmptyContext()
+        public static TurnContext CreateEmptyContext(TestContext testContext)
         {
-            var b = new TestAdapter();
+            var b = new TestAdapter(TestAdapter.CreateConversation(testContext.TestName));
             var a = new Activity
             {
                 Type = ActivityTypes.Message,
@@ -36,7 +37,7 @@ namespace Microsoft.Bot.Builder.Tests
         /*
         public static T CreateEmptyContext<T>() where T:ITurnContext
         {
-            TestAdapter b = new TestAdapter();
+            TestAdapter b = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             Activity a = new Activity();
             if (typeof(T).IsAssignableFrom(typeof(ITurnContext)))
             {

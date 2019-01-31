@@ -10,6 +10,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
     [TestClass]
     public class QnAMakerTraceInfoTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]

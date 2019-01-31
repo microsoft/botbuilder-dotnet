@@ -8,14 +8,15 @@ using System.Linq;
 using System.Text;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
     public class TestUtilities
     {
-        public static TurnContext CreateEmptyContext()
+        public static TurnContext CreateEmptyContext(TestContext testContext)
         {
-            var b = new TestAdapter();
+            var b = new TestAdapter(TestAdapter.CreateConversation(testContext.TestName));
             var a = new Activity
             {
                 Type = ActivityTypes.Message,

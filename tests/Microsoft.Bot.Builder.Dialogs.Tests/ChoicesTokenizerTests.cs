@@ -11,6 +11,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestCategory("Choice Tests")]
     public class ChoicesTokenizerTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public void ShouldBreakOnSpaces()
         {
