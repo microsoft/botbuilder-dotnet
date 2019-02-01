@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.TemplateManager
 {
@@ -9,7 +10,9 @@ namespace Microsoft.Bot.Builder.TemplateManager
     /// </summary>
     public class TemplateOptions
     {
+        [JsonProperty(PropertyName = "template")]
         public string TemplateId { get; set; }
+        [JsonProperty(PropertyName = "data")]
         public object Data { get; set; }
     }
 }

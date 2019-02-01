@@ -5,10 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="en-us.lg" />
     <None Remove="main.dialog" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="en-us.lg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="main.dialog">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -28,6 +32,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\integration\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.AI.LanguageGeneration\Microsoft.Bot.Builder.AI.LanguageGeneration.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Composition\Microsoft.Bot.Builder.Dialogs.Composition.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Flow.Loader\Microsoft.Bot.Builder.Dialogs.Flow.Loader.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Flow\Microsoft.Bot.Builder.Dialogs.Flow.csproj" />
