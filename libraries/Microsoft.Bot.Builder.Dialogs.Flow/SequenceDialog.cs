@@ -71,12 +71,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
             return base.OnInitialize(outerDc);
         }
 
-        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            // start the InitialDialogId
-            return await base.BeginDialogAsync(outerDc, options, cancellationToken);
-        }
-
         internal class StepDialog : Dialog, IDialog
         {
             internal StepDialog(string dialogId) : base(dialogId)

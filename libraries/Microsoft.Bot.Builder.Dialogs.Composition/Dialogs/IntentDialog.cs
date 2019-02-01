@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
     /// <summary>
     /// IntentDialog - Dispatches to Dialog based on intent out of a recognizer
     /// </summary>
-    public class IntentDialog : ComponentDialog, IRecognizerDialog<IDialog>
+    public class IntentDialog : ComponentDialogBase, IRecognizerDialog<IDialog>
     {
         /// <summary>
         /// Recognizer to use to get intents/entities
@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
 
 
         // autoregister dialogs in the routes
-        protected override Task OnInitialize(DialogContext outerDc)
+        protected override Task OnInitialize(DialogContext dc)
         {
             foreach(var route in Routes)
             {
@@ -32,12 +32,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
                     dialog.Id = $"{this.Id}.{route.Key}";
                 }
 
-                if (this.FindDialog(dialog.Id) == null && outerDc.FindDialog(dialog.Id) == null)
+                if (this.FindDialog(dialog.Id) == null && dc.FindDialog(dialog.Id) == null)
                 {
                     this.AddDialog(dialog);
                 }
             }
-            return base.OnInitialize(outerDc);
+            return base.OnInitialize(dc);
         }
 
         /// <summary>
@@ -47,29 +47,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
         /// <param name="options"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        protected async override Task<DialogTurnResult> OnBeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (this.Recognizer == null)
-            {
-                throw new ArgumentNullException("Recognizer");
-            }
-
-            var dialogState = new DialogState();
-            outerDc.ActiveDialog.State[PersistedDialogState] = dialogState;
-
-            await EnsureInitialized(outerDc).ConfigureAwait(false);
-
-            var result = await this.Recognizer.RecognizeAsync(outerDc.Context, cancellationToken);
+            var state = dc.ActiveDialog.State;
+            var result = await this.Recognizer.RecognizeAsync(dc.Context, cancellationToken);
 
             var topIntent = result.GetTopScoringIntent();
 
             // look up route
             if (Routes.TryGetValue(topIntent.intent, out IDialog dialog))
             {
-                var innerDc = new DialogContext(_dialogs, outerDc, dialogState);
-                return await innerDc.BeginDialogAsync(dialog.Id, null, cancellationToken).ConfigureAwait(false);
+                return await dc.BeginDialogAsync(dialog.Id, null, cancellationToken).ConfigureAwait(false);
             }
-
             // no match
             return new DialogTurnResult(DialogTurnStatus.Complete);
         }

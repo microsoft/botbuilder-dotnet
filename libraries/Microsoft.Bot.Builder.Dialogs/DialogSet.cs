@@ -114,5 +114,10 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             return null;
         }
+
+        public IEnumerable<IDialog> GetDialogs()
+        {
+            return _dialogs.Values;
+        }
     }
 }
