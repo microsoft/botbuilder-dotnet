@@ -11,10 +11,10 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// FileTranscriptLogger which creates a .transcript file for each conversationId
+    /// FileTranscriptLogger which creates a .transcript file for each conversationId.
     /// </summary>
     /// <remarks>
-    /// This is a useful class for unit tests
+    /// This is a useful class for unit tests.  It is not meant to be used as a general purpose file based transcript logger as it will not scale to large conversations.
     /// </remarks>
     public class FileTranscriptLogger : ITranscriptLogger
     {
@@ -25,29 +25,29 @@ namespace Microsoft.Bot.Builder
             NullValueHandling = NullValueHandling.Ignore,
         };
 
-        private string folder;
-        private bool unitTestMode;
-        private HashSet<string> started = new HashSet<string>();
+        private string _folder;
+        private bool _unitTestMode;
+        private Dictionary<string, object> _started = new Dictionary<string, object>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileTranscriptLogger"/> class.
         /// </summary>
-        /// <param name="folder">folder to place the transcript files (Default current folder)</param>
+        /// <param name="_folder">folder to place the transcript files (Default current folder)</param>
         /// <param name="unitTestMode">unitTestMode will overwrite transcript files</param>
         public FileTranscriptLogger(string folder = null, bool unitTestMode = true)
         {
+            this._unitTestMode = unitTestMode;
             if (folder == null)
             {
                 folder = Environment.CurrentDirectory;
             }
+            this._folder = folder;
 
-            if (!Directory.Exists(folder))
+            if (!Directory.Exists(_folder))
             {
-                Directory.CreateDirectory(folder);
+                Directory.CreateDirectory(_folder);
             }
 
-            this.folder = folder;
-            this.unitTestMode = unitTestMode;
         }
 
         /// <summary>
@@ -59,38 +59,44 @@ namespace Microsoft.Bot.Builder
         {
             if (activity != null)
             {
-                string transcriptFile = Path.Combine(folder, activity.Conversation.Id + ".transcript");
+                string transcriptFile = Path.Combine(_folder, activity.Conversation.Id + ".transcript");
 
                 List<Activity> transcript = null;
 
-                if (this.unitTestMode == true && !started.Contains(transcriptFile))
+                lock (_started)
                 {
-                    started.Add(transcriptFile);
-                    File.Delete(transcriptFile);
+                    if (this._unitTestMode == true && !_started.ContainsKey(transcriptFile))
+                    {
+                        _started.Add(transcriptFile, new object());
+                        File.Delete(transcriptFile);
+                    }
                 }
 
-                if (File.Exists(transcriptFile))
+                lock (_started[transcriptFile])
                 {
-                    transcript = JsonConvert.DeserializeObject<List<Activity>>(File.ReadAllText(transcriptFile));
-                }
+                    if (File.Exists(transcriptFile))
+                    {
+                        transcript = JsonConvert.DeserializeObject<List<Activity>>(File.ReadAllText(transcriptFile));
+                    }
 
-                if (transcript == null)
-                {
-                    transcript = new List<Activity>();
-                    System.Diagnostics.Trace.TraceInformation($"file://{transcriptFile.Replace("\\", "/")}");
-                }
+                    if (transcript == null)
+                    {
+                        transcript = new List<Activity>();
+                        System.Diagnostics.Trace.TraceInformation($"file://{transcriptFile.Replace("\\", "/")}");
+                    }
 
-                if (activity.Type == ActivityTypes.Message)
-                {
-                    System.Diagnostics.Trace.TraceInformation($"{activity.From.Name ?? activity.From.Id ?? activity.From.Role}: {((Activity)activity).Text}");
-                }
-                else
-                {
-                    System.Diagnostics.Trace.TraceInformation($"{activity.From.Name ?? activity.From.Id ?? activity.From.Role} [{activity.Type}]");
-                }
+                    if (activity.Type == ActivityTypes.Message)
+                    {
+                        System.Diagnostics.Trace.TraceInformation($"{activity.From.Name ?? activity.From.Id ?? activity.From.Role}: {((Activity)activity).Text}");
+                    }
+                    else
+                    {
+                        System.Diagnostics.Trace.TraceInformation($"{activity.From.Name ?? activity.From.Id ?? activity.From.Role} [{activity.Type}]");
+                    }
 
-                transcript.Add((Activity)activity);
-                File.WriteAllText(transcriptFile, JsonConvert.SerializeObject(transcript, jsonSettings));
+                    transcript.Add((Activity)activity);
+                    File.WriteAllText(transcriptFile, JsonConvert.SerializeObject(transcript, jsonSettings));
+                }
             }
         }
     }
