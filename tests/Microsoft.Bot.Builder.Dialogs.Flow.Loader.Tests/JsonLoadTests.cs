@@ -167,6 +167,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         }
 
         [TestMethod]
+        public async Task JsonDialogLoad_IntentDialogLuisRecognizer()
+        {
+            string json = File.ReadAllText("TestFlows/LuisRecognizerBasic.json");
+
+            Factory.Register("http://schemas.botframework.com/RuleRecognizer", typeof(RuleRecognizer));
+
+            await BuildTestFlow(json)
+            .Send("name")
+            .AssertReply("What is your name?")
+            .Send("Carlos")
+            .Send("age")
+            .AssertReply("What is your age?")
+            //.Send("name")
+            //.AssertReply("What is your name?")
+            //.Send("Carlos")
+            //.Send("name")
+            //.AssertReply("What is your name?")
+            //.Send("Carlos")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task JsonDialogLoad_FileDependencyPlugin()
         {
             string json = File.ReadAllText("TestFlows/FilePluginEchoDialog.json");

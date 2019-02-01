@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Loaders
             // simpler json format
             if (obj["appId"]?.Type == JTokenType.String)
             {
-                var luisService = serializer.Deserialize<LuisService>(obj.CreateReader());
+                var luisService = obj.ToObject<LuisService>();
                 return new LuisRecognizer(luisService);
             }
 

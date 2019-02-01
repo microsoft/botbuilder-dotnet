@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types
             Register("http://schemas.botframework.com/IntegerPrompt", typeof(IntegerPrompt));
 
             // Recognizers
-            Register("http://schemas.botframework.com/LuisRecognizer", typeof(LuisRecognizer));
+            Register("http://schemas.botframework.com/LuisRecognizer", typeof(LuisRecognizer), new LuisRecognizerLoader());
         }
     }
 }
