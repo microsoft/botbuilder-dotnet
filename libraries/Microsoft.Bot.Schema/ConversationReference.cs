@@ -10,7 +10,6 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using Microsoft.Bot.Configuration;
     using Newtonsoft.Json;
     using System.Linq;
 
@@ -39,7 +38,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="channelId">Channel ID</param>
         /// <param name="serviceUrl">Service endpoint where operations
         /// concerning the referenced conversation may be performed</param>
-        public ConversationReference(string activityId = default(string), ChannelAccount user = default(ChannelAccount), ChannelAccount bot = default(ChannelAccount), ConversationAccount conversation = default(ConversationAccount), string channelId = default(string), string serviceUrl = default(string), string channelData = null)
+        public ConversationReference(string activityId = default(string), ChannelAccount user = default(ChannelAccount), ChannelAccount bot = default(ChannelAccount), ConversationAccount conversation = default(ConversationAccount), string channelId = default(string), string serviceUrl = default(string), string channelData = default(string))
         {
             ActivityId = activityId;
             User = user;
