@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.Dialogs.Composition;
 using Microsoft.Bot.Builder.Dialogs.Flow.Loader.Loaders;
 using Microsoft.Bot.Builder.Dialogs.Flow.Loader.Plugins;
@@ -115,7 +116,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types
             Register("http://schemas.botframework.com/IntegerPrompt", typeof(IntegerPrompt));
 
             // Recognizers
-            //TODO: LuisRecognizer
+            Register("http://schemas.botframework.com/LuisRecognizer", typeof(LuisRecognizer));
         }
     }
 }

@@ -19,6 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="TestFlows\LuisRecognizerBasic.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestFlows\IntentDialogRelativeReferences.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

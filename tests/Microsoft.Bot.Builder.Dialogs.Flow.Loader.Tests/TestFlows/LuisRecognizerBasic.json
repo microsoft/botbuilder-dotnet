@@ -1,0 +1,16 @@
+{
+  "$type": "http://schemas.botframework.com/IntentDialog",
+  "$id": "intentDialog",
+  "recognizer": {
+    "$type": "http://schemas.botframework.com/LuisRecognizer",
+    "appId": "myluisappid",
+    "authoringKey": "authoringKey",
+    "subscriptionKey": "subscriptionKey",
+    "version": "1.2",
+    "region": "region"
+  },
+  "routes": {
+    "name": { "$ref": "TestFlows/TextPrompt.json" },
+    "age": { "$ref": "TestFlows/NumberPrompt.json" }
+  }
+}
