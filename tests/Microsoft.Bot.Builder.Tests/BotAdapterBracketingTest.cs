@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new BeforeAFterMiddlware())
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
 
             async Task Echo(ITurnContext ctx, CancellationToken cancellationToken)
             {
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new CatchExceptionMiddleware())
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
 
             async Task EchoWithException(ITurnContext ctx, CancellationToken cancellationToken)
             {

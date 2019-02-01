@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Tests
             var transcriptStore = new MemoryTranscriptStore();
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new TranscriptLoggerMiddleware(transcriptStore))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
             string conversationId = null;
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Tests
             var transcriptStore = new MemoryTranscriptStore();
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new TranscriptLoggerMiddleware(transcriptStore))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
             string conversationId = null;
             Activity activityToUpdate = null;
             await new TestFlow(adapter, async (context, cancellationToken) =>
@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.Tests
             var transcriptStore = new MemoryTranscriptStore();
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new TranscriptLoggerMiddleware(transcriptStore))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
             string conversationId = null;
             Activity activityToUpdate = null;
             await new TestFlow(adapter, async (context, cancellationToken) =>
@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder.Tests
             var transcriptStore = new MemoryTranscriptStore();
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new TranscriptLoggerMiddleware(transcriptStore))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
             string conversationId = null;
             string activityId = null;
             await new TestFlow(adapter, async (context, cancellationToken) =>

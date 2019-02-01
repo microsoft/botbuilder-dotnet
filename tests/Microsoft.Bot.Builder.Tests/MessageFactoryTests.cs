@@ -391,7 +391,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task ValidateIMBackWithText()
         {
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
 
             async Task ReplyWithimBackBack(ITurnContext ctx, CancellationToken cancellationToken)
             {
@@ -429,7 +429,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task ValidateIMBackWithNoTest()
         {
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
 
             async Task ReplyWithimBackBack(ITurnContext ctx, CancellationToken cancellationToken)
             {

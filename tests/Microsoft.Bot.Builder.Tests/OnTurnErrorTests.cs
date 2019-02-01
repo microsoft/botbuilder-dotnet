@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task OnTurnError_Test()
         {
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
             adapter.OnTurnError = async (context, exception) =>
             {
                 if (exception is NotImplementedException)

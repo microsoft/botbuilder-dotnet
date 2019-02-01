@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(userState, convState))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
 
             const int USER_INITITAL_COUNT = 100;
             const int CONVERSATION_INITIAL_COUNT = 10;
@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Tests
                 Conversation = new ConversationAccount(false, $"{TestContext.TestName}2", $"{TestContext.TestName}2")
             })
                 .Use(new AutoSaveStateMiddleware(userState, convState))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
 
             await new TestFlow(adapter, botLogic)
                 .Send("get userCount")
@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .Add(convState);
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(bss)
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
 
             const int USER_INITITAL_COUNT = 100;
             const int CONVERSATION_INITIAL_COUNT = 10;
@@ -166,7 +166,7 @@ namespace Microsoft.Bot.Builder.Tests
                 Conversation = new ConversationAccount(false, $"{TestContext.TestName}2", $"{TestContext.TestName}2")
             })
                 .Use(bss2)
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
 
             await new TestFlow(adapter, botLogic)
                 .Send("get userCount")

@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(userState))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
 
             var flow = new TestFlow(adapter, async (context, cancellationToken) =>
             {
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(convoState))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
 
             var flow = new TestFlow(adapter, async (context, cancellationToken) =>
             {
@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var testProperty = customState.CreateProperty<CustomStateObject>("Test");
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(customState))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
 
             var flow = new TestFlow(adapter, async (context, cancellationToken) =>
             {

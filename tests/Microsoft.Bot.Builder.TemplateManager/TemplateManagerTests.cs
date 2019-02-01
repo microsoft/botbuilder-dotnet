@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         {
 
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
 
             var templateManager = new TemplateManager()
                 .Register(new DictionaryRenderer(templates1))
@@ -134,7 +134,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         {
 
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
             var templateManager = new TemplateManager()
                 .Register(new DictionaryRenderer(templates1))
                 .Register(new DictionaryRenderer(templates2));
@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         {
 
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
             var templateManager = new TemplateManager()
                 .Register(new DictionaryRenderer(templates1))
                 .Register(new DictionaryRenderer(templates2));
@@ -176,7 +176,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         {
 
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
             var templateManager = new TemplateManager()
                 .Register(new DictionaryRenderer(templates1))
                 .Register(new DictionaryRenderer(templates2));
@@ -197,7 +197,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         {
 
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
             var templateManager = new TemplateManager()
                 .Register(new DictionaryRenderer(templates1))
                 .Register(new DictionaryRenderer(templates2));

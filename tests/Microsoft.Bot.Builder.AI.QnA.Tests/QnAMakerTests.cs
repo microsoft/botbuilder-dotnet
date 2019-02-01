@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             // No text
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             // No text
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             // No text
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));            ;
+                                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));            ;
             var activity = new Activity
             {
                 Type = ActivityTypes.Trace,
@@ -200,7 +200,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             // No text
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
             var context = new MyTurnContext(adapter, null);
 
 
@@ -674,7 +674,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         private TurnContext GetContext(string utterance)
         {
             var b = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
             var a = new Activity
             {
                 Type = ActivityTypes.Message,

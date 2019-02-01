@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new ShowTypingMiddleware(100, 1000))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
             
             await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new ShowTypingMiddleware(100, 5000))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new ShowTypingMiddleware(2000, 5000))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                     .Use(new ShowTypingMiddleware(-100, 1000))
-                    .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                    .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
             }
             catch (Exception ex)
             {
@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                     .Use(new ShowTypingMiddleware(-100, 0))
-                    .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                    .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
             }
             catch (Exception ex)
             {

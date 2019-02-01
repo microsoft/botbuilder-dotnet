@@ -11,12 +11,12 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// FileTranscriptLogger which creates a .transcript file for each conversationId.
+    /// UnitTestTranscriptLogger which creates a .transcript file for each conversationId.
     /// </summary>
     /// <remarks>
     /// This is a useful class for unit tests.  It is not meant to be used as a general purpose file based transcript logger as it will not scale to large conversations.
     /// </remarks>
-    public class FileTranscriptLogger : ITranscriptLogger
+    public class UnitTestTranscriptLogger : ITranscriptLogger
     {
 
         private static JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
@@ -30,11 +30,11 @@ namespace Microsoft.Bot.Builder
         private Dictionary<string, object> _started = new Dictionary<string, object>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FileTranscriptLogger"/> class.
+        /// Initializes a new instance of the <see cref="UnitTestTranscriptLogger"/> class.
         /// </summary>
         /// <param name="_folder">folder to place the transcript files (Default current folder)</param>
         /// <param name="unitTestMode">unitTestMode will overwrite transcript files</param>
-        public FileTranscriptLogger(string folder = null, bool unitTestMode = true)
+        public UnitTestTranscriptLogger(string folder = null, bool unitTestMode = true)
         {
             this._unitTestMode = unitTestMode;
             if (folder == null)

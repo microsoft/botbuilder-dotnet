@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             bool callbackInvoked = false;
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
             ConversationReference cr = new ConversationReference
             {
                 ActivityId = "activityId",

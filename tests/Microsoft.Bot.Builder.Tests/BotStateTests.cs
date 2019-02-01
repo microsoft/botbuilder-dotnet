@@ -381,7 +381,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
 
             await new TestFlow(adapter, (context, cancellationToken) =>
                    {
@@ -401,7 +401,7 @@ namespace Microsoft.Bot.Builder.Tests
             var testProperty = userState.CreateProperty<TestPocoState>("test");
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(userState))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
 
             await new TestFlow(adapter,
                     async (context, cancellationToken) =>
@@ -432,7 +432,7 @@ namespace Microsoft.Bot.Builder.Tests
             var testPocoProperty = userState.CreateProperty<TestPocoState>("testPoco");
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(userState))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
             await new TestFlow(adapter,
                     async (context, cancellationToken) =>
                     {
@@ -463,7 +463,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(userState))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
 
             await new TestFlow(adapter,
                     async (context, cancellationToken) =>
@@ -494,7 +494,7 @@ namespace Microsoft.Bot.Builder.Tests
             var testPocoProperty = userState.CreateProperty<TestPocoState>("testPoco");
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(userState))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
 
             await new TestFlow(adapter,
                     async (context, cancellationToken) =>
@@ -525,7 +525,7 @@ namespace Microsoft.Bot.Builder.Tests
             var testPocoProperty = privateConversationState.CreateProperty<TestPocoState>("testPoco");
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(privateConversationState))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
 
             await new TestFlow(adapter,
                     async (context, cancellationToken) =>
@@ -561,7 +561,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(customState))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
                     {
@@ -596,7 +596,7 @@ namespace Microsoft.Bot.Builder.Tests
             var testProperty = convoState.CreateProperty<TypedObject>("typed");
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(convoState))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
 
             await new TestFlow(adapter,
                     async (context, cancellationToken) =>
@@ -624,7 +624,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task State_UseBotStateDirectly()
         {
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
 
             await new TestFlow(adapter,
                     async (context, cancellationToken) =>

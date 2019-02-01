@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
 
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new BeforeAfterMiddleware())
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new UnitTestTranscriptLogger()));
             adapter.OnTurnError = async (context, exception) =>
             {
                 await context.SendActivityAsync($"Caught: {exception.Message}");
