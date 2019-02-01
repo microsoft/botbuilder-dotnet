@@ -98,6 +98,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 var parser = new LGFileParser(tokens);
                 parser.BuildParseTree = true;
                 parser.ErrorHandler = new BailErrorStrategy();
+                parser.AddErrorListener(ThrowingErrorListener.INSTANCE);
 
                 var context = parser.file();
 
