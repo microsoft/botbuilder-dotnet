@@ -49,7 +49,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
         /// <returns></returns>
         protected async override Task<DialogTurnResult> OnBeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var state = dc.ActiveDialog.State;
             var result = await this.Recognizer.RecognizeAsync(dc.Context, cancellationToken);
 
             var topIntent = result.GetTopScoringIntent();
