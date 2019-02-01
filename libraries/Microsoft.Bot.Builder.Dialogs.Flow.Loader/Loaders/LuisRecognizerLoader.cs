@@ -15,9 +15,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Loaders
         {
             // If the luis service info is inlined with the recognizer, load it here for 
             // simpler json format
-            if (obj["appId"]?.Type == JTokenType.String)
+            if (obj["applicationId"]?.Type == JTokenType.String)
             {
-                var luisService = obj.ToObject<LuisService>();
+                var luisService = obj.ToObject<LuisApplication>();
                 return new LuisRecognizer(luisService);
             }
 
