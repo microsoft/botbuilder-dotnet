@@ -1,0 +1,36 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "title": "QnAMaker.ai Recognizer",
+    "description": "This represents a configuration of the QNAMaker as a recognizer",
+    "$implements": [
+        "Microsoft.IRecognizer"
+    ],
+    "allOf": [
+        {
+            "$ref":"../component.schema#"
+        },
+        {
+            "properties": {
+                "applicationId": {
+                    "type": "string",
+                    "description": "This is the QnAMaker appId to use",
+                    "examples": [
+                        "123123123"
+                    ]
+                },
+                "endpoint": {
+                    "type": "string",
+                    "description": "This is the QnAMaker endpoint to use",
+                    "examples": [
+                        "http://westus.qnamaker.ai"
+                    ]
+                }
+            },
+            "required": [
+                "applicationId",
+                "endpoint"
+            ]
+        }
+    ]
+}

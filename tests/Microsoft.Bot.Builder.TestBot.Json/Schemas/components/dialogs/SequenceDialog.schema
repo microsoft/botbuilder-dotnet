@@ -1,0 +1,36 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "title": "Sequence Dialog",
+    "description": "Configures a data driven dialog via a collection of steps/dialogs.",
+    "$implements": [
+        "Microsoft.IDialog"
+    ],
+    "allOf": [
+        {
+            "$ref":"../component.schema#"
+        },
+        {
+            "properties": {
+                "Id": {
+                    "type": "string",
+                    "description": "Id for the dialog"
+                },
+                "Steps": {
+                    "type": "array",
+                    "description": "Sequence of steps or dialogs to execute",
+                    "items": {
+                        "type": [
+                            "IDialog",
+                            "IDialogStep"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "Id",
+                "Steps"
+            ]
+        }
+    ]
+}

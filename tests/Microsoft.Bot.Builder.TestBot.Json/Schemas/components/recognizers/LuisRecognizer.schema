@@ -1,0 +1,45 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "LUIS Recognizer",
+    "description": "LUIS recognizer.",
+    "$implements": [
+        "Microsoft.IRecognizer"
+    ],
+    "allOf": [
+        {
+            "$ref":"../component.schema#"
+        },
+        {
+            "properties": {
+                "$type": {
+                    "const": "Microsoft.LUISRecognizer"
+                },
+                "application": {
+                    "type": "object",
+                    "properties": {
+                        "applicationId": {
+                            "type": "string"
+                        },
+                        "endpoint": {
+                            "type": "string"
+                        },
+                        "endpointKey": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "applicationId",
+                        "endpoint",
+                        "endpointKey"
+                    ]
+                },
+                "priority": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "applicationId"
+            ]
+        }
+    ]
+}
