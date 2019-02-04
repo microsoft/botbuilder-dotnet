@@ -1,5 +1,152 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "oneOf": [],
-    "definitions": {}
+    "oneOf": [
+        {
+            "$ref": "#/definitions/Microsoft.IntentDialog"
+        },
+        {
+            "$ref": "#/definitions/Microsoft.LUISRecognizer"
+        },
+        {
+            "$ref": "#/definitions/Microsoft.RegexRecognizer"
+        }
+    ],
+    "definitions": {
+        "Microsoft.IActivityTemplate": {
+            "title": "Microsoft IActivityTemplate",
+            "description": "Definition of Microsoft.IActivityTemplate which will be expanded by components that $implements it.",
+            "$defines": "Microsoft.IActivityTemplate",
+            "oneOf": [
+                {
+                    "type": "string"
+                }
+            ]
+        },
+        "Microsoft.IDialog": {
+            "title": "Microsoft IDialog",
+            "description": "Definition of Microsoft.IDialog which will be expanded by components that $implements it.",
+            "$defines": "Microsoft.IDialog",
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.IntentDialog"
+                }
+            ]
+        },
+        "Microsoft.IRecognizer": {
+            "title": "Microsoft IRecognizer",
+            "description": "Definition of Microsoft.IRecognizer which will be expanded by components that $implements it.",
+            "$defines": "Microsoft.IRecognizer",
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.LUISRecognizer"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.RegexRecognizer"
+                }
+            ]
+        },
+        "Microsoft.IntentDialog": {
+            "type": "object",
+            "title": "Intent Dialog",
+            "description": "Configures a recognizer and the intent routes",
+            "$implements": [
+                "Microsoft.IDialog"
+            ],
+            "required": [
+                "$type",
+                "pattern"
+            ],
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.IntentDialog"
+                },
+                "$id": {
+                    "type": "string"
+                },
+                "recognizer": {
+                    "$ref": "#/definitions/Microsoft.IRecognizer"
+                },
+                "routes": {
+                    "type": "object",
+                    "description": "maps intent->IDialog",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                }
+            }
+        },
+        "Microsoft.LUISRecognizer": {
+            "title": "LUIS Recognizer",
+            "description": "LUIS recognizer.",
+            "$implements": [
+                "Microsoft.IRecognizer"
+            ],
+            "type": "object",
+            "required": [
+                "$type",
+                "applicationId"
+            ],
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.LUISRecognizer"
+                },
+                "$id": {
+                    "type": "string"
+                },
+                "application": {
+                    "type": "object",
+                    "required": [
+                        "applicationId",
+                        "endpoint",
+                        "endpointKey"
+                    ],
+                    "properties": {
+                        "applicationId": {
+                            "type": "string"
+                        },
+                        "endpoint": {
+                            "type": "string"
+                        },
+                        "endpointKey": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "priority": {
+                    "type": "string"
+                }
+            }
+        },
+        "Microsoft.RegexRecognizer": {
+            "title": "Regular Expression Recognizer",
+            "description": "Example regular expression recognizer.",
+            "$implements": [
+                "Microsoft.IRecognizer"
+            ],
+            "type": "object",
+            "required": [
+                "$type"
+            ],
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.RegexRecognizer"
+                },
+                "$id": {
+                    "type": "string"
+                },
+                "pattern": {
+                    "type": "string"
+                }
+            }
+        }
+    }
 }

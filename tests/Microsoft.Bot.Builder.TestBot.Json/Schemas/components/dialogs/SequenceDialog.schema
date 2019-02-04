@@ -8,7 +8,7 @@
     ],
     "allOf": [
         {
-            "$ref":"../component.schema#"
+            "$ref":"../component.schema"
         },
         {
             "properties": {
@@ -21,8 +21,7 @@
                     "description": "Sequence of steps or dialogs to execute",
                     "items": {
                         "type": [
-                            "IDialog",
-                            "IDialogStep"
+                            "object"
                         ]
                     }
                 }

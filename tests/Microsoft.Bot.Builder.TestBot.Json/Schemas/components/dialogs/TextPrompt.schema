@@ -9,7 +9,7 @@
     ],
     "allOf": [
         {
-            "$ref":"../component.schema#"
+            "$ref": "../component.schema"
         },
         {
             "properties": {
@@ -29,7 +29,7 @@
                     ]
                 },
                 "initialPrompt": {
-                    "type": "string",
+                    "$ref": "../IActivityTemplate.schema#",
                     "title": "Initial Prompt",
                     "description": "The message to send to start.",
                     "examples": [
@@ -37,7 +37,7 @@
                     ]
                 },
                 "retryPrompt": {
-                    "type": "string",
+                    "$ref": "../IActivityTemplate.schema#",
                     "title": "Retry Prompt",
                     "description": "The message to send to prompt again.",
                     "examples": [
@@ -45,7 +45,7 @@
                     ]
                 },
                 "noMatchResponse": {
-                    "type": "string",
+                    "$ref": "../IActivityTemplate.schema#",
                     "title": "No match",
                     "description": "The message to send to when the input didn't match.",
                     "examples": [

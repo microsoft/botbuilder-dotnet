@@ -8,7 +8,7 @@
     ],
     "allOf": [
         {
-            "$ref":"../component.schema#"
+            "$ref":"../component.schema"
         },
         {
             "properties": {
@@ -16,7 +16,7 @@
                     "const": "Microsoft.IntentDialog"
                 },
                 "recognizer": {
-                    "$ref": "#/definitions/IRecognizer"
+                    "$ref": "../IRecognizer.schema"
                 },
                 "routes": {
                     "type": "object",

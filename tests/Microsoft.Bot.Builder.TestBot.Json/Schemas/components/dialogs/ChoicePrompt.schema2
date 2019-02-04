@@ -72,7 +72,7 @@
                         }
                     },
                     "initialPrompt": {
-                        "type": "string",
+                        "$ref": "../IActivityTemplate.schema#",
                         "title": "Initial Prompt",
                         "description": "The message to send to start the dialog.",
                         "examples": [
@@ -80,7 +80,7 @@
                         ]
                     },
                     "retryPrompt": {
-                        "type": "string",
+                        "$ref": "../IActivityTemplate.schema#",
                         "title": "Retry Prompt",
                         "description": "The message to send to prompt again.",
                         "examples": [
@@ -88,7 +88,7 @@
                         ]
                     },
                     "noMatchResponse": {
-                        "type": "string",
+                        "$ref": "../IActivityTemplate.schema#",
                         "title": "No match",
                         "description": "I didn't recognize a color from the options.",
                         "examples": [
