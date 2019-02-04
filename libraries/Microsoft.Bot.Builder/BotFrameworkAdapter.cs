@@ -259,7 +259,7 @@ namespace Microsoft.Bot.Builder
         /// <remarks>If the activities are successfully sent, the task result contains
         /// an array of <see cref="ResourceResponse"/> objects containing the IDs that
         /// the receiving channel assigned to the activities.</remarks>
-        /// <seealso cref="ITurnContext.OnSendActivities(SendActivitiesHandler)"/>
+        /// <seealso cref="ITurnContext.On ivities(SendActivitiesHandler)"/>
         public override async Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
         {
             if (turnContext == null)
@@ -776,37 +776,14 @@ namespace Microsoft.Bot.Builder
         /// specified users, the ID of the activity's <see cref="IActivity.Conversation"/>
         /// will contain the ID of the new conversation.</para>
         /// </remarks>
-        public virtual async Task CreateConversationAsync(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, BotCallbackHandler callback, CancellationToken cancellationToken, ConversationReference reference)
+        public virtual async Task CreateConversationAsync(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, BotCallbackHandler callback, ConversationReference reference, CancellationToken cancellationToken)
         {
-            var connectorClient = CreateConnectorClient(serviceUrl, credentials);
-
-            var result = await connectorClient.Conversations.CreateConversationAsync(conversationParameters, cancellationToken).ConfigureAwait(false);
-
-            // Create a conversation update activity to represent the result.
-            var eventActivity = Activity.CreateEventActivity();
-            eventActivity.Name = "CreateConversation";
-            eventActivity.ChannelId = channelId;
-            eventActivity.ServiceUrl = serviceUrl;
-            eventActivity.Id = result.ActivityId ?? Guid.NewGuid().ToString("n");
-            eventActivity.Conversation = new ConversationAccount(id: result.Id);
-            eventActivity.Recipient = conversationParameters.Bot;
-
             if (reference.ChannelData != null)
             {
-                eventActivity.ChannelData.set(tenant: reference.ChannelData);
+                conversationParameters.ChannelData = new { tenant= reference.ChannelData };
             }
 
-            using (TurnContext context = new TurnContext(this, (Activity)eventActivity))
-            {
-                ClaimsIdentity claimsIdentity = new ClaimsIdentity();
-                claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AudienceClaim, credentials.MicrosoftAppId));
-                claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AppIdClaim, credentials.MicrosoftAppId));
-                claimsIdentity.AddClaim(new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl));
-
-                context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
-                context.TurnState.Add(connectorClient);
-                await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
-            }
+            await CreateConversationAsync(channelId, serviceUrl, credentials, conversationParameters, callback, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
