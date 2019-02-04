@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Initialize state
             var timeout = _settings.Timeout ?? DefaultPromptTimeout;
-            var state = dc.ActiveDialog.State;
+            var state = dc.DialogState;
             state[PersistedOptions] = opt;
             state[PersistedState] = new ExpandoObject();
             state[PersistedExpires] = DateTime.Now.AddMilliseconds(timeout);
@@ -132,7 +132,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var recognized = await RecognizeTokenAsync(dc.Context, cancellationToken).ConfigureAwait(false);
 
             // Check for timeout
-            var state = dc.ActiveDialog.State;
+            var state = dc.DialogState;
             var expires = (DateTime)state[PersistedExpires];
             var isMessage = dc.Context.Activity.Type == ActivityTypes.Message;
             var hasTimedOut = isMessage && (DateTime.Compare(DateTime.Now, expires) > 0);

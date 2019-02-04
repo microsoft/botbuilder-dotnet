@@ -14,12 +14,13 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class DialogSet
     {
         private readonly IStatePropertyAccessor<DialogState> _dialogState;
-        private IBotTelemetryClient _telemetryClient;
         private readonly IDictionary<string, IDialog> _dialogs = new Dictionary<string, IDialog>();
+
+        private IBotTelemetryClient _telemetryClient;
 
         public DialogSet(IStatePropertyAccessor<DialogState> dialogState)
         {
-            _dialogState = dialogState ?? throw new ArgumentNullException($"missing {nameof(dialogState)}");
+            _dialogState = dialogState ?? throw new ArgumentNullException(nameof(dialogState));
             _telemetryClient = NullBotTelemetryClient.Instance;
         }
 
@@ -90,7 +91,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Load/initialize dialog state
             var state = await _dialogState.GetAsync(turnContext, () => { return new DialogState(); }, cancellationToken).ConfigureAwait(false);
-
+            
             // Create and return context
             return new DialogContext(this, turnContext, state);
         }
