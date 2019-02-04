@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
@@ -52,8 +53,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string PersistedState = "state";
         private const string PersistedExpires = "expires";
 
-            // Default prompt timeout of 15 minutes (in ms)
-        private const int DefaultPromptTimeout = 54000000;
+        // Default prompt timeout of 15 minutes (in ms)
+        private const int DefaultPromptTimeout = 900000;
 
         // regex to check if code supplied is a 6 digit numerical code (hence, a magic code).
         private readonly Regex _magicCodeRegex = new Regex(@"(\d{6})");
@@ -195,7 +196,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 magicCode = value.GetValue("state")?.ToString();
             }
 
-            if (turnContext.Activity.Type == ActivityTypes.Message && _magicCodeRegex.IsMatch(turnContext.Activity.Text))
+            if (turnContext.Activity.Type == ActivityTypes.Message && turnContext.Activity.Text != null && _magicCodeRegex.IsMatch(turnContext.Activity.Text))
             {
                 magicCode = turnContext.Activity.Text;
             }
@@ -258,7 +259,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                                 {
                                     Title = _settings.Title,
                                     Value = link,
-                                    Type = ActionTypes.Signin,
+                                    Type = turnContext.Activity.ChannelId == "msteams" ? ActionTypes.OpenUrl : ActionTypes.Signin,
                                 },
                             },
                         },
@@ -361,10 +362,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             switch (channelId)
             {
-                case "msteams":
-                case "cortana":
-                case "skype":
-                case "skypeforbusiness":
+                case Channels.Msteams:
+                case Channels.Cortana:
+                case Channels.Skype:
+                case Channels.Skypeforbusiness:
                     return false;
             }
 

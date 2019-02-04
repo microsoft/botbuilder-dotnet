@@ -21,20 +21,7 @@
     <Summary>This library provides integration between the Microsoft Bot Builder SDK and Application Insights.</Summary>
   </PropertyGroup>
 
-	<PropertyGroup>
-		<Company>Microsoft</Company>
-		<Authors>microsoft,BotFramework,nugetbotbuilder</Authors>
-		<Product>Microsoft Bot Builder SDK</Product>
-		<Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
-		<PackageProjectUrl>https://github.com/Microsoft/botbuilder-dotnet</PackageProjectUrl>
-		<PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
-		<PackageLicenseUrl>https://github.com/Microsoft/BotBuilder/blob/master/LICENSE</PackageLicenseUrl>
-		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<RepositoryUrl>https://github.com/Microsoft/botbuilder-dotnet</RepositoryUrl>
-		<LicenseUrl>https://github.com/Microsoft/BotBuilder-dotnet/blob/master/LICENSE</LicenseUrl>
-		<RepositoryType />
-		<PackageTags>bots;ai;botframework;botbuilder</PackageTags>
-		<NeutralLanguage />
+	<PropertyGroup>		
 		<AssemblyName>Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi</AssemblyName>
 		<RootNamespace>Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi</RootNamespace>
 	</PropertyGroup>
@@ -58,10 +45,10 @@
 
 	<ItemGroup>
 		<PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003" PrivateAssets="all" />
-		<PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.4" />
+		<PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.6" />
 		 <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
-    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.1" />
+    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008" PrivateAssets="all" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.8.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.Agent.Intercept" Version="2.4.0" />

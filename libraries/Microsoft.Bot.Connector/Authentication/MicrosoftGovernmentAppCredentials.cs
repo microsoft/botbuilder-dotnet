@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Net.Http;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -14,13 +15,14 @@ namespace Microsoft.Bot.Connector.Authentication
         /// An empty set of credentials.
         /// </summary>
         public static new readonly MicrosoftGovernmentAppCredentials Empty = new MicrosoftGovernmentAppCredentials(null, null);
-        
+
         /// <summary>
         /// Creates a new instance of the <see cref="MicrosoftGovernmentAppCredentials"/> class.
         /// </summary>
         /// <param name="appId">The Microsoft app ID.</param>
         /// <param name="password">The Microsoft app password.</param>
-        public MicrosoftGovernmentAppCredentials(string appId, string password) : base(appId, password)
+        /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
+        public MicrosoftGovernmentAppCredentials(string appId, string password, HttpClient customHttpClient = null) : base(appId, password, customHttpClient)
         {
         }
 

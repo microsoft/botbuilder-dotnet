@@ -267,7 +267,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+                .Respond("application/json", GetResponse("QnaMaker_UsesStrictFilters_ToReturnAnswer.json"));
 
             var interceptHttp = new InterceptRequestHandler(mockHttp);
 
@@ -292,12 +292,42 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             Assert.IsNotNull(results);
             Assert.AreEqual(results.Length, 1, "should get one result");
             StringAssert.StartsWith(results[0].Answer, "BaseCamp: You can use a damp rag to clean around the Power Pack");
+            Assert.AreEqual("topic", results[0].Metadata[0].Name);
+            Assert.AreEqual("value", results[0].Metadata[0].Value);
 
             // verify we are actually passing on the options
             var obj = JObject.Parse(interceptHttp.Content);
             Assert.AreEqual(1, obj["top"].Value<int>());
             Assert.AreEqual("topic", obj["strictFilters"][0]["name"].Value<string>());
             Assert.AreEqual("value", obj["strictFilters"][0]["value"].Value<string>());
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        public async Task QnaMaker_SetScoreThresholdWhenThresholdIsZero()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+            
+            var qnaWithZeroValueThreshold = GetQnAMaker(mockHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname
+                },
+                new QnAMakerOptions()
+                {
+                    ScoreThreshold = 0.0F
+                });
+            
+            var results = await qnaWithZeroValueThreshold
+                .GetAnswersAsync(GetContext("how do I clean the stove?"), new QnAMakerOptions() { Top = 1 });
+            
+            Assert.IsNotNull(results);
+            Assert.AreEqual(1, results.Length);
         }
 
         [TestMethod]
@@ -331,20 +361,45 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void QnaMaker_Test_ScoreThreshold_OutOfRange()
+        public void QnaMaker_Test_ScoreThresholdTooLarge_OutOfRange()
         {
-            var qna = new QnAMaker(
-                new QnAMakerEndpoint
-                {
-                    KnowledgeBaseId = _knowlegeBaseId,
-                    EndpointKey = _endpointKey,
-                    Host = _hostname
-                },
-                new QnAMakerOptions
-                {
-                    Top = 1,
-                    ScoreThreshold = 1.1F
-                });
+            var endpoint = new QnAMakerEndpoint
+            {
+                KnowledgeBaseId = _knowlegeBaseId,
+                EndpointKey = _endpointKey,
+                Host = _hostname
+            };
+
+            var tooLargeThreshold = new QnAMakerOptions
+            {
+                ScoreThreshold = 1.1F,
+                Top = 1
+            };
+
+            var qnaWithLargeThreshold = new QnAMaker(endpoint, tooLargeThreshold);
+
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void QnaMaker_Test_ScoreThresholdTooSmall_OutOfRange()
+        {
+            var endpoint = new QnAMakerEndpoint
+            {
+                KnowledgeBaseId = _knowlegeBaseId,
+                EndpointKey = _endpointKey,
+                Host = _hostname
+            };
+
+            var tooSmallThreshold = new QnAMakerOptions
+            {
+                ScoreThreshold = -9000.0F,
+                Top = 1
+            };
+
+            var qnaWithSmallThreshold = new QnAMaker(endpoint, tooSmallThreshold);
         }
 
         [TestMethod]
@@ -365,6 +420,54 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     Top = -1,
                     ScoreThreshold = 0.5F
                 });
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        [ExpectedException(typeof(ArgumentException))]
+        public void QnaMaker_Test_Endpoint_EmptyKbId()
+        {
+            var qnaNullEndpoint = new QnAMaker(
+                new QnAMakerEndpoint()
+                {
+                    KnowledgeBaseId = "",
+                    EndpointKey = _endpointKey,
+                    Host = _hostname
+                }
+            );
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        [ExpectedException(typeof(ArgumentException))]
+        public void QnaMaker_Test_Endpoint_EmptyEndpointKey()
+        {
+            var qnaNullEndpoint = new QnAMaker(
+                new QnAMakerEndpoint()
+                {
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = "",
+                    Host = _hostname
+                }
+            );
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        [ExpectedException(typeof(ArgumentException))]
+        public void QnaMaker_Test_Endpoint_EmptyHost()
+        {
+            var qnaNullEndpoint = new QnAMaker(
+                new QnAMakerEndpoint()
+                {
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = ""
+                }
+            );
         }
 
         [TestMethod]
@@ -400,10 +503,157 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             Assert.IsTrue(interceptHttp.UserAgent.Contains("Microsoft.Bot.Builder.AI.QnA/4"));
         }
 
-        private string GetRequestUrl()
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        [ExpectedException(typeof(NotSupportedException))]
+        public async Task QnaMaker_V2LegacyEndpoint_ConvertsToHaveIdPropertyInResult()
         {
-            return $"{_hostname}/knowledgebases/{_knowlegeBaseId}/generateanswer";
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetV2LegacyRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_LegacyEndpointAnswer.json"));
+            
+            var v2LegacyEndpoint = new QnAMakerEndpoint
+            {
+                KnowledgeBaseId = _knowlegeBaseId,
+                EndpointKey = _endpointKey,
+                Host = $"{_hostname}/v2.0"
+            };
+
+            var v2Qna = GetQnAMaker(mockHttp, v2LegacyEndpoint);
+            
+            var v2legacyResult = await v2Qna.GetAnswersAsync(GetContext("How do I be the best?"));
+
+            Assert.IsNotNull(v2legacyResult);
+            Assert.IsTrue(v2legacyResult[0]?.Id != null);
         }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        public async Task QnaMaker_V3LegacyEndpoint_ConvertsToHaveIdPropertyInResult()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetV3LegacyRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_LegacyEndpointAnswer.json"));
+            
+            var v3LegacyEndpoint = new QnAMakerEndpoint
+            {
+                KnowledgeBaseId = _knowlegeBaseId,
+                EndpointKey = _endpointKey,
+                Host = $"{_hostname}/v3.0"
+            };
+
+            var v3Qna = GetQnAMaker(mockHttp, v3LegacyEndpoint);
+            
+            var v3legacyResult = await v3Qna.GetAnswersAsync(GetContext("How do I be the best?"));
+
+            Assert.IsNotNull(v3legacyResult);
+            Assert.IsTrue(v3legacyResult[0]?.Id != null);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        public async Task QnaMaker_ReturnsAnswerWithMetadataBoost()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswersWithMetadataBoost.json"));
+
+            var interceptHttp = new InterceptRequestHandler(mockHttp);
+
+            var qna = GetQnAMaker(
+                interceptHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname
+                });
+            
+            var options = new QnAMakerOptions
+            {
+                MetadataBoost = new Metadata[]
+                {
+                    new Metadata() { Name = "artist", Value = "drake" }
+                },
+                Top = 1
+            };
+
+            var results = await qna.GetAnswersAsync(GetContext("who loves me?"), options);
+            
+            Assert.IsNotNull(results);
+            Assert.AreEqual(results.Length, 1, "should get one result");
+            StringAssert.StartsWith(results[0].Answer, "Kiki");
+
+
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        public async Task QnaMaker_TestThresholdInQueryOption()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_GivenScoreThresholdQueryOption.json"));
+            
+            var interceptHttp = new InterceptRequestHandler(mockHttp);
+
+            var qna = GetQnAMaker(
+                interceptHttp, 
+                new QnAMakerEndpoint()
+                {
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname
+                });
+            
+            var queryOptionsWithScoreThreshold = new QnAMakerOptions()
+            {
+                ScoreThreshold = 0.5F,
+                Top = 2
+            };
+
+            var result = await qna.GetAnswersAsync(
+                    GetContext("What happens when you hug a porcupine?"), 
+                    queryOptionsWithScoreThreshold
+            );
+
+            Assert.IsNotNull(result);
+
+            var obj = JObject.Parse(interceptHttp.Content);
+            Assert.AreEqual(2, obj["top"].Value<int>());
+            Assert.AreEqual(0.5F, obj["scoreThreshold"].Value<float>());
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        [ExpectedException(typeof(HttpRequestException))]
+        public async Task QnaMaker_Test_UnsuccessfulResponse()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond(System.Net.HttpStatusCode.BadGateway);
+            
+            var qna = GetQnAMaker(
+                mockHttp,
+                new QnAMakerEndpoint()
+                {
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname
+                });
+            
+            var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
+        }        
+
+        private string GetV2LegacyRequestUrl() => $"{_hostname}/v2.0/knowledgebases/{_knowlegeBaseId}/generateanswer";
+        private string GetV3LegacyRequestUrl() => $"{_hostname}/v3.0/knowledgebases/{_knowlegeBaseId}/generateanswer";
+
+        private string GetRequestUrl() => $"{_hostname}/knowledgebases/{_knowlegeBaseId}/generateanswer";
 
         private Stream GetResponse(string fileName)
         {

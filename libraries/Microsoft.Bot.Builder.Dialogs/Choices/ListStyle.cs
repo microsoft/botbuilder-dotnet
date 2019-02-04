@@ -33,5 +33,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// Add choices to prompt as suggested actions.
         /// </summary>
         SuggestedAction,
+
+        /// <summary>
+        /// Add choices to prompt as a HeroCard with buttons.
+        /// </summary>
+        HeroCard,
     }
 }

@@ -24,7 +24,10 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
     public class LuisRecognizerTests
     {
         private readonly string _luisAppId = TestUtilities.GetKey("LUISAPPID", "38330cad-f768-4619-96f9-69ea333e594b");
-        private readonly string _subscriptionKey = TestUtilities.GetKey("LUISAPPKEY", "LUIS Endpoint Key");
+
+        // By default (when the Mocks are being used), the subscription key used can be any GUID. Only if the tests
+        // are connecting to LUIS is an actual key needed.
+        private readonly string _subscriptionKey = TestUtilities.GetKey("LUISAPPKEY", "00000000-1111-2222-3333-444444444444");
         private readonly string _endpoint = TestUtilities.GetKey("LUISENDPOINT", "https://westus.api.cognitive.microsoft.com");
 
         private readonly RecognizerResult _mockedResults = new RecognizerResult

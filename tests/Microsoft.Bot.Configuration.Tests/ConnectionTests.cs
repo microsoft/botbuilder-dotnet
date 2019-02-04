@@ -9,10 +9,12 @@ namespace Microsoft.Bot.Configuration.Tests
     [TestClass]
     public class ConnectionTests
     {
+        private const string TestBotFileName = @"..\..\..\test.bot";
+
         [TestMethod]
         public async Task ConnectAssignsUniqueIds()
         {
-            var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
+            var config = await BotConfiguration.LoadAsync(TestBotFileName);
             var config2 = new BotConfiguration();
             foreach (var service in config.Services)
             {
@@ -31,7 +33,7 @@ namespace Microsoft.Bot.Configuration.Tests
         [TestMethod]
         public async Task FindServices()
         {
-            var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
+            var config = await BotConfiguration.LoadAsync(TestBotFileName);
             Assert.IsNotNull(config.FindServiceByNameOrId("3"), "Should find by id");
             Assert.IsNotNull(config.FindServiceByNameOrId("testInsights"), "Should find by name");
             Assert.IsNotNull(config.FindService("3"), "Should find by id");
@@ -41,7 +43,7 @@ namespace Microsoft.Bot.Configuration.Tests
         [TestMethod]
         public async Task DisconnectServicesById()
         {
-            var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
+            var config = await BotConfiguration.LoadAsync(TestBotFileName);
             var config2 = new BotConfiguration();
             foreach (var service in config.Services)
             {
@@ -60,7 +62,7 @@ namespace Microsoft.Bot.Configuration.Tests
         [TestMethod]
         public async Task DisconnectServicesByNameOrId_UsingId()
         {
-            var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
+            var config = await BotConfiguration.LoadAsync(TestBotFileName);
             var config2 = new BotConfiguration();
             foreach (var service in config.Services)
             {
@@ -78,7 +80,7 @@ namespace Microsoft.Bot.Configuration.Tests
         [TestMethod]
         public async Task DisconnectByNameOrId_UsingName()
         {
-            var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
+            var config = await BotConfiguration.LoadAsync(TestBotFileName);
             var config2 = new BotConfiguration();
             foreach (var service in config.Services)
             {

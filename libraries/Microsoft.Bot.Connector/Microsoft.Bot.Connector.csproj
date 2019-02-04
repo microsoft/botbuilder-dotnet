@@ -15,34 +15,9 @@
   </PropertyGroup>
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
-		<PackageId>Microsoft.Bot.Connector</PackageId>
+		<TargetFramework>netstandard2.0</TargetFramework>		
 		<Description>This library implements C# classes for using the Bot Framework Connector REST API.</Description>
 		<Summary>Client REST API library for Microsoft Bot Framework Connector</Summary>
-	</PropertyGroup>
-
-	<PropertyGroup>
-		<Company>Microsoft</Company>
-		<Authors>microsoft,BotFramework,nugetbotbuilder</Authors>
-		<Product>Microsoft Bot Connector</Product>
-		<Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
-		<PackageProjectUrl>https://github.com/Microsoft/botbuilder-dotnet</PackageProjectUrl>
-		<PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
-		<PackageLicenseUrl>https://github.com/Microsoft/BotBuilder/blob/master/LICENSE</PackageLicenseUrl>
-		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<RepositoryUrl>https://github.com/Microsoft/botbuilder-dotnet</RepositoryUrl>
-		<LicenseUrl>https://github.com/Microsoft/BotBuilder-dotnet/blob/master/LICENSE</LicenseUrl>
-		<RepositoryType />
-		<PackageTags>bots;ai;botframework;botbuilder</PackageTags>
-		<NeutralLanguage />
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
-	  <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Connector.xml</DocumentationFile>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Connector.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -56,12 +31,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="4.5.0" />
 		<PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="5.2.1" />
 		<PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.13" />
 		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
 		<PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
 		<PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
-		<PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.1" />
+		<PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
 	</ItemGroup>
 
 	<ItemGroup>

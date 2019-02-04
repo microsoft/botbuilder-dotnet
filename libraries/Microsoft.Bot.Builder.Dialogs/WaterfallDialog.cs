@@ -126,7 +126,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             if (reason == DialogReason.CancelCalled)
             {
-                // Create step context
                 var index = Convert.ToInt32(instance.State[StepIndex]);
                 var stepName = WaterfallStepName(index);
                 var instanceId = instance.State[PersistedInstanceId] as string;

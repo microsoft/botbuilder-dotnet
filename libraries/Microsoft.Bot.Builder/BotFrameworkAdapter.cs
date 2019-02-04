@@ -778,8 +778,9 @@ namespace Microsoft.Bot.Builder
 
             if (OAuthClientConfig.EmulateOAuthCards)
             {
+                // do not await task - we want this to run in the background
                 var oauthClient = new OAuthClient(new Uri(turnContext.Activity.ServiceUrl), connectorClient.Credentials);
-                Task.Run(async () => await OAuthClientConfig.SendEmulateOAuthCardsAsync(oauthClient, OAuthClientConfig.EmulateOAuthCards).ConfigureAwait(false)).Wait();
+                var task = Task.Run(() => OAuthClientConfig.SendEmulateOAuthCardsAsync(oauthClient, OAuthClientConfig.EmulateOAuthCards));
                 return oauthClient;
             }
 
@@ -877,8 +878,8 @@ namespace Microsoft.Bot.Builder
             // NOTE: we can't do async operations inside of a AddOrUpdate, so we split access pattern
             string appPassword = await _credentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
             appCredentials = (_channelProvider != null && _channelProvider.IsGovernment()) ?
-                new MicrosoftGovernmentAppCredentials(appId, appPassword) :
-                new MicrosoftAppCredentials(appId, appPassword);
+                new MicrosoftGovernmentAppCredentials(appId, appPassword, _httpClient) :
+                new MicrosoftAppCredentials(appId, appPassword, _httpClient);
             _appCredentialMap[appId] = appCredentials;
             return appCredentials;
         }

@@ -36,14 +36,14 @@ namespace Microsoft.Bot.Connector.Tests
         public void GovernmentAuthenticationConstants_ToChannelFromBotLoginUrl_IsRight()
         {
             // This value should not change
-            Assert.Equal("https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/oauth2/v2.0/token", GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl);
+            Assert.Equal("https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e", GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl);
         }
 
         [Fact]
         public void GovernmentAuthenticationConstants_ToChannelFromBotOAuthScope_IsRight()
         {
             // This value should not change
-            Assert.Equal("https://api.botframework.us/.default", GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope);
+            Assert.Equal("https://api.botframework.us", GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope);
         }
 
         [Fact]

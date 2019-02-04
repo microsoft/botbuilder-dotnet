@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Version Condition=" '$(PackageVersion)' == '' ">4.0.0-local</Version>
 		<Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
@@ -15,39 +15,17 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
-		<PackageId>Microsoft.Bot.Schema</PackageId>
+		<TargetFramework>netstandard2.0</TargetFramework>		
 		<Description>This library implements C# schema classes for using the Bot Framework.</Description>
 		<Summary>This library implements C# schema classes for using the Bot Framework.</Summary>
 	</PropertyGroup>
 
-	<PropertyGroup>
-		<Company>Microsoft</Company>
-		<Authors>microsoft,BotFramework,nugetbotbuilder</Authors>
-		<Product>Microsoft Bot Framework</Product>
-		<Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
-		<PackageProjectUrl>https://github.com/Microsoft/botbuilder-dotnet</PackageProjectUrl>
-		<PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
-		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<PackageLicenseUrl>https://github.com/Microsoft/BotBuilder/blob/master/LICENSE</PackageLicenseUrl>
-		<RepositoryUrl>https://github.com/Microsoft/botbuilder-dotnet</RepositoryUrl>
-		<LicenseUrl>https://github.com/Microsoft/BotBuilder-dotnet/blob/master/LICENSE</LicenseUrl>
-		<RepositoryType />
-		<PackageTags>bots;ai;botframework;botbuilder</PackageTags>
-		<NeutralLanguage />
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Schema.xml</DocumentationFile>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Schema.xml</DocumentationFile>
-	</PropertyGroup>
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);CS0108</NoWarn>
+  </PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-		<PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.1" />
+		<PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
 	</ItemGroup>
-
 </Project>

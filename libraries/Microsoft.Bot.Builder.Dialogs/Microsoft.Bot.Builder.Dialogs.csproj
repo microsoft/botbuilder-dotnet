@@ -16,42 +16,13 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
-		<PackageId>Microsoft.Bot.Builder.Dialogs</PackageId>
+		<TargetFramework>netstandard2.0</TargetFramework>		
 		<Description>This library implements .NET Simple Dialog classes </Description>
 		<Summary>This library implements .NET Simple Dialog classes </Summary>
 	</PropertyGroup>
-
-	<PropertyGroup>
-		<Company>Microsoft</Company>
-		<Authors>microsoft,BotFramework,nugetbotbuilder</Authors>
-		<Product>Microsoft Bot Builder SDK</Product>
-		<Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
-		<PackageProjectUrl>https://github.com/Microsoft/botbuilder-dotnet</PackageProjectUrl>
-		<PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
-		<PackageLicenseUrl>https://github.com/Microsoft/BotBuilder/blob/master/LICENSE</PackageLicenseUrl>
-		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<RepositoryUrl>https://github.com/Microsoft/botbuilder-dotnet</RepositoryUrl>
-		<LicenseUrl>https://github.com/Microsoft/BotBuilder-dotnet/blob/master/LICENSE</LicenseUrl>
-		<RepositoryType />
-		<PackageTags>bots;ai;botframework;botbuilder</PackageTags>
-		<NeutralLanguage />
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Dialogs.xml</DocumentationFile>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Dialogs.xml</DocumentationFile>
-	</PropertyGroup>
-  
+ 
 	<PropertyGroup>
 	  <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Dialogs.ruleset</CodeAnalysisRuleSet>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <DebugType>full</DebugType>
-	  <DebugSymbols>true</DebugSymbols>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -64,7 +35,7 @@
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
 		<PackageReference Include="Microsoft.Recognizers.Text.Choice" Version="1.1.3" />
 		<PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.1.3" />
-		<PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.1" />
+		<PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
 		<PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008" PrivateAssets="all" />
 	</ItemGroup>
 
