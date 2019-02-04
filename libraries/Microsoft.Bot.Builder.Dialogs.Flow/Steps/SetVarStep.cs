@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
             {
                 throw new ArgumentNullException(nameof(Value));
             }
-            var state = dialogContext.ActiveDialogState;
+            var state = dialogContext.DialogState;
             state[Name.Trim()] = await Value.Evaluate(state);
             return null;
         }

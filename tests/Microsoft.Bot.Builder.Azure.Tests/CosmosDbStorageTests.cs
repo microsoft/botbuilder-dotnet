@@ -375,17 +375,17 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 {
                     async (stepContext, ct) =>
                     {
-                        Assert.AreEqual(stepContext.ActiveDialogState["stepIndex"].GetType(), typeof(Int32));
+                        Assert.AreEqual(stepContext.DialogState["stepIndex"].GetType(), typeof(Int32));
                         await stepContext.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn;
                     },
                     async (stepContext, ct) =>
                     {
-                        Assert.AreEqual(stepContext.ActiveDialogState["stepIndex"].GetType(), typeof(Int32));
+                        Assert.AreEqual(stepContext.DialogState["stepIndex"].GetType(), typeof(Int32));
                         await stepContext.Context.SendActivityAsync("step2"); return Dialog.EndOfTurn;
                     },
                     async (stepContext, ct) =>
                     {
-                        Assert.AreEqual(stepContext.ActiveDialogState["stepIndex"].GetType(), typeof(Int32));
+                        Assert.AreEqual(stepContext.DialogState["stepIndex"].GetType(), typeof(Int32));
                         await stepContext.Context.SendActivityAsync("step3"); return Dialog.EndOfTurn;
                     },
                 }));

@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        public StateMap ActiveDialogState
+        public StateMap DialogState
         {
             get
             {

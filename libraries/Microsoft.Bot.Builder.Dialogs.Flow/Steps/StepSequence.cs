@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
                 throw new ArgumentNullException(nameof(this.Id));
             }
 
-            var state = dialogContext.ActiveDialogState;
+            var state = dialogContext.DialogState;
             state.TryGetValue(this.currentIdLabel, out object obj);
             string currentId = (string)obj;
 

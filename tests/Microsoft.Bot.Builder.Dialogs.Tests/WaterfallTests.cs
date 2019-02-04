@@ -76,14 +76,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     step.UserState["name"] = "bill";
                     step.ConversationState["order"] = 1;
-                    step.ActiveDialogState["result"] = "foo";
+                    step.DialogState["result"] = "foo";
                     return Dialog.EndOfTurn;
                 },
                 async (step, cancellationToken) => 
                 {
                     Assert.AreEqual("bill", step.UserState["name"]);
                     Assert.AreEqual(1, step.ConversationState["order"]);
-                    Assert.AreEqual("foo", step.ActiveDialogState["result"]);
+                    Assert.AreEqual("foo", step.DialogState["result"]);
                     return Dialog.EndOfTurn; },
             }));
 

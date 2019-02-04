@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Initialize prompt state
-            var state = dc.ActiveDialogState;
+            var state = dc.DialogState;
             state[PersistedOptions] = promptOptions;
             state[PersistedState] = new ExpandoObject();
 

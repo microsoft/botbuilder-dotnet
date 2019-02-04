@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Initialize waterfall state
-            var state = dc.ActiveDialogState;
+            var state = dc.DialogState;
             var instanceId = Guid.NewGuid().ToString();
             state[PersistedOptions] = options;
             state[PersistedValues] = new ExpandoObject();
@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Increment step index and run step
-            var state = dc.ActiveDialogState;
+            var state = dc.DialogState;
 
             // For issue https://github.com/Microsoft/botbuilder-dotnet/issues/871
             // See the linked issue for details. This issue was happening when using the CosmosDB
@@ -160,7 +160,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         protected virtual async Task<DialogTurnResult> OnStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var stepName = WaterfallStepName(stepContext.Index);
-            var instanceId = stepContext.ActiveDialogState[PersistedInstanceId] as string;
+            var instanceId = stepContext.DialogState[PersistedInstanceId] as string;
             var properties = new Dictionary<string, string>()
             {
                 { "DialogId", Id },
@@ -181,7 +181,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (index < _steps.Count)
             {
                 // Update persisted step index
-                var state = dc.ActiveDialogState;
+                var state = dc.DialogState;
                 state[StepIndex] = index;
 
                 // Create step context
