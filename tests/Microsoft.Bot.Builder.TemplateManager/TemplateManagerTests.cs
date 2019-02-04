@@ -3,6 +3,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.AI.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -243,7 +244,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         }
 
         [TestMethod]
-        public async Task TemplateManagerMiddleware_Declaritive()
+        public async Task TemplateManagerMiddleware_Declarative()
         {
 
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
@@ -271,5 +272,56 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                 .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task TemplateManagerMiddleware_LanguageGeneration()
+        {
+
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()))
+                                .Use(new TemplateManagerMiddleware()
+                                {
+                                    Renderers =
+                                    {
+                                        new LanguageGenerationRenderer("en-us.lg")
+                                    }
+                                });
+
+
+            await new TestFlow(adapter, async (context, cancellationToken) =>
+            {
+                var templateId = context.Activity.AsMessageActivity().Text.Trim();
+                var templateActivity = TemplateManager.CreateTemplateActivity(templateId, new { name = "joe" });
+                await context.SendActivityAsync(templateActivity);
+            })
+                .Send("welcome")
+                    .AssertReplyOneOf(new string[] { "Hello", "Hi" })
+                .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task TemplateManagerMiddleware_LanguageGenerationWithParameters()
+        {
+
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()))
+                                .Use(new TemplateManagerMiddleware()
+                                {
+                                    Renderers =
+                                    {
+                                        new LanguageGenerationRenderer("en-us.lg")
+                                    }
+                                });
+
+
+            await new TestFlow(adapter, async (context, cancellationToken) =>
+            {
+                var templateId = context.Activity.AsMessageActivity().Text.Trim();
+                var templateActivity = TemplateManager.CreateTemplateActivity(templateId, new { userName = "joe" });
+                await context.SendActivityAsync(templateActivity);
+            })
+                .Send("welcome-user")
+                    .AssertReplyOneOf(new string[] { "Hello joe :)", "Hi joe :)", "Hello joe", "Hi joe" })
+                .StartTestAsync();
+        }
     }
 }

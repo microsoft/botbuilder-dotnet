@@ -16,20 +16,14 @@
       "property": "value.name"
     },
     {
-      "$type": "http://schemas.botframework.com/CallDialog",
-      "dialog": {
-        "$type": "http://schemas.botframework.com/IntegerPrompt",
-        "$id": "agePrompt",
-        "property": "value.age",
-        "minValue": 0,
-        "maxValue": 125,
-        "initialPrompt": "What is your age?",
-        "retryPrompt": "Let's try again, what's your age?",
-        "noMatchResponse": "I didn't recognize a number in your response.",
-        "tooSmallResponse": "Nobody can be negative aged!",
-        "tooLargeResponse": "I don't think anyone can be that old."
-      },
-      "property": "value.age"
+      "$type": "http://schemas.botframework.com/SendActivityStep",
+      "activity": {
+        "type": "Template",
+        "value": {
+          "data": "value.name",
+          "template": "welcome-user"
+        }
+      }
     },
     {
       "$type": "http://schemas.botframework.com/EndDialog",

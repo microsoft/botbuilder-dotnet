@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
             return new Activity()
             {
                 Type = "Template",
-                ChannelData = new TemplateOptions()
+                Value = new TemplateOptions()
                 {
                     TemplateId = templateId,
                     Data = data

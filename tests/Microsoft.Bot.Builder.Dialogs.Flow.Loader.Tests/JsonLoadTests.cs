@@ -179,12 +179,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             .Send("Carlos")
             .Send("age")
             .AssertReply("What is your age?")
-            //.Send("name")
-            //.AssertReply("What is your name?")
-            //.Send("Carlos")
-            //.Send("name")
-            //.AssertReply("What is your name?")
-            //.Send("Carlos")
             .StartTestAsync();
         }
 

@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         
         public Task<object> Execute(DialogContext dialogContext, CancellationToken cancellationToken)
         {
-            var state = dialogContext.ActiveDialog.State;
+            var state = dialogContext.DialogState;
             state.Remove(Name);
             return Task.FromResult<object>(null);
         }

@@ -18,20 +18,24 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialogs">Parent dialog set.</param>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
         /// <param name="state">Current dialog state.</param>
-        public DialogContext(DialogSet dialogs, DialogContext parentDialogContext, DialogState state)
+        public DialogContext(DialogSet dialogs, DialogContext parentDialogContext, DialogState state, StateMap conversationState = null, StateMap userState = null)
         {
             Dialogs = dialogs;
             ParentContext = parentDialogContext ?? throw new ArgumentNullException(nameof(parentDialogContext));
             Context = ParentContext.Context;
             Stack = state.DialogStack;
+            ConversationState = conversationState ?? state?.ConversationState ?? new StateMap();
+            UserState = userState ?? state?.UserState ?? new StateMap();
         }
 
-        public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state)
+        public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state, StateMap conversationState = null, StateMap userState = null)
         {
             ParentContext = null;
             Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
             Context = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
             Stack = state.DialogStack;
+            ConversationState = conversationState ?? state?.ConversationState ?? new StateMap();
+            UserState = userState ?? state?.UserState ?? new StateMap();
         }
 
         public DialogContext ParentContext { get; private set; }
@@ -41,6 +45,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         public ITurnContext Context { get; private set; }
 
         public List<DialogInstance> Stack { get; private set; }
+
+        public StateMap UserState { get; private set; }
+
+        public StateMap ConversationState { get; private set; }
 
         /// <summary>
         /// Gets the cached instance of the active dialog on the top of the stack or <c>null</c> if the stack is empty.
@@ -58,6 +66,14 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
 
                 return null;
+            }
+        }
+
+        public StateMap DialogState
+        {
+            get
+            {
+                return ActiveDialog?.State;
             }
         }
 
@@ -86,7 +102,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var instance = new DialogInstance
             {
                 Id = dialogId,
-                State = new ExpandoObject(),
+                State = new StateMap(),
             };
 
             Stack.Insert(0, instance);

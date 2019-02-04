@@ -2,14 +2,17 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Bot.Builder.AI.LanguageGeneration;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types;
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.TemplateManager;
 using Microsoft.Bot.Builder.TestBot.Json.Recognizers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +20,8 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
+
+
     public class Startup
     {
         public Startup(IHostingEnvironment env)
@@ -59,6 +64,14 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                         await conversationState.SaveChangesAsync(turnContext);
                     };
                     options.Middleware.Add(new AutoSaveStateMiddleware(conversationState));
+                    options.Middleware.Add(
+                        new TemplateManagerMiddleware()
+                        {
+                            Renderers = new List<ITemplateRenderer>()
+                            {
+                                new LanguageGenerationRenderer("en-us.lg")
+                            }
+                        });
                 });
         }
 
@@ -73,6 +86,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             app.UseDefaultFiles()
                 .UseStaticFiles()
                 .UseBotFramework();
+            app.UseExceptionHandler();
         }
 
         private void RegisterTypes()

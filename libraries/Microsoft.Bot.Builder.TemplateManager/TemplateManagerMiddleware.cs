@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.TemplateManager
 {
@@ -54,7 +55,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
             {
                 foreach (var activity in activities)
                 {
-                    await transformTemplateActivity(turnContext, activity);
+                    await TransformTemplateActivity(turnContext, activity);
                 }
 
                 // run pipeline
@@ -64,7 +65,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
             // hook up update activity pipeline
             turnContext.OnUpdateActivity(async (ctx, activity, nextUpdate) =>
             {
-                await transformTemplateActivity(turnContext, activity);
+                await TransformTemplateActivity(turnContext, activity);
 
                 // run full pipeline
                 return await nextUpdate().ConfigureAwait(false);
@@ -74,11 +75,11 @@ namespace Microsoft.Bot.Builder.TemplateManager
             await nextTurn(cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task transformTemplateActivity(ITurnContext turnContext, Activity activity)
+        private async Task TransformTemplateActivity(ITurnContext turnContext, Activity activity)
         {
             if (activity.Type == "Template")
             {
-                var templateOptions = activity.GetChannelData<TemplateOptions>();
+                var templateOptions = JToken.FromObject(activity.Value)?.ToObject<TemplateOptions>();
 
                 var newActivity = await this.TemplateManager.RenderTemplate(turnContext,
                     turnContext.Activity.Locale,

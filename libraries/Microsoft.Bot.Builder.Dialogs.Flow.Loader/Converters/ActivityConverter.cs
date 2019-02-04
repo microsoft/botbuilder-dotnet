@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Converters
                     Text = (string)reader.Value
                 };
             }
-            return serializer.Deserialize<Activity>(reader);
+            return JToken.Load(reader).ToObject<Activity>();
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

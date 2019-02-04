@@ -32,24 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         public async Task<object> Execute(DialogContext dialogContext, CancellationToken cancellationToken)
         {
             var activity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(Activity));
-            if (activity.Text.StartsWith("{") && activity.Text.EndsWith("}"))
-            {
-                var var = activity.Text.Trim('{', '}');
-                var state = dialogContext.ActiveDialog.State;
-                if (state.TryGetValue(var, out object val))
-                {
-                    activity.Text = Convert.ToString(state[var]);
-                    await dialogContext.Context.SendActivityAsync(activity, cancellationToken);
-                }
-                else
-                {
-                    await dialogContext.Context.SendActivityAsync(dialogContext.Context.Activity.CreateReply("null"), cancellationToken);
-                }
-            }
-            else
-            {
-                await dialogContext.Context.SendActivityAsync(activity, cancellationToken);
-            }
+            await dialogContext.Context.SendActivityAsync(activity, cancellationToken);
             return null;
         }
     }
