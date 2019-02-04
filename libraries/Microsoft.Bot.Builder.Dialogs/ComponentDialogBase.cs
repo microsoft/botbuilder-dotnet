@@ -54,11 +54,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Start the inner dialog.
             var dialogState = new DialogState();
-            outerDc.ActiveDialog.State[PersistedDialogState] = dialogState;
+            outerDc.ActiveDialogState[PersistedDialogState] = dialogState;
 
             await EnsureInitialized(outerDc).ConfigureAwait(false);
 
-            var innerDc = new DialogContext(_dialogs, outerDc, dialogState);
+            var innerDc = new DialogContext(_dialogs, outerDc, dialogState, outerDc.ConversationState, outerDc.UserState);
             var turnResult = await OnBeginDialogAsync(innerDc, options, cancellationToken).ConfigureAwait(false);
 
             // Check for end of inner dialog
@@ -93,8 +93,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             await EnsureInitialized(outerDc).ConfigureAwait(false);
 
             // Continue execution of inner dialog.
-            var dialogState = (DialogState)outerDc.ActiveDialog.State[PersistedDialogState];
-            var innerDc = new DialogContext(_dialogs, outerDc, dialogState);
+            var dialogState = (DialogState)outerDc.ActiveDialogState[PersistedDialogState];
+            var innerDc = new DialogContext(_dialogs, outerDc, dialogState, outerDc.ConversationState, outerDc.UserState);
             var turnResult = await OnContinueDialogAsync(innerDc, cancellationToken).ConfigureAwait(false);
 
             if (turnResult.Status != DialogTurnStatus.Waiting)
@@ -124,7 +124,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             // Delegate to inner dialog.
             var dialogState = (DialogState)instance.State[PersistedDialogState];
-            var innerDc = new DialogContext(_dialogs, turnContext, dialogState);
+            var innerDc = new DialogContext(_dialogs, turnContext, dialogState, new StateMap(), new StateMap());
             await innerDc.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
 
             // Notify component
@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (reason == DialogReason.CancelCalled)
             {
                 var dialogState = (DialogState)instance.State[PersistedDialogState];
-                var innerDc = new DialogContext(_dialogs, turnContext, dialogState);
+                var innerDc = new DialogContext(_dialogs, turnContext, dialogState, new StateMap(), new StateMap());
                 await innerDc.CancelAllDialogsAsync(cancellationToken).ConfigureAwait(false);
             }
 

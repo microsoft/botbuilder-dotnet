@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         {
             if (DialogResult != null)
             {
-                var state = dialogContext.ActiveDialog.State;
+                var state = dialogContext.ActiveDialogState;
                 var expressionResult = await DialogResult.Evaluate(state);
                 return await dialogContext.EndDialogAsync(expressionResult, cancellationToken);
             }

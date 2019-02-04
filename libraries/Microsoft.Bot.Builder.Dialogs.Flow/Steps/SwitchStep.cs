@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
 
         public async Task<object> Execute(DialogContext dialogContext, CancellationToken cancellationToken)
         {
-            var state = dialogContext.ActiveDialog.State;
+            var state = dialogContext.ActiveDialogState;
             if (Condition == null)
             {
                 throw new ArgumentNullException(nameof(Condition));

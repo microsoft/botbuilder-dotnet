@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
             /// <returns></returns>
             public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dialogContext, object options = null, CancellationToken cancellationToken = default(CancellationToken))
             {
-                var state = dialogContext.ActiveDialog?.State;
+                var state = dialogContext.ActiveDialogState;
                 if (this.Sequence == null)
                 {
                     return await EndThisDialog(dialogContext, null, state, cancellationToken);
@@ -122,15 +122,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
             /// <returns></returns>
             public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dialogContext, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
             {
-                var state = dialogContext.ActiveDialog.State;
+                var state = dialogContext.ActiveDialogState;
                 state["DialogTurnResult"] = result;
                 return await OnTurnAsync(dialogContext, DialogReason.NextCalled, result, cancellationToken);
             }
 
-
             private async Task<DialogTurnResult> OnTurnAsync(DialogContext dialogContext, DialogReason reason, object result, CancellationToken cancellationToken)
             {
-                var state = dialogContext.ActiveDialog.State;
+                var state = dialogContext.ActiveDialogState;
                 var stepResult = await this.Sequence.Execute(dialogContext, cancellationToken);
                 if (stepResult is DialogTurnResult dialogTurnResult)
                 {

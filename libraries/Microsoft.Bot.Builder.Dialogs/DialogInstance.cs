@@ -24,6 +24,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The instances persisted state.
         /// </value>
-        public IDictionary<string, object> State { get; set; }
+        public StateMap State { get; set; }
     }
 }

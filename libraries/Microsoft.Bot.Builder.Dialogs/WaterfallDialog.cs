@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Initialize waterfall state
-            var state = dc.ActiveDialog.State;
+            var state = dc.ActiveDialogState;
             var instanceId = Guid.NewGuid().ToString();
             state[PersistedOptions] = options;
             state[PersistedValues] = new ExpandoObject();
@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Increment step index and run step
-            var state = dc.ActiveDialog.State;
+            var state = dc.ActiveDialogState;
 
             // For issue https://github.com/Microsoft/botbuilder-dotnet/issues/871
             // See the linked issue for details. This issue was happening when using the CosmosDB
@@ -127,10 +127,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             if (reason == DialogReason.CancelCalled)
             {
+                var state = new StateMap(instance.State);
+
                 // Create step context
-                var index = Convert.ToInt32(instance.State[StepIndex]);
+                var index = Convert.ToInt32(state[StepIndex]);
                 var stepName = WaterfallStepName(index);
-                var instanceId = instance.State[PersistedInstanceId] as string;
+                var instanceId = state[PersistedInstanceId] as string;
 
                 var properties = new Dictionary<string, string>()
                 {
@@ -142,7 +144,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else if (reason == DialogReason.EndCalled)
             {
-                var instanceId = instance.State[PersistedInstanceId] as string;
+                var state = new StateMap(instance.State);
+                var instanceId = state[PersistedInstanceId] as string;
                 var properties = new Dictionary<string, string>()
                 {
                     { "DialogId", Id },
@@ -157,7 +160,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         protected virtual async Task<DialogTurnResult> OnStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var stepName = WaterfallStepName(stepContext.Index);
-            var instanceId = stepContext.ActiveDialog.State[PersistedInstanceId] as string;
+            var instanceId = stepContext.ActiveDialogState[PersistedInstanceId] as string;
             var properties = new Dictionary<string, string>()
             {
                 { "DialogId", Id },
@@ -178,7 +181,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (index < _steps.Count)
             {
                 // Update persisted step index
-                var state = dc.ActiveDialog.State;
+                var state = dc.ActiveDialogState;
                 state[StepIndex] = index;
 
                 // Create step context

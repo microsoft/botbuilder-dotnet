@@ -55,6 +55,53 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        public async Task Waterfall_PersistsMemory()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+            
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new AutoSaveStateMiddleware(convoState, userState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+
+            var userStateProperty = userState.CreateProperty<Dictionary<string, object>>("user");
+            var convoStateProperty = convoState.CreateProperty<Dictionary<string, object>>("conversation");
+
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+            var dialogs = new DialogSet(dialogState);
+
+            dialogs.Add(new WaterfallDialog("test", new WaterfallStep[]
+            {
+                async (step, cancellationToken) => 
+                {
+                    step.UserState["name"] = "bill";
+                    step.ConversationState["order"] = 1;
+                    step.ActiveDialogState["result"] = "foo";
+                    return Dialog.EndOfTurn;
+                },
+                async (step, cancellationToken) => 
+                {
+                    Assert.AreEqual("bill", step.UserState["name"]);
+                    Assert.AreEqual(1, step.ConversationState["order"]);
+                    Assert.AreEqual("foo", step.ActiveDialogState["result"]);
+                    return Dialog.EndOfTurn; },
+            }));
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                await dc.ContinueDialogAsync(cancellationToken);
+                if (!turnContext.Responded)
+                {
+                    await dc.BeginDialogAsync("test", null, cancellationToken);
+                }
+            })
+            .Send("start")
+            .Send("continue")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task WaterfallWithCallback()
         {
             var convoState = new ConversationState(new MemoryStorage());
