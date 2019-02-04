@@ -60,8 +60,10 @@ namespace Microsoft.Bot.Builder
         /// <param name="context">Context for the current turn of conversation with the user.</param>
         /// <param name="userId">The user Id for which token status is retrieved.</param>
         /// <param name="includeFilter">Optional comma seperated list of connection's to include. Blank will return token status for all configured connections.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
         /// <returns>Array of TokenStatus.</returns>
-        Task<TokenStatus[]> GetTokenStatusAsync(ITurnContext context, string userId, string includeFilter = null);
+        Task<TokenStatus[]> GetTokenStatusAsync(ITurnContext context, string userId, string includeFilter = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Retrieves Azure Active Directory tokens for particular resources on a configured connection.
@@ -70,7 +72,9 @@ namespace Microsoft.Bot.Builder
         /// <param name="connectionName">The name of the Azure Active Direcotry connection configured with this bot.</param>
         /// <param name="resourceUrls">The list of resource URLs to retrieve tokens for.</param>
         /// <param name="userId">The user Id for which tokens are retrieved. If passing in null the userId is taken from the Activity in the ITurnContext.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
         /// <returns>Dictionary of resourceUrl to the corresponding TokenResponse.</returns>
-        Task<Dictionary<string, TokenResponse>> GetAadTokensAsync(ITurnContext context, string connectionName, string[] resourceUrls, string userId = null);
+        Task<Dictionary<string, TokenResponse>> GetAadTokensAsync(ITurnContext context, string connectionName, string[] resourceUrls, string userId = null, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

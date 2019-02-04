@@ -521,8 +521,9 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="context">The turnContext (with a valid Activity).</param>
         /// <param name="userId">The user id.</param>
         /// <param name="includeFilter">Optional comma seperated list of connection's to include. Blank will return token status for all configured connections.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Array of TokenStatus.</returns>
-        public virtual Task<TokenStatus[]> GetTokenStatusAsync(ITurnContext context, string userId, string includeFilter = null)
+        public virtual Task<TokenStatus[]> GetTokenStatusAsync(ITurnContext context, string userId, string includeFilter = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var filter = includeFilter == null ? null : includeFilter.Split(',');
             var records = _userTokens.
@@ -547,8 +548,9 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="connectionName">The connectionName.</param>
         /// <param name="resourceUrls">The list of AAD resource URLs.</param>
         /// <param name="userId">The user ID.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
         /// <returns>The dicitonary of TokenResponses for each resource URL.</returns>
-        public virtual Task<Dictionary<string, TokenResponse>> GetAadTokensAsync(ITurnContext context, string connectionName, string[] resourceUrls, string userId = null)
+        public virtual Task<Dictionary<string, TokenResponse>> GetAadTokensAsync(ITurnContext context, string connectionName, string[] resourceUrls, string userId = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(new Dictionary<string, TokenResponse>());
         }

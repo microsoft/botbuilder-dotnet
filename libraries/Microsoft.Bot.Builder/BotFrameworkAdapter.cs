@@ -703,7 +703,7 @@ namespace Microsoft.Bot.Builder
             }
 
             var client = await this.CreateOAuthApiClientAsync(context).ConfigureAwait(false);
-            return await client.UserToken.GetAadTokensAsync(userId, connectionName, new AadResourceUrls() { ResourceUrls = resourceUrls?.ToList() }, context.Activity?.ChannelId, cancellationToken).ConfigureAwait(false);
+            return (Dictionary<string, TokenResponse>)await client.UserToken.GetAadTokensAsync(userId, connectionName, new AadResourceUrls() { ResourceUrls = resourceUrls?.ToList() }, context.Activity?.ChannelId, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
