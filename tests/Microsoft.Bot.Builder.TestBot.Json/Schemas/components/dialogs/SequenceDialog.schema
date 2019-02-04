@@ -8,15 +8,14 @@
     ],
     "allOf": [
         {
-            "$ref":"../component.schema"
+            "$ref": "../component.schema"
         },
         {
             "properties": {
-                "Id": {
-                    "type": "string",
-                    "description": "Id for the dialog"
+                "$type": {
+                    "const": "Microsoft.SequenceDialog"
                 },
-                "Steps": {
+                "steps": {
                     "type": "array",
                     "description": "Sequence of steps or dialogs to execute",
                     "items": {
@@ -27,8 +26,7 @@
                 }
             },
             "required": [
-                "Id",
-                "Steps"
+                "steps"
             ]
         }
     ]

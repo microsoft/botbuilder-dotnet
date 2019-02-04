@@ -8,10 +8,13 @@
     ],
     "allOf": [
         {
-            "$ref":"../component.schema"
+            "$ref": "../component.schema"
         },
         {
             "properties": {
+                "$type": {
+                    "const": "Microsoft.DateTimePrompt"
+                },
                 "property": {
                     "type": "string",
                     "description": "This is the property to set.",

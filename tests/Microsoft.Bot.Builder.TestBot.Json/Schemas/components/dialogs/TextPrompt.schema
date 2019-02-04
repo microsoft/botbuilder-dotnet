@@ -3,7 +3,6 @@
     "type": "object",
     "title": "Text prompt",
     "description": "This represents a dialog which gathers a text from the user",
-    "additionalProperties": false,
     "$implements": [
         "Microsoft.IDialog"
     ],
@@ -13,6 +12,9 @@
         },
         {
             "properties": {
+                "$type": {
+                    "const": "Microsoft.TextPrompt"
+                },
                 "property": {
                     "type": "string",
                     "description": "This is the property to set the result.",
