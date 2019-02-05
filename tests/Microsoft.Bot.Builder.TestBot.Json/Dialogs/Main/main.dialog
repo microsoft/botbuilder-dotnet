@@ -46,7 +46,7 @@
                 "noMatchResponse": "No number was recognized",
                 "tooLargeResponse": "Nobody is that old!",
                 "tooSmallResponse": "Nobody is younger than 0.",
-                "retryPrompt": "Let's try again. What is your age?",
+                "retryPrompt": "Let's try again. What is your age?"
             }
         },
         {

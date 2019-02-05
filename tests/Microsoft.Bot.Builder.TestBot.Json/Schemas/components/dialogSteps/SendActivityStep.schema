@@ -1,33 +1,16 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "type": "object",
-    "title": "Send Activity Step",
-    "description": "This is a step which sends an activity to the user",
+    "$type": "Microsoft.SendActivityStep",
     "$implements": [
         "Microsoft.IDialogStep"
     ],
-    "allOf": [
-        {
-            "$ref": "../component.schema"
-        },
-        {
-            "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
-                    "type": "string"
-                }
-            },
-            "properties": {
-                "$type": {
-                    "const": "Microsoft.SendActivityStep"
-                },
-                "$id": {
-                    "type": "string"
-                },
-                "activity": {
-                    "$ref": "../activity.schema"
-                }
-            }
+    "title": "Send Activity Step",
+    "description": "This is a step which sends an activity to the user",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "activity": {
+            "$ref": "../activity.schema"
         }
-    ]
+    }
 }

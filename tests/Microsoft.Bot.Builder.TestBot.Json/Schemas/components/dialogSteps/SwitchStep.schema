@@ -1,61 +1,44 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "type": "object",
-    "title": "Switch Step",
-    "description": "Step which conditionally decides which step to execute next.",
+    "$type": "Microsoft.SwitchStep",
     "$implements": [
         "Microsoft.IDialogStep"
     ],
-    "allOf": [
-        {
-            "$ref": "../component.schema"
+    "title": "Switch Step",
+    "description": "Step which conditionally decides which step to execute next.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "condition": {
+            "$ref": "../IExpression.schema",
+            "title": "Condition",
+            "description": "Expression to evaluate.",
+            "examples": [
+                "user.age > 3"
+            ]
         },
-        {
-            "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
-                    "type": "string"
-                }
-            },
-            "properties": {
-                "$id": {
-                    "type": "string"
-                },
-                "$type": {
-                    "const": "Microsoft.SwitchStep"
-                },
-                "condition": {
-                    "$ref": "../IExpression.schema",
-                    "title": "Condition",
-                    "description": "Expression to evaluate.",
-                    "examples": [
-                        "user.age > 3"
-                    ]
-                },
-                "cases": {
-                    "type": "object",
-                    "title": "Cases",
-                    "description": "Step to execute if expression is true.",
-                    "additionalProperties": {
-                        "oneOf": [
-                            {
-                                "$ref": "../IDialogStep.schema"
-                            },
-                            {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "../IDialogStep.schema"
-                                }
-                            }
-                        ]
+        "cases": {
+            "type": "object",
+            "title": "Cases",
+            "description": "Step to execute if expression is true.",
+            "additionalProperties": {
+                "oneOf": [
+                    {
+                        "$ref": "../IDialogStep.schema"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "$ref": "../IDialogStep.schema"
+                        }
                     }
-                },
-                "ignoreCase": {
-                    "type": "boolean",
-                    "title": "Ignore carse",
-                    "description": "Control whether case comparison is case sensitive."
-                }
+                ]
             }
+        },
+        "ignoreCase": {
+            "type": "boolean",
+            "title": "Ignore carse",
+            "description": "Control whether case comparison is case sensitive."
         }
-    ]
+    }
 }

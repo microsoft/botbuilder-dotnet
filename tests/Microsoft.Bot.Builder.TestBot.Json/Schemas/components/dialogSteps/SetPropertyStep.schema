@@ -1,40 +1,23 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "type": "object",
-    "title": "Set Property",
-    "description": "This is a step which sets a property in memory to a value",
+    "$type": "Microsoft.SetPropertyStep",
     "$implements": [
         "Microsoft.IDialogStep"
     ],
-    "allOf": [
-        {
-            "$ref": "../component.schema"
+    "title": "Set Property",
+    "description": "This is a step which sets a property in memory to a value",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "property": {
+            "$ref": "../IExpression.schema",
+            "title": "Property",
+            "description": "Expression which is the property to set."
         },
-        {
-            "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
-                    "type": "string"
-                }
-            },
-            "properties": {
-                "$id": {
-                    "type": "string"
-                },
-                "$type": {
-                    "const": "Microsoft.SetPropertyStep"
-                },
-                "property": {
-                    "$ref": "../IExpression.schema",
-                    "title": "Property",
-                    "description": "Expression which is the property to set."
-                },
-                "value": {
-                    "$ref": "../IExpression.schema",
-                    "title": "Value",
-                    "description": "Expression which is the value to use."
-                }
-            }
+        "value": {
+            "$ref": "../IExpression.schema",
+            "title": "Value",
+            "description": "Expression which is the value to use."
         }
-    ]
+    }
 }

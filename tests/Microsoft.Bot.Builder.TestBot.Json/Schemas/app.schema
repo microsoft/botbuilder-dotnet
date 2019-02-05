@@ -76,26 +76,15 @@
     ],
     "definitions": {
         "Microsoft.DateTimePrompt": {
-            "type": "object",
-            "title": "DateTime prompt",
-            "description": "This represents a dialog which gathers a DateTime in a specified range",
+            "$type": "Microsoft.DateTimePrompt",
             "$implements": [
                 "Microsoft.IDialog"
             ],
+            "title": "DateTime prompt",
+            "description": "This represents a dialog which gathers a DateTime in a specified range",
+            "type": "object",
             "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
-                    "type": "string"
-                }
-            },
             "properties": {
-                "$type": {
-                    "type": "string",
-                    "const": "Microsoft.DateTimePrompt"
-                },
-                "$id": {
-                    "type": "string"
-                },
                 "property": {
                     "type": "string",
                     "description": "This is the property to set.",
@@ -158,30 +147,120 @@
                         "You can't be born in the future!"
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                }
-            }
-        },
-        "Microsoft.FloatPrompt": {
-            "type": "object",
-            "title": "Float  prompt",
-            "description": "This represents a dialog which gathers a number in a specified range",
-            "$implements": [
-                "Microsoft.IDialog"
-            ],
-            "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
+                },
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.DateTimePrompt"
+                },
+                "$id": {
                     "type": "string"
                 }
             },
+            "patternProperties": {
+                "^$": {}
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "Microsoft.FloatPrompt": {
+            "$type": "Microsoft.FloatPrompt",
+            "$implements": [
+                "Microsoft.IDialog"
+            ],
+            "title": "Float  prompt",
+            "description": "This represents a dialog which gathers a number in a specified range",
+            "type": "object",
+            "additionalProperties": false,
             "properties": {
+                "property": {
+                    "type": "string",
+                    "description": "This is the property to set.",
+                    "examples": [
+                        "value.age"
+                    ]
+                },
+                "minValue": {
+                    "type": "integer",
+                    "title": "Mininum value",
+                    "description": "The minimum value that is acceptable.  If the value is less then this then the TooSmallReponse and RetryPrompt will be sent.",
+                    "examples": [
+                        "0"
+                    ]
+                },
+                "maxValue": {
+                    "type": "integer",
+                    "title": "Maximum value",
+                    "description": "The maximum value that is acceptable.  If the value is greater then this then the TooLargeResponse and RetryPrompt will be sent.",
+                    "examples": [
+                        "120"
+                    ]
+                },
+                "initialPrompt": {
+                    "title": "Initial Prompt",
+                    "description": "The message to send to start.",
+                    "examples": [
+                        "What is your age?"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "retryPrompt": {
+                    "title": "Retry Prompt",
+                    "description": "The message to send to prompt again.",
+                    "examples": [
+                        "Let's try again. What is your age?"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "noMatchResponse": {
+                    "title": "No match",
+                    "description": "The message to send to when no number was recognized.",
+                    "examples": [
+                        "No number was recognized"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "tooSmallResponse": {
+                    "title": "Too small",
+                    "description": "The message to send to when the recognized number was less then the MinValue. ",
+                    "examples": [
+                        "Nobody is younger than 0."
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "tooLargeResponse": {
+                    "title": "Too large",
+                    "description": "The message to send to when the recognized number was greater then the MinValue.",
+                    "examples": [
+                        "Nobody is that old!"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.FloatPrompt"
                 },
                 "$id": {
                     "type": "string"
-                },
+                }
+            },
+            "patternProperties": {
+                "^$": {}
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "Microsoft.IntegerPrompt": {
+            "$type": "Microsoft.IntegerPrompt",
+            "$implements": [
+                "Microsoft.IDialog"
+            ],
+            "title": "Integer prompt",
+            "description": "This represents a dialog which gathers a number in a specified range",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
                 "property": {
                     "type": "string",
                     "description": "This is the property to set.",
@@ -244,120 +323,32 @@
                         "Nobody is that old!"
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                }
-            }
-        },
-        "Microsoft.IntegerPrompt": {
-            "type": "object",
-            "title": "Integer prompt",
-            "description": "This represents a dialog which gathers a number in a specified range",
-            "$implements": [
-                "Microsoft.IDialog"
-            ],
-            "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
-                    "type": "string"
-                }
-            },
-            "properties": {
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.IntegerPrompt"
                 },
                 "$id": {
                     "type": "string"
-                },
-                "property": {
-                    "type": "string",
-                    "description": "This is the property to set.",
-                    "examples": [
-                        "value.age"
-                    ]
-                },
-                "minValue": {
-                    "type": "integer",
-                    "title": "Mininum value",
-                    "description": "The minimum value that is acceptable.  If the value is less then this then the TooSmallReponse and RetryPrompt will be sent.",
-                    "examples": [
-                        "0"
-                    ]
-                },
-                "maxValue": {
-                    "type": "integer",
-                    "title": "Maximum value",
-                    "description": "The maximum value that is acceptable.  If the value is greater then this then the TooLargeResponse and RetryPrompt will be sent.",
-                    "examples": [
-                        "120"
-                    ]
-                },
-                "initialPrompt": {
-                    "title": "Initial Prompt",
-                    "description": "The message to send to start.",
-                    "examples": [
-                        "What is your age?"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "retryPrompt": {
-                    "title": "Retry Prompt",
-                    "description": "The message to send to prompt again.",
-                    "examples": [
-                        "Let's try again. What is your age?"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "noMatchResponse": {
-                    "title": "No match",
-                    "description": "The message to send to when no number was recognized.",
-                    "examples": [
-                        "No number was recognized"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "tooSmallResponse": {
-                    "title": "Too small",
-                    "description": "The message to send to when the recognized number was less then the MinValue. ",
-                    "examples": [
-                        "Nobody is younger than 0."
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "tooLargeResponse": {
-                    "title": "Too large",
-                    "description": "The message to send to when the recognized number was greater then the MinValue.",
-                    "examples": [
-                        "Nobody is that old!"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 }
-            }
+            },
+            "patternProperties": {
+                "^$": {}
+            },
+            "required": [
+                "$type"
+            ]
         },
         "Microsoft.IntentDialog": {
-            "type": "object",
-            "title": "Intent Dialog",
-            "description": "Configures a recognizer and the intent routes",
+            "$type": "Microsoft.IntentDialog",
             "$implements": [
                 "Microsoft.IDialog"
             ],
-            "required": [
-                "recognizer",
-                "routes"
-            ],
+            "title": "Intent Dialog",
+            "description": "Configures a recognizer and the intent routes",
+            "type": "object",
             "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
-                    "type": "string"
-                }
-            },
             "properties": {
-                "$type": {
-                    "type": "string",
-                    "const": "Microsoft.IntentDialog"
-                },
-                "$id": {
-                    "type": "string"
-                },
                 "recognizer": {
                     "title": "Microsoft IRecognizer",
                     "description": "Definition of Microsoft.IRecognizer which will be expanded by components that $implements it.",
@@ -371,33 +362,34 @@
                         "description": "Definition of Microsoft.IDialog which will be expanded by components that $implements it.",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
-                }
-            }
-        },
-        "Microsoft.SequenceDialog": {
-            "type": "object",
-            "title": "Sequence Dialog",
-            "description": "Configures a data driven dialog via a collection of steps/dialogs.",
-            "$implements": [
-                "Microsoft.IDialog"
-            ],
-            "required": [
-                "sequence"
-            ],
-            "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
-                    "type": "string"
-                }
-            },
-            "properties": {
+                },
                 "$type": {
                     "type": "string",
-                    "const": "Microsoft.SequenceDialog"
+                    "const": "Microsoft.IntentDialog"
                 },
                 "$id": {
                     "type": "string"
-                },
+                }
+            },
+            "required": [
+                "recognizer",
+                "routes",
+                "$type"
+            ],
+            "patternProperties": {
+                "^$": {}
+            }
+        },
+        "Microsoft.SequenceDialog": {
+            "$type": "Microsoft.SequenceDialog",
+            "$implements": [
+                "Microsoft.IDialog"
+            ],
+            "title": "Sequence Dialog",
+            "description": "Configures a data driven dialog via a collection of steps/dialogs.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
                 "sequence": {
                     "type": "array",
                     "description": "Sequence of steps or dialogs to execute",
@@ -406,30 +398,33 @@
                         "description": "Definition of Microsoft.IDialogStep which will be expanded by components that $implements it.",
                         "$ref": "#/definitions/Microsoft.IDialogStep"
                     }
-                }
-            }
-        },
-        "Microsoft.TextPrompt": {
-            "type": "object",
-            "title": "Text prompt",
-            "description": "This represents a dialog which gathers a text from the user",
-            "$implements": [
-                "Microsoft.IDialog"
-            ],
-            "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
-                    "type": "string"
-                }
-            },
-            "properties": {
+                },
                 "$type": {
                     "type": "string",
-                    "const": "Microsoft.TextPrompt"
+                    "const": "Microsoft.SequenceDialog"
                 },
                 "$id": {
                     "type": "string"
-                },
+                }
+            },
+            "required": [
+                "sequence",
+                "$type"
+            ],
+            "patternProperties": {
+                "^$": {}
+            }
+        },
+        "Microsoft.TextPrompt": {
+            "$type": "Microsoft.TextPrompt",
+            "$implements": [
+                "Microsoft.IDialog"
+            ],
+            "title": "Text prompt",
+            "description": "This represents a dialog which gathers a text from the user",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
                 "property": {
                     "type": "string",
                     "description": "This is the property to set the result.",
@@ -469,30 +464,32 @@
                         "A valid phone number looks like xxx-xxx-xxxx."
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                }
-            }
-        },
-        "Microsoft.CallDialog": {
-            "type": "object",
-            "title": "Call Dialog",
-            "description": "Step which calls another dialog.",
-            "$implements": [
-                "Microsoft.IDialogStep"
-            ],
-            "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
-                    "type": "string"
-                }
-            },
-            "properties": {
+                },
                 "$type": {
                     "type": "string",
-                    "const": "Microsoft.CallDialog"
+                    "const": "Microsoft.TextPrompt"
                 },
                 "$id": {
                     "type": "string"
-                },
+                }
+            },
+            "patternProperties": {
+                "^$": {}
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "Microsoft.CallDialog": {
+            "$type": "Microsoft.CallDialog",
+            "$implements": [
+                "Microsoft.IDialogStep"
+            ],
+            "title": "Call Dialog",
+            "description": "Step which calls another dialog.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
                 "dialog": {
                     "title": "Dialog",
                     "description": "This is the dialog to call.",
@@ -511,22 +508,31 @@
                         "user.name"
                     ],
                     "$ref": "#/definitions/Microsoft.IExpression"
-                }
-            }
-        },
-        "Microsoft.CancelDialog": {
-            "type": "object",
-            "title": "Cancel Dialog",
-            "description": "This is a step which cancels the current dialog, returning no result",
-            "$implements": [
-                "Microsoft.IDialogStep"
-            ],
-            "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
+                },
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.CallDialog"
+                },
+                "$id": {
                     "type": "string"
                 }
             },
+            "patternProperties": {
+                "^$": {}
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "Microsoft.CancelDialog": {
+            "$type": "Microsoft.CancelDialog",
+            "$implements": [
+                "Microsoft.IDialogStep"
+            ],
+            "title": "Cancel Dialog",
+            "description": "This is a step which cancels the current dialog, returning no result",
+            "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "type": "string",
@@ -535,57 +541,54 @@
                 "$id": {
                     "type": "string"
                 }
-            }
+            },
+            "patternProperties": {
+                "^$": {}
+            },
+            "required": [
+                "$type"
+            ]
         },
         "Microsoft.ClearPropertyStep": {
-            "type": "object",
-            "title": "Clear Property",
-            "description": "This is a step which removes a property from memory",
+            "$type": "Microsoft.ClearPropertyStep",
             "$implements": [
                 "Microsoft.IDialogStep"
             ],
+            "title": "Clear Property",
+            "description": "This is a step which removes a property from memory",
+            "type": "object",
             "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
-                    "type": "string"
-                }
-            },
             "properties": {
+                "property": {
+                    "title": "Property",
+                    "description": "Expression which is the property to clear.",
+                    "$ref": "#/definitions/Microsoft.IExpression"
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.ClearPropertyStep"
                 },
                 "$id": {
                     "type": "string"
-                },
-                "property": {
-                    "title": "Property",
-                    "description": "Expression which is the property to clear.",
-                    "$ref": "#/definitions/Microsoft.IExpression"
                 }
-            }
+            },
+            "patternProperties": {
+                "^$": {}
+            },
+            "required": [
+                "$type"
+            ]
         },
         "Microsoft.EndDialog": {
-            "type": "object",
-            "title": "End Dialog",
-            "description": "This is a step which ends the current dialog, returning the result",
+            "$type": "Microsoft.EndDialog",
             "$implements": [
                 "Microsoft.IDialogStep"
             ],
+            "title": "End Dialog",
+            "description": "This is a step which ends the current dialog, returning the result",
+            "type": "object",
             "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
-                    "type": "string"
-                }
-            },
             "properties": {
-                "$type": {
-                    "type": "string",
-                    "const": "Microsoft.EndDialog"
-                },
-                "$id": {
-                    "type": "string"
-                },
                 "property": {
                     "title": "Property",
                     "description": "The property from dialog memory to return as the result",
@@ -593,10 +596,24 @@
                         "user.name"
                     ],
                     "$ref": "#/definitions/Microsoft.IExpression"
+                },
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.EndDialog"
+                },
+                "$id": {
+                    "type": "string"
                 }
-            }
+            },
+            "patternProperties": {
+                "^$": {}
+            },
+            "required": [
+                "$type"
+            ]
         },
         "Microsoft.EndOfTurn": {
+            "$type": "Microsoft.EndOfTurn",
             "type": "object",
             "title": "End Of Trun",
             "description": "This is a step which ends the current turn",
@@ -604,11 +621,6 @@
                 "Microsoft.IDialogStep"
             ],
             "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
-                    "type": "string"
-                }
-            },
             "properties": {
                 "$type": {
                     "type": "string",
@@ -617,29 +629,24 @@
                 "$id": {
                     "type": "string"
                 }
-            }
+            },
+            "patternProperties": {
+                "^$": {}
+            },
+            "required": [
+                "$type"
+            ]
         },
         "Microsoft.IfElseStep": {
-            "type": "object",
-            "title": "If Step",
-            "description": "Step which conditionally decides which step to execute next.",
+            "$type": "Microsoft.IfElseStep",
             "$implements": [
                 "Microsoft.IDialogStep"
             ],
+            "title": "If Step",
+            "description": "Step which conditionally decides which step to execute next.",
+            "type": "object",
             "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
-                    "type": "string"
-                }
-            },
             "properties": {
-                "$type": {
-                    "type": "string",
-                    "const": "Microsoft.IfElseStep"
-                },
-                "$id": {
-                    "type": "string"
-                },
                 "ifTrue": {
                     "oneOf": [
                         {
@@ -685,30 +692,32 @@
                         "user.age > 3"
                     ],
                     "$ref": "#/definitions/Microsoft.IExpression"
-                }
-            }
-        },
-        "Microsoft.SendActivityStep": {
-            "type": "object",
-            "title": "Send Activity Step",
-            "description": "This is a step which sends an activity to the user",
-            "$implements": [
-                "Microsoft.IDialogStep"
-            ],
-            "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
-                    "type": "string"
-                }
-            },
-            "properties": {
+                },
                 "$type": {
                     "type": "string",
-                    "const": "Microsoft.SendActivityStep"
+                    "const": "Microsoft.IfElseStep"
                 },
                 "$id": {
                     "type": "string"
-                },
+                }
+            },
+            "patternProperties": {
+                "^$": {}
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "Microsoft.SendActivityStep": {
+            "$type": "Microsoft.SendActivityStep",
+            "$implements": [
+                "Microsoft.IDialogStep"
+            ],
+            "title": "Send Activity Step",
+            "description": "This is a step which sends an activity to the user",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
                 "activity": {
                     "$schema": "http://json-schema.org/draft-07/schema#",
                     "type": "object",
@@ -2048,58 +2057,62 @@
                             }
                         }
                     }
-                }
-            }
-        },
-        "Microsoft.SendActivityTemplateStep": {
-            "type": "object",
-            "title": "Send Activity Step",
-            "description": "This is a step which sends an activity to the user",
-            "$implements": [
-                "Microsoft.IDialogStep"
-            ],
-            "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
+                },
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.SendActivityStep"
+                },
+                "$id": {
                     "type": "string"
                 }
             },
+            "patternProperties": {
+                "^$": {}
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "Microsoft.SendActivityTemplateStep": {
+            "$type": "Microsoft.SendActivityTemplateStep",
+            "$implements": [
+                "Microsoft.IDialogStep"
+            ],
+            "title": "Send Activity Step",
+            "description": "This is a step which sends an activity to the user",
+            "type": "object",
+            "additionalProperties": false,
             "properties": {
+                "activityTemplate": {
+                    "title": "Activity",
+                    "description": "Activity to send to the user.",
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.SendActivityTemplateStep"
                 },
                 "$id": {
                     "type": "string"
-                },
-                "activityTemplate": {
-                    "title": "Activity",
-                    "description": "Activity to send to the user.",
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 }
-            }
+            },
+            "patternProperties": {
+                "^$": {}
+            },
+            "required": [
+                "$type"
+            ]
         },
         "Microsoft.SetPropertyStep": {
-            "type": "object",
-            "title": "Set Property",
-            "description": "This is a step which sets a property in memory to a value",
+            "$type": "Microsoft.SetPropertyStep",
             "$implements": [
                 "Microsoft.IDialogStep"
             ],
+            "title": "Set Property",
+            "description": "This is a step which sets a property in memory to a value",
+            "type": "object",
             "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
-                    "type": "string"
-                }
-            },
             "properties": {
-                "$type": {
-                    "type": "string",
-                    "const": "Microsoft.SetPropertyStep"
-                },
-                "$id": {
-                    "type": "string"
-                },
                 "property": {
                     "title": "Property",
                     "description": "Expression which is the property to set.",
@@ -2109,30 +2122,32 @@
                     "title": "Value",
                     "description": "Expression which is the value to use.",
                     "$ref": "#/definitions/Microsoft.IExpression"
-                }
-            }
-        },
-        "Microsoft.SwitchStep": {
-            "type": "object",
-            "title": "Switch Step",
-            "description": "Step which conditionally decides which step to execute next.",
-            "$implements": [
-                "Microsoft.IDialogStep"
-            ],
-            "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
-                    "type": "string"
-                }
-            },
-            "properties": {
+                },
                 "$type": {
                     "type": "string",
-                    "const": "Microsoft.SwitchStep"
+                    "const": "Microsoft.SetPropertyStep"
                 },
                 "$id": {
                     "type": "string"
-                },
+                }
+            },
+            "patternProperties": {
+                "^$": {}
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "Microsoft.SwitchStep": {
+            "$type": "Microsoft.SwitchStep",
+            "$implements": [
+                "Microsoft.IDialogStep"
+            ],
+            "title": "Switch Step",
+            "description": "Step which conditionally decides which step to execute next.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
                 "condition": {
                     "title": "Condition",
                     "description": "Expression to evaluate.",
@@ -2167,33 +2182,32 @@
                     "type": "boolean",
                     "title": "Ignore carse",
                     "description": "Control whether case comparison is case sensitive."
-                }
-            }
-        },
-        "Microsoft.LUISRecognizer": {
-            "title": "LUIS Recognizer",
-            "description": "LUIS recognizer.",
-            "$implements": [
-                "Microsoft.IRecognizer"
-            ],
-            "type": "object",
-            "required": [
-                "applicationId"
-            ],
-            "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
-                    "type": "string"
-                }
-            },
-            "properties": {
+                },
                 "$type": {
                     "type": "string",
-                    "const": "Microsoft.LUISRecognizer"
+                    "const": "Microsoft.SwitchStep"
                 },
                 "$id": {
                     "type": "string"
-                },
+                }
+            },
+            "patternProperties": {
+                "^$": {}
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "Microsoft.LUISRecognizer": {
+            "$type": "Microsoft.LUISRecognizer",
+            "$implements": [
+                "Microsoft.IRecognizer"
+            ],
+            "title": "LUIS Recognizer",
+            "description": "LUIS recognizer.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
                 "application": {
                     "type": "object",
                     "required": [
@@ -2215,34 +2229,33 @@
                 },
                 "priority": {
                     "type": "string"
-                }
-            }
-        },
-        "Microsoft.QnaMakerRecognizer": {
-            "type": "object",
-            "title": "QnAMaker.ai Recognizer",
-            "description": "This represents a configuration of the QNAMaker as a recognizer",
-            "$implements": [
-                "Microsoft.IRecognizer"
-            ],
-            "required": [
-                "applicationId",
-                "endpoint"
-            ],
-            "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
-                    "type": "string"
-                }
-            },
-            "properties": {
+                },
                 "$type": {
                     "type": "string",
-                    "const": "Microsoft.QnaMakerRecognizer"
+                    "const": "Microsoft.LUISRecognizer"
                 },
                 "$id": {
                     "type": "string"
-                },
+                }
+            },
+            "required": [
+                "applicationId",
+                "$type"
+            ],
+            "patternProperties": {
+                "^$": {}
+            }
+        },
+        "Microsoft.QnaMakerRecognizer": {
+            "$type": "Microsoft.QnaMakerRecognizer",
+            "$implements": [
+                "Microsoft.IRecognizer"
+            ],
+            "title": "QnAMaker.ai Recognizer",
+            "description": "This represents a configuration of the QNAMaker as a recognizer",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
                 "applicationId": {
                     "type": "string",
                     "description": "This is the QnAMaker appId to use",
@@ -2256,36 +2269,51 @@
                     "examples": [
                         "http://westus.qnamaker.ai"
                     ]
-                }
-            }
-        },
-        "Microsoft.RegexRecognizer": {
-            "title": "Regular Expression Recognizer",
-            "description": "Example regular expression recognizer.",
-            "$implements": [
-                "Microsoft.IRecognizer"
-            ],
-            "type": "object",
-            "required": [
-                "pattern"
-            ],
-            "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
+                },
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.QnaMakerRecognizer"
+                },
+                "$id": {
                     "type": "string"
                 }
             },
+            "required": [
+                "applicationId",
+                "endpoint",
+                "$type"
+            ],
+            "patternProperties": {
+                "^$": {}
+            }
+        },
+        "Microsoft.RegexRecognizer": {
+            "$type": "Microsoft.RegexRecognizer",
+            "$implements": [
+                "Microsoft.IRecognizer"
+            ],
+            "title": "Regular Expression Recognizer",
+            "description": "Example regular expression recognizer.",
+            "type": "object",
+            "additionalProperties": false,
             "properties": {
+                "pattern": {
+                    "type": "string"
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.RegexRecognizer"
                 },
                 "$id": {
                     "type": "string"
-                },
-                "pattern": {
-                    "type": "string"
                 }
+            },
+            "required": [
+                "pattern",
+                "$type"
+            ],
+            "patternProperties": {
+                "^$": {}
             }
         },
         "Microsoft.IActivityTemplate": {

@@ -1,30 +1,12 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
+    "$type": "Microsoft.EndOfTurn",
     "type": "object",
     "title": "End Of Trun",
     "description": "This is a step which ends the current turn",
     "$implements": [
         "Microsoft.IDialogStep"
     ],
-    "allOf": [
-        {
-            "$ref": "../component.schema"
-        },
-        {
-            "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
-                    "type": "string"
-                }
-            },
-            "properties": {
-                "$type": {
-                    "const": "Microsoft.EndOfTurn"
-                },
-                "$id": {
-                    "type": "string"
-                }
-            }
-        }
-    ]
+    "additionalProperties": false,
+    "properties": {}
 }

@@ -1,44 +1,27 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "type": "object",
-    "title": "Intent Dialog",
-    "description": "Configures a recognizer and the intent routes",
+    "$type": "Microsoft.IntentDialog",
     "$implements": [
         "Microsoft.IDialog"
     ],
-    "allOf": [
-        {
-            "$ref": "../component.schema"
+    "title": "Intent Dialog",
+    "description": "Configures a recognizer and the intent routes",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "recognizer": {
+            "$ref": "../IRecognizer.schema"
         },
-        {
-            "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
-                    "type": "string"
-                }
-            },
-            "properties": {
-                "$type": {
-                    "const": "Microsoft.IntentDialog"
-                },
-                "$id": {
-                    "type": "string"
-                },
-                "recognizer": {
-                    "$ref": "../IRecognizer.schema"
-                },
-                "routes": {
-                    "type": "object",
-                    "description": "maps intent->IDialog",
-                    "additionalProperties": {
-                        "$ref": "../IDialog.schema#"
-                    }
-                }
-            },
-            "required": [
-                "recognizer",
-                "routes"
-            ]
+        "routes": {
+            "type": "object",
+            "description": "maps intent->IDialog",
+            "additionalProperties": {
+                "$ref": "../IDialog.schema#"
+            }
         }
+    },
+    "required": [
+        "recognizer",
+        "routes"
     ]
 }

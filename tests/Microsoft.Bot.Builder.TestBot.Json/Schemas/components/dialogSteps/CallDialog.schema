@@ -1,49 +1,32 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "type": "object",
-    "title": "Call Dialog",
-    "description": "Step which calls another dialog.",
+    "$type": "Microsoft.CallDialog",
     "$implements": [
         "Microsoft.IDialogStep"
     ],
-    "allOf": [
-        {
-            "$ref": "../component.schema"
+    "title": "Call Dialog",
+    "description": "Step which calls another dialog.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "dialog": {
+            "$ref": "../IDialog.schema",
+            "title": "Dialog",
+            "description": "This is the dialog to call."
         },
-        {
-            "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
-                    "type": "string"
-                }
-            },
-            "properties": {
-                "$type": {
-                    "const": "Microsoft.CallDialog"
-                },
-                "$id": {
-                    "type": "string"
-                },
-                "dialog": {
-                    "$ref": "../IDialog.schema",
-                    "title": "Dialog",
-                    "description": "This is the dialog to call."
-                },
-                "options": {
-                    "type": "object",
-                    "additionalProperties": true,
-                    "title": "Options",
-                    "description": "Options to pass to the dialog."
-                },
-                "property": {
-                    "$ref": "../IExpression.schema",
-                    "title": "Property",
-                    "description": "The property to bind to the dialog and store the result in",
-                    "examples": [
-                        "user.name"
-                    ]
-                }
-            }
+        "options": {
+            "type": "object",
+            "additionalProperties": true,
+            "title": "Options",
+            "description": "Options to pass to the dialog."
+        },
+        "property": {
+            "$ref": "../IExpression.schema",
+            "title": "Property",
+            "description": "The property to bind to the dialog and store the result in",
+            "examples": [
+                "user.name"
+            ]
         }
-    ]
+    }
 }

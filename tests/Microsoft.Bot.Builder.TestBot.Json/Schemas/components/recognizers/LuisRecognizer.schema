@@ -1,54 +1,38 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "LUIS Recognizer",
-    "description": "LUIS recognizer.",
+    "$type": "Microsoft.LUISRecognizer",
     "$implements": [
         "Microsoft.IRecognizer"
     ],
-    "allOf": [
-        {
-            "$ref": "../component.schema#"
-        },
-        {
-            "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
-                    "type": "string"
-                }
-            },
+    "title": "LUIS Recognizer",
+    "description": "LUIS recognizer.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "application": {
+            "type": "object",
             "properties": {
-                "$type": {
-                    "const": "Microsoft.LUISRecognizer"
-                },
-                "$id": {
+                "applicationId": {
                     "type": "string"
                 },
-                "application": {
-                    "type": "object",
-                    "properties": {
-                        "applicationId": {
-                            "type": "string"
-                        },
-                        "endpoint": {
-                            "type": "string"
-                        },
-                        "endpointKey": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "applicationId",
-                        "endpoint",
-                        "endpointKey"
-                    ]
+                "endpoint": {
+                    "type": "string"
                 },
-                "priority": {
+                "endpointKey": {
                     "type": "string"
                 }
             },
             "required": [
-                "applicationId"
+                "applicationId",
+                "endpoint",
+                "endpointKey"
             ]
+        },
+        "priority": {
+            "type": "string"
         }
+    },
+    "required": [
+        "applicationId"
     ]
 }

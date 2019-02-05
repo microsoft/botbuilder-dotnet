@@ -1,35 +1,18 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "type": "object",
-    "title": "Clear Property",
-    "description": "This is a step which removes a property from memory",
+    "$type": "Microsoft.ClearPropertyStep",
     "$implements": [
         "Microsoft.IDialogStep"
     ],
-    "allOf": [
-        {
-            "$ref": "../component.schema"
-        },
-        {
-            "additionalProperties": false,
-            "patternProperties": {
-                "^$": {
-                    "type": "string"
-                }
-            },
-            "properties": {
-                "$type": {
-                    "const": "Microsoft.ClearPropertyStep"
-                },
-                "$id": {
-                    "type": "string"
-                },
-                "property": {
-                    "$ref": "../IExpression.schema",
-                    "title": "Property",
-                    "description": "Expression which is the property to clear."
-                }
-            }
+    "title": "Clear Property",
+    "description": "This is a step which removes a property from memory",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "property": {
+            "$ref": "../IExpression.schema",
+            "title": "Property",
+            "description": "Expression which is the property to clear."
         }
-    ]
+    }
 }
