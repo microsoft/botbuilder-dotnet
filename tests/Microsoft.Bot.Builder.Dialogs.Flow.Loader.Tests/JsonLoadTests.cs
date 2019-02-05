@@ -239,8 +239,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var state = await dialogState.GetAsync(turnContext, () => new DialogState());
-
                 var dialogContext = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
                 var results = await dialogContext.ContinueDialogAsync(cancellationToken);

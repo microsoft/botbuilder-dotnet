@@ -34,20 +34,18 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 throw new Exception("oh dear");
             }
 
-            // run the DialogSet - let the framework identify the current state of the dialog from 
-            // the dialog stack and figure out what (if any) is the active dialog
-            var dialogContext = await _dialogs.CreateContextAsync(turnContext, cancellationToken);
-            var results = await dialogContext.ContinueDialogAsync(cancellationToken);
-
-            // HasActive = true if there is an active dialog on the dialogstack
-            // HasResults = true if the dialog just completed and the final  result can be retrived
-            // if both are false this indicates a new dialog needs to start
-            // an additional check for Responded stops a new waterfall from being automatically started over
-            if (results.Status == DialogTurnStatus.Empty || results.Status == DialogTurnStatus.Complete)
+            if (turnContext.Activity.Type == ActivityTypes.Message)
             {
-                await dialogContext.BeginDialogAsync(rootDialog.Id, null, cancellationToken);
+                // run the DialogSet - let the framework identify the current state of the dialog from 
+                // the dialog stack and figure out what (if any) is the active dialog
+                var dialogContext = await _dialogs.CreateContextAsync(turnContext, cancellationToken);
+                var results = await dialogContext.ContinueDialogAsync(cancellationToken);
+                
+                if (results.Status == DialogTurnStatus.Empty || results.Status == DialogTurnStatus.Complete)
+                {
+                    await dialogContext.BeginDialogAsync(rootDialog.Id, null, cancellationToken);
+                }
             }
-
         }
     }
 }

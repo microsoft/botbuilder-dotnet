@@ -182,11 +182,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 MinValue = 0,
                 MaxValue = 100,
-                InitialPrompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." },
-                RetryPrompt = new Activity { Type = ActivityTypes.Message, Text = "Let's try again. Enter a number." },
-                NoMatchResponse = new Activity { Type = ActivityTypes.Message, Text = "That's not a number." },
-                TooSmallResponse = new Activity { Type = ActivityTypes.Message, Text = "You must enter a positive number." },
-                TooLargeResponse = new Activity { Type = ActivityTypes.Message, Text = "You must enter a less than 100." },
+                InitialPrompt = new ActivityTemplate("Enter a number."),
+                RetryPrompt = new ActivityTemplate("Let's try again. Enter a number."),
+                NoMatchResponse = new ActivityTemplate("That's not a number."),
+                TooSmallResponse = new ActivityTemplate("You must enter a positive number."),
+                TooLargeResponse = new ActivityTemplate("You must enter a less than 100."),
             };
             dialogs.Add(numberPrompt);
 

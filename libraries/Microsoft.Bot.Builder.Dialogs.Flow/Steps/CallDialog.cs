@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         /// <summary>
         /// Name of the var to store result 
         /// </summary>
-        public string Name { get; set; }
+        public string Property { get; set; }
 
         /// <summary>
         /// (OPTIONAL) Value of the var to store th
@@ -41,7 +41,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         {
             if (this.Dialog != null)
             {
-                return await dialogContext.BeginDialogAsync(this.Dialog.Id, Options, cancellationToken);
+                var dialogResult = await dialogContext.BeginDialogAsync(this.Dialog.Id, Options, cancellationToken);
+                return dialogResult;
             }
             // nothing to do
             return null;
