@@ -11,6 +11,7 @@
             "$ref": "../component.schema"
         },
         {
+            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "const": "Microsoft.ClearPropertyStep"

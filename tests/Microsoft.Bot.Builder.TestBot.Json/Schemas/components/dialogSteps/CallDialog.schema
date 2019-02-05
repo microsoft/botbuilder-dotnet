@@ -11,9 +11,10 @@
             "$ref": "../component.schema"
         },
         {
+            "additionalProperties": false,
             "properties": {
                 "$type": {
-                    "const": "Microsoft.CallDialogStep"
+                    "const": "Microsoft.CallDialog"
                 },
                 "dialog": {
                     "$ref": "../IDialog.schema",

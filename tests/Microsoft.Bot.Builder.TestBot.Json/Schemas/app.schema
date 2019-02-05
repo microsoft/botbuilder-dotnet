@@ -20,19 +20,19 @@
             "$ref": "#/definitions/Microsoft.TextPrompt"
         },
         {
-            "$ref": "#/definitions/Microsoft.CallDialogStep"
+            "$ref": "#/definitions/Microsoft.CallDialog"
         },
         {
-            "$ref": "#/definitions/Microsoft.CancelDialogStep"
+            "$ref": "#/definitions/Microsoft.CancelDialog"
         },
         {
             "$ref": "#/definitions/Microsoft.ClearPropertyStep"
         },
         {
-            "$ref": "#/definitions/Microsoft.EndDialogStep"
+            "$ref": "#/definitions/Microsoft.EndDialog"
         },
         {
-            "$ref": "#/definitions/Microsoft.EndOfTurnStep"
+            "$ref": "#/definitions/Microsoft.EndOfTurn"
         },
         {
             "$ref": "#/definitions/Microsoft.IfElseStep"
@@ -82,13 +82,11 @@
             "required": [
                 "$type"
             ],
+            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.DateTimePrompt"
-                },
-                "$id": {
-                    "type": "string"
                 },
                 "property": {
                     "type": "string",
@@ -165,13 +163,11 @@
             "required": [
                 "$type"
             ],
+            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.FloatPrompt"
-                },
-                "$id": {
-                    "type": "string"
                 },
                 "property": {
                     "type": "string",
@@ -248,13 +244,11 @@
             "required": [
                 "$type"
             ],
+            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.IntegerPrompt"
-                },
-                "$id": {
-                    "type": "string"
                 },
                 "property": {
                     "type": "string",
@@ -333,13 +327,11 @@
                 "recognizer",
                 "routes"
             ],
+            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.IntentDialog"
-                },
-                "$id": {
-                    "type": "string"
                 },
                 "recognizer": {
                     "title": "Microsoft IRecognizer",
@@ -368,13 +360,11 @@
                 "$type",
                 "sequence"
             ],
+            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.SequenceDialog"
-                },
-                "$id": {
-                    "type": "string"
                 },
                 "sequence": {
                     "type": "array",
@@ -397,13 +387,11 @@
             "required": [
                 "$type"
             ],
+            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.TextPrompt"
-                },
-                "$id": {
-                    "type": "string"
                 },
                 "property": {
                     "type": "string",
@@ -447,7 +435,7 @@
                 }
             }
         },
-        "Microsoft.CallDialogStep": {
+        "Microsoft.CallDialog": {
             "type": "object",
             "title": "Call Dialog",
             "description": "Step which calls another dialog.",
@@ -457,13 +445,11 @@
             "required": [
                 "$type"
             ],
+            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "type": "string",
-                    "const": "Microsoft.CallDialogStep"
-                },
-                "$id": {
-                    "type": "string"
+                    "const": "Microsoft.CallDialog"
                 },
                 "dialog": {
                     "title": "Dialog",
@@ -486,7 +472,7 @@
                 }
             }
         },
-        "Microsoft.CancelDialogStep": {
+        "Microsoft.CancelDialog": {
             "type": "object",
             "title": "Cancel Dialog",
             "description": "This is a step which cancels the current dialog, returning no result",
@@ -496,13 +482,11 @@
             "required": [
                 "$type"
             ],
+            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "type": "string",
-                    "const": "Microsoft.CancelDialogStep"
-                },
-                "$id": {
-                    "type": "string"
+                    "const": "Microsoft.CancelDialog"
                 }
             }
         },
@@ -516,13 +500,11 @@
             "required": [
                 "$type"
             ],
+            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.ClearPropertyStep"
-                },
-                "$id": {
-                    "type": "string"
                 },
                 "property": {
                     "title": "Property",
@@ -531,7 +513,7 @@
                 }
             }
         },
-        "Microsoft.EndDialogStep": {
+        "Microsoft.EndDialog": {
             "type": "object",
             "title": "End Dialog",
             "description": "This is a step which ends the current dialog, returning the result",
@@ -541,13 +523,11 @@
             "required": [
                 "$type"
             ],
+            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "type": "string",
-                    "const": "Microsoft.EndDialogStep"
-                },
-                "$id": {
-                    "type": "string"
+                    "const": "Microsoft.EndDialog"
                 },
                 "property": {
                     "title": "Property",
@@ -559,7 +539,7 @@
                 }
             }
         },
-        "Microsoft.EndOfTurnStep": {
+        "Microsoft.EndOfTurn": {
             "type": "object",
             "title": "End Of Trun",
             "description": "This is a step which ends the current turn",
@@ -569,13 +549,11 @@
             "required": [
                 "$type"
             ],
+            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "type": "string",
-                    "const": "Microsoft.EndOfTurnStep"
-                },
-                "$id": {
-                    "type": "string"
+                    "const": "Microsoft.EndOfTurn"
                 }
             }
         },
@@ -589,13 +567,11 @@
             "required": [
                 "$type"
             ],
+            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.IfElseStep"
-                },
-                "$id": {
-                    "type": "string"
                 },
                 "ifTrue": {
                     "oneOf": [
@@ -655,13 +631,11 @@
             "required": [
                 "$type"
             ],
+            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.SendActivityStep"
-                },
-                "$id": {
-                    "type": "string"
                 },
                 "activity": {
                     "title": "Activity",
@@ -680,13 +654,11 @@
             "required": [
                 "$type"
             ],
+            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.SetPropertyStep"
-                },
-                "$id": {
-                    "type": "string"
                 },
                 "property": {
                     "title": "Property",
@@ -710,13 +682,11 @@
             "required": [
                 "$type"
             ],
+            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.SwitchStep"
-                },
-                "$id": {
-                    "type": "string"
                 },
                 "condition": {
                     "title": "Condition",
@@ -766,13 +736,11 @@
                 "$type",
                 "applicationId"
             ],
+            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.LUISRecognizer"
-                },
-                "$id": {
-                    "type": "string"
                 },
                 "application": {
                     "type": "object",
@@ -810,13 +778,11 @@
                 "applicationId",
                 "endpoint"
             ],
+            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.QnaMakerRecognizer"
-                },
-                "$id": {
-                    "type": "string"
                 },
                 "applicationId": {
                     "type": "string",
@@ -845,13 +811,11 @@
                 "$type",
                 "pattern"
             ],
+            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.RegexRecognizer"
-                },
-                "$id": {
-                    "type": "string"
                 },
                 "pattern": {
                     "type": "string"
@@ -909,19 +873,19 @@
         "Microsoft.IDialogStep": {
             "oneOf": [
                 {
-                    "$ref": "#/definitions/Microsoft.CallDialogStep"
+                    "$ref": "#/definitions/Microsoft.CallDialog"
                 },
                 {
-                    "$ref": "#/definitions/Microsoft.CancelDialogStep"
+                    "$ref": "#/definitions/Microsoft.CancelDialog"
                 },
                 {
                     "$ref": "#/definitions/Microsoft.ClearPropertyStep"
                 },
                 {
-                    "$ref": "#/definitions/Microsoft.EndDialogStep"
+                    "$ref": "#/definitions/Microsoft.EndDialog"
                 },
                 {
-                    "$ref": "#/definitions/Microsoft.EndOfTurnStep"
+                    "$ref": "#/definitions/Microsoft.EndOfTurn"
                 },
                 {
                     "$ref": "#/definitions/Microsoft.IfElseStep"

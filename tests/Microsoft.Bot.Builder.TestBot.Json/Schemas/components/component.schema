@@ -4,6 +4,9 @@
     "description": "The root definition for components.",
     "type":"object",
     "properties": {
+        "$schema": {
+            "type": "string"
+        },
         "$type": {
             "type": "string"
         },

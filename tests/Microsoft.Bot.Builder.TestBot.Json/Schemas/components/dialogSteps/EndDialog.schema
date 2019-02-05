@@ -11,9 +11,10 @@
             "$ref": "../component.schema"
         },
         {
+            "additionalProperties": false,
             "properties": {
                 "$type": {
-                    "const": "Microsoft.EndDialogStep"
+                    "const": "Microsoft.EndDialog"
                 },
                 "property": {
                     "$ref": "../IExpression.schema",
