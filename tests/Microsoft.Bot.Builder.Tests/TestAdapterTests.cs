@@ -180,5 +180,293 @@ namespace Microsoft.Bot.Builder.Tests
                     Assert.IsInstanceOfType(action.Exception.InnerException, exceptionType);
                 });
         }
+
+        [TestMethod]
+        public async Task TestAdapter_GetUserTokenAsyncReturnsNull()
+        {
+            TestAdapter adapter = new TestAdapter();
+            Activity activity = new Activity()
+            {
+                ChannelId = "directline",
+                From = new ChannelAccount()
+                {
+                    Id = "testUser"
+                }
+            };
+            TurnContext turnContext = new TurnContext(adapter, activity);
+
+            var token = await adapter.GetUserTokenAsync(turnContext, "myConnection", null, CancellationToken.None);
+            Assert.IsNull(token);
+        }
+
+        [TestMethod]
+        public async Task TestAdapter_GetUserTokenAsyncReturnsNullWithCode()
+        {
+            TestAdapter adapter = new TestAdapter();
+            Activity activity = new Activity()
+            {
+                ChannelId = "directline",
+                From = new ChannelAccount()
+                {
+                    Id = "testUser"
+                }
+            };
+            TurnContext turnContext = new TurnContext(adapter, activity);
+
+            var token = await adapter.GetUserTokenAsync(turnContext, "myConnection", "abc123", CancellationToken.None);
+            Assert.IsNull(token);
+        }
+
+        [TestMethod]
+        public async Task TestAdapter_GetUserTokenAsyncReturnsToken()
+        {
+            TestAdapter adapter = new TestAdapter();
+            string connectionName = "myConnection";
+            string channelId = "directline";
+            string userId = "testUser";
+            string token = "abc123";
+            Activity activity = new Activity()
+            {
+                ChannelId = channelId,
+                From = new ChannelAccount()
+                {
+                    Id = userId
+                }
+            };
+            TurnContext turnContext = new TurnContext(adapter, activity);
+
+            adapter.AddUserToken(connectionName, channelId, userId, token);
+
+            var tokenResponse = await adapter.GetUserTokenAsync(turnContext, connectionName, null, CancellationToken.None);
+            Assert.IsNotNull(tokenResponse);
+            Assert.AreEqual(token, tokenResponse.Token);
+            Assert.AreEqual(connectionName, tokenResponse.ConnectionName);
+        }
+
+        [TestMethod]
+        public async Task TestAdapter_GetUserTokenAsyncReturnsTokenWithMagicCode()
+        {
+            TestAdapter adapter = new TestAdapter();
+            string connectionName = "myConnection";
+            string channelId = "directline";
+            string userId = "testUser";
+            string token = "abc123";
+            string magicCode = "888999";
+            Activity activity = new Activity()
+            {
+                ChannelId = channelId,
+                From = new ChannelAccount()
+                {
+                    Id = userId
+                }
+            };
+            TurnContext turnContext = new TurnContext(adapter, activity);
+
+            adapter.AddUserToken(connectionName, channelId, userId, token, magicCode);
+
+            // First it's null
+            var tokenResponse = await adapter.GetUserTokenAsync(turnContext, connectionName, null, CancellationToken.None);
+            Assert.IsNull(tokenResponse);
+
+            // Can be retreived with magic code
+            tokenResponse = await adapter.GetUserTokenAsync(turnContext, connectionName, magicCode, CancellationToken.None);
+            Assert.IsNotNull(tokenResponse);
+            Assert.AreEqual(token, tokenResponse.Token);
+            Assert.AreEqual(connectionName, tokenResponse.ConnectionName);
+
+            // Then can be retreived without magic code
+            tokenResponse = await adapter.GetUserTokenAsync(turnContext, connectionName, null, CancellationToken.None);
+            Assert.IsNotNull(tokenResponse);
+            Assert.AreEqual(token, tokenResponse.Token);
+            Assert.AreEqual(connectionName, tokenResponse.ConnectionName);
+        }
+
+        [TestMethod]
+        public async Task TestAdapter_GetSignInLink()
+        {
+            TestAdapter adapter = new TestAdapter();
+            string connectionName = "myConnection";
+            string channelId = "directline";
+            string userId = "testUser";
+            Activity activity = new Activity()
+            {
+                ChannelId = channelId,
+                From = new ChannelAccount()
+                {
+                    Id = userId
+                }
+            };
+            TurnContext turnContext = new TurnContext(adapter, activity);
+
+
+            var link = await adapter.GetOauthSignInLinkAsync(turnContext, connectionName, userId, null, CancellationToken.None);
+            Assert.IsNotNull(link);
+            Assert.IsTrue(link.Length > 0);
+        }
+
+        [TestMethod]
+        public async Task TestAdapter_GetSignInLinkWithNoUserId()
+        {
+            TestAdapter adapter = new TestAdapter();
+            string connectionName = "myConnection";
+            string channelId = "directline";
+            string userId = "testUser";
+            Activity activity = new Activity()
+            {
+                ChannelId = channelId,
+                From = new ChannelAccount()
+                {
+                    Id = userId
+                }
+            };
+            TurnContext turnContext = new TurnContext(adapter, activity);
+
+
+            var link = await adapter.GetOauthSignInLinkAsync(turnContext, connectionName, CancellationToken.None);
+            Assert.IsNotNull(link);
+            Assert.IsTrue(link.Length > 0);
+        }
+
+        [TestMethod]
+        public async Task TestAdapter_SignOutNoop()
+        {
+            TestAdapter adapter = new TestAdapter();
+            string connectionName = "myConnection";
+            string channelId = "directline";
+            string userId = "testUser";
+            string token = "abc123";
+            Activity activity = new Activity()
+            {
+                ChannelId = channelId,
+                From = new ChannelAccount()
+                {
+                    Id = userId
+                }
+            };
+            TurnContext turnContext = new TurnContext(adapter, activity);
+
+            
+            await adapter.SignOutUserAsync(turnContext);
+            await adapter.SignOutUserAsync(turnContext, connectionName);
+            await adapter.SignOutUserAsync(turnContext, connectionName, userId);
+            await adapter.SignOutUserAsync(turnContext, null, userId);
+        }
+
+        [TestMethod]
+        public async Task TestAdapter_SignOut()
+        {
+            TestAdapter adapter = new TestAdapter();
+            string connectionName = "myConnection";
+            string channelId = "directline";
+            string userId = "testUser";
+            string token = "abc123";
+            Activity activity = new Activity()
+            {
+                ChannelId = channelId,
+                From = new ChannelAccount()
+                {
+                    Id = userId
+                }
+            };
+            TurnContext turnContext = new TurnContext(adapter, activity);
+
+            adapter.AddUserToken(connectionName, channelId, userId, token);
+
+            var tokenResponse = await adapter.GetUserTokenAsync(turnContext, connectionName, null, CancellationToken.None);
+            Assert.IsNotNull(tokenResponse);
+            Assert.AreEqual(token, tokenResponse.Token);
+            Assert.AreEqual(connectionName, tokenResponse.ConnectionName);
+
+            await adapter.SignOutUserAsync(turnContext, connectionName, userId);
+            tokenResponse = await adapter.GetUserTokenAsync(turnContext, connectionName, null, CancellationToken.None);
+            Assert.IsNull(tokenResponse);
+        }
+
+        [TestMethod]
+        public async Task TestAdapter_SignOutAll()
+        {
+            TestAdapter adapter = new TestAdapter();
+            string channelId = "directline";
+            string userId = "testUser";
+            string token = "abc123";
+            Activity activity = new Activity()
+            {
+                ChannelId = channelId,
+                From = new ChannelAccount()
+                {
+                    Id = userId
+                }
+            };
+            TurnContext turnContext = new TurnContext(adapter, activity);
+
+            adapter.AddUserToken("ABC", channelId, userId, token);
+            adapter.AddUserToken("DEF", channelId, userId, token);
+
+            var tokenResponse = await adapter.GetUserTokenAsync(turnContext, "ABC", null, CancellationToken.None);
+            Assert.IsNotNull(tokenResponse);
+            Assert.AreEqual(token, tokenResponse.Token);
+            Assert.AreEqual("ABC", tokenResponse.ConnectionName);
+
+            tokenResponse = await adapter.GetUserTokenAsync(turnContext, "DEF", null, CancellationToken.None);
+            Assert.IsNotNull(tokenResponse);
+            Assert.AreEqual(token, tokenResponse.Token);
+            Assert.AreEqual("DEF", tokenResponse.ConnectionName);
+
+            await adapter.SignOutUserAsync(turnContext, null, userId);
+            tokenResponse = await adapter.GetUserTokenAsync(turnContext, "ABC", null, CancellationToken.None);
+            Assert.IsNull(tokenResponse);
+            tokenResponse = await adapter.GetUserTokenAsync(turnContext, "DEF", null, CancellationToken.None);
+            Assert.IsNull(tokenResponse);
+        }
+
+        [TestMethod]
+        public async Task TestAdapter_GetTokenStatus()
+        {
+            TestAdapter adapter = new TestAdapter();
+            string channelId = "directline";
+            string userId = "testUser";
+            string token = "abc123";
+            Activity activity = new Activity()
+            {
+                ChannelId = channelId,
+                From = new ChannelAccount()
+                {
+                    Id = userId
+                }
+            };
+            TurnContext turnContext = new TurnContext(adapter, activity);
+
+            adapter.AddUserToken("ABC", channelId, userId, token);
+            adapter.AddUserToken("DEF", channelId, userId, token);
+
+            var status = await adapter.GetTokenStatusAsync(turnContext, userId);
+            Assert.IsNotNull(status);
+            Assert.AreEqual(2, status.Length);
+        }
+
+        [TestMethod]
+        public async Task TestAdapter_GetTokenStatusWithFilter()
+        {
+            TestAdapter adapter = new TestAdapter();
+            string channelId = "directline";
+            string userId = "testUser";
+            string token = "abc123";
+            Activity activity = new Activity()
+            {
+                ChannelId = channelId,
+                From = new ChannelAccount()
+                {
+                    Id = userId
+                }
+            };
+            TurnContext turnContext = new TurnContext(adapter, activity);
+
+            adapter.AddUserToken("ABC", channelId, userId, token);
+            adapter.AddUserToken("DEF", channelId, userId, token);
+
+            var status = await adapter.GetTokenStatusAsync(turnContext, userId, "DEF");
+            Assert.IsNotNull(status);
+            Assert.AreEqual(1, status.Length);
+        }
     }
 }
