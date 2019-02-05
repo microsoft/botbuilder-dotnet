@@ -11,7 +11,7 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 {
-    public static class HttpHelper
+    internal static class HttpHelper
     {
         public static readonly MediaTypeFormatter[] BotMessageMediaTypeFormatters = new[]
         {
