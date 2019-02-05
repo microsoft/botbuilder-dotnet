@@ -34,9 +34,17 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public TNumber MaxValue { get; set; }
 
-        public Activity TooSmallResponse { get; set; }
+        public ActivityTemplate TooSmallResponse { get; set; }
 
-        public Activity TooLargeResponse { get; set; }
+        public ActivityTemplate TooLargeResponse { get; set; }
+
+        protected override async Task OnBeforePromptAsync(DialogContext dc, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // TODO: Parametrize to which state to bind.
+            await base.OnBeforePromptAsync(dc, isRetry, cancellationToken).ConfigureAwait(false);
+            TooSmallResponse?.Bind(dc.UserState);
+            TooLargeResponse?.Bind(dc.UserState);
+        }
 
         protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, NumberPromptOptions<TNumber> options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -58,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     {
                         if (this.NoMatchResponse != null)
                         {
-                            await promptContext.Context.SendActivityAsync(this.NoMatchResponse).ConfigureAwait(false);
+                            await promptContext.Context.SendActivityAsync(this.NoMatchResponse.Activity).ConfigureAwait(false);
                         }
 
                         await promptContext.Context.SendActivityAsync(options.RetryPrompt).ConfigureAwait(false);
@@ -71,7 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     {
                         if (this.TooSmallResponse != null)
                         {
-                            await promptContext.Context.SendActivityAsync(this.TooSmallResponse).ConfigureAwait(false);
+                            await promptContext.Context.SendActivityAsync(this.TooSmallResponse.Activity).ConfigureAwait(false);
                         }
 
                         await promptContext.Context.SendActivityAsync(options.RetryPrompt).ConfigureAwait(false);
@@ -82,7 +90,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     {
                         if (this.TooLargeResponse != null)
                         {
-                            await promptContext.Context.SendActivityAsync(this.TooLargeResponse).ConfigureAwait(false);
+                            await promptContext.Context.SendActivityAsync(this.TooLargeResponse.Activity).ConfigureAwait(false);
                         }
 
                         await promptContext.Context.SendActivityAsync(options.RetryPrompt).ConfigureAwait(false);

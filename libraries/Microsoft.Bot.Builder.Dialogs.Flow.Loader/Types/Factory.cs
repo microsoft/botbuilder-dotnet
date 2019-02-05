@@ -107,6 +107,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types
             Register("http://schemas.botframework.com/EndOfTurnStep", typeof(EndOfTurnStep));
             Register("http://schemas.botframework.com/GotoDialog", typeof(GotoDialog));
             Register("http://schemas.botframework.com/IfElseStep", typeof(IfElseStep));
+            Register("http://schemas.botframework.com/SendActivityTemplateStep", typeof(SendActivityTemplateStep));
 
             // Dialogs
             Register("http://schemas.botframework.com/ComponentDialog", typeof(ComponentDialog), new ComponentDialogLoader());

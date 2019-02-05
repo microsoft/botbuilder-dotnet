@@ -44,6 +44,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         {
             IStorage dataStore = new MemoryStorage();
             var conversationState = new ConversationState(dataStore);
+            var userState = new UserState(dataStore);
 
             var accessors = new TestBotAccessors
             {
@@ -64,14 +65,14 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                         await conversationState.SaveChangesAsync(turnContext);
                     };
                     options.Middleware.Add(new AutoSaveStateMiddleware(conversationState));
-                    options.Middleware.Add(
-                        new TemplateManagerMiddleware()
-                        {
-                            Renderers = new List<ITemplateRenderer>()
-                            {
-                                new LanguageGenerationRenderer("en-us.lg")
-                            }
-                        });
+                    //options.Middleware.Add(
+                    //    new TemplateManagerMiddleware()
+                    //    {
+                    //        Renderers = new List<ITemplateRenderer>()
+                    //        {
+                    //            new LanguageGenerationRenderer("en-us.lg")
+                    //        }
+                    //    });
                 });
         }
 

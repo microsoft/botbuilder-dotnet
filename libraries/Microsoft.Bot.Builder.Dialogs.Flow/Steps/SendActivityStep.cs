@@ -6,6 +6,25 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Flow
 {
+    public class SendActivityTemplateStep : IStep
+    {
+        public SendActivityTemplateStep() { }
+
+        /// <summary>
+        /// (OPTIONAL) Id of the command
+        /// </summary>
+        public string Id { get; set; }
+
+        public ActivityTemplate ActivityTemplate { get; set; }
+
+        public async Task<object> Execute(DialogContext dialogContext, CancellationToken cancellationToken)
+        {
+            var activity = ActivityTemplate.Bind(dialogContext.UserState);
+            await dialogContext.Context.SendActivityAsync(activity, cancellationToken);
+            return null;
+        }
+    }
+
     /// <summary>
     /// Send an activity as an action
     /// </summary>

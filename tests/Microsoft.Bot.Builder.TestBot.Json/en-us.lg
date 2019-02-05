@@ -1,11 +1,11 @@
-# wPhrase
-- Hi
-- Hello
- 
-# welcome
-- [wPhrase]
-- [wPhrase] :)
- 
 # welcome-user
-- [wPhrase] {userName}
-- [wPhrase] {userName} :)
+- Hi {name}
+- Howdy {name} :)
+
+# prompt-country
+- I have a few questions {name}, where were you born?
+- Yo {name}, where u from?
+
+# love-country
+- No kidding! {country} is my favourite Country!!!
+- I actually was born in {country} too :)
