@@ -11,15 +11,17 @@
         },
         {
             "additionalProperties": false,
-            "properties": {
-                "$schema": {
+            "patternProperties": {
+                "^$": {
                     "type": "string"
+                }
+            },
+            "properties": {
+                "$type": {
+                    "const": "Microsoft.RegexRecognizer"
                 },
                 "$id": {
                     "type": "string"
-                },
-    w                "$type": {
-                    "const": "Microsoft.RegexRecognizer"
                 },
                 "pattern": {
                     "type": "string"

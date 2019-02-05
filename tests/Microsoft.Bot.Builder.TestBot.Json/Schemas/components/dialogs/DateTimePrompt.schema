@@ -11,16 +11,18 @@
             "$ref": "../component.schema"
         },
         {
+            "patternProperties": {
+                "^$": {
+                    "type": "string"
+                }
+            },
             "additionalProperties": false,
             "properties": {
-                "$schema": {
-                    "type": "string"
+                "$type": {
+                    "const": "Microsoft.DateTimePrompt"
                 },
                 "$id": {
                     "type": "string"
-                },
-                "$type": {
-                    "const": "Microsoft.DateTimePrompt"
                 },
                 "property": {
                     "type": "string",

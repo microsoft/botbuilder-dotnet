@@ -1,5 +1,5 @@
 {
-    "$schema": "./Schemas/app.schema",
+    "$schema": "../../Schemas/app.schema",
     "$type": "Microsoft.SequenceDialog",
     "$id": "getUserInfo",
     "sequence": [
@@ -34,6 +34,20 @@
         {
             "$type": "Microsoft.SendActivityStep",
             "activity": "{template(love-country)}"
+        },
+        {
+            "$type": "Microsoft.CallDialog",
+            "$id": "AgePrompt",
+            "dialog": {
+                "$type": "Microsoft.IntegerPrompt",
+                "maxValue": 100,
+                "minValue": 1,
+                "initialPrompt": "What is your age?",
+                "noMatchResponse": "No number was recognized",
+                "tooLargeResponse": "Nobody is that old!",
+                "tooSmallResponse": "Nobody is younger than 0.",
+                "retryPrompt": "Let's try again. What is your age?",
+            }
         },
         {
             "$type": "Microsoft.EndDialog",

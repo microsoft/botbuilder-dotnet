@@ -12,15 +12,17 @@
         },
         {
             "additionalProperties": false,
-            "properties": {
-                "$schema": {
+            "patternProperties": {
+                "^$": {
                     "type": "string"
+                }
+            },
+            "properties": {
+                "$type": {
+                    "const": "Microsoft.SendActivityTemplateStep"
                 },
                 "$id": {
                     "type": "string"
-                },
-                "$type": {
-                    "const": "Microsoft.SendActivityTemplateStep"
                 },
                 "activityTemplate": {
                     "$ref": "../IActivityTemplate.schema",

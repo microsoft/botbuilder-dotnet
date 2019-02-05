@@ -56,6 +56,9 @@
             "$ref": "#/definitions/Microsoft.QnaMakerRecognizer"
         },
         {
+            "$ref": "#/definitions/Microsoft.RegexRecognizer"
+        },
+        {
             "$ref": "#/definitions/Microsoft.IActivityTemplate"
         },
         {
@@ -80,10 +83,12 @@
                 "Microsoft.IDialog"
             ],
             "additionalProperties": false,
-            "properties": {
-                "$schema": {
+            "patternProperties": {
+                "^$": {
                     "type": "string"
-                },
+                }
+            },
+            "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.DateTimePrompt"
@@ -164,10 +169,12 @@
                 "Microsoft.IDialog"
             ],
             "additionalProperties": false,
-            "properties": {
-                "$schema": {
+            "patternProperties": {
+                "^$": {
                     "type": "string"
-                },
+                }
+            },
+            "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.FloatPrompt"
@@ -248,10 +255,12 @@
                 "Microsoft.IDialog"
             ],
             "additionalProperties": false,
-            "properties": {
-                "$schema": {
+            "patternProperties": {
+                "^$": {
                     "type": "string"
-                },
+                }
+            },
+            "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.IntegerPrompt"
@@ -336,10 +345,12 @@
                 "routes"
             ],
             "additionalProperties": false,
-            "properties": {
-                "$schema": {
+            "patternProperties": {
+                "^$": {
                     "type": "string"
-                },
+                }
+            },
+            "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.IntentDialog"
@@ -374,10 +385,12 @@
                 "sequence"
             ],
             "additionalProperties": false,
-            "properties": {
-                "$schema": {
+            "patternProperties": {
+                "^$": {
                     "type": "string"
-                },
+                }
+            },
+            "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.SequenceDialog"
@@ -404,10 +417,12 @@
                 "Microsoft.IDialog"
             ],
             "additionalProperties": false,
-            "properties": {
-                "$schema": {
+            "patternProperties": {
+                "^$": {
                     "type": "string"
-                },
+                }
+            },
+            "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.TextPrompt"
@@ -465,10 +480,12 @@
                 "Microsoft.IDialogStep"
             ],
             "additionalProperties": false,
-            "properties": {
-                "$schema": {
+            "patternProperties": {
+                "^$": {
                     "type": "string"
-                },
+                }
+            },
+            "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.CallDialog"
@@ -505,10 +522,12 @@
                 "Microsoft.IDialogStep"
             ],
             "additionalProperties": false,
-            "properties": {
-                "$schema": {
+            "patternProperties": {
+                "^$": {
                     "type": "string"
-                },
+                }
+            },
+            "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.CancelDialog"
@@ -526,10 +545,12 @@
                 "Microsoft.IDialogStep"
             ],
             "additionalProperties": false,
-            "properties": {
-                "$schema": {
+            "patternProperties": {
+                "^$": {
                     "type": "string"
-                },
+                }
+            },
+            "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.ClearPropertyStep"
@@ -552,10 +573,12 @@
                 "Microsoft.IDialogStep"
             ],
             "additionalProperties": false,
-            "properties": {
-                "$schema": {
+            "patternProperties": {
+                "^$": {
                     "type": "string"
-                },
+                }
+            },
+            "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.EndDialog"
@@ -581,10 +604,12 @@
                 "Microsoft.IDialogStep"
             ],
             "additionalProperties": false,
-            "properties": {
-                "$schema": {
+            "patternProperties": {
+                "^$": {
                     "type": "string"
-                },
+                }
+            },
+            "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.EndOfTurn"
@@ -602,10 +627,12 @@
                 "Microsoft.IDialogStep"
             ],
             "additionalProperties": false,
-            "properties": {
-                "$schema": {
+            "patternProperties": {
+                "^$": {
                     "type": "string"
-                },
+                }
+            },
+            "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.IfElseStep"
@@ -669,10 +696,12 @@
                 "Microsoft.IDialogStep"
             ],
             "additionalProperties": false,
-            "properties": {
-                "$schema": {
+            "patternProperties": {
+                "^$": {
                     "type": "string"
-                },
+                }
+            },
+            "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.SendActivityStep"
@@ -2030,10 +2059,12 @@
                 "Microsoft.IDialogStep"
             ],
             "additionalProperties": false,
-            "properties": {
-                "$schema": {
+            "patternProperties": {
+                "^$": {
                     "type": "string"
-                },
+                }
+            },
+            "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.SendActivityTemplateStep"
@@ -2056,10 +2087,12 @@
                 "Microsoft.IDialogStep"
             ],
             "additionalProperties": false,
-            "properties": {
-                "$schema": {
+            "patternProperties": {
+                "^$": {
                     "type": "string"
-                },
+                }
+            },
+            "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.SetPropertyStep"
@@ -2087,10 +2120,12 @@
                 "Microsoft.IDialogStep"
             ],
             "additionalProperties": false,
-            "properties": {
-                "$schema": {
+            "patternProperties": {
+                "^$": {
                     "type": "string"
-                },
+                }
+            },
+            "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.SwitchStep"
@@ -2146,10 +2181,12 @@
                 "applicationId"
             ],
             "additionalProperties": false,
-            "properties": {
-                "$schema": {
+            "patternProperties": {
+                "^$": {
                     "type": "string"
-                },
+                }
+            },
+            "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.LUISRecognizer"
@@ -2193,10 +2230,12 @@
                 "endpoint"
             ],
             "additionalProperties": false,
-            "properties": {
-                "$schema": {
+            "patternProperties": {
+                "^$": {
                     "type": "string"
-                },
+                }
+            },
+            "properties": {
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.QnaMakerRecognizer"
@@ -2220,6 +2259,35 @@
                 }
             }
         },
+        "Microsoft.RegexRecognizer": {
+            "title": "Regular Expression Recognizer",
+            "description": "Example regular expression recognizer.",
+            "$implements": [
+                "Microsoft.IRecognizer"
+            ],
+            "type": "object",
+            "required": [
+                "pattern"
+            ],
+            "additionalProperties": false,
+            "patternProperties": {
+                "^$": {
+                    "type": "string"
+                }
+            },
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.RegexRecognizer"
+                },
+                "$id": {
+                    "type": "string"
+                },
+                "pattern": {
+                    "type": "string"
+                }
+            }
+        },
         "Microsoft.IActivityTemplate": {
             "oneOf": [
                 {
@@ -2237,6 +2305,9 @@
                 },
                 {
                     "$ref": "#/definitions/Microsoft.QnaMakerRecognizer"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.RegexRecognizer"
                 }
             ]
         },

@@ -12,15 +12,17 @@
         },
         {
             "additionalProperties": false,
-            "properties": {
-                "$schema": {
+            "patternProperties": {
+                "^$": {
                     "type": "string"
+                }
+            },
+            "properties": {
+                "$type": {
+                    "const": "Microsoft.IfElseStep"
                 },
                 "$id": {
                     "type": "string"
-                },
-                "$type": {
-                    "const": "Microsoft.IfElseStep"
                 },
                 "ifTrue": {
                     "oneOf": [

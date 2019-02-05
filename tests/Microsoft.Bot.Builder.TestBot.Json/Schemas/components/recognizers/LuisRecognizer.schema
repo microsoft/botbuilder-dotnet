@@ -11,15 +11,17 @@
         },
         {
             "additionalProperties": false,
-            "properties": {
-                "$schema": {
+            "patternProperties": {
+                "^$": {
                     "type": "string"
+                }
+            },
+            "properties": {
+                "$type": {
+                    "const": "Microsoft.LUISRecognizer"
                 },
                 "$id": {
                     "type": "string"
-                },
-                "$type": {
-                    "const": "Microsoft.LUISRecognizer"
                 },
                 "application": {
                     "type": "object",

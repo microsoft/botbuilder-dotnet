@@ -12,10 +12,12 @@
         },
         {
             "additionalProperties": false,
-            "properties": {
-                "$schema": {
+            "patternProperties": {
+                "^$": {
                     "type": "string"
-                },
+                }
+            },
+            "properties": {
                 "$id": {
                     "type": "string"
                 },
