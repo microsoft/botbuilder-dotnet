@@ -16,8 +16,8 @@
             }
         },
         {
-            "$type": "Microsoft.SendActivityStep",
-            "activity": "{template(welcome-user)}"
+            "$type": "Microsoft.SendActivityTemplateStep",
+            "activityTemplate": "{template(welcome-user)}"
         },
         {
             "$type": "Microsoft.CallDialog",
@@ -32,21 +32,21 @@
             }
         },
         {
-            "$type": "Microsoft.SendActivityStep",
-            "activity": "{template(love-country)}"
+            "$type": "Microsoft.SendActivityTemplateStep",
+            "activityTemplate": "{template(love-country)}"
         },
         {
             "$type": "Microsoft.CallDialog",
             "$id": "AgePrompt",
             "dialog": {
                 "$type": "Microsoft.IntegerPrompt",
+                "initialPrompt": "What is your age?",
                 "maxValue": 100,
                 "minValue": 1,
-                "initialPrompt": "What is your age?",
                 "noMatchResponse": "No number was recognized",
+                "retryPrompt": "Let's try again. What is your age?",
                 "tooLargeResponse": "Nobody is that old!",
-                "tooSmallResponse": "Nobody is younger than 0.",
-                "retryPrompt": "Let's try again. What is your age?"
+                "tooSmallResponse": "Nobody is younger than 0."
             }
         },
         {
