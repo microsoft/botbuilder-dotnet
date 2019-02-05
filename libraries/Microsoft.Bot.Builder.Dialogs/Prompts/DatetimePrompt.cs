@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                             await promptContext.Context.SendActivityAsync(this.NoMatchResponse.Activity).ConfigureAwait(false);
                         }
 
-                        await promptContext.Context.SendActivityAsync(options.RetryPrompt ?? this.RetryPrompt.Activity ?? options.Prompt ?? this.InitialPrompt.Activity).ConfigureAwait(false);
+                        await promptContext.Context.SendActivityAsync(options.RetryPrompt ?? this.RetryPrompt?.Activity ?? options.Prompt ?? this.InitialPrompt?.Activity).ConfigureAwait(false);
                         return false;
                     }
 
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                                 await promptContext.Context.SendActivityAsync(this.TooSmallResponse.Activity).ConfigureAwait(false);
                             }
 
-                            await promptContext.Context.SendActivityAsync(options.RetryPrompt ?? this.RetryPrompt.Activity ?? options.Prompt ?? this.InitialPrompt.Activity).ConfigureAwait(false);
+                            await promptContext.Context.SendActivityAsync(options.RetryPrompt ?? this.RetryPrompt?.Activity ?? options.Prompt ?? this.InitialPrompt?.Activity).ConfigureAwait(false);
                             return false;
                         }
 
@@ -119,11 +119,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                         await promptContext.Context.SendActivityAsync(this.NoMatchResponse.Activity).ConfigureAwait(false);
                     }
 
-                    await promptContext.Context.SendActivityAsync(options.RetryPrompt ?? this.RetryPrompt.Activity ?? options.Prompt ?? this.InitialPrompt.Activity).ConfigureAwait(false);
+                    await promptContext.Context.SendActivityAsync(options.RetryPrompt ?? this.RetryPrompt?.Activity ?? options.Prompt ?? this.InitialPrompt?.Activity).ConfigureAwait(false);
                     return false;
                 });
             }
-
 
             if (isRetry && options.RetryPrompt != null)
             {

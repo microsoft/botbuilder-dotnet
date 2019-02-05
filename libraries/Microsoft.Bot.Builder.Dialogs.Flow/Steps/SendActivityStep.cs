@@ -15,11 +15,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         /// </summary>
         public string Id { get; set; }
 
-        public ActivityTemplate ActivityTemplate { get; set; }
+        public ActivityTemplate Activity { get; set; }
 
         public async Task<object> Execute(DialogContext dialogContext, CancellationToken cancellationToken)
         {
-            var activity = ActivityTemplate.Bind(dialogContext.UserState);
+            var activity = Activity.Bind(dialogContext.UserState);
             await dialogContext.Context.SendActivityAsync(activity, cancellationToken);
             return null;
         }

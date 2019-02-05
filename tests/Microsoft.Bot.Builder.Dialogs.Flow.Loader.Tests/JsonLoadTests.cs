@@ -147,6 +147,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task JsonDialogLoad_SimpleLGBinding()
+        {
+            string json = File.ReadAllText("TestFlows/SimpleLGBinding.json");
+
+            await BuildTestFlow(json)
+            .Send("hello")
+                .AssertReply("What's your name?")
+            .Send("Carlos")
+                .AssertReply("Hi Carlos")
+                .AssertReply("I have a few questions Carlos, where were you born?")
+            .Send("Argentina")
+                .AssertReply("No kidding! Argentina is my favourite Country!!!")
+            .StartTestAsync();
+        }
+
         /// <summary>
         /// An intent dialog that with a simple recognizer and two child dialogs.
         /// </summary>
@@ -183,6 +199,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         }
 
         [TestMethod]
+        [Ignore("Work in progress")]
         public async Task JsonDialogLoad_FileDependencyPlugin()
         {
             string json = File.ReadAllText("TestFlows/FilePluginEchoDialog.json");
