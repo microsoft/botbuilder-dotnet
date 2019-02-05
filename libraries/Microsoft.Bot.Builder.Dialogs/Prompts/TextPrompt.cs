@@ -28,7 +28,14 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public string Pattern { get { return _patternMatcher?.ToString(); } set { _patternMatcher = new Regex(value); } }
 
-        public Activity NotMatchedActivity { get; set; }
+        public ActivityTemplate NotMatchedActivity { get; set; }
+
+        protected override async Task OnBeforePromptAsync(DialogContext dc, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // TODO: Parametrize to which state to bind.
+            await base.OnBeforePromptAsync(dc, isRetry, cancellationToken).ConfigureAwait(false);
+            NotMatchedActivity?.Bind(dc.UserState);
+        }
 
         protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, TextPromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -62,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     {
                         if (this.NotMatchedActivity != null)
                         {
-                            await promptContext.Context.SendActivityAsync(this.NotMatchedActivity).ConfigureAwait(false);
+                            await promptContext.Context.SendActivityAsync(this.NotMatchedActivity.Activity).ConfigureAwait(false);
                         }
 
                         return false;
@@ -72,10 +79,25 @@ namespace Microsoft.Bot.Builder.Dialogs
                 });
             }
 
-            if (isRetry && options.RetryPrompt != null)
+            // Retry for template model
+            if (isRetry && RetryPrompt != null)
+            {
+                await turnContext.SendActivityAsync(RetryPrompt.Activity, cancellationToken).ConfigureAwait(false);
+            }
+
+            // Backward compatible retry for Options model
+            else if (isRetry && options.RetryPrompt != null)
             {
                 await turnContext.SendActivityAsync(options.RetryPrompt, cancellationToken).ConfigureAwait(false);
             }
+
+            // Initial prompt for template model
+            else if (InitialPrompt != null)
+            {
+                await turnContext.SendActivityAsync(InitialPrompt.Activity, cancellationToken).ConfigureAwait(false);
+            }
+
+            // Backward compatible initial prompt for Options model
             else if (options.Prompt != null)
             {
                 await turnContext.SendActivityAsync(options.Prompt, cancellationToken).ConfigureAwait(false);

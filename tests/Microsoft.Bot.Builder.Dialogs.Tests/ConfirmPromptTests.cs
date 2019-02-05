@@ -87,8 +87,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             dialogs.Add(new ConfirmPrompt()
             {
                 Id = "ConfirmPrompt",
-                InitialPrompt = new Activity { Type = ActivityTypes.Message, Text = "Please confirm." },
-                RetryPrompt = new Activity { Type = ActivityTypes.Message, Text = "That's bad. Please try again." },
+                InitialPrompt = new ActivityTemplate("Please confirm."),
+                RetryPrompt = new ActivityTemplate("That's bad. Please try again."),
             });
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>

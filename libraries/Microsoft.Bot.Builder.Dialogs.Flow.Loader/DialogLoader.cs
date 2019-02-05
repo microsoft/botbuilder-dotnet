@@ -29,7 +29,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader
                         new StepConverter(refResolver),
                         new InterfaceConverter<IRecognizer>(refResolver),
                         new ExpressionConverter(),
-                        new ActivityConverter()
+                        new ActivityConverter(),
+                        new ActivityTemplateConverter()
                     },
                     Error = (sender, args) =>
                     {
