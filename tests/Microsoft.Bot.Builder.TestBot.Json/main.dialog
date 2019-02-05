@@ -1,33 +1,34 @@
 {
-  "$type": "http://schemas.botframework.com/SequenceDialog",
-  "$id": "getUserInfo",
-  "sequence": [
-    {
-      "$type": "http://schemas.botframework.com/CallDialog",
-      "dialog": {
-        "$type": "http://schemas.botframework.com/TextPrompt",
-        "$id": "namePrompt",
-        "property": "value.name",
-        "pattern": "\\w{3,50}",
-        "initialPrompt": "What is your name?",
-        "retryPrompt": "Let's try again, what's your name?",
-        "notMatchedActivity": "You need to give me at least 3 chars to 30 chars as a name."
-      },
-      "property": "value.name"
-    },
-    {
-      "$type": "http://schemas.botframework.com/SendActivityStep",
-      "activity": {
-        "type": "Template",
-        "value": {
-          "data": "value.name",
-          "template": "welcome-user"
+    "$schema": "./Schemas/app.schema",
+    "$type" :"Microsoft.SequenceDialog",
+    "$id": "getUserInfo",
+    "sequence": [
+        {
+            "$type": "http://schemas.botframework.com/CallDialog",
+            "dialog": {
+                "$type": "http://schemas.botframework.com/TextPrompt",
+                "$id": "namePrompt",
+                "property": "value.name",
+                "pattern": "\\w{3,50}",
+                "initialPrompt": "What is your name?",
+                "retryPrompt": "Let's try again, what's your name?",
+                "notMatchedActivity": "You need to give me at least 3 chars to 30 chars as a name."
+            },
+            "property": "value.name"
+        },
+        {
+            "$type": "http://schemas.botframework.com/SendActivityStep",
+            "activity": {
+                "type": "Template",
+                "value": {
+                    "data": "value.name",
+                    "template": "welcome-user"
+                }
+            }
+        },
+        {
+            "$type": "http://schemas.botframework.com/EndDialog",
+            "result": "value"
         }
-      }
-    },
-    {
-      "$type": "http://schemas.botframework.com/EndDialog",
-      "result": "value"
-    }
-  ]
+    ]
 }

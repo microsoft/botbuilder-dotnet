@@ -243,11 +243,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                 Sequence = new Sequence()
                 {
                     // set the test=123
-                    new SetVarStep() { Name = "test", Value = new CommonExpression("123") },
+                    new SetPropertyStep() { Name = "test", Value = new CommonExpression("123") },
                     // send the value of test
                     new SendActivityStep("{test}"),
                     // set test=
-                    new ClearVarStep() { Name = "test" },
+                    new ClearPropertyStep() { Name = "test" },
                     // send the value of test
                     new SendActivityStep("{test}"),
                 }

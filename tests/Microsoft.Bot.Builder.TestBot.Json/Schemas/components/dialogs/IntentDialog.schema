@@ -27,7 +27,8 @@
                 }
             },
             "required": [
-                "pattern"
+                "recognizer",
+                "routes"
             ]
         }
     ]

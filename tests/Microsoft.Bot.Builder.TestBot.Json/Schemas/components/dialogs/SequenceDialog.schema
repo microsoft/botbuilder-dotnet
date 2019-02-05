@@ -15,18 +15,16 @@
                 "$type": {
                     "const": "Microsoft.SequenceDialog"
                 },
-                "steps": {
+                "sequence": {
                     "type": "array",
                     "description": "Sequence of steps or dialogs to execute",
                     "items": {
-                        "type": [
-                            "object"
-                        ]
+                        "$ref": "../IDialogStep.schema"
                     }
                 }
             },
             "required": [
-                "steps"
+                "sequence"
             ]
         }
     ]

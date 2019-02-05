@@ -39,8 +39,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                 Sequence = new Sequence("Dialog2")
                 {
                     new CallDialog() { Dialog = agePrompt },
-                    new SetVarStep() { Name = "Age", Value = new CommonExpression("DialogTurnResult") },
-                    new SetVarStep() { Name = "IsChild", Value = new CommonExpression("Age < 18") },
+                    new SetPropertyStep() { Name = "Age", Value = new CommonExpression("DialogTurnResult") },
+                    new SetPropertyStep() { Name = "IsChild", Value = new CommonExpression("Age < 18") },
                     new SendActivityStep("Done"),
                 }
             };
@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
                 Id = "FlowDialog",
                 Sequence = new Sequence("Dialog") {
                     new CallDialog() { Id = "CallNamePrompt", Dialog = namePrompt },
-                    new SetVarStep() { Name ="Name", Value = new CommonExpression("DialogTurnResult") },
+                    new SetPropertyStep() { Name ="Name", Value = new CommonExpression("DialogTurnResult") },
                     new IfElseStep()
                     {
                         Condition = new CommonExpression() { Expression ="Name.Length > 2" },

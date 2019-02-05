@@ -98,12 +98,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types
             // while things are changing rapidly still
 
             // Steps
-            Register("http://schemas.botframework.com/SetVarStep", typeof(SetVarStep));
+            Register("http://schemas.botframework.com/SetVarStep", typeof(SetPropertyStep));
             Register("http://schemas.botframework.com/SwitchStep", typeof(SwitchStep));
             Register("http://schemas.botframework.com/CallDialog", typeof(CallDialog));
             Register("http://schemas.botframework.com/SendActivityStep", typeof(SendActivityStep));
             Register("http://schemas.botframework.com/EndDialog", typeof(EndDialog));
-            Register("http://schemas.botframework.com/ClearVarStep", typeof(ClearVarStep));
+            Register("http://schemas.botframework.com/ClearVarStep", typeof(ClearPropertyStep));
             Register("http://schemas.botframework.com/EndOfTurnStep", typeof(EndOfTurnStep));
             Register("http://schemas.botframework.com/GotoDialog", typeof(GotoDialog));
             Register("http://schemas.botframework.com/IfElseStep", typeof(IfElseStep));
