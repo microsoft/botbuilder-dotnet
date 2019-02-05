@@ -1,0 +1,472 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "oneOf": [
+        {
+            "$ref": "#/definitions/Microsoft.DateTimePrompt"
+        },
+        {
+            "$ref": "#/definitions/Microsoft.FloatPrompt"
+        },
+        {
+            "$ref": "#/definitions/Microsoft.IntegerPrompt"
+        },
+        {
+            "$ref": "#/definitions/Microsoft.IntentDialog"
+        },
+        {
+            "$ref": "#/definitions/Microsoft.SequenceDialog"
+        },
+        {
+            "$ref": "#/definitions/Microsoft.TextPrompt"
+        },
+        {
+            "$ref": "#/definitions/Microsoft.LUISRecognizer"
+        },
+        {
+            "$ref": "#/definitions/Microsoft.QnaMakerRecognizer"
+        },
+        {
+            "$ref": "#/definitions/Microsoft.RegexRecognizer"
+        }
+    ],
+    "definitions": {
+        "Microsoft.IActivityTemplate": {
+            "title": "Microsoft IActivityTemplate",
+            "description": "Definition of Microsoft.IActivityTemplate which will be expanded by components that $implements it.",
+            "$defines": "Microsoft.IActivityTemplate",
+            "oneOf": [
+                {
+                    "type": "string"
+                }
+            ]
+        },
+        "Microsoft.IDialog": {
+            "title": "Microsoft IDialog",
+            "description": "Definition of Microsoft.IDialog which will be expanded by components that $implements it.",
+            "$defines": "Microsoft.IDialog",
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.DateTimePrompt"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.FloatPrompt"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.IntegerPrompt"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.IntentDialog"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.SequenceDialog"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.TextPrompt"
+                }
+            ]
+        },
+        "Microsoft.IRecognizer": {
+            "title": "Microsoft IRecognizer",
+            "description": "Definition of Microsoft.IRecognizer which will be expanded by components that $implements it.",
+            "$defines": "Microsoft.IRecognizer",
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.LUISRecognizer"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.QnaMakerRecognizer"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.RegexRecognizer"
+                }
+            ]
+        },
+        "Microsoft.DateTimePrompt": {
+            "type": "object",
+            "title": "DateTime prompt",
+            "description": "This represents a dialog which gathers a DateTime in a specified range",
+            "$implements": [
+                "Microsoft.IDialog"
+            ],
+            "required": [
+                "$type"
+            ],
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.DateTimePrompt"
+                },
+                "$id": {
+                    "type": "string"
+                },
+                "property": {
+                    "type": "string",
+                    "description": "This is the property to set.",
+                    "examples": [
+                        "value.birthday"
+                    ]
+                },
+                "minValue": {
+                    "type": "integer",
+                    "title": "Mininum value",
+                    "description": "The minimum value that is acceptable.  If the value is less then this then the TooSmallReponse and RetryPrompt will be sent.",
+                    "examples": [
+                        "1900-01-01"
+                    ]
+                },
+                "maxValue": {
+                    "type": "integer",
+                    "title": "Maximum value",
+                    "description": "The maximum value that is acceptable.  If the value is greater then this then the TooLargeResponse and RetryPrompt will be sent.",
+                    "examples": [
+                        "2100-01-01"
+                    ]
+                },
+                "initialPrompt": {
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "retryPrompt": {
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "noMatchResponse": {
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "tooSmallResponse": {
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "tooLargeResponse": {
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                }
+            }
+        },
+        "Microsoft.FloatPrompt": {
+            "type": "object",
+            "title": "Float  prompt",
+            "description": "This represents a dialog which gathers a number in a specified range",
+            "$implements": [
+                "Microsoft.IDialog"
+            ],
+            "required": [
+                "$type"
+            ],
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.FloatPrompt"
+                },
+                "$id": {
+                    "type": "string"
+                },
+                "property": {
+                    "type": "string",
+                    "description": "This is the property to set.",
+                    "examples": [
+                        "value.age"
+                    ]
+                },
+                "minValue": {
+                    "type": "integer",
+                    "title": "Mininum value",
+                    "description": "The minimum value that is acceptable.  If the value is less then this then the TooSmallReponse and RetryPrompt will be sent.",
+                    "examples": [
+                        "0"
+                    ]
+                },
+                "maxValue": {
+                    "type": "integer",
+                    "title": "Maximum value",
+                    "description": "The maximum value that is acceptable.  If the value is greater then this then the TooLargeResponse and RetryPrompt will be sent.",
+                    "examples": [
+                        "120"
+                    ]
+                },
+                "initialPrompt": {
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "retryPrompt": {
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "noMatchResponse": {
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "tooSmallResponse": {
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "tooLargeResponse": {
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                }
+            }
+        },
+        "Microsoft.IntegerPrompt": {
+            "type": "object",
+            "title": "Integer prompt",
+            "description": "This represents a dialog which gathers a number in a specified range",
+            "$implements": [
+                "Microsoft.IDialog"
+            ],
+            "required": [
+                "$type"
+            ],
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.IntegerPrompt"
+                },
+                "$id": {
+                    "type": "string"
+                },
+                "property": {
+                    "type": "string",
+                    "description": "This is the property to set.",
+                    "examples": [
+                        "value.age"
+                    ]
+                },
+                "minValue": {
+                    "type": "integer",
+                    "title": "Mininum value",
+                    "description": "The minimum value that is acceptable.  If the value is less then this then the TooSmallReponse and RetryPrompt will be sent.",
+                    "examples": [
+                        "0"
+                    ]
+                },
+                "maxValue": {
+                    "type": "integer",
+                    "title": "Maximum value",
+                    "description": "The maximum value that is acceptable.  If the value is greater then this then the TooLargeResponse and RetryPrompt will be sent.",
+                    "examples": [
+                        "120"
+                    ]
+                },
+                "initialPrompt": {
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "retryPrompt": {
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "noMatchResponse": {
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "tooSmallResponse": {
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "tooLargeResponse": {
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                }
+            }
+        },
+        "Microsoft.IntentDialog": {
+            "type": "object",
+            "title": "Intent Dialog",
+            "description": "Configures a recognizer and the intent routes",
+            "$implements": [
+                "Microsoft.IDialog"
+            ],
+            "required": [
+                "$type",
+                "pattern"
+            ],
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.IntentDialog"
+                },
+                "$id": {
+                    "type": "string"
+                },
+                "recognizer": {
+                    "$ref": "#/definitions/Microsoft.IRecognizer"
+                },
+                "routes": {
+                    "type": "object",
+                    "description": "maps intent->IDialog",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                }
+            }
+        },
+        "Microsoft.SequenceDialog": {
+            "type": "object",
+            "title": "Sequence Dialog",
+            "description": "Configures a data driven dialog via a collection of steps/dialogs.",
+            "$implements": [
+                "Microsoft.IDialog"
+            ],
+            "required": [
+                "$type",
+                "steps"
+            ],
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.SequenceDialog"
+                },
+                "$id": {
+                    "type": "string"
+                },
+                "steps": {
+                    "type": "array",
+                    "description": "Sequence of steps or dialogs to execute",
+                    "items": {
+                        "type": [
+                            "object"
+                        ]
+                    }
+                }
+            }
+        },
+        "Microsoft.TextPrompt": {
+            "type": "object",
+            "title": "Text prompt",
+            "description": "This represents a dialog which gathers a text from the user",
+            "$implements": [
+                "Microsoft.IDialog"
+            ],
+            "required": [
+                "$type"
+            ],
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.TextPrompt"
+                },
+                "$id": {
+                    "type": "string"
+                },
+                "property": {
+                    "type": "string",
+                    "description": "This is the property to set the result.",
+                    "examples": [
+                        "value.name"
+                    ]
+                },
+                "pattern": {
+                    "type": "string",
+                    "title": "Pattern",
+                    "description": "A regular expression pattern which must match",
+                    "examples": [
+                        "\\w{3,30}"
+                    ]
+                },
+                "initialPrompt": {
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "retryPrompt": {
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "noMatchResponse": {
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                }
+            }
+        },
+        "Microsoft.LUISRecognizer": {
+            "title": "LUIS Recognizer",
+            "description": "LUIS recognizer.",
+            "$implements": [
+                "Microsoft.IRecognizer"
+            ],
+            "type": "object",
+            "required": [
+                "$type",
+                "applicationId"
+            ],
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.LUISRecognizer"
+                },
+                "$id": {
+                    "type": "string"
+                },
+                "application": {
+                    "type": "object",
+                    "required": [
+                        "applicationId",
+                        "endpoint",
+                        "endpointKey"
+                    ],
+                    "properties": {
+                        "applicationId": {
+                            "type": "string"
+                        },
+                        "endpoint": {
+                            "type": "string"
+                        },
+                        "endpointKey": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "priority": {
+                    "type": "string"
+                }
+            }
+        },
+        "Microsoft.QnaMakerRecognizer": {
+            "type": "object",
+            "title": "QnAMaker.ai Recognizer",
+            "description": "This represents a configuration of the QNAMaker as a recognizer",
+            "$implements": [
+                "Microsoft.IRecognizer"
+            ],
+            "required": [
+                "$type",
+                "applicationId",
+                "endpoint"
+            ],
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.QnaMakerRecognizer"
+                },
+                "$id": {
+                    "type": "string"
+                },
+                "applicationId": {
+                    "type": "string",
+                    "description": "This is the QnAMaker appId to use",
+                    "examples": [
+                        "123123123"
+                    ]
+                },
+                "endpoint": {
+                    "type": "string",
+                    "description": "This is the QnAMaker endpoint to use",
+                    "examples": [
+                        "http://westus.qnamaker.ai"
+                    ]
+                }
+            }
+        },
+        "Microsoft.RegexRecognizer": {
+            "title": "Regular Expression Recognizer",
+            "description": "Example regular expression recognizer.",
+            "$implements": [
+                "Microsoft.IRecognizer"
+            ],
+            "type": "object",
+            "required": [
+                "$type"
+            ],
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.RegexRecognizer"
+                },
+                "$id": {
+                    "type": "string"
+                },
+                "pattern": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

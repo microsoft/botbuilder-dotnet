@@ -1,0 +1,23 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Regular Expression Recognizer",
+    "description": "Example regular expression recognizer.",
+    "$implements": [
+        "Microsoft.IRecognizer"
+    ],
+    "allOf": [
+        {
+            "$ref": "../component.schema#"
+        },
+        {
+            "properties": {
+                "$type": {
+                    "const": "Microsoft.RegexRecognizer"
+                },
+                "pattern": {
+                    "type": "string"
+                }
+            }
+        }
+    ]
+}

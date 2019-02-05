@@ -8,9 +8,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
     /// <summary>
     /// Set State variable as an action
     /// </summary>
-    public class SetVarStep : IStep
+    public class SetPropertyStep : IStep
     {
-        public SetVarStep() { }
+        public SetPropertyStep() { }
 
         /// <summary>
         /// (OPTIONAL) Id of the command

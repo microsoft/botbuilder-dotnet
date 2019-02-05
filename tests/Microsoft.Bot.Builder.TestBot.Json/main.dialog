@@ -1,5 +1,6 @@
 {
-  "$type": "http://schemas.botframework.com/SequenceDialog",
+  "$schema": "./Schemas/app.schema",
+  "$type": "Microsoft.SequenceDialog",
   "$id": "getUserInfo",
   "sequence": [
     {

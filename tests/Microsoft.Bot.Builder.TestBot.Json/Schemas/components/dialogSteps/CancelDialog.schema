@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "title": "Cancel Dialog",
+    "description": "This is a step which cancels the current dialog, returning no result",
+    "$implements": [
+        "Microsoft.IDialogStep"
+    ],
+    "allOf": [
+        {
+            "$ref": "../component.schema"
+        },
+        {
+            "properties": {
+                "$type": {
+                    "const": "Microsoft.CancelDialogStep"
+                }
+            }
+        }
+    ]
+}
