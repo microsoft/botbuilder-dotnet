@@ -13,16 +13,22 @@
         {
             "additionalProperties": false,
             "properties": {
+                "$schema": {
+                    "type": "string"
+                },
+                "$id": {
+                    "type": "string"
+                },
                 "$type": {
                     "const": "Microsoft.SetPropertyStep"
                 },
                 "property": {
-                    "$ref":"../IExpression.schema",
+                    "$ref": "../IExpression.schema",
                     "title": "Property",
                     "description": "Expression which is the property to set."
                 },
                 "value": {
-                    "$ref":"../IExpression.schema",
+                    "$ref": "../IExpression.schema",
                     "title": "Value",
                     "description": "Expression which is the value to use."
                 }

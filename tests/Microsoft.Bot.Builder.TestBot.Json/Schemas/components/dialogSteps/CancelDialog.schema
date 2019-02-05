@@ -13,6 +13,12 @@
         {
             "additionalProperties": false,
             "properties": {
+                "$schema": {
+                    "type": "string"
+                },
+                "$id": {
+                    "type": "string"
+                },
                 "$type": {
                     "const": "Microsoft.CancelDialog"
                 }

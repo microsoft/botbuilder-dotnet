@@ -12,7 +12,13 @@
         {
             "additionalProperties": false,
             "properties": {
-                "$type": {
+                "$schema": {
+                    "type": "string"
+                },
+                "$id": {
+                    "type": "string"
+                },
+    w                "$type": {
                     "const": "Microsoft.RegexRecognizer"
                 },
                 "pattern": {

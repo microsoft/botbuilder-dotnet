@@ -13,8 +13,5 @@
         "$id": {
             "type":"string"
         }
-    },
-    "required": [
-        "$type"
-    ]
+    }
 }

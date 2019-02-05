@@ -7,11 +7,17 @@
     ],
     "allOf": [
         {
-            "$ref":"../component.schema#"
+            "$ref": "../component.schema#"
         },
         {
             "additionalProperties": false,
             "properties": {
+                "$schema": {
+                    "type": "string"
+                },
+                "$id": {
+                    "type": "string"
+                },
                 "$type": {
                     "const": "Microsoft.LUISRecognizer"
                 },

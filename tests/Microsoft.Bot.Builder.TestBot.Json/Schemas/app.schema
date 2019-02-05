@@ -79,14 +79,17 @@
             "$implements": [
                 "Microsoft.IDialog"
             ],
-            "required": [
-                "$type"
-            ],
             "additionalProperties": false,
             "properties": {
+                "$schema": {
+                    "type": "string"
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.DateTimePrompt"
+                },
+                "$id": {
+                    "type": "string"
                 },
                 "property": {
                     "type": "string",
@@ -160,14 +163,17 @@
             "$implements": [
                 "Microsoft.IDialog"
             ],
-            "required": [
-                "$type"
-            ],
             "additionalProperties": false,
             "properties": {
+                "$schema": {
+                    "type": "string"
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.FloatPrompt"
+                },
+                "$id": {
+                    "type": "string"
                 },
                 "property": {
                     "type": "string",
@@ -241,14 +247,17 @@
             "$implements": [
                 "Microsoft.IDialog"
             ],
-            "required": [
-                "$type"
-            ],
             "additionalProperties": false,
             "properties": {
+                "$schema": {
+                    "type": "string"
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.IntegerPrompt"
+                },
+                "$id": {
+                    "type": "string"
                 },
                 "property": {
                     "type": "string",
@@ -323,15 +332,20 @@
                 "Microsoft.IDialog"
             ],
             "required": [
-                "$type",
                 "recognizer",
                 "routes"
             ],
             "additionalProperties": false,
             "properties": {
+                "$schema": {
+                    "type": "string"
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.IntentDialog"
+                },
+                "$id": {
+                    "type": "string"
                 },
                 "recognizer": {
                     "title": "Microsoft IRecognizer",
@@ -357,14 +371,19 @@
                 "Microsoft.IDialog"
             ],
             "required": [
-                "$type",
                 "sequence"
             ],
             "additionalProperties": false,
             "properties": {
+                "$schema": {
+                    "type": "string"
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.SequenceDialog"
+                },
+                "$id": {
+                    "type": "string"
                 },
                 "sequence": {
                     "type": "array",
@@ -384,14 +403,17 @@
             "$implements": [
                 "Microsoft.IDialog"
             ],
-            "required": [
-                "$type"
-            ],
             "additionalProperties": false,
             "properties": {
+                "$schema": {
+                    "type": "string"
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.TextPrompt"
+                },
+                "$id": {
+                    "type": "string"
                 },
                 "property": {
                     "type": "string",
@@ -442,14 +464,17 @@
             "$implements": [
                 "Microsoft.IDialogStep"
             ],
-            "required": [
-                "$type"
-            ],
             "additionalProperties": false,
             "properties": {
+                "$schema": {
+                    "type": "string"
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.CallDialog"
+                },
+                "$id": {
+                    "type": "string"
                 },
                 "dialog": {
                     "title": "Dialog",
@@ -479,14 +504,17 @@
             "$implements": [
                 "Microsoft.IDialogStep"
             ],
-            "required": [
-                "$type"
-            ],
             "additionalProperties": false,
             "properties": {
+                "$schema": {
+                    "type": "string"
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.CancelDialog"
+                },
+                "$id": {
+                    "type": "string"
                 }
             }
         },
@@ -497,14 +525,17 @@
             "$implements": [
                 "Microsoft.IDialogStep"
             ],
-            "required": [
-                "$type"
-            ],
             "additionalProperties": false,
             "properties": {
+                "$schema": {
+                    "type": "string"
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.ClearPropertyStep"
+                },
+                "$id": {
+                    "type": "string"
                 },
                 "property": {
                     "title": "Property",
@@ -520,14 +551,17 @@
             "$implements": [
                 "Microsoft.IDialogStep"
             ],
-            "required": [
-                "$type"
-            ],
             "additionalProperties": false,
             "properties": {
+                "$schema": {
+                    "type": "string"
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.EndDialog"
+                },
+                "$id": {
+                    "type": "string"
                 },
                 "property": {
                     "title": "Property",
@@ -546,14 +580,17 @@
             "$implements": [
                 "Microsoft.IDialogStep"
             ],
-            "required": [
-                "$type"
-            ],
             "additionalProperties": false,
             "properties": {
+                "$schema": {
+                    "type": "string"
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.EndOfTurn"
+                },
+                "$id": {
+                    "type": "string"
                 }
             }
         },
@@ -564,14 +601,17 @@
             "$implements": [
                 "Microsoft.IDialogStep"
             ],
-            "required": [
-                "$type"
-            ],
             "additionalProperties": false,
             "properties": {
+                "$schema": {
+                    "type": "string"
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.IfElseStep"
+                },
+                "$id": {
+                    "type": "string"
                 },
                 "ifTrue": {
                     "oneOf": [
@@ -628,14 +668,17 @@
             "$implements": [
                 "Microsoft.IDialogStep"
             ],
-            "required": [
-                "$type"
-            ],
             "additionalProperties": false,
             "properties": {
+                "$schema": {
+                    "type": "string"
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.SendActivityStep"
+                },
+                "$id": {
+                    "type": "string"
                 },
                 "activity": {
                     "title": "Activity",
@@ -651,14 +694,17 @@
             "$implements": [
                 "Microsoft.IDialogStep"
             ],
-            "required": [
-                "$type"
-            ],
             "additionalProperties": false,
             "properties": {
+                "$schema": {
+                    "type": "string"
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.SetPropertyStep"
+                },
+                "$id": {
+                    "type": "string"
                 },
                 "property": {
                     "title": "Property",
@@ -679,14 +725,17 @@
             "$implements": [
                 "Microsoft.IDialogStep"
             ],
-            "required": [
-                "$type"
-            ],
             "additionalProperties": false,
             "properties": {
+                "$schema": {
+                    "type": "string"
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.SwitchStep"
+                },
+                "$id": {
+                    "type": "string"
                 },
                 "condition": {
                     "title": "Condition",
@@ -733,14 +782,19 @@
             ],
             "type": "object",
             "required": [
-                "$type",
                 "applicationId"
             ],
             "additionalProperties": false,
             "properties": {
+                "$schema": {
+                    "type": "string"
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.LUISRecognizer"
+                },
+                "$id": {
+                    "type": "string"
                 },
                 "application": {
                     "type": "object",
@@ -774,15 +828,20 @@
                 "Microsoft.IRecognizer"
             ],
             "required": [
-                "$type",
                 "applicationId",
                 "endpoint"
             ],
             "additionalProperties": false,
             "properties": {
+                "$schema": {
+                    "type": "string"
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.QnaMakerRecognizer"
+                },
+                "$id": {
+                    "type": "string"
                 },
                 "applicationId": {
                     "type": "string",
@@ -808,14 +867,19 @@
             ],
             "type": "object",
             "required": [
-                "$type",
                 "pattern"
             ],
             "additionalProperties": false,
             "properties": {
+                "$schema": {
+                    "type": "string"
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.RegexRecognizer"
+                },
+                "$id": {
+                    "type": "string"
                 },
                 "pattern": {
                     "type": "string"
