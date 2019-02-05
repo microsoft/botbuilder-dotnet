@@ -20,10 +20,12 @@
                     "type": "string"
                 },
                 "$type": {
-                    "const": "Microsoft.SendActivityStep"
+                    "const": "Microsoft.SendActivityTemplateStep"
                 },
-                "activity": {
-                    "$ref": "../activity.schema"
+                "activityTemplate": {
+                    "$ref": "../IActivityTemplate.schema",
+                    "title": "Activity",
+                    "description": "Activity to send to the user."
                 }
             }
         }

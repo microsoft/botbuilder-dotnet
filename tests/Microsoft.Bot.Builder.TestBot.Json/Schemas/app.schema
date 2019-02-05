@@ -41,6 +41,9 @@
             "$ref": "#/definitions/Microsoft.SendActivityStep"
         },
         {
+            "$ref": "#/definitions/Microsoft.SendActivityTemplateStep"
+        },
+        {
             "$ref": "#/definitions/Microsoft.SetPropertyStep"
         },
         {
@@ -51,9 +54,6 @@
         },
         {
             "$ref": "#/definitions/Microsoft.QnaMakerRecognizer"
-        },
-        {
-            "$ref": "#/definitions/Microsoft.RegexRecognizer"
         },
         {
             "$ref": "#/definitions/Microsoft.IActivityTemplate"
@@ -681,6 +681,1367 @@
                     "type": "string"
                 },
                 "activity": {
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "type": "object",
+                    "required": [
+                        "type"
+                    ],
+                    "definitions": {
+                        "Attachment": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [
+                                "contentType",
+                                "contentUrl",
+                                "content",
+                                "name",
+                                "thumbnailUrl"
+                            ],
+                            "properties": {
+                                "contentType": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "contentUrl": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "content": {},
+                                "name": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "thumbnailUrl": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                }
+                            }
+                        },
+                        "CardAction": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [
+                                "type",
+                                "title",
+                                "image",
+                                "text",
+                                "displayText",
+                                "value",
+                                "channelData"
+                            ],
+                            "properties": {
+                                "type": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "title": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "image": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "text": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "displayText": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "value": {},
+                                "channelData": {}
+                            }
+                        },
+                        "ChannelAccount": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [
+                                "id",
+                                "name",
+                                "aadObjectId",
+                                "role"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "name": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "aadObjectId": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "role": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                }
+                            }
+                        },
+                        "ConversationAccount": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [
+                                "isGroup",
+                                "conversationType",
+                                "id",
+                                "name",
+                                "aadObjectId",
+                                "role"
+                            ],
+                            "properties": {
+                                "isGroup": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "conversationType": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "id": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "name": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "aadObjectId": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "role": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                }
+                            }
+                        },
+                        "ConversationReference": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [
+                                "activityId",
+                                "user",
+                                "bot",
+                                "conversation",
+                                "channelId",
+                                "serviceUrl"
+                            ],
+                            "properties": {
+                                "activityId": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "user": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "required": [
+                                        "id",
+                                        "name",
+                                        "aadObjectId",
+                                        "role"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "name": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "aadObjectId": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "role": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "bot": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "required": [
+                                        "id",
+                                        "name",
+                                        "aadObjectId",
+                                        "role"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "name": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "aadObjectId": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "role": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "conversation": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "required": [
+                                        "isGroup",
+                                        "conversationType",
+                                        "id",
+                                        "name",
+                                        "aadObjectId",
+                                        "role"
+                                    ],
+                                    "properties": {
+                                        "isGroup": {
+                                            "type": [
+                                                "boolean",
+                                                "null"
+                                            ]
+                                        },
+                                        "conversationType": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "id": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "name": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "aadObjectId": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "role": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "channelId": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "serviceUrl": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                }
+                            }
+                        },
+                        "Entity": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [
+                                "type"
+                            ],
+                            "properties": {
+                                "type": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                }
+                            }
+                        },
+                        "MessageReaction": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [
+                                "type"
+                            ],
+                            "properties": {
+                                "type": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                }
+                            }
+                        },
+                        "SemanticAction": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [
+                                "id",
+                                "entities"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "entities": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "additionalProperties": {
+                                        "type": [
+                                            "object",
+                                            "null"
+                                        ],
+                                        "required": [
+                                            "type"
+                                        ],
+                                        "properties": {
+                                            "type": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "SuggestedActions": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [
+                                "to",
+                                "actions"
+                            ],
+                            "properties": {
+                                "to": {
+                                    "type": [
+                                        "array",
+                                        "null"
+                                    ],
+                                    "items": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    }
+                                },
+                                "actions": {
+                                    "type": [
+                                        "array",
+                                        "null"
+                                    ],
+                                    "items": {
+                                        "type": [
+                                            "object",
+                                            "null"
+                                        ],
+                                        "required": [
+                                            "type",
+                                            "title",
+                                            "image",
+                                            "text",
+                                            "displayText",
+                                            "value",
+                                            "channelData"
+                                        ],
+                                        "properties": {
+                                            "type": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "title": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "image": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "text": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "displayText": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "value": {},
+                                            "channelData": {}
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "TextHighlight": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [
+                                "text",
+                                "occurrence"
+                            ],
+                            "properties": {
+                                "text": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "occurrence": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "properties": {
+                        "type": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "id": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "timestamp": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "format": "date-time"
+                        },
+                        "localTimestamp": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "format": "date-time"
+                        },
+                        "localTimezone": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "serviceUrl": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "channelId": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "from": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [
+                                "id",
+                                "name",
+                                "aadObjectId",
+                                "role"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "name": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "aadObjectId": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "role": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                }
+                            }
+                        },
+                        "conversation": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [
+                                "isGroup",
+                                "conversationType",
+                                "id",
+                                "name",
+                                "aadObjectId",
+                                "role"
+                            ],
+                            "properties": {
+                                "isGroup": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "conversationType": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "id": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "name": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "aadObjectId": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "role": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                }
+                            }
+                        },
+                        "recipient": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [
+                                "id",
+                                "name",
+                                "aadObjectId",
+                                "role"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "name": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "aadObjectId": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "role": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                }
+                            }
+                        },
+                        "textFormat": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "attachmentLayout": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "membersAdded": {
+                            "type": [
+                                "array",
+                                "null"
+                            ],
+                            "items": {
+                                "type": [
+                                    "object",
+                                    "null"
+                                ],
+                                "required": [
+                                    "id",
+                                    "name",
+                                    "aadObjectId",
+                                    "role"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "name": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "aadObjectId": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "role": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "membersRemoved": {
+                            "type": [
+                                "array",
+                                "null"
+                            ],
+                            "items": {
+                                "type": [
+                                    "object",
+                                    "null"
+                                ],
+                                "required": [
+                                    "id",
+                                    "name",
+                                    "aadObjectId",
+                                    "role"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "name": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "aadObjectId": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "role": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "reactionsAdded": {
+                            "type": [
+                                "array",
+                                "null"
+                            ],
+                            "items": {
+                                "type": [
+                                    "object",
+                                    "null"
+                                ],
+                                "required": [
+                                    "type"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "reactionsRemoved": {
+                            "type": [
+                                "array",
+                                "null"
+                            ],
+                            "items": {
+                                "type": [
+                                    "object",
+                                    "null"
+                                ],
+                                "required": [
+                                    "type"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "topicName": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "historyDisclosed": {
+                            "type": [
+                                "boolean",
+                                "null"
+                            ]
+                        },
+                        "locale": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "text": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "speak": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "inputHint": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "summary": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "suggestedActions": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [
+                                "to",
+                                "actions"
+                            ],
+                            "properties": {
+                                "to": {
+                                    "type": [
+                                        "array",
+                                        "null"
+                                    ],
+                                    "items": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    }
+                                },
+                                "actions": {
+                                    "type": [
+                                        "array",
+                                        "null"
+                                    ],
+                                    "items": {
+                                        "type": [
+                                            "object",
+                                            "null"
+                                        ],
+                                        "required": [
+                                            "type",
+                                            "title",
+                                            "image",
+                                            "text",
+                                            "displayText",
+                                            "value",
+                                            "channelData"
+                                        ],
+                                        "properties": {
+                                            "type": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "title": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "image": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "text": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "displayText": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "value": {},
+                                            "channelData": {}
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "attachments": {
+                            "type": [
+                                "array",
+                                "null"
+                            ],
+                            "items": {
+                                "type": [
+                                    "object",
+                                    "null"
+                                ],
+                                "required": [
+                                    "contentType",
+                                    "contentUrl",
+                                    "content",
+                                    "name",
+                                    "thumbnailUrl"
+                                ],
+                                "properties": {
+                                    "contentType": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "contentUrl": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "content": {},
+                                    "name": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "thumbnailUrl": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "entities": {
+                            "type": [
+                                "array",
+                                "null"
+                            ],
+                            "items": {
+                                "type": [
+                                    "object",
+                                    "null"
+                                ],
+                                "required": [
+                                    "type"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "channelData": {},
+                        "action": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "replyToId": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "label": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "valueType": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "value": {},
+                        "name": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "relatesTo": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [
+                                "activityId",
+                                "user",
+                                "bot",
+                                "conversation",
+                                "channelId",
+                                "serviceUrl"
+                            ],
+                            "properties": {
+                                "activityId": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "user": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "required": [
+                                        "id",
+                                        "name",
+                                        "aadObjectId",
+                                        "role"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "name": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "aadObjectId": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "role": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "bot": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "required": [
+                                        "id",
+                                        "name",
+                                        "aadObjectId",
+                                        "role"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "name": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "aadObjectId": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "role": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "conversation": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "required": [
+                                        "isGroup",
+                                        "conversationType",
+                                        "id",
+                                        "name",
+                                        "aadObjectId",
+                                        "role"
+                                    ],
+                                    "properties": {
+                                        "isGroup": {
+                                            "type": [
+                                                "boolean",
+                                                "null"
+                                            ]
+                                        },
+                                        "conversationType": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "id": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "name": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "aadObjectId": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "role": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "channelId": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "serviceUrl": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                }
+                            }
+                        },
+                        "code": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "expiration": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "format": "date-time"
+                        },
+                        "importance": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "deliveryMode": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "listenFor": {
+                            "type": [
+                                "array",
+                                "null"
+                            ],
+                            "items": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "textHighlights": {
+                            "type": [
+                                "array",
+                                "null"
+                            ],
+                            "items": {
+                                "type": [
+                                    "object",
+                                    "null"
+                                ],
+                                "required": [
+                                    "text",
+                                    "occurrence"
+                                ],
+                                "properties": {
+                                    "text": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "occurrence": {
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "semanticAction": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [
+                                "id",
+                                "entities"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "entities": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "additionalProperties": {
+                                        "type": [
+                                            "object",
+                                            "null"
+                                        ],
+                                        "required": [
+                                            "type"
+                                        ],
+                                        "properties": {
+                                            "type": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "Microsoft.SendActivityTemplateStep": {
+            "type": "object",
+            "title": "Send Activity Step",
+            "description": "This is a step which sends an activity to the user",
+            "$implements": [
+                "Microsoft.IDialogStep"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "$schema": {
+                    "type": "string"
+                },
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.SendActivityTemplateStep"
+                },
+                "$id": {
+                    "type": "string"
+                },
+                "activityTemplate": {
                     "title": "Activity",
                     "description": "Activity to send to the user.",
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
@@ -859,33 +2220,6 @@
                 }
             }
         },
-        "Microsoft.RegexRecognizer": {
-            "title": "Regular Expression Recognizer",
-            "description": "Example regular expression recognizer.",
-            "$implements": [
-                "Microsoft.IRecognizer"
-            ],
-            "type": "object",
-            "required": [
-                "pattern"
-            ],
-            "additionalProperties": false,
-            "properties": {
-                "$schema": {
-                    "type": "string"
-                },
-                "$type": {
-                    "type": "string",
-                    "const": "Microsoft.RegexRecognizer"
-                },
-                "$id": {
-                    "type": "string"
-                },
-                "pattern": {
-                    "type": "string"
-                }
-            }
-        },
         "Microsoft.IActivityTemplate": {
             "oneOf": [
                 {
@@ -903,9 +2237,6 @@
                 },
                 {
                     "$ref": "#/definitions/Microsoft.QnaMakerRecognizer"
-                },
-                {
-                    "$ref": "#/definitions/Microsoft.RegexRecognizer"
                 }
             ]
         },
@@ -956,6 +2287,9 @@
                 },
                 {
                     "$ref": "#/definitions/Microsoft.SendActivityStep"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.SendActivityTemplateStep"
                 },
                 {
                     "$ref": "#/definitions/Microsoft.SetPropertyStep"

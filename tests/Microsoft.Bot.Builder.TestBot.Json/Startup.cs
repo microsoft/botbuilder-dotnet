@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
         private void RegisterTypes()
         {
-            Factory.Register("http://schemas.botframework.com/RuleRecognizer", typeof(RuleRecognizer));
+            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
         }
     }
 }

@@ -33,7 +33,7 @@
     },
     {
       "$type": "Microsoft.SendActivityStep",
-      "activity": "{template(love-country)}"
+      "activityTemplate": "{template(love-country)}"
     },
     {
       "$type": "Microsoft.EndDialog",
