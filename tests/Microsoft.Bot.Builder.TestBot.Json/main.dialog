@@ -1,12 +1,12 @@
 {
     "$schema": "./Schemas/app.schema",
-    "$type" :"Microsoft.SequenceDialog",
+    "$type": "Microsoft.SequenceDialog",
     "$id": "getUserInfo",
     "sequence": [
         {
-            "$type": "http://schemas.botframework.com/CallDialog",
+            "$type": "Microsoft.CallDialogStep",
             "dialog": {
-                "$type": "http://schemas.botframework.com/TextPrompt",
+                "$type": "Microsoft.TextPrompt",
                 "$id": "namePrompt",
                 "property": "value.name",
                 "pattern": "\\w{3,50}",
@@ -17,17 +17,11 @@
             "property": "value.name"
         },
         {
-            "$type": "http://schemas.botframework.com/SendActivityStep",
-            "activity": {
-                "type": "Template",
-                "value": {
-                    "data": "value.name",
-                    "template": "welcome-user"
-                }
-            }
+            "$type": "Microsoft.SendActivityStep",
+            "activity": "{template(welcome-user)}"
         },
         {
-            "$type": "http://schemas.botframework.com/EndDialog",
+            "$type": "Microsoft.EndDialogStep",
             "result": "value"
         }
     ]
