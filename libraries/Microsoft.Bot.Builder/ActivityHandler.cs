@@ -9,8 +9,22 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
 {
+    /// <summary>
+    /// An implementation of the IBot interface intended for further subclassing.
+    /// Derive from this class to plug in code to handle particular Activity types.
+    /// Pre and post processing of Activities can be plugged in by deriving and calling
+    /// the base class implementation.
+    /// </summary>
     public class ActivityHandler : IBot
     {
+        /// <summary>
+        /// The OnTurnAsync function is called by the Adapter (for example, the <see cref="BotFrameworkHttpAdapter"/>)
+        /// at runtime in order to process an inbound Activity.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public virtual Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             if (turnContext == null)

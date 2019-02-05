@@ -12,23 +12,23 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
     /// <summary>
     /// A Bot Builder Adapter implementation used to handled bot Framework HTTP requests.
     /// </summary>
-    public class BotFrameworkAdapterEx : BotFrameworkAdapter, IBotFrameworkAdapter
+    public class BotFrameworkHttpAdapter : BotFrameworkAdapter, IBotFrameworkHttpAdapter
     {
-        public BotFrameworkAdapterEx(ICredentialProvider credentialProvider)
-            : base(credentialProvider)
+        public BotFrameworkHttpAdapter(ICredentialProvider credentialProvider = null)
+            : base(credentialProvider ?? new SimpleCredentialProvider())
         {
         }
 
-        public async Task ProcessAsync(HttpRequestMessage request, HttpResponseMessage response, IBot bot, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task ProcessAsync(HttpRequestMessage httpRequest, HttpResponseMessage httpResponse, IBot bot, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (request == null)
+            if (httpRequest == null)
             {
-                throw new ArgumentNullException(nameof(request));
+                throw new ArgumentNullException(nameof(httpRequest));
             }
 
-            if (response == null)
+            if (httpResponse == null)
             {
-                throw new ArgumentNullException(nameof(response));
+                throw new ArgumentNullException(nameof(httpResponse));
             }
 
             if (bot == null)
@@ -37,16 +37,16 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             }
 
             // deserialize the incoming Activity
-            var activity = await HttpHelper.FromRequestAsync(request, cancellationToken).ConfigureAwait(false);
+            var activity = await HttpHelper.FromRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
 
             // grab the auth header from the inbound http request
-            var authHeader = request.Headers.Authorization?.ToString();
+            var authHeader = httpRequest.Headers.Authorization?.ToString();
 
             // process the inbound activity with the bot
             var invokeResponse = await ProcessActivityAsync(authHeader, activity, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
             // write the response, potentially serializing the InvokeResponse
-            HttpHelper.ToResponse(request, response, invokeResponse);
+            HttpHelper.ToResponse(httpRequest, httpResponse, invokeResponse);
         }
     }
 }
