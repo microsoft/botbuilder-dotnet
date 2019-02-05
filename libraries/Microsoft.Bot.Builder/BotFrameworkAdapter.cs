@@ -754,7 +754,7 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Creates a conversation on the specified channel. Overload allows a ConversationReference for Teams.
+        /// Creates a conversation on the specified channel. Overload receives a ConversationReference including the tenant.
         /// </summary>
         /// <param name="channelId">The ID for the channel.</param>
         /// <param name="serviceUrl">The channel's service URL endpoint.</param>
@@ -764,7 +764,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="callback">The method to call for the resulting bot turn.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
-        /// <param name="reference"> A conversation reference that contains the tennant id.</param>
+        /// <param name="reference">A conversation reference that contains the tenant.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>To start a conversation, your bot must know its account information
         /// and the user's account information on that channel.
