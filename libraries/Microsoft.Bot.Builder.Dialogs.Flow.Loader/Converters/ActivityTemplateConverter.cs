@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Converters
             }
 
             // TODO: Wire language generator into configuration pipeline
-            template.LanguageGenerator = new LangugageGenerator("en-us.lg");
+            template.LanguageGenerator = new LangugageGenerator(@"dialogs\main\en-us.lg");
 
             return template;
         }

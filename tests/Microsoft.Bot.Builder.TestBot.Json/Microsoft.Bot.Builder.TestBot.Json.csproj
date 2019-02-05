@@ -10,10 +10,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="en-us.lg">
+    <Content Include="Dialogs\Main\en-us.lg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="main.dialog">
+    <Content Include="Dialogs\Main\main.dialog">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
