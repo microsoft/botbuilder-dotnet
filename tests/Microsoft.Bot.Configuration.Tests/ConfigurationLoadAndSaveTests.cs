@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Configuration.Tests
             Assert.AreEqual("test", config.Name);
             Assert.AreEqual("test description", config.Description);
             Assert.AreEqual("", config.Padlock);
-            Assert.AreEqual(11, config.Services.Count);
+            Assert.AreEqual(12, config.Services.Count);
             dynamic properties = config.Properties;
             Assert.AreEqual(true, (bool)properties.extra, "extra property should round trip");
 
