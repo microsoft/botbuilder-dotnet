@@ -22,10 +22,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         public string Value { get; set; }
 
         /// <summary>
-        /// Gets or sets the action to use when rendering the choice as a suggested action. This is optional.
+        /// Gets or sets the action to use when rendering the choice as a suggested action or hero card.
+        /// This is optional.
         /// </summary>
         /// <value>
-        /// The action to use when rendering the choice as a suggested action.
+        /// The action to use when rendering the choice as a suggested action or hero card.
         /// </value>
         public CardAction Action { get; set; }
 

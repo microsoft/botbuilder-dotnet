@@ -154,10 +154,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 
         public static IMessageActivity SuggestedAction(IList<Choice> choices, string text = null, string speak = null)
         {
+            // Return activity with choices as suggested actions
+            return MessageFactory.SuggestedActions(ExtractActions(choices), text, speak, InputHints.ExpectingInput);
+        }
+
+        public static IMessageActivity HeroCard(IList<Choice> choices, string text = null, string speak = null)
+        {
+            var attachments = new List<Attachment>
+            {
+                new HeroCard(text: text, buttons: ExtractActions(choices)).ToAttachment(),
+            };
+
+            // Return activity with choices as HeroCard with buttons
+            return MessageFactory.Attachment(attachments, null, speak, InputHints.ExpectingInput);
+        }
+
+        public static IList<Choice> ToChoices(IList<string> choices)
+        {
+            return (choices == null)
+                    ?
+                new List<Choice>()
+                    :
+                choices.Select(choice => new Choice { Value = choice }).ToList();
+        }
+
+        private static List<CardAction> ExtractActions(IList<Choice> choices)
+        {
             choices = choices ?? new List<Choice>();
 
             // Map choices to actions
-            var actions = choices.Select((choice) =>
+            return choices.Select((choice) =>
             {
                 if (choice.Action != null)
                 {
@@ -173,42 +199,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                     };
                 }
             }).ToList();
-
-            // Return activity with choices as suggested actions
-            return MessageFactory.SuggestedActions(actions, text, speak, InputHints.ExpectingInput);
-        }
-
-        public static IMessageActivity HeroCard(IList<Choice> choices, string text = null, string speak = null)
-        {
-            choices = choices ?? new List<Choice>();
-
-            var actions = new List<CardAction>();
-            foreach (var choice in choices)
-            {
-                actions.Add(new CardAction
-                {
-                    Type = ActionTypes.ImBack,
-                    Title = choice.Value,
-                    Value = choice.Value
-                });
-            }
-
-            var attachments = new List<Attachment>
-            {
-                new HeroCard(text: text, buttons: actions).ToAttachment()
-            };
-
-            // Return activity with choices as HeroCard with buttons
-            return MessageFactory.Attachment(attachments, null, speak, InputHints.ExpectingInput);
-        }
-
-        public static IList<Choice> ToChoices(IList<string> choices)
-        {
-            return (choices == null)
-                    ?
-                new List<Choice>()
-                    :
-                choices.Select(choice => new Choice { Value = choice }).ToList();
         }
     }
 }
