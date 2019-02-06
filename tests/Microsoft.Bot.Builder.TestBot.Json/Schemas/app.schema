@@ -2,12 +2,6 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "oneOf": [
         {
-            "$ref": "#/definitions/Microsoft.IActivityTemplate"
-        },
-        {
-            "$ref": "#/definitions/Microsoft.IExpression"
-        },
-        {
             "$ref": "#/definitions/Microsoft.DateTimePrompt"
         },
         {
@@ -67,33 +61,12 @@
     ],
     "definitions": {
         "Microsoft.IActivityTemplate": {
-            "title": "Microsoft IActivityTemplate",
+            "title": "Microsoft ActivityTemplate",
             "description": "Definition of Microsoft.IActivityTemplate which will be expanded by components that $implements it.",
             "oneOf": [
                 {
                     "type": "string"
                 }
-            ],
-            "properties": {
-                "$type": {
-                    "type": "string",
-                    "const": "Microsoft.IActivityTemplate"
-                },
-                "$id": {
-                    "type": "string"
-                },
-                "$ref": {
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false,
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "$type"
             ]
         },
         "Microsoft.IDialog": {
@@ -101,14 +74,23 @@
             "description": "Definition of Microsoft.IDialog which will be expanded by components that $implements it.",
             "oneOf": [
                 {
-                    "type": "string"
+                    "$ref": "#/definitions/Microsoft.DateTimePrompt"
                 },
-                "Microsoft.DateTimePrompt",
-                "Microsoft.FloatPrompt",
-                "Microsoft.IntegerPrompt",
-                "Microsoft.IntentDialog",
-                "Microsoft.SequenceDialog",
-                "Microsoft.TextPrompt"
+                {
+                    "$ref": "#/definitions/Microsoft.FloatPrompt"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.IntegerPrompt"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.IntentDialog"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.SequenceDialog"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.TextPrompt"
+                }
             ]
         },
         "Microsoft.IDialogStep": {
@@ -116,18 +98,35 @@
             "description": "Definition of Microsoft.IDialogStep which will be expanded by components that $implements it.",
             "oneOf": [
                 {
-                    "type": "object"
+                    "$ref": "#/definitions/Microsoft.CallDialog"
                 },
-                "Microsoft.CallDialog",
-                "Microsoft.CancelDialog",
-                "Microsoft.ClearPropertyStep",
-                "Microsoft.EndDialog",
-                "Microsoft.EndOfTurnStep",
-                "Microsoft.IfElseStep",
-                "Microsoft.SendActivityStep",
-                "Microsoft.SendActivityTemplateStep",
-                "Microsoft.SetPropertyStep",
-                "Microsoft.SwitchStep"
+                {
+                    "$ref": "#/definitions/Microsoft.CancelDialog"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.ClearPropertyStep"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.EndDialog"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.EndOfTurnStep"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.IfElseStep"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.SendActivityStep"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.SendActivityTemplateStep"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.SetPropertyStep"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.SwitchStep"
+                }
             ]
         },
         "Microsoft.IExpression": {
@@ -137,27 +136,6 @@
                 {
                     "type": "string"
                 }
-            ],
-            "properties": {
-                "$type": {
-                    "type": "string",
-                    "const": "Microsoft.IExpression"
-                },
-                "$id": {
-                    "type": "string"
-                },
-                "$ref": {
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false,
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "$type"
             ]
         },
         "Microsoft.IRecognizer": {
@@ -167,9 +145,15 @@
                 {
                     "type": "string"
                 },
-                "Microsoft.LuisRecognizer",
-                "Microsoft.QnaMakerRecognizer",
-                "Microsoft.RegexRecognizer"
+                {
+                    "$ref": "#/definitions/Microsoft.LuisRecognizer"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.QnaMakerRecognizer"
+                },
+                {
+                    "$ref": "#/definitions/Microsoft.RegexRecognizer"
+                }
             ]
         },
         "Microsoft.DateTimePrompt": {
