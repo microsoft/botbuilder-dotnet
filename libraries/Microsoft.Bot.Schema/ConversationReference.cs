@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="channelId">Channel ID</param>
         /// <param name="serviceUrl">Service endpoint where operations
         /// concerning the referenced conversation may be performed</param>
-        public ConversationReference(string activityId = default(string), ChannelAccount user = default(ChannelAccount), ChannelAccount bot = default(ChannelAccount), ConversationAccount conversation = default(ConversationAccount), string channelId = default(string), string serviceUrl = default(string), object channelData = default(object))
+        public ConversationReference(string activityId = default(string), ChannelAccount user = default(ChannelAccount), ChannelAccount bot = default(ChannelAccount), ConversationAccount conversation = default(ConversationAccount), string channelId = default(string), string serviceUrl = default(string))
         {
             ActivityId = activityId;
             User = user;
@@ -46,7 +46,6 @@ namespace Microsoft.Bot.Schema
             Conversation = conversation;
             ChannelId = channelId;
             ServiceUrl = serviceUrl;
-            ChannelData = channelData;
             CustomInit();
         }
 
@@ -91,11 +90,6 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "serviceUrl")]
         public string ServiceUrl { get; set; }    
-        
-        /// <summary>
-        /// Gets or sets channel Data
-        /// </summary>
-        [JsonProperty(PropertyName = "channelData")]
-        public object ChannelData { get; set; }
+       
     }
 }

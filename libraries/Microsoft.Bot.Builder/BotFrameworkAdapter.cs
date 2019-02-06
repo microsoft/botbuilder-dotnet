@@ -778,19 +778,21 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         public virtual async Task CreateConversationAsync(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, BotCallbackHandler callback, ConversationReference reference, CancellationToken cancellationToken)
         {
-            if (reference.ChannelData != null)
+            if (reference.Conversation != null)
             {
-                var typeOfDynamic = reference.ChannelData.GetType();
+                var typeOfDynamic = reference.Conversation.GetType();
                 var tenantProperty = typeOfDynamic.GetProperty("tenant");
-                var tenant = tenantProperty?.GetValue(reference.ChannelData, null);
+                var tenantId = tenantProperty?.GetValue(reference.Conversation, null);
 
-                if (tenant != null)
+                if (tenantId != null)
                 {
-                    conversationParameters.ChannelData = new { tenant };
-                }
-            }
+                    conversationParameters.ChannelData = new { tenant = new { id = tenantId } };
 
-            await CreateConversationAsync(channelId, serviceUrl, credentials, conversationParameters, callback, cancellationToken).ConfigureAwait(false);
+                    // conversationParameters.Conversation = new { tenantId };
+                }
+
+                await CreateConversationAsync(channelId, serviceUrl, credentials, conversationParameters, callback, cancellationToken).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
