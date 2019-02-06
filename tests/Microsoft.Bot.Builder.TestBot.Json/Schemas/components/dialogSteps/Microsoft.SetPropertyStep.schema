@@ -1,6 +1,5 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$type": "Microsoft.SetPropertyStep",
     "$implements": [
         "Microsoft.IDialogStep"
     ],
@@ -10,12 +9,12 @@
     "additionalProperties": false,
     "properties": {
         "property": {
-            "$ref": "../IExpression.schema",
+            "$type":"Microsoft.IExpression",
             "title": "Property",
             "description": "Expression which is the property to set."
         },
         "value": {
-            "$ref": "../IExpression.schema",
+            "$type":"Microsoft.IExpression",
             "title": "Value",
             "description": "Expression which is the value to use."
         }

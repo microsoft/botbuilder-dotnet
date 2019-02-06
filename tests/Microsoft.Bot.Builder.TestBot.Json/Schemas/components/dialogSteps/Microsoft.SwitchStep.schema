@@ -1,6 +1,5 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$type": "Microsoft.SwitchStep",
     "$implements": [
         "Microsoft.IDialogStep"
     ],
@@ -10,7 +9,7 @@
     "additionalProperties": false,
     "properties": {
         "condition": {
-            "$ref": "../IExpression.schema",
+            "$type":"Microsoft.IExpression",
             "title": "Condition",
             "description": "Expression to evaluate.",
             "examples": [
@@ -24,12 +23,12 @@
             "additionalProperties": {
                 "oneOf": [
                     {
-                        "$ref": "../IDialogStep.schema"
+                        "$type":"Microsoft.IDialogStep"
                     },
                     {
                         "type": "array",
                         "items": {
-                            "$ref": "../IDialogStep.schema"
+                            "$type":"Microsoft.IDialogStep"
                         }
                     }
                 ]

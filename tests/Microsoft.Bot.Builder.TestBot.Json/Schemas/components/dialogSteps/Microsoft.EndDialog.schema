@@ -1,6 +1,5 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$type": "Microsoft.EndDialog",
     "$implements": [
         "Microsoft.IDialogStep"
     ],
@@ -10,7 +9,7 @@
     "additionalProperties": false,
     "properties": {
         "property": {
-            "$ref": "../IExpression.schema",
+            "$type":"Microsoft.IExpression",
             "title": "Property",
             "description": "The property from dialog memory to return as the result",
             "examples": [

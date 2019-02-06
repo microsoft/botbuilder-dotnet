@@ -1,6 +1,5 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$type": "Microsoft.IfElseStep",
     "$implements": [
         "Microsoft.IDialogStep"
     ],
@@ -12,12 +11,12 @@
         "ifTrue": {
             "oneOf": [
                 {
-                    "$ref": "../IDialogStep.schema"
+                    "$type":"Microsoft.IDialogStep"
                 },
                 {
                     "type": "array",
                     "items": {
-                        "$ref": "../IDialogStep.schema"
+                        "$type":"Microsoft.IDialogStep"
                     }
                 }
             ],
@@ -27,12 +26,12 @@
         "ifFalse": {
             "oneOf": [
                 {
-                    "$ref": "../IDialogStep.schema"
+                    "$type":"Microsoft.IDialogStep"
                 },
                 {
                     "type": "array",
                     "items": {
-                        "$ref": "../IDialogStep.schema"
+                        "$type":"Microsoft.IDialogStep"
                     }
                 }
             ],
@@ -40,7 +39,7 @@
             "description": "Step to execute if expression is false."
         },
         "condition": {
-            "$ref": "../IExpression.schema",
+            "$type":"Microsoft.IExpression",
             "title": "Condition",
             "description": "Expression to evaluate.",
             "examples": [

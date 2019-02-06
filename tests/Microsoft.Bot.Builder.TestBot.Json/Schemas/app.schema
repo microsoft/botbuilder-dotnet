@@ -2,6 +2,12 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "oneOf": [
         {
+            "$ref": "#/definitions/Microsoft.IActivityTemplate"
+        },
+        {
+            "$ref": "#/definitions/Microsoft.IExpression"
+        },
+        {
             "$ref": "#/definitions/Microsoft.DateTimePrompt"
         },
         {
@@ -32,7 +38,7 @@
             "$ref": "#/definitions/Microsoft.EndDialog"
         },
         {
-            "$ref": "#/definitions/Microsoft.EndOfTurn"
+            "$ref": "#/definitions/Microsoft.EndOfTurnStep"
         },
         {
             "$ref": "#/definitions/Microsoft.IfElseStep"
@@ -50,33 +56,123 @@
             "$ref": "#/definitions/Microsoft.SwitchStep"
         },
         {
-            "$ref": "#/definitions/Microsoft.LUISRecognizer"
+            "$ref": "#/definitions/Microsoft.LuisRecognizer"
         },
         {
             "$ref": "#/definitions/Microsoft.QnaMakerRecognizer"
         },
         {
             "$ref": "#/definitions/Microsoft.RegexRecognizer"
-        },
-        {
-            "$ref": "#/definitions/Microsoft.IActivityTemplate"
-        },
-        {
-            "$ref": "#/definitions/Microsoft.IRecognizer"
-        },
-        {
-            "$ref": "#/definitions/Microsoft.IDialog"
-        },
-        {
-            "$ref": "#/definitions/Microsoft.IDialogStep"
-        },
-        {
-            "$ref": "#/definitions/Microsoft.IExpression"
         }
     ],
     "definitions": {
+        "Microsoft.IActivityTemplate": {
+            "title": "Microsoft IActivityTemplate",
+            "description": "Definition of Microsoft.IActivityTemplate which will be expanded by components that $implements it.",
+            "oneOf": [
+                {
+                    "type": "string"
+                }
+            ],
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.IActivityTemplate"
+                },
+                "$id": {
+                    "type": "string"
+                },
+                "$ref": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "Microsoft.IDialog": {
+            "title": "Microsoft IDialog",
+            "description": "Definition of Microsoft.IDialog which will be expanded by components that $implements it.",
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                "Microsoft.DateTimePrompt",
+                "Microsoft.FloatPrompt",
+                "Microsoft.IntegerPrompt",
+                "Microsoft.IntentDialog",
+                "Microsoft.SequenceDialog",
+                "Microsoft.TextPrompt"
+            ]
+        },
+        "Microsoft.IDialogStep": {
+            "title": "Microsoft IDialogStep",
+            "description": "Definition of Microsoft.IDialogStep which will be expanded by components that $implements it.",
+            "oneOf": [
+                {
+                    "type": "object"
+                },
+                "Microsoft.CallDialog",
+                "Microsoft.CancelDialog",
+                "Microsoft.ClearPropertyStep",
+                "Microsoft.EndDialog",
+                "Microsoft.EndOfTurnStep",
+                "Microsoft.IfElseStep",
+                "Microsoft.SendActivityStep",
+                "Microsoft.SendActivityTemplateStep",
+                "Microsoft.SetPropertyStep",
+                "Microsoft.SwitchStep"
+            ]
+        },
+        "Microsoft.IExpression": {
+            "title": "Microsoft IActivityTemplate",
+            "description": "Definition of Microsoft.IExpression which will be expanded by components that $implements it.",
+            "oneOf": [
+                {
+                    "type": "string"
+                }
+            ],
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.IExpression"
+                },
+                "$id": {
+                    "type": "string"
+                },
+                "$ref": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "Microsoft.IRecognizer": {
+            "title": "Microsoft IRecognizer",
+            "description": "Definition of Microsoft.IRecognizer which will be expanded by components that $implements it.",
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                "Microsoft.LuisRecognizer",
+                "Microsoft.QnaMakerRecognizer",
+                "Microsoft.RegexRecognizer"
+            ]
+        },
         "Microsoft.DateTimePrompt": {
-            "$type": "Microsoft.DateTimePrompt",
             "$implements": [
                 "Microsoft.IDialog"
             ],
@@ -109,6 +205,7 @@
                     ]
                 },
                 "initialPrompt": {
+                    "$type": "Microsoft.IActivityTemplate",
                     "title": "Initial Prompt",
                     "description": "The message to send to start.",
                     "examples": [
@@ -117,6 +214,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "retryPrompt": {
+                    "$type": "Microsoft.IActivityTemplate",
                     "title": "Retry Prompt",
                     "description": "The message to send to prompt again.",
                     "examples": [
@@ -125,6 +223,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "noMatchResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
                     "title": "No match",
                     "description": "The message to send to when no date was recognized.",
                     "examples": [
@@ -133,6 +232,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "tooSmallResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
                     "title": "Too small",
                     "description": "The message to send to when the recognized number was less then the MinValue. ",
                     "examples": [
@@ -141,6 +241,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "tooLargeResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
                     "title": "Too large",
                     "description": "The message to send to when the recognized number was greater then the MinValue.",
                     "examples": [
@@ -154,17 +255,21 @@
                 },
                 "$id": {
                     "type": "string"
+                },
+                "$ref": {
+                    "type": "string"
                 }
             },
             "patternProperties": {
-                "^$": {}
+                "^\\$": {
+                    "type": "string"
+                }
             },
             "required": [
                 "$type"
             ]
         },
         "Microsoft.FloatPrompt": {
-            "$type": "Microsoft.FloatPrompt",
             "$implements": [
                 "Microsoft.IDialog"
             ],
@@ -197,6 +302,7 @@
                     ]
                 },
                 "initialPrompt": {
+                    "$type": "Microsoft.IActivityTemplate",
                     "title": "Initial Prompt",
                     "description": "The message to send to start.",
                     "examples": [
@@ -205,6 +311,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "retryPrompt": {
+                    "$type": "Microsoft.IActivityTemplate",
                     "title": "Retry Prompt",
                     "description": "The message to send to prompt again.",
                     "examples": [
@@ -213,6 +320,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "noMatchResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
                     "title": "No match",
                     "description": "The message to send to when no number was recognized.",
                     "examples": [
@@ -221,6 +329,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "tooSmallResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
                     "title": "Too small",
                     "description": "The message to send to when the recognized number was less then the MinValue. ",
                     "examples": [
@@ -229,6 +338,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "tooLargeResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
                     "title": "Too large",
                     "description": "The message to send to when the recognized number was greater then the MinValue.",
                     "examples": [
@@ -242,17 +352,21 @@
                 },
                 "$id": {
                     "type": "string"
+                },
+                "$ref": {
+                    "type": "string"
                 }
             },
             "patternProperties": {
-                "^$": {}
+                "^\\$": {
+                    "type": "string"
+                }
             },
             "required": [
                 "$type"
             ]
         },
         "Microsoft.IntegerPrompt": {
-            "$type": "Microsoft.IntegerPrompt",
             "$implements": [
                 "Microsoft.IDialog"
             ],
@@ -285,6 +399,7 @@
                     ]
                 },
                 "initialPrompt": {
+                    "$type": "Microsoft.IActivityTemplate",
                     "title": "Initial Prompt",
                     "description": "The message to send to start.",
                     "examples": [
@@ -293,6 +408,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "retryPrompt": {
+                    "$type": "Microsoft.IActivityTemplate",
                     "title": "Retry Prompt",
                     "description": "The message to send to prompt again.",
                     "examples": [
@@ -301,6 +417,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "noMatchResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
                     "title": "No match",
                     "description": "The message to send to when no number was recognized.",
                     "examples": [
@@ -309,6 +426,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "tooSmallResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
                     "title": "Too small",
                     "description": "The message to send to when the recognized number was less then the MinValue. ",
                     "examples": [
@@ -317,6 +435,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "tooLargeResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
                     "title": "Too large",
                     "description": "The message to send to when the recognized number was greater then the MinValue.",
                     "examples": [
@@ -330,17 +449,21 @@
                 },
                 "$id": {
                     "type": "string"
+                },
+                "$ref": {
+                    "type": "string"
                 }
             },
             "patternProperties": {
-                "^$": {}
+                "^\\$": {
+                    "type": "string"
+                }
             },
             "required": [
                 "$type"
             ]
         },
         "Microsoft.IntentDialog": {
-            "$type": "Microsoft.IntentDialog",
             "$implements": [
                 "Microsoft.IDialog"
             ],
@@ -350,16 +473,14 @@
             "additionalProperties": false,
             "properties": {
                 "recognizer": {
-                    "title": "Microsoft IRecognizer",
-                    "description": "Definition of Microsoft.IRecognizer which will be expanded by components that $implements it.",
+                    "$type": "Microsoft.IRecognizer",
                     "$ref": "#/definitions/Microsoft.IRecognizer"
                 },
                 "routes": {
                     "type": "object",
                     "description": "maps intent->IDialog",
                     "additionalProperties": {
-                        "title": "Microsoft IDialog",
-                        "description": "Definition of Microsoft.IDialog which will be expanded by components that $implements it.",
+                        "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
@@ -369,6 +490,9 @@
                 },
                 "$id": {
                     "type": "string"
+                },
+                "$ref": {
+                    "type": "string"
                 }
             },
             "required": [
@@ -377,11 +501,12 @@
                 "$type"
             ],
             "patternProperties": {
-                "^$": {}
+                "^\\$": {
+                    "type": "string"
+                }
             }
         },
         "Microsoft.SequenceDialog": {
-            "$type": "Microsoft.SequenceDialog",
             "$implements": [
                 "Microsoft.IDialog"
             ],
@@ -394,8 +519,7 @@
                     "type": "array",
                     "description": "Sequence of steps or dialogs to execute",
                     "items": {
-                        "title": "Microsoft IDialogStep",
-                        "description": "Definition of Microsoft.IDialogStep which will be expanded by components that $implements it.",
+                        "$type": "Microsoft.IDialogStep",
                         "$ref": "#/definitions/Microsoft.IDialogStep"
                     }
                 },
@@ -405,6 +529,9 @@
                 },
                 "$id": {
                     "type": "string"
+                },
+                "$ref": {
+                    "type": "string"
                 }
             },
             "required": [
@@ -412,11 +539,12 @@
                 "$type"
             ],
             "patternProperties": {
-                "^$": {}
+                "^\\$": {
+                    "type": "string"
+                }
             }
         },
         "Microsoft.TextPrompt": {
-            "$type": "Microsoft.TextPrompt",
             "$implements": [
                 "Microsoft.IDialog"
             ],
@@ -441,6 +569,7 @@
                     ]
                 },
                 "initialPrompt": {
+                    "$type": "Microsoft.IActivityTemplate",
                     "title": "Initial Prompt",
                     "description": "The message to send to start.",
                     "examples": [
@@ -449,6 +578,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "retryPrompt": {
+                    "$type": "Microsoft.IActivityTemplate",
                     "title": "Retry Prompt",
                     "description": "The message to send to prompt again.",
                     "examples": [
@@ -457,6 +587,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "noMatchResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
                     "title": "No match",
                     "description": "The message to send to when the input didn't match.",
                     "examples": [
@@ -471,17 +602,21 @@
                 },
                 "$id": {
                     "type": "string"
+                },
+                "$ref": {
+                    "type": "string"
                 }
             },
             "patternProperties": {
-                "^$": {}
+                "^\\$": {
+                    "type": "string"
+                }
             },
             "required": [
                 "$type"
             ]
         },
         "Microsoft.CallDialog": {
-            "$type": "Microsoft.CallDialog",
             "$implements": [
                 "Microsoft.IDialogStep"
             ],
@@ -491,6 +626,7 @@
             "additionalProperties": false,
             "properties": {
                 "dialog": {
+                    "$type": "Microsoft.IDialog",
                     "title": "Dialog",
                     "description": "This is the dialog to call.",
                     "$ref": "#/definitions/Microsoft.IDialog"
@@ -502,6 +638,7 @@
                     "additionalProperties": true
                 },
                 "property": {
+                    "$type": "Microsoft.IExpression",
                     "title": "Property",
                     "description": "The property to bind to the dialog and store the result in",
                     "examples": [
@@ -515,17 +652,21 @@
                 },
                 "$id": {
                     "type": "string"
+                },
+                "$ref": {
+                    "type": "string"
                 }
             },
             "patternProperties": {
-                "^$": {}
+                "^\\$": {
+                    "type": "string"
+                }
             },
             "required": [
                 "$type"
             ]
         },
         "Microsoft.CancelDialog": {
-            "$type": "Microsoft.CancelDialog",
             "$implements": [
                 "Microsoft.IDialogStep"
             ],
@@ -540,17 +681,21 @@
                 },
                 "$id": {
                     "type": "string"
+                },
+                "$ref": {
+                    "type": "string"
                 }
             },
             "patternProperties": {
-                "^$": {}
+                "^\\$": {
+                    "type": "string"
+                }
             },
             "required": [
                 "$type"
             ]
         },
         "Microsoft.ClearPropertyStep": {
-            "$type": "Microsoft.ClearPropertyStep",
             "$implements": [
                 "Microsoft.IDialogStep"
             ],
@@ -560,6 +705,7 @@
             "additionalProperties": false,
             "properties": {
                 "property": {
+                    "$type": "Microsoft.IExpression",
                     "title": "Property",
                     "description": "Expression which is the property to clear.",
                     "$ref": "#/definitions/Microsoft.IExpression"
@@ -570,17 +716,21 @@
                 },
                 "$id": {
                     "type": "string"
+                },
+                "$ref": {
+                    "type": "string"
                 }
             },
             "patternProperties": {
-                "^$": {}
+                "^\\$": {
+                    "type": "string"
+                }
             },
             "required": [
                 "$type"
             ]
         },
         "Microsoft.EndDialog": {
-            "$type": "Microsoft.EndDialog",
             "$implements": [
                 "Microsoft.IDialogStep"
             ],
@@ -590,6 +740,7 @@
             "additionalProperties": false,
             "properties": {
                 "property": {
+                    "$type": "Microsoft.IExpression",
                     "title": "Property",
                     "description": "The property from dialog memory to return as the result",
                     "examples": [
@@ -603,17 +754,21 @@
                 },
                 "$id": {
                     "type": "string"
+                },
+                "$ref": {
+                    "type": "string"
                 }
             },
             "patternProperties": {
-                "^$": {}
+                "^\\$": {
+                    "type": "string"
+                }
             },
             "required": [
                 "$type"
             ]
         },
-        "Microsoft.EndOfTurn": {
-            "$type": "Microsoft.EndOfTurn",
+        "Microsoft.EndOfTurnStep": {
             "type": "object",
             "title": "End Of Trun",
             "description": "This is a step which ends the current turn",
@@ -624,21 +779,25 @@
             "properties": {
                 "$type": {
                     "type": "string",
-                    "const": "Microsoft.EndOfTurn"
+                    "const": "Microsoft.EndOfTurnStep"
                 },
                 "$id": {
+                    "type": "string"
+                },
+                "$ref": {
                     "type": "string"
                 }
             },
             "patternProperties": {
-                "^$": {}
+                "^\\$": {
+                    "type": "string"
+                }
             },
             "required": [
                 "$type"
             ]
         },
         "Microsoft.IfElseStep": {
-            "$type": "Microsoft.IfElseStep",
             "$implements": [
                 "Microsoft.IDialogStep"
             ],
@@ -650,15 +809,13 @@
                 "ifTrue": {
                     "oneOf": [
                         {
-                            "title": "Microsoft IDialogStep",
-                            "description": "Definition of Microsoft.IDialogStep which will be expanded by components that $implements it.",
+                            "$type": "Microsoft.IDialogStep",
                             "$ref": "#/definitions/Microsoft.IDialogStep"
                         },
                         {
                             "type": "array",
                             "items": {
-                                "title": "Microsoft IDialogStep",
-                                "description": "Definition of Microsoft.IDialogStep which will be expanded by components that $implements it.",
+                                "$type": "Microsoft.IDialogStep",
                                 "$ref": "#/definitions/Microsoft.IDialogStep"
                             }
                         }
@@ -669,15 +826,13 @@
                 "ifFalse": {
                     "oneOf": [
                         {
-                            "title": "Microsoft IDialogStep",
-                            "description": "Definition of Microsoft.IDialogStep which will be expanded by components that $implements it.",
+                            "$type": "Microsoft.IDialogStep",
                             "$ref": "#/definitions/Microsoft.IDialogStep"
                         },
                         {
                             "type": "array",
                             "items": {
-                                "title": "Microsoft IDialogStep",
-                                "description": "Definition of Microsoft.IDialogStep which will be expanded by components that $implements it.",
+                                "$type": "Microsoft.IDialogStep",
                                 "$ref": "#/definitions/Microsoft.IDialogStep"
                             }
                         }
@@ -686,6 +841,7 @@
                     "description": "Step to execute if expression is false."
                 },
                 "condition": {
+                    "$type": "Microsoft.IExpression",
                     "title": "Condition",
                     "description": "Expression to evaluate.",
                     "examples": [
@@ -699,17 +855,21 @@
                 },
                 "$id": {
                     "type": "string"
+                },
+                "$ref": {
+                    "type": "string"
                 }
             },
             "patternProperties": {
-                "^$": {}
+                "^\\$": {
+                    "type": "string"
+                }
             },
             "required": [
                 "$type"
             ]
         },
         "Microsoft.SendActivityStep": {
-            "$type": "Microsoft.SendActivityStep",
             "$implements": [
                 "Microsoft.IDialogStep"
             ],
@@ -719,1337 +879,701 @@
             "additionalProperties": false,
             "properties": {
                 "activity": {
-                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "description": "An Activity is the basic communication type for the Bot Framework 3.0 protocol.",
+                    "title": "Activity",
                     "type": "object",
                     "required": [
+                        "channelId",
+                        "conversation",
                         "type"
                     ],
-                    "definitions": {
-                        "Attachment": {
-                            "type": [
-                                "object",
-                                "null"
-                            ],
-                            "required": [
-                                "contentType",
-                                "contentUrl",
-                                "content",
-                                "name",
-                                "thumbnailUrl"
-                            ],
-                            "properties": {
-                                "contentType": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                },
-                                "contentUrl": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                },
-                                "content": {},
-                                "name": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                },
-                                "thumbnailUrl": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                }
-                            }
+                    "properties": {
+                        "type": {
+                            "description": "Contains the activity type. Possible values include: 'message', 'contactRelationUpdate',\n'conversationUpdate', 'typing', 'endOfConversation', 'event', 'invoke', 'deleteUserData',\n'messageUpdate', 'messageDelete', 'installationUpdate', 'messageReaction', 'suggestion',\n'trace', 'handoff'",
+                            "type": "string",
+                            "title": "type"
                         },
-                        "CardAction": {
-                            "type": [
-                                "object",
-                                "null"
-                            ],
-                            "required": [
-                                "type",
-                                "title",
-                                "image",
-                                "text",
-                                "displayText",
-                                "value",
-                                "channelData"
-                            ],
-                            "properties": {
-                                "type": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                },
-                                "title": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                },
-                                "image": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                },
-                                "text": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                },
-                                "displayText": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                },
-                                "value": {},
-                                "channelData": {}
-                            }
+                        "id": {
+                            "description": "Contains an ID that uniquely identifies the activity on the channel.",
+                            "type": "string",
+                            "title": "id"
                         },
-                        "ChannelAccount": {
-                            "type": [
-                                "object",
-                                "null"
-                            ],
+                        "timestamp": {
+                            "description": "Contains the date and time that the message was sent, in UTC, expressed in ISO-8601 format.",
+                            "type": "string",
+                            "format": "date-time",
+                            "title": "timestamp"
+                        },
+                        "localTimestamp": {
+                            "description": "Contains the date and time that the message was sent, in local time, expressed in ISO-8601\nformat.\nFor example, 2016-09-23T13:07:49.4714686-07:00.",
+                            "type": "string",
+                            "format": "date-time",
+                            "title": "localTimestamp"
+                        },
+                        "localTimezone": {
+                            "description": "Contains the name of the timezone in which the message, in local time, expressed in IANA Time\nZone database format.\nFor example, America/Los_Angeles.",
+                            "type": "string",
+                            "title": "localTimezone"
+                        },
+                        "serviceUrl": {
+                            "description": "Contains the URL that specifies the channel's service endpoint. Set by the channel.",
+                            "type": "string",
+                            "title": "serviceUrl"
+                        },
+                        "channelId": {
+                            "description": "Contains an ID that uniquely identifies the channel. Set by the channel.",
+                            "type": "string",
+                            "title": "channelId"
+                        },
+                        "from": {
+                            "description": "Identifies the sender of the message.",
+                            "title": "from",
+                            "type": "object",
                             "required": [
                                 "id",
-                                "name",
-                                "aadObjectId",
-                                "role"
+                                "name"
                             ],
                             "properties": {
                                 "id": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
+                                    "description": "Channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or\n123456)",
+                                    "type": "string",
+                                    "title": "id"
                                 },
                                 "name": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
+                                    "description": "Display friendly name",
+                                    "type": "string",
+                                    "title": "name"
                                 },
                                 "aadObjectId": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
+                                    "description": "This account's object ID within Azure Active Directory (AAD)",
+                                    "type": "string",
+                                    "title": "aadObjectId"
                                 },
                                 "role": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
+                                    "description": "Role of the entity behind the account (Example: User, Bot, etc.). Possible values include:\n'user', 'bot'",
+                                    "type": "string",
+                                    "title": "role"
                                 }
                             }
                         },
-                        "ConversationAccount": {
-                            "type": [
-                                "object",
-                                "null"
-                            ],
+                        "conversation": {
+                            "description": "Identifies the conversation to which the activity belongs.",
+                            "title": "conversation",
+                            "type": "object",
                             "required": [
-                                "isGroup",
                                 "conversationType",
                                 "id",
-                                "name",
-                                "aadObjectId",
-                                "role"
+                                "isGroup",
+                                "name"
                             ],
                             "properties": {
                                 "isGroup": {
-                                    "type": [
-                                        "boolean",
-                                        "null"
-                                    ]
+                                    "description": "Indicates whether the conversation contains more than two participants at the time the\nactivity was generated",
+                                    "type": "boolean",
+                                    "title": "isGroup"
                                 },
                                 "conversationType": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
+                                    "description": "Indicates the type of the conversation in channels that distinguish between conversation types",
+                                    "type": "string",
+                                    "title": "conversationType"
                                 },
                                 "id": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
+                                    "description": "Channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or\n123456)",
+                                    "type": "string",
+                                    "title": "id"
                                 },
                                 "name": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
+                                    "description": "Display friendly name",
+                                    "type": "string",
+                                    "title": "name"
                                 },
                                 "aadObjectId": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
+                                    "description": "This account's object ID within Azure Active Directory (AAD)",
+                                    "type": "string",
+                                    "title": "aadObjectId"
                                 },
                                 "role": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
+                                    "description": "Role of the entity behind the account (Example: User, Bot, etc.). Possible values include:\n'user', 'bot'",
+                                    "enum": [
+                                        "bot",
+                                        "user"
+                                    ],
+                                    "type": "string",
+                                    "title": "role"
                                 }
                             }
                         },
-                        "ConversationReference": {
-                            "type": [
-                                "object",
-                                "null"
-                            ],
-                            "required": [
-                                "activityId",
-                                "user",
-                                "bot",
-                                "conversation",
-                                "channelId",
-                                "serviceUrl"
-                            ],
-                            "properties": {
-                                "activityId": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                },
-                                "user": {
-                                    "type": [
-                                        "object",
-                                        "null"
-                                    ],
-                                    "required": [
-                                        "id",
-                                        "name",
-                                        "aadObjectId",
-                                        "role"
-                                    ],
-                                    "properties": {
-                                        "id": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
-                                        },
-                                        "name": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
-                                        },
-                                        "aadObjectId": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
-                                        },
-                                        "role": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
-                                        }
-                                    }
-                                },
-                                "bot": {
-                                    "type": [
-                                        "object",
-                                        "null"
-                                    ],
-                                    "required": [
-                                        "id",
-                                        "name",
-                                        "aadObjectId",
-                                        "role"
-                                    ],
-                                    "properties": {
-                                        "id": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
-                                        },
-                                        "name": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
-                                        },
-                                        "aadObjectId": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
-                                        },
-                                        "role": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
-                                        }
-                                    }
-                                },
-                                "conversation": {
-                                    "type": [
-                                        "object",
-                                        "null"
-                                    ],
-                                    "required": [
-                                        "isGroup",
-                                        "conversationType",
-                                        "id",
-                                        "name",
-                                        "aadObjectId",
-                                        "role"
-                                    ],
-                                    "properties": {
-                                        "isGroup": {
-                                            "type": [
-                                                "boolean",
-                                                "null"
-                                            ]
-                                        },
-                                        "conversationType": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
-                                        },
-                                        "id": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
-                                        },
-                                        "name": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
-                                        },
-                                        "aadObjectId": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
-                                        },
-                                        "role": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
-                                        }
-                                    }
-                                },
-                                "channelId": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                },
-                                "serviceUrl": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                }
-                            }
-                        },
-                        "Entity": {
-                            "type": [
-                                "object",
-                                "null"
-                            ],
-                            "required": [
-                                "type"
-                            ],
-                            "properties": {
-                                "type": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                }
-                            }
-                        },
-                        "MessageReaction": {
-                            "type": [
-                                "object",
-                                "null"
-                            ],
-                            "required": [
-                                "type"
-                            ],
-                            "properties": {
-                                "type": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                }
-                            }
-                        },
-                        "SemanticAction": {
-                            "type": [
-                                "object",
-                                "null"
-                            ],
+                        "recipient": {
+                            "description": "Identifies the recipient of the message.",
+                            "title": "recipient",
+                            "type": "object",
                             "required": [
                                 "id",
-                                "entities"
+                                "name"
                             ],
                             "properties": {
                                 "id": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
+                                    "description": "Channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or\n123456)",
+                                    "type": "string",
+                                    "title": "id"
                                 },
-                                "entities": {
-                                    "type": [
-                                        "object",
-                                        "null"
-                                    ],
-                                    "additionalProperties": {
-                                        "type": [
-                                            "object",
-                                            "null"
-                                        ],
+                                "name": {
+                                    "description": "Display friendly name",
+                                    "type": "string",
+                                    "title": "name"
+                                },
+                                "aadObjectId": {
+                                    "description": "This account's object ID within Azure Active Directory (AAD)",
+                                    "type": "string",
+                                    "title": "aadObjectId"
+                                },
+                                "role": {
+                                    "description": "Role of the entity behind the account (Example: User, Bot, etc.). Possible values include:\n'user', 'bot'",
+                                    "type": "string",
+                                    "title": "role"
+                                }
+                            }
+                        },
+                        "textFormat": {
+                            "description": "Format of text fields Default:markdown. Possible values include: 'markdown', 'plain', 'xml'",
+                            "type": "string",
+                            "title": "textFormat"
+                        },
+                        "attachmentLayout": {
+                            "description": "The layout hint for multiple attachments. Default: list. Possible values include: 'list',\n'carousel'",
+                            "type": "string",
+                            "title": "attachmentLayout"
+                        },
+                        "membersAdded": {
+                            "description": "The collection of members added to the conversation.",
+                            "type": "array",
+                            "title": "membersAdded",
+                            "items": {
+                                "description": "Channel account information needed to route a message",
+                                "title": "ChannelAccount",
+                                "type": "object",
+                                "required": [
+                                    "id",
+                                    "name"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "description": "Channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or\n123456)",
+                                        "type": "string",
+                                        "title": "id"
+                                    },
+                                    "name": {
+                                        "description": "Display friendly name",
+                                        "type": "string",
+                                        "title": "name"
+                                    },
+                                    "aadObjectId": {
+                                        "description": "This account's object ID within Azure Active Directory (AAD)",
+                                        "type": "string",
+                                        "title": "aadObjectId"
+                                    },
+                                    "role": {
+                                        "description": "Role of the entity behind the account (Example: User, Bot, etc.). Possible values include:\n'user', 'bot'",
+                                        "type": "string",
+                                        "title": "role"
+                                    }
+                                }
+                            }
+                        },
+                        "membersRemoved": {
+                            "description": "The collection of members removed from the conversation.",
+                            "type": "array",
+                            "title": "membersRemoved",
+                            "items": {
+                                "description": "Channel account information needed to route a message",
+                                "title": "ChannelAccount",
+                                "type": "object",
+                                "required": [
+                                    "id",
+                                    "name"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "description": "Channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or\n123456)",
+                                        "type": "string",
+                                        "title": "id"
+                                    },
+                                    "name": {
+                                        "description": "Display friendly name",
+                                        "type": "string",
+                                        "title": "name"
+                                    },
+                                    "aadObjectId": {
+                                        "description": "This account's object ID within Azure Active Directory (AAD)",
+                                        "type": "string",
+                                        "title": "aadObjectId"
+                                    },
+                                    "role": {
+                                        "description": "Role of the entity behind the account (Example: User, Bot, etc.). Possible values include:\n'user', 'bot'",
+                                        "type": "string",
+                                        "title": "role"
+                                    }
+                                }
+                            }
+                        },
+                        "reactionsAdded": {
+                            "description": "The collection of reactions added to the conversation.",
+                            "type": "array",
+                            "title": "reactionsAdded",
+                            "items": {
+                                "description": "Message reaction object",
+                                "title": "MessageReaction",
+                                "type": "object",
+                                "required": [
+                                    "type"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "description": "Message reaction type. Possible values include: 'like', 'plusOne'",
+                                        "type": "string",
+                                        "title": "type"
+                                    }
+                                }
+                            }
+                        },
+                        "reactionsRemoved": {
+                            "description": "The collection of reactions removed from the conversation.",
+                            "type": "array",
+                            "title": "reactionsRemoved",
+                            "items": {
+                                "description": "Message reaction object",
+                                "title": "MessageReaction",
+                                "type": "object",
+                                "required": [
+                                    "type"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "description": "Message reaction type. Possible values include: 'like', 'plusOne'",
+                                        "type": "string",
+                                        "title": "type"
+                                    }
+                                }
+                            }
+                        },
+                        "topicName": {
+                            "description": "The updated topic name of the conversation.",
+                            "type": "string",
+                            "title": "topicName"
+                        },
+                        "historyDisclosed": {
+                            "description": "Indicates whether the prior history of the channel is disclosed.",
+                            "type": "boolean",
+                            "title": "historyDisclosed"
+                        },
+                        "locale": {
+                            "description": "A locale name for the contents of the text field.\nThe locale name is a combination of an ISO 639 two- or three-letter culture code associated\nwith a language\nand an ISO 3166 two-letter subculture code associated with a country or region.\nThe locale name can also correspond to a valid BCP-47 language tag.",
+                            "type": "string",
+                            "title": "locale"
+                        },
+                        "text": {
+                            "description": "The text content of the message.",
+                            "type": "string",
+                            "title": "text"
+                        },
+                        "speak": {
+                            "description": "The text to speak.",
+                            "type": "string",
+                            "title": "speak"
+                        },
+                        "inputHint": {
+                            "description": "Indicates whether your bot is accepting,\nexpecting, or ignoring user input after the message is delivered to the client. Possible\nvalues include: 'acceptingInput', 'ignoringInput', 'expectingInput'",
+                            "type": "string",
+                            "title": "inputHint"
+                        },
+                        "summary": {
+                            "description": "The text to display if the channel cannot render cards.",
+                            "type": "string",
+                            "title": "summary"
+                        },
+                        "suggestedActions": {
+                            "description": "The suggested actions for the activity.",
+                            "title": "suggestedActions",
+                            "type": "object",
+                            "required": [
+                                "actions",
+                                "to"
+                            ],
+                            "properties": {
+                                "to": {
+                                    "description": "Ids of the recipients that the actions should be shown to.  These Ids are relative to the\nchannelId and a subset of all recipients of the activity",
+                                    "type": "array",
+                                    "title": "to",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "actions": {
+                                    "description": "Actions that can be shown to the user",
+                                    "type": "array",
+                                    "title": "actions",
+                                    "items": {
+                                        "description": "A clickable action",
+                                        "title": "CardAction",
+                                        "type": "object",
                                         "required": [
-                                            "type"
+                                            "title",
+                                            "type",
+                                            "value"
                                         ],
                                         "properties": {
                                             "type": {
-                                                "type": [
-                                                    "string",
-                                                    "null"
-                                                ]
+                                                "description": "The type of action implemented by this button. Possible values include: 'openUrl', 'imBack',\n'postBack', 'playAudio', 'playVideo', 'showImage', 'downloadFile', 'signin', 'call',\n'payment', 'messageBack'",
+                                                "type": "string",
+                                                "title": "type"
+                                            },
+                                            "title": {
+                                                "description": "Text description which appears on the button",
+                                                "type": "string",
+                                                "title": "title"
+                                            },
+                                            "image": {
+                                                "description": "Image URL which will appear on the button, next to text label",
+                                                "type": "string",
+                                                "title": "image"
+                                            },
+                                            "text": {
+                                                "description": "Text for this action",
+                                                "type": "string",
+                                                "title": "text"
+                                            },
+                                            "displayText": {
+                                                "description": "(Optional) text to display in the chat feed if the button is clicked",
+                                                "type": "string",
+                                                "title": "displayText"
+                                            },
+                                            "value": {
+                                                "description": "Supplementary parameter for action. Content of this property depends on the ActionType",
+                                                "title": "value"
+                                            },
+                                            "channelData": {
+                                                "description": "Channel-specific data associated with this action",
+                                                "title": "channelData"
                                             }
                                         }
                                     }
                                 }
                             }
                         },
-                        "SuggestedActions": {
-                            "type": [
-                                "object",
-                                "null"
-                            ],
-                            "required": [
-                                "to",
-                                "actions"
-                            ],
-                            "properties": {
-                                "to": {
-                                    "type": [
-                                        "array",
-                                        "null"
-                                    ],
-                                    "items": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
-                                    }
-                                },
-                                "actions": {
-                                    "type": [
-                                        "array",
-                                        "null"
-                                    ],
-                                    "items": {
-                                        "type": [
-                                            "object",
-                                            "null"
-                                        ],
-                                        "required": [
-                                            "type",
-                                            "title",
-                                            "image",
-                                            "text",
-                                            "displayText",
-                                            "value",
-                                            "channelData"
-                                        ],
-                                        "properties": {
-                                            "type": {
-                                                "type": [
-                                                    "string",
-                                                    "null"
-                                                ]
-                                            },
-                                            "title": {
-                                                "type": [
-                                                    "string",
-                                                    "null"
-                                                ]
-                                            },
-                                            "image": {
-                                                "type": [
-                                                    "string",
-                                                    "null"
-                                                ]
-                                            },
-                                            "text": {
-                                                "type": [
-                                                    "string",
-                                                    "null"
-                                                ]
-                                            },
-                                            "displayText": {
-                                                "type": [
-                                                    "string",
-                                                    "null"
-                                                ]
-                                            },
-                                            "value": {},
-                                            "channelData": {}
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "TextHighlight": {
-                            "type": [
-                                "object",
-                                "null"
-                            ],
-                            "required": [
-                                "text",
-                                "occurrence"
-                            ],
-                            "properties": {
-                                "text": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                },
-                                "occurrence": {
-                                    "type": [
-                                        "integer",
-                                        "null"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "properties": {
-                        "type": {
-                            "type": [
-                                "string",
-                                "null"
-                            ]
-                        },
-                        "id": {
-                            "type": [
-                                "string",
-                                "null"
-                            ]
-                        },
-                        "timestamp": {
-                            "type": [
-                                "string",
-                                "null"
-                            ],
-                            "format": "date-time"
-                        },
-                        "localTimestamp": {
-                            "type": [
-                                "string",
-                                "null"
-                            ],
-                            "format": "date-time"
-                        },
-                        "localTimezone": {
-                            "type": [
-                                "string",
-                                "null"
-                            ]
-                        },
-                        "serviceUrl": {
-                            "type": [
-                                "string",
-                                "null"
-                            ]
-                        },
-                        "channelId": {
-                            "type": [
-                                "string",
-                                "null"
-                            ]
-                        },
-                        "from": {
-                            "type": [
-                                "object",
-                                "null"
-                            ],
-                            "required": [
-                                "id",
-                                "name",
-                                "aadObjectId",
-                                "role"
-                            ],
-                            "properties": {
-                                "id": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                },
-                                "name": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                },
-                                "aadObjectId": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                },
-                                "role": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                }
-                            }
-                        },
-                        "conversation": {
-                            "type": [
-                                "object",
-                                "null"
-                            ],
-                            "required": [
-                                "isGroup",
-                                "conversationType",
-                                "id",
-                                "name",
-                                "aadObjectId",
-                                "role"
-                            ],
-                            "properties": {
-                                "isGroup": {
-                                    "type": [
-                                        "boolean",
-                                        "null"
-                                    ]
-                                },
-                                "conversationType": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                },
-                                "id": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                },
-                                "name": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                },
-                                "aadObjectId": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                },
-                                "role": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                }
-                            }
-                        },
-                        "recipient": {
-                            "type": [
-                                "object",
-                                "null"
-                            ],
-                            "required": [
-                                "id",
-                                "name",
-                                "aadObjectId",
-                                "role"
-                            ],
-                            "properties": {
-                                "id": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                },
-                                "name": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                },
-                                "aadObjectId": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                },
-                                "role": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                }
-                            }
-                        },
-                        "textFormat": {
-                            "type": [
-                                "string",
-                                "null"
-                            ]
-                        },
-                        "attachmentLayout": {
-                            "type": [
-                                "string",
-                                "null"
-                            ]
-                        },
-                        "membersAdded": {
-                            "type": [
-                                "array",
-                                "null"
-                            ],
-                            "items": {
-                                "type": [
-                                    "object",
-                                    "null"
-                                ],
-                                "required": [
-                                    "id",
-                                    "name",
-                                    "aadObjectId",
-                                    "role"
-                                ],
-                                "properties": {
-                                    "id": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
-                                    },
-                                    "name": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
-                                    },
-                                    "aadObjectId": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
-                                    },
-                                    "role": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
-                                    }
-                                }
-                            }
-                        },
-                        "membersRemoved": {
-                            "type": [
-                                "array",
-                                "null"
-                            ],
-                            "items": {
-                                "type": [
-                                    "object",
-                                    "null"
-                                ],
-                                "required": [
-                                    "id",
-                                    "name",
-                                    "aadObjectId",
-                                    "role"
-                                ],
-                                "properties": {
-                                    "id": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
-                                    },
-                                    "name": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
-                                    },
-                                    "aadObjectId": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
-                                    },
-                                    "role": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
-                                    }
-                                }
-                            }
-                        },
-                        "reactionsAdded": {
-                            "type": [
-                                "array",
-                                "null"
-                            ],
-                            "items": {
-                                "type": [
-                                    "object",
-                                    "null"
-                                ],
-                                "required": [
-                                    "type"
-                                ],
-                                "properties": {
-                                    "type": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
-                                    }
-                                }
-                            }
-                        },
-                        "reactionsRemoved": {
-                            "type": [
-                                "array",
-                                "null"
-                            ],
-                            "items": {
-                                "type": [
-                                    "object",
-                                    "null"
-                                ],
-                                "required": [
-                                    "type"
-                                ],
-                                "properties": {
-                                    "type": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
-                                    }
-                                }
-                            }
-                        },
-                        "topicName": {
-                            "type": [
-                                "string",
-                                "null"
-                            ]
-                        },
-                        "historyDisclosed": {
-                            "type": [
-                                "boolean",
-                                "null"
-                            ]
-                        },
-                        "locale": {
-                            "type": [
-                                "string",
-                                "null"
-                            ]
-                        },
-                        "text": {
-                            "type": [
-                                "string",
-                                "null"
-                            ]
-                        },
-                        "speak": {
-                            "type": [
-                                "string",
-                                "null"
-                            ]
-                        },
-                        "inputHint": {
-                            "type": [
-                                "string",
-                                "null"
-                            ]
-                        },
-                        "summary": {
-                            "type": [
-                                "string",
-                                "null"
-                            ]
-                        },
-                        "suggestedActions": {
-                            "type": [
-                                "object",
-                                "null"
-                            ],
-                            "required": [
-                                "to",
-                                "actions"
-                            ],
-                            "properties": {
-                                "to": {
-                                    "type": [
-                                        "array",
-                                        "null"
-                                    ],
-                                    "items": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
-                                    }
-                                },
-                                "actions": {
-                                    "type": [
-                                        "array",
-                                        "null"
-                                    ],
-                                    "items": {
-                                        "type": [
-                                            "object",
-                                            "null"
-                                        ],
-                                        "required": [
-                                            "type",
-                                            "title",
-                                            "image",
-                                            "text",
-                                            "displayText",
-                                            "value",
-                                            "channelData"
-                                        ],
-                                        "properties": {
-                                            "type": {
-                                                "type": [
-                                                    "string",
-                                                    "null"
-                                                ]
-                                            },
-                                            "title": {
-                                                "type": [
-                                                    "string",
-                                                    "null"
-                                                ]
-                                            },
-                                            "image": {
-                                                "type": [
-                                                    "string",
-                                                    "null"
-                                                ]
-                                            },
-                                            "text": {
-                                                "type": [
-                                                    "string",
-                                                    "null"
-                                                ]
-                                            },
-                                            "displayText": {
-                                                "type": [
-                                                    "string",
-                                                    "null"
-                                                ]
-                                            },
-                                            "value": {},
-                                            "channelData": {}
-                                        }
-                                    }
-                                }
-                            }
-                        },
                         "attachments": {
-                            "type": [
-                                "array",
-                                "null"
-                            ],
+                            "description": "Attachments",
+                            "type": "array",
+                            "title": "attachments",
                             "items": {
-                                "type": [
-                                    "object",
-                                    "null"
-                                ],
+                                "description": "An attachment within an activity",
+                                "title": "Attachment",
+                                "type": "object",
                                 "required": [
-                                    "contentType",
-                                    "contentUrl",
-                                    "content",
-                                    "name",
-                                    "thumbnailUrl"
+                                    "contentType"
                                 ],
                                 "properties": {
                                     "contentType": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
+                                        "description": "mimetype/Contenttype for the file",
+                                        "type": "string",
+                                        "title": "contentType"
                                     },
                                     "contentUrl": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
+                                        "description": "Content Url",
+                                        "type": "string",
+                                        "title": "contentUrl"
                                     },
-                                    "content": {},
+                                    "content": {
+                                        "description": "Embedded content",
+                                        "title": "content"
+                                    },
                                     "name": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
+                                        "description": "(OPTIONAL) The name of the attachment",
+                                        "type": "string",
+                                        "title": "name"
                                     },
                                     "thumbnailUrl": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
+                                        "description": "(OPTIONAL) Thumbnail associated with attachment",
+                                        "type": "string",
+                                        "title": "thumbnailUrl"
                                     }
                                 }
                             }
                         },
                         "entities": {
-                            "type": [
-                                "array",
-                                "null"
-                            ],
+                            "description": "Represents the entities that were mentioned in the message.",
+                            "type": "array",
+                            "title": "entities",
                             "items": {
-                                "type": [
-                                    "object",
-                                    "null"
-                                ],
+                                "description": "Metadata object pertaining to an activity",
+                                "title": "Entity",
+                                "type": "object",
                                 "required": [
                                     "type"
                                 ],
                                 "properties": {
                                     "type": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
+                                        "description": "Type of this entity (RFC 3987 IRI)",
+                                        "type": "string",
+                                        "title": "type"
                                     }
                                 }
                             }
                         },
-                        "channelData": {},
+                        "channelData": {
+                            "description": "Contains channel-specific content.",
+                            "title": "channelData"
+                        },
                         "action": {
-                            "type": [
-                                "string",
-                                "null"
-                            ]
+                            "description": "Indicates whether the recipient of a contactRelationUpdate was added or removed from the\nsender's contact list.",
+                            "type": "string",
+                            "title": "action"
                         },
                         "replyToId": {
-                            "type": [
-                                "string",
-                                "null"
-                            ]
+                            "description": "Contains the ID of the message to which this message is a reply.",
+                            "type": "string",
+                            "title": "replyToId"
                         },
                         "label": {
-                            "type": [
-                                "string",
-                                "null"
-                            ]
+                            "description": "A descriptive label for the activity.",
+                            "type": "string",
+                            "title": "label"
                         },
                         "valueType": {
-                            "type": [
-                                "string",
-                                "null"
-                            ]
+                            "description": "The type of the activity's value object.",
+                            "type": "string",
+                            "title": "valueType"
                         },
-                        "value": {},
+                        "value": {
+                            "description": "A value that is associated with the activity.",
+                            "title": "value"
+                        },
                         "name": {
-                            "type": [
-                                "string",
-                                "null"
-                            ]
+                            "description": "The name of the operation associated with an invoke or event activity.",
+                            "type": "string",
+                            "title": "name"
                         },
                         "relatesTo": {
-                            "type": [
-                                "object",
-                                "null"
-                            ],
+                            "description": "A reference to another conversation or activity.",
+                            "title": "relatesTo",
+                            "type": "object",
                             "required": [
-                                "activityId",
-                                "user",
                                 "bot",
-                                "conversation",
                                 "channelId",
+                                "conversation",
                                 "serviceUrl"
                             ],
                             "properties": {
                                 "activityId": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
+                                    "description": "(Optional) ID of the activity to refer to",
+                                    "type": "string",
+                                    "title": "activityId"
                                 },
                                 "user": {
-                                    "type": [
-                                        "object",
-                                        "null"
-                                    ],
+                                    "description": "(Optional) User participating in this conversation",
+                                    "title": "user",
+                                    "type": "object",
                                     "required": [
                                         "id",
-                                        "name",
-                                        "aadObjectId",
-                                        "role"
+                                        "name"
                                     ],
                                     "properties": {
                                         "id": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
+                                            "description": "Channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or\n123456)",
+                                            "type": "string",
+                                            "title": "id"
                                         },
                                         "name": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
+                                            "description": "Display friendly name",
+                                            "type": "string",
+                                            "title": "name"
                                         },
                                         "aadObjectId": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
+                                            "description": "This account's object ID within Azure Active Directory (AAD)",
+                                            "type": "string",
+                                            "title": "aadObjectId"
                                         },
                                         "role": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
+                                            "description": "Role of the entity behind the account (Example: User, Bot, etc.). Possible values include:\n'user', 'bot'",
+                                            "type": "string",
+                                            "title": "role"
                                         }
                                     }
                                 },
                                 "bot": {
-                                    "type": [
-                                        "object",
-                                        "null"
-                                    ],
+                                    "description": "Bot participating in this conversation",
+                                    "title": "bot",
+                                    "type": "object",
                                     "required": [
                                         "id",
-                                        "name",
-                                        "aadObjectId",
-                                        "role"
+                                        "name"
                                     ],
                                     "properties": {
                                         "id": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
+                                            "description": "Channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or\n123456)",
+                                            "type": "string",
+                                            "title": "id"
                                         },
                                         "name": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
+                                            "description": "Display friendly name",
+                                            "type": "string",
+                                            "title": "name"
                                         },
                                         "aadObjectId": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
+                                            "description": "This account's object ID within Azure Active Directory (AAD)",
+                                            "type": "string",
+                                            "title": "aadObjectId"
                                         },
                                         "role": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
+                                            "description": "Role of the entity behind the account (Example: User, Bot, etc.). Possible values include:\n'user', 'bot'",
+                                            "type": "string",
+                                            "title": "role"
                                         }
                                     }
                                 },
                                 "conversation": {
-                                    "type": [
-                                        "object",
-                                        "null"
-                                    ],
+                                    "description": "Conversation reference",
+                                    "title": "conversation",
+                                    "type": "object",
                                     "required": [
-                                        "isGroup",
                                         "conversationType",
                                         "id",
-                                        "name",
-                                        "aadObjectId",
-                                        "role"
+                                        "isGroup",
+                                        "name"
                                     ],
                                     "properties": {
                                         "isGroup": {
-                                            "type": [
-                                                "boolean",
-                                                "null"
-                                            ]
+                                            "description": "Indicates whether the conversation contains more than two participants at the time the\nactivity was generated",
+                                            "type": "boolean",
+                                            "title": "isGroup"
                                         },
                                         "conversationType": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
+                                            "description": "Indicates the type of the conversation in channels that distinguish between conversation types",
+                                            "type": "string",
+                                            "title": "conversationType"
                                         },
                                         "id": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
+                                            "description": "Channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or\n123456)",
+                                            "type": "string",
+                                            "title": "id"
                                         },
                                         "name": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
+                                            "description": "Display friendly name",
+                                            "type": "string",
+                                            "title": "name"
                                         },
                                         "aadObjectId": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
+                                            "description": "This account's object ID within Azure Active Directory (AAD)",
+                                            "type": "string",
+                                            "title": "aadObjectId"
                                         },
                                         "role": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
+                                            "description": "Role of the entity behind the account (Example: User, Bot, etc.). Possible values include:\n'user', 'bot'",
+                                            "enum": [
+                                                "bot",
+                                                "user"
+                                            ],
+                                            "type": "string",
+                                            "title": "role"
                                         }
                                     }
                                 },
                                 "channelId": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
+                                    "description": "Channel ID",
+                                    "type": "string",
+                                    "title": "channelId"
                                 },
                                 "serviceUrl": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
+                                    "description": "Service endpoint where operations concerning the referenced conversation may be performed",
+                                    "type": "string",
+                                    "title": "serviceUrl"
                                 }
                             }
                         },
                         "code": {
-                            "type": [
-                                "string",
-                                "null"
-                            ]
+                            "description": "The a code for endOfConversation activities that indicates why the conversation ended.\nPossible values include: 'unknown', 'completedSuccessfully', 'userCancelled', 'botTimedOut',\n'botIssuedInvalidMessage', 'channelFailed'",
+                            "type": "string",
+                            "title": "code"
                         },
                         "expiration": {
-                            "type": [
-                                "string",
-                                "null"
-                            ],
-                            "format": "date-time"
+                            "description": "The time at which the activity should be considered to be \"expired\" and should not be\npresented to the recipient.",
+                            "type": "string",
+                            "format": "date-time",
+                            "title": "expiration"
                         },
                         "importance": {
-                            "type": [
-                                "string",
-                                "null"
-                            ]
+                            "description": "The importance of the activity. Possible values include: 'low', 'normal', 'high'",
+                            "type": "string",
+                            "title": "importance"
                         },
                         "deliveryMode": {
-                            "type": [
-                                "string",
-                                "null"
-                            ]
+                            "description": "A delivery hint to signal to the recipient alternate delivery paths for the activity.\nThe default delivery mode is \"default\". Possible values include: 'normal', 'notification'",
+                            "type": "string",
+                            "title": "deliveryMode"
                         },
                         "listenFor": {
-                            "type": [
-                                "array",
-                                "null"
-                            ],
+                            "description": "List of phrases and references that speech and language priming systems should listen for",
+                            "type": "array",
+                            "title": "listenFor",
                             "items": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
+                                "type": "string"
                             }
                         },
                         "textHighlights": {
-                            "type": [
-                                "array",
-                                "null"
-                            ],
+                            "description": "The collection of text fragments to highlight when the activity contains a ReplyToId value.",
+                            "type": "array",
+                            "title": "textHighlights",
                             "items": {
-                                "type": [
-                                    "object",
-                                    "null"
-                                ],
+                                "description": "Refers to a substring of content within another field",
+                                "title": "TextHighlight",
+                                "type": "object",
                                 "required": [
-                                    "text",
-                                    "occurrence"
+                                    "occurrence",
+                                    "text"
                                 ],
                                 "properties": {
                                     "text": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
+                                        "description": "Defines the snippet of text to highlight",
+                                        "type": "string",
+                                        "title": "text"
                                     },
                                     "occurrence": {
-                                        "type": [
-                                            "integer",
-                                            "null"
-                                        ]
+                                        "description": "Occurrence of the text field within the referenced text, if multiple exist.",
+                                        "type": "number",
+                                        "title": "occurrence"
                                     }
                                 }
                             }
                         },
                         "semanticAction": {
-                            "type": [
-                                "object",
-                                "null"
-                            ],
+                            "description": "An optional programmatic action accompanying this request",
+                            "title": "semanticAction",
+                            "type": "object",
                             "required": [
-                                "id",
-                                "entities"
+                                "entities",
+                                "id"
                             ],
                             "properties": {
                                 "id": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
+                                    "description": "ID of this action",
+                                    "type": "string",
+                                    "title": "id"
                                 },
                                 "entities": {
-                                    "type": [
-                                        "object",
-                                        "null"
-                                    ],
+                                    "description": "Entities associated with this action",
+                                    "type": "object",
+                                    "title": "entities",
                                     "additionalProperties": {
-                                        "type": [
-                                            "object",
-                                            "null"
-                                        ],
+                                        "description": "Metadata object pertaining to an activity",
+                                        "title": "Entity",
+                                        "type": "object",
                                         "required": [
                                             "type"
                                         ],
                                         "properties": {
                                             "type": {
-                                                "type": [
-                                                    "string",
-                                                    "null"
-                                                ]
+                                                "description": "Type of this entity (RFC 3987 IRI)",
+                                                "type": "string",
+                                                "title": "type"
                                             }
                                         }
                                     }
@@ -2064,17 +1588,21 @@
                 },
                 "$id": {
                     "type": "string"
+                },
+                "$ref": {
+                    "type": "string"
                 }
             },
             "patternProperties": {
-                "^$": {}
+                "^\\$": {
+                    "type": "string"
+                }
             },
             "required": [
                 "$type"
             ]
         },
         "Microsoft.SendActivityTemplateStep": {
-            "$type": "Microsoft.SendActivityTemplateStep",
             "$implements": [
                 "Microsoft.IDialogStep"
             ],
@@ -2084,6 +1612,7 @@
             "additionalProperties": false,
             "properties": {
                 "activityTemplate": {
+                    "$type": "Microsoft.IActivityTemplate",
                     "title": "Activity",
                     "description": "Activity to send to the user.",
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
@@ -2094,17 +1623,21 @@
                 },
                 "$id": {
                     "type": "string"
+                },
+                "$ref": {
+                    "type": "string"
                 }
             },
             "patternProperties": {
-                "^$": {}
+                "^\\$": {
+                    "type": "string"
+                }
             },
             "required": [
                 "$type"
             ]
         },
         "Microsoft.SetPropertyStep": {
-            "$type": "Microsoft.SetPropertyStep",
             "$implements": [
                 "Microsoft.IDialogStep"
             ],
@@ -2114,11 +1647,13 @@
             "additionalProperties": false,
             "properties": {
                 "property": {
+                    "$type": "Microsoft.IExpression",
                     "title": "Property",
                     "description": "Expression which is the property to set.",
                     "$ref": "#/definitions/Microsoft.IExpression"
                 },
                 "value": {
+                    "$type": "Microsoft.IExpression",
                     "title": "Value",
                     "description": "Expression which is the value to use.",
                     "$ref": "#/definitions/Microsoft.IExpression"
@@ -2129,17 +1664,21 @@
                 },
                 "$id": {
                     "type": "string"
+                },
+                "$ref": {
+                    "type": "string"
                 }
             },
             "patternProperties": {
-                "^$": {}
+                "^\\$": {
+                    "type": "string"
+                }
             },
             "required": [
                 "$type"
             ]
         },
         "Microsoft.SwitchStep": {
-            "$type": "Microsoft.SwitchStep",
             "$implements": [
                 "Microsoft.IDialogStep"
             ],
@@ -2149,6 +1688,7 @@
             "additionalProperties": false,
             "properties": {
                 "condition": {
+                    "$type": "Microsoft.IExpression",
                     "title": "Condition",
                     "description": "Expression to evaluate.",
                     "examples": [
@@ -2163,15 +1703,13 @@
                     "additionalProperties": {
                         "oneOf": [
                             {
-                                "title": "Microsoft IDialogStep",
-                                "description": "Definition of Microsoft.IDialogStep which will be expanded by components that $implements it.",
+                                "$type": "Microsoft.IDialogStep",
                                 "$ref": "#/definitions/Microsoft.IDialogStep"
                             },
                             {
                                 "type": "array",
                                 "items": {
-                                    "title": "Microsoft IDialogStep",
-                                    "description": "Definition of Microsoft.IDialogStep which will be expanded by components that $implements it.",
+                                    "$type": "Microsoft.IDialogStep",
                                     "$ref": "#/definitions/Microsoft.IDialogStep"
                                 }
                             }
@@ -2189,17 +1727,21 @@
                 },
                 "$id": {
                     "type": "string"
+                },
+                "$ref": {
+                    "type": "string"
                 }
             },
             "patternProperties": {
-                "^$": {}
+                "^\\$": {
+                    "type": "string"
+                }
             },
             "required": [
                 "$type"
             ]
         },
-        "Microsoft.LUISRecognizer": {
-            "$type": "Microsoft.LUISRecognizer",
+        "Microsoft.LuisRecognizer": {
             "$implements": [
                 "Microsoft.IRecognizer"
             ],
@@ -2232,9 +1774,12 @@
                 },
                 "$type": {
                     "type": "string",
-                    "const": "Microsoft.LUISRecognizer"
+                    "const": "Microsoft.LuisRecognizer"
                 },
                 "$id": {
+                    "type": "string"
+                },
+                "$ref": {
                     "type": "string"
                 }
             },
@@ -2243,11 +1788,12 @@
                 "$type"
             ],
             "patternProperties": {
-                "^$": {}
+                "^\\$": {
+                    "type": "string"
+                }
             }
         },
         "Microsoft.QnaMakerRecognizer": {
-            "$type": "Microsoft.QnaMakerRecognizer",
             "$implements": [
                 "Microsoft.IRecognizer"
             ],
@@ -2276,6 +1822,9 @@
                 },
                 "$id": {
                     "type": "string"
+                },
+                "$ref": {
+                    "type": "string"
                 }
             },
             "required": [
@@ -2284,11 +1833,12 @@
                 "$type"
             ],
             "patternProperties": {
-                "^$": {}
+                "^\\$": {
+                    "type": "string"
+                }
             }
         },
         "Microsoft.RegexRecognizer": {
-            "$type": "Microsoft.RegexRecognizer",
             "$implements": [
                 "Microsoft.IRecognizer"
             ],
@@ -2306,6 +1856,9 @@
                 },
                 "$id": {
                     "type": "string"
+                },
+                "$ref": {
+                    "type": "string"
                 }
             },
             "required": [
@@ -2313,97 +1866,10 @@
                 "$type"
             ],
             "patternProperties": {
-                "^$": {}
+                "^\\$": {
+                    "type": "string"
+                }
             }
-        },
-        "Microsoft.IActivityTemplate": {
-            "oneOf": [
-                {
-                    "type": "string"
-                }
-            ]
-        },
-        "Microsoft.IRecognizer": {
-            "oneOf": [
-                {
-                    "type": "string"
-                },
-                {
-                    "$ref": "#/definitions/Microsoft.LUISRecognizer"
-                },
-                {
-                    "$ref": "#/definitions/Microsoft.QnaMakerRecognizer"
-                },
-                {
-                    "$ref": "#/definitions/Microsoft.RegexRecognizer"
-                }
-            ]
-        },
-        "Microsoft.IDialog": {
-            "oneOf": [
-                {
-                    "type": "string"
-                },
-                {
-                    "$ref": "#/definitions/Microsoft.DateTimePrompt"
-                },
-                {
-                    "$ref": "#/definitions/Microsoft.FloatPrompt"
-                },
-                {
-                    "$ref": "#/definitions/Microsoft.IntegerPrompt"
-                },
-                {
-                    "$ref": "#/definitions/Microsoft.IntentDialog"
-                },
-                {
-                    "$ref": "#/definitions/Microsoft.SequenceDialog"
-                },
-                {
-                    "$ref": "#/definitions/Microsoft.TextPrompt"
-                }
-            ]
-        },
-        "Microsoft.IDialogStep": {
-            "oneOf": [
-                {
-                    "$ref": "#/definitions/Microsoft.CallDialog"
-                },
-                {
-                    "$ref": "#/definitions/Microsoft.CancelDialog"
-                },
-                {
-                    "$ref": "#/definitions/Microsoft.ClearPropertyStep"
-                },
-                {
-                    "$ref": "#/definitions/Microsoft.EndDialog"
-                },
-                {
-                    "$ref": "#/definitions/Microsoft.EndOfTurn"
-                },
-                {
-                    "$ref": "#/definitions/Microsoft.IfElseStep"
-                },
-                {
-                    "$ref": "#/definitions/Microsoft.SendActivityStep"
-                },
-                {
-                    "$ref": "#/definitions/Microsoft.SendActivityTemplateStep"
-                },
-                {
-                    "$ref": "#/definitions/Microsoft.SetPropertyStep"
-                },
-                {
-                    "$ref": "#/definitions/Microsoft.SwitchStep"
-                }
-            ]
-        },
-        "Microsoft.IExpression": {
-            "oneOf": [
-                {
-                    "type": "string"
-                }
-            ]
         }
     }
 }

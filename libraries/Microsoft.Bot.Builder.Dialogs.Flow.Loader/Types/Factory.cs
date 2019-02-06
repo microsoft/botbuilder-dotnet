@@ -101,13 +101,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types
             Register("Microsoft.SetPropertyStep", typeof(SetPropertyStep));
             Register("Microsoft.SwitchStep", typeof(SwitchStep));
             Register("Microsoft.CallDialog", typeof(CallDialog));
-            //Register("Microsoft.SendActivityStep", typeof(SendActivityStep));
+            Register("Microsoft.SendActivityStep", typeof(SendActivityStep));
             Register("Microsoft.EndDialog", typeof(EndDialog));
             Register("Microsoft.ClearPropertyStep", typeof(ClearPropertyStep));
             Register("Microsoft.EndOfTurnStep", typeof(EndOfTurnStep));
             Register("Microsoft.GotoDialog", typeof(GotoDialog));
             Register("Microsoft.IfElseStep", typeof(IfElseStep));
-            Register("Microsoft.SendActivityStep", typeof(SendActivityTemplateStep));
+            Register("Microsoft.SendActivityTemplateStep", typeof(SendActivityTemplateStep));
 
             // Dialogs
             Register("Microsoft.ComponentDialog", typeof(ComponentDialog), new ComponentDialogLoader());

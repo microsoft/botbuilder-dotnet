@@ -1,6 +1,5 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$type": "Microsoft.FloatPrompt",
     "$implements": [
         "Microsoft.IDialog"
     ],
@@ -33,7 +32,7 @@
             ]
         },
         "initialPrompt": {
-            "$ref": "../IActivityTemplate.schema#",
+            "$type":"Microsoft.IActivityTemplate",
             "title": "Initial Prompt",
             "description": "The message to send to start.",
             "examples": [
@@ -41,7 +40,7 @@
             ]
         },
         "retryPrompt": {
-            "$ref": "../IActivityTemplate.schema#",
+            "$type":"Microsoft.IActivityTemplate",
             "title": "Retry Prompt",
             "description": "The message to send to prompt again.",
             "examples": [
@@ -49,7 +48,7 @@
             ]
         },
         "noMatchResponse": {
-            "$ref": "../IActivityTemplate.schema#",
+            "$type":"Microsoft.IActivityTemplate",
             "title": "No match",
             "description": "The message to send to when no number was recognized.",
             "examples": [
@@ -57,7 +56,7 @@
             ]
         },
         "tooSmallResponse": {
-            "$ref": "../IActivityTemplate.schema#",
+            "$type":"Microsoft.IActivityTemplate",
             "title": "Too small",
             "description": "The message to send to when the recognized number was less then the MinValue. ",
             "examples": [
@@ -65,7 +64,7 @@
             ]
         },
         "tooLargeResponse": {
-            "$ref": "../IActivityTemplate.schema#",
+            "$type":"Microsoft.IActivityTemplate",
             "title": "Too large",
             "description": "The message to send to when the recognized number was greater then the MinValue.",
             "examples": [

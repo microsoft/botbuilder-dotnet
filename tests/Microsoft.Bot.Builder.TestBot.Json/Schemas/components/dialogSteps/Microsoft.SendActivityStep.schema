@@ -1,6 +1,5 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$type": "Microsoft.SendActivityTemplateStep",
     "$implements": [
         "Microsoft.IDialogStep"
     ],
@@ -9,10 +8,8 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
-        "activityTemplate": {
-            "$ref": "../IActivityTemplate.schema",
-            "title": "Activity",
-            "description": "Activity to send to the user."
+        "activity": {
+            "$ref": "https://raw.githubusercontent.com/Microsoft/BotBuilder/master/schemas/botframework.schema#/definitions/Activity"
         }
     }
 }

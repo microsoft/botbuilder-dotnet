@@ -1,6 +1,5 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$type": "Microsoft.CallDialog",
     "$implements": [
         "Microsoft.IDialogStep"
     ],
@@ -10,7 +9,7 @@
     "additionalProperties": false,
     "properties": {
         "dialog": {
-            "$ref": "../IDialog.schema",
+            "$type":"Microsoft.IDialog",
             "title": "Dialog",
             "description": "This is the dialog to call."
         },
@@ -21,7 +20,7 @@
             "description": "Options to pass to the dialog."
         },
         "property": {
-            "$ref": "../IExpression.schema",
+            "$type":"Microsoft.IExpression",
             "title": "Property",
             "description": "The property to bind to the dialog and store the result in",
             "examples": [

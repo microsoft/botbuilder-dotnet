@@ -1,6 +1,5 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$type": "Microsoft.TextPrompt",
     "$implements": [
         "Microsoft.IDialog"
     ],
@@ -25,7 +24,7 @@
             ]
         },
         "initialPrompt": {
-            "$ref": "../IActivityTemplate.schema#",
+            "$type":"Microsoft.IActivityTemplate",
             "title": "Initial Prompt",
             "description": "The message to send to start.",
             "examples": [
@@ -33,7 +32,7 @@
             ]
         },
         "retryPrompt": {
-            "$ref": "../IActivityTemplate.schema#",
+            "$type":"Microsoft.IActivityTemplate",
             "title": "Retry Prompt",
             "description": "The message to send to prompt again.",
             "examples": [
@@ -41,7 +40,7 @@
             ]
         },
         "noMatchResponse": {
-            "$ref": "../IActivityTemplate.schema#",
+            "$type":"Microsoft.IActivityTemplate",
             "title": "No match",
             "description": "The message to send to when the input didn't match.",
             "examples": [
