@@ -12,6 +12,8 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
         public ConversationState ConversationState { get; set; }
 
+        public UserState UserState{ get; set; }
+
         public SemaphoreSlim SemaphoreSlim { get; } = new SemaphoreSlim(1, 1);
     }
 }

@@ -45,11 +45,12 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             IStorage dataStore = new MemoryStorage();
             var conversationState = new ConversationState(dataStore);
             var userState = new UserState(dataStore);
-
+            var userStateMap = userState.CreateProperty<StateMap>("user");
             var accessors = new TestBotAccessors
             {
                 ConversationDialogState = conversationState.CreateProperty<DialogState>("DialogState"),
-                ConversationState = conversationState
+                ConversationState = conversationState,
+                UserState = userState
             };
 
             services.AddBot<IBot>(
@@ -65,14 +66,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                         await conversationState.SaveChangesAsync(turnContext);
                     };
                     options.Middleware.Add(new AutoSaveStateMiddleware(conversationState));
-                    //options.Middleware.Add(
-                    //    new TemplateManagerMiddleware()
-                    //    {
-                    //        Renderers = new List<ITemplateRenderer>()
-                    //        {
-                    //            new LanguageGenerationRenderer("en-us.lg")
-                    //        }
-                    //    });
                 });
         }
 
