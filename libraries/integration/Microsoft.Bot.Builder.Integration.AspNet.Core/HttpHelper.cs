@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() },
         });
 
-        public static Activity FromRequest(HttpRequest request)
+        public static Activity ReadRequest(HttpRequest request)
         {
             if (request == null)
             {
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             return activity;
         }
 
-        public static void ToResponse(HttpResponse response, InvokeResponse invokeResponse)
+        public static void WriteResponse(HttpResponse response, InvokeResponse invokeResponse)
         {
             if (response == null)
             {

@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public virtual Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+        public virtual Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -161,49 +161,31 @@ namespace Microsoft.Bot.Builder
             public bool Responded => _innerTurnContext.Responded;
 
             public Task DeleteActivityAsync(string activityId, CancellationToken cancellationToken = default(CancellationToken))
-            {
-                return _innerTurnContext.DeleteActivityAsync(activityId, cancellationToken);
-            }
+                => _innerTurnContext.DeleteActivityAsync(activityId, cancellationToken);
 
             public Task DeleteActivityAsync(ConversationReference conversationReference, CancellationToken cancellationToken = default(CancellationToken))
-            {
-                return _innerTurnContext.DeleteActivityAsync(conversationReference, cancellationToken);
-            }
+                => _innerTurnContext.DeleteActivityAsync(conversationReference, cancellationToken);
 
             public ITurnContext OnDeleteActivity(DeleteActivityHandler handler)
-            {
-                return _innerTurnContext.OnDeleteActivity(handler);
-            }
+                => _innerTurnContext.OnDeleteActivity(handler);
 
             public ITurnContext OnSendActivities(SendActivitiesHandler handler)
-            {
-                return _innerTurnContext.OnSendActivities(handler);
-            }
+                => _innerTurnContext.OnSendActivities(handler);
 
             public ITurnContext OnUpdateActivity(UpdateActivityHandler handler)
-            {
-                return _innerTurnContext.OnUpdateActivity(handler);
-            }
+                => _innerTurnContext.OnUpdateActivity(handler);
 
             public Task<ResourceResponse[]> SendActivitiesAsync(IActivity[] activities, CancellationToken cancellationToken = default(CancellationToken))
-            {
-                return _innerTurnContext.SendActivitiesAsync(activities, cancellationToken);
-            }
+                => _innerTurnContext.SendActivitiesAsync(activities, cancellationToken);
 
             public Task<ResourceResponse> SendActivityAsync(string textReplyToSend, string speak = null, string inputHint = "acceptingInput", CancellationToken cancellationToken = default(CancellationToken))
-            {
-                return _innerTurnContext.SendActivityAsync(textReplyToSend, speak, inputHint, cancellationToken);
-            }
+                => _innerTurnContext.SendActivityAsync(textReplyToSend, speak, inputHint, cancellationToken);
 
             public Task<ResourceResponse> SendActivityAsync(IActivity activity, CancellationToken cancellationToken = default(CancellationToken))
-            {
-                return _innerTurnContext.SendActivityAsync(activity, cancellationToken);
-            }
+                => _innerTurnContext.SendActivityAsync(activity, cancellationToken);
 
             public Task<ResourceResponse> UpdateActivityAsync(IActivity activity, CancellationToken cancellationToken = default(CancellationToken))
-            {
-                return _innerTurnContext.UpdateActivityAsync(activity, cancellationToken);
-            }
+                => _innerTurnContext.UpdateActivityAsync(activity, cancellationToken);
         }
     }
 }

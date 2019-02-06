@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             }
 
             // deserialize the incoming Activity
-            var activity = await HttpHelper.FromRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            var activity = await HttpHelper.ReadRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
 
             // grab the auth header from the inbound http request
             var authHeader = httpRequest.Headers.Authorization?.ToString();
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             var invokeResponse = await ProcessActivityAsync(authHeader, activity, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
             // write the response, potentially serializing the InvokeResponse
-            HttpHelper.ToResponse(httpRequest, httpResponse, invokeResponse);
+            HttpHelper.WriteResponse(httpRequest, httpResponse, invokeResponse);
         }
     }
 }

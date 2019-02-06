@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             },
         };
 
-        public static async Task<Activity> FromRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        public static async Task<Activity> ReadRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             if (request == null)
             {
@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             return activity;
         }
 
-        public static void ToResponse(HttpRequestMessage request, HttpResponseMessage response, InvokeResponse invokeResponse)
+        public static void WriteResponse(HttpRequestMessage request, HttpResponseMessage response, InvokeResponse invokeResponse)
         {
             if (response == null)
             {

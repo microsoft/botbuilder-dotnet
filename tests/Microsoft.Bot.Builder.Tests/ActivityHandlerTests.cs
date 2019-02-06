@@ -6,8 +6,10 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -164,6 +166,41 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual(bot.Record[0], "OnUnrecognizedActivityTypeAsync");
         }
 
+        [TestMethod]
+        public async Task TestDelegatingTurnContext()
+        {
+            // Arrange
+            var turnContextMock = new Mock<ITurnContext>();
+            turnContextMock.Setup(tc => tc.Activity).Returns(new Activity { Type = ActivityTypes.Message });
+            turnContextMock.Setup(tc => tc.Adapter).Returns(new BotFrameworkAdapter(new SimpleCredentialProvider()));
+            turnContextMock.Setup(tc => tc.TurnState).Returns(new TurnContextStateCollection());
+            turnContextMock.Setup(tc => tc.Responded).Returns(false);
+            turnContextMock.Setup(tc => tc.OnDeleteActivity(It.IsAny<DeleteActivityHandler>()));
+            turnContextMock.Setup(tc => tc.OnSendActivities(It.IsAny<SendActivitiesHandler>()));
+            turnContextMock.Setup(tc => tc.OnUpdateActivity(It.IsAny<UpdateActivityHandler>()));
+            turnContextMock.Setup(tc => tc.SendActivityAsync(It.IsAny<IActivity>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(new ResourceResponse()));
+            turnContextMock.Setup(tc => tc.SendActivitiesAsync(It.IsAny<IActivity[]>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(new[] { new ResourceResponse() }));
+            turnContextMock.Setup(tc => tc.DeleteActivityAsync(It.IsAny<ConversationReference>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(new ResourceResponse()));
+            turnContextMock.Setup(tc => tc.UpdateActivityAsync(It.IsAny<IActivity>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(new ResourceResponse()));
+
+            // Act
+            var bot = new TestDelegatingTurnContextActivityHandler();
+            await bot.OnTurnAsync(turnContextMock.Object);
+
+            // Assert
+            turnContextMock.VerifyGet(tc => tc.Activity, Times.AtLeastOnce);
+            turnContextMock.VerifyGet(tc => tc.Adapter, Times.Once);
+            turnContextMock.VerifyGet(tc => tc.TurnState, Times.Once);
+            turnContextMock.VerifyGet(tc => tc.Responded, Times.Once);
+            turnContextMock.Verify(tc => tc.OnDeleteActivity(It.IsAny<DeleteActivityHandler>()), Times.Once);
+            turnContextMock.Verify(tc => tc.OnSendActivities(It.IsAny<SendActivitiesHandler>()), Times.Once);
+            turnContextMock.Verify(tc => tc.OnUpdateActivity(It.IsAny<UpdateActivityHandler>()), Times.Once);
+            turnContextMock.Verify(tc => tc.SendActivityAsync(It.IsAny<IActivity>(), It.IsAny<CancellationToken>()), Times.Once);
+            turnContextMock.Verify(tc => tc.SendActivitiesAsync(It.IsAny<IActivity[]>(), It.IsAny<CancellationToken>()), Times.Once);
+            turnContextMock.Verify(tc => tc.DeleteActivityAsync(It.IsAny<ConversationReference>(), It.IsAny<CancellationToken>()), Times.Once);
+            turnContextMock.Verify(tc => tc.UpdateActivityAsync(It.IsAny<IActivity>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
         private class NotImplementedAdapter : BotAdapter
         {
             public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
@@ -244,6 +281,25 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return base.OnUnrecognizedActivityTypeAsync(turnContext, cancellationToken);
+            }
+        }
+
+        private class TestDelegatingTurnContextActivityHandler : ActivityHandler
+        {
+            protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+            {
+                // touch every 
+                var activity = turnContext.Activity;
+                var adapter = turnContext.Adapter;
+                var turnState = turnContext.TurnState;
+                var responsed = turnContext.Responded;
+                turnContext.OnDeleteActivity((t, a, n) => Task.CompletedTask);
+                turnContext.OnSendActivities((t, a, n) => Task.FromResult(new ResourceResponse[] { new ResourceResponse() }));
+                turnContext.OnUpdateActivity((t, a, n) => Task.FromResult(new ResourceResponse()));
+                await turnContext.DeleteActivityAsync(activity.GetConversationReference());
+                await turnContext.SendActivityAsync(new Activity());
+                await turnContext.SendActivitiesAsync(new IActivity[] { new Activity() });
+                await turnContext.UpdateActivityAsync(new Activity());
             }
         }
     }
