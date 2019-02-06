@@ -20,18 +20,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
 
             // Get the request body and deserialize to the Activity object.
             // We need to leave the stream open here so others downstream can access it.
-            var originalPosition = request.Body.Position;
             request.Body.Position = 0;
-            try
+            using (var bodyReader = new JsonTextReader(new StreamReader(request.Body, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, bufferSize: 1024, leaveOpen: true)))
             {
-                using (var bodyReader = new JsonTextReader(new StreamReader(request.Body, Encoding.UTF8, true, 1024, true)))
-                {
-                    activity = BotMessageHandlerBase.BotMessageSerializer.Deserialize<Activity>(bodyReader);
-                }
-            }
-            finally
-            {
-                request.Body.Position = originalPosition;
+                activity = BotMessageHandlerBase.BotMessageSerializer.Deserialize<Activity>(bodyReader);
             }
 
 #pragma warning disable UseConfigureAwait // Use ConfigureAwait
