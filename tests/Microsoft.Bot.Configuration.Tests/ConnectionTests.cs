@@ -38,6 +38,13 @@ namespace Microsoft.Bot.Configuration.Tests
             Assert.IsNotNull(config.FindServiceByNameOrId("testInsights"), "Should find by name");
             Assert.IsNotNull(config.FindService("3"), "Should find by id");
             Assert.IsNull(config.FindService("testInsights"), "Should not find by name ");
+
+            var service = config.FindServiceByNameOrId<GenericService>("testAbs");
+            Assert.IsNotNull(service, "Should find a service with this type and name.");
+            Assert.IsTrue(service.Id.Equals("12"), "Should find the correct service.");
+
+            Assert.IsNull(config.FindServiceByNameOrId<CosmosDbService>("testAbs"),
+                "Should not find a service of this type and name.");
         }
 
         [TestMethod]
