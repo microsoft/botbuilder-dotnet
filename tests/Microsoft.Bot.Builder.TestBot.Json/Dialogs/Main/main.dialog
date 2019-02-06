@@ -17,7 +17,7 @@
         },
         {
             "$type": "Microsoft.SendActivityTemplateStep",
-            "activityTemplate": "{template(welcome-user)}"
+            "activity": "{template(welcome-user)}"
         },
         {
             "$type": "Microsoft.CallDialog",
@@ -32,8 +32,8 @@
             }
         },
         {
-            "$type": "Microsoft.SendActivityTemplateStep",
-            "activityTemplate": "{template(love-country)}"
+          "$type": "Microsoft.SendActivityTemplateStep",
+          "activity": "{template(love-country)}"
         },
         {
             "$type": "Microsoft.CallDialog",
