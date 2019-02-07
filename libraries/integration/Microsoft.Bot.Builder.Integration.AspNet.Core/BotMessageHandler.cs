@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -17,7 +18,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
         {
             var activity = default(Activity);
 
-            using (var bodyReader = new JsonTextReader(new StreamReader(request.Body, Encoding.UTF8)))
+            // Get the request body and deserialize to the Activity object.
+            // We need to leave the stream open here so others downstream can access it.
+            request.Body.Position = 0;
+            using (var bodyReader = new JsonTextReader(new StreamReader(request.Body, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, bufferSize: 1024, leaveOpen: true)))
             {
                 activity = BotMessageHandlerBase.BotMessageSerializer.Deserialize<Activity>(bodyReader);
             }
