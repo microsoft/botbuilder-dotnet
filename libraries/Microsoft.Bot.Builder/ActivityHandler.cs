@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -51,13 +52,16 @@ namespace Microsoft.Bot.Builder
                     return OnConversationUpdateActivityAsync(new DelegatingTurnContext<IConversationUpdateActivity>(turnContext), cancellationToken);
 
                 case ActivityTypes.Event:
-                    return OnEventActivityAsync(turnContext, cancellationToken);
+                    return OnEventActivityAsync(new DelegatingTurnContext<IEventActivity>(turnContext), cancellationToken);
+
+                case ActivityTypes.ContactRelationUpdate:
+                    return OnContactRelationUpdateActivityAsync(new DelegatingTurnContext<IContactRelationUpdateActivity>(turnContext), cancellationToken);
+
+                case ActivityTypes.Invoke:
+                    return OnInvokeActivityAsync(new DelegatingTurnContext<IInvokeActivity>(turnContext), cancellationToken);
 
                 case ActivityTypes.DeleteUserData:
                     return OnDeleteUserDataActivityAsync(turnContext, cancellationToken);
-
-                case ActivityTypes.ContactRelationUpdate:
-                    return OnContactRelationUpdateActivityAsync(turnContext, cancellationToken);
 
                 default:
                     return OnUnrecognizedActivityTypeAsync(turnContext, cancellationToken);
@@ -115,19 +119,59 @@ namespace Microsoft.Bot.Builder
             return Task.CompletedTask;
         }
 
-        protected virtual Task OnEventActivityAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+        protected virtual Task OnEventActivityAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+        {
+            if (turnContext.Activity.Name == "tokens/response")
+            {
+                return OnTokenResponseEventAsync(turnContext, cancellationToken);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        protected virtual Task OnTokenResponseEventAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+        {
+            // If using the OAuthPrompt override this method to forward this Activity to the Dialog.
+            return Task.CompletedTask;
+        }
+
+        protected virtual Task OnContactRelationUpdateActivityAsync(ITurnContext<IContactRelationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
+        }
+
+        protected virtual async Task OnInvokeActivityAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        {
+            InvokeResponse invokeResponse;
+            if (turnContext.Activity.Name == "signin/verifyState")
+            {
+                invokeResponse = await OnTeamsVerificationInvokeAsync(turnContext, cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                invokeResponse = await OnInvokeAsync(turnContext, cancellationToken).ConfigureAwait(false);
+            }
+
+            if (invokeResponse != null)
+            {
+                var invokeResponseActivity = new Activity { Type = ActivityTypesEx.InvokeResponse, Value = invokeResponse };
+                await turnContext.SendActivityAsync(invokeResponseActivity, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        protected virtual Task<InvokeResponse> OnTeamsVerificationInvokeAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        {
+            // If using the OAuthPrompt override this method to forward this Activity to the Dialog.
+            return Task.FromResult(new InvokeResponse { Status = (int)HttpStatusCode.NotImplemented });
+        }
+
+        protected virtual Task<InvokeResponse> OnInvokeAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(new InvokeResponse { Status = (int)HttpStatusCode.NotImplemented });
         }
 
         protected virtual Task OnDeleteUserDataActivityAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            return Task.CompletedTask;
-        }
-
-        protected virtual Task OnContactRelationUpdateActivityAsync(ITurnContext turnContext, CancellationToken cancellationToken)
-        {
-            // TODO: some documentation as to when this Activity can be sent would be helpful
             return Task.CompletedTask;
         }
 
