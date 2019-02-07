@@ -60,6 +60,9 @@ namespace Microsoft.Bot.Builder
                 case ActivityTypes.Invoke:
                     return OnInvokeActivityAsync(new DelegatingTurnContext<IInvokeActivity>(turnContext), cancellationToken);
 
+                case ActivityTypes.EndOfConversation:
+                    return OnEndOfConversationActivityAsync(new DelegatingTurnContext<IEndOfConversationActivity>(turnContext), cancellationToken);
+
                 case ActivityTypes.DeleteUserData:
                     return OnDeleteUserDataActivityAsync(turnContext, cancellationToken);
 
@@ -168,6 +171,11 @@ namespace Microsoft.Bot.Builder
         protected virtual Task<InvokeResponse> OnInvokeAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.FromResult(new InvokeResponse { Status = (int)HttpStatusCode.NotImplemented });
+        }
+
+        protected virtual Task OnEndOfConversationActivityAsync(ITurnContext<IEndOfConversationActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
         }
 
         protected virtual Task OnDeleteUserDataActivityAsync(ITurnContext turnContext, CancellationToken cancellationToken)

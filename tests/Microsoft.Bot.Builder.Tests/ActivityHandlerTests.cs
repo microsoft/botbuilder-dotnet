@@ -112,6 +112,27 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
+        public async Task TestTokenResponseEventAsync()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Event,
+                Name = "tokens/response",
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.AreEqual(2, bot.Record.Count);
+            Assert.AreEqual(bot.Record[0], "OnEventActivityAsync");
+            Assert.AreEqual(bot.Record[1], "OnTokenResponseEventAsync");
+        }
+
+        [TestMethod]
         public async Task TestContactRelationUpdateActivity()
         {
             // Arrange
@@ -178,6 +199,25 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
+        public async Task TestEndOfConversationActivity()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.EndOfConversation
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.AreEqual(1, bot.Record.Count);
+            Assert.AreEqual(bot.Record[0], "OnEndOfConversationActivityAsync");
+        }
+
+        [TestMethod]
         public async Task TestDeleteUserDataActivity()
         {
             // Arrange
@@ -194,27 +234,6 @@ namespace Microsoft.Bot.Builder.Tests
             // Assert
             Assert.AreEqual(1, bot.Record.Count);
             Assert.AreEqual(bot.Record[0], "OnDeleteUserDataActivityAsync");
-        }
-
-        [TestMethod]
-        public async Task TestTokenResponseEventAsync()
-        {
-            // Arrange
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Event,
-                Name = "tokens/response",
-            };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
-
-            // Act
-            var bot = new TestActivityHandler();
-            await ((IBot)bot).OnTurnAsync(turnContext);
-
-            // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnEventActivityAsync");
-            Assert.AreEqual(bot.Record[1], "OnTokenResponseEventAsync");
         }
 
         [TestMethod]
@@ -373,6 +392,12 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return Task.FromResult(new InvokeResponse { Status = (int)HttpStatusCode.OK });
+            }
+
+            protected override Task OnEndOfConversationActivityAsync(ITurnContext<IEndOfConversationActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnEndOfConversationActivityAsync(turnContext, cancellationToken);
             }
 
             protected override Task OnDeleteUserDataActivityAsync(ITurnContext turnContext, CancellationToken cancellationToken)
