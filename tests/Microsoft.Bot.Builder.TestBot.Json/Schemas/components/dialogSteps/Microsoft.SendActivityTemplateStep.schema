@@ -8,7 +8,7 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
-        "activityTemplate": {
+        "activity": {
             "$type":"Microsoft.IActivityTemplate",
             "title": "Activity",
             "description": "Activity to send to the user."

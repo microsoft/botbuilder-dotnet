@@ -1,61 +1,102 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "Component types",
+    "description": "These are all of the types that can be created by the loader.",
     "oneOf": [
         {
+            "title": "DateTime prompt",
+            "description": "This represents a dialog which gathers a DateTime in a specified range",
             "$ref": "#/definitions/Microsoft.DateTimePrompt"
         },
         {
+            "title": "Float  prompt",
+            "description": "This represents a dialog which gathers a number in a specified range",
             "$ref": "#/definitions/Microsoft.FloatPrompt"
         },
         {
+            "title": "Integer prompt",
+            "description": "This represents a dialog which gathers a number in a specified range",
             "$ref": "#/definitions/Microsoft.IntegerPrompt"
         },
         {
+            "title": "Intent Dialog",
+            "description": "Configures a recognizer and the intent routes",
             "$ref": "#/definitions/Microsoft.IntentDialog"
         },
         {
+            "title": "Sequence Dialog",
+            "description": "Configures a data driven dialog via a collection of steps/dialogs.",
             "$ref": "#/definitions/Microsoft.SequenceDialog"
         },
         {
+            "title": "Text prompt",
+            "description": "This represents a dialog which gathers a text from the user",
             "$ref": "#/definitions/Microsoft.TextPrompt"
         },
         {
+            "title": "Call Dialog",
+            "description": "Step which calls another dialog.",
             "$ref": "#/definitions/Microsoft.CallDialog"
         },
         {
+            "title": "Cancel Dialog",
+            "description": "This is a step which cancels the current dialog, returning no result",
             "$ref": "#/definitions/Microsoft.CancelDialog"
         },
         {
+            "title": "Clear Property",
+            "description": "This is a step which removes a property from memory",
             "$ref": "#/definitions/Microsoft.ClearPropertyStep"
         },
         {
+            "title": "End Dialog",
+            "description": "This is a step which ends the current dialog, returning the result",
             "$ref": "#/definitions/Microsoft.EndDialog"
         },
         {
+            "title": "End Of Trun",
+            "description": "This is a step which ends the current turn",
             "$ref": "#/definitions/Microsoft.EndOfTurnStep"
         },
         {
+            "title": "If Step",
+            "description": "Step which conditionally decides which step to execute next.",
             "$ref": "#/definitions/Microsoft.IfElseStep"
         },
         {
+            "title": "Send Activity Step",
+            "description": "This is a step which sends an activity to the user",
             "$ref": "#/definitions/Microsoft.SendActivityStep"
         },
         {
+            "title": "Send Activity Step",
+            "description": "This is a step which sends an activity to the user",
             "$ref": "#/definitions/Microsoft.SendActivityTemplateStep"
         },
         {
+            "title": "Set Property",
+            "description": "This is a step which sets a property in memory to a value",
             "$ref": "#/definitions/Microsoft.SetPropertyStep"
         },
         {
+            "title": "Switch Step",
+            "description": "Step which conditionally decides which step to execute next.",
             "$ref": "#/definitions/Microsoft.SwitchStep"
         },
         {
+            "title": "LUIS Recognizer",
+            "description": "LUIS recognizer.",
             "$ref": "#/definitions/Microsoft.LuisRecognizer"
         },
         {
+            "title": "QnAMaker.ai Recognizer",
+            "description": "This represents a configuration of the QNAMaker as a recognizer",
             "$ref": "#/definitions/Microsoft.QnaMakerRecognizer"
         },
         {
+            "title": "Regular Expression Recognizer",
+            "description": "Example regular expression recognizer.",
             "$ref": "#/definitions/Microsoft.RegexRecognizer"
         }
     ],
@@ -67,7 +108,8 @@
                 {
                     "type": "string"
                 }
-            ]
+            ],
+            "type": "object"
         },
         "Microsoft.IDialog": {
             "title": "Microsoft IDialog",
@@ -91,7 +133,8 @@
                 {
                     "$ref": "#/definitions/Microsoft.TextPrompt"
                 }
-            ]
+            ],
+            "type": "object"
         },
         "Microsoft.IDialogStep": {
             "title": "Microsoft IDialogStep",
@@ -127,7 +170,8 @@
                 {
                     "$ref": "#/definitions/Microsoft.SwitchStep"
                 }
-            ]
+            ],
+            "type": "object"
         },
         "Microsoft.IExpression": {
             "title": "Microsoft IActivityTemplate",
@@ -136,7 +180,8 @@
                 {
                     "type": "string"
                 }
-            ]
+            ],
+            "type": "object"
         },
         "Microsoft.IRecognizer": {
             "title": "Microsoft IRecognizer",
@@ -154,7 +199,8 @@
                 {
                     "$ref": "#/definitions/Microsoft.RegexRecognizer"
                 }
-            ]
+            ],
+            "type": "object"
         },
         "Microsoft.DateTimePrompt": {
             "$implements": [
@@ -165,6 +211,16 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
+                "$ref": {
+                    "type": "string"
+                },
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.DateTimePrompt"
+                },
+                "$id": {
+                    "type": "string"
+                },
                 "property": {
                     "type": "string",
                     "description": "This is the property to set.",
@@ -232,16 +288,6 @@
                         "You can't be born in the future!"
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "$type": {
-                    "type": "string",
-                    "const": "Microsoft.DateTimePrompt"
-                },
-                "$id": {
-                    "type": "string"
-                },
-                "$ref": {
-                    "type": "string"
                 }
             },
             "patternProperties": {
@@ -262,6 +308,16 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
+                "$ref": {
+                    "type": "string"
+                },
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.FloatPrompt"
+                },
+                "$id": {
+                    "type": "string"
+                },
                 "property": {
                     "type": "string",
                     "description": "This is the property to set.",
@@ -329,16 +385,6 @@
                         "Nobody is that old!"
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "$type": {
-                    "type": "string",
-                    "const": "Microsoft.FloatPrompt"
-                },
-                "$id": {
-                    "type": "string"
-                },
-                "$ref": {
-                    "type": "string"
                 }
             },
             "patternProperties": {
@@ -359,6 +405,16 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
+                "$ref": {
+                    "type": "string"
+                },
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.IntegerPrompt"
+                },
+                "$id": {
+                    "type": "string"
+                },
                 "property": {
                     "type": "string",
                     "description": "This is the property to set.",
@@ -426,16 +482,6 @@
                         "Nobody is that old!"
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "$type": {
-                    "type": "string",
-                    "const": "Microsoft.IntegerPrompt"
-                },
-                "$id": {
-                    "type": "string"
-                },
-                "$ref": {
-                    "type": "string"
                 }
             },
             "patternProperties": {
@@ -456,6 +502,16 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
+                "$ref": {
+                    "type": "string"
+                },
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.IntentDialog"
+                },
+                "$id": {
+                    "type": "string"
+                },
                 "recognizer": {
                     "$type": "Microsoft.IRecognizer",
                     "$ref": "#/definitions/Microsoft.IRecognizer"
@@ -467,16 +523,6 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
-                },
-                "$type": {
-                    "type": "string",
-                    "const": "Microsoft.IntentDialog"
-                },
-                "$id": {
-                    "type": "string"
-                },
-                "$ref": {
-                    "type": "string"
                 }
             },
             "required": [
@@ -499,13 +545,8 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "sequence": {
-                    "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
-                    "items": {
-                        "$type": "Microsoft.IDialogStep",
-                        "$ref": "#/definitions/Microsoft.IDialogStep"
-                    }
+                "$ref": {
+                    "type": "string"
                 },
                 "$type": {
                     "type": "string",
@@ -514,8 +555,13 @@
                 "$id": {
                     "type": "string"
                 },
-                "$ref": {
-                    "type": "string"
+                "sequence": {
+                    "type": "array",
+                    "description": "Sequence of steps or dialogs to execute",
+                    "items": {
+                        "$type": "Microsoft.IDialogStep",
+                        "$ref": "#/definitions/Microsoft.IDialogStep"
+                    }
                 }
             },
             "required": [
@@ -537,6 +583,16 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
+                "$ref": {
+                    "type": "string"
+                },
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.TextPrompt"
+                },
+                "$id": {
+                    "type": "string"
+                },
                 "property": {
                     "type": "string",
                     "description": "This is the property to set the result.",
@@ -579,16 +635,6 @@
                         "A valid phone number looks like xxx-xxx-xxxx."
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "$type": {
-                    "type": "string",
-                    "const": "Microsoft.TextPrompt"
-                },
-                "$id": {
-                    "type": "string"
-                },
-                "$ref": {
-                    "type": "string"
                 }
             },
             "patternProperties": {
@@ -609,6 +655,16 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
+                "$ref": {
+                    "type": "string"
+                },
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.CallDialog"
+                },
+                "$id": {
+                    "type": "string"
+                },
                 "dialog": {
                     "$type": "Microsoft.IDialog",
                     "title": "Dialog",
@@ -629,16 +685,6 @@
                         "user.name"
                     ],
                     "$ref": "#/definitions/Microsoft.IExpression"
-                },
-                "$type": {
-                    "type": "string",
-                    "const": "Microsoft.CallDialog"
-                },
-                "$id": {
-                    "type": "string"
-                },
-                "$ref": {
-                    "type": "string"
                 }
             },
             "patternProperties": {
@@ -659,14 +705,14 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
+                "$ref": {
+                    "type": "string"
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.CancelDialog"
                 },
                 "$id": {
-                    "type": "string"
-                },
-                "$ref": {
                     "type": "string"
                 }
             },
@@ -688,11 +734,8 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "property": {
-                    "$type": "Microsoft.IExpression",
-                    "title": "Property",
-                    "description": "Expression which is the property to clear.",
-                    "$ref": "#/definitions/Microsoft.IExpression"
+                "$ref": {
+                    "type": "string"
                 },
                 "$type": {
                     "type": "string",
@@ -701,8 +744,11 @@
                 "$id": {
                     "type": "string"
                 },
-                "$ref": {
-                    "type": "string"
+                "property": {
+                    "$type": "Microsoft.IExpression",
+                    "title": "Property",
+                    "description": "Expression which is the property to clear.",
+                    "$ref": "#/definitions/Microsoft.IExpression"
                 }
             },
             "patternProperties": {
@@ -723,14 +769,8 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "property": {
-                    "$type": "Microsoft.IExpression",
-                    "title": "Property",
-                    "description": "The property from dialog memory to return as the result",
-                    "examples": [
-                        "user.name"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IExpression"
+                "$ref": {
+                    "type": "string"
                 },
                 "$type": {
                     "type": "string",
@@ -739,8 +779,14 @@
                 "$id": {
                     "type": "string"
                 },
-                "$ref": {
-                    "type": "string"
+                "property": {
+                    "$type": "Microsoft.IExpression",
+                    "title": "Property",
+                    "description": "The property from dialog memory to return as the result",
+                    "examples": [
+                        "user.name"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IExpression"
                 }
             },
             "patternProperties": {
@@ -761,14 +807,14 @@
             ],
             "additionalProperties": false,
             "properties": {
+                "$ref": {
+                    "type": "string"
+                },
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.EndOfTurnStep"
                 },
                 "$id": {
-                    "type": "string"
-                },
-                "$ref": {
                     "type": "string"
                 }
             },
@@ -790,6 +836,16 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
+                "$ref": {
+                    "type": "string"
+                },
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.IfElseStep"
+                },
+                "$id": {
+                    "type": "string"
+                },
                 "ifTrue": {
                     "oneOf": [
                         {
@@ -832,16 +888,6 @@
                         "user.age > 3"
                     ],
                     "$ref": "#/definitions/Microsoft.IExpression"
-                },
-                "$type": {
-                    "type": "string",
-                    "const": "Microsoft.IfElseStep"
-                },
-                "$id": {
-                    "type": "string"
-                },
-                "$ref": {
-                    "type": "string"
                 }
             },
             "patternProperties": {
@@ -862,6 +908,16 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
+                "$ref": {
+                    "type": "string"
+                },
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.SendActivityStep"
+                },
+                "$id": {
+                    "type": "string"
+                },
                 "activity": {
                     "description": "An Activity is the basic communication type for the Bot Framework 3.0 protocol.",
                     "title": "Activity",
@@ -1565,16 +1621,6 @@
                             }
                         }
                     }
-                },
-                "$type": {
-                    "type": "string",
-                    "const": "Microsoft.SendActivityStep"
-                },
-                "$id": {
-                    "type": "string"
-                },
-                "$ref": {
-                    "type": "string"
                 }
             },
             "patternProperties": {
@@ -1595,11 +1641,8 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "activityTemplate": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "Activity",
-                    "description": "Activity to send to the user.",
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                "$ref": {
+                    "type": "string"
                 },
                 "$type": {
                     "type": "string",
@@ -1608,8 +1651,11 @@
                 "$id": {
                     "type": "string"
                 },
-                "$ref": {
-                    "type": "string"
+                "activity": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Activity",
+                    "description": "Activity to send to the user.",
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 }
             },
             "patternProperties": {
@@ -1630,6 +1676,16 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
+                "$ref": {
+                    "type": "string"
+                },
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.SetPropertyStep"
+                },
+                "$id": {
+                    "type": "string"
+                },
                 "property": {
                     "$type": "Microsoft.IExpression",
                     "title": "Property",
@@ -1641,16 +1697,6 @@
                     "title": "Value",
                     "description": "Expression which is the value to use.",
                     "$ref": "#/definitions/Microsoft.IExpression"
-                },
-                "$type": {
-                    "type": "string",
-                    "const": "Microsoft.SetPropertyStep"
-                },
-                "$id": {
-                    "type": "string"
-                },
-                "$ref": {
-                    "type": "string"
                 }
             },
             "patternProperties": {
@@ -1671,6 +1717,16 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
+                "$ref": {
+                    "type": "string"
+                },
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.SwitchStep"
+                },
+                "$id": {
+                    "type": "string"
+                },
                 "condition": {
                     "$type": "Microsoft.IExpression",
                     "title": "Condition",
@@ -1704,16 +1760,6 @@
                     "type": "boolean",
                     "title": "Ignore carse",
                     "description": "Control whether case comparison is case sensitive."
-                },
-                "$type": {
-                    "type": "string",
-                    "const": "Microsoft.SwitchStep"
-                },
-                "$id": {
-                    "type": "string"
-                },
-                "$ref": {
-                    "type": "string"
                 }
             },
             "patternProperties": {
@@ -1734,6 +1780,16 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
+                "$ref": {
+                    "type": "string"
+                },
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.LuisRecognizer"
+                },
+                "$id": {
+                    "type": "string"
+                },
                 "application": {
                     "type": "object",
                     "required": [
@@ -1754,16 +1810,6 @@
                     }
                 },
                 "priority": {
-                    "type": "string"
-                },
-                "$type": {
-                    "type": "string",
-                    "const": "Microsoft.LuisRecognizer"
-                },
-                "$id": {
-                    "type": "string"
-                },
-                "$ref": {
                     "type": "string"
                 }
             },
@@ -1786,6 +1832,16 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
+                "$ref": {
+                    "type": "string"
+                },
+                "$type": {
+                    "type": "string",
+                    "const": "Microsoft.QnaMakerRecognizer"
+                },
+                "$id": {
+                    "type": "string"
+                },
                 "applicationId": {
                     "type": "string",
                     "description": "This is the QnAMaker appId to use",
@@ -1799,16 +1855,6 @@
                     "examples": [
                         "http://westus.qnamaker.ai"
                     ]
-                },
-                "$type": {
-                    "type": "string",
-                    "const": "Microsoft.QnaMakerRecognizer"
-                },
-                "$id": {
-                    "type": "string"
-                },
-                "$ref": {
-                    "type": "string"
                 }
             },
             "required": [
@@ -1831,7 +1877,7 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "pattern": {
+                "$ref": {
                     "type": "string"
                 },
                 "$type": {
@@ -1841,7 +1887,7 @@
                 "$id": {
                     "type": "string"
                 },
-                "$ref": {
+                "pattern": {
                     "type": "string"
                 }
             },
