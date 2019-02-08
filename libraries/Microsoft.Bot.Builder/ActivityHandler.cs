@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -66,6 +67,24 @@ namespace Microsoft.Bot.Builder
                 case ActivityTypes.DeleteUserData:
                     return OnDeleteUserDataActivityAsync(turnContext, cancellationToken);
 
+                case ActivityTypes.MessageUpdate:
+                    return OnMessageUpdateActivityAsync(new DelegatingTurnContext<IMessageUpdateActivity>(turnContext), cancellationToken);
+
+                case ActivityTypes.MessageDelete:
+                    return OnMessageDeleteActivityAsync(new DelegatingTurnContext<IMessageDeleteActivity>(turnContext), cancellationToken);
+
+                case ActivityTypes.MessageReaction:
+                    return OnMessageReactionActivityAsync(new DelegatingTurnContext<IMessageReactionActivity>(turnContext), cancellationToken);
+
+                case ActivityTypes.InstallationUpdate:
+                    return OnInstallationUpdateActivityAsync(new DelegatingTurnContext<IInstallationUpdateActivity>(turnContext), cancellationToken);
+
+                case ActivityTypes.Typing:
+                    return OnTypingActivityAsync(new DelegatingTurnContext<ITypingActivity>(turnContext), cancellationToken);
+
+                case ActivityTypes.Handoff:
+                    return OnHandoffActivityAsync(new DelegatingTurnContext<IHandoffActivity>(turnContext), cancellationToken);
+
                 default:
                     return OnUnrecognizedActivityTypeAsync(turnContext, cancellationToken);
             }
@@ -80,61 +99,70 @@ namespace Microsoft.Bot.Builder
         {
             if (turnContext.Activity.MembersAdded != null)
             {
-                return OnMembersAddedAsync(turnContext.Activity.MembersAdded, turnContext, cancellationToken);
+                if (turnContext.Activity.MembersAdded.Count(m => m.Id != turnContext.Activity.Recipient?.Id) > 1)
+                {
+                    return OnMembersAddedAsync(turnContext.Activity.MembersAdded, turnContext, cancellationToken);
+                }
             }
             else if (turnContext.Activity.MembersRemoved != null)
             {
-                return OnMembersRemovedAsync(turnContext.Activity.MembersAdded, turnContext, cancellationToken);
+                if (turnContext.Activity.MembersRemoved.Count(m => m.Id != turnContext.Activity.Recipient?.Id) > 1)
+                {
+                    return OnMembersRemovedAsync(turnContext.Activity.MembersRemoved, turnContext, cancellationToken);
+                }
             }
 
             return Task.CompletedTask;
         }
 
-        protected virtual async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
-        {
-            foreach (var member in membersAdded)
-            {
-                if (member.Id != turnContext.Activity.Recipient?.Id)
-                {
-                    await OnMemberAddedAsync(member, turnContext, cancellationToken).ConfigureAwait(false);
-                }
-            }
-        }
-
-        protected virtual async Task OnMembersRemovedAsync(IList<ChannelAccount> membersRemoved, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
-        {
-            foreach (var member in membersRemoved)
-            {
-                if (member.Id != turnContext.Activity.Recipient?.Id)
-                {
-                    await OnMemberRemovedAsync(member, turnContext, cancellationToken).ConfigureAwait(false);
-                }
-            }
-        }
-
-        protected virtual Task OnMemberAddedAsync(ChannelAccount account, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        protected virtual Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
 
-        protected virtual Task OnMemberRemovedAsync(ChannelAccount account, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        protected virtual Task OnMembersRemovedAsync(IList<ChannelAccount> membersRemoved, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
 
         protected virtual Task OnEventActivityAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
         {
-            if (turnContext.Activity.Name == "tokens/response")
+            if (turnContext.Activity.Name != null)
             {
-                return OnTokenResponseEventAsync(turnContext, cancellationToken);
+                switch (turnContext.Activity.Name)
+                {
+                    case "tokens/response":
+                        return OnTokenResponseEventAsync(turnContext, cancellationToken);
+
+                    case "createConversation":
+                        return OnCreateConversationAsync(turnContext, cancellationToken);
+
+                    case "continueConversation":
+                        return OnContinueConversationAsync(turnContext, cancellationToken);
+                }
             }
 
-            return Task.CompletedTask;
+            return OnEventAsync(turnContext, cancellationToken);
         }
 
         protected virtual Task OnTokenResponseEventAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
         {
             // If using the OAuthPrompt override this method to forward this Activity to the Dialog.
+            return Task.CompletedTask;
+        }
+
+        protected virtual Task OnCreateConversationAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        protected virtual Task OnContinueConversationAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        protected virtual Task OnEventAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+        {
             return Task.CompletedTask;
         }
 
@@ -179,6 +207,52 @@ namespace Microsoft.Bot.Builder
         }
 
         protected virtual Task OnDeleteUserDataActivityAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        protected virtual Task OnMessageUpdateActivityAsync(ITurnContext<IMessageUpdateActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        protected virtual Task OnMessageDeleteActivityAsync(ITurnContext<IMessageDeleteActivity> turnContext, CancellationToken cancellationToken) => Task.CompletedTask;
+
+        protected virtual Task OnMessageReactionActivityAsync(ITurnContext<IMessageReactionActivity> turnContext, CancellationToken cancellationToken)
+        {
+            if (turnContext.Activity.ReactionsAdded != null)
+            {
+                return OnMessageReactionsAddedAsync(turnContext, cancellationToken);
+            }
+            else if (turnContext.Activity.ReactionsRemoved != null)
+            {
+                return OnMessageReactionsRemovedAsync(turnContext, cancellationToken);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        protected virtual Task OnMessageReactionsAddedAsync(ITurnContext<IMessageReactionActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        protected virtual Task OnMessageReactionsRemovedAsync(ITurnContext<IMessageReactionActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        protected virtual Task OnInstallationUpdateActivityAsync(ITurnContext<IInstallationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        protected virtual Task OnTypingActivityAsync(ITurnContext<ITypingActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        protected virtual Task OnHandoffActivityAsync(ITurnContext<IHandoffActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
