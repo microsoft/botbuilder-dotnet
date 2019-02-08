@@ -10,6 +10,7 @@ namespace Microsoft.Bot.Builder
     /// </summary>
     public class ConversationState : BotState
     {
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ConversationState"/> class.
         /// </summary>
@@ -18,6 +19,16 @@ namespace Microsoft.Bot.Builder
             : base(storage, nameof(ConversationState))
         {
         }
+
+        public ConversationState(IStorage storage, int maxKeyLength)
+            : base(storage, nameof(ConversationState))
+        {
+            // Note: There is no min check here, as different data stores have different
+            // requiements.
+            MaxKeyLength = maxKeyLength;
+        }
+
+        public int MaxKeyLength { get; } = 254;
 
         /// <summary>
         /// Gets the key to use when reading and writing state to and from storage.
@@ -28,7 +39,20 @@ namespace Microsoft.Bot.Builder
         {
             var channelId = turnContext.Activity.ChannelId ?? throw new ArgumentNullException("invalid activity-missing channelId");
             var conversationId = turnContext.Activity.Conversation?.Id ?? throw new ArgumentNullException("invalid activity-missing Conversation.Id");
-            return $"{channelId}/conversations/{conversationId}";
+
+            var firstSegment = $"{channelId}/conversations/";
+            if (firstSegment.Length + conversationId.Length > MaxKeyLength)
+            {
+                // Some data stores, such as CosmosDB, have a key length limitation, as seen here:
+                // https://docs.microsoft.com/en-us/azure/cosmos-db/faq#table
+                // Some channels, such as Teams, return long conversations Ids.
+
+                // This code checks for an artibraty key legth, and just uses a hash of the ConversationId if
+                // the length is too long.
+                conversationId = conversationId.GetHashCode().ToString("x");
+            }
+
+            return $"{firstSegment}{conversationId}";
         }
     }
 }
