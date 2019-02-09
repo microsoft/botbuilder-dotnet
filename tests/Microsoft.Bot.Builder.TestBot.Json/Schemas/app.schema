@@ -5,36 +5,6 @@
     "description": "These are all of the types that can be created by the loader.",
     "oneOf": [
         {
-            "title": "DateTime prompt",
-            "description": "This represents a dialog which gathers a DateTime in a specified range",
-            "$ref": "#/definitions/Microsoft.DateTimePrompt"
-        },
-        {
-            "title": "Float  prompt",
-            "description": "This represents a dialog which gathers a number in a specified range",
-            "$ref": "#/definitions/Microsoft.FloatPrompt"
-        },
-        {
-            "title": "Integer prompt",
-            "description": "This represents a dialog which gathers a number in a specified range",
-            "$ref": "#/definitions/Microsoft.IntegerPrompt"
-        },
-        {
-            "title": "Intent Dialog",
-            "description": "Configures a recognizer and the intent routes",
-            "$ref": "#/definitions/Microsoft.IntentDialog"
-        },
-        {
-            "title": "Sequence Dialog",
-            "description": "Configures a data driven dialog via a collection of steps/dialogs.",
-            "$ref": "#/definitions/Microsoft.SequenceDialog"
-        },
-        {
-            "title": "Text prompt",
-            "description": "This represents a dialog which gathers a text from the user",
-            "$ref": "#/definitions/Microsoft.TextPrompt"
-        },
-        {
             "title": "Call Dialog",
             "description": "Step which calls another dialog.",
             "$ref": "#/definitions/Microsoft.CallDialog"
@@ -50,6 +20,11 @@
             "$ref": "#/definitions/Microsoft.ClearPropertyStep"
         },
         {
+            "title": "DateTime prompt",
+            "description": "This represents a dialog which gathers a DateTime in a specified range",
+            "$ref": "#/definitions/Microsoft.DateTimePrompt"
+        },
+        {
             "title": "End Dialog",
             "description": "This is a step which ends the current dialog, returning the result",
             "$ref": "#/definitions/Microsoft.EndDialog"
@@ -60,29 +35,24 @@
             "$ref": "#/definitions/Microsoft.EndOfTurnStep"
         },
         {
+            "title": "Float  prompt",
+            "description": "This represents a dialog which gathers a number in a specified range",
+            "$ref": "#/definitions/Microsoft.FloatPrompt"
+        },
+        {
             "title": "If Step",
             "description": "Step which conditionally decides which step to execute next.",
             "$ref": "#/definitions/Microsoft.IfElseStep"
         },
         {
-            "title": "Send Activity Step",
-            "description": "This is a step which sends an activity to the user",
-            "$ref": "#/definitions/Microsoft.SendActivityStep"
+            "title": "Integer prompt",
+            "description": "This represents a dialog which gathers a number in a specified range",
+            "$ref": "#/definitions/Microsoft.IntegerPrompt"
         },
         {
-            "title": "Send Activity Step",
-            "description": "This is a step which sends an activity to the user",
-            "$ref": "#/definitions/Microsoft.SendActivityTemplateStep"
-        },
-        {
-            "title": "Set Property",
-            "description": "This is a step which sets a property in memory to a value",
-            "$ref": "#/definitions/Microsoft.SetPropertyStep"
-        },
-        {
-            "title": "Switch Step",
-            "description": "Step which conditionally decides which step to execute next.",
-            "$ref": "#/definitions/Microsoft.SwitchStep"
+            "title": "Intent Dialog",
+            "description": "Configures a recognizer and the intent routes",
+            "$ref": "#/definitions/Microsoft.IntentDialog"
         },
         {
             "title": "LUIS Recognizer",
@@ -98,6 +68,36 @@
             "title": "Regular Expression Recognizer",
             "description": "Example regular expression recognizer.",
             "$ref": "#/definitions/Microsoft.RegexRecognizer"
+        },
+        {
+            "title": "Send Activity Step",
+            "description": "This is a step which sends an activity to the user",
+            "$ref": "#/definitions/Microsoft.SendActivityStep"
+        },
+        {
+            "title": "Send Activity Step",
+            "description": "This is a step which sends an activity to the user",
+            "$ref": "#/definitions/Microsoft.SendActivityTemplateStep"
+        },
+        {
+            "title": "Sequence Dialog",
+            "description": "Configures a data driven dialog via a collection of steps/dialogs.",
+            "$ref": "#/definitions/Microsoft.SequenceDialog"
+        },
+        {
+            "title": "Set Property",
+            "description": "This is a step which sets a property in memory to a value",
+            "$ref": "#/definitions/Microsoft.SetPropertyStep"
+        },
+        {
+            "title": "Switch Step",
+            "description": "Step which conditionally decides which step to execute next.",
+            "$ref": "#/definitions/Microsoft.SwitchStep"
+        },
+        {
+            "title": "Text prompt",
+            "description": "This represents a dialog which gathers a text from the user",
+            "$ref": "#/definitions/Microsoft.TextPrompt"
         }
     ],
     "definitions": {
@@ -106,7 +106,8 @@
             "description": "Definition of Microsoft.IActivityTemplate which will be expanded by components that $implements it.",
             "oneOf": [
                 {
-                    "type": "string"
+                    "type": "string",
+                    "title": "string"
                 }
             ],
             "type": "object"
@@ -116,21 +117,33 @@
             "description": "Definition of Microsoft.IDialog which will be expanded by components that $implements it.",
             "oneOf": [
                 {
+                    "title": "DateTime prompt",
+                    "description": "This represents a dialog which gathers a DateTime in a specified range",
                     "$ref": "#/definitions/Microsoft.DateTimePrompt"
                 },
                 {
+                    "title": "Float  prompt",
+                    "description": "This represents a dialog which gathers a number in a specified range",
                     "$ref": "#/definitions/Microsoft.FloatPrompt"
                 },
                 {
+                    "title": "Integer prompt",
+                    "description": "This represents a dialog which gathers a number in a specified range",
                     "$ref": "#/definitions/Microsoft.IntegerPrompt"
                 },
                 {
+                    "title": "Intent Dialog",
+                    "description": "Configures a recognizer and the intent routes",
                     "$ref": "#/definitions/Microsoft.IntentDialog"
                 },
                 {
+                    "title": "Sequence Dialog",
+                    "description": "Configures a data driven dialog via a collection of steps/dialogs.",
                     "$ref": "#/definitions/Microsoft.SequenceDialog"
                 },
                 {
+                    "title": "Text prompt",
+                    "description": "This represents a dialog which gathers a text from the user",
                     "$ref": "#/definitions/Microsoft.TextPrompt"
                 }
             ],
@@ -141,33 +154,53 @@
             "description": "Definition of Microsoft.IDialogStep which will be expanded by components that $implements it.",
             "oneOf": [
                 {
+                    "title": "Call Dialog",
+                    "description": "Step which calls another dialog.",
                     "$ref": "#/definitions/Microsoft.CallDialog"
                 },
                 {
+                    "title": "Cancel Dialog",
+                    "description": "This is a step which cancels the current dialog, returning no result",
                     "$ref": "#/definitions/Microsoft.CancelDialog"
                 },
                 {
+                    "title": "Clear Property",
+                    "description": "This is a step which removes a property from memory",
                     "$ref": "#/definitions/Microsoft.ClearPropertyStep"
                 },
                 {
+                    "title": "End Dialog",
+                    "description": "This is a step which ends the current dialog, returning the result",
                     "$ref": "#/definitions/Microsoft.EndDialog"
                 },
                 {
+                    "title": "End Of Trun",
+                    "description": "This is a step which ends the current turn",
                     "$ref": "#/definitions/Microsoft.EndOfTurnStep"
                 },
                 {
+                    "title": "If Step",
+                    "description": "Step which conditionally decides which step to execute next.",
                     "$ref": "#/definitions/Microsoft.IfElseStep"
                 },
                 {
+                    "title": "Send Activity Step",
+                    "description": "This is a step which sends an activity to the user",
                     "$ref": "#/definitions/Microsoft.SendActivityStep"
                 },
                 {
+                    "title": "Send Activity Step",
+                    "description": "This is a step which sends an activity to the user",
                     "$ref": "#/definitions/Microsoft.SendActivityTemplateStep"
                 },
                 {
+                    "title": "Set Property",
+                    "description": "This is a step which sets a property in memory to a value",
                     "$ref": "#/definitions/Microsoft.SetPropertyStep"
                 },
                 {
+                    "title": "Switch Step",
+                    "description": "Step which conditionally decides which step to execute next.",
                     "$ref": "#/definitions/Microsoft.SwitchStep"
                 }
             ],
@@ -178,7 +211,8 @@
             "description": "Definition of Microsoft.IExpression which will be expanded by components that $implements it.",
             "oneOf": [
                 {
-                    "type": "string"
+                    "type": "string",
+                    "title": "string"
                 }
             ],
             "type": "object"
@@ -188,15 +222,22 @@
             "description": "Definition of Microsoft.IRecognizer which will be expanded by components that $implements it.",
             "oneOf": [
                 {
-                    "type": "string"
+                    "type": "string",
+                    "title": "string"
                 },
                 {
+                    "title": "LUIS Recognizer",
+                    "description": "LUIS recognizer.",
                     "$ref": "#/definitions/Microsoft.LuisRecognizer"
                 },
                 {
+                    "title": "QnAMaker.ai Recognizer",
+                    "description": "This represents a configuration of the QNAMaker as a recognizer",
                     "$ref": "#/definitions/Microsoft.QnaMakerRecognizer"
                 },
                 {
+                    "title": "Regular Expression Recognizer",
+                    "description": "Example regular expression recognizer.",
                     "$ref": "#/definitions/Microsoft.RegexRecognizer"
                 }
             ],
@@ -857,7 +898,8 @@
                             "items": {
                                 "$type": "Microsoft.IDialogStep",
                                 "$ref": "#/definitions/Microsoft.IDialogStep"
-                            }
+                            },
+                            "title": "array"
                         }
                     ],
                     "title": "If True",
@@ -874,7 +916,8 @@
                             "items": {
                                 "$type": "Microsoft.IDialogStep",
                                 "$ref": "#/definitions/Microsoft.IDialogStep"
-                            }
+                            },
+                            "title": "array"
                         }
                     ],
                     "title": "If False",
@@ -1751,7 +1794,8 @@
                                 "items": {
                                     "$type": "Microsoft.IDialogStep",
                                     "$ref": "#/definitions/Microsoft.IDialogStep"
-                                }
+                                },
+                                "title": "array"
                             }
                         ]
                     }
