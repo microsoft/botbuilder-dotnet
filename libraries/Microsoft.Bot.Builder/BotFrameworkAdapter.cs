@@ -791,7 +791,6 @@ namespace Microsoft.Bot.Builder
                 {
                     conversationParameters.ChannelData = new { tenant = new { id = tenantId } };
 
-                    // This would be the final implementation, depends on the update of the Teams API
                     // conversationParameters.Conversation = new { tenantId };
                 }
 
