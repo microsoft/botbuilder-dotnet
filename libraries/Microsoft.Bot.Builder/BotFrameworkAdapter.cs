@@ -789,9 +789,11 @@ namespace Microsoft.Bot.Builder
 
                 if (tenantId != null)
                 {
-                    conversationParameters.ChannelData = new { tenant = new { id = tenantId } };
+                    // Putting tenantId in channelData is a temporary solution while we wait for the Teams API to be updated
+                    conversationParameters.ChannelData = new { tenant = new { tenantId= tenantId.ToString() } };
 
-                    // conversationParameters.Conversation = new { tenantId };
+                    // Permanent solution is to put tenantId in parameters.tenantId
+                    conversationParameters.TenantId = tenantId.ToString();
                 }
 
                 await CreateConversationAsync(channelId, serviceUrl, credentials, conversationParameters, callback, cancellationToken).ConfigureAwait(false);
