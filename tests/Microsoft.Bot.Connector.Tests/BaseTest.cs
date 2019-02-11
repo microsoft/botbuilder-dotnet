@@ -122,8 +122,7 @@ namespace Connector.Tests
             using (MockContext context = MockContext.Start(className ?? ClassName, methodName))
             {
                 HttpMockServer.Initialize(className ?? ClassName, methodName, mode);
-                using (var client = new ConnectorClient(hostUri, new BotAccessTokenStub(token), handlers: HttpMockServer.CreateInstance()))
-                using (var oauthClient = new OAuthClient(client, AuthenticationConstants.OAuthUrl))
+                using (var oauthClient = new OAuthClient(new Uri(AuthenticationConstants.OAuthUrl), new BotAccessTokenStub(token), handlers: HttpMockServer.CreateInstance()))
                 {
                     await doTest(oauthClient);
                 }

@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Connector
     /// <summary>
     /// Service client to handle requests to the Bot Framework API service.
     /// </summary>
-    public class OAuthClient : ServiceClient<OAuthClient>
+    public class OAuthClientOld : ServiceClient<OAuthClientOld>
     {
         private readonly ConnectorClient _client;
         private readonly string _uri;
@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Connector
         /// </summary>
         /// <param name="client">The Bot Connector REST client to use.</param>
         /// <param name="uri">The URL to use to get a token.</param>
-        public OAuthClient(ConnectorClient client, string uri)
+        public OAuthClientOld(ConnectorClient client, string uri)
         {
             if (!(Uri.TryCreate(uri, UriKind.Absolute, out var uriResult)))
                 throw new ArgumentException("Please supply a valid https uri");

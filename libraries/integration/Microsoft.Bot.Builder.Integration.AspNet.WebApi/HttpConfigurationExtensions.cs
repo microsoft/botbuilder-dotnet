@@ -99,14 +99,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 
             if (!string.IsNullOrEmpty(oauthApiEndpoint))
             {
-                OAuthClient.OAuthEndpoint = oauthApiEndpoint;
+                OAuthClientConfig.OAuthEndpoint = oauthApiEndpoint;
             }
 
             var emulateOAuthCards = ConfigurationManager.AppSettings[AuthenticationConstants.EmulateOAuthCardsKey];
 
             if (!string.IsNullOrEmpty(emulateOAuthCards) && bool.TryParse(emulateOAuthCards, out bool emualteOAuthCardsValue))
             {
-                OAuthClient.EmulateOAuthCards = emualteOAuthCardsValue;
+                OAuthClientConfig.EmulateOAuthCards = emualteOAuthCardsValue;
             }
         }
     }

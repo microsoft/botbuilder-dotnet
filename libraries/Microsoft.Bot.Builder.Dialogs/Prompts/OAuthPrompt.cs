@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public async Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             string magicCode = null;
-            if (!(turnContext.Adapter is BotFrameworkAdapter adapter))
+            if (!(turnContext.Adapter is IUserTokenProvider adapter))
             {
                 throw new InvalidOperationException("OAuthPrompt.GetUserToken(): not supported by the current adapter");
             }
@@ -212,7 +212,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task SignOutUserAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (!(turnContext.Adapter is BotFrameworkAdapter adapter))
+            if (!(turnContext.Adapter is IUserTokenProvider adapter))
             {
                 throw new InvalidOperationException("OAuthPrompt.SignOutUser(): not supported by the current adapter");
             }
@@ -225,7 +225,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             BotAssert.ContextNotNull(turnContext);
 
-            if (!(turnContext.Adapter is BotFrameworkAdapter adapter))
+            if (!(turnContext.Adapter is IUserTokenProvider adapter))
             {
                 throw new InvalidOperationException("OAuthPrompt.Prompt(): not supported by the current adapter");
             }
@@ -312,7 +312,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var magicCodeObject = turnContext.Activity.Value as JObject;
                 var magicCode = magicCodeObject.GetValue("state")?.ToString();
 
-                if (!(turnContext.Adapter is BotFrameworkAdapter adapter))
+                if (!(turnContext.Adapter is IUserTokenProvider adapter))
                 {
                     throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
                 }
@@ -329,7 +329,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var matched = _magicCodeRegex.Match(turnContext.Activity.Text);
                 if (matched.Success)
                 {
-                    if (!(turnContext.Adapter is BotFrameworkAdapter adapter))
+                    if (!(turnContext.Adapter is IUserTokenProvider adapter))
                     {
                         throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
                     }
