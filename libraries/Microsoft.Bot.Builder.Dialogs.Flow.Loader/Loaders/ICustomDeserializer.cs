@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Loaders
 {
-    public interface ILoader
+    public interface ICustomDeserializer
     {
         object Load(JToken obj, JsonSerializer serializer, Type type);
     }

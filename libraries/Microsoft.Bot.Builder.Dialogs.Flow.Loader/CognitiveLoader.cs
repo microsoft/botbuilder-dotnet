@@ -11,13 +11,13 @@ using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader
 {
-    public static class DialogLoader
+    public static class CognitiveLoader
     {
-        public static IDialog Load(string json)
+        public static T Load<T>(string json)
         {
             IRefResolver refResolver = new JPointerRefResolver(JToken.Parse(json));
 
-            var dialog = JsonConvert.DeserializeObject<IDialog>(
+            var cog = JsonConvert.DeserializeObject<T>(
                 json, new JsonSerializerSettings()
                 {
                     SerializationBinder = new UriTypeBinder(),
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader
                         NamingStrategy = new CamelCaseNamingStrategy()
                     }
                 });
-            return dialog;
+            return cog;
         }
     }
 }

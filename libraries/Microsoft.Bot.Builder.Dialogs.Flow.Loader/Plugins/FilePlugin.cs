@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Plugins
 
         public Type Type { get; private set; }
 
-        public ILoader Loader { get; private set; }
+        public ICustomDeserializer Loader { get; private set; }
 
         public async Task Load()
         {
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Plugins
 
             if (!string.IsNullOrEmpty(info.CustomLoaderClassName))
             {
-                this.Loader = Activator.CreateInstance(assembly.GetType(info.CustomLoaderClassName)) as ILoader;
+                this.Loader = Activator.CreateInstance(assembly.GetType(info.CustomLoaderClassName)) as ICustomDeserializer;
             }
         }
     }

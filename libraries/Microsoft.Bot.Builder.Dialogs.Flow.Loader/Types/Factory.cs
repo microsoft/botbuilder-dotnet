@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types
 {
     public static class Factory
     {
-        private static Dictionary<Type, ILoader> builders = new Dictionary<Type, ILoader>();
+        private static Dictionary<Type, ICustomDeserializer> builders = new Dictionary<Type, ICustomDeserializer>();
         private static Dictionary<string, Type> types = new Dictionary<string, Type>();
         private static Dictionary<Type, string> names = new Dictionary<Type, string>();
 
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types
             RegisterDefaults();   
         }
 
-        public static void Register(string name, Type type, ILoader loader = null)
+        public static void Register(string name, Type type, ICustomDeserializer loader = null)
         {
             // Default loader if none specified
             if (loader == null)
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types
 
         public static T Build<T>(string name, JToken obj, JsonSerializer serializer) where T : class
         {
-            ILoader builder;
+            ICustomDeserializer builder;
             var type = TypeFromName(name);
 
             if (type == null)

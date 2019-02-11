@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Plugins
     {
         string SchemaUri { get; }
         Type Type { get; }
-        ILoader Loader { get; }
+        ICustomDeserializer Loader { get; }
         Task Load();
     }
 }

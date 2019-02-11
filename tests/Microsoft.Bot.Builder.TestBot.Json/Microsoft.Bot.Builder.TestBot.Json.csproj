@@ -13,7 +13,7 @@
     <Content Include="Dialogs\Main\en-us.lg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Dialogs\Main\main.dialog">
+    <Content Include="Dialogs\Main\main.cog">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
