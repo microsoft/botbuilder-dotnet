@@ -93,6 +93,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BotFrameworkHttpAdapterTests.cs" />
     <Compile Include="HttpConfigurationExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -105,9 +106,17 @@
       <Project>{bd0b82ef-1601-4e87-b78a-b43de7eb36b0}</Project>
       <Name>Microsoft.Bot.Builder.Integration.AspNet.WebApi</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj">
+      <Project>{ada8ab8b-2066-4193-b8f7-985669b23e00}</Project>
+      <Name>Microsoft.Bot.Builder</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj">
       <Project>{6462DA5D-27DC-4CD5-9467-5EFB998FD838}</Project>
       <Name>Microsoft.Bot.Connector</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj">
+      <Project>{c1f54cdc-ad1d-45bb-8f7d-f49e411afaf1}</Project>
+      <Name>Microsoft.Bot.Schema</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
