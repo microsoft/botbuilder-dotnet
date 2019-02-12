@@ -1,1 +1,1 @@
-schemamerge components/**/*.schema -o app.schema
+cogSchema components/**/*.schema -o app.schema

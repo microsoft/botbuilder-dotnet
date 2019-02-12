@@ -109,8 +109,7 @@
                     "type": "string",
                     "title": "string"
                 }
-            ],
-            "type": "object"
+            ]
         },
         "Microsoft.IDialog": {
             "title": "Microsoft IDialog",
@@ -146,8 +145,7 @@
                     "description": "This represents a dialog which gathers a text from the user",
                     "$ref": "#/definitions/Microsoft.TextPrompt"
                 }
-            ],
-            "type": "object"
+            ]
         },
         "Microsoft.IDialogStep": {
             "title": "Microsoft IDialogStep",
@@ -203,8 +201,7 @@
                     "description": "Step which conditionally decides which step to execute next.",
                     "$ref": "#/definitions/Microsoft.SwitchStep"
                 }
-            ],
-            "type": "object"
+            ]
         },
         "Microsoft.IExpression": {
             "title": "Microsoft IActivityTemplate",
@@ -214,8 +211,7 @@
                     "type": "string",
                     "title": "string"
                 }
-            ],
-            "type": "object"
+            ]
         },
         "Microsoft.IRecognizer": {
             "title": "Microsoft IRecognizer",
@@ -240,8 +236,7 @@
                     "description": "Example regular expression recognizer.",
                     "$ref": "#/definitions/Microsoft.RegexRecognizer"
                 }
-            ],
-            "type": "object"
+            ]
         },
         "Microsoft.DateTimePrompt": {
             "$implements": [
@@ -258,7 +253,6 @@
                 "$type": {
                     "type": "string",
                     "const": "Microsoft.DateTimePrompt"
-                    "default":"Microsoft.DateTimePrompt"
                 },
                 "$id": {
                     "type": "string"
@@ -568,15 +562,28 @@
                 }
             },
             "required": [
-                "recognizer",
-                "routes",
                 "$type"
             ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
                 }
-            }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$ref"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "recognizer",
+                        "routes"
+                    ]
+                }
+            ]
         },
         "Microsoft.SequenceDialog": {
             "$implements": [
@@ -607,14 +614,27 @@
                 }
             },
             "required": [
-                "sequence",
                 "$type"
             ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
                 }
-            }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$ref"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "sequence"
+                    ]
+                }
+            ]
         },
         "Microsoft.TextPrompt": {
             "$implements": [
@@ -1859,14 +1879,27 @@
                 }
             },
             "required": [
-                "applicationId",
                 "$type"
             ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
                 }
-            }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$ref"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "applicationId"
+                    ]
+                }
+            ]
         },
         "Microsoft.QnaMakerRecognizer": {
             "$implements": [
@@ -1903,15 +1936,28 @@
                 }
             },
             "required": [
-                "applicationId",
-                "endpoint",
                 "$type"
             ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
                 }
-            }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$ref"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "applicationId",
+                        "endpoint"
+                    ]
+                }
+            ]
         },
         "Microsoft.RegexRecognizer": {
             "$implements": [
@@ -1937,14 +1983,27 @@
                 }
             },
             "required": [
-                "pattern",
                 "$type"
             ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
                 }
-            }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$ref"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "pattern"
+                    ]
+                }
+            ]
         }
     }
 }
