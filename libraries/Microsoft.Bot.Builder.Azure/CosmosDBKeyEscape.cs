@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Azure
 {
     public static class CosmosDbKeyEscape
     {
-        // Per the CosmosDB Docs, there is a max key length of 255. 
+        // Per the CosmosDB Docs, there is a max key length of 255.
         // https://docs.microsoft.com/en-us/azure/cosmos-db/faq#table
         public const int MaxKeyLength = 255;
 
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Azure
 
             var firstIllegalCharIndex = key.IndexOfAny(_illegalKeys);
 
-            // If there are no illegal characters, and tkey is within length costraints, 
+            // If there are no illegal characters, and tkey is within length costraints,
             // return immediately and avoid any further processing/allocations
             if (firstIllegalCharIndex == -1)
             {
