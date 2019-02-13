@@ -76,6 +76,18 @@ namespace Microsoft.Bot.Builder.AI.Luis
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="LuisRecognizer"/> class.
+        /// </summary>
+        /// <param name="applicationEndpoint">The LUIS endpoint as shown in https://luis.ai .</param>
+        /// <param name="predictionOptions">(Optional) The LUIS prediction options to use.</param>
+        /// <param name="includeApiResults">(Optional) TRUE to include raw LUIS API response.</param>
+        /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
+        public LuisRecognizer(string applicationEndpoint, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null)
+            : this(new LuisApplication(applicationEndpoint), predictionOptions, includeApiResults, clientHandler)
+        {
+        }
+
+        /// <summary>
         /// Returns the name of the top scoring intent from a set of LUIS results.
         /// </summary>
         /// <param name="results">Result set to be searched.</param>
