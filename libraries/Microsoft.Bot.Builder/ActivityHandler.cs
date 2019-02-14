@@ -55,36 +55,6 @@ namespace Microsoft.Bot.Builder
                 case ActivityTypes.Event:
                     return OnEventActivityAsync(new DelegatingTurnContext<IEventActivity>(turnContext), cancellationToken);
 
-                case ActivityTypes.ContactRelationUpdate:
-                    return OnContactRelationUpdateActivityAsync(new DelegatingTurnContext<IContactRelationUpdateActivity>(turnContext), cancellationToken);
-
-                case ActivityTypes.Invoke:
-                    return OnInvokeActivityAsync(new DelegatingTurnContext<IInvokeActivity>(turnContext), cancellationToken);
-
-                case ActivityTypes.EndOfConversation:
-                    return OnEndOfConversationActivityAsync(new DelegatingTurnContext<IEndOfConversationActivity>(turnContext), cancellationToken);
-
-                case ActivityTypes.DeleteUserData:
-                    return OnDeleteUserDataActivityAsync(turnContext, cancellationToken);
-
-                case ActivityTypes.MessageUpdate:
-                    return OnMessageUpdateActivityAsync(new DelegatingTurnContext<IMessageUpdateActivity>(turnContext), cancellationToken);
-
-                case ActivityTypes.MessageDelete:
-                    return OnMessageDeleteActivityAsync(new DelegatingTurnContext<IMessageDeleteActivity>(turnContext), cancellationToken);
-
-                case ActivityTypes.MessageReaction:
-                    return OnMessageReactionActivityAsync(new DelegatingTurnContext<IMessageReactionActivity>(turnContext), cancellationToken);
-
-                case ActivityTypes.InstallationUpdate:
-                    return OnInstallationUpdateActivityAsync(new DelegatingTurnContext<IInstallationUpdateActivity>(turnContext), cancellationToken);
-
-                case ActivityTypes.Typing:
-                    return OnTypingActivityAsync(new DelegatingTurnContext<ITypingActivity>(turnContext), cancellationToken);
-
-                case ActivityTypes.Handoff:
-                    return OnHandoffActivityAsync(new DelegatingTurnContext<IHandoffActivity>(turnContext), cancellationToken);
-
                 default:
                     return OnUnrecognizedActivityTypeAsync(turnContext, cancellationToken);
             }
@@ -127,19 +97,9 @@ namespace Microsoft.Bot.Builder
 
         protected virtual Task OnEventActivityAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
         {
-            if (turnContext.Activity.Name != null)
+            if (turnContext.Activity.Name == "tokens/response")
             {
-                switch (turnContext.Activity.Name)
-                {
-                    case "tokens/response":
-                        return OnTokenResponseEventAsync(turnContext, cancellationToken);
-
-                    case "createConversation":
-                        return OnCreateConversationAsync(turnContext, cancellationToken);
-
-                    case "continueConversation":
-                        return OnContinueConversationAsync(turnContext, cancellationToken);
-                }
+                return OnTokenResponseEventAsync(turnContext, cancellationToken);
             }
 
             return OnEventAsync(turnContext, cancellationToken);
@@ -151,108 +111,7 @@ namespace Microsoft.Bot.Builder
             return Task.CompletedTask;
         }
 
-        protected virtual Task OnCreateConversationAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        protected virtual Task OnContinueConversationAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
         protected virtual Task OnEventAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        protected virtual Task OnContactRelationUpdateActivityAsync(ITurnContext<IContactRelationUpdateActivity> turnContext, CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        protected virtual async Task OnInvokeActivityAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
-        {
-            InvokeResponse invokeResponse;
-            if (turnContext.Activity.Name == "signin/verifyState")
-            {
-                invokeResponse = await OnTeamsVerificationInvokeAsync(turnContext, cancellationToken).ConfigureAwait(false);
-            }
-            else
-            {
-                invokeResponse = await OnInvokeAsync(turnContext, cancellationToken).ConfigureAwait(false);
-            }
-
-            if (invokeResponse != null)
-            {
-                var invokeResponseActivity = new Activity { Type = ActivityTypesEx.InvokeResponse, Value = invokeResponse };
-                await turnContext.SendActivityAsync(invokeResponseActivity, cancellationToken).ConfigureAwait(false);
-            }
-        }
-
-        protected virtual Task<InvokeResponse> OnTeamsVerificationInvokeAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
-        {
-            // If using the OAuthPrompt override this method to forward this Activity to the Dialog.
-            return Task.FromResult(new InvokeResponse { Status = (int)HttpStatusCode.NotImplemented });
-        }
-
-        protected virtual Task<InvokeResponse> OnInvokeAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
-        {
-            return Task.FromResult(new InvokeResponse { Status = (int)HttpStatusCode.NotImplemented });
-        }
-
-        protected virtual Task OnEndOfConversationActivityAsync(ITurnContext<IEndOfConversationActivity> turnContext, CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        protected virtual Task OnDeleteUserDataActivityAsync(ITurnContext turnContext, CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        protected virtual Task OnMessageUpdateActivityAsync(ITurnContext<IMessageUpdateActivity> turnContext, CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        protected virtual Task OnMessageDeleteActivityAsync(ITurnContext<IMessageDeleteActivity> turnContext, CancellationToken cancellationToken) => Task.CompletedTask;
-
-        protected virtual Task OnMessageReactionActivityAsync(ITurnContext<IMessageReactionActivity> turnContext, CancellationToken cancellationToken)
-        {
-            if (turnContext.Activity.ReactionsAdded != null)
-            {
-                return OnMessageReactionsAddedAsync(turnContext, cancellationToken);
-            }
-            else if (turnContext.Activity.ReactionsRemoved != null)
-            {
-                return OnMessageReactionsRemovedAsync(turnContext, cancellationToken);
-            }
-
-            return Task.CompletedTask;
-        }
-
-        protected virtual Task OnMessageReactionsAddedAsync(ITurnContext<IMessageReactionActivity> turnContext, CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        protected virtual Task OnMessageReactionsRemovedAsync(ITurnContext<IMessageReactionActivity> turnContext, CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        protected virtual Task OnInstallationUpdateActivityAsync(ITurnContext<IInstallationUpdateActivity> turnContext, CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        protected virtual Task OnTypingActivityAsync(ITurnContext<ITypingActivity> turnContext, CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        protected virtual Task OnHandoffActivityAsync(ITurnContext<IHandoffActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }

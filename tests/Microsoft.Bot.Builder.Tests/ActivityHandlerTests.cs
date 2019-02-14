@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -158,48 +157,6 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task TestCreateConversationAsync()
-        {
-            // Arrange
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Event,
-                Name = "createConversation",
-            };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
-
-            // Act
-            var bot = new TestActivityHandler();
-            await ((IBot)bot).OnTurnAsync(turnContext);
-
-            // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnEventActivityAsync");
-            Assert.AreEqual(bot.Record[1], "OnCreateConversationAsync");
-        }
-
-        [TestMethod]
-        public async Task TestContinueConversationAsync()
-        {
-            // Arrange
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Event,
-                Name = "continueConversation",
-            };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
-
-            // Act
-            var bot = new TestActivityHandler();
-            await ((IBot)bot).OnTurnAsync(turnContext);
-
-            // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnEventActivityAsync");
-            Assert.AreEqual(bot.Record[1], "OnContinueConversationAsync");
-        }
-
-        [TestMethod]
         public async Task TestEventAsync()
         {
             // Arrange
@@ -241,152 +198,6 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task TestContactRelationUpdateActivity()
-        {
-            // Arrange
-            var activity = new Activity
-            {
-                Type = ActivityTypes.ContactRelationUpdate
-            };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
-
-            // Act
-            var bot = new TestActivityHandler();
-            await ((IBot)bot).OnTurnAsync(turnContext);
-
-            // Assert
-            Assert.AreEqual(1, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnContactRelationUpdateActivityAsync");
-        }
-
-        [TestMethod]
-        public async Task TestTeamsVerificationInvokeAsync()
-        {
-            // Arrange
-            var adapter = new TestInvokeAdapter();
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Invoke,
-                Name = "signin/verifyState",
-            };
-            var turnContext = new TurnContext(adapter, activity);
-
-            // Act
-            var bot = new TestActivityHandler();
-            await ((IBot)bot).OnTurnAsync(turnContext);
-
-            // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnInvokeActivityAsync");
-            Assert.AreEqual(bot.Record[1], "OnTeamsVerificationInvokeAsync");
-            Assert.IsNotNull(adapter.Activity);
-            Assert.AreEqual((int)HttpStatusCode.OK, ((InvokeResponse)((Activity)adapter.Activity).Value).Status);
-        }
-
-        [TestMethod]
-        public async Task TestInvokeActivity()
-        {
-            // Arrange
-            var adapter = new TestInvokeAdapter();
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Invoke
-            };
-            var turnContext = new TurnContext(adapter, activity);
-
-            // Act
-            var bot = new TestActivityHandler();
-            await ((IBot)bot).OnTurnAsync(turnContext);
-
-            // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnInvokeActivityAsync");
-            Assert.AreEqual(bot.Record[1], "OnInvokeAsync");
-            Assert.IsNotNull(adapter.Activity);
-            Assert.AreEqual((int)HttpStatusCode.OK, ((InvokeResponse)((Activity)adapter.Activity).Value).Status);
-        }
-
-        [TestMethod]
-        public async Task TestEndOfConversationActivity()
-        {
-            // Arrange
-            var activity = new Activity
-            {
-                Type = ActivityTypes.EndOfConversation
-            };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
-
-            // Act
-            var bot = new TestActivityHandler();
-            await ((IBot)bot).OnTurnAsync(turnContext);
-
-            // Assert
-            Assert.AreEqual(1, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnEndOfConversationActivityAsync");
-        }
-
-        [TestMethod]
-        public async Task TestDeleteUserDataActivity()
-        {
-            // Arrange
-            var activity = new Activity
-            {
-                Type = ActivityTypes.DeleteUserData
-            };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
-
-            // Act
-            var bot = new TestActivityHandler();
-            await ((IBot)bot).OnTurnAsync(turnContext);
-
-            // Assert
-            Assert.AreEqual(1, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnDeleteUserDataActivityAsync");
-        }
-
-        [TestMethod]
-        public async Task TestMessageReactionActivityAdded()
-        {
-            // Arrange
-            var activity = new Activity
-            {
-                Type = ActivityTypes.MessageReaction,
-                ReactionsAdded = new List<MessageReaction> { new MessageReaction { Type = "x" } },
-            };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
-
-            // Act
-            var bot = new TestActivityHandler();
-            await ((IBot)bot).OnTurnAsync(turnContext);
-
-            // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnMessageReactionActivityAsync");
-            Assert.AreEqual(bot.Record[1], "OnMessageReactionsAddedAsync");
-        }
-
-        [TestMethod]
-        public async Task TestMessageReactionActivityRemoved()
-        {
-            // Arrange
-            var activity = new Activity
-            {
-                Type = ActivityTypes.MessageReaction,
-                ReactionsRemoved = new List<MessageReaction> { new MessageReaction { Type = "x" } },
-            };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
-
-            // Act
-            var bot = new TestActivityHandler();
-            await ((IBot)bot).OnTurnAsync(turnContext);
-
-            // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnMessageReactionActivityAsync");
-            Assert.AreEqual(bot.Record[1], "OnMessageReactionsRemovedAsync");
-        }
-
-        [TestMethod]
         public async Task TestUnrecognizedActivityType()
         {
             // Arrange
@@ -403,63 +214,6 @@ namespace Microsoft.Bot.Builder.Tests
             // Assert
             Assert.AreEqual(1, bot.Record.Count);
             Assert.AreEqual(bot.Record[0], "OnUnrecognizedActivityTypeAsync");
-        }
-
-        [TestMethod]
-        public async Task TestTypingActivityType()
-        {
-            // Arrange
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Typing
-            };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
-
-            // Act
-            var bot = new TestActivityHandler();
-            await ((IBot)bot).OnTurnAsync(turnContext);
-
-            // Assert
-            Assert.AreEqual(1, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnTypingActivityAsync");
-        }
-
-        [TestMethod]
-        public async Task TestHandoffActivityType()
-        {
-            // Arrange
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Handoff
-            };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
-
-            // Act
-            var bot = new TestActivityHandler();
-            await ((IBot)bot).OnTurnAsync(turnContext);
-
-            // Assert
-            Assert.AreEqual(1, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnHandoffActivityAsync");
-        }
-
-        [TestMethod]
-        public async Task TestInstallationUpdateActivityType()
-        {
-            // Arrange
-            var activity = new Activity
-            {
-                Type = ActivityTypes.InstallationUpdate
-            };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
-
-            // Act
-            var bot = new TestActivityHandler();
-            await ((IBot)bot).OnTurnAsync(turnContext);
-
-            // Assert
-            Assert.AreEqual(1, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnInstallationUpdateActivityAsync");
         }
 
         [TestMethod]
@@ -565,106 +319,10 @@ namespace Microsoft.Bot.Builder.Tests
                 return base.OnTokenResponseEventAsync(turnContext, cancellationToken);
             }
 
-            protected override Task OnCreateConversationAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
-            {
-                Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnCreateConversationAsync(turnContext, cancellationToken);
-            }
-
-            protected override Task OnContinueConversationAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
-            {
-                Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnContinueConversationAsync(turnContext, cancellationToken);
-            }
-
             protected override Task OnEventAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return base.OnEventAsync(turnContext, cancellationToken);
-            }
-
-            protected override Task OnContactRelationUpdateActivityAsync(ITurnContext<IContactRelationUpdateActivity> turnContext, CancellationToken cancellationToken)
-            {
-                Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnContactRelationUpdateActivityAsync(turnContext, cancellationToken);
-            }
-
-            protected override Task OnInvokeActivityAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
-            {
-                Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnInvokeActivityAsync(turnContext, cancellationToken);
-            }
-
-            protected override Task<InvokeResponse> OnTeamsVerificationInvokeAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
-            {
-                Record.Add(MethodBase.GetCurrentMethod().Name);
-                return Task.FromResult(new InvokeResponse { Status = (int)HttpStatusCode.OK });
-            }
-
-            protected override Task<InvokeResponse> OnInvokeAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
-            {
-                Record.Add(MethodBase.GetCurrentMethod().Name);
-                return Task.FromResult(new InvokeResponse { Status = (int)HttpStatusCode.OK });
-            }
-
-            protected override Task OnEndOfConversationActivityAsync(ITurnContext<IEndOfConversationActivity> turnContext, CancellationToken cancellationToken)
-            {
-                Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnEndOfConversationActivityAsync(turnContext, cancellationToken);
-            }
-
-            protected override Task OnDeleteUserDataActivityAsync(ITurnContext turnContext, CancellationToken cancellationToken)
-            {
-                Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnDeleteUserDataActivityAsync(turnContext, cancellationToken);
-            }
-
-            protected override Task OnMessageUpdateActivityAsync(ITurnContext<IMessageUpdateActivity> turnContext, CancellationToken cancellationToken)
-            {
-                Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnMessageUpdateActivityAsync(turnContext, cancellationToken);
-            }
-
-            protected override Task OnMessageDeleteActivityAsync(ITurnContext<IMessageDeleteActivity> turnContext, CancellationToken cancellationToken)
-            {
-                Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnMessageDeleteActivityAsync(turnContext, cancellationToken);
-            }
-
-            protected override Task OnMessageReactionActivityAsync(ITurnContext<IMessageReactionActivity> turnContext, CancellationToken cancellationToken)
-            {
-                Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnMessageReactionActivityAsync(turnContext, cancellationToken);
-            }
-
-            protected override Task OnMessageReactionsAddedAsync(ITurnContext<IMessageReactionActivity> turnContext, CancellationToken cancellationToken)
-            {
-                Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnMessageReactionsAddedAsync(turnContext, cancellationToken);
-            }
-
-            protected override Task OnMessageReactionsRemovedAsync(ITurnContext<IMessageReactionActivity> turnContext, CancellationToken cancellationToken)
-            {
-                Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnMessageReactionsRemovedAsync(turnContext, cancellationToken);
-            }
-
-            protected override Task OnInstallationUpdateActivityAsync(ITurnContext<IInstallationUpdateActivity> turnContext, CancellationToken cancellationToken)
-            {
-                Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnInstallationUpdateActivityAsync(turnContext, cancellationToken);
-            }
-
-            protected override Task OnHandoffActivityAsync(ITurnContext<IHandoffActivity> turnContext, CancellationToken cancellationToken)
-            {
-                Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnHandoffActivityAsync(turnContext, cancellationToken);
-            }
-
-            protected override Task OnTypingActivityAsync(ITurnContext<ITypingActivity> turnContext, CancellationToken cancellationToken)
-            {
-                Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnTypingActivityAsync(turnContext, cancellationToken);
             }
 
             protected override Task OnUnrecognizedActivityTypeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
