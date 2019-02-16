@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -48,6 +49,25 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         // Changing this to false will cause running against the actual LUIS service.
         // This is useful in order to see if the oracles for mocking or testing have changed.
         private readonly bool _mock = true;
+
+        [TestMethod]
+        public void LuisRecognizerConstruction()
+        {
+            // Arrange
+            // Note this is NOT a real LUIS application ID nor a real LUIS subscription-key
+            // theses are GUIDs edited to look right to the parsing and validation code.
+            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
+            var fieldInfo = typeof(LuisRecognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            // Act
+            var recognizer = new LuisRecognizer(endpoint);
+
+            // Assert
+            var app = (LuisApplication)fieldInfo.GetValue(recognizer);
+            Assert.AreEqual("b31aeaf3-3511-495b-a07f-571fc873214b", app.ApplicationId);
+            Assert.AreEqual("048ec46dc58e495482b0c447cfdbd291", app.EndpointKey);
+            Assert.AreEqual("https://westus.api.cognitive.microsoft.com", app.Endpoint);
+        }
 
         [TestMethod]
         public async Task LuisRecognizer_Configuration()
