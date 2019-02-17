@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Schema", "..\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Integration.AspNet.Core", "..\..\libraries\integration\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj", "{5D7C3E6A-5203-48BA-915C-C22AB2815224}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Configuration", "..\..\libraries\Microsoft.Bot.Configuration\Microsoft.Bot.Configuration.csproj", "{741248B0-692D-4D1C-9149-3981C4317B61}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Release|Any CPU = Release|Any CPU
@@ -30,6 +32,8 @@ Global
 		{01205ADB-1EF1-4217-B553-CE8BE187C518}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5D7C3E6A-5203-48BA-915C-C22AB2815224}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D7C3E6A-5203-48BA-915C-C22AB2815224}.Release|Any CPU.Build.0 = Release|Any CPU
+		{741248B0-692D-4D1C-9149-3981C4317B61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{741248B0-692D-4D1C-9149-3981C4317B61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,6 +43,7 @@ Global
 		{0D4DDC10-C314-4862-A424-1AB076D96A5A} = {A56AC445-2E07-4EFC-9326-80977C740D04}
 		{01205ADB-1EF1-4217-B553-CE8BE187C518} = {A56AC445-2E07-4EFC-9326-80977C740D04}
 		{5D7C3E6A-5203-48BA-915C-C22AB2815224} = {A56AC445-2E07-4EFC-9326-80977C740D04}
+		{741248B0-692D-4D1C-9149-3981C4317B61} = {A56AC445-2E07-4EFC-9326-80977C740D04}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6ED9DC95-7090-4498-BC15-54F668BA2BD5}
