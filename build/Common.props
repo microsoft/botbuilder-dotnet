@@ -20,6 +20,7 @@
     <SemanticVersionDate>2019-02-15</SemanticVersionDate>
 
     <PreReleaseVersion Condition="'$(PreReleaseVersion)'==''">$([MSBuild]::Divide($([System.DateTime]::Now.Subtract($([System.DateTime]::Parse($(SemanticVersionDate)))).TotalMinutes), 5).ToString('F0'))</PreReleaseVersion>
+    <Configurations>Debug;Release;Documentation;Debug - NuGet Packages;</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(PackageVersion)'==''">
@@ -27,5 +28,15 @@
     <PackageVersion Condition="'$(PreReleaseMilestone)' != ''">$(PackageVersion)-$(PreReleaseMilestone)</PackageVersion>
     <PackageVersion Condition="'$(TF_BUILD)' != 'True'">$(PackageVersion)-build$(PreReleaseVersion)</PackageVersion>
 	  <Version>$(PackageVersion)</Version>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DelaySign>true</DelaySign>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
 </Project>

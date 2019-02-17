@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -26,13 +25,17 @@
     </PackageReference>
   </ItemGroup>
 
+  <Target Name="EnsureReleaseBuild" BeforeTargets="BeforeBuild" Condition="'$(Configuration)'!='Release'">
+    <Error Text="This project can only be build in Release mode." />
+  </Target>
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\libraries\integration\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj" />
     <ProjectReference Include="..\..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
     <ProjectReference Include="..\..\..\libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
     <ProjectReference Include="..\..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <None Update="KeysDocument.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

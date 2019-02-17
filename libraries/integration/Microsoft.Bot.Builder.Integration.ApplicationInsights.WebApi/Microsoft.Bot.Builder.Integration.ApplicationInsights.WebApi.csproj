@@ -1,28 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), .gitignore))\Build\Common.props" />
-  
-  <PropertyGroup>
-	<Version Condition=" '$(PackageVersion)' == '' ">4.0.0-local</Version>
-	<Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
-	<PackageVersion Condition=" '$(PackageVersion)' == '' ">4.0.0-local</PackageVersion>
-	<PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
-	<Configurations>Debug;Release;Documentation;Debug - NuGet Packages;</Configurations>
-</PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-		<SignAssembly>true</SignAssembly>
-		<DelaySign>true</DelaySign>
-		<AssemblyOriginatorKeyFile>..\..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
 
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
     <PackageId>Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi</PackageId>
     <Description>This library integrates the Microsoft Bot Builder SDK with Application Insights WebAPI.</Description>
     <Summary>This library provides integration between the Microsoft Bot Builder SDK and Application Insights.</Summary>
-  </PropertyGroup>
+  </PropertyGroup> 
 
 	<PropertyGroup>		
 		<AssemblyName>Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi</AssemblyName>
