@@ -1,0 +1,11 @@
+{
+  "issuer": "https://api.botframework.com",
+  "authorization_endpoint": "https://invalid.botframework.com",
+  "jwks_uri": "https://login.botframework.com/v1/.well-known/keys",
+  "id_token_signing_alg_values_supported": [
+    "RS256"
+  ],
+  "token_endpoint_auth_methods_supported": [
+    "private_key_jwt"
+  ]
+}

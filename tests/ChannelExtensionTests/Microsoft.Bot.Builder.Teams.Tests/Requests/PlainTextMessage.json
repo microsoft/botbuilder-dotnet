@@ -1,0 +1,34 @@
+{
+  "text": "test",
+  "textFormat": "plain",
+  "type": "message",
+  "timestamp": "2019-02-17T01:44:09.7872025Z",
+  "localTimestamp": "2019-02-16T17:44:09.7872025-08:00",
+  "id": "1550367849687",
+  "channelId": "msteams",
+  "serviceUrl": "https://canary.botapi.skype.com/amer/",
+  "from": {
+    "id": "29:User",
+    "name": "Unit Test User",
+    "aadObjectId": "9765f8f9-3c98-4fef-8596-7d9895c0931f"
+  },
+  "conversation": {
+    "conversationType": "personal",
+    "id": "a:ConversationId"
+  },
+  "recipient": {
+    "id": "28:36c331a0-5800-403c-bfff-c9a3bec2a3c5",
+    "name": "UnitTestingBot"
+  },
+  "entities": [
+    {
+      "locale": "en-US",
+      "country": "US",
+      "platform": "Windows",
+      "timezone": "America/Los_Angeles",
+      "type": "clientInfo"
+    }
+  ],
+  "channelData": { "tenant": { "id": "343a7d7e-bc96-43c7-a4a1-eb1beb4376d2" } },
+  "locale": "en-US"
+}
