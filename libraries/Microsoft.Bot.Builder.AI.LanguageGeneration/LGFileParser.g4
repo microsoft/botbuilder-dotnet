@@ -20,12 +20,16 @@ newline
     ;
 
 templateDefinition
-	: templateName newline templateBody
+	: templateNameLine newline templateBody
+	;
+
+templateNameLine
+	: HASH templateName parameters?
 	;
 
 templateName
-	: HASH IDENTIFIER parameters?
-	;
+    : IDENTIFIER (DOT IDENTIFIER)*
+    ;
 
 parameters
     : OPEN_PARENTHESIS IDENTIFIER (COMMA IDENTIFIER)* CLOSE_PARENTHESIS

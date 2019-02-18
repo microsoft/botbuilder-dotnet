@@ -52,6 +52,10 @@ IDENTIFIER
   : (LETTER | NUMBER | '_') (LETTER | NUMBER | '-' | '_')*
   ;
 
+DOT
+  : '.'
+  ;
+
 OPEN_PARENTHESIS
   : '('
   ;
