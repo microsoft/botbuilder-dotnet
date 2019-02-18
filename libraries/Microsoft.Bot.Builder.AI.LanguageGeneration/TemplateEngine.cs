@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             foreach (var template in templates)
             {
                 // Extact name
-                var templateName = template.templateName().IDENTIFIER().GetText();
+                var templateName = template.templateNameLine().templateName().GetText();
                 if (!templateContexts.ContainsKey(templateName))
                 {
                     templateContexts[templateName] = template;
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 }
 
                 // Extract parameter list
-                var parameters = template.templateName().parameters();
+                var parameters = template.templateNameLine().parameters();
                 if (parameters != null)
                 {
                     templateParameters[templateName] = parameters.IDENTIFIER().Select(x => x.GetText()).ToList();

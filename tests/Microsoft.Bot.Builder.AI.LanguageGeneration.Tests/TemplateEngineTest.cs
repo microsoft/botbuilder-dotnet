@@ -124,5 +124,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var evaled = engine.Evaluate("RecentTasks", new { recentTasks = new[] { "Task1" } });
             Assert.AreEqual(evaled, "你好");
         }
+
+        [TestMethod]
+        public void TestTemplateNameWithDotIn()
+        {
+            var engine = TemplateEngine.FromFile(GetExampleFilePath("TemplateNameWithDot.lg"));
+            Assert.AreEqual(engine.Evaluate("Hello.World", null), "Hello World");
+            Assert.AreEqual(engine.Evaluate("Hello", null), "Hello World");
+        }
     }
 }
