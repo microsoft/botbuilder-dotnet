@@ -66,8 +66,13 @@ COMMA
 
 mode TEMPLATE_BODY_MODE;
 
+// a little tedious on the rules, a big improvement on portability
+WS_IN_BODY_IGNORED
+  : (' '|'\t')+  {ignoreWS}? -> skip
+  ;
+
 WS_IN_BODY
-  : (' '|'\t')+   {if(ignoreWS) {_channel = Hidden;}} -> type(WS)
+  : (' '|'\t')+  -> type(WS)
   ;
 
 NEWLINE_IN_BODY
