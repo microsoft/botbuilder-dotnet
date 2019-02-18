@@ -1,8 +1,6 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
-    "$implements": [
-        "Microsoft.IDialogStep"
-    ],
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/CogSchema/src/cogSchema.schema",
+    "$role": "unionType(Microsoft.IDialogStep)",
     "title": "End Dialog",
     "description": "This is a step which ends the current dialog, returning the result",
     "type": "object",

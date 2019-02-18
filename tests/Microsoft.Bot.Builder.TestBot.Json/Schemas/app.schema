@@ -1,5 +1,6 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/CogSchema/src/cogSchema.schema",
+    "$id": "app.schema",
     "type": "object",
     "title": "Component types",
     "description": "These are all of the types that can be created by the loader.",
@@ -104,6 +105,7 @@
         "Microsoft.IActivityTemplate": {
             "title": "Microsoft ActivityTemplate",
             "description": "Definition of Microsoft.IActivityTemplate which will be expanded by components that $implements it.",
+            "$role": "unionType",
             "oneOf": [
                 {
                     "type": "string",
@@ -114,6 +116,7 @@
         "Microsoft.IDialog": {
             "title": "Microsoft IDialog",
             "description": "Definition of Microsoft.IDialog which will be expanded by components that $implements it.",
+            "$role": "unionType",
             "oneOf": [
                 {
                     "title": "Microsoft.DateTimePrompt",
@@ -150,6 +153,7 @@
         "Microsoft.IDialogStep": {
             "title": "Microsoft IDialogStep",
             "description": "Definition of Microsoft.IDialogStep which will be expanded by components that $implements it.",
+            "$role": "unionType",
             "oneOf": [
                 {
                     "title": "Microsoft.CallDialog",
@@ -206,6 +210,7 @@
         "Microsoft.IExpression": {
             "title": "Microsoft IActivityTemplate",
             "description": "Definition of Microsoft.IExpression which will be expanded by components that $implements it.",
+            "$role": "unionType",
             "oneOf": [
                 {
                     "type": "string",
@@ -216,6 +221,7 @@
         "Microsoft.IRecognizer": {
             "title": "Microsoft IRecognizer",
             "description": "Definition of Microsoft.IRecognizer which will be expanded by components that $implements it.",
+            "$role": "unionType",
             "oneOf": [
                 {
                     "type": "string",
@@ -239,23 +245,36 @@
             ]
         },
         "Microsoft.DateTimePrompt": {
-            "$implements": [
-                "Microsoft.IDialog"
-            ],
+            "$role": "unionType(Microsoft.IDialog)",
             "title": "DateTime prompt",
             "description": "This represents a dialog which gathers a DateTime in a specified range",
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "$ref": {
-                    "type": "string"
-                },
                 "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
-                    "const": "Microsoft.DateTimePrompt"
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RegexRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
                 },
                 "$id": {
-                    "type": "string"
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$role": {
+                    "title": "$role",
+                    "description": "Schema definition for root $role added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "property": {
                     "type": "string",
@@ -336,23 +355,36 @@
             ]
         },
         "Microsoft.FloatPrompt": {
-            "$implements": [
-                "Microsoft.IDialog"
-            ],
+            "$role": "unionType(Microsoft.IDialog)",
             "title": "Float  prompt",
             "description": "This represents a dialog which gathers a number in a specified range",
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "$ref": {
-                    "type": "string"
-                },
                 "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
-                    "const": "Microsoft.FloatPrompt"
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RegexRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
                 },
                 "$id": {
-                    "type": "string"
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$role": {
+                    "title": "$role",
+                    "description": "Schema definition for root $role added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "property": {
                     "type": "string",
@@ -433,23 +465,36 @@
             ]
         },
         "Microsoft.IntegerPrompt": {
-            "$implements": [
-                "Microsoft.IDialog"
-            ],
+            "$role": "unionType(Microsoft.IDialog)",
             "title": "Integer prompt",
             "description": "This represents a dialog which gathers a number in a specified range",
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "$ref": {
-                    "type": "string"
-                },
                 "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
-                    "const": "Microsoft.IntegerPrompt"
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RegexRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
                 },
                 "$id": {
-                    "type": "string"
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$role": {
+                    "title": "$role",
+                    "description": "Schema definition for root $role added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "property": {
                     "type": "string",
@@ -530,23 +575,36 @@
             ]
         },
         "Microsoft.IntentDialog": {
-            "$implements": [
-                "Microsoft.IDialog"
-            ],
+            "$role": "unionType(Microsoft.IDialog)",
             "title": "Intent Dialog",
             "description": "Configures a recognizer and the intent routes",
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "$ref": {
-                    "type": "string"
-                },
                 "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
-                    "const": "Microsoft.IntentDialog"
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RegexRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
                 },
                 "$id": {
-                    "type": "string"
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$role": {
+                    "title": "$role",
+                    "description": "Schema definition for root $role added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "recognizer": {
                     "$type": "Microsoft.IRecognizer",
@@ -586,23 +644,36 @@
             ]
         },
         "Microsoft.SequenceDialog": {
-            "$implements": [
-                "Microsoft.IDialog"
-            ],
+            "$role": "unionType(Microsoft.IDialog)",
             "title": "Sequence Dialog",
             "description": "Configures a data driven dialog via a collection of steps/dialogs.",
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "$ref": {
-                    "type": "string"
-                },
                 "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
-                    "const": "Microsoft.SequenceDialog"
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RegexRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
                 },
                 "$id": {
-                    "type": "string"
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$role": {
+                    "title": "$role",
+                    "description": "Schema definition for root $role added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "sequence": {
                     "type": "array",
@@ -637,23 +708,36 @@
             ]
         },
         "Microsoft.TextPrompt": {
-            "$implements": [
-                "Microsoft.IDialog"
-            ],
+            "$role": "unionType(Microsoft.IDialog)",
             "title": "Text prompt",
             "description": "This represents a dialog which gathers a text from the user",
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "$ref": {
-                    "type": "string"
-                },
                 "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
-                    "const": "Microsoft.TextPrompt"
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RegexRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
                 },
                 "$id": {
-                    "type": "string"
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$role": {
+                    "title": "$role",
+                    "description": "Schema definition for root $role added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "property": {
                     "type": "string",
@@ -709,23 +793,36 @@
             ]
         },
         "Microsoft.CallDialog": {
-            "$implements": [
-                "Microsoft.IDialogStep"
-            ],
+            "$role": "unionType(Microsoft.IDialogStep)",
             "title": "Call Dialog",
             "description": "Step which calls another dialog.",
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "$ref": {
-                    "type": "string"
-                },
                 "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
-                    "const": "Microsoft.CallDialog"
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RegexRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
                 },
                 "$id": {
-                    "type": "string"
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$role": {
+                    "title": "$role",
+                    "description": "Schema definition for root $role added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "dialog": {
                     "$type": "Microsoft.IDialog",
@@ -759,23 +856,36 @@
             ]
         },
         "Microsoft.CancelDialog": {
-            "$implements": [
-                "Microsoft.IDialogStep"
-            ],
+            "$role": "unionType(Microsoft.IDialogStep)",
             "title": "Cancel Dialog",
             "description": "This is a step which cancels the current dialog, returning no result",
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "$ref": {
-                    "type": "string"
-                },
                 "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
-                    "const": "Microsoft.CancelDialog"
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RegexRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
                 },
                 "$id": {
-                    "type": "string"
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$role": {
+                    "title": "$role",
+                    "description": "Schema definition for root $role added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 }
             },
             "patternProperties": {
@@ -788,23 +898,36 @@
             ]
         },
         "Microsoft.ClearPropertyStep": {
-            "$implements": [
-                "Microsoft.IDialogStep"
-            ],
+            "$role": "unionType(Microsoft.IDialogStep)",
             "title": "Clear Property",
             "description": "This is a step which removes a property from memory",
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "$ref": {
-                    "type": "string"
-                },
                 "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
-                    "const": "Microsoft.ClearPropertyStep"
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RegexRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
                 },
                 "$id": {
-                    "type": "string"
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$role": {
+                    "title": "$role",
+                    "description": "Schema definition for root $role added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "property": {
                     "$type": "Microsoft.IExpression",
@@ -823,23 +946,36 @@
             ]
         },
         "Microsoft.EndDialog": {
-            "$implements": [
-                "Microsoft.IDialogStep"
-            ],
+            "$role": "unionType(Microsoft.IDialogStep)",
             "title": "End Dialog",
             "description": "This is a step which ends the current dialog, returning the result",
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "$ref": {
-                    "type": "string"
-                },
                 "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
-                    "const": "Microsoft.EndDialog"
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RegexRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
                 },
                 "$id": {
-                    "type": "string"
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$role": {
+                    "title": "$role",
+                    "description": "Schema definition for root $role added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "property": {
                     "$type": "Microsoft.IExpression",
@@ -864,20 +1000,33 @@
             "type": "object",
             "title": "End Of Trun",
             "description": "This is a step which ends the current turn",
-            "$implements": [
-                "Microsoft.IDialogStep"
-            ],
+            "$role": "unionType(Microsoft.IDialogStep)",
             "additionalProperties": false,
             "properties": {
-                "$ref": {
-                    "type": "string"
-                },
                 "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
-                    "const": "Microsoft.EndOfTurnStep"
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RegexRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
                 },
                 "$id": {
-                    "type": "string"
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$role": {
+                    "title": "$role",
+                    "description": "Schema definition for root $role added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 }
             },
             "patternProperties": {
@@ -890,23 +1039,36 @@
             ]
         },
         "Microsoft.IfElseStep": {
-            "$implements": [
-                "Microsoft.IDialogStep"
-            ],
+            "$role": "unionType(Microsoft.IDialogStep)",
             "title": "If Step",
             "description": "Step which conditionally decides which step to execute next.",
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "$ref": {
-                    "type": "string"
-                },
                 "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
-                    "const": "Microsoft.IfElseStep"
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RegexRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
                 },
                 "$id": {
-                    "type": "string"
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$role": {
+                    "title": "$role",
+                    "description": "Schema definition for root $role added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "ifTrue": {
                     "oneOf": [
@@ -964,23 +1126,36 @@
             ]
         },
         "Microsoft.SendActivityStep": {
-            "$implements": [
-                "Microsoft.IDialogStep"
-            ],
+            "$role": "unionType(Microsoft.IDialogStep)",
             "title": "Send Activity Step",
             "description": "This is a step which sends an activity to the user",
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "$ref": {
-                    "type": "string"
-                },
                 "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
-                    "const": "Microsoft.SendActivityStep"
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RegexRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
                 },
                 "$id": {
-                    "type": "string"
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$role": {
+                    "title": "$role",
+                    "description": "Schema definition for root $role added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "activity": {
                     "description": "An Activity is the basic communication type for the Bot Framework 3.0 protocol.",
@@ -1697,23 +1872,36 @@
             ]
         },
         "Microsoft.SendActivityTemplateStep": {
-            "$implements": [
-                "Microsoft.IDialogStep"
-            ],
+            "$role": "unionType(Microsoft.IDialogStep)",
             "title": "Send Activity Step",
             "description": "This is a step which sends an activity to the user",
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "$ref": {
-                    "type": "string"
-                },
                 "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
-                    "const": "Microsoft.SendActivityTemplateStep"
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RegexRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
                 },
                 "$id": {
-                    "type": "string"
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$role": {
+                    "title": "$role",
+                    "description": "Schema definition for root $role added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "activity": {
                     "$type": "Microsoft.IActivityTemplate",
@@ -1732,23 +1920,36 @@
             ]
         },
         "Microsoft.SetPropertyStep": {
-            "$implements": [
-                "Microsoft.IDialogStep"
-            ],
+            "$role": "unionType(Microsoft.IDialogStep)",
             "title": "Set Property",
             "description": "This is a step which sets a property in memory to a value",
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "$ref": {
-                    "type": "string"
-                },
                 "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
-                    "const": "Microsoft.SetPropertyStep"
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RegexRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
                 },
                 "$id": {
-                    "type": "string"
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$role": {
+                    "title": "$role",
+                    "description": "Schema definition for root $role added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "property": {
                     "$type": "Microsoft.IExpression",
@@ -1773,23 +1974,36 @@
             ]
         },
         "Microsoft.SwitchStep": {
-            "$implements": [
-                "Microsoft.IDialogStep"
-            ],
+            "$role": "unionType(Microsoft.IDialogStep)",
             "title": "Switch Step",
             "description": "Step which conditionally decides which step to execute next.",
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "$ref": {
-                    "type": "string"
-                },
                 "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
-                    "const": "Microsoft.SwitchStep"
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RegexRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
                 },
                 "$id": {
-                    "type": "string"
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$role": {
+                    "title": "$role",
+                    "description": "Schema definition for root $role added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "condition": {
                     "$type": "Microsoft.IExpression",
@@ -1837,23 +2051,36 @@
             ]
         },
         "Microsoft.LuisRecognizer": {
-            "$implements": [
-                "Microsoft.IRecognizer"
-            ],
+            "$role": "unionType(Microsoft.IRecognizer)",
             "title": "LUIS Recognizer",
             "description": "LUIS recognizer.",
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "$ref": {
-                    "type": "string"
-                },
                 "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
-                    "const": "Microsoft.LuisRecognizer"
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RegexRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
                 },
                 "$id": {
-                    "type": "string"
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$role": {
+                    "title": "$role",
+                    "description": "Schema definition for root $role added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "application": {
                     "type": "object",
@@ -1902,23 +2129,36 @@
             ]
         },
         "Microsoft.QnaMakerRecognizer": {
-            "$implements": [
-                "Microsoft.IRecognizer"
-            ],
+            "$role": "unionType(Microsoft.IRecognizer)",
             "title": "QnAMaker.ai Recognizer",
             "description": "This represents a configuration of the QNAMaker as a recognizer",
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "$ref": {
-                    "type": "string"
-                },
                 "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
-                    "const": "Microsoft.QnaMakerRecognizer"
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RegexRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
                 },
                 "$id": {
-                    "type": "string"
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$role": {
+                    "title": "$role",
+                    "description": "Schema definition for root $role added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "applicationId": {
                     "type": "string",
@@ -1960,23 +2200,36 @@
             ]
         },
         "Microsoft.RegexRecognizer": {
-            "$implements": [
-                "Microsoft.IRecognizer"
-            ],
+            "$role": "unionType(Microsoft.IRecognizer)",
             "title": "Regular Expression Recognizer",
             "description": "Example regular expression recognizer.",
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "$ref": {
-                    "type": "string"
-                },
                 "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
                     "const": "Microsoft.RegexRecognizer"
                 },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
                 "$id": {
-                    "type": "string"
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$role": {
+                    "title": "$role",
+                    "description": "Schema definition for root $role added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "pattern": {
                     "type": "string"

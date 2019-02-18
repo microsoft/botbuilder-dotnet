@@ -1,8 +1,6 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
-    "$implements": [
-        "Microsoft.IDialogStep"
-    ],
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/CogSchema/src/cogSchema.schema",
+    "$role": "unionType(Microsoft.IDialogStep)",
     "title": "Cancel Dialog",
     "description": "This is a step which cancels the current dialog, returning no result",
     "type": "object",

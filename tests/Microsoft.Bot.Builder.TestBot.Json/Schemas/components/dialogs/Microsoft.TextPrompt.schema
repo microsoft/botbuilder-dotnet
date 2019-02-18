@@ -1,8 +1,6 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
-    "$implements": [
-        "Microsoft.IDialog"
-    ],
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/CogSchema/src/cogSchema.schema",
+    "$role": "unionType(Microsoft.IDialog)",
     "title": "Text prompt",
     "description": "This represents a dialog which gathers a text from the user",
     "type": "object",

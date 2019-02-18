@@ -1,8 +1,6 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$implements": [
-        "Microsoft.IRecognizer"
-    ],
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/CogSchema/src/cogSchema.schema",
+    "$role": "unionType(Microsoft.IRecognizer)",
     "title": "Regular Expression Recognizer",
     "description": "Example regular expression recognizer.",
     "type": "object",
