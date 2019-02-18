@@ -1,7 +1,6 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/CogSchema/src/cogSchema.schema",
+    "$schema": "../../Schemas/app.schema",
     "$type": "Microsoft.SequenceDialog",
-    "$id": "getUserInfo",
     "sequence": [
         {
             "$type": "Microsoft.CallDialog",
