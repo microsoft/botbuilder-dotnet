@@ -256,7 +256,7 @@
                     "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.RegexRecognizer"
+                    "const": "Microsoft.DateTimePrompt"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -366,7 +366,7 @@
                     "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.RegexRecognizer"
+                    "const": "Microsoft.FloatPrompt"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -476,7 +476,7 @@
                     "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.RegexRecognizer"
+                    "const": "Microsoft.IntegerPrompt"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -586,7 +586,7 @@
                     "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.RegexRecognizer"
+                    "const": "Microsoft.IntentDialog"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -631,7 +631,7 @@
                 {
                     "title": "Reference",
                     "required": [
-                        "$ref"
+                        "$copy"
                     ]
                 },
                 {
@@ -655,7 +655,7 @@
                     "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.RegexRecognizer"
+                    "const": "Microsoft.SequenceDialog"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -696,7 +696,7 @@
                 {
                     "title": "Reference",
                     "required": [
-                        "$ref"
+                        "$copy"
                     ]
                 },
                 {
@@ -719,7 +719,7 @@
                     "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.RegexRecognizer"
+                    "const": "Microsoft.TextPrompt"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -804,7 +804,7 @@
                     "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.RegexRecognizer"
+                    "const": "Microsoft.CallDialog"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -867,7 +867,7 @@
                     "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.RegexRecognizer"
+                    "const": "Microsoft.CancelDialog"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -909,7 +909,7 @@
                     "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.RegexRecognizer"
+                    "const": "Microsoft.ClearPropertyStep"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -957,7 +957,7 @@
                     "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.RegexRecognizer"
+                    "const": "Microsoft.EndDialog"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -1008,7 +1008,7 @@
                     "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.RegexRecognizer"
+                    "const": "Microsoft.EndOfTurnStep"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -1050,7 +1050,7 @@
                     "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.RegexRecognizer"
+                    "const": "Microsoft.IfElseStep"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -1137,7 +1137,7 @@
                     "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.RegexRecognizer"
+                    "const": "Microsoft.SendActivityStep"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -1883,7 +1883,7 @@
                     "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.RegexRecognizer"
+                    "const": "Microsoft.SendActivityTemplateStep"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -1931,7 +1931,7 @@
                     "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.RegexRecognizer"
+                    "const": "Microsoft.SetPropertyStep"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -1985,7 +1985,7 @@
                     "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.RegexRecognizer"
+                    "const": "Microsoft.SwitchStep"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -2062,7 +2062,7 @@
                     "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.RegexRecognizer"
+                    "const": "Microsoft.LuisRecognizer"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -2117,7 +2117,7 @@
                 {
                     "title": "Reference",
                     "required": [
-                        "$ref"
+                        "$copy"
                     ]
                 },
                 {
@@ -2140,7 +2140,7 @@
                     "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.RegexRecognizer"
+                    "const": "Microsoft.QnaMakerRecognizer"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -2187,7 +2187,7 @@
                 {
                     "title": "Reference",
                     "required": [
-                        "$ref"
+                        "$copy"
                     ]
                 },
                 {
@@ -2247,7 +2247,7 @@
                 {
                     "title": "Reference",
                     "required": [
-                        "$ref"
+                        "$copy"
                     ]
                 },
                 {
