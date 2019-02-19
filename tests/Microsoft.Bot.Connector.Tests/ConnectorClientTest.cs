@@ -18,19 +18,6 @@ namespace Connector.Tests
     public class ConnectorClientTest : BaseTest
     {
         [Fact]
-        public void ConnectorClientWithCustomHttpClient()
-        {
-            var baseUri = new Uri("https://test.coffee");
-            var customHttpClient = new HttpClient();
-
-            // Set a special base address so then we can make sure the connector client is honoring this http client
-            customHttpClient.BaseAddress = baseUri;
-            var connector = new ConnectorClient(new Uri("http://localhost/"), string.Empty, string.Empty, customHttpClient: customHttpClient);
-
-            Assert.Equal(connector.HttpClient.BaseAddress, baseUri);
-        }
-
-        [Fact]
         public void ConnectorClientWithCustomHttpClientAndMicrosoftCredentials()
         {
             var baseUri = new Uri("https://test.coffee");
@@ -38,7 +25,7 @@ namespace Connector.Tests
 
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
-            var connector = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient: customHttpClient);
+            var connector = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
 
             Assert.Equal(connector.HttpClient.BaseAddress, baseUri);
         }
