@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$implements": [
+        "Microsoft.IDialogStep"
+    ],
+    "title": "End Dialog",
+    "description": "This is a step which ends the current dialog, returning the result",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "property": {
+            "$type":"Microsoft.IExpression",
+            "title": "Property",
+            "description": "The property from dialog memory to return as the result",
+            "examples": [
+                "user.name"
+            ]
+        }
+    }
+}

@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                         return s;
                     }
                 }
-                throw ex;
+                return ((dynamic)instance)[property];
             }
 
             

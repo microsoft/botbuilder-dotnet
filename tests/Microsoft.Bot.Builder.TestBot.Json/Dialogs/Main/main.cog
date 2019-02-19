@@ -17,7 +17,7 @@
         },
         {
             "$type": "Microsoft.SendActivityTemplateStep",
-            "activity": "{template(welcome-user)}"
+            "activity": "[welcome-user]"
         },
         {
             "$type": "Microsoft.CallDialog",
@@ -26,14 +26,14 @@
                 "$id": "countryPrompt",
                 "property": "country",
                 "pattern": "\\w{3,50}",
-                "initialPrompt": "{template(prompt-country)}",
+                "initialPrompt": "[prompt-country]",
                 "retryPrompt": "Let's try again, what's your country of birth?",
                 "noMatchResponse": "You need to give me at least 3 chars to 30 chars as a country."
             }
         },
         {
           "$type": "Microsoft.SendActivityTemplateStep",
-          "activity": "{template(love-country)}"
+          "activity": "[love-country]"
         },
         {
             "$type": "Microsoft.CallDialog",

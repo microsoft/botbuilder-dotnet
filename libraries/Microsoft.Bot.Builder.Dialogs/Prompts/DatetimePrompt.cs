@@ -28,6 +28,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             DefaultLocale = defaultLocale;
             MinValue = DateTime.MinValue;
             MaxValue = DateTime.MaxValue;
+            this.TooSmallResponse = new ActivityTemplate(this.GetType(), nameof(TooSmallResponse));
+            this.TooLargeResponse = new ActivityTemplate(this.GetType(), nameof(TooLargeResponse));
         }
 
         public string DefaultLocale { get; set; }
@@ -36,16 +38,14 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public DateTime MaxValue { get; set; }
 
-        public ActivityTemplate TooSmallResponse { get; set; }
+        public IActivityTemplate TooSmallResponse { get; set; }
 
-        public ActivityTemplate TooLargeResponse { get; set; }
+        public IActivityTemplate TooLargeResponse { get; set; }
 
         protected override async Task OnBeforePromptAsync(DialogContext dc, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
         {
             // TODO: Parametrize to which state to bind.
             await base.OnBeforePromptAsync(dc, isRetry, cancellationToken).ConfigureAwait(false);
-            TooSmallResponse?.Bind(dc.UserState);
-            TooLargeResponse?.Bind(dc.UserState);
         }
 
         protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, DateTimePromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
@@ -76,12 +76,30 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     if (!promptContext.Recognized.Succeeded)
                     {
-                        if (this.NoMatchResponse != null)
+                        var noMatchResponse = await this.NoMatchResponse.BindToActivity(turnContext, state).ConfigureAwait(false);
+                        if (noMatchResponse != null)
                         {
-                            await promptContext.Context.SendActivityAsync(this.NoMatchResponse.Activity).ConfigureAwait(false);
+                            await promptContext.Context.SendActivityAsync(noMatchResponse).ConfigureAwait(false);
                         }
 
-                        await promptContext.Context.SendActivityAsync(options.RetryPrompt ?? this.RetryPrompt?.Activity ?? options.Prompt ?? this.InitialPrompt?.Activity).ConfigureAwait(false);
+                        if (options.RetryPrompt != null)
+                        {
+                            await promptContext.Context.SendActivityAsync(options.RetryPrompt).ConfigureAwait(false);
+                            return false;
+                        }
+
+                        var retry = await this.RetryPrompt.BindToActivity(turnContext, state).ConfigureAwait(false);
+                        if (retry != null)
+                        {
+                            await promptContext.Context.SendActivityAsync(retry).ConfigureAwait(false);
+                            return false;
+                        }
+
+                        var prompt = await this.InitialPrompt.BindToActivity(turnContext, state).ConfigureAwait(false);
+                        if (prompt != null)
+                        {
+                            await promptContext.Context.SendActivityAsync(prompt).ConfigureAwait(false);
+                        }
                         return false;
                     }
 
@@ -91,46 +109,87 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                         if (value < options.MinValue.Value)
                         {
-                            if (this.TooSmallResponse != null)
+                            var tooSmall = await this.TooSmallResponse.BindToActivity(turnContext, state).ConfigureAwait(false);
+                            if (tooSmall != null)
                             {
-                                await promptContext.Context.SendActivityAsync(this.TooSmallResponse.Activity).ConfigureAwait(false);
+                                await promptContext.Context.SendActivityAsync(tooSmall).ConfigureAwait(false);
                             }
 
-                            await promptContext.Context.SendActivityAsync(options.RetryPrompt ?? this.RetryPrompt?.Activity ?? options.Prompt ?? this.InitialPrompt?.Activity).ConfigureAwait(false);
+                            if (options.RetryPrompt != null)
+                            {
+                                await promptContext.Context.SendActivityAsync(options.RetryPrompt).ConfigureAwait(false);
+                                return false;
+                            }
+
+                            var retry = await this.RetryPrompt.BindToActivity(turnContext, state).ConfigureAwait(false);
+                            await promptContext.Context.SendActivityAsync(retry).ConfigureAwait(false);
                             return false;
                         }
 
                         if (value > options.MaxValue.Value)
                         {
-                            if (this.TooLargeResponse != null)
+                            var tooLarge = await this.TooLargeResponse.BindToActivity(turnContext, state).ConfigureAwait(false);
+                            if (tooLarge != null)
                             {
-                                await promptContext.Context.SendActivityAsync(this.TooLargeResponse.Activity).ConfigureAwait(false);
+                                await promptContext.Context.SendActivityAsync(tooLarge).ConfigureAwait(false);
                             }
 
-                            await promptContext.Context.SendActivityAsync(options.RetryPrompt ?? this.RetryPrompt.Activity ?? options.Prompt ?? this.InitialPrompt.Activity).ConfigureAwait(false);
+                            if (options.RetryPrompt != null)
+                            {
+                                await promptContext.Context.SendActivityAsync(options.RetryPrompt).ConfigureAwait(false);
+                                return false;
+                            }
+
+                            var retry = await this.RetryPrompt.BindToActivity(turnContext, state).ConfigureAwait(false);
+                            await promptContext.Context.SendActivityAsync(retry).ConfigureAwait(false);
                             return false;
                         }
 
                         return true;
                     }
 
-                    if (this.NoMatchResponse != null)
+                    var noMatch = await this.NoMatchResponse.BindToActivity(turnContext, state).ConfigureAwait(false);
+                    if (noMatch != null)
                     {
-                        await promptContext.Context.SendActivityAsync(this.NoMatchResponse.Activity).ConfigureAwait(false);
+
+                        await promptContext.Context.SendActivityAsync(noMatch).ConfigureAwait(false);
                     }
 
-                    await promptContext.Context.SendActivityAsync(options.RetryPrompt ?? this.RetryPrompt?.Activity ?? options.Prompt ?? this.InitialPrompt?.Activity).ConfigureAwait(false);
+                    var retryResponse = await this.RetryPrompt.BindToActivity(turnContext, state).ConfigureAwait(false);
+                    await promptContext.Context.SendActivityAsync(retryResponse).ConfigureAwait(false);
                     return false;
                 });
             }
 
-            if (isRetry && options.RetryPrompt != null)
+            if (isRetry)
             {
-                await turnContext.SendActivityAsync(options.RetryPrompt, cancellationToken).ConfigureAwait(false);
+                if (options.RetryPrompt != null)
+                {
+                    await turnContext.SendActivityAsync(options.RetryPrompt, cancellationToken).ConfigureAwait(false);
+                }
+                else
+                {
+                    var retry = await this.RetryPrompt.BindToActivity(turnContext, state).ConfigureAwait(false);
+                    if (retry != null)
+                    {
+                        await turnContext.SendActivityAsync(retry).ConfigureAwait(false);
+                    }
+                }
             }
-            else if (options.Prompt != null)
+            else
             {
-                await turnContext.SendActivityAsync(options.Prompt, cancellationToken).ConfigureAwait(false);
+                if (options.Prompt != null)
+                {
+                    await turnContext.SendActivityAsync(options.Prompt, cancellationToken).ConfigureAwait(false);
+                }
+                else
+                {
+                    var initialPrompt = await this.InitialPrompt.BindToActivity(turnContext, state).ConfigureAwait(false);
+                    if (initialPrompt != null)
+                    {
+                        await turnContext.SendActivityAsync(initialPrompt).ConfigureAwait(false);
+                    }
+                }
             }
         }
 

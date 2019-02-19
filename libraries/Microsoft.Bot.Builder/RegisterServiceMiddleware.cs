@@ -1,0 +1,44 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Microsoft.Bot.Builder
+{
+    /// <summary>
+    /// Middleware for injecting a class into the turn context.
+    /// </summary>
+    /// <typeparam name="T">The type to register</typeparam>
+    public class RegisterClassMiddleware<T> : IMiddleware
+        where T : class
+    {
+        private T service;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RegisterClassMiddleware{T}"/> class.
+        /// </summary>
+        /// <param name="service">The service instance to register.</param>
+        public RegisterClassMiddleware(T service)
+        {
+            this.service = service;
+        }
+
+        /// <summary>
+        /// registers into the turncontext
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="nextTurn">The delegate to call to continue the bot middleware pipeline.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <seealso cref="ITurnContext"/>
+        /// <seealso cref="Bot.Schema.IActivity"/>
+        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate nextTurn, CancellationToken cancellationToken)
+        {
+            // Register service
+            turnContext.TurnState.Add(this.service);
+            await nextTurn(cancellationToken).ConfigureAwait(false);
+        }
+    }
+}

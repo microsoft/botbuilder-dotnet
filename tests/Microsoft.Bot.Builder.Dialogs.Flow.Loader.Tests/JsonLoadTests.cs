@@ -247,7 +247,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger()))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()))
                 .Use(new AutoSaveStateMiddleware(convoState));
 
             var dialogs = new DialogSet(dialogState);

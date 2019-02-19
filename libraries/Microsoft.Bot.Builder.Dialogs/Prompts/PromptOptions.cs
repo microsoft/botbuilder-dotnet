@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </value>
         public Activity RetryPrompt { get; set; }
 
-        public ActivityTemplate PromptTemplate { get; set; }
-        public ActivityTemplate RetryPromptTemplate { get; set; }
+        public IActivityTemplate PromptTemplate { get; set; }
+        public IActivityTemplate RetryPromptTemplate { get; set; }
     }
 }

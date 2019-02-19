@@ -2,14 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Composition;
-using Microsoft.Bot.Builder.Dialogs.Composition.Expressions;
 using Microsoft.Bot.Builder.Dialogs.Flow.Loader.Parsers;
-using Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -22,43 +15,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Converters
 
         public override bool CanConvert(Type objectType)
         {
-            return typeof(ActivityTemplate) == objectType;
+            return typeof(IActivityTemplate) == objectType;
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            ActivityTemplate template;
-            
             if (reader.ValueType == typeof(string))
             {
+                // inline template Example: "Hello {name}"
                 string readerValue = reader.Value.ToString();
-
-                var args = TemplateExpressionParser.Parse(readerValue);
-
-                // Direct string in text
-                if (args == null || args.Count == 0)
-                {
-                    template = new ActivityTemplate(readerValue);
-                }
-                // Template
-                else
-                {
-                    template = new ActivityTemplate()
-                    {
-                        Template = args.First()
-                    };
-                }
-                // TODO: hybrid model, i.e. inline template: "Hello {name}"
+                return new ActivityTemplate((string)readerValue);
             }
             else
             {
-                template = JToken.Load(reader).ToObject<ActivityTemplate>();
+                var activity = JToken.Load(reader).ToObject<Activity>();
+                return new ActivityTemplate((Activity)activity);
             }
-
-            // TODO: Wire language generator into configuration pipeline
-            template.LanguageGenerator = new LangugageGenerator(@"dialogs\main\en-us.lg");
-
-            return template;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

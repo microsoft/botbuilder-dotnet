@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Reflection;
 using Microsoft.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Composition.Expressions
@@ -48,5 +47,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Expressions
             throw new ArgumentNullException(nameof(Expression));
         }
 
+        public Task<object> Evaluate(string expression, IDictionary<string, object> vars)
+        {
+            var parseTree = ExpressionEngine.Parse(expression);
+            var result = ExpressionEngine.Evaluate(this._parseTree, vars);
+            return Task.FromResult(result);
+        }
     }
 }

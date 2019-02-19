@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var engine = TemplateEngine.FromFile(GetExampleFilePath("6.lg"));
 
             string evaled = engine.Evaluate("welcome", null);
-            Assert.AreEqual("Hi DongLei :)", evaled);
+            Assert.AreEqual("Hi DonsgLei :)", evaled);
 
             evaled = engine.Evaluate("welcome", new { userName = "DL" });
             Assert.AreEqual("Hi DL :)", evaled);
