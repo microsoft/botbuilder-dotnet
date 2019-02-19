@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Expressions
         public Task<object> Evaluate(string expression, IDictionary<string, object> vars)
         {
             var parseTree = ExpressionEngine.Parse(expression);
-            var result = ExpressionEngine.Evaluate(this._parseTree, vars);
+            var result = ExpressionEngine.Evaluate(parseTree, vars);
             return Task.FromResult(result);
         }
     }
