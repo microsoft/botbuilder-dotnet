@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         private Activity activity = null;
 
         // Fixed text constructor
-        public ActivityTemplate(string text)
+        public ActivityTemplate(string text, string textFormat = TextFormatTypes.Plain, SuggestedActions suggestedActions = null)
         {
             if (string.IsNullOrEmpty(text))
             {
@@ -29,8 +29,16 @@ namespace Microsoft.Bot.Builder.Dialogs
             this.activity = new Activity()
             {
                 Type = ActivityTypes.Message,
-                Text = text
+                Text = text,
+                TextFormat = textFormat,
+                SuggestedActions = suggestedActions,
             };
+        }
+
+        public ActivityTemplate(Attachment attachment, SuggestedActions suggestedActions)
+        {
+            this.activity = (Activity)MessageFactory.Attachment(attachment);
+            this.activity.SuggestedActions = suggestedActions;
         }
 
         // Data bound constructor

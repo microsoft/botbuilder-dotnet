@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 {
                     throw new Exception($"Not a valid template ref: {exp}");
                 }
-                var argExpressions = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(",");
+                var argExpressions = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(',');
                 var args = argExpressions.Select(x => EvalByExpressionEngine(x, Scope)).ToList();
 
                 // Construct a new Scope for this template reference

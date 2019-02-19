@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 }
                 else
                 {
-                    var firstPart = String.Join(sep1, li.OfType<object>().SkipLast(1));
+                    var firstPart = String.Join(sep1, li.OfType<object>().Take(li.OfType<object>().Count()-1));
                     return firstPart + sep2 + li.OfType<object>().Last().ToString();
                 }
             }

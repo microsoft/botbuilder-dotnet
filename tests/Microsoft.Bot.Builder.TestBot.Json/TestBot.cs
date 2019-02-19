@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Flow.Loader;
+using Microsoft.Bot.Builder.TestBot.Json.CCI;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 
@@ -18,10 +19,11 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         private SemaphoreSlim _semaphore;
 
         private readonly IDialog rootDialog;
-        public TestBot(TestBotAccessors accessors)
+        public TestBot(TestBotAccessors accessors, Dialogs.Composition.IntentDialog intentDialog)
         {
             // create the DialogSet from accessor
-            rootDialog = CognitiveLoader.Load<IDialog>(File.ReadAllText(@"Dialogs\Main\main.cog"));
+            // rootDialog = CognitiveLoader.Load<IDialog>(File.ReadAllText(@"Dialogs\Main\main.cog"));
+            rootDialog = intentDialog;
 
             _dialogs = new DialogSet(accessors.ConversationDialogState);
             _dialogs.Add(rootDialog);

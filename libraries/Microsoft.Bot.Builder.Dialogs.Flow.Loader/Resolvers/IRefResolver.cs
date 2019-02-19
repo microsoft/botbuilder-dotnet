@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Resolvers
 
             var refTarget = jProperty.Value.Value<string>();
 
-            var targetFragments = refTarget.Split("#");
+            var targetFragments = refTarget.Split('#');
 
             string jsonFile;
             string jsonPointer = null;

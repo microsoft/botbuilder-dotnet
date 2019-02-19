@@ -73,6 +73,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
                             return commandResult as DialogTurnResult;
                         }
 
+                        if (commandResult is Task<object>)
+                        {
+                            commandResult = ((Task<object>)commandResult).Result;
+                        }
+
                         if (commandResult is string && !String.IsNullOrEmpty((string)commandResult))
                         {
                             currentId = (string)commandResult;

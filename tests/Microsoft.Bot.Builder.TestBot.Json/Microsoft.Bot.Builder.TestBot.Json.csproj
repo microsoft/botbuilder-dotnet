@@ -1,7 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <!--<TargetFramework>netcoreapp2.0</TargetFramework>-->
+    <TargetFramework>net462</TargetFramework>
+    <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,7 +25,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.9" />
+    <!--<PackageReference Include="Autofac" Version="4.8.1" />-->
+    <!--<PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.9" />-->
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
+    <!--<PackageReference Include="Microsoft.CCI.BotProvider" Version="1.0.201902163" />-->
+    <PackageReference Include="Microsoft.CCI.Content" Version="1.0.20190216.4" />
+    <PackageReference Include="ResourceStack.Storage.Client" Version="6.0.0.882" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,6 +48,42 @@
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Azure.Flow.Common">
+      <HintPath>CCI\Microsoft.Azure.Flow.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Azure.Flow.Templates">
+      <HintPath>CCI\Microsoft.Azure.Flow.Templates.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <!--<ItemGroup>
+    <Reference Include="Microsoft.CCI.OnlineEngine.Content">
+      <HintPath>..\..\..\..\msazure\OnlineEngine\src\OnlineEngine\Dialog.Engine\bin\Debug\netstandard2.0\Microsoft.CCI.OnlineEngine.Content.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CCI.OnlineEngine.Content.Abstractions">
+      <HintPath>..\..\..\..\msazure\OnlineEngine\src\OnlineEngine\Dialog.Engine\bin\Debug\netstandard2.0\Microsoft.CCI.OnlineEngine.Content.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CCI.OnlineEngine.Dialog.Engine">
+      <HintPath>..\..\..\..\msazure\OnlineEngine\src\OnlineEngine\Dialog.Engine\bin\Debug\netstandard2.0\Microsoft.CCI.OnlineEngine.Dialog.Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CCI.OnlineEngine.EngineBuilder.Abstractions">
+      <HintPath>..\..\..\..\msazure\OnlineEngine\src\OnlineEngine\Dialog.Engine\bin\Debug\netstandard2.0\Microsoft.CCI.OnlineEngine.EngineBuilder.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CCI.OnlineEngine.Metrics">
+      <HintPath>..\..\..\..\msazure\OnlineEngine\src\OnlineEngine\Dialog.Engine\bin\Debug\netstandard2.0\Microsoft.CCI.OnlineEngine.Metrics.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CCI.OnlineEngine.QueryUnderstanding.Abstractions">
+      <HintPath>..\..\..\..\msazure\OnlineEngine\src\OnlineEngine\Dialog.Engine\bin\Debug\netstandard2.0\Microsoft.CCI.OnlineEngine.QueryUnderstanding.Abstractions.dll</HintPath>
+    </Reference>
+  </ItemGroup>-->
+
+  <ItemGroup>
+    <Content Update="Dialogs\AllBotContent.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

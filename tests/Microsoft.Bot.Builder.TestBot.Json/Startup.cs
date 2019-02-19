@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -13,6 +14,7 @@ using Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types;
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.TemplateManager;
+using Microsoft.Bot.Builder.TestBot.Json.CCI;
 using Microsoft.Bot.Builder.TestBot.Json.Recognizers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -53,10 +55,12 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 UserState = userState
             };
 
+            var intentDialog = BotContentLoader.Load(File.ReadAllText(@"Dialogs\AllBotContent.json"));
+
             services.AddBot<IBot>(
                 (IServiceProvider sp) =>
                 {
-                    return new TestBot(accessors);
+                    return new TestBot(accessors, intentDialog);
                 },
                 (BotFrameworkOptions options) =>
                 {
@@ -77,10 +81,10 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseDefaultFiles()
+            app
                 .UseStaticFiles()
                 .UseBotFramework();
-            app.UseExceptionHandler();
+            app.UseExceptionHandler("/");
         }
 
         private void RegisterTypes()
