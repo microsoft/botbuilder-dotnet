@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
 
         public SendActivityStep(string text)
         {
-            this.Activity = new ActivityTemplate(text);
+            this.Activity = new TextActivity(text);
         }
 
         /// <summary>

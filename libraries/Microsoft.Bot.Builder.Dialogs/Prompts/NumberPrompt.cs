@@ -27,8 +27,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             MinValue = (TNumber)typeof(TNumber).GetField(nameof(MinValue)).GetValue(null);
             MaxValue = (TNumber)typeof(TNumber).GetField(nameof(MaxValue)).GetValue(null);
 
-            this.TooSmallResponse = new ActivityTemplate(this.GetType(), nameof(TooSmallResponse));
-            this.TooLargeResponse = new ActivityTemplate(this.GetType(), nameof(TooLargeResponse));
+            this.TooSmallResponse = this.DefineProperty(nameof(TooSmallResponse));
+            this.TooLargeResponse = this.DefineProperty(nameof(TooLargeResponse));
         }
 
         public string DefaultLocale { get; set; }

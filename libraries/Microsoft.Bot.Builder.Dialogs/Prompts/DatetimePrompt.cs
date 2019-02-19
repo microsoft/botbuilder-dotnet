@@ -28,8 +28,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             DefaultLocale = defaultLocale;
             MinValue = DateTime.MinValue;
             MaxValue = DateTime.MaxValue;
-            this.TooSmallResponse = new ActivityTemplate(this.GetType(), nameof(TooSmallResponse));
-            this.TooLargeResponse = new ActivityTemplate(this.GetType(), nameof(TooLargeResponse));
+            this.TooSmallResponse = this.DefineProperty(nameof(TooSmallResponse));
+            this.TooLargeResponse = this.DefineProperty(nameof(TooLargeResponse));
         }
 
         public string DefaultLocale { get; set; }

@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public TextPrompt(string dialogId = nameof(TextPrompt), PromptValidator<string> validator = null)
             : base(dialogId ?? nameof(TextPrompt), validator)
         {
-            this.NotMatchedActivity = new ActivityTemplate(this.GetType(), nameof(NotMatchedActivity));
+            this.NotMatchedActivity = this.DefineProperty(nameof(NotMatchedActivity));
         }
 
         /// <summary>

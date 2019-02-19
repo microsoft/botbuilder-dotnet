@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Converters
             {
                 // inline template Example: "Hello {name}"
                 string readerValue = reader.Value.ToString();
-                return new ActivityTemplate((string)readerValue);
+                return new TextActivity((string)readerValue);
             }
             else
             {

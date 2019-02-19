@@ -21,6 +21,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             _telemetryClient = NullBotTelemetryClient.Instance;
         }
 
+        public IActivityTemplate DefineProperty(string name)
+        {
+            var types = ActivityProperty.GetTypes(this.GetType());
+            return new ActivityProperty(types, name);
+        }
+
         /// <summary>
         /// Unique id for the dialog
         /// </summary>

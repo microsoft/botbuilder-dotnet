@@ -37,9 +37,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             : base(dialogId)
         {
             _validator = validator;
-            this.InitialPrompt = new ActivityTemplate(this.GetType(), nameof(InitialPrompt));
-            this.RetryPrompt = new ActivityTemplate(this.GetType(), nameof(RetryPrompt));
-            this.NoMatchResponse = new ActivityTemplate(this.GetType(), nameof(NoMatchResponse));
+
+            this.InitialPrompt = this.DefineProperty(nameof(InitialPrompt));
+            this.RetryPrompt = this.DefineProperty(nameof(RetryPrompt));
+            this.NoMatchResponse = this.DefineProperty(nameof(NoMatchResponse));
         }
 
         /// <summary>
@@ -56,7 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The initial prompt to send the user as <seealso cref="Activity"/>Activity.
         /// </value>
-        public IActivityTemplate InitialPrompt { get; set; } 
+        public IActivityTemplate InitialPrompt { get; set; }
 
         /// <summary>
         /// Gets or sets the retry prompt to send the user as <seealso cref="Activity"/>Activity.
