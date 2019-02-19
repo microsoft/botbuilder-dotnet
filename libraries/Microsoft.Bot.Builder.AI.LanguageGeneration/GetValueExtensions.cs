@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         {
             try
             {
-                // Evaluate with the auto property binder first
+                // EvaluateTemplate with the auto property binder first
               
                 var result = PropertyBinder.Auto(instance, property);
                 return result;

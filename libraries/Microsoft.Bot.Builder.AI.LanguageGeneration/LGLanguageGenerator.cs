@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             try
             {
                 // do inline evaluation first
-                return engine.Evaluate(text, data);
+                return engine.EvaluateTemplate(text, data);
             }
             catch (Exception)
             {

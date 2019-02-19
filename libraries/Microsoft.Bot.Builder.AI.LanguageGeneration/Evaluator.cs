@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             GetValueX = new GetValueExtensions(this);
         }
 
-        public string Evaluate(string templateName, object scope)
+        public string EvaluateTemplate(string templateName, object scope)
         {
             TemplateName = templateName;
             Scope = scope;
@@ -149,7 +149,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var argsStartPos = exp.IndexOf('(');
             if (argsStartPos > 0) // Do have args
             {
-                // Evaluate all arguments using ExpressoinEngine
+                // EvaluateTemplate all arguments using ExpressoinEngine
                 var argsEndPos = exp.LastIndexOf(')');
                 if (argsEndPos < 0 || argsEndPos < argsStartPos+1)
                 {
@@ -163,10 +163,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 var templateName = exp.Substring(0, argsStartPos);
                 var newScope = ConstructScope(templateName, args);
 
-                return Evaluate(templateName, newScope);
+                return EvaluateTemplate(templateName, newScope);
                 
             }
-            return Evaluate(exp, Scope);
+            return EvaluateTemplate(exp, Scope);
         }
 
         private List<string> ExtractParameters(string templateName)

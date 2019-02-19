@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 var result = li.OfType<object>().Select(x =>
                 {
                     var newScope = _evaluator.ConstructScope(func, new List<object>() { x });
-                    var evaled = _evaluator.Evaluate(func, newScope);
+                    var evaled = _evaluator.EvaluateTemplate(func, newScope);
                     return evaled;
                 }).ToList();
 
@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 var result = li.OfType<object>().Select(x =>
                 {
                     var newScope = _evaluator.ConstructScope(func, new List<object>() { x });
-                    var evaled = _evaluator.Evaluate(func, newScope);
+                    var evaled = _evaluator.EvaluateTemplate(func, newScope);
                     return evaled;
                 }).ToList();
 

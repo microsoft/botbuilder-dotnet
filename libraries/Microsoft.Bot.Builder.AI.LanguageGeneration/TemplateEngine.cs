@@ -14,10 +14,22 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
     /// </summary>
     class EvaluationContext
     {
+        public EvaluationContext()
+        {
+            TemplateContexts = new Dictionary<string, LGFileParser.TemplateDefinitionContext>();
+            TemplateParameters = new Dictionary<string, List<string>>();
+        }
+
         public EvaluationContext(Dictionary<string, LGFileParser.TemplateDefinitionContext> templateContexts, Dictionary<string, List<string>> templateParameters)
         {
             TemplateContexts = templateContexts;
             TemplateParameters = templateParameters;
+        }
+
+        public EvaluationContext(EvaluationContext context)
+        {
+            TemplateContexts = new Dictionary<string, LGFileParser.TemplateDefinitionContext>(context.TemplateContexts);
+            TemplateParameters = new Dictionary<string, List<string>>(context.TemplateParameters);
         }
 
         /// <summary>
@@ -37,9 +49,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
     /// </summary>
     public class TemplateEngine
     {
+        /// <summary>
+        /// This is ensentially an index for the parse tree, used to accelerate the evalution process
+        /// </summary>
         private readonly EvaluationContext evaluationContext = null;
-        //private readonly LGFileParser.FileContext _context = null;
-        //private readonly Dictionary<string, LGFileParser.TemplateDefinitionContext> _templates = null;
+
+        /// <summary>
+        /// Use for create an empty engine
+        /// </summary>
+        private TemplateEngine()
+        {
+            evaluationContext = new EvaluationContext();
+        }
         private TemplateEngine(LGFileParser.FileContext context)
         {
             // Pre-compute some information to help the evalution process later
@@ -71,20 +92,65 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             evaluationContext = new EvaluationContext(templateContexts, templateParameters);
         }
         
-        public string Evaluate(string templateName, object scope)
+        public string EvaluateTemplate(string templateName, object scope)
         {
 
-            var evalutor = new Evaluator(evaluationContext);
-            return evalutor.Evaluate(templateName, scope);
-            /*
-            if (!_templates.ContainsKey(templateName))
-            {
-                throw new Exception($"No such template defined with name: {templateName}");
-            }
+            var evaluator = new Evaluator(evaluationContext);
+            return evaluator.EvaluateTemplate(templateName, scope);
+        }
 
-            var visitor = new Evaluator(templateName, scope, this, _templates);
-            return visitor.Visit(_templates[templateName]) ?? throw new Exception("Evaluation error");
-             */    
+
+        /// <summary>
+        /// Use to evaluate an inline template str
+        /// </summary>
+        /// <param name="inlineStr"></param>
+        /// <param name="scope"></param>
+        /// <returns></returns>
+        public string Evaluate(string inlineStr, object scope)
+        {
+            // TODO: maybe we can directly ref the templateBody without giving a name, but that means
+            // we needs to make a little changes in the evalutor, especially the loop detection part
+            
+            var fakeTemplateId = "__temp__";
+            // wrap inline string with "# name and -" to align the evaluation process
+            var wrappedStr = $"# {fakeTemplateId} \r\n - {inlineStr}";
+
+            try
+            {
+                // Step 1: parse input, construct parse tree
+                var input = new AntlrInputStream(wrappedStr);
+                var lexer = new LGFileLexer(input);
+                var tokens = new CommonTokenStream(lexer);
+                var parser = new LGFileParser(tokens);
+                parser.BuildParseTree = true;
+                parser.ErrorHandler = new BailErrorStrategy();
+                // the only difference here is that we parse as templateBody, not as the whole file
+                var context = parser.templateDefinition();
+
+                // Step 2: constuct a new evalution context on top of the current one
+                var evaluationContext = new EvaluationContext(this.evaluationContext);
+                evaluationContext.TemplateContexts[fakeTemplateId] = context;
+                var evaluator = new Evaluator(evaluationContext);
+
+                // Step 3: evaluate
+                return evaluator.EvaluateTemplate(fakeTemplateId, scope);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+                throw e;
+            }
+            
+        }
+
+
+        /// <summary>
+        /// Make this a signleton ? or give a better name
+        /// </summary>
+        /// <returns></returns>
+        public static TemplateEngine EmptyEngine()
+        {
+            return FromText("");
         }
 
         public static TemplateEngine FromFile(string filePath)
@@ -94,6 +160,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
         public static TemplateEngine FromText(string lgFileContent)
         {
+            // Short cut for empty engine
+            if (string.IsNullOrEmpty(lgFileContent))
+            {
+                return new TemplateEngine();
+            }
+
             try
             {
                 var input = new AntlrInputStream(lgFileContent);
