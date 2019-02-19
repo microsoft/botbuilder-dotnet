@@ -1,75 +1,100 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Composition.Expressions;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public interface ILanguageGenerator
-    {
-        string Apply(string template, object data, string locale = null);
-    }
 
-    public class ActivityTemplate
+    public class ActivityTemplate : IActivityTemplate
     {
-        private bool bound = false;
-        private bool textOnly = false;
-        private Activity activity = null;
+        private string[] types;
 
-        // Fixed text constructor
-        public ActivityTemplate(string text)
+        // Fixed text constructor for inline template
+        public ActivityTemplate(string inlineTemplate)
         {
-            if (string.IsNullOrEmpty(text))
-            {
-                throw new ArgumentException(nameof(text));
-            }
-
-            this.bound = true;
-            this.textOnly = true;
-            this.activity = new Activity()
-            {
-                Type = ActivityTypes.Message,
-                Text = text
-            };
+            this.Template = inlineTemplate ?? throw new ArgumentNullException(nameof(inlineTemplate));
         }
 
-        // Data bound constructor
-        public ActivityTemplate() { }
+        // Fixed text constructor
+        public ActivityTemplate(Type type, string property)
+        {
+            this.types = GetTypeHierarchy(type);
+            this.Property = property ?? throw new ArgumentNullException(nameof(Property));
+        }
 
-        public ILanguageGenerator LanguageGenerator { get; set; }
+        public ActivityTemplate(Activity activity)
+        {
+            this.Activity = activity ?? throw new ArgumentNullException(nameof(activity));
+        }
+
+        public string Property { get; set; }
 
         public string Template { get; set; }
 
-        // TODO: This will be removed after we move to PromptDialogs, where OnPromptAsync has dialogContext available
-        // In this case, ActivityTemplates need to be databound before hand in OnBeforePromptAsync.
-        public Activity Activity
-        {
-            get
-            {
-                if (!bound)
-                {
-                    throw new InvalidOperationException("Bind() must be called prior to retrieving the Activity");
-                }
+        protected Activity Activity { get; set; }
 
-                return activity;
-            }
-        }
-
-        public Activity Bind(object data)
+        public async Task<Activity> BindToActivity(ITurnContext context, object data)
         {
-            if (textOnly)
+            if (Activity != null)
             {
+                // TODO walk text and look for bindings?
                 return Activity;
             }
 
-            bound = true;
-            activity = new Activity()
+            IMessageGenerator messageGenerator = context.TurnState.Get<IMessageGenerator>();
+            if (messageGenerator != null)
             {
-                Type = ActivityTypes.Message,
-                Text = LanguageGenerator.Apply(Template, data),
-            };
+                var result = await messageGenerator.Generate(
+                    context.Activity.Locale,
+                    inlineTemplate: Template,
+                    id: this.Property,
+                    data: data,
+                    tags: null,
+                    types: types).ConfigureAwait(false);
+                return (Activity)result;
+            }
 
-            return activity;
+            if (!string.IsNullOrEmpty(this.Template))
+            {
+                var message = Activity.CreateMessageActivity();
+                message.Text = this.Template;
+                message.Speak = this.Template;
+
+                ILanguageGenerator languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+                if (languageGenerator != null)
+                {
+                    var result = await languageGenerator.Generate(
+                        context.Activity.Locale,
+                        inlineTemplate: Template,
+                        id: this.Property,
+                        data: data,
+                        tags: null,
+                        types: types).ConfigureAwait(false);
+                    if (result != null)
+                    {
+                        message.Text = result;
+                        message.Speak = result;
+                    }
+                }
+
+                return message as Activity;
+            }
+
+            return null;
+        }
+
+        public static string[] GetTypeHierarchy(Type type)
+        {
+            List<string> types = new List<string>();
+            while (type != typeof(object))
+            {
+                types.Add($"{type.Namespace}.{type.Name}");
+                type = type.BaseType;
+            }
+
+            return types.ToArray();
         }
     }
 }

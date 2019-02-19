@@ -2,21 +2,17 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Composition.Resources;
 using Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types;
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Builder.TemplateManager;
 using Microsoft.Bot.Builder.TestBot.Json.Recognizers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -26,6 +22,8 @@ namespace Microsoft.Bot.Builder.TestBot.Json
     {
         public Startup(IHostingEnvironment env)
         {
+            HostingEnvironment = env;
+
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -36,6 +34,8 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
             RegisterTypes();
         }
+
+        public IHostingEnvironment HostingEnvironment { get; }
 
         public IConfiguration Configuration { get; }
 
@@ -65,6 +65,17 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                         await conversationState.ClearStateAsync(turnContext);
                         await conversationState.SaveChangesAsync(turnContext);
                     };
+
+                    // manage all bot resources
+                    var botResourceManager = new BotResourceManager()
+                        // add current folder, it's project file, packages, projects, etc.
+                        .AddProjectResources(HostingEnvironment.ContentRootPath);
+
+                    // create LG 
+                    var lg = new LGLanguageGenerator(botResourceManager);
+                    options.Middleware.Add(new RegisterClassMiddleware<IBotResourceProvider>(botResourceManager));
+                    options.Middleware.Add(new RegisterClassMiddleware<ILanguageGenerator>(lg));
+                    options.Middleware.Add(new RegisterClassMiddleware<IMessageGenerator>(new SimpleMessageGenerator(lg)));
                     options.Middleware.Add(new AutoSaveStateMiddleware(conversationState));
                 });
         }

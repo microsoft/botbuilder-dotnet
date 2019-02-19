@@ -12,3 +12,31 @@
 
 # age
 - You are {age}.
+
+# Microsoft-TextPrompt-InitialPrompt
+- What would you like?
+
+# Microsoft-TextPrompt-RetryPrompt
+- I still need an answer. What would you like?
+
+# Microsoft-NumberPrompt-InitialPrompt
+- What number would you like?
+
+# Microsoft-NumberPrompt-NoMatchResponse
+- I didn't recognize a number.
+
+# Microsoft-NumberPrompt-TooSmallResponse
+- That number is too small. 
+
+# Microsoft-NumberPrompt-TooSmallResponse
+- That number is too small. 
+
+# namePrompt-InitialPrompt
+- What's your name?
+
+# namePrompt-RetryPrompt
+- Let's try again, what's your name?
+
+# namePrompt-NoMatchResponse
+- You need to give me at least 3 chars to 30 chars as a name.
+

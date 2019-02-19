@@ -1,0 +1,43 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$implements": [
+        "Microsoft.IDialogStep"
+    ],
+    "title": "Switch Step",
+    "description": "Step which conditionally decides which step to execute next.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "condition": {
+            "$type":"Microsoft.IExpression",
+            "title": "Condition",
+            "description": "Expression to evaluate.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
+        "cases": {
+            "type": "object",
+            "title": "Cases",
+            "description": "Step to execute if expression is true.",
+            "additionalProperties": {
+                "oneOf": [
+                    {
+                        "$type":"Microsoft.IDialogStep"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "$type":"Microsoft.IDialogStep"
+                        }
+                    }
+                ]
+            }
+        },
+        "ignoreCase": {
+            "type": "boolean",
+            "title": "Ignore carse",
+            "description": "Control whether case comparison is case sensitive."
+        }
+    }
+}

@@ -15,12 +15,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         /// </summary>
         public string Id { get; set; }
 
-        public ActivityTemplate Activity { get; set; }
+        public IActivityTemplate Activity { get; set; }
 
         public async Task<object> Execute(DialogContext dialogContext, CancellationToken cancellationToken)
         {
-            var activity = Activity.Bind(dialogContext.UserState);
-            await dialogContext.Context.SendActivityAsync(activity, cancellationToken);
+            var activity = await Activity.BindToActivity(dialogContext.Context, dialogContext.UserState).ConfigureAwait(false); 
+            await dialogContext.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
             return null;
         }
     }
@@ -34,11 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
 
         public SendActivityStep(string text)
         {
-            this.Activity = new Activity()
-            {
-                Type = ActivityTypes.Message,
-                Text = text
-            };
+            this.Activity = new ActivityTemplate(text);
         }
 
         /// <summary>
@@ -46,11 +42,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow
         /// </summary>
         public string Id { get; set; }
 
-        public Activity Activity { get; set; }
+        public IActivityTemplate Activity { get; set; }
 
         public async Task<object> Execute(DialogContext dialogContext, CancellationToken cancellationToken)
         {
-            var activity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(Activity));
+            var activity = await this.Activity.BindToActivity(dialogContext.Context, dialogContext.DialogState);
             await dialogContext.Context.SendActivityAsync(activity, cancellationToken);
             return null;
         }

@@ -1,0 +1,50 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$implements": [
+        "Microsoft.IDialogStep"
+    ],
+    "title": "If Step",
+    "description": "Step which conditionally decides which step to execute next.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "ifTrue": {
+            "oneOf": [
+                {
+                    "$type":"Microsoft.IDialogStep"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "$type":"Microsoft.IDialogStep"
+                    }
+                }
+            ],
+            "title": "If True",
+            "description": "Step to execute if expression is true."
+        },
+        "ifFalse": {
+            "oneOf": [
+                {
+                    "$type":"Microsoft.IDialogStep"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "$type":"Microsoft.IDialogStep"
+                    }
+                }
+            ],
+            "title": "If False",
+            "description": "Step to execute if expression is false."
+        },
+        "condition": {
+            "$type":"Microsoft.IExpression",
+            "title": "Condition",
+            "description": "Expression to evaluate.",
+            "examples": [
+                "user.age > 3"
+            ]
+        }
+    }
+}

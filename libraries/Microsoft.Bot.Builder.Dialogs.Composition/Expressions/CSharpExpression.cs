@@ -43,22 +43,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Expressions
         {
             if (this.script != null)
             {
-                try
-                {
-                    var result = await script.RunAsync(new GlobalState() { State = state });
-                    return result.ReturnValue;
-                }
-                catch (CompilationErrorException e)
-                {
-                    Console.WriteLine(string.Join(Environment.NewLine, e.Diagnostics));
-
-                    // TODO WHAT TO THROW?
-                    throw;
-                }
+                var result = await script.RunAsync(new GlobalState() { State = state });
+                return result.ReturnValue;
             }
 
             throw new ArgumentNullException(nameof(Expression));
         }
 
+        public async Task<object> Evaluate(string expression, IDictionary<string, object> vars)
+        {
+            var script = CSharpScript.Create(expression, options: ScriptOptions.Default.AddReferences(refs), globalsType: typeof(GlobalState));
+
+            var result = await script.RunAsync(new GlobalState() { State = vars });
+            return result.ReturnValue;
+        }
     }
 }

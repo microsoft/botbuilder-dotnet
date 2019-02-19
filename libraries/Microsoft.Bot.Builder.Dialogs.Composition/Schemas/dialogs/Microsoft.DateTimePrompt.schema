@@ -1,0 +1,75 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$implements": [
+        "Microsoft.IDialog"
+    ],
+    "title": "DateTime prompt",
+    "description": "This represents a dialog which gathers a DateTime in a specified range",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "property": {
+            "type": "string",
+            "description": "This is the property to set.",
+            "examples": [
+                "value.birthday"
+            ]
+        },
+        "minValue": {
+            "type": "integer",
+            "title": "Mininum value",
+            "description": "The minimum value that is acceptable.  If the value is less then this then the TooSmallReponse and RetryPrompt will be sent.",
+            "examples": [
+                "1900-01-01"
+            ]
+        },
+        "maxValue": {
+            "type": "integer",
+            "title": "Maximum value",
+            "description": "The maximum value that is acceptable.  If the value is greater then this then the TooLargeResponse and RetryPrompt will be sent.",
+            "examples": [
+                "2100-01-01"
+            ]
+        },
+        "initialPrompt": {
+            "$type":"Microsoft.IActivityTemplate",
+            "title": "Initial Prompt",
+            "description": "The message to send to start.",
+            "examples": [
+                "What is your birth date?"
+            ]
+        },
+        "retryPrompt": {
+            "$type":"Microsoft.IActivityTemplate",
+            "title": "Retry Prompt",
+            "description": "The message to send to prompt again.",
+            "examples": [
+                "Let's try again. What is your birth date?"
+            ]
+        },
+        "noMatchResponse": {
+            "$type":"Microsoft.IActivityTemplate",
+            "title": "No match",
+            "description": "The message to send to when no date was recognized.",
+            "examples": [
+                "No date was recognized"
+            ]
+        },
+        "tooSmallResponse": {
+            "$type":"Microsoft.IActivityTemplate",
+            "title": "Too small",
+            "description": "The message to send to when the recognized number was less then the MinValue. ",
+            "examples": [
+                "Hmmm...I think your birthday means you must be dead."
+            ]
+        },
+        "tooLargeResponse": {
+            "$type":"Microsoft.IActivityTemplate",
+            "title": "Too large",
+            "description": "The message to send to when the recognized number was greater then the MinValue.",
+            "examples": [
+                "You can't be born in the future!"
+            ]
+        }
+    }
+}

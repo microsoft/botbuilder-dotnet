@@ -89,7 +89,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
         public static TemplateEngine FromFile(string filePath)
         {
-            string lgFileContent = File.ReadAllText(filePath);
+            return FromText(File.ReadAllText(filePath));
+        }
+
+        public static TemplateEngine FromText(string lgFileContent)
+        {
             try
             {
                 var input = new AntlrInputStream(lgFileContent);

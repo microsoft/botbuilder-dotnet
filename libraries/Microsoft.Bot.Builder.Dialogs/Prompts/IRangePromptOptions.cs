@@ -10,8 +10,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
 
         T MaxValue { get; set; }
 
-        ActivityTemplate TooSmallResponse { get; set; }
+        IActivityTemplate TooSmallResponse { get; set; }
 
-        ActivityTemplate TooLargeResponse { get; set; }
+        IActivityTemplate TooLargeResponse { get; set; }
     }
 }

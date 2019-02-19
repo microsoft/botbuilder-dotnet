@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$implements": [
+        "Microsoft.IDialog"
+    ],
+    "title": "Intent Dialog",
+    "description": "Configures a recognizer and the intent routes",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "recognizer": {
+            "$type": "Microsoft.IRecognizer"
+        },
+        "routes": {
+            "type": "object",
+            "description": "maps intent->IDialog",
+            "additionalProperties": {
+                "$type": "Microsoft.IDialog"
+            }
+        }
+    },
+    "required": [
+        "recognizer",
+        "routes"
+    ]
+}

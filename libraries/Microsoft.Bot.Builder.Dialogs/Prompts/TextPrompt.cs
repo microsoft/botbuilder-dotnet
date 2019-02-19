@@ -19,6 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public TextPrompt(string dialogId = nameof(TextPrompt), PromptValidator<string> validator = null)
             : base(dialogId ?? nameof(TextPrompt), validator)
         {
+            this.NotMatchedActivity = new ActivityTemplate(this.GetType(), nameof(NotMatchedActivity));
         }
 
         /// <summary>
@@ -28,13 +29,12 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public string Pattern { get { return _patternMatcher?.ToString(); } set { _patternMatcher = new Regex(value); } }
 
-        public ActivityTemplate NotMatchedActivity { get; set; }
+        public IActivityTemplate NotMatchedActivity { get; set; }
 
         protected override async Task OnBeforePromptAsync(DialogContext dc, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
         {
             // TODO: Parametrize to which state to bind.
             await base.OnBeforePromptAsync(dc, isRetry, cancellationToken).ConfigureAwait(false);
-            NotMatchedActivity?.Bind(dc.UserState);
         }
 
         protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, TextPromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
@@ -67,9 +67,10 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                     if (!_patternMatcher.IsMatch(value))
                     {
-                        if (this.NotMatchedActivity != null)
+                        var notMatched = await this.NotMatchedActivity.BindToActivity(turnContext, state).ConfigureAwait(false);
+                        if (notMatched != null)
                         {
-                            await promptContext.Context.SendActivityAsync(this.NotMatchedActivity.Activity).ConfigureAwait(false);
+                            await promptContext.Context.SendActivityAsync(notMatched).ConfigureAwait(false);
                         }
 
                         return false;
@@ -80,28 +81,30 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Retry for template model
-            if (isRetry && RetryPrompt != null)
-            {
-                await turnContext.SendActivityAsync(RetryPrompt.Activity, cancellationToken).ConfigureAwait(false);
-            }
-
-            // Backward compatible retry for Options model
-            else if (isRetry && options.RetryPrompt != null)
+            if (isRetry && options.RetryPrompt != null)
             {
                 await turnContext.SendActivityAsync(options.RetryPrompt, cancellationToken).ConfigureAwait(false);
             }
-
-            // Initial prompt for template model
-            else if (InitialPrompt != null)
+            else if (isRetry)
             {
-                await turnContext.SendActivityAsync(InitialPrompt.Activity, cancellationToken).ConfigureAwait(false);
+                var retryPrompt = await this.RetryPrompt.BindToActivity(turnContext, state).ConfigureAwait(false);
+                if (retryPrompt != null)
+                {
+                    await turnContext.SendActivityAsync(retryPrompt, cancellationToken).ConfigureAwait(false);
+                }
             }
-
-            // Backward compatible initial prompt for Options model
             else if (options.Prompt != null)
             {
+                // Backward compatible initial prompt for Options model
                 await turnContext.SendActivityAsync(options.Prompt, cancellationToken).ConfigureAwait(false);
             }
+            else
+            {
+                // Initial prompt for template model
+                var initialPrompt = await this.InitialPrompt.BindToActivity(turnContext, state).ConfigureAwait(false);
+                await turnContext.SendActivityAsync(initialPrompt, cancellationToken).ConfigureAwait(false);
+            }
+
         }
 
         protected override Task<PromptRecognizerResult<string>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, TextPromptOptions options, CancellationToken cancellationToken = default(CancellationToken))

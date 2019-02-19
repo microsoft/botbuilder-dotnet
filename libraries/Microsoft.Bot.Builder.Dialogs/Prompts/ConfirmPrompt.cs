@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="defaultLocale">The default culture or locale to use if the <see cref="Activity.Locale"/>
         /// of the <see cref="DialogContext"/>.<see cref="DialogContext.Context"/>.<see cref="ITurnContext.Activity"/>
         /// is not specified.</param>
-        public ConfirmPrompt(string dialogId=null, PromptValidator<bool> validator = null, string defaultLocale = null)
+        public ConfirmPrompt(string dialogId = null, PromptValidator<bool> validator = null, string defaultLocale = null)
             : base(dialogId, validator)
         {
             Style = ListStyle.Auto;
@@ -101,13 +101,36 @@ namespace Microsoft.Bot.Builder.Dialogs
             var choiceOptions = ChoiceOptions ?? defaults.Item3;
             var confirmChoices = ConfirmChoices ?? Tuple.Create(defaults.Item1, defaults.Item2);
             var choices = new List<Choice> { confirmChoices.Item1, confirmChoices.Item2 };
-            if (isRetry && options.RetryPrompt != null)
+            if (isRetry)
             {
-                prompt = AppendChoices(options.RetryPrompt, channelId, choices, Style, choiceOptions);
+                if (options.RetryPrompt != null)
+                {
+                    prompt = AppendChoices(options.RetryPrompt, channelId, choices, Style, choiceOptions);
+                }
+                else
+                {
+                    var retry = await this.RetryPrompt.BindToActivity(turnContext, state).ConfigureAwait(false);
+                    if (retry == null)
+                    {
+                        retry = (Activity)Activity.CreateMessageActivity();
+                    }
+
+                    prompt = AppendChoices(retry.AsMessageActivity(), channelId, choices, Style, choiceOptions);
+                }
+            }
+            else if (options.Prompt != null)
+            {
+                prompt = AppendChoices(options.Prompt, channelId, choices, Style, choiceOptions);
             }
             else
             {
-                prompt = AppendChoices(options.Prompt, channelId, choices, Style, choiceOptions);
+                var initialPrompt = await this.InitialPrompt.BindToActivity(turnContext, state).ConfigureAwait(false);
+                if (initialPrompt == null)
+                {
+                    initialPrompt = (Activity)Activity.CreateMessageActivity();
+                }
+
+                prompt = AppendChoices(initialPrompt, channelId, choices, Style, choiceOptions);
             }
 
             // Send prompt
