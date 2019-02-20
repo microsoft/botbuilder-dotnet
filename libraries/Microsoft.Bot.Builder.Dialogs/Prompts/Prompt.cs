@@ -38,9 +38,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             _validator = validator;
 
-            this.InitialPrompt = this.DefineProperty(nameof(InitialPrompt));
-            this.RetryPrompt = this.DefineProperty(nameof(RetryPrompt));
-            this.NoMatchResponse = this.DefineProperty(nameof(NoMatchResponse));
+            this.InitialPrompt = this.DefineMessageActivityProperty(nameof(InitialPrompt));
+            this.RetryPrompt = this.DefineMessageActivityProperty(nameof(RetryPrompt));
+            this.NoMatchResponse = this.DefineMessageActivityProperty(nameof(NoMatchResponse));
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The initial prompt to send the user as <seealso cref="Activity"/>Activity.
         /// </value>
-        public IActivityTemplate InitialPrompt { get; set; }
+        public ITemplate<IMessageActivity> InitialPrompt { get; set; }
 
         /// <summary>
         /// Gets or sets the retry prompt to send the user as <seealso cref="Activity"/>Activity.
@@ -65,12 +65,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The retry prompt to send the user as <seealso cref="Activity"/>Activity.
         /// </value>
-        public IActivityTemplate RetryPrompt { get; set; }
+        public ITemplate<IMessageActivity> RetryPrompt { get; set; }
 
         /// <summary>
         /// Gets or sets the activity to send when the input didn't match at all
         /// </summary>
-        public IActivityTemplate NoMatchResponse { get; set; }
+        public ITemplate<IMessageActivity> NoMatchResponse { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
         {

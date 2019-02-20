@@ -152,8 +152,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 Id = "TextPrompt",
                 Pattern = @"\w{3,7}", // must be between 3 and 7 non-space chars
-                InitialPrompt = new TextActivity("Enter some text."),
-                NotMatchedActivity = new TextActivity("Make sure the text is greater than three characters."),
+                InitialPrompt = new ActivityTemplate("Enter some text."),
+                NotMatchedResponse = new ActivityTemplate("Make sure the text is greater than three characters."),
             };
             dialogs.Add(textPrompt);
 

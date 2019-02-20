@@ -31,8 +31,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             {
                 var engs = new Dictionary<string, TemplateEngine>(StringComparer.CurrentCultureIgnoreCase);
 
-                engs.Add(string.Empty, TemplateEngine.FromText(" "));
-
                 var lgs = await this.resourceManager.GetResources("lg");
                 var getResourceTasks = lgs.Select(resource => resource.GetTextAsync());
                 await Task.WhenAll(getResourceTasks).ConfigureAwait(false);
@@ -72,6 +70,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 {
                     engs.Add(lang, TemplateEngine.FromText(languageResources[lang].ToString()));
                 }
+
+                if (!engs.ContainsKey(""))
+                {
+                    engs.Add(string.Empty, TemplateEngine.FromText(" "));
+                }
+
                 this.engines = engs;
             }
         }
@@ -112,9 +116,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             if (!String.IsNullOrEmpty(inline))
             {
                 // do inline evaluation first
-                result = this.TryEvaluate(engine, inline, data);
-                if (result != null)
-                    return result;
+                return this.TryEvaluate(engine, inline, data);
             }
             else if (!String.IsNullOrEmpty(id))
             {
@@ -169,7 +171,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             try
             {
                 // do inline evaluation first
-                return engine.EvaluateTemplate(text, data);
+                return engine.Evaluate(text, data);
             }
             catch (Exception)
             {

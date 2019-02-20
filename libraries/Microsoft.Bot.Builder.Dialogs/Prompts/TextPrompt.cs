@@ -16,20 +16,17 @@ namespace Microsoft.Bot.Builder.Dialogs
 
     public class TextPrompt : Prompt<string, TextPromptOptions>
     {
+        private Regex _patternMatcher;
+
         public TextPrompt(string dialogId = nameof(TextPrompt), PromptValidator<string> validator = null)
             : base(dialogId ?? nameof(TextPrompt), validator)
         {
-            this.NotMatchedActivity = this.DefineProperty(nameof(NotMatchedActivity));
         }
 
         /// <summary>
         /// Regex Match expression to match.
         /// </summary>
-        private Regex _patternMatcher;
-
         public string Pattern { get { return _patternMatcher?.ToString(); } set { _patternMatcher = new Regex(value); } }
-
-        public IActivityTemplate NotMatchedActivity { get; set; }
 
         protected override async Task OnBeforePromptAsync(DialogContext dc, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -67,7 +64,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                     if (!_patternMatcher.IsMatch(value))
                     {
-                        var notMatched = await this.NotMatchedActivity.BindToActivity(turnContext, state).ConfigureAwait(false);
+                        var notMatched = await this.NoMatchResponse.BindToData(turnContext, state).ConfigureAwait(false);
                         if (notMatched != null)
                         {
                             await promptContext.Context.SendActivityAsync(notMatched).ConfigureAwait(false);
@@ -87,7 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else if (isRetry)
             {
-                var retryPrompt = await this.RetryPrompt.BindToActivity(turnContext, state).ConfigureAwait(false);
+                var retryPrompt = await this.RetryPrompt.BindToData(turnContext, state).ConfigureAwait(false);
                 if (retryPrompt != null)
                 {
                     await turnContext.SendActivityAsync(retryPrompt, cancellationToken).ConfigureAwait(false);
@@ -101,7 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             else
             {
                 // Initial prompt for template model
-                var initialPrompt = await this.InitialPrompt.BindToActivity(turnContext, state).ConfigureAwait(false);
+                var initialPrompt = await this.InitialPrompt.BindToData(turnContext, state).ConfigureAwait(false);
                 await turnContext.SendActivityAsync(initialPrompt, cancellationToken).ConfigureAwait(false);
             }
 

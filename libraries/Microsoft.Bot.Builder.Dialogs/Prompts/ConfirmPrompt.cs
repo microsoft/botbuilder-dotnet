@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
                 else
                 {
-                    var retry = await this.RetryPrompt.BindToActivity(turnContext, state).ConfigureAwait(false);
+                    var retry = await this.RetryPrompt.BindToData(turnContext, state).ConfigureAwait(false);
                     if (retry == null)
                     {
                         retry = (Activity)Activity.CreateMessageActivity();
@@ -124,7 +124,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else
             {
-                var initialPrompt = await this.InitialPrompt.BindToActivity(turnContext, state).ConfigureAwait(false);
+                var initialPrompt = await this.InitialPrompt.BindToData(turnContext, state).ConfigureAwait(false);
                 if (initialPrompt == null)
                 {
                     initialPrompt = (Activity)Activity.CreateMessageActivity();

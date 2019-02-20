@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task TestInline()
         {
             var lg = new MockLanguageGenator();
-            var mg = new SimpleMessageGenerator(lg);
+            var mg = new TextMessageActivityGenerator(lg);
             var activity = await mg.Generate("", "text", id: null, data: null, types: null, tags: null);
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
             Assert.AreEqual("text", activity.Text);
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task TestSpeak()
         {
             var lg = new MockLanguageGenator();
-            var mg = new SimpleMessageGenerator(lg);
+            var mg = new TextMessageActivityGenerator(lg);
             var activity = await mg.Generate("", "text||speak", id: null, data: null, types: null, tags: null);
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
             Assert.AreEqual("text", activity.Text);
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task TestHerocard()
         {
             var lg = new MockLanguageGenator();
-            var mg = new SimpleMessageGenerator(lg);
+            var mg = new TextMessageActivityGenerator(lg);
             IMessageActivity activity = await mg.Generate("", "[Herocard\ntitle=test]", id: null, data: null, types: null, tags: null);
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
             Assert.IsTrue(string.IsNullOrEmpty(activity.Text));

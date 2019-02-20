@@ -5,14 +5,14 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
-    /// The SimpleMessageGenerator uses ILanguageGenerator to generate text and then
-    /// uses simple markdown semantics like chatdown to create complex attachments such as
-    /// herocards, image cards, image attachments etc.
+    /// The TextMessageGenerator implements IMessageActivityGenerator by using ILanguageGenerator
+    /// to generate text and then uses simple markdown semantics like chatdown to create complex
+    /// attachments such as herocards, image cards, image attachments etc.
     /// </summary>
-    public class SimpleMessageGenerator : IMessageGenerator
+    public class TextMessageActivityGenerator : IMessageActivityGenerator
     {
         // Fixed text constructor
-        public SimpleMessageGenerator(ILanguageGenerator languageGenerator)
+        public TextMessageActivityGenerator(ILanguageGenerator languageGenerator)
         {
             if (languageGenerator == null)
             {

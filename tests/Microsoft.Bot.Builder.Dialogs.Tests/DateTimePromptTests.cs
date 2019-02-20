@@ -165,11 +165,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 DefaultLocale = Culture.English,
                 MinValue = new DateTime(1920, 1, 1, 0, 0, 0),
                 MaxValue = new DateTime(2050, 1, 1, 0, 0, 0),
-                InitialPrompt = new TextActivity("What date would you like?"),
-                RetryPrompt = new TextActivity("So...What date would you like?"),
-                NoMatchResponse = new TextActivity("That isn't a date."),
-                TooSmallResponse = new TextActivity("Too small."),
-                TooLargeResponse = new TextActivity("Too large."),
+                InitialPrompt = new ActivityTemplate("What date would you like?"),
+                RetryPrompt = new ActivityTemplate("So...What date would you like?"),
+                NoMatchResponse = new ActivityTemplate("That isn't a date."),
+                TooSmallResponse = new ActivityTemplate("Too small."),
+                TooLargeResponse = new ActivityTemplate("Too large."),
             };
             dialogs.Add(dateTimePrompt);
 

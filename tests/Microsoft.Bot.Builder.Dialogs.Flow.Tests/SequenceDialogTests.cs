@@ -22,15 +22,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Tests
             var agePrompt = new NumberPrompt<Int32>()
             {
                 Id = "AgePrompt",
-                InitialPrompt = new TextActivity("What is your age?"),
-                RetryPrompt = new TextActivity("Reprompt: What is your age?")
+                InitialPrompt = new ActivityTemplate("What is your age?"),
+                RetryPrompt = new ActivityTemplate("Reprompt: What is your age?")
             };
 
             var namePrompt = new TextPrompt()
             {
                 Id = "NamePrompt",
-                InitialPrompt = new TextActivity("What is your name?"),
-                RetryPrompt = new TextActivity("Reprompt: What is your name?")
+                InitialPrompt = new ActivityTemplate("What is your name?"),
+                RetryPrompt = new ActivityTemplate("Reprompt: What is your name?")
             };
 
             var flowDialog2 = new SequenceDialog()

@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                     var lg = new LGLanguageGenerator(botResourceManager);
                     options.Middleware.Add(new RegisterClassMiddleware<IBotResourceProvider>(botResourceManager));
                     options.Middleware.Add(new RegisterClassMiddleware<ILanguageGenerator>(lg));
-                    options.Middleware.Add(new RegisterClassMiddleware<IMessageGenerator>(new SimpleMessageGenerator(lg)));
+                    options.Middleware.Add(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)));
                     options.Middleware.Add(new AutoSaveStateMiddleware(conversationState));
                 });
         }

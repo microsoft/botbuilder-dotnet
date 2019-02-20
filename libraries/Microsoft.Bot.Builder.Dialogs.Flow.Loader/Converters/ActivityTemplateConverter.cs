@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Converters
 
         public override bool CanConvert(Type objectType)
         {
-            return typeof(IActivityTemplate) == objectType;
+            return typeof(ITemplate<IMessageActivity>) == objectType;
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -24,12 +24,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Converters
             {
                 // inline template Example: "Hello {name}"
                 string readerValue = reader.Value.ToString();
-                return new TextActivity((string)readerValue);
+                return new ActivityTemplate((string)readerValue);
             }
             else
             {
                 var activity = JToken.Load(reader).ToObject<Activity>();
-                return new ActivityTemplate((Activity)activity);
+                return new StaticActivityTemplate((Activity)activity);
             }
         }
 
