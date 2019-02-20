@@ -227,77 +227,77 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Returns this activity as a message activty type; or null, if this is not that type of activity.
+        /// Returns this activity as a message activity type; or null, if this is not that type of activity.
         /// </summary>
         public IMessageActivity AsMessageActivity() { return IsActivity(ActivityTypes.Message) ? this : null; }
 
         /// <summary>
-        /// Returns this activity as a contact relation update activty type; or null, if this is not that type of activity.
+        /// Returns this activity as a contact relation update activity type; or null, if this is not that type of activity.
         /// </summary>
         public IContactRelationUpdateActivity AsContactRelationUpdateActivity() { return IsActivity(ActivityTypes.ContactRelationUpdate) ? this : null; }
 
         /// <summary>
-        /// Returns this activity as an installation update activty type; or null, if this is not that type of activity.
+        /// Returns this activity as an installation update activity type; or null, if this is not that type of activity.
         /// </summary>
         public IInstallationUpdateActivity AsInstallationUpdateActivity() { return IsActivity(ActivityTypes.InstallationUpdate) ? this : null; }
 
         /// <summary>
-        /// Returns this activity as a conversation update activty type; or null, if this is not that type of activity.
+        /// Returns this activity as a conversation update activity type; or null, if this is not that type of activity.
         /// </summary>
         public IConversationUpdateActivity AsConversationUpdateActivity() { return IsActivity(ActivityTypes.ConversationUpdate) ? this : null; }
 
         /// <summary>
-        /// Returns this activity as a typing activty type; or null, if this is not that type of activity.
+        /// Returns this activity as a typing activity type; or null, if this is not that type of activity.
         /// </summary>
         public ITypingActivity AsTypingActivity() { return IsActivity(ActivityTypes.Typing) ? this : null; }
 
         /// <summary>
-        /// Returns this activity as an end of conversation activty type; or null, if this is not that type of activity.
+        /// Returns this activity as an end of conversation activity type; or null, if this is not that type of activity.
         /// </summary>
         public IEndOfConversationActivity AsEndOfConversationActivity() { return IsActivity(ActivityTypes.EndOfConversation) ? this : null; }
 
         /// <summary>
-        /// Returns this activity as an event activty type; or null, if this is not that type of activity.
+        /// Returns this activity as an event activity type; or null, if this is not that type of activity.
         /// </summary>
         public IEventActivity AsEventActivity() { return IsActivity(ActivityTypes.Event) ? this : null; }
 
         /// <summary>
-        /// Returns this activity as an invoke activty type; or null, if this is not that type of activity.
+        /// Returns this activity as an invoke activity type; or null, if this is not that type of activity.
         /// </summary>
         public IInvokeActivity AsInvokeActivity() { return IsActivity(ActivityTypes.Invoke) ? this : null; }
 
         /// <summary>
-        /// Returns this activity as a message update activty type; or null, if this is not that type of activity.
+        /// Returns this activity as a message update activity type; or null, if this is not that type of activity.
         /// </summary>
         /// <returns></returns>
         public IMessageUpdateActivity AsMessageUpdateActivity() { return IsActivity(ActivityTypes.MessageUpdate) ? this : null; }
 
         /// <summary>
-        /// Returns this activity as a message delete activty type; or null, if this is not that type of activity.
+        /// Returns this activity as a message delete activity type; or null, if this is not that type of activity.
         /// </summary>
         /// <returns></returns>
         public IMessageDeleteActivity AsMessageDeleteActivity() { return IsActivity(ActivityTypes.MessageDelete) ? this : null; }
 
         /// <summary>
-        /// Returns this activity as a message reaction activty type; or null, if this is not that type of activity.
+        /// Returns this activity as a message reaction activity type; or null, if this is not that type of activity.
         /// </summary>
         /// <returns></returns>
         public IMessageReactionActivity AsMessageReactionActivity() { return IsActivity(ActivityTypes.MessageReaction) ? this : null; }
 
         /// <summary>
-        /// Returns this activity as a suggestion activty type; or null, if this is not that type of activity.
+        /// Returns this activity as a suggestion activity type; or null, if this is not that type of activity.
         /// </summary>
         /// <returns></returns>
         public ISuggestionActivity AsSuggestionActivity() { return IsActivity(ActivityTypes.Suggestion) ? this : null; }
 
         /// <summary>
-        /// Returns this activity as a trace activty type; or null, if this is not that type of activity.
+        /// Returns this activity as a trace activity type; or null, if this is not that type of activity.
         /// </summary>
         /// <returns></returns>
         public ITraceActivity AsTraceActivity() { return IsActivity(ActivityTypes.Trace) ? this : null; }
 
         /// <summary>
-        /// Returns this activity as a handoff activty type; or null, if this is not that type of activity.
+        /// Returns this activity as a handoff activity type; or null, if this is not that type of activity.
         /// </summary>
         public IHandoffActivity AsHandoffActivity() { return IsActivity(ActivityTypes.Handoff) ? this : null; }
 
