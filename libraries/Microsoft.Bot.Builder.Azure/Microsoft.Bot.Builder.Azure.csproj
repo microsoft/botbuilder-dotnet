@@ -42,7 +42,6 @@
 		<PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.1.2" />
 		<PackageReference Include="Microsoft.Azure.Storage.Blob" Version="9.4.2" />
-		<PackageReference Include="Microsoft.Azure.Storage.Common" Version="9.4.2" />
 		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
 		<PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
 		<PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008" PrivateAssets="all" />

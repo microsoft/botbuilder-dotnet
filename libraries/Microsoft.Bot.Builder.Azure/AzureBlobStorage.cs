@@ -12,6 +12,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Blob.Protocol;
 using Microsoft.WindowsAzure.Storage.Core;
+using Microsoft.WindowsAzure.Storage.RetryPolicies;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Azure
@@ -37,6 +38,7 @@ namespace Microsoft.Bot.Builder.Azure
 
         private readonly CloudStorageAccount _storageAccount;
         private readonly string _containerName;
+        private int _checkforContainerExistance;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureBlobStorage"/> class.
@@ -46,6 +48,7 @@ namespace Microsoft.Bot.Builder.Azure
         public AzureBlobStorage(string dataConnectionstring, string containerName)
             : this(CloudStorageAccount.Parse(dataConnectionstring), containerName)
         {
+            _checkforContainerExistance = 1;
         }
 
         /// <summary>
@@ -112,18 +115,7 @@ namespace Microsoft.Bot.Builder.Azure
 
                 try
                 {
-                    using (var blobStream = await blobReference.OpenReadAsync(cancellationToken).ConfigureAwait(false))
-                    using (var jsonReader = new JsonTextReader(new StreamReader(blobStream)))
-                    {
-                        var obj = JsonSerializer.Deserialize(jsonReader);
-
-                        if (obj is IStoreItem storeItem)
-                        {
-                            storeItem.ETag = blobReference.Properties.ETag;
-                        }
-
-                        items.Add(key, obj);
-                    }
+                    items.Add(key, await InnerReadBlobAsync(blobReference, cancellationToken).ConfigureAwait(false));
                 }
                 catch (StorageException ex)
                     when ((HttpStatusCode)ex.RequestInformation.HttpStatusCode == HttpStatusCode.NotFound)
@@ -157,7 +149,12 @@ namespace Microsoft.Bot.Builder.Azure
 
             var blobClient = _storageAccount.CreateCloudBlobClient();
             var blobContainer = blobClient.GetContainerReference(_containerName);
-            await blobContainer.CreateIfNotExistsAsync(cancellationToken).ConfigureAwait(false);
+
+            // this should only happen once - assuming this is a singleton
+            if (Interlocked.CompareExchange(ref _checkforContainerExistance, 0, 1) == 1)
+            {
+                await blobContainer.CreateIfNotExistsAsync(cancellationToken).ConfigureAwait(false);
+            }
 
             var blobRequestOptions = new BlobRequestOptions();
             var operationContext = new OperationContext();
@@ -207,6 +204,46 @@ namespace Microsoft.Bot.Builder.Azure
             var blobName = HttpUtility.UrlEncode(key);
             NameValidator.ValidateBlobName(blobName);
             return blobName;
+        }
+
+        private static async Task<object> InnerReadBlobAsync(CloudBlob blobReference, CancellationToken cancellationToken)
+        {
+            var i = 0;
+            while (true)
+            {
+                try
+                {
+                    // add request options to retry on timeouts and server errors
+                    var options = new BlobRequestOptions { RetryPolicy = new LinearRetry(TimeSpan.FromSeconds(20), 4) };
+
+                    using (var blobStream = await blobReference.OpenReadAsync(null, options, new OperationContext(), cancellationToken).ConfigureAwait(false))
+                    using (var jsonReader = new JsonTextReader(new StreamReader(blobStream)))
+                    {
+                        var obj = JsonSerializer.Deserialize(jsonReader);
+
+                        if (obj is IStoreItem storeItem)
+                        {
+                            storeItem.ETag = blobReference.Properties.ETag;
+                        }
+
+                        return obj;
+                    }
+                }
+                catch (StorageException ex)
+                    when ((HttpStatusCode)ex.RequestInformation.HttpStatusCode == HttpStatusCode.PreconditionFailed)
+                {
+                    // additional retry logic, even though this is a read operation blob storage can return 412 if there is contention
+                    if (i++ < 8)
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(20)).ConfigureAwait(false);
+                        continue;
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
         }
     }
 }
