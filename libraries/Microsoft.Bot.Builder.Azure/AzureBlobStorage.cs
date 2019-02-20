@@ -48,7 +48,6 @@ namespace Microsoft.Bot.Builder.Azure
         public AzureBlobStorage(string dataConnectionstring, string containerName)
             : this(CloudStorageAccount.Parse(dataConnectionstring), containerName)
         {
-            _checkforContainerExistance = 1;
         }
 
         /// <summary>
@@ -63,6 +62,9 @@ namespace Microsoft.Bot.Builder.Azure
 
             // Checks if a container name is valid
             NameValidator.ValidateContainerName(containerName);
+
+            // Triggers a check for the existance of the container
+            _checkforContainerExistance = 1;
         }
 
         /// <summary>
