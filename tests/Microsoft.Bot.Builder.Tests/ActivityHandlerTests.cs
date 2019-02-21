@@ -34,7 +34,57 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task TestMemberAdded()
+        public async Task TestMemberAdded1()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.ConversationUpdate,
+                MembersAdded = new List<ChannelAccount>
+                {
+                    new ChannelAccount { Id = "b" },
+                },
+                Recipient = new ChannelAccount { Id = "b" }
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.AreEqual(1, bot.Record.Count);
+            Assert.AreEqual(bot.Record[0], "OnConversationUpdateActivityAsync");
+        }
+
+        [TestMethod]
+        public async Task TestMemberAdded2()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.ConversationUpdate,
+                MembersAdded = new List<ChannelAccount>
+                {
+                    new ChannelAccount { Id = "a" },
+                    new ChannelAccount { Id = "b" },
+                },
+                Recipient = new ChannelAccount { Id = "b" }
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.AreEqual(2, bot.Record.Count);
+            Assert.AreEqual(bot.Record[0], "OnConversationUpdateActivityAsync");
+            Assert.AreEqual(bot.Record[1], "OnMembersAddedAsync");
+        }
+
+        [TestMethod]
+        public async Task TestMemberAdded3()
         {
             // Arrange
             var activity = new Activity
@@ -61,7 +111,57 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task TestMemberRemoved()
+        public async Task TestMemberRemoved1()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.ConversationUpdate,
+                MembersAdded = new List<ChannelAccount>
+                {
+                    new ChannelAccount { Id = "c" },
+                },
+                Recipient = new ChannelAccount { Id = "c" }
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.AreEqual(1, bot.Record.Count);
+            Assert.AreEqual(bot.Record[0], "OnConversationUpdateActivityAsync");
+        }
+
+        [TestMethod]
+        public async Task TestMemberRemoved2()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.ConversationUpdate,
+                MembersAdded = new List<ChannelAccount>
+                {
+                    new ChannelAccount { Id = "a" },
+                    new ChannelAccount { Id = "c" },
+                },
+                Recipient = new ChannelAccount { Id = "c" }
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.AreEqual(2, bot.Record.Count);
+            Assert.AreEqual(bot.Record[0], "OnConversationUpdateActivityAsync");
+            Assert.AreEqual(bot.Record[1], "OnMembersAddedAsync");
+        }
+
+        [TestMethod]
+        public async Task TestMemberRemoved3()
         {
             // Arrange
             var activity = new Activity
