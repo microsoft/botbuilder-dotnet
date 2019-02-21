@@ -69,14 +69,14 @@ namespace Microsoft.Bot.Builder
         {
             if (turnContext.Activity.MembersAdded != null)
             {
-                if (turnContext.Activity.MembersAdded.Count(m => m.Id != turnContext.Activity.Recipient?.Id) > 1)
+                if (turnContext.Activity.MembersAdded.Any(m => m.Id != turnContext.Activity.Recipient?.Id))
                 {
                     return OnMembersAddedAsync(turnContext.Activity.MembersAdded, turnContext, cancellationToken);
                 }
             }
             else if (turnContext.Activity.MembersRemoved != null)
             {
-                if (turnContext.Activity.MembersRemoved.Count(m => m.Id != turnContext.Activity.Recipient?.Id) > 1)
+                if (turnContext.Activity.MembersRemoved.Any(m => m.Id != turnContext.Activity.Recipient?.Id))
                 {
                     return OnMembersRemovedAsync(turnContext.Activity.MembersRemoved, turnContext, cancellationToken);
                 }
