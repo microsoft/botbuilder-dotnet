@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Microsoft.Expressions;
@@ -103,6 +104,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     case LGFileParser.TEMPLATE_REF:
                         builder.Append(EvalTemplateRef(node.GetText()));
                         break;
+                    case LGFileLexer.MULTI_LINE_TEXT:
+                        builder.Append(EvalMultiLineText(node.GetText()));
+                        break;
                     default:
                         builder.Append(node.GetText());
                         break;
@@ -169,6 +173,26 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return EvaluateTemplate(exp, Scope);
         }
 
+
+        private string EvalMultiLineText(string exp)
+        {
+            exp = exp.Substring(3, exp.Length - 6); //remove ``` ```
+            var reg = @"@\{[^{}]+\}";
+            var evalutor = new MatchEvaluator(m =>
+            {
+                var newExp = m.Value.Substring(1); // remove @
+                if (newExp.StartsWith("{[") && newExp.EndsWith("]}"))
+                {
+                    return EvalTemplateRef(newExp.Substring(2, newExp.Length - 4));//[ ]
+                }
+                else
+                {
+                    return EvalExpression(newExp).ToString();//{ }
+                }
+            });
+
+            return Regex.Replace(exp, reg, evalutor);
+        }
         private List<string> ExtractParameters(string templateName)
         {
             bool hasParameters = Context.TemplateParameters.TryGetValue(templateName, out List<string> parameters);

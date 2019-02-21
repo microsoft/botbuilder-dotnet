@@ -176,5 +176,24 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                                                   }), "Hi DL Your most recent task is task1. You can let me know if you want to add or complete a task.");
 
         }
+
+        [TestMethod]
+        public void TestMultiLine()
+        {
+            var engine = TemplateEngine.FromFile(GetExampleFilePath("MultilineTextForAdaptiveCard.lg"));
+            var evaled1 = engine.EvaluateTemplate("wPhrase", "");
+            var options1 = new List<string> { "\r\ncardContent\r\n", "hello" };
+            Assert.IsTrue(options1.Contains(evaled1), $"Evaled is {evaled1}");
+
+            var evaled2 = engine.EvaluateTemplate("nameTemplate", new { name = "N" });
+            var options2 = new List<string> { "\r\nN\r\n", "N" };
+            Assert.IsTrue(options2.Contains(evaled2), $"Evaled is {evaled2}");
+
+            var evaled3 = engine.EvaluateTemplate("adaptivecardsTemplate", "");
+
+            var evaled4 = engine.EvaluateTemplate("refTemplate", "");
+            var options4 = new List<string> { "\r\nhi\r\n" };
+            Assert.IsTrue(options4.Contains(evaled4), $"Evaled is {evaled4}");
+        }
     }
 }

@@ -92,6 +92,10 @@ DEFAULT
   : ('default:' | 'DEFAULT:') {expectCaseOrDefault}? { ignoreWS = true;}
   ;
 
+MULTI_LINE_TEXT
+  : '```' .*? '```' { ignoreWS = false; expectCaseOrDefault = false;}
+  ;
+
 EXPRESSION
   : '{' ~[\r\n{}]* '}'  { ignoreWS = false; expectCaseOrDefault = false;}
   ;

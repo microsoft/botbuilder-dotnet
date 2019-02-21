@@ -45,7 +45,7 @@ normalTemplateBody
     ;
 
 normalTemplateString
-	: DASH (WS|TEXT|EXPRESSION|TEMPLATE_REF|TEXT_SEPARATOR)*
+	: DASH (WS|TEXT|EXPRESSION|TEMPLATE_REF|TEXT_SEPARATOR|MULTI_LINE_TEXT)*
 	;
 
 conditionalTemplateBody
