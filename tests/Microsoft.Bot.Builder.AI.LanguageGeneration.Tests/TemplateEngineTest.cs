@@ -76,6 +76,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public void TestBasicListSupport()
+        {
+            var engine = TemplateEngine.FromFile(GetExampleFilePath("BasicList.lg"));
+            Assert.AreEqual(engine.EvaluateTemplate("BasicJoin", new { items = new[] { "1", "2" } }), "1, 2");
+        }
+
+        [TestMethod]
         public void TestBasicExtendedFunctions()
         {
             var engine = TemplateEngine.FromFile(GetExampleFilePath("6.lg"));
@@ -195,5 +202,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var options4 = new List<string> { "\r\nhi\r\n" };
             Assert.IsTrue(options4.Contains(evaled4), $"Evaled is {evaled4}");
         }
+
+       
     }
 }

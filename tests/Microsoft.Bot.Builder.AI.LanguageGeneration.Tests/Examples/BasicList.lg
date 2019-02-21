@@ -1,0 +1,7 @@
+﻿# BasicJoin
+- CASE: {count(items) == 2}
+  - {join(items, ',')}
+- CASE: {count(items) > 2}
+  - {join(items, ',', 'and')}
+- DEFAULT:
+  - {items[0]}

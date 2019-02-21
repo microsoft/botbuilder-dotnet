@@ -51,10 +51,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         public object Join(IReadOnlyList<object> parameters)
         {
             if (parameters.Count == 2 &&
-                parameters[0] is IList &&
+                parameters[0] is IList p0 &&
                 parameters[1] is String sep)
             {
-                return String.Join(sep + " ", parameters[0]); // "," => ", " 
+                return String.Join(sep + " ", p0.OfType<object>().Select(x => x.ToString())); // "," => ", " 
             }
 
             if (parameters.Count == 3 &&
