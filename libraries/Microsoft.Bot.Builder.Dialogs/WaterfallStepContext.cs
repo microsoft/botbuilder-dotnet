@@ -16,6 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         internal WaterfallStepContext(WaterfallDialog parent, DialogContext dc, object options,  IDictionary<string, object> values, int index, DialogReason reason, object result = null)
             : base(dc.Dialogs, dc.Context, new DialogState(dc.Stack), dc.ConversationState, dc.UserState)
         {
+            this.ParentContext = dc.ParentContext;
             _parent = parent;
             _nextCalled = false;
             Index = index;

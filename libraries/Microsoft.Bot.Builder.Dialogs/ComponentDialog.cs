@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     public class ComponentDialog : ComponentDialogBase
     {
-        public ComponentDialog(string dialogId=null)
+        public ComponentDialog(string dialogId = null)
             : base(dialogId)
         {
         }
@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             if (this.InitialDialogId == null)
             {
-                this.InitialDialogId = base._dialogs.GetDialogs().FirstOrDefault()?.Id;
+                this.InitialDialogId = _dialogs.GetDialogs().FirstOrDefault()?.Id;
             }
 
             return base.OnInitialize(dc);

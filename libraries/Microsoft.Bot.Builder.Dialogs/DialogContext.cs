@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             UserState = userState ?? state?.UserState ?? new StateMap();
         }
 
-        public DialogContext ParentContext { get; private set; }
+        public DialogContext ParentContext { get; protected set; }
 
         public DialogSet Dialogs { get; private set; }
 
