@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.TestBot.Bots;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,8 +26,13 @@ namespace Microsoft.Bot.Builder.TestBot
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            // Add the Adapter as a singleton and our Bot as transient.
-            services.AddSingleton<IBotFrameworkHttpAdapter>(sp => new BotFrameworkHttpAdapter());
+            // Load the credentials from configuration and create the credential provider.
+            var appId = Configuration["BotFramework:AppId"];
+            var password = Configuration["BotFramework:Password"];
+            var credentialProvider = new SimpleCredentialProvider(appId, password);
+
+            // Add the Adapter as a singleton and in this example the Bot as transient.
+            services.AddSingleton<IBotFrameworkHttpAdapter>(sp => new BotFrameworkHttpAdapter(credentialProvider));
             services.AddTransient<IBot>(sp => new MyBot());
         }
 
@@ -45,7 +51,7 @@ namespace Microsoft.Bot.Builder.TestBot
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseMvc();
         }
     }
