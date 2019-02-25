@@ -110,8 +110,10 @@ namespace Microsoft.Bot.Builder
         /// Most _channels require a user to initaiate a conversation with a bot
         /// before the bot can send activities to the user.
         /// <para>This method registers the following services for the turn.<list type="bullet">
-        /// <item><see cref="IIdentity"/> (key = "BotIdentity"), a claims identity for the bot.</item>
-        /// <item><see cref="IConnectorClient"/>, the channel connector client to use this turn.</item>
+        /// <item><description><see cref="IIdentity"/> (key = "BotIdentity"), a claims identity for the bot.
+        /// </description></item>
+        /// <item><description><see cref="IConnectorClient"/>, the channel connector client to use this turn.
+        /// </description></item>
         /// </list></para>
         /// <para>
         /// This overload differers from the Node implementation by requiring the BotId to be
@@ -765,9 +767,9 @@ namespace Microsoft.Bot.Builder
         /// <param name="conversationParameters">The conversation information to use to
         /// create the conversation.</param>
         /// <param name="callback">The method to call for the resulting bot turn.</param>
+        /// <param name="reference">A conversation reference that contains the tenant.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
-        /// <param name="reference">A conversation reference that contains the tenant.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>To start a conversation, your bot must know its account information
         /// and the user's account information on that channel.

@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder
     public class ActivityHandler : IBot
     {
         /// <summary>
-        /// The OnTurnAsync function is called by the Adapter (for example, the <see cref="BotFrameworkHttpAdapter"/>)
+        /// The OnTurnAsync function is called by the Adapter (for example, the <see cref="BotFrameworkAdapter"/>)
         /// at runtime in order to process an inbound Activity.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
