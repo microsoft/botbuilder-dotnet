@@ -7,6 +7,7 @@ using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Bot.Builder.ApplicationInsights;
 using Microsoft.Bot.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
@@ -63,6 +64,41 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
 
             return services;
         }
+
+        /// <summary>
+        /// Adds and configures services for Application Insights to the <see cref="IServiceCollection" />.
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/> which specifies the contract for a collection of service descriptors.</param>
+        /// <param name="config">Represents a set of key/value application configuration properties.</param>
+        /// <returns>A reference to this instance after the operation has completed.</returns>
+        public static IServiceCollection AddBotApplicationInsights(this IServiceCollection services, IConfiguration config)
+        {
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            string instrumentationKey = config.GetValue<string>("ApplicationInsights:instrumentationKey"); 
+
+
+            CreateBotTelemetry(services);
+
+            IBotTelemetryClient telemetryClient = null;
+            if (!string.IsNullOrWhiteSpace(instrumentationKey))
+            {
+                services.AddApplicationInsightsTelemetry(instrumentationKey);
+                telemetryClient = new BotTelemetryClient(new TelemetryClient());
+            }
+            else
+            {
+                telemetryClient = NullBotTelemetryClient.Instance;
+            }
+
+            services.AddSingleton(telemetryClient);
+
+            return services;
+        }
+
 
         /// <summary>
         /// Adds and configures services for Application Insights to the <see cref="IServiceCollection" />.
