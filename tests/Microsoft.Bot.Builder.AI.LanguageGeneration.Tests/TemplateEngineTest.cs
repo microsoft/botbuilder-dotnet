@@ -203,6 +203,19 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsTrue(options4.Contains(evaled4), $"Evaled is {evaled4}");
         }
 
-       
+        [TestMethod]
+        public void TestTemplateRef()
+        {
+            var engine = TemplateEngine.FromFile(GetExampleFilePath("TemplateRef.lg"));
+
+            var scope = new
+            {
+                time = "morning",
+                name = "Dong Lei"
+            };
+            Assert.AreEqual(engine.EvaluateTemplate("Hello", scope), "Good morning Dong Lei");
+
+        }
+
     }
 }

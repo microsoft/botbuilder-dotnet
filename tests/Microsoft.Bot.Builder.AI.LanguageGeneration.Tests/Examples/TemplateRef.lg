@@ -1,0 +1,10 @@
+﻿# Hello
+- [Welcome(time)] {name}
+
+# Welcome(time)
+- CASE: {time == 'morning'}
+ - Good morning
+- CASE: {time == 'evening'}
+ - Good evening
+- DEFAULT:
+ - How are doing, 
