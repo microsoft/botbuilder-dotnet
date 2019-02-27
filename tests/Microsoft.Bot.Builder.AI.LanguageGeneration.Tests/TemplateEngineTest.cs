@@ -148,20 +148,20 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestBasicInlineTemplate()
         {
             var emptyEngine = TemplateEngine.FromText("");
-            Assert.AreEqual(emptyEngine.Evaluate("Hi", null), "Hi");
-            Assert.AreEqual(emptyEngine.Evaluate("Hi {name}", new { name = "DL" } ), "Hi DL");
-            Assert.AreEqual(emptyEngine.Evaluate("Hi {name.FirstName}{name.LastName}", new { name = new { FirstName = "D", LastName = "L" }} ), "Hi DL");
-            Assert.AreEqual(TemplateEngine.EmptyEngine().Evaluate("Hi", null), "Hi");
+            Assert.AreEqual(emptyEngine.EvaluateInline("Hi", null), "Hi");
+            Assert.AreEqual(emptyEngine.EvaluateInline("Hi {name}", new { name = "DL" } ), "Hi DL");
+            Assert.AreEqual(emptyEngine.EvaluateInline("Hi {name.FirstName}{name.LastName}", new { name = new { FirstName = "D", LastName = "L" }} ), "Hi DL");
+            Assert.AreEqual(TemplateEngine.EmptyEngine().EvaluateInline("Hi", null), "Hi");
         }
 
         [TestMethod]
         public void TestInlineTemplateWithTemplateFile()
         {
             var emptyEngine = TemplateEngine.FromFile(GetExampleFilePath("8.lg"));
-            Assert.AreEqual(emptyEngine.Evaluate("Hi", null), "Hi");
-            Assert.AreEqual(emptyEngine.Evaluate("Hi {name}", new { name = "DL" }), "Hi DL");
-            Assert.AreEqual(emptyEngine.Evaluate("Hi {name.FirstName}{name.LastName}", new { name = new { FirstName = "D", LastName = "L" } }), "Hi DL");
-            Assert.AreEqual(emptyEngine.Evaluate("Hi {name.FirstName}{name.LastName} [RecentTasks]", 
+            Assert.AreEqual(emptyEngine.EvaluateInline("Hi", null), "Hi");
+            Assert.AreEqual(emptyEngine.EvaluateInline("Hi {name}", new { name = "DL" }), "Hi DL");
+            Assert.AreEqual(emptyEngine.EvaluateInline("Hi {name.FirstName}{name.LastName}", new { name = new { FirstName = "D", LastName = "L" } }), "Hi DL");
+            Assert.AreEqual(emptyEngine.EvaluateInline("Hi {name.FirstName}{name.LastName} [RecentTasks]", 
                                                   new {
                                                        name = new {
                                                            FirstName = "D",
@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                                                        }
                                                        
                                                   }), "Hi DL You don't have any tasks.");
-            Assert.AreEqual(emptyEngine.Evaluate("Hi {name.FirstName}{name.LastName} [RecentTasks]",
+            Assert.AreEqual(emptyEngine.EvaluateInline("Hi {name.FirstName}{name.LastName} [RecentTasks]",
                                                   new
                                                   {
                                                       name = new

@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         /// <param name="inlineStr"></param>
         /// <param name="scope"></param>
         /// <returns></returns>
-        public string Evaluate(string inlineStr, object scope)
+        public string EvaluateInline(string inlineStr, object scope)
         {
             // TODO: maybe we can directly ref the templateBody without giving a name, but that means
             // we needs to make a little changes in the evalutor, especially the loop detection part

@@ -171,7 +171,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             try
             {
                 // do inline evaluation first
-                return engine.Evaluate(text, data);
+                return engine.EvaluateInline(text, data);
             }
             catch (Exception)
             {
