@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         private Stack<EvaluationTarget> evalutationTargetStack = new Stack<EvaluationTarget>();
         private EvaluationTarget currentTarget()
         {
-            // just don't want to write evaluationTarget everywhere
+            // just don't want to write evaluationTargetStack.Peek() everywhere
             return evalutationTargetStack.Peek();
         }
        
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
             if (evalutationTargetStack.Any(e => e.TemplateName == templateName))
             { 
-                throw new Exception($"Loop deteced: {String.Join(" => ", evalutationTargetStack.Reverse())} => {templateName}");
+                throw new Exception($"Loop deteced: {String.Join(" => ", evalutationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
             // Using a stack to track the evalution trace

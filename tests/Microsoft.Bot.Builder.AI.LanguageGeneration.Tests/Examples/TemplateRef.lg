@@ -7,4 +7,4 @@
 - CASE: {time == 'evening'}
  - Good evening
 - DEFAULT:
- - How are doing, 
+ - How are you doing, 
