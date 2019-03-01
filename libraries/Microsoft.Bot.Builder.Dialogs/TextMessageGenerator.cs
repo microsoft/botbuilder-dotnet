@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                             }
                         }
 
-                        if (string.IsNullOrEmpty(activity.Text))
+                        if (!String.IsNullOrEmpty(line) && string.IsNullOrEmpty(activity.Text))
                         {
                             var i = line.IndexOf("||");
                             if (i > 0)
@@ -125,10 +125,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                             {
                                 activity.Text = activity.Speak = line.Trim();
                             }
-                        }
-                        else
-                        {
-                            System.Diagnostics.Debug.WriteLine(string.Format("Card type {0} is not support!", line));
                         }
                         break;
                 }
