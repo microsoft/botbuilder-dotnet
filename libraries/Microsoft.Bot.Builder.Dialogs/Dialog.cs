@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public virtual async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             // By default just end the current dialog.
-            return await dc.EndDialogAsync(cancellationToken).ConfigureAwait(false);
+            return await dc.EndDialogAsync(null, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
