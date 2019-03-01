@@ -270,12 +270,6 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
-                "$role": {
-                    "title": "$role",
-                    "description": "Schema definition for root $role added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
-                },
                 "property": {
                     "type": "string",
                     "description": "This is the property to set.",
@@ -379,12 +373,6 @@
                     "description": "Schema definition for $id added by cogSchema.",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$role": {
-                    "title": "$role",
-                    "description": "Schema definition for root $role added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "property": {
                     "type": "string",
@@ -490,12 +478,6 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
-                "$role": {
-                    "title": "$role",
-                    "description": "Schema definition for root $role added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
-                },
                 "property": {
                     "type": "string",
                     "description": "This is the property to set.",
@@ -600,12 +582,6 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
-                "$role": {
-                    "title": "$role",
-                    "description": "Schema definition for root $role added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
-                },
                 "recognizer": {
                     "$type": "Microsoft.IRecognizer",
                     "$ref": "#/definitions/Microsoft.IRecognizer"
@@ -669,12 +645,6 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
-                "$role": {
-                    "title": "$role",
-                    "description": "Schema definition for root $role added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
-                },
                 "sequence": {
                     "type": "array",
                     "description": "Sequence of steps or dialogs to execute",
@@ -732,12 +702,6 @@
                     "description": "Schema definition for $id added by cogSchema.",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$role": {
-                    "title": "$role",
-                    "description": "Schema definition for root $role added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "property": {
                     "type": "string",
@@ -818,12 +782,6 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
-                "$role": {
-                    "title": "$role",
-                    "description": "Schema definition for root $role added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
-                },
                 "dialog": {
                     "$type": "Microsoft.IDialog",
                     "title": "Dialog",
@@ -880,12 +838,6 @@
                     "description": "Schema definition for $id added by cogSchema.",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$role": {
-                    "title": "$role",
-                    "description": "Schema definition for root $role added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 }
             },
             "patternProperties": {
@@ -922,12 +874,6 @@
                     "description": "Schema definition for $id added by cogSchema.",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$role": {
-                    "title": "$role",
-                    "description": "Schema definition for root $role added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "property": {
                     "$type": "Microsoft.IExpression",
@@ -970,12 +916,6 @@
                     "description": "Schema definition for $id added by cogSchema.",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$role": {
-                    "title": "$role",
-                    "description": "Schema definition for root $role added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "property": {
                     "$type": "Microsoft.IExpression",
@@ -1021,12 +961,6 @@
                     "description": "Schema definition for $id added by cogSchema.",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$role": {
-                    "title": "$role",
-                    "description": "Schema definition for root $role added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 }
             },
             "patternProperties": {
@@ -1063,12 +997,6 @@
                     "description": "Schema definition for $id added by cogSchema.",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$role": {
-                    "title": "$role",
-                    "description": "Schema definition for root $role added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "ifTrue": {
                     "oneOf": [
@@ -1150,12 +1078,6 @@
                     "description": "Schema definition for $id added by cogSchema.",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$role": {
-                    "title": "$role",
-                    "description": "Schema definition for root $role added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "activity": {
                     "description": "An Activity is the basic communication type for the Bot Framework 3.0 protocol.",
@@ -1897,12 +1819,6 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
-                "$role": {
-                    "title": "$role",
-                    "description": "Schema definition for root $role added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
-                },
                 "activity": {
                     "$type": "Microsoft.IActivityTemplate",
                     "title": "Activity",
@@ -1944,12 +1860,6 @@
                     "description": "Schema definition for $id added by cogSchema.",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$role": {
-                    "title": "$role",
-                    "description": "Schema definition for root $role added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "property": {
                     "$type": "Microsoft.IExpression",
@@ -1998,12 +1908,6 @@
                     "description": "Schema definition for $id added by cogSchema.",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$role": {
-                    "title": "$role",
-                    "description": "Schema definition for root $role added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "condition": {
                     "$type": "Microsoft.IExpression",
@@ -2075,12 +1979,6 @@
                     "description": "Schema definition for $id added by cogSchema.",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$role": {
-                    "title": "$role",
-                    "description": "Schema definition for root $role added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "application": {
                     "type": "object",
@@ -2154,12 +2052,6 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
-                "$role": {
-                    "title": "$role",
-                    "description": "Schema definition for root $role added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
-                },
                 "applicationId": {
                     "type": "string",
                     "description": "This is the QnAMaker appId to use",
@@ -2224,12 +2116,6 @@
                     "description": "Schema definition for $id added by cogSchema.",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$role": {
-                    "title": "$role",
-                    "description": "Schema definition for root $role added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^((lg)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
                 },
                 "pattern": {
                     "type": "string"
