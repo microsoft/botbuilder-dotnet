@@ -48,9 +48,25 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             var result = await this.LanguageGenerator.Generate(locale, inlineTemplate, id, data, types, tags).ConfigureAwait(false);
 
+            return CreateActivityFromText(result);
+        }
+
+        /// <summary>
+        /// Given a text result (text or text||speak or text||speak with [herocard... etc), create an activity
+        /// </summary>
+        /// <remarks>
+        /// This method will create an MessageActivity from text.  It supports 3 formats
+        ///     text
+        ///     text || speak
+        ///     text || speak [Herocard][attachment]etc...
+        /// </remarks>
+        /// <param name="text">text</param>
+        /// <returns>MessageActivity for it</returns>
+        public static IMessageActivity CreateActivityFromText(string text)
+        {
             var activity = Activity.CreateMessageActivity();
             activity.TextFormat = TextFormatTypes.Markdown;
-            var lines = result.Split('\n');
+            var lines = text.Split('\n');
 
             // if result is multi line
             for (int iLine = 0; iLine < lines.Length; iLine++)
