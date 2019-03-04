@@ -151,7 +151,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var engine = TemplateEngine.FromFile(GetExampleFilePath("8.lg"));
             var evaled = engine.EvaluateTemplate("RecentTasks", new { recentTasks = new[] { "Task1" } });
-            Assert.AreEqual(evaled, "你好");
+            Assert.AreEqual(evaled, "Your most recent task is Task1. You can let me know if you want to add or complete a task.");
         }
 
         [TestMethod]

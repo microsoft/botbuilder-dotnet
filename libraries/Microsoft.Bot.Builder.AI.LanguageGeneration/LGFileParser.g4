@@ -49,8 +49,7 @@ normalTemplateString
 	;
 
 conditionalTemplateBody
-    : caseRule+
-    | caseRule+ defaultRule
+    : caseRule+ defaultRule?
     ;
 
 caseRule
