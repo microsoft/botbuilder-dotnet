@@ -180,6 +180,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("http://4.bp.blogspot.com/--cFa6t-x4qY/UAqEgUvPd2I/AAAAAAAANIg/pMLE080Zjh4/s1600/turtle.jpg", (string)((dynamic)activity.Attachments[3].ContentUrl));
         }
 
-
+        [TestMethod]
+        public async Task TestMultipleAdaptiveCards()
+        {
+            var mg = GetGenerator();
+            dynamic data = new JObject();
+            data.adaptiveCardTitle = "test";
+            IMessageActivity activity = await mg.Generate("", "[multipleAdaptiveCardsTemplate]", id: null, data: data, types: null, tags: null);
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Text));
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Speak));
+            Assert.AreEqual(2, activity.Attachments.Count);
+            Assert.AreEqual("application/vnd.microsoft.card.adaptive", activity.Attachments[0].ContentType);
+            Assert.AreEqual("application/vnd.microsoft.card.adaptive", activity.Attachments[1].ContentType);
+            Assert.AreEqual("test", (string)((dynamic)activity.Attachments[0].Content).body[0].text);
+            Assert.AreEqual("test", (string)((dynamic)activity.Attachments[1].Content).body[0].text);
+        }
+        
+        [TestMethod]
+        public async Task TestMultipleCards()
+        {
+            var mg = GetGenerator();
+            dynamic data = new JObject();
+            data.type = "herocard";
+            IMessageActivity activity = await mg.Generate("", "[MultipleCardsTemplate]", id: null, data: data, types: null, tags: null);
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Text));
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Speak));
+            Assert.AreEqual(2, activity.Attachments.Count);
+            Assert.AreEqual(HeroCard.ContentType, activity.Attachments[0].ContentType);
+            Assert.AreEqual(HeroCard.ContentType, activity.Attachments[1].ContentType);
+            var card1 = ((JObject)activity.Attachments[0].Content).ToObject<HeroCard>();
+            var card2 = ((JObject)activity.Attachments[1].Content).ToObject<HeroCard>();
+            Assert.AreEqual("herocard", card1.Subtitle);
+            Assert.AreEqual("herocard", card2.Subtitle);
+        }
     }
 }
