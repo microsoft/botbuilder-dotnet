@@ -97,7 +97,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     return Visit(caseRule.normalTemplateBody());
                 }
             }
-            return Visit(context.conditionalTemplateBody().defaultRule().normalTemplateBody());
+
+            if (context?.conditionalTemplateBody()?.defaultRule() != null)
+            {
+                return Visit(context.conditionalTemplateBody().defaultRule().normalTemplateBody());
+            }
+            else
+            {
+                return null;
+            }
         }
         
 

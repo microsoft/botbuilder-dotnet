@@ -57,6 +57,24 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             string evaled = engine.EvaluateTemplate("time-of-day-readout", new { timeOfDay = "morning" });
             Assert.IsTrue(evaled == "Good morning" || evaled == "Morning! ", $"Evaled is {evaled}");
+
+            evaled = engine.EvaluateTemplate("time-of-day-readout", new { timeOfDay = "evening" });
+            Assert.IsTrue(evaled == "Good evening" || evaled == "Evening! ", $"Evaled is {evaled}");
+        }
+
+        [TestMethod]
+        public void TestBasicConditionalTemplateWithoutDefault()
+        {
+            var engine = TemplateEngine.FromFile(GetExampleFilePath("5.lg"));
+
+            string evaled = engine.EvaluateTemplate("time-of-day-readout-without-default", new { timeOfDay = "morning" });
+            Assert.IsTrue(evaled == "Good morning" || evaled == "Morning! ", $"Evaled is {evaled}");
+
+            evaled = engine.EvaluateTemplate("time-of-day-readout-without-default2", new { timeOfDay = "morning" });
+            Assert.IsTrue(evaled == "Good morning" || evaled == "Morning! ", $"Evaled is {evaled}");
+
+            evaled = engine.EvaluateTemplate("time-of-day-readout-without-default2", new { timeOfDay = "evening" });
+            Assert.IsNull(evaled, "Evaled is not null");
         }
 
         [TestMethod]
