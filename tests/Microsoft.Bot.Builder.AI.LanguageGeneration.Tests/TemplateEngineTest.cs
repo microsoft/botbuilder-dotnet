@@ -241,8 +241,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestEscapeCharacter()
         {
             var engine = TemplateEngine.FromFile(GetExampleFilePath("EscapeCharacter.lg"));
-            var evaled = engine.EvaluateTemplate("wPhrase", null);
-            Assert.AreEqual(evaled, @"Hi \\\r\ny[in1]{in2}template2vaule");
+            var evaled1 = engine.EvaluateTemplate("wPhrase", null);
+            Assert.AreEqual(evaled1, "Hi \\r\\n\\t\\'\\\"[]{}\\\\");
+
+            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("wPhrase2", null));
+            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("wPhrase3", null));
         }
 
     }

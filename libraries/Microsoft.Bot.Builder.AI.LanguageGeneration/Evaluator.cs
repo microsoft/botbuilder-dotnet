@@ -121,6 +121,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     case LGFileParser.ESCAPE_CHARACTER:
                         builder.Append(EvalEscapeCharacter(node.GetText()));
                         break;
+                    case LGFileParser.INVALID_ESCAPE:
+                        throw new Exception($"escape character {node.GetText()} is invalid");
                     case LGFileParser.EXPRESSION:
                         builder.Append(EvalExpression(node.GetText()));
                         break;
@@ -131,14 +133,35 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                         builder.Append(EvalMultiLineText(node.GetText()));
                         break;
                     default:
-                        builder.Append(EvalEscapeCharacter(node.GetText()));
+                        builder.Append(node.GetText());
                         break;
                 }
             }
             return builder.ToString();
         }
 
-        private string EvalEscapeCharacter(string exp) => Regex.Replace(exp, @"\\[\w\\\[\{\]}]", new MatchEvaluator(EscapeMatcher));
+        private string EvalEscapeCharacter(string exp)
+        {
+            var validCharactersDict = new Dictionary<string, string> {
+                { @"\r",@"\r"},
+                { @"\n",@"\n"},
+                { @"\t",@"\t"},
+                { "\\\"","\\\""},
+                { @"\\",@"\\"},
+                { @"\'",@"\'"},
+                { @"\[",@"["},
+                { @"\]",@"]"},
+                { @"\{",@"{"},
+                { @"\}",@"}"},
+            };
+
+            if (validCharactersDict.ContainsKey(exp))
+                return validCharactersDict[exp];
+
+            else
+                throw new Exception($"escape character {exp} is invalid");
+
+        }
 
 
         private string EscapeMatcher(Match match)

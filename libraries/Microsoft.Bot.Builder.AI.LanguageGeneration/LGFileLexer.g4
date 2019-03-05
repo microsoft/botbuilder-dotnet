@@ -97,7 +97,11 @@ MULTI_LINE_TEXT
   ;
 
 ESCAPE_CHARACTER
-  : '\\{' | '\\[' | '\\\\' | '\\'[\]] | '\\'[}] | '\\'[r] | '\\'[n] | '\\' LETTER{ ignoreWS = false; expectCaseOrDefault = false;}
+  : ('\\{' | '\\[' | '\\\\' | '\\'[\]] | '\\'[}] | '\\'[r] | '\\'[t] | '\\'[n] | '\\'["] | '\\'[']) { ignoreWS = false; expectCaseOrDefault = false;}
+  ;
+
+INVALID_ESCAPE
+  : '\\'.
   ;
 
 EXPRESSION
