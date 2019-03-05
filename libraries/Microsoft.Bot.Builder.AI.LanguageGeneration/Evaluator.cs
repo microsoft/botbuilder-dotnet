@@ -163,25 +163,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
         }
 
-
-        private string EscapeMatcher(Match match)
-        {
-            var noEscape = new List<string> { "\\r", "\\n", "\\t" };
-            if (match == null
-                || string.IsNullOrEmpty(match.Value))
-                return string.Empty;
-
-            var input = match.Value;
-
-            if (!input.StartsWith("\\"))
-                return input;
-
-            if (noEscape.Contains(input))
-                return input;
-
-            return input.Substring(1);
-        }
-
         private bool EvalCondition(string exp)
         {
             try
