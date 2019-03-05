@@ -352,14 +352,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                     var obj = JToken.Parse(strInput);
                     return true;
                 }
-                catch (JsonReaderException jex)
+                catch
                 {
-                    Console.WriteLine(jex.Message);
-                    return false;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
                     return false;
                 }
             }
