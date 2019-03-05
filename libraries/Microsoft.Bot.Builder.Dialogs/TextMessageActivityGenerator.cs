@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             var activity = Activity.CreateMessageActivity();
             activity.TextFormat = TextFormatTypes.Markdown;
-            var lines = text.Split('\n');
+            var lines = text.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
             // if result is multi line
             for (int iLine = 0; iLine < lines.Length; iLine++)
@@ -102,12 +102,13 @@ namespace Microsoft.Bot.Builder.Dialogs
                         iLine = AddGenericCardAtttachment(activity, OAuthCard.ContentType, lines, ++iLine);
                         break;
 
-                    case "{":
+                    case "[adaptivecard":
                         // json object
-                        iLine = AddJsonAttachment(activity, lines, iLine);
+                        iLine = AddJsonAttachment(activity, lines, ++iLine);
                         break;
 
                     default:
+                        // single line [attachment ... ] command support
                         if (line.StartsWith("[") && line.EndsWith("]"))
                         {
                             var lowerLine = line.ToLower();
@@ -201,6 +202,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             StringBuilder sb = new StringBuilder();
             for (; iLine < lines.Length; iLine++)
             {
+                if (lines[iLine].TrimEnd() == "]")
+                {
+                    break;
+                }
+
                 sb.AppendLine(lines[iLine]);
             }
 
@@ -325,6 +331,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                         default:
                             System.Diagnostics.Debug.WriteLine(string.Format("Skipping unknown card property {0}", property));
                             break;
+                    }
+
+                    if (lastLine)
+                    {
+                        break;
                     }
                 }
             }

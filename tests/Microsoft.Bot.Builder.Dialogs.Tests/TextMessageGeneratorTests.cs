@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using AdaptiveCards;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
 using Microsoft.Bot.Builder.Dialogs.Composition.Resources;
 using Microsoft.Bot.Schema;
@@ -178,6 +179,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("http://viagemempauta.com.br/wp-content/uploads/2015/09/2_All-Angle-By-Andreza-dos-Santos_FTS_2914-344-620x415.jpg", (string)((dynamic)activity.Attachments[1].ContentUrl));
             Assert.AreEqual("http://images.fineartamerica.com/images-medium-large/good-morning-turtles-freund-gloria.jpg", (string)((dynamic)activity.Attachments[2].ContentUrl));
             Assert.AreEqual("http://4.bp.blogspot.com/--cFa6t-x4qY/UAqEgUvPd2I/AAAAAAAANIg/pMLE080Zjh4/s1600/turtle.jpg", (string)((dynamic)activity.Attachments[3].ContentUrl));
+        }
+
+        [TestMethod]
+        public async Task TestMultipleCards()
+        {
+            var mg = GetGenerator();
+            dynamic data = new JObject();
+            data.type = "herocard";
+            data.adaptiveCardTitle = "test";
+            IMessageActivity activity = await mg.Generate("", "[multiCardTemplate]", id: null, data: data, types: null, tags: null);
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Text));
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Speak));
+            Assert.AreEqual(4, activity.Attachments.Count);
+            Assert.AreEqual(HeroCard.ContentType, activity.Attachments[0].ContentType);
+            Assert.AreEqual(AdaptiveCard.ContentType, activity.Attachments[1].ContentType);
+            var card = ((JObject)activity.Attachments[0].Content).ToObject<HeroCard>();
+            Assert.IsNotNull(card, "should have herocard");
+            Assert.AreEqual("Cheese gromit!", card.Title, "card title should be set");
+            Assert.AreEqual("herocard", card.Subtitle, "card subtitle should be data bound ");
+            Assert.AreEqual("This is some text describing the card, it's cool because it's cool", card.Text, "card text should be set");
+            Assert.AreEqual("https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg", card.Images[0].Url, "image should be set");
+            Assert.AreEqual(3, card.Buttons.Count, "card buttons should be set");
+            for (int i = 0; i <= 2; i++)
+                Assert.AreEqual($"Option {i + 1}", card.Buttons[i].Title, "card buttons should be set");
+
+            Assert.AreEqual("test", (string)((dynamic)activity.Attachments[1].Content).body[0].text);
         }
 
 
