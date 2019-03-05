@@ -118,6 +118,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 {
                     case LGFileParser.DASH:
                         break;
+                    case LGFileParser.ESCAPE_CHARACTER:
+                        builder.Append(EvalEscapeCharacter(node.GetText()));
+                        break;
                     case LGFileParser.EXPRESSION:
                         builder.Append(EvalExpression(node.GetText()));
                         break;
@@ -128,13 +131,33 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                         builder.Append(EvalMultiLineText(node.GetText()));
                         break;
                     default:
-                        builder.Append(node.GetText());
+                        builder.Append(EvalEscapeCharacter(node.GetText()));
                         break;
                 }
             }
             return builder.ToString();
         }
-        
+
+        private string EvalEscapeCharacter(string exp) => Regex.Replace(exp, @"\\[\w\\\[\{\]}]", new MatchEvaluator(EscapeMatcher));
+
+
+        private string EscapeMatcher(Match match)
+        {
+            var noEscape = new List<string> { "\\r", "\\n", "\\t" };
+            if (match == null
+                || string.IsNullOrEmpty(match.Value))
+                return string.Empty;
+
+            var input = match.Value;
+
+            if (!input.StartsWith("\\"))
+                return input;
+
+            if (noEscape.Contains(input))
+                return input;
+
+            return input.Substring(1);
+        }
 
         private bool EvalCondition(string exp)
         {

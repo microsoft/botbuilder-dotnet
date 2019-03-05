@@ -96,6 +96,10 @@ MULTI_LINE_TEXT
   : '```' .*? '```' { ignoreWS = false; expectCaseOrDefault = false;}
   ;
 
+ESCAPE_CHARACTER
+  : '\\{' | '\\[' | '\\\\' | '\\'[\]] | '\\'[}] | '\\'[r] | '\\'[n] | '\\' LETTER{ ignoreWS = false; expectCaseOrDefault = false;}
+  ;
+
 EXPRESSION
   : '{' ~[\r\n{}]* '}'  { ignoreWS = false; expectCaseOrDefault = false;}
   ;
@@ -109,5 +113,5 @@ TEXT_SEPARATOR
   ;
 
 TEXT
-  : ~[ \t\r\n{}[\]()]+  { ignoreWS = false; expectCaseOrDefault = false;}
+  : ~[ \\\t\r\n{}[\]()]+  { ignoreWS = false; expectCaseOrDefault = false;}
   ;

@@ -1,0 +1,7 @@
+﻿﻿> Welcome Phrase template
+> LG runtime will pick a text value from the one-of collection list at random.
+# wPhrase
+- Hi \\\\\r\n\y\[in1\]\{in2\}[template2]
+
+# template2
+- template2vaule
