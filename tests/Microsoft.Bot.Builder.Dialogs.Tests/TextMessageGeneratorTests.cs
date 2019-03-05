@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using AdaptiveCards;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
 using Microsoft.Bot.Builder.Dialogs.Composition.Resources;
 using Microsoft.Bot.Schema;
@@ -203,17 +204,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var mg = GetGenerator();
             dynamic data = new JObject();
             data.type = "herocard";
+            data.adaptiveCardTitle = "test";
             IMessageActivity activity = await mg.Generate("", "[MultipleCardsTemplate]", id: null, data: data, types: null, tags: null);
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
             Assert.IsTrue(string.IsNullOrEmpty(activity.Text));
             Assert.IsTrue(string.IsNullOrEmpty(activity.Speak));
-            Assert.AreEqual(2, activity.Attachments.Count);
+            Assert.AreEqual(3, activity.Attachments.Count);
             Assert.AreEqual(HeroCard.ContentType, activity.Attachments[0].ContentType);
-            Assert.AreEqual(HeroCard.ContentType, activity.Attachments[1].ContentType);
+            Assert.AreEqual(AdaptiveCard.ContentType, activity.Attachments[1].ContentType);
+            Assert.AreEqual(HeroCard.ContentType, activity.Attachments[2].ContentType);
             var card1 = ((JObject)activity.Attachments[0].Content).ToObject<HeroCard>();
-            var card2 = ((JObject)activity.Attachments[1].Content).ToObject<HeroCard>();
+            var card2 = ((JObject)activity.Attachments[1].Content).ToObject<AdaptiveCard>();
+            var card3 = ((JObject)activity.Attachments[2].Content).ToObject<HeroCard>();
             Assert.AreEqual("herocard", card1.Subtitle);
-            Assert.AreEqual("herocard", card2.Subtitle);
+            Assert.AreEqual("test", (card2.Body[0] as AdaptiveTextBlock).Text);
+            Assert.AreEqual("herocard", card3.Subtitle);
         }
     }
 }

@@ -202,6 +202,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             for (; iLine < lines.Length; iLine++)
             {
                 sb.AppendLine(lines[iLine]);
+                if (IsValidJson(sb.ToString()))
+                {
+                    break;
+                }
             }
 
             dynamic obj = JsonConvert.DeserializeObject(sb.ToString());
@@ -326,11 +330,43 @@ namespace Microsoft.Bot.Builder.Dialogs
                             System.Diagnostics.Debug.WriteLine(string.Format("Skipping unknown card property {0}", property));
                             break;
                     }
+
+                    if (lastLine)
+                    {
+                        break;
+                    }
                 }
             }
 
             return iLine;
         }
 
+        private static bool IsValidJson(string strInput)
+        {
+            strInput = strInput.Trim();
+            if ((strInput.StartsWith("{") && strInput.EndsWith("}")) ||
+                (strInput.StartsWith("[") && strInput.EndsWith("]")))
+            {
+                try
+                {
+                    var obj = JToken.Parse(strInput);
+                    return true;
+                }
+                catch (JsonReaderException jex)
+                {
+                    Console.WriteLine(jex.Message);
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
