@@ -58,7 +58,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Configuration", "libraries\Microsoft.Bot.Configuration\Microsoft.Bot.Configuration.csproj", "{0B8ABFDB-F9CF-4EC6-988E-9C32D9E01C26}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Configuration.Tests", "tests\Microsoft.Bot.Configuration.Tests\Microsoft.Bot.Configuration.Tests.csproj", "{1B7920E6-5262-4054-B72D-3A8DBBA057D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Configuration.Tests", "tests\Microsoft.Bot.Configuration.Tests\Microsoft.Bot.Configuration.Tests.csproj", "{1B7920E6-5262-4054-B72D-3A8DBBA057D2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.TestBot.WebApi", "tests\Microsoft.Bot.Builder.TestBot.WebApi\Microsoft.Bot.Builder.TestBot.WebApi.csproj", "{298009D3-971D-4375-A2F2-04CFB168CED9}"
 EndProject
@@ -73,6 +73,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.ApplicationInsights.WebApi.Tests", "tests\integration\Microsoft.Bot.ApplicationInsights.WebApi.Tests\Microsoft.Bot.ApplicationInsights.WebApi.Tests.csproj", "{873BCC1F-ED12-424E-93FA-D76F4BA022C2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.ApplicationInsights.Tests", "tests\Microsoft.Bot.Builder.ApplicationInsights.Tests\Microsoft.Bot.Builder.ApplicationInsights.Tests.csproj", "{D790A4BB-D8AC-4AAE-B3FE-0CF432CA8031}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.AI.TextTranslator", "libraries\Microsoft.Bot.Builder.AI.TextTranslator\Microsoft.Bot.Builder.AI.TextTranslator.csproj", "{06826E72-26BE-425E-8574-23264B5E1398}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.AI.TextTranslator.Tests", "tests\Microsoft.Bot.Builder.AI.TextTranslator.Tests\Microsoft.Bot.Builder.AI.TextTranslator.Tests.csproj", "{02CF56A7-BA6C-4711-A55A-52F11127887C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -329,6 +333,22 @@ Global
 		{D790A4BB-D8AC-4AAE-B3FE-0CF432CA8031}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{D790A4BB-D8AC-4AAE-B3FE-0CF432CA8031}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D790A4BB-D8AC-4AAE-B3FE-0CF432CA8031}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06826E72-26BE-425E-8574-23264B5E1398}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{06826E72-26BE-425E-8574-23264B5E1398}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{06826E72-26BE-425E-8574-23264B5E1398}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06826E72-26BE-425E-8574-23264B5E1398}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06826E72-26BE-425E-8574-23264B5E1398}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{06826E72-26BE-425E-8574-23264B5E1398}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{06826E72-26BE-425E-8574-23264B5E1398}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06826E72-26BE-425E-8574-23264B5E1398}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02CF56A7-BA6C-4711-A55A-52F11127887C}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{02CF56A7-BA6C-4711-A55A-52F11127887C}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{02CF56A7-BA6C-4711-A55A-52F11127887C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02CF56A7-BA6C-4711-A55A-52F11127887C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02CF56A7-BA6C-4711-A55A-52F11127887C}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{02CF56A7-BA6C-4711-A55A-52F11127887C}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{02CF56A7-BA6C-4711-A55A-52F11127887C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02CF56A7-BA6C-4711-A55A-52F11127887C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -368,6 +388,8 @@ Global
 		{400BB78F-AFDC-4B1C-AD85-BE159B576FCE} = {276EBE79-A13A-46BD-A566-B01DC0477A9B}
 		{873BCC1F-ED12-424E-93FA-D76F4BA022C2} = {0A0E26B0-7A46-4F1A-8BFE-9A763FDF6CF8}
 		{D790A4BB-D8AC-4AAE-B3FE-0CF432CA8031} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{06826E72-26BE-425E-8574-23264B5E1398} = {763168FA-A590-482C-84D8-2922F7ADB1A2}
+		{02CF56A7-BA6C-4711-A55A-52F11127887C} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

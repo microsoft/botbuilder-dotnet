@@ -19,5 +19,6 @@ namespace Microsoft.Bot.Configuration
         public const string File = "file";
         public const string Luis = "luis";
         public const string QnA = "qna";
+        public const string TextTranslator = "translator";
     }
 }

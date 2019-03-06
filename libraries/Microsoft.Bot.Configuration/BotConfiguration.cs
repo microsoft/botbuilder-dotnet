@@ -546,6 +546,9 @@ namespace Microsoft.Bot.Configuration
                         case ServiceTypes.QnA:
                             services.Add(token.ToObject<QnAMakerService>());
                             break;
+                        case ServiceTypes.TextTranslator:
+                            services.Add(token.ToObject<TextTranslatorService>());
+                            break;
                         case ServiceTypes.Generic:
                             services.Add(token.ToObject<GenericService>());
                             break;

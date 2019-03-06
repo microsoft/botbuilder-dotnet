@@ -1,0 +1,18 @@
+﻿[
+  {
+    "detectedLanguage": {
+      "language": "de",
+      "score": 1.0
+    },
+    "translations": [
+      {
+        "text": "Ich bin ein Berliner",
+        "to": "de"
+      },
+      {
+        "text": "Sono un Berliner",
+        "to": "it"
+      }
+    ]
+  }
+]
