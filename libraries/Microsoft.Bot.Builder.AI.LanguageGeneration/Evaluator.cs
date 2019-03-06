@@ -17,17 +17,24 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
         public readonly EvaluationContext Context;
 
-        private readonly GetMethodExtensions GetMethodX;
-        private readonly GetValueExtensions GetValueX;
+        private readonly IGetMethod GetMethodX;
+        private readonly IGetValue GetValueX;
 
         private Stack<string> templateNameStack = new Stack<string>();
 
-        public Evaluator(EvaluationContext context)
+        public Evaluator(EvaluationContext context, IGetMethod getMethod, IGetValue getValue)
         {
             Context = context;
-            GetMethodX = new GetMethodExtensions(this);
-            GetValueX = new GetValueExtensions(this);
+            GetMethodX = getMethod ?? new GetMethodExtensions(this);
+            GetValueX = getValue ?? new GetValueExtensions(this);
         }
+
+        //public Evaluator(EvaluationContext context)
+        //{
+        //    Context = context;
+        //    GetMethodX = new GetMethodExtensions(this);
+        //    GetValueX = new GetValueExtensions(this);
+        //}
 
         public string EvaluateTemplate(string templateName, object scope)
         {
@@ -143,7 +150,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         {
             exp = exp.TrimStart('{').TrimEnd('}');
             var result = EvalByExpressionEngine(exp, Scope);
-            return result.ToString();
+            return result?.ToString();
         }
 
         private string EvalTemplateRef(string exp)

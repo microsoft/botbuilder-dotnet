@@ -58,7 +58,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Configuration", "libraries\Microsoft.Bot.Configuration\Microsoft.Bot.Configuration.csproj", "{0B8ABFDB-F9CF-4EC6-988E-9C32D9E01C26}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Configuration.Tests", "tests\Microsoft.Bot.Configuration.Tests\Microsoft.Bot.Configuration.Tests.csproj", "{1B7920E6-5262-4054-B72D-3A8DBBA057D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Configuration.Tests", "tests\Microsoft.Bot.Configuration.Tests\Microsoft.Bot.Configuration.Tests.csproj", "{1B7920E6-5262-4054-B72D-3A8DBBA057D2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.TestBot.WebApi", "tests\Microsoft.Bot.Builder.TestBot.WebApi\Microsoft.Bot.Builder.TestBot.WebApi.csproj", "{298009D3-971D-4375-A2F2-04CFB168CED9}"
 EndProject
@@ -95,6 +95,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.LanguageGeneration", "libraries\Microsoft.Bot.Builder.AI.LanguageGeneration\Microsoft.Bot.Builder.AI.LanguageGeneration.csproj", "{150BC344-4534-41E1-9700-9D231CF327D2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.LanguageGeneration.Tests", "tests\Microsoft.Bot.Builder.AI.LanguageGeneration.Tests\Microsoft.Bot.Builder.AI.LanguageGeneration.Tests.csproj", "{A6E642AE-B132-4A90-A95A-A44A82BC0B66}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Planning", "libraries\Microsoft.Bot.Builder.Planning\Microsoft.Bot.Builder.Planning.csproj", "{3CF175CF-1AF4-4109-96CB-221684DCED7D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Planning.Tests", "tests\Microsoft.Bot.Builder.Planning.Tests\Microsoft.Bot.Builder.Planning.Tests.csproj", "{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -433,6 +437,22 @@ Global
 		{A6E642AE-B132-4A90-A95A-A44A82BC0B66}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{A6E642AE-B132-4A90-A95A-A44A82BC0B66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6E642AE-B132-4A90-A95A-A44A82BC0B66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -483,6 +503,8 @@ Global
 		{32C97F31-8148-43D6-9056-7CDBEAE4F7D7} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{150BC344-4534-41E1-9700-9D231CF327D2} = {763168FA-A590-482C-84D8-2922F7ADB1A2}
 		{A6E642AE-B132-4A90-A95A-A44A82BC0B66} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{3CF175CF-1AF4-4109-96CB-221684DCED7D} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
+		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

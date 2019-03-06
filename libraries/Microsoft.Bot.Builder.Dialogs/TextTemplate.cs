@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         public string Template { get; set; }
 
-        public async Task<string> BindToData(ITurnContext context, object data)
+        public async Task<string> BindToData(ITurnContext context, object data, Func<string, object, object> binder = null)
         {
             if (string.IsNullOrEmpty(this.Template))
             {
@@ -36,7 +36,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                     id: null,
                     data: data,
                     tags: null,
-                    types: null).ConfigureAwait(false);
+                    types: null,
+                    valueBinder: binder).ConfigureAwait(false);
                 return result;
             }
 

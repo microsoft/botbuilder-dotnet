@@ -1,0 +1,11 @@
+# welcome-user
+- Hello {user.name}, nice talking to you!
+- Howdy {user.name}!
+
+# prompt-name
+- What's your name?
+
+# welcome
+- Zoidberg here, welcome to my world! I can tell jokes and also forsee the future!
+- Hello, my name is Zoidberg and I'll be your guide. I can tell jokes and also forsee the future!
+- Hail Zoidberg!

@@ -1,0 +1,30 @@
+{
+  "$schema": "../../Schemas/app.schema",
+  "$type": "Microsoft.PlanningDialog",
+  "$id":  "root",
+  "storage": {
+    "$type": "Microsoft.MemoryStorage"
+  },
+  "rules": [
+    {
+      "$type": "Microsoft.FallbackRule",
+      "steps": [
+        {
+          "$type": "Microsoft.IfProperty",
+          "expression": "user.name == null",
+          "ifTrue": [
+            {
+              "$type": "Microsoft.TextPrompt",
+              "property": "user.name",
+              "initialPrompt": "Hello, I'm Zoidberg. What is your name?"
+            }
+          ]
+        },
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "Hello {user.name}, nice to talk to you!"
+        }
+      ]
+    }
+  ]   
+}

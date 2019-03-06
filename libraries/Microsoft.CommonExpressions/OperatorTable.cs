@@ -38,7 +38,7 @@ namespace Microsoft.Expressions
             Infix(">=", 60, operands => operands[0] is IComparable operand0 && operands[1] is IComparable operand1 ? operand0.CompareTo(operand1) >= 0 : throw new Exception()),
             Infix("<>", 60, operands => operands[0] is IComparable operand0 && operands[1] is IComparable operand1 ? operand0.CompareTo(operand1) != 0 : throw new Exception()),
             Infix("!=", 60, operands => operands[0] is IComparable operand0 && operands[1] is IComparable operand1 ? operand0.CompareTo(operand1) != 0 : throw new Exception()),
-            Infix("==", 60, operands => operands[0] is IComparable operand0 && operands[1] is IComparable operand1 ? operand0.CompareTo(operand1) == 0 : throw new Exception()),
+            Infix("==", 60, operands => operands[0] is IComparable operand0 && operands[1] is IComparable operand1 ? operand0.CompareTo(operand1) == 0 : operands[0] == null && operands[1] == null ? true : (operands[0] == null || operands[1] == null) ? false : throw new Exception()),
 
             // TODO: delegate to C# double and int, might prefer coercion rules
             Infix("+", 110, operands =>

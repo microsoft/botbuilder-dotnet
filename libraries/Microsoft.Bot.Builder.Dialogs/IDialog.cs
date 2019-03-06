@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -9,6 +10,21 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Unique id for the dialog
         /// </summary>
         string Id { get; set; }
+
+        /// <summary>
+        /// Set of tags assigned to the dialog.
+        /// </summary>
+        List<string> Tags { get; }
+
+        /// <summary>
+        /// JSONPath expression for the memory slots to bind the dialogs options to on a call to `beginDialog()`.
+        /// </summary>
+        Dictionary<string, string> InputBindings { get; }
+
+        /// <summary>
+        /// JSONPath expression for the memory slot to bind the dialogs result to when `endDialog()` is called.
+        /// </summary>
+        string OutputBinding { get; }
 
         /// <summary>
         /// Telemetry client
@@ -69,5 +85,28 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns></returns>
         Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken));
 
+
+        /// <summary>
+        /// Called when an event has been raised, using `DialogContext.emitEvent()`, by either the current dialog or a dialog that the current dialog started.
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <param name="e">The event being raised.</param>
+        /// <returns>True if the event is handled by the current dialog and bubbling should stop.</returns>
+        Task<bool> OnDialogEventAsync(DialogContext dc, DialogEvent e);
+
+        /// <summary>
+        /// Should be overridden by dialogs that support multi-turn conversations. A function for 
+        /// processing the utterance is returned along with a code indicating the dialogs desire to 
+        /// process the utterance.This can be one of the following values. 
+        /// - CanProcess - The dialog is capable of processing the utterance but parent dialogs 
+        /// should feel free to intercept the utterance if they'd like.
+        /// - ShouldProcess - The dialog (or one of its children) wants to process the utterance
+        /// so parents should not intercept it.
+        /// The default implementation calls the legacy ContinueDialogAsync for 
+        /// compatibility reasons.That method simply calls DialogContext.EndDialog().
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        Task<DialogConsultation> ConsultDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

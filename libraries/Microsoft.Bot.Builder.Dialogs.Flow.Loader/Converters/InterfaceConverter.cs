@@ -34,9 +34,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Converters
                 jsonObject = refResolver.Resolve(jsonObject);
             }
 
-            jsonObject["id"] = jsonObject["id"] ?? jsonObject["$id"];
+            //jsonObject["id"] = jsonObject["id"] ?? jsonObject["$id"];
 
-            var typeName = jsonObject["$type"].ToString();
+            var typeName = jsonObject["$type"]?.ToString();
             T result = Factory.Build<T>(typeName, jsonObject, serializer);
 
             return result;

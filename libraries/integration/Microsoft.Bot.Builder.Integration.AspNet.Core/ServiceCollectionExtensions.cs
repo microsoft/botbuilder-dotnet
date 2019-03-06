@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             return services
                 .TryAddBotFrameworkAdapterIntegration()
-                .AddTransient<IBot>(botFactory);
+                .AddSingleton<IBot>(botFactory);
         }
 
         /// <summary>

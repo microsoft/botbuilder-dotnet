@@ -70,8 +70,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Perform base recognition
             var instance = dc.ActiveDialog;
-            var state = (IDictionary<string, object>)instance.State[PersistedState];
-            var options = (PromptOptions)instance.State[PersistedOptions];
+            var state = (IDictionary<string, object>)((StateMap)instance.State)[PersistedState];
+            var options = (PromptOptions)((StateMap)instance.State)[PersistedOptions];
             var recognized = await OnRecognizeAsync(dc.Context, state, options, cancellationToken).ConfigureAwait(false);
 
             // Validate the return value
@@ -102,8 +102,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var state = (IDictionary<string, object>)instance.State[PersistedState];
-            var options = (PromptOptions)instance.State[PersistedOptions];
+            var state = (IDictionary<string, object>)((StateMap)instance.State)[PersistedState];
+            var options = (PromptOptions)((StateMap)instance.State)[PersistedOptions];
             await OnPromptAsync(turnContext, state, options, cancellationToken).ConfigureAwait(false);
         }
 
@@ -132,6 +132,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                 Succeeded = true,
                 Value = turnContext.Activity,
             });
+        }
+
+        protected override string OnComputeId()
+        {
+            return $"ActivityPrompt[{this.BindingPath()}]";
         }
     }
 }

@@ -1,0 +1,74 @@
+{
+  "$schema": "../../Schemas/app.schema",
+  "$type": "Microsoft.PlanningDialog",
+  "$id": "root",
+  "storage": {
+    "$type": "Microsoft.MemoryStorage"
+  },
+  "recognizer": {
+    "$type": "Microsoft.RegexRecognizer",
+    "rules": {
+      "JokeIntent": "joke",
+      "FortuneTellerIntent":  "fortune|future"
+    }
+  },
+  "rules": [
+    {
+      "$type": "Microsoft.DoStepsRule",
+      "intent": "JokeIntent",
+      "steps": [
+        {
+          "$type": "Microsoft.CallDialog",
+          "dialogId": "TellJokeDialog"
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.DoStepsRule",
+      "intent": "FortuneTellerIntent",
+      "steps": [
+        {
+          "$type": "Microsoft.CallDialog",
+          "activity": "FortuneTellerDialog"
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.WelcomeRule",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "Welcome!"
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.FallbackRule",
+      "steps": [
+        {
+          "$type": "Microsoft.IfProperty",
+          "expression": "user.name == null",
+          "ifTrue": [
+            {
+              "$type": "Microsoft.TextPrompt",
+              "property": "user.name",
+              "initialPrompt": "Hello, I'm Zoidberg. What is your name?"
+            }
+          ]
+        },
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "Hello {user.name}, nice to talk to you!"
+        }
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "$ref": "TellJokeDialog.dialog"
+    },
+    {
+      "$ref": "FortuneTellerDialog.dialog"
+    }
+  ]
+}

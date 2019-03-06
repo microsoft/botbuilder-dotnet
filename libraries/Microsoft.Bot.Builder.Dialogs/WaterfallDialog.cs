@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             if (reason == DialogReason.CancelCalled)
             {
-                var state = new StateMap(instance.State);
+                var state = new StateMap((StateMap)instance.State);
 
                 // Create step context
                 var index = Convert.ToInt32(state[StepIndex]);
@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else if (reason == DialogReason.EndCalled)
             {
-                var state = new StateMap(instance.State);
+                var state = new StateMap((StateMap)instance.State);
                 var instanceId = state[PersistedInstanceId] as string;
                 var properties = new Dictionary<string, string>()
                 {
@@ -155,6 +155,25 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return Task.CompletedTask;
+        }
+
+        public override async Task<DialogConsultation> ConsultDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return new DialogConsultation()
+            {
+                Desire = DialogConsultationDesires.CanProcess,
+                Processor = async (dialogContext) =>
+                {
+                    // Don't do anything for non-message activities
+                    if (dialogContext.Context.Activity.Type != ActivityTypes.Message)
+                    {
+                        return Dialog.EndOfTurn;
+                    }
+
+                    // Run next steo with the message text as the result
+                    return await this.ResumeDialogAsync(dialogContext, DialogReason.ContinueCalled, dialogContext.Context.Activity.Text).ConfigureAwait(false);
+                },
+            };
         }
 
         protected virtual async Task<DialogTurnResult> OnStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -169,6 +188,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             };
             TelemetryClient.TrackEvent("WaterfallStep", properties);
             return await _steps[stepContext.Index](stepContext, cancellationToken).ConfigureAwait(false);
+        }
+
+        protected override string OnComputeId()
+        {
+            return $"waterfall[{this.BindingPath()}]";
         }
 
         private async Task<DialogTurnResult> RunStepAsync(DialogContext dc, int index, DialogReason reason, object result, CancellationToken cancellationToken)

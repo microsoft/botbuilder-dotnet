@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -18,6 +19,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="types">array of prefixes to try.</param>
         /// <param name="tags">array of tags to capture context.</param>
         /// <returns>text.</returns>
-        Task<string> Generate(string locale, string inlineTemplate, string id, object data, string[] types, string[] tags);
+        Task<string> Generate(string locale, string inlineTemplate, string id, object data, string[] types, string[] tags, Func<string, object, object> valueBinder);
     }
 }

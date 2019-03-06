@@ -21,5 +21,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             : base(dialogId, validator, defaultLocale)
         {
         }
+
+        protected override string OnComputeId()
+        {
+            return $"FloatPrompt[{this.BindingPath()}]";
+        }
     }
 }

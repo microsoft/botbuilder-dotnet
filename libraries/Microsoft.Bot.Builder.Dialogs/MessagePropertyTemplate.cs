@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public string Property { get; set; }
 
-        public async Task<IMessageActivity> BindToData(ITurnContext context, object data)
+        public async Task<IMessageActivity> BindToData(ITurnContext context, object data, Func<string, object, object> binder = null)
         {
             IMessageActivityGenerator messageGenerator = context.TurnState.Get<IMessageActivityGenerator>();
             if (messageGenerator != null)
@@ -58,7 +58,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                     id: this.Property,
                     data: data,
                     tags: null,
-                    types: this.Types.ToArray()).ConfigureAwait(false);
+                    types: this.Types.ToArray(),
+                    valueBinder: binder).ConfigureAwait(false);
 
                 if (result != null)
                 {

@@ -7,7 +7,12 @@ using System.Linq;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
-    class GetMethodExtensions
+    public interface IGetMethod
+    {
+        EvaluationDelegate GetMethodX(string name);
+    }
+
+    class GetMethodExtensions : IGetMethod
     {
         // Hold an evaluator instance to make sure all functions have access
         // This ensentially make all functions as closure

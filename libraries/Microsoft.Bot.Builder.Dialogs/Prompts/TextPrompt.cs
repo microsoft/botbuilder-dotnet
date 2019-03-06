@@ -124,5 +124,10 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             return Task.FromResult(result);
         }
+
+        protected override string OnComputeId()
+        {
+            return $"TextPrompt[{this.BindingPath()}]";
+        }
     }
 }

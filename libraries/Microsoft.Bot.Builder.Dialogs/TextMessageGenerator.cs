@@ -40,9 +40,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="types">type hierarchy for type inheritence.</param>
         /// <param name="tags">contextual tags.</param>
         /// <returns>message activity</returns>
-        public async Task<IMessageActivity> Generate(string locale, string inlineTemplate, string id, object data, string[] types, string[] tags)
+        public async Task<IMessageActivity> Generate(string locale, string inlineTemplate, string id, object data, string[] types, string[] tags, Func<string, object, object> binder = null)
         {
-            var result = await this.LanguageGenerator.Generate(locale, inlineTemplate, id, data, types, tags).ConfigureAwait(false);
+            var result = await this.LanguageGenerator.Generate(locale, inlineTemplate, id, data, types, tags, binder).ConfigureAwait(false);
 
             var activity = Activity.CreateMessageActivity();
             activity.TextFormat = TextFormatTypes.Markdown;
