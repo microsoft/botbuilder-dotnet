@@ -74,9 +74,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.ApplicationIn
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.ApplicationInsights.Tests", "tests\Microsoft.Bot.Builder.ApplicationInsights.Tests\Microsoft.Bot.Builder.ApplicationInsights.Tests.csproj", "{D790A4BB-D8AC-4AAE-B3FE-0CF432CA8031}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.AI.TextTranslator", "libraries\Microsoft.Bot.Builder.AI.TextTranslator\Microsoft.Bot.Builder.AI.TextTranslator.csproj", "{06826E72-26BE-425E-8574-23264B5E1398}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.TextTranslator", "libraries\Microsoft.Bot.Builder.AI.TextTranslator\Microsoft.Bot.Builder.AI.TextTranslator.csproj", "{06826E72-26BE-425E-8574-23264B5E1398}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.AI.TextTranslator.Tests", "tests\Microsoft.Bot.Builder.AI.TextTranslator.Tests\Microsoft.Bot.Builder.AI.TextTranslator.Tests.csproj", "{02CF56A7-BA6C-4711-A55A-52F11127887C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.TextTranslator.Tests", "tests\Microsoft.Bot.Builder.AI.TextTranslator.Tests\Microsoft.Bot.Builder.AI.TextTranslator.Tests.csproj", "{02CF56A7-BA6C-4711-A55A-52F11127887C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -333,8 +333,8 @@ Global
 		{D790A4BB-D8AC-4AAE-B3FE-0CF432CA8031}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{D790A4BB-D8AC-4AAE-B3FE-0CF432CA8031}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D790A4BB-D8AC-4AAE-B3FE-0CF432CA8031}.Release|Any CPU.Build.0 = Release|Any CPU
-		{06826E72-26BE-425E-8574-23264B5E1398}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{06826E72-26BE-425E-8574-23264B5E1398}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{06826E72-26BE-425E-8574-23264B5E1398}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
+		{06826E72-26BE-425E-8574-23264B5E1398}.Debug - NuGet Packages|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
 		{06826E72-26BE-425E-8574-23264B5E1398}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{06826E72-26BE-425E-8574-23264B5E1398}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06826E72-26BE-425E-8574-23264B5E1398}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
