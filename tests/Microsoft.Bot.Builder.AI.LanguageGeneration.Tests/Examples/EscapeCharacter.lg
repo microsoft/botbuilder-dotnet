@@ -1,11 +1,10 @@
 ﻿﻿> Welcome Phrase template
 > LG runtime will pick a text value from the one-of collection list at random.
 # wPhrase
-- Hi \r\n\t\'\"\[\]\{\}\f\a\b
+- Hi \r\n\t\[\]\{\}\\
 
 # wPhrase2
-- Hi \y
-
+- Hi \
 
 # wPhrase3
-- Hi abc\
+- Hi abc\y

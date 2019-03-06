@@ -143,22 +143,16 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         private string EvalEscapeCharacter(string exp)
         {
             var validCharactersDict = new Dictionary<string, string> {
-                //Top ten items :C# later render engine will treat them as escape characters, so the format is unchanged
-                { @"\r",@"\r"},
-                { @"\n",@"\n"},
-                { @"\t",@"\t"},
-                { "\\\"","\\\""},
-                { @"\\",@"\\"},
-                { @"\'",@"\'"},
-                { @"\v",@"\v"},
-                { @"\f",@"\f"},
-                { @"\a",@"\a"},
-                { @"\b",@"\b"},
+                //Top four items :C# later render engine will treat them as escape characters, so the format is unchanged
+                { @"\r","\r"},
+                { @"\n","\n"},
+                { @"\t","\t"},
+                { @"\\","\\"},
 
-                { @"\[",@"["},
-                { @"\]",@"]"},
-                { @"\{",@"{"},
-                { @"\}",@"}"},
+                { @"\[","["},
+                { @"\]","]"},
+                { @"\{","{"},
+                { @"\}","}"},
             };
 
             if (validCharactersDict.ContainsKey(exp))

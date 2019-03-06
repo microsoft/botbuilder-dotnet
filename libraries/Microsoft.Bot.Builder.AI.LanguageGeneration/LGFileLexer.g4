@@ -97,11 +97,11 @@ MULTI_LINE_TEXT
   ;
 
 ESCAPE_CHARACTER
-  : '\\{' | '\\[' | '\\\\' | '\\'[rtn"'abf\]}]  { ignoreWS = false; expectCaseOrDefault = false;}
+  : '\\{' | '\\[' | '\\\\' | '\\'[rtn\]}]  { ignoreWS = false; expectCaseOrDefault = false;}
   ;
 
 INVALID_ESCAPE
-  : '\\'.
+  : '\\'~[\r\n]?
   ;
 
 EXPRESSION
