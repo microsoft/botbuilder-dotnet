@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Azure
     /// </summary>
     public class CosmosDbStorage : IStorage
     {
-        private static readonly JsonSerializer _jsonSerializer = JsonSerializer.CreateDefault(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+        private static readonly JsonSerializer _jsonSerializer = JsonSerializer.CreateDefault(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All, NullValueHandling = NullValueHandling.Include, ContractResolver = new DefaultContractResolver() });
 
         // When setting up the database, calls are made to CosmosDB. If multiple calls are made, we'll end up setting the
         // collectionLink member variable more than once. The semaphore is for making sure the initialization of the
