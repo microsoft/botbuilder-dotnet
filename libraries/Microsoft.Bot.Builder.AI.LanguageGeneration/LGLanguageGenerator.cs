@@ -40,8 +40,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 {
                     var lgText = result;
                     // get lang (HACK)
-                    var iEnd = lgText.IndexOf("\n");
-                    var firstLine = (iEnd < 0) ? lgText.Substring(iEnd) : lgText;
+                    var iEnd = lgText.IndexOf("\r\n");
+                    var firstLine = (iEnd > 0) ? lgText.Substring(0, iEnd) : lgText;
 
                     string lang = String.Empty;
                     iEnd = firstLine.IndexOf("]");
