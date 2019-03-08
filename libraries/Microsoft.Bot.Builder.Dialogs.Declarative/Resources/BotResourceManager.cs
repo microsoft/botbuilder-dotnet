@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
     /// </summary>
     public class BotResourceManager : IBotResourceProvider, IBotResourceWatcher
     {
-        public static HashSet<string> ResourceTypes { get; set; } = new HashSet<string>() { "lg", "lu", "cog", "schema" };
+        public static HashSet<string> ResourceTypes { get; set; } = new HashSet<string>() { "lg", "lu", "dialog", "schema" };
         private HashSet<string> watchedSources = new HashSet<string>();
 
         public BotResourceManager()
