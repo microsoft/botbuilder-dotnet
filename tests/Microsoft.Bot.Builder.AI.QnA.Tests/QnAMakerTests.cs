@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
@@ -10,6 +11,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RichardSzalay.MockHttp;
@@ -648,7 +650,317 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 });
             
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
-        }        
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        [TestCategory("Telemetry")]
+        public async Task Telemetry_NullTelemetryClient()
+        {
+            // Arrange
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+
+            var client = new HttpClient(mockHttp);
+
+            var endpoint = new QnAMakerEndpoint
+            {
+                KnowledgeBaseId = _knowlegeBaseId,
+                EndpointKey = _endpointKey,
+                Host = _hostname
+            };
+            var options = new QnAMakerOptions
+            {
+                Top = 1
+            };
+
+            // Act (Null Telemetry client)
+            //
+            //    This will default to the NullTelemetryClient which no-ops all calls.
+            //
+            var qna = new QnAMaker(endpoint, options, client, null, true);
+            var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
+
+            // Assert - Validate we didn't break QnA functionality.
+            Assert.IsNotNull(results);
+            Assert.AreEqual(results.Length, 1, "should get one result");
+            StringAssert.StartsWith(results[0].Answer, "BaseCamp: You can use a damp rag to clean around the Power Pack");
+            StringAssert.StartsWith(results[0].Source, "Editorial");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        [TestCategory("Telemetry")]
+        public async Task Telemetry_ReturnsAnswer()
+        {
+            // Arrange
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+
+            var client = new HttpClient(mockHttp);
+
+            var endpoint = new QnAMakerEndpoint
+            {
+                KnowledgeBaseId = _knowlegeBaseId,
+                EndpointKey = _endpointKey,
+                Host = _hostname
+            };
+            var options = new QnAMakerOptions
+            {
+                Top = 1
+            };
+            var telemetryClient = new Mock<IBotTelemetryClient>();
+
+            // Act - See if we get data back in telemetry
+            var qna = new QnAMaker(endpoint, options, client, telemetryClient.Object, true);
+            var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
+
+            // Assert - Check Telemetry logged
+            Assert.AreEqual(telemetryClient.Invocations.Count, 1);
+            Assert.AreEqual(telemetryClient.Invocations[0].Arguments.Count, 3);
+            Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("knowledgeBaseId"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("originalQuestion"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("question"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("questionId"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("answer"));
+            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["answer"], "BaseCamp: You can use a damp rag to clean around the Power Pack");
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("articleFound"));
+            Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).Count, 1);
+            Assert.IsTrue(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).ContainsKey("score"));
+            // Assert - Validate we didn't break QnA functionality.
+            Assert.IsNotNull(results);
+            Assert.AreEqual(results.Length, 1, "should get one result");
+            StringAssert.StartsWith(results[0].Answer, "BaseCamp: You can use a damp rag to clean around the Power Pack");
+            StringAssert.StartsWith(results[0].Source, "Editorial");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        [TestCategory("Telemetry")]
+        public async Task Telemetry_PII()
+        {
+            // Arrange
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+
+            var client = new HttpClient(mockHttp);
+
+            var endpoint = new QnAMakerEndpoint
+            {
+                KnowledgeBaseId = _knowlegeBaseId,
+                EndpointKey = _endpointKey,
+                Host = _hostname
+            };
+            var options = new QnAMakerOptions
+            {
+                Top = 1
+            };
+            var telemetryClient = new Mock<IBotTelemetryClient>();
+
+            // Act
+            var qna = new QnAMaker(endpoint, options, client, telemetryClient.Object, false);
+            var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
+
+            // Assert - Validate PII properties not logged.
+            Assert.AreEqual(telemetryClient.Invocations.Count, 1);
+            Assert.AreEqual(telemetryClient.Invocations[0].Arguments.Count, 3);
+            Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("knowledgeBaseId"));
+            Assert.IsFalse(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("originalQuestion"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("question"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("questionId"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("answer"));
+            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["answer"], "BaseCamp: You can use a damp rag to clean around the Power Pack");
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("articleFound"));
+            Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).Count, 1);
+            Assert.IsTrue(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).ContainsKey("score"));
+            // Assert - Validate we didn't break QnA functionality.
+            Assert.IsNotNull(results);
+            Assert.AreEqual(results.Length, 1, "should get one result");
+            StringAssert.StartsWith(results[0].Answer, "BaseCamp: You can use a damp rag to clean around the Power Pack");
+            StringAssert.StartsWith(results[0].Source, "Editorial");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        [TestCategory("Telemetry")]
+        public async Task Telemetry_Override()
+        {
+            // Arrange
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+
+            var client = new HttpClient(mockHttp);
+
+            var endpoint = new QnAMakerEndpoint
+            {
+                KnowledgeBaseId = _knowlegeBaseId,
+                EndpointKey = _endpointKey,
+                Host = _hostname
+            };
+            var options = new QnAMakerOptions
+            {
+                Top = 1
+            };
+            var telemetryClient = new Mock<IBotTelemetryClient>();
+
+            // Act - Override the QnaMaker object to log custom stuff
+            var qna = new OverrideTelemetry(endpoint, options, client, telemetryClient.Object, false);
+            var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
+
+            // Assert
+            Assert.AreEqual(telemetryClient.Invocations.Count, 2);
+            Assert.AreEqual(telemetryClient.Invocations[0].Arguments.Count, 3);
+            Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("MyImportantProperty"));
+            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["MyImportantProperty"], "myImportantValue");
+
+            Assert.AreEqual(telemetryClient.Invocations[1].Arguments[0], "MySecondEvent");
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[1].Arguments[1]).ContainsKey("MyImportantProperty2"));
+            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[1].Arguments[1])["MyImportantProperty2"], "myImportantValue2");
+
+            // Validate we didn't break QnA functionality.
+            Assert.IsNotNull(results);
+            Assert.AreEqual(results.Length, 1, "should get one result");
+            StringAssert.StartsWith(results[0].Answer, "BaseCamp: You can use a damp rag to clean around the Power Pack");
+            StringAssert.StartsWith(results[0].Source, "Editorial");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        [TestCategory("Telemetry")]
+        public async Task Telemetry_AdditionalPropsMetrics()
+        {
+            // Arrange
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+
+            var client = new HttpClient(mockHttp);
+
+            var endpoint = new QnAMakerEndpoint
+            {
+                KnowledgeBaseId = _knowlegeBaseId,
+                EndpointKey = _endpointKey,
+                Host = _hostname
+            };
+            var options = new QnAMakerOptions
+            {
+                Top = 1
+            };
+            var telemetryClient = new Mock<IBotTelemetryClient>();
+
+            // Act - Pass in properties during QnA invocation
+            var qna = new QnAMaker(endpoint, options, client, telemetryClient.Object, false);
+            var telemetryProperties = new Dictionary<string, string>
+            {
+                { "MyImportantProperty", "myImportantValue" },
+            };
+            var telemetryMetrics = new Dictionary<string, double>
+            {
+                { "MyImportantMetric", 3.14159 },
+            };
+
+            var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"), null, telemetryProperties, telemetryMetrics);
+
+            // Assert - added properties were added.
+            Assert.AreEqual(telemetryClient.Invocations.Count, 1);
+            Assert.AreEqual(telemetryClient.Invocations[0].Arguments.Count, 3);
+            Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("knowledgeBaseId"));
+            Assert.IsFalse(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("originalQuestion"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("question"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("questionId"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("answer"));
+            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["answer"], "BaseCamp: You can use a damp rag to clean around the Power Pack");
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("MyImportantProperty"));
+            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["MyImportantProperty"], "myImportantValue");
+
+            Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).Count, 2);
+            Assert.IsTrue(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).ContainsKey("score"));
+            Assert.IsTrue(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).ContainsKey("MyImportantMetric"));
+            Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2])["MyImportantMetric"], 3.14159);
+
+            // Validate we didn't break QnA functionality.
+            Assert.IsNotNull(results);
+            Assert.AreEqual(results.Length, 1, "should get one result");
+            StringAssert.StartsWith(results[0].Answer, "BaseCamp: You can use a damp rag to clean around the Power Pack");
+            StringAssert.StartsWith(results[0].Source, "Editorial");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        [TestCategory("Telemetry")]
+        public async Task Telemetry_AdditionalPropsOverride()
+        {
+            // Arrange
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+
+            var client = new HttpClient(mockHttp);
+
+            var endpoint = new QnAMakerEndpoint
+            {
+                KnowledgeBaseId = _knowlegeBaseId,
+                EndpointKey = _endpointKey,
+                Host = _hostname
+            };
+            var options = new QnAMakerOptions
+            {
+                Top = 1
+            };
+            var telemetryClient = new Mock<IBotTelemetryClient>();
+
+            // Act - Pass in properties during QnA invocation that override default properties
+            //
+            //  NOTE: We are invoking this with PII turned OFF, and passing a PII property (originalQuestion).
+            //
+            var qna = new QnAMaker(endpoint, options, client, telemetryClient.Object, false);
+            var telemetryProperties = new Dictionary<string, string>
+            {
+                { "knowledgeBaseId", "myImportantValue" },
+                { "originalQuestion", "myImportantValue2" },
+            };
+            var telemetryMetrics = new Dictionary<string, double>
+            {
+                { "score", 3.14159 },
+            };
+
+            var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"), null, telemetryProperties, telemetryMetrics);
+
+            // Assert - added properties were added.
+            Assert.AreEqual(telemetryClient.Invocations.Count, 1);
+            Assert.AreEqual(telemetryClient.Invocations[0].Arguments.Count, 3);
+            Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("knowledgeBaseId"));
+            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["knowledgeBaseId"], "myImportantValue");
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("originalQuestion"));
+            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["originalQuestion"], "myImportantValue2");
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("question"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("questionId"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("answer"));
+            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["answer"], "BaseCamp: You can use a damp rag to clean around the Power Pack");
+            Assert.IsFalse(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("MyImportantProperty"));
+
+            Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).Count, 1);
+            Assert.IsTrue(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).ContainsKey("score"));
+            Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2])["score"], 3.14159);
+        }
+
+
+
 
         private string GetV2LegacyRequestUrl() => $"{_hostname}/v2.0/knowledgebases/{_knowlegeBaseId}/generateanswer";
         private string GetV3LegacyRequestUrl() => $"{_hostname}/v3.0/knowledgebases/{_knowlegeBaseId}/generateanswer";
@@ -706,6 +1018,41 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             };
             return new TurnContext(b, a);
 
+        }
+    }
+
+    public class OverrideTelemetry : QnAMaker
+    {
+        public OverrideTelemetry(QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient, IBotTelemetryClient telemetryClient, bool logPersonalInformation)
+            : base(endpoint, options, httpClient, telemetryClient, logPersonalInformation)
+        {
+        }
+
+        protected override Task OnQnaResultsAsync(
+                                    QueryResult[] queryResults, 
+                                    ITurnContext turnContext, 
+                                    Dictionary<string, string> telemetryProperties = null, 
+                                    Dictionary<string, double> telemetryMetrics = null, 
+                                    CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var properties = new Dictionary<string, string>
+            {
+                {"MyImportantProperty", "myImportantValue" }
+            };
+
+            // Log event
+            TelemetryClient.TrackEvent(
+                            QnATelemetryConstants.QnaMsgEvent,
+                            properties);
+
+            // Create second event.
+            var secondEventProperties = new Dictionary<string, string>();
+            secondEventProperties.Add("MyImportantProperty2",
+                                       "myImportantValue2");
+            TelemetryClient.TrackEvent(
+                            "MySecondEvent",
+                            secondEventProperties);
+            return Task.CompletedTask;
         }
     }
 
