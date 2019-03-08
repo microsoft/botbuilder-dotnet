@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             evaluationContext = new EvaluationContext(templateContexts, templateParameters);
         }
         
-        public string EvaluateTemplate(string templateName, object scope, IGetValue valueBinder, IGetMethod methodBinder)
+        public string EvaluateTemplate(string templateName, object scope, IGetValue valueBinder = null, IGetMethod methodBinder = null)
         {
 
             var evaluator = new Evaluator(evaluationContext, methodBinder, valueBinder);
@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         /// <param name="inlineStr"></param>
         /// <param name="scope"></param>
         /// <returns></returns>
-        public string Evaluate(string inlineStr, object scope, IGetValue valueBinder, IGetMethod methodBinder)
+        public string Evaluate(string inlineStr, object scope, IGetValue valueBinder = null, IGetMethod methodBinder = null)
         {
             // TODO: maybe we can directly ref the templateBody without giving a name, but that means
             // we needs to make a little changes in the evalutor, especially the loop detection part

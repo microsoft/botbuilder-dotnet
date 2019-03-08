@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
     public class MockLanguageGenator : ILanguageGenerator
     {
-        public Task<string> Generate(string locale, string inlineTemplate, string id, object data, string[] types, string[] tags)
+        public Task<string> Generate(string locale, string inlineTemplate, string id, object data, string[] types, string[] tags, Func<string, object, object> valueBinder)
         {
             if (!String.IsNullOrEmpty(inlineTemplate))
             {
