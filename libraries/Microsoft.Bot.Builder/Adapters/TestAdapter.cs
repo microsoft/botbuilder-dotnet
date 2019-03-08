@@ -24,44 +24,6 @@ namespace Microsoft.Bot.Builder.Adapters
 
         private int _nextId = 0;
 
-        private class UserTokenKey
-        {
-            public string ConnectionName { get; set; }
-
-            public string UserId { get; set; }
-
-            public string ChannelId { get; set; }
-
-            public override bool Equals(object obj)
-            {
-                var rhs = obj as UserTokenKey;
-                if (rhs != null)
-                {
-                    return string.Equals(this.ConnectionName, rhs.ConnectionName) &&
-                        string.Equals(this.UserId, rhs.UserId) &&
-                        string.Equals(this.ChannelId, rhs.ChannelId);
-                }
-
-                return base.Equals(obj);
-            }
-
-            public override int GetHashCode()
-            {
-                return (ConnectionName ?? string.Empty).GetHashCode() +
-                    (UserId ?? string.Empty).GetHashCode() +
-                    (ChannelId ?? string.Empty).GetHashCode();
-            }
-        }
-
-        private class TokenMagicCode
-        {
-            public UserTokenKey Key { get; set; }
-
-            public string MagicCode { get; set; }
-
-            public string UserToken { get; set; }
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TestAdapter"/> class.
         /// </summary>
@@ -505,7 +467,7 @@ namespace Microsoft.Bot.Builder.Adapters
             foreach (var t in records)
             {
                 if (t.Key.ChannelId == channelId &&
-                    t.Key.UserId == userId && 
+                    t.Key.UserId == userId &&
                     (connectionName == null || connectionName == t.Key.ConnectionName))
                 {
                     _userTokens.Remove(t.Key);
@@ -553,6 +515,44 @@ namespace Microsoft.Bot.Builder.Adapters
         public virtual Task<Dictionary<string, TokenResponse>> GetAadTokensAsync(ITurnContext context, string connectionName, string[] resourceUrls, string userId = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(new Dictionary<string, TokenResponse>());
+        }
+
+        private class UserTokenKey
+        {
+            public string ConnectionName { get; set; }
+
+            public string UserId { get; set; }
+
+            public string ChannelId { get; set; }
+
+            public override bool Equals(object obj)
+            {
+                var rhs = obj as UserTokenKey;
+                if (rhs != null)
+                {
+                    return string.Equals(this.ConnectionName, rhs.ConnectionName) &&
+                        string.Equals(this.UserId, rhs.UserId) &&
+                        string.Equals(this.ChannelId, rhs.ChannelId);
+                }
+
+                return base.Equals(obj);
+            }
+
+            public override int GetHashCode()
+            {
+                return (ConnectionName ?? string.Empty).GetHashCode() +
+                    (UserId ?? string.Empty).GetHashCode() +
+                    (ChannelId ?? string.Empty).GetHashCode();
+            }
+        }
+
+        private class TokenMagicCode
+        {
+            public UserTokenKey Key { get; set; }
+
+            public string MagicCode { get; set; }
+
+            public string UserToken { get; set; }
         }
     }
 }
