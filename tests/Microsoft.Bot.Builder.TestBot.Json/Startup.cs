@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Composition.Resources;
-using Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.TestBot.Json.Recognizers;
@@ -16,8 +16,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
-
-
     public class Startup
     {
         public Startup(IHostingEnvironment env)
