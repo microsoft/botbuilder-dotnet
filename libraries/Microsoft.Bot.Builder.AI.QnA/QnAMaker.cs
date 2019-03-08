@@ -162,16 +162,16 @@ namespace Microsoft.Bot.Builder.AI.QnA
         }
 
         /// <summary>
-        /// Fills the event properties andmetrics for the QnaMessage event for telemetry.
+        /// Fills the event properties and metrics for the QnaMessage event for telemetry.
         /// These properties are logged when the QnA GetAnswers method is called.
         /// </summary>
         /// <param name="queryResults">QnA service results.</param>
         /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
-        /// <param name="telemetryProperties">Additional properties to add to the event.</param>
-        /// <param name="telemetryMetrics">Additional metrics to add to the event.</param>
+        /// <param name="telemetryProperties">Properties to add/override for the event.</param>
+        /// <param name="telemetryMetrics">Metrics to add/override for the event.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// additionalProperties
-        /// <returns>A dictionary that is sent as "Properties" to IBotTelemetryClient.TrackEvent method for the BotMessageSend event.</returns>
+        /// <returns>A tuple of Properties and Metrics that will be sent to the IBotTelemetryClient.TrackEvent method for the QnAMessage event.  The properties and metrics returned the standard properties logged with any properties passed from the GetAnswersAsync method.</returns>
         protected Task<(Dictionary<string, string> Properties, Dictionary<string, double> Metrics)> FillQnAEventAsync(QueryResult[] queryResults, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var properties = new Dictionary<string, string>();

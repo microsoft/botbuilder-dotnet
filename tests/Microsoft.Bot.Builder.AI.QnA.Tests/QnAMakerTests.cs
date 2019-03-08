@@ -716,7 +716,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var telemetryClient = new Mock<IBotTelemetryClient>();
 
             // Act - See if we get data back in telemetry
-            var qna = new QnAMaker(endpoint, options, client, telemetryClient.Object, true);
+            var qna = new QnAMaker(endpoint, options, client, telemetryClient: telemetryClient.Object, logPersonalInformation: true);
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
 
             // Assert - Check Telemetry logged
@@ -813,16 +813,23 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             };
             var telemetryClient = new Mock<IBotTelemetryClient>();
 
-            // Act - Override the QnaMaker object to log custom stuff
+            // Act - Override the QnaMaker object to log custom stuff and honor parms passed in.
+            var telemetryProperties = new Dictionary<string, string>
+            {
+                { "Id", "MyID" },
+            };
             var qna = new OverrideTelemetry(endpoint, options, client, telemetryClient.Object, false);
-            var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
+            var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"), null, telemetryProperties);
 
             // Assert
             Assert.AreEqual(telemetryClient.Invocations.Count, 2);
             Assert.AreEqual(telemetryClient.Invocations[0].Arguments.Count, 3);
             Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).Count == 2);
             Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("MyImportantProperty"));
             Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["MyImportantProperty"], "myImportantValue");
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("Id"));
+            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["Id"], "MyID");
 
             Assert.AreEqual(telemetryClient.Invocations[1].Arguments[0], "MySecondEvent");
             Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[1].Arguments[1]).ContainsKey("MyImportantProperty2"));
@@ -959,6 +966,76 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2])["score"], 3.14159);
         }
 
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        [TestCategory("Telemetry")]
+        public async Task Telemetry_FillPropsOverride()
+        {
+            // Arrange
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+
+            var client = new HttpClient(mockHttp);
+
+            var endpoint = new QnAMakerEndpoint
+            {
+                KnowledgeBaseId = _knowlegeBaseId,
+                EndpointKey = _endpointKey,
+                Host = _hostname
+            };
+            var options = new QnAMakerOptions
+            {
+                Top = 1
+            };
+            var telemetryClient = new Mock<IBotTelemetryClient>();
+
+            // Act - Pass in properties during QnA invocation that override default properties
+            //       In addition Override with derivation.  This presents an interesting question of order of setting properties.
+            //       If I want to override "originalQuestion" property:
+            //           - Set in "Stock" schema
+            //           - Set in derived QnAMaker class
+            //           - Set in GetAnswersAsync
+            //       Logically, the GetAnswersAync should win.  But ultimately OnQnaResultsAsync decides since it is the last
+            //       code to touch the properties before logging (since it actually logs the event).
+            //
+            var qna = new OverrideFillTelemetry(endpoint, options, client, telemetryClient.Object, false);
+            var telemetryProperties = new Dictionary<string, string>
+            {
+                { "knowledgeBaseId", "myImportantValue" },
+                { "originalQuestion", "myImportantValue2" },
+            };
+            var telemetryMetrics = new Dictionary<string, double>
+            {
+                { "score", 3.14159 },
+            };
+
+            var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"), null, telemetryProperties, telemetryMetrics);
+
+            // Assert - added properties were added.
+            Assert.AreEqual(telemetryClient.Invocations.Count, 2);
+            Assert.AreEqual(telemetryClient.Invocations[0].Arguments.Count, 3);
+            Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
+            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).Count, 7);
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("knowledgeBaseId"));
+            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["knowledgeBaseId"], "myImportantValue");
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("originalQuestion"));
+            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["originalQuestion"], "myImportantValue2");
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("question"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("questionId"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("answer"));
+            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["answer"], "BaseCamp: You can use a damp rag to clean around the Power Pack");
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("articleFound"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("MyImportantProperty"));
+            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["MyImportantProperty"], "myImportantValue");
+
+            Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).Count, 1);
+            Assert.IsTrue(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).ContainsKey("score"));
+            Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2])["score"], 3.14159);
+        }
+
+
 
 
 
@@ -1035,10 +1112,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                                     Dictionary<string, double> telemetryMetrics = null, 
                                     CancellationToken cancellationToken = default(CancellationToken))
         {
-            var properties = new Dictionary<string, string>
-            {
-                {"MyImportantProperty", "myImportantValue" }
-            };
+            var properties = telemetryProperties ?? new Dictionary<string, string>();
+            // GetAnswerAsync overrides derived class.
+            properties.TryAdd("MyImportantProperty", "myImportantValue");
 
             // Log event
             TelemetryClient.TrackEvent(
@@ -1055,6 +1131,43 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             return Task.CompletedTask;
         }
     }
+
+    public class OverrideFillTelemetry : QnAMaker
+    {
+        public OverrideFillTelemetry(QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient, IBotTelemetryClient telemetryClient, bool logPersonalInformation)
+            : base(endpoint, options, httpClient, telemetryClient, logPersonalInformation)
+        {
+        }
+
+        protected override async Task OnQnaResultsAsync(
+                                    QueryResult[] queryResults,
+                                    ITurnContext turnContext,
+                                    Dictionary<string, string> telemetryProperties = null,
+                                    Dictionary<string, double> telemetryMetrics = null,
+                                    CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var eventData = await FillQnAEventAsync(queryResults, turnContext, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
+
+            // Add my property
+            eventData.Properties.Add("MyImportantProperty", "myImportantValue");
+
+            // Log QnaMessage event
+            TelemetryClient.TrackEvent(
+                            QnATelemetryConstants.QnaMsgEvent,
+                            eventData.Properties,
+                            eventData.Metrics
+                            );
+
+            // Create second event.
+            var secondEventProperties = new Dictionary<string, string>();
+            secondEventProperties.Add("MyImportantProperty2",
+                                       "myImportantValue2");
+            TelemetryClient.TrackEvent(
+                            "MySecondEvent",
+                            secondEventProperties);
+        }
+    }
+
 
     class MyTurnContext : ITurnContext
     {
