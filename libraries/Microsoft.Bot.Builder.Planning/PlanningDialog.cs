@@ -58,8 +58,9 @@ namespace Microsoft.Bot.Builder.Planning
 
         public IStorage Storage { get; set; }
 
-        private List<IDialog> steps = new List<IDialog>();
-        public List<IDialog> Steps
+        protected List<IDialog> steps = new List<IDialog>();
+
+        public virtual List<IDialog> Steps
         {
             get { return steps; }
             set

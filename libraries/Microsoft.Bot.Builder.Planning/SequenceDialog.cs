@@ -8,12 +8,24 @@ using Microsoft.Bot.Builder.Planning.Rules;
 
 namespace Microsoft.Bot.Builder.Planning
 {
-    public class SequenceDialog : PlanningDialog//, IDialogDependencies
+    public class SequenceDialog : PlanningDialog
     {
+        public override List<IDialog> Steps
+        {
+            get
+            {
+                return base.Steps;
+            }
+            set
+            {
+                // Add the rules and allow the steps to work declaratively
+                AddRule(new[] { new FallbackRule(value) });
+            }
+        }
+
         public SequenceDialog(string dialogId = null, List<IDialog> steps = null)
             : base(dialogId)
-        {
-            AddRule(new[] { new FallbackRule(steps ?? new List<IDialog>())});
+        {          
         }
     }
 }
