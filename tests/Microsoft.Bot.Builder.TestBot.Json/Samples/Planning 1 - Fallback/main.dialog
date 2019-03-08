@@ -1,0 +1,19 @@
+{
+  "$schema": "../../Schemas/app.schema",
+  "$type": "Microsoft.PlanningDialog",
+  "$id":  "root",
+  "storage": {
+    "$type": "Microsoft.MemoryStorage"
+  },
+  "rules": [
+    {
+      "$type": "Microsoft.FallbackRule",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "Hello planning!"
+        }
+      ]
+    }
+  ]   
+}

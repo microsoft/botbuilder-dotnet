@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -13,6 +14,23 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
+    public class BindingTestDialog : Dialog
+    {
+        public BindingTestDialog(string dialogId, string inputBinding, string outputBinding)
+            : base(dialogId)
+        {
+            this.InputBindings["value"] = inputBinding;
+            this.OutputBinding = outputBinding;
+        }
+
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            Assert.IsInstanceOfType(options, typeof(object));
+            //Assert.IsNotNull(((dynamic)options).value);
+            return await dc.EndDialogAsync(((dynamic)options)["value"]).ConfigureAwait(false);
+        }
+    }
+
     [TestClass]
     public class WaterfallTests
     {
@@ -74,16 +92,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 async (step, cancellationToken) => 
                 {
-                    step.UserState["name"] = "bill";
-                    step.ConversationState["order"] = 1;
-                    step.DialogState["result"] = "foo";
+                    step.State.User["name"] = "bill";
+                    step.State.Conversation["order"] = 1;
+                    step.State.Dialog["result"] = "foo";
                     return Dialog.EndOfTurn;
                 },
                 async (step, cancellationToken) => 
                 {
-                    Assert.AreEqual("bill", step.UserState["name"]);
-                    Assert.AreEqual(1, step.ConversationState["order"]);
-                    Assert.AreEqual("foo", step.DialogState["result"]);
+                    Assert.AreEqual("bill", step.State.User["name"]);
+                    Assert.AreEqual(1, step.State.Conversation["order"]);
+                    Assert.AreEqual("foo", step.State.Dialog["result"]);
                     return Dialog.EndOfTurn; },
             }));
 
@@ -100,6 +118,210 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .Send("continue")
             .StartTestAsync();
         }
+
+        [TestMethod]
+        public async Task Waterfall_MemoryQueryStateValues()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new AutoSaveStateMiddleware(convoState, userState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+
+            var userStateProperty = userState.CreateProperty<Dictionary<string, object>>("user");
+            var convoStateProperty = convoState.CreateProperty<Dictionary<string, object>>("conversation");
+
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+            var dialogs = new DialogSet(dialogState);
+
+            dialogs.Add(new WaterfallDialog("test", new WaterfallStep[]
+            {
+                async (step, cancellationToken) =>
+                {
+                    step.State.User["name"] = "user";
+                    step.State.Conversation["name"] = "convo";
+                    step.State.Dialog["name"] = "foo";
+                    return Dialog.EndOfTurn;
+                },
+                async (step, cancellationToken) =>
+                {
+                    var result = step.State.Query("user.name");
+                    Assert.IsTrue(result.Count() == 1 && result.First().ToString() == "user");
+
+                    result = step.State.Query("conversation.name");
+                    Assert.IsTrue(result.Count() == 1 && result.First().ToString() == "convo");
+
+                    result = step.State.Query("dialog.name");
+                    Assert.IsTrue(result.Count() == 1 && result.First().ToString() == "foo");
+
+                    result = step.State.Query("$..name");
+                    Assert.IsTrue(result.Count() == 3);
+
+                    return Dialog.EndOfTurn;
+                }
+            }));
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                await dc.ContinueDialogAsync(cancellationToken);
+                if (!turnContext.Responded)
+                {
+                    await dc.BeginDialogAsync("test", null, cancellationToken);
+                }
+            })
+            .Send("start")
+            .Send("continue")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task Waterfall_MemoryGetStateValues()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new AutoSaveStateMiddleware(convoState, userState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+
+            var userStateProperty = userState.CreateProperty<Dictionary<string, object>>("user");
+            var convoStateProperty = convoState.CreateProperty<Dictionary<string, object>>("conversation");
+
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+            var dialogs = new DialogSet(dialogState);
+
+            dialogs.Add(new WaterfallDialog("test", new WaterfallStep[]
+            {
+                async (step, cancellationToken) =>
+                {
+                    step.State.User["name"] = "user";
+                    step.State.Conversation["name"] = "convo";
+                    step.State.Dialog["name"] = "foo";
+                    return Dialog.EndOfTurn;
+                },
+                async (step, cancellationToken) =>
+                {
+                    Assert.AreEqual("user", step.State.GetValue<string>("user.name"));
+                    Assert.AreEqual(null, step.State.GetValue<string>("user.lastName"));
+                    Assert.AreEqual("default", step.State.GetValue<string>("user.lastName", "default"));
+                    return Dialog.EndOfTurn;
+                }
+            }));
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                await dc.ContinueDialogAsync(cancellationToken);
+                if (!turnContext.Responded)
+                {
+                    await dc.BeginDialogAsync("test", null, cancellationToken);
+                }
+            })
+            .Send("start")
+            .Send("continue")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task Waterfall_MemorySetValue()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new AutoSaveStateMiddleware(convoState, userState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+
+            var userStateProperty = userState.CreateProperty<Dictionary<string, object>>("user");
+            var convoStateProperty = convoState.CreateProperty<Dictionary<string, object>>("conversation");
+
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+            var dialogs = new DialogSet(dialogState);
+
+            dialogs.Add(new WaterfallDialog("test", new WaterfallStep[]
+            {
+                async (step, cancellationToken) =>
+                {
+                    step.State.User["name"] = "testUser";
+                    step.State.SetValue("user.address", "15155");
+                    step.State.SetValue("user.profile.firstName", "bill");
+                    step.State.SetValue("conversation.a", "joe");
+                    step.State.SetValue("dialog.profilds", "johnny");
+                    step.State.SetValue("conversation.profile.firstName", "joe");
+                    step.State.SetValue("dialog.profile.firstName", "johnny");
+                    return Dialog.EndOfTurn;
+                },
+                async (step, cancellationToken) =>
+                {
+                    Assert.AreEqual("bill", step.State.GetValue<string>("user.profile.firstName"));
+                    Assert.AreEqual("joe", step.State.GetValue<string>("conversation.profile.firstName"));
+                    Assert.AreEqual("johnny", step.State.GetValue<string>("dialog.profile.firstName"));
+                    return Dialog.EndOfTurn;
+                }
+            }));
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                await dc.ContinueDialogAsync(cancellationToken);
+                if (!turnContext.Responded)
+                {
+                    await dc.BeginDialogAsync("test", null, cancellationToken);
+                }
+            })
+            .Send("start")
+            .Send("continue")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task Waterfall_MemoryInputOutputBindings()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new AutoSaveStateMiddleware(convoState, userState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+
+            var userStateProperty = userState.CreateProperty<Dictionary<string, object>>("user");
+            var convoStateProperty = convoState.CreateProperty<Dictionary<string, object>>("conversation");
+
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+            var dialogs = new DialogSet(dialogState);
+
+            dialogs.Add(new WaterfallDialog("test", new WaterfallStep[]
+            {
+                async (step, cancellationToken) =>
+                {
+                    step.State.SetValue("user.profile.name", "bill");
+                    await step.BeginDialogAsync("b").ConfigureAwait(false);
+                    return Dialog.EndOfTurn;
+                },
+                async (step, cancellationToken) =>
+                {
+                    Assert.AreEqual("bill", step.State.GetValue<string>("dialog.result.name"));
+                    return Dialog.EndOfTurn;
+                }
+            }));
+
+            dialogs.Add(new BindingTestDialog("b", "user.profile.name", "dialog.result.name"));
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                await dc.ContinueDialogAsync(cancellationToken);
+                if (!turnContext.Responded)
+                {
+                    await dc.BeginDialogAsync("test", null, cancellationToken);
+                }
+            })
+            .Send("start")
+            .StartTestAsync();
+        }
+
 
         [TestMethod]
         public async Task WaterfallWithCallback()
@@ -199,7 +421,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var numberPrompt = new NumberPrompt<int>("number", defaultLocale: Culture.English);
                 dialogs.Add(numberPrompt);
 
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
                 await dc.ContinueDialogAsync();
 
@@ -288,7 +510,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 dialogs.Add(Create_Waterfall4());
                 dialogs.Add(Create_Waterfall5());
 
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
                 await dc.ContinueDialogAsync();
 

@@ -1,0 +1,28 @@
+﻿{
+  "$schema": "../../Schemas/app.schema",
+  "$type": "Microsoft.SequenceDialog",
+  "$id": "Greeting",
+  "storage": {
+    "$type": "Microsoft.MemoryStorage"
+  },
+  "steps": [
+        {
+            "$type": "Microsoft.IfProperty",
+            "expression": "user.name == null",
+            "ifTrue": [
+            {
+                "$type": "Microsoft.TextPrompt",
+                "pattern": "\\w{3,50}",
+                "property": "user.name",
+                "initialPrompt": "[Gretting.Name.intialPrompt]",
+                "retryPrompt":"[Greeting.Name.retryPrompt]",
+                "notMatched": "[Greeting.Name.notMatched]"   
+            }
+        ]
+    },
+    {
+        "$type": "Microsoft.SendActivity",
+        "activity": "[Greeting.GreetUser]"
+    }
+  ]
+}

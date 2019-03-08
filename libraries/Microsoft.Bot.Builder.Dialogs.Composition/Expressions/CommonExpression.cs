@@ -26,6 +26,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Expressions
             }
         }
 
+        public Task<object> Evaluate(DialogContextState state)
+        {
+            //var parseTree = ExpressionEngine.Parse(expression);
+            var result = ExpressionEngine.Evaluate(this._parseTree, state, getValue: (instance, key) => state.GetValue<object>(instance, key?.ToString()));
+            return Task.FromResult(result);
+        }
+
         public async Task<object> Evaluate(IDictionary<string, object> state)
         {
             if (this._parseTree != null)

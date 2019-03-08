@@ -221,6 +221,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             await adapter.SignOutUserAsync(turnContext, _settings.ConnectionName, turnContext.Activity?.From?.Id, cancellationToken).ConfigureAwait(false);
         }
 
+        protected override string OnComputeId()
+        {
+            return $"OAuthPrompt[{this.BindingPath()}]";
+        }
+
         private async Task SendOAuthCardAsync(ITurnContext turnContext, IMessageActivity prompt, CancellationToken cancellationToken = default(CancellationToken))
         {
             BotAssert.ContextNotNull(turnContext);

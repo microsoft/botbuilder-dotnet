@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -15,6 +16,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="turnContext">TurnContext</param>
         /// <param name="data">data to bind to </param>
         /// <returns>instance of T</returns>
-        Task<T> BindToData(ITurnContext turnContext, object data);
+        Task<T> BindToData(ITurnContext turnContext, object data, Func<string, object, object> binder = null);
     }
 }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Flow.Loader.Converters;
 using Microsoft.Bot.Builder.Dialogs.Flow.Loader.Resolvers;
 using Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types;
+using Microsoft.Bot.Builder.Planning;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -25,8 +26,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader
                     Converters = new List<JsonConverter>()
                     {
                         new InterfaceConverter<IDialog>(refResolver),
-                        new InterfaceConverter<IStep>(refResolver),
-                        new StepConverter(refResolver),
+                        new InterfaceConverter<IPlanningRule>(refResolver),
+                        new InterfaceConverter<IStorage>(refResolver),
                         new InterfaceConverter<IRecognizer>(refResolver),
                         new ExpressionConverter(),
                         new ActivityConverter(),

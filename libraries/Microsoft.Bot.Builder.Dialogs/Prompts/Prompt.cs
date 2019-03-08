@@ -44,14 +44,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Gets or sets the property this prompt is bound to.
-        /// </summary>
-        /// <value>
-        /// The name of the property this prompt should.
-        /// </value>
-        public string Property { get; set; }
-
-        /// <summary>
         /// Gets or sets the initial prompt to send the user as <seealso cref="Activity"/>Activity.
         /// </summary>
         /// <value>
@@ -140,7 +132,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 if (Property != null)
                 {
-                    dc.UserState[Property] = recognized.Value;
+                    dc.State.User[Property] = recognized.Value;
                 }
 
                 return await dc.EndDialogAsync(recognized.Value).ConfigureAwait(false);
@@ -170,8 +162,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var state = (IDictionary<string, object>)instance.State[PersistedState];
-            var options = (TPromptOptions)instance.State[PersistedOptions];
+            var state = (IDictionary<string, object>)((StateMap)instance.State)[PersistedState];
+            var options = (TPromptOptions)((StateMap)instance.State)[PersistedOptions];
             await OnPromptAsync(turnContext, state, options, false).ConfigureAwait(false);
         }
 

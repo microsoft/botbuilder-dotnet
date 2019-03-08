@@ -1,0 +1,88 @@
+{
+    "$schema": "../../Schemas/app.schema",
+    "$type": "Microsoft.PlanningDialog",
+    "$id": "root",
+    "storage": {
+        "$type": "Microsoft.MemoryStorage"
+    },
+    "recognizer": {
+        "$type": "Microsoft.RegexRecognizer",
+        "rules": {
+            "HelpIntent": "help",
+            "GreetingIntent": "hi|hello|hiya|greetings",
+            "JokeIntent": "joke",
+            "FortuneTellerIntent": "fortune|future"
+        }
+    },
+    "rules": [
+        {
+            "$type": "Microsoft.DoStepsRule",
+            "intent": "JokeIntent",
+            "steps": [
+                {
+                    "$type": "Microsoft.CallDialog",
+                    "dialogId": "TellJokeDialog"
+                }
+            ]
+        },
+        {
+            "$type": "Microsoft.DoStepsRule",
+            "intent": "FortuneTellerIntent",
+            "steps": [
+                {
+                    "$type": "Microsoft.CallDialog",
+                    "activity": "FortuneTellerDialog"
+                }
+            ]
+        },
+        {
+            "$type": "Microsoft.WelcomeRule",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "[welcome]"
+                }
+            ]
+        },
+        {
+            "$type": "Microsoft.DoStepsRule",
+            "intent": "GreetingIntent",
+            "steps": [
+                {
+                    "$type": "Microsoft.CallDialog",
+                    "dialogId": "Greeting"
+                }
+            ]
+        },
+        {
+            "$type": "Microsoft.DoStepsRule",
+            "intent": "HelpIntent",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "[help]"
+                }
+            ]
+        },
+        {
+            "$type": "Microsoft.FallbackRule",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "[help]"
+                }
+            ]
+        }
+    ],
+    "steps": [
+        {
+            "$ref": "Samples/Planning 8 - ExternalLanguage/TellJokeDialog.dialog"
+        },
+        {
+            "$ref": "Samples/Planning 8 - ExternalLanguage/FortuneTellerDialog.dialog"
+        },
+        {
+            "$ref": "Samples/Planning 8 - ExternalLanguage/Greeting.dialog"
+        }
+    ]
+}

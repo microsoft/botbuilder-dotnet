@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
         public async Task<object> RenderTemplate(ITurnContext turnContext, string language, string templateId, object data)
         {
-            return await Task.Run(() => templateEngine.EvaluateTemplate(templateId, data));
+            return await Task.Run(() => templateEngine.EvaluateTemplate(templateId, data, null, null));
         }
     }
 }

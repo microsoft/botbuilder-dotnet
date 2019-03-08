@@ -26,23 +26,19 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
     { 
         public readonly EvaluationContext Context;
 
-        private readonly GetMethodExtensions GetMethodX;
-        private readonly GetValueExtensions GetValueX;
+        private readonly IGetMethod GetMethodX;
+        private readonly IGetValue GetValueX;
 
+        
         private Stack<EvaluationTarget> evalutationTargetStack = new Stack<EvaluationTarget>();
-        private EvaluationTarget currentTarget()
-        {
-            // just don't want to write evaluationTargetStack.Peek() everywhere
-            return evalutationTargetStack.Peek();
-        }
-       
 
-        public Evaluator(EvaluationContext context)
+        public Evaluator(EvaluationContext context, IGetMethod getMethod, IGetValue getValue)
         {
             Context = context;
-            GetMethodX = new GetMethodExtensions(this);
-            GetValueX = new GetValueExtensions(this);
+            GetMethodX = getMethod ?? new GetMethodExtensions(this);
+            GetValueX = getValue ?? new GetValueExtensions(this);
         }
+
 
         public string EvaluateTemplate(string templateName, object scope)
         {
@@ -67,7 +63,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         public override string VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
         {
             var templateNameContext = context.templateNameLine();
-            if (templateNameContext.templateName().GetText().Equals(currentTarget().TemplateName))
+            if (templateNameContext.templateName().GetText().Equals(CurrentTarget().TemplateName))
             {
                 return Visit(context.templateBody());
             }
@@ -141,7 +137,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             try
             {
                 exp = exp.TrimStart('{').TrimEnd('}');
-                var result = EvalByExpressionEngine(exp, currentTarget().Scope); 
+                var result = EvalByExpressionEngine(exp, CurrentTarget().Scope); 
 
                 if ((result is Boolean r1 && r1 == false) ||
                     (result is int r2 && r2 == 0))
@@ -162,7 +158,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         private string EvalExpression(string exp)
         {
             exp = exp.TrimStart('{').TrimEnd('}');
-            var result = EvalByExpressionEngine(exp, currentTarget().Scope);
+            var result = EvalByExpressionEngine(exp, CurrentTarget().Scope);
             return result.ToString();
         }
 
@@ -180,7 +176,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     throw new Exception($"Not a valid template ref: {exp}");
                 }
                 var argExpressions = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(",");
-                var args = argExpressions.Select(x => EvalByExpressionEngine(x, currentTarget().Scope)).ToList();
+                var args = argExpressions.Select(x => EvalByExpressionEngine(x, CurrentTarget().Scope)).ToList();
 
                 // Construct a new Scope for this template reference
                 // Bind all arguments to parameters
@@ -190,9 +186,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 return EvaluateTemplate(templateName, newScope);
                 
             }
-            return EvaluateTemplate(exp, currentTarget().Scope);
+            return EvaluateTemplate(exp, CurrentTarget().Scope);
         }
 
+        private EvaluationTarget CurrentTarget()
+        {
+            // just don't want to write evaluationTargetStack.Peek() everywhere
+            return evalutationTargetStack.Peek();
+        }
 
         private string EvalMultiLineText(string exp)
         {

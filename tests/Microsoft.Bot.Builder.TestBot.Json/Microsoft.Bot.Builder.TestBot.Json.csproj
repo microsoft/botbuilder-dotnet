@@ -7,13 +7,59 @@
   <ItemGroup>
     <None Remove="en-us.lg" />
     <None Remove="main.dialog" />
+    <None Remove="Samples\Planning 1 - Fallback\main.dialog" />
+    <None Remove="Samples\Planning 8 - ExternalLanguage\FortuneTellerDialog.dialog" />
+    <None Remove="Samples\Planning 8 - ExternalLanguage\main.dialog" />
+    <None Remove="Samples\Planning 8 - ExternalLanguage\main.lg" />
+    <None Remove="Samples\Planning 8 - ExternalLanguage\TellJokeDialog.dialog" />
+    <None Remove="Samples\Planning 7 - CallDialog\FortuneTellerDialog.dialog" />
+    <None Remove="Samples\Planning 7 - CallDialog\main.dialog" />
+    <None Remove="Samples\Planning 6 - DoSteps\main.dialog" />
+    <None Remove="Samples\Planning 5 - WelcomeRule\main.dialog" />
+    <None Remove="Samples\Planning 4 - TextPrompt\main.dialog" />
+    <None Remove="Samples\Planning 3 - IfProperty\main.dialog" />
+    <None Remove="Samples\Planning 2 - WaitForInput\main.dialog" />
+    <None Remove="Samples\Planning 7 - CallDialog\TellJokeDialog.dialog" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Dialogs\Main\en-us.lg">
+    <Content Include="Samples\Planning 1 - Fallback\main.dialog">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Dialogs\Main\main.cog">
+    <Content Include="Samples\Planning 8 - ExternalLanguage\FortuneTellerDialog.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Samples\Planning 8 - ExternalLanguage\main.lg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Samples\Planning 8 - ExternalLanguage\main.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Samples\Planning 8 - ExternalLanguage\TellJokeDialog.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Samples\Planning 7 - CallDialog\FortuneTellerDialog.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Samples\Planning 7 - CallDialog\TellJokeDialog.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Samples\Planning 7 - CallDialog\main.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Samples\Planning 6 - DoSteps\main.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Samples\Planning 5 - WelcomeRule\main.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Samples\Planning 4 - TextPrompt\main.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Samples\Planning 3 - IfProperty\main.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Samples\Planning 2 - WaitForInput\main.dialog">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

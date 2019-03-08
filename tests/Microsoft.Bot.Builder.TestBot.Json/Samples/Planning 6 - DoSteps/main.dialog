@@ -1,0 +1,81 @@
+{
+  "$schema": "../../Schemas/app.schema",
+  "$type": "Microsoft.PlanningDialog",
+  "$id": "root",
+  "storage": {
+    "$type": "Microsoft.MemoryStorage"
+  },
+  "recognizer": {
+    "$type": "Microsoft.RegexRecognizer",
+    "rules": {
+      "JokeIntent": "joke",
+      "FortuneTellerIntent":  "fortune|future"
+    }
+  },
+  "rules": [
+    {
+      "$type": "Microsoft.DoStepsRule",
+      "intent": "JokeIntent",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "Why did the chicken cross the road?"
+        },
+        {
+          "$type": "Microsoft.WaitForInput"
+        },
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "To get to the other side"
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.DoStepsRule",
+      "intent": "FortuneTellerIntent",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "Seeing into the future..."
+        },
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "I see great things happening..."
+        },
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "Perhaps even a successful bot demo"
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.WelcomeRule",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "Welcome!"
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.FallbackRule",
+      "steps": [
+        {
+          "$type": "Microsoft.IfProperty",
+          "expression": "user.name == null",
+          "ifTrue": [
+            {
+              "$type": "Microsoft.TextPrompt",
+              "property": "user.name",
+              "initialPrompt": "Hello, I'm Zoidberg. What is your name?"
+            }
+          ]
+        },
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "Hello {user.name}, nice to talk to you!"
+        }
+      ]
+    }
+  ]
+}

@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder
 {
@@ -15,7 +16,11 @@ namespace Microsoft.Bot.Builder
     /// </summary>
     public class MemoryStorage : IStorage
     {
-        private static readonly JsonSerializer StateJsonSerializer = new JsonSerializer() { TypeNameHandling = TypeNameHandling.All };
+        private static readonly JsonSerializer StateJsonSerializer = new JsonSerializer()
+        {
+            TypeNameHandling = TypeNameHandling.All,
+            ReferenceLoopHandling = ReferenceLoopHandling.Error,
+        };
 
         private readonly Dictionary<string, JObject> _memory;
         private readonly object _syncroot = new object();
@@ -84,7 +89,9 @@ namespace Microsoft.Bot.Builder
                     {
                         if (state != null)
                         {
-                            storeItems.Add(key, state.ToObject<object>(StateJsonSerializer));
+                            var str = state.ToString();
+                            var deserialized = state.ToObject<object>(StateJsonSerializer);
+                            storeItems.Add(key, deserialized);
                         }
                     }
                 }

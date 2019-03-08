@@ -9,6 +9,10 @@ using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.Dialogs.Composition;
 using Microsoft.Bot.Builder.Dialogs.Flow.Loader.Loaders;
 using Microsoft.Bot.Builder.Dialogs.Flow.Loader.Plugins;
+using Microsoft.Bot.Builder.Planning;
+using Microsoft.Bot.Builder.Planning.Recognizers;
+using Microsoft.Bot.Builder.Planning.Rules;
+using Microsoft.Bot.Builder.Planning.Steps;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -97,28 +101,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Flow.Loader.Types
             //TODO: we don't want this static initialization, leaving it here for convenience now
             // while things are changing rapidly still
 
+            // Rules
+            Register("Microsoft.DoStepsRule", typeof(DoStepsRule));
+            Register("Microsoft.EventRule", typeof(EventRule));
+            Register("Microsoft.FallbackRule", typeof(FallbackRule));
+            Register("Microsoft.IfPropertyRule", typeof(IfPropertyRule));
+            Register("Microsoft.ReplacePlanRule", typeof(ReplacePlanRule));
+            Register("Microsoft.UtteranceRecognizeRule", typeof(UtteranceRecognizeRule));
+            Register("Microsoft.WelcomeRule", typeof(WelcomeRule));
+
             // Steps
-            Register("Microsoft.SetPropertyStep", typeof(SetPropertyStep));
-            Register("Microsoft.SwitchStep", typeof(SwitchStep));
             Register("Microsoft.CallDialog", typeof(CallDialog));
-            Register("Microsoft.SendActivityStep", typeof(SendActivityStep));
+            Register("Microsoft.CancelDialog", typeof(CancelDialog));
             Register("Microsoft.EndDialog", typeof(EndDialog));
-            Register("Microsoft.ClearPropertyStep", typeof(ClearPropertyStep));
-            Register("Microsoft.EndOfTurnStep", typeof(EndOfTurnStep));
             Register("Microsoft.GotoDialog", typeof(GotoDialog));
-            Register("Microsoft.IfElseStep", typeof(IfElseStep));
-            Register("Microsoft.SendActivityTemplateStep", typeof(SendActivityTemplateStep));
+            Register("Microsoft.IfProperty", typeof(IfProperty));
+            Register("Microsoft.SendActivity", typeof(SendActivity));
+            Register("Microsoft.SendActivityTemplate", typeof(SendActivityTemplate));
+            Register("Microsoft.WaitForInput", typeof(WaitForInput));
 
             // Dialogs
             Register("Microsoft.ComponentDialog", typeof(ComponentDialog), new ComponentDialogLoader());
-            Register("Microsoft.IntentDialog", typeof(IntentDialog));
             Register("Microsoft.SequenceDialog", typeof(SequenceDialog));
+            Register("Microsoft.PlanningDialog", typeof(PlanningDialog));
             Register("Microsoft.TextPrompt", typeof(TextPrompt));
             Register("Microsoft.IntegerPrompt", typeof(IntegerPrompt));
             Register("Microsoft.FloatPrompt", typeof(FloatPrompt));
 
             // Recognizers
             Register("Microsoft.LuisRecognizer", typeof(LuisRecognizer), new LuisRecognizerLoader());
+            Register("Microsoft.RegexRecognizer", typeof(RegexRecognizer));
+
+            // Storage
+            Register("Microsoft.MemoryStorage", typeof(MemoryStorage));
         }
     }
 }

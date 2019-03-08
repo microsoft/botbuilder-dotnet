@@ -111,13 +111,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Resources
                 var resource = this.resources.Cast<FileResource>().SingleOrDefault(r => Path.Equals(r.Path, e.FullPath));
                 if (resource == null)
                 {
+                    var extension = Path.GetExtension(e.Name);
+
                     resource = new FileResource()
                     {
                         Id = e.FullPath,
                         Source = this,
                         Name = Path.GetFileNameWithoutExtension(e.Name),
                         Path = e.FullPath,
-                        ResourceType = Path.GetExtension(e.Name).Substring(1)
+                        ResourceType = extension.Length > 0 ? extension.Substring(1) : string.Empty
                     };
                     this.resources.Add(resource);
                 }

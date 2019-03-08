@@ -20,6 +20,69 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public TestContext TestContext { get; set; }
 
         [TestMethod]
+        public async Task CallDialogInParentComponent()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var state = await dialogState.GetAsync(turnContext, () => new DialogState());
+                var dialogs = new DialogSet(dialogState);
+
+                var childComponent = new ComponentDialog("childComponent");
+                childComponent.AddDialog(new WaterfallDialog("childDialog", new WaterfallStep[]
+                    {
+                        async (step, token) => 
+                        {
+                            await step.Context.SendActivityAsync("Child started.");
+                            return await step.BeginDialogAsync("parentDialog", "test");
+                        },
+                        async (step, token) => 
+                        {
+                            await step.Context.SendActivityAsync($"Child finished. Value: {step.Result}");
+                            return await step.EndDialogAsync();
+                        }
+                    }));
+
+                var parentComponent = new ComponentDialog("parentComponent");
+                parentComponent.AddDialog(childComponent);
+                parentComponent.AddDialog(new WaterfallDialog("parentDialog", new WaterfallStep[]
+                    {
+                        async (step, token) =>
+                        {
+                            await step.Context.SendActivityAsync("Parent called.");
+                            return await step.EndDialogAsync(step.Options);
+                        }
+                    }));
+
+                dialogs.Add(parentComponent);
+
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.BeginDialogAsync("parentComponent", null, cancellationToken);
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    var value = (int)results.Result;
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the number '{value}'."), cancellationToken);
+                }
+            })
+            .Send("Hi")
+                .AssertReply("Child started.")
+                .AssertReply("Parent called.")
+                .AssertReply("Child finished. Value: test")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task BasicWaterfallTest()
         {
             var convoState = new ConversationState(new MemoryStorage());
