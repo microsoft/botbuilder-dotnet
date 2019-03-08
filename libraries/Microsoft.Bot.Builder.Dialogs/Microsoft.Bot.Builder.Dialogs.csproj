@@ -20,10 +20,6 @@
 		<Description>This library implements .NET Simple Dialog classes </Description>
 		<Summary>This library implements .NET Simple Dialog classes </Summary>
 	</PropertyGroup>
- 
-	<PropertyGroup>
-	  <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Dialogs.ruleset</CodeAnalysisRuleSet>
-	</PropertyGroup>
 
 	<ItemGroup>
 	  <Compile Remove="Prompts\BasicPrompt.cs" />

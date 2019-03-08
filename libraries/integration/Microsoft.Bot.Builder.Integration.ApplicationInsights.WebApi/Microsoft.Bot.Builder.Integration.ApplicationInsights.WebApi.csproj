@@ -34,10 +34,6 @@
 		<DocumentationFile>bin\$(Configuration)\net461\Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi.xml</DocumentationFile>		
 	</PropertyGroup>
 
-	<PropertyGroup>
-	  <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi.ruleset</CodeAnalysisRuleSet>
-	</PropertyGroup>
-
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 	  <DebugType>full</DebugType>
 	  <DebugSymbols>true</DebugSymbols>
