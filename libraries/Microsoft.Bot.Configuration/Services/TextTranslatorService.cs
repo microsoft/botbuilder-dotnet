@@ -4,19 +4,6 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Configuration
 {
-    public enum TranslatorEngine
-    {
-        /// <summary>
-        /// Microsoft Translator API
-        /// </summary>
-        MicrosoftTranslator,
-
-        /// <summary>
-        /// Use of Deepl Translator
-        /// </summary>
-        Deepl,
-    }
-
     public class TextTranslatorService : ConnectedService
     {
         public TextTranslatorService()
@@ -24,11 +11,17 @@ namespace Microsoft.Bot.Configuration
         {
         }
 
+        /// <summary>
+        /// microsofttranslator, deepl
+        /// </summary>
         [JsonProperty("engine")]
-        public TranslatorEngine Engine { get; set; }
+        public string Engine { get; set; }
 
         [JsonProperty("subscriptionKey")]
         public string SubscriptionKey { get; set; }
+
+        [JsonProperty("host")]
+        public string Host { get; set; }
 
         /// <inheritdoc/>
         public override void Encrypt(string secret)

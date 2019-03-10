@@ -23,9 +23,8 @@ namespace Microsoft.Bot.Builder.AI.TextTranslator.Tests
             mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsofttranslator.com/*")
                     .Respond("application/json", GetResponse("MsTranslation_ItalResponse.json"));
 
-            var translator = new TextTranslator(new TextTranslatorService()
+            var translator = new TextTranslator(new TextTranslatorEndpoint(TranslatorEngine.MicrosoftTranslator)
             {
-                Engine = TranslatorEngine.MicrosoftTranslator,
                 SubscriptionKey = _subscriptionKey
             }, mockHttp.ToHttpClient());
             var result = await translator.TranslateAsync("Ich bin ein Berliner", "it");
@@ -41,9 +40,8 @@ namespace Microsoft.Bot.Builder.AI.TextTranslator.Tests
             mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsofttranslator.com/*")
                     .Respond("application/json", GetResponse("MsTranslation_ItalResponse.json"));
 
-            var translator = new TextTranslator(new TextTranslatorService()
+            var translator = new TextTranslator(new TextTranslatorEndpoint(TranslatorEngine.MicrosoftTranslator)
             {
-                Engine = TranslatorEngine.MicrosoftTranslator,
                 SubscriptionKey = _subscriptionKey
             }, mockHttp.ToHttpClient());
             var result = await translator.TranslateAsync("Ich bin ein Berliner", "it");
@@ -59,9 +57,8 @@ namespace Microsoft.Bot.Builder.AI.TextTranslator.Tests
             mockHttp.When(HttpMethod.Post, "https://api.deepl.com/v1/translate")
                     .Respond("application/json", GetResponse("Deepl_ItalResponse.json"));
 
-            var translator = new TextTranslator(new TextTranslatorService()
+            var translator = new TextTranslator(new TextTranslatorEndpoint(TranslatorEngine.Deepl)
             {
-                Engine = TranslatorEngine.Deepl,
                 SubscriptionKey = _deeplAuthKey
             }, mockHttp.ToHttpClient());
             var result = await translator.TranslateAsync("Ich bin ein Berliner", "it");
@@ -77,9 +74,8 @@ namespace Microsoft.Bot.Builder.AI.TextTranslator.Tests
             mockHttp.When(HttpMethod.Post, "https://api.deepl.com/v1/translate")
                     .Respond("application/json", GetResponse("Deepl_ItalResponse.json"));
 
-            var translator = new TextTranslator(new TextTranslatorService()
+            var translator = new TextTranslator(new TextTranslatorEndpoint(TranslatorEngine.Deepl)
             {
-                Engine = TranslatorEngine.Deepl,
                 SubscriptionKey = _deeplAuthKey
             }, mockHttp.ToHttpClient());
             var result = await translator.TranslateAsync("Ich bin ein Berliner", "it", "de");

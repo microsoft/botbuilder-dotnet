@@ -261,8 +261,8 @@ Global
 		{F87B093D-A3AC-4125-A8A8-FE167F918FFF}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{F87B093D-A3AC-4125-A8A8-FE167F918FFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F87B093D-A3AC-4125-A8A8-FE167F918FFF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0B8ABFDB-F9CF-4EC6-988E-9C32D9E01C26}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{0B8ABFDB-F9CF-4EC6-988E-9C32D9E01C26}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{0B8ABFDB-F9CF-4EC6-988E-9C32D9E01C26}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
+		{0B8ABFDB-F9CF-4EC6-988E-9C32D9E01C26}.Debug - NuGet Packages|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
 		{0B8ABFDB-F9CF-4EC6-988E-9C32D9E01C26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0B8ABFDB-F9CF-4EC6-988E-9C32D9E01C26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B8ABFDB-F9CF-4EC6-988E-9C32D9E01C26}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
