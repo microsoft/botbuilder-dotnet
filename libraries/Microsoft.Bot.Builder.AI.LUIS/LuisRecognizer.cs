@@ -44,14 +44,14 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="includeApiResults">(Optional) TRUE to include raw LUIS API response.</param>
         /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
         /// <param name="telemetryClient">The IBotTelemetryClient used to log the LuisResult event.</param>
-        public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null, IBotTelemetryClient telemetryClient = null)
+        public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null, IBotTelemetryClient telemetryClient = null, bool logPersonalInformation = false)
         {
             _application = application ?? throw new ArgumentNullException(nameof(application));
             _options = predictionOptions ?? new LuisPredictionOptions();
             _includeApiResults = includeApiResults;
 
             TelemetryClient = telemetryClient ?? new NullBotTelemetryClient();
-            LogPersonalInformation = false;
+            LogPersonalInformation = logPersonalInformation;
 
             var credentials = new ApiKeyServiceClientCredentials(application.EndpointKey);
             var delegatingHandler = new LuisDelegatingHandler();
@@ -150,14 +150,14 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
         /// <inheritdoc />
         public async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
-            => await RecognizeInternalAsync(turnContext, null, cancellationToken).ConfigureAwait(false);
+            => await RecognizeInternalAsync(turnContext, null, null, cancellationToken).ConfigureAwait(false);
 
         /// <inheritdoc />
         public async Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken)
             where T : IRecognizerConvert, new()
         {
             var result = new T();
-            result.Convert(await RecognizeInternalAsync(turnContext, null, cancellationToken).ConfigureAwait(false));
+            result.Convert(await RecognizeInternalAsync(turnContext, null, null, cancellationToken).ConfigureAwait(false));
             return result;
         }
 
@@ -165,26 +165,28 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// Return results of the analysis (Suggested actions and intents).
         /// </summary>
         /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
-        /// <param name="logProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>The LUIS results of the analysis of the current message text in the current turn's context activity.</returns>
-        public async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, Dictionary<string, string> logProperties, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await RecognizeInternalAsync(turnContext, logProperties, cancellationToken).ConfigureAwait(false);
+            return await RecognizeInternalAsync(turnContext, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Return results of the analysis (Suggested actions and intents).
         /// </summary>
         /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
-        /// <param name="logProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>The LUIS results of the analysis of the current message text in the current turn's context activity.</returns>
-        public async Task<T> RecognizeAsync<T>(ITurnContext turnContext, Dictionary<string, string> logProperties, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<T> RecognizeAsync<T>(ITurnContext turnContext, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
             where T : IRecognizerConvert, new()
         {
             var result = new T();
-            result.Convert(await RecognizeInternalAsync(turnContext, logProperties, cancellationToken).ConfigureAwait(false));
+            result.Convert(await RecognizeInternalAsync(turnContext, telemetryProperties, telemetryMetrics,  cancellationToken).ConfigureAwait(false));
             return result;
         }
 
@@ -193,15 +195,16 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         /// <param name="recognizerResult">The Luis Results for the call.</param>
         /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
-        /// <param name="additionalProperties">Additional properties to be logged with the LuisResult event.</param>
+        /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns><see cref="Task"/>.</returns>
-        protected virtual async Task OnRecognizerResultAsync(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> additionalProperties = null, CancellationToken cancellationToken = default(CancellationToken))
+        protected virtual async Task OnRecognizerResultAsync(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var properties = await FillLuisEventPropertiesAsync(recognizerResult, turnContext, additionalProperties, cancellationToken).ConfigureAwait(false);
+            var properties = await FillLuisEventPropertiesAsync(recognizerResult, turnContext, telemetryProperties, cancellationToken).ConfigureAwait(false);
 
             // Track the event
-            TelemetryClient.TrackEvent(LuisTelemetryConstants.LuisResult, properties, null);
+            TelemetryClient.TrackEvent(LuisTelemetryConstants.LuisResult, properties, telemetryMetrics);
 
             return;
         }
@@ -212,11 +215,11 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         /// <param name="recognizerResult">Last activity sent from user.</param>
         /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
-        /// <param name="additionalProperties">Additional properties to add to the event.</param>
+        /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// additionalProperties
         /// <returns>A dictionary that is sent as "Properties" to IBotTelemetryClient.TrackEvent method for the BotMessageSend event.</returns>
-        protected Task<Dictionary<string, string>> FillLuisEventPropertiesAsync(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> additionalProperties = null, CancellationToken cancellationToken = default(CancellationToken))
+        protected Task<Dictionary<string, string>> FillLuisEventPropertiesAsync(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var topLuisIntent = recognizerResult.GetTopScoringIntent();
             var intentScore = topLuisIntent.score.ToString("N2");
@@ -253,9 +256,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
             }
 
             // Additional Properties can override "stock" properties.
-            if (additionalProperties != null)
+            if (telemetryProperties != null)
             {
-                return Task.FromResult(additionalProperties.Concat(properties)
+                return Task.FromResult(telemetryProperties.Concat(properties)
                            .GroupBy(kv => kv.Key)
                            .ToDictionary(g => g.Key, g => g.First().Value));
             }
@@ -263,7 +266,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             return Task.FromResult(properties);
         }
 
-        private async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, Dictionary<string, string> additionalProperties, CancellationToken cancellationToken)
+        private async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics, CancellationToken cancellationToken)
         {
             BotAssert.ContextNotNull(turnContext);
 
@@ -304,7 +307,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             }
 
             // Log telemetry
-            await OnRecognizerResultAsync(recognizerResult, turnContext, additionalProperties, cancellationToken).ConfigureAwait(false);
+            await OnRecognizerResultAsync(recognizerResult, turnContext, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
 
             var traceInfo = JObject.FromObject(
                 new

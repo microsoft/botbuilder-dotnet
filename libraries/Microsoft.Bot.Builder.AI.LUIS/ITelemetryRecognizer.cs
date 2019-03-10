@@ -28,12 +28,13 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// Return results of the analysis (suggested intents and entities) using the turn context.
         /// </summary>
         /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
-        /// <param name="logProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>The LUIS results of the analysis of the current message text in the current turn's context activity.</returns>
-        Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, Dictionary<string, string> logProperties, CancellationToken cancellationToken = default(CancellationToken));
+        Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics, CancellationToken cancellationToken = default(CancellationToken));
 
-        Task<T> RecognizeAsync<T>(ITurnContext turnContext, Dictionary<string, string> logProperties, CancellationToken cancellationToken = default(CancellationToken))
+        Task<T> RecognizeAsync<T>(ITurnContext turnContext, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics, CancellationToken cancellationToken = default(CancellationToken))
             where T : IRecognizerConvert, new();
 
         new Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
