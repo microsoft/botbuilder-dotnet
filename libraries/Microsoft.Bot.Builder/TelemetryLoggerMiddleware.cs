@@ -11,7 +11,8 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// Middleware for logging incoming, outgoing, updated or deleted Activity messages using IBotTelemetryClient.
+    /// Middleware for logging incoming, outgoing, updated or deleted Activity messages.
+    /// Uses the IBotTelemetryClient interface.
     /// </summary>
     public class TelemetryLoggerMiddleware : IMiddleware
     {
@@ -22,32 +23,24 @@ namespace Microsoft.Bot.Builder
         /// <param name="logPersonalInformation"> (Optional) TRUE to include personally indentifiable information.</param>
         public TelemetryLoggerMiddleware(IBotTelemetryClient telemetryClient, bool logPersonalInformation = false)
         {
-            TelemetryClient = telemetryClient ?? throw new ArgumentNullException(nameof(telemetryClient));
+            TelemetryClient = telemetryClient ?? new NullBotTelemetryClient();
             LogPersonalInformation = logPersonalInformation;
         }
 
         /// <summary>
-        /// Gets a value indicating whether indicates whether to log personal information into events.
-        /// By default, the following properties will not be logged if this is set to false:
-        ///   Activity.From.Name
-        ///   Activity.Text
-        ///   Activity.Speak
+        /// Gets a value indicating whether determines whether to log personal information that came from the user.
         /// </summary>
-        /// <value>
-        /// A value indicating whether indicates whether to log personal information into events.
-        /// </value>
+        /// <value>If true, will log personal information into the IBotTelemetryClient.TrackEvent method; otherwise the properties will be filtered.</value>
         public bool LogPersonalInformation { get; }
 
         /// <summary>
-        /// Gets the IBotTelemetryClient.
+        /// Gets the currently configured <see cref="IBotTelemetryClient"/> that logs the QnaMessage event.
         /// </summary>
-        /// <value>
-        /// The IBotTelemetryClient.
-        /// </value>
+        /// <value>The <see cref=IBotTelemetryClient"/> being used to log events.</value>
         public IBotTelemetryClient TelemetryClient { get; }
 
         /// <summary>
-        /// Logs events based on incoming and outgoing activities using the IBotTelemetryClient interface.
+        /// Logs events based on incoming and outgoing activities using the <see cref="IBotTelemetryClient"/> interface.
         /// </summary>
         /// <param name="context">The context object for this turn.</param>
         /// <param name="nextTurn">The delegate to call to continue the bot middleware pipeline.</param>
@@ -89,7 +82,7 @@ namespace Microsoft.Bot.Builder
                 // run full pipeline
                 var response = await nextUpdate().ConfigureAwait(false);
 
-                await OnUpdateActivity(activity, cancellationToken).ConfigureAwait(false);
+                await OnUpdateActivityAsync(activity, cancellationToken).ConfigureAwait(false);
 
                 return response;
             });
@@ -108,7 +101,7 @@ namespace Microsoft.Bot.Builder
                 .ApplyConversationReference(reference, isIncoming: false)
                 .AsMessageDeleteActivity();
 
-                await OnDeleteActivity((Activity)deleteActivity, cancellationToken).ConfigureAwait(false);
+                await OnDeleteActivityAsync((Activity)deleteActivity, cancellationToken).ConfigureAwait(false);
             });
 
             if (nextTurn != null)
@@ -156,7 +149,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellation"> cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        protected virtual async Task OnUpdateActivity(Activity activity, CancellationToken cancellation)
+        protected virtual async Task OnUpdateActivityAsync(Activity activity, CancellationToken cancellation)
         {
             TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgUpdateEvent, await FillUpdateEventPropertiesAsync(activity).ConfigureAwait(false));
             return;
@@ -171,15 +164,15 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellation"> cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        protected virtual async Task OnDeleteActivity(Activity activity, CancellationToken cancellation)
+        protected virtual async Task OnDeleteActivityAsync(Activity activity, CancellationToken cancellation)
         {
             TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgDeleteEvent, await FillDeleteEventPropertiesAsync(activity).ConfigureAwait(false));
             return;
         }
  
         /// <summary>
-        /// Fills the Event properties for BotMessageReceived.
-        /// These properties are logged in the IBotTelemetryClient.TrackEvent method when a message is received from the user.
+        /// Fills the event properties for the BotMessageReceived.
+        /// Adheres to the LogPersonalInformation flag to filter Name, Text and Speak properties.
         /// </summary>
         /// <param name="activity">Last activity sent from user.</param>
         /// <param name="additionalProperties">Additional properties to add to the event.</param>

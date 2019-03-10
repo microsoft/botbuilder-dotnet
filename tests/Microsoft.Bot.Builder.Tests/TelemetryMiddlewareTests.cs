@@ -18,21 +18,31 @@ namespace Microsoft.Bot.Builder.Tests
     {
         [TestMethod]
         [TestCategory("Telemetry")]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public async Task Telemetry_NullConstruction()
+        public async Task Telemetry_NullTelemetryClient()
         {
+            // Arrange / Act
+            //
+            // Note: The TelemetryClient will most likely be DI'd in, and handling a null
+            // TelemetryClient should be handled by placing the NullBotTelemetryClient().
+            //
             var logger = new TelemetryLoggerMiddleware(null, logPersonalInformation: true);
+
+            // Assert
+            Assert.IsNotNull(logger);
         }
 
         [TestMethod]
         [TestCategory("Telemetry")]
         public async Task Telemetry_LogActivities()
         {
+            // Arrange
             var mockTelemetryClient = new Mock<IBotTelemetryClient>();
             TestAdapter adapter = new TestAdapter()
                 .Use(new TelemetryLoggerMiddleware(mockTelemetryClient.Object, logPersonalInformation: true));
             string conversationId = null;
 
+            // Act 
+            // Default case logging Send/Receive Activities
             await new TestFlow(adapter, async (context, cancellationToken) =>
             {
                 conversationId = context.Activity.Conversation.Id;
@@ -53,6 +63,7 @@ namespace Microsoft.Bot.Builder.Tests
                     .AssertReply("echo:bar")
                 .StartTestAsync();
 
+            // Assert
             Assert.AreEqual(mockTelemetryClient.Invocations.Count, 6);
             Assert.AreEqual(mockTelemetryClient.Invocations[0].Arguments[0], "BotMessageReceived"); // Check initial message
             Assert.IsTrue(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).Count == 7);
@@ -99,11 +110,14 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("Telemetry")]
         public async Task Telemetry_NoPII()
         {
+            // Arrange
             var mockTelemetryClient = new Mock<IBotTelemetryClient>();
             TestAdapter adapter = new TestAdapter()
                 .Use(new TelemetryLoggerMiddleware(mockTelemetryClient.Object, logPersonalInformation: false));
             string conversationId = null;
 
+            // Act
+            // Ensure LogPersonalInformation flag works
             await new TestFlow(adapter, async (context, cancellationToken) =>
             {
                 conversationId = context.Activity.Conversation.Id;
@@ -124,6 +138,7 @@ namespace Microsoft.Bot.Builder.Tests
                     .AssertReply("echo:bar")
                 .StartTestAsync();
 
+            // Assert
             Assert.AreEqual(mockTelemetryClient.Invocations.Count, 6);
             Assert.AreEqual(mockTelemetryClient.Invocations[0].Arguments[0], "BotMessageReceived"); // Check initial message
             Assert.IsTrue(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).Count == 5);
@@ -168,11 +183,15 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("Telemetry")]
         public async Task Transcript_LogUpdateActivities()
         {
+            // Arrange
             var mockTelemetryClient = new Mock<IBotTelemetryClient>();
             TestAdapter adapter = new TestAdapter()
                 .Use(new TelemetryLoggerMiddleware(mockTelemetryClient.Object, logPersonalInformation: true));
             string conversationId = null;
             Activity activityToUpdate = null;
+
+            // Act
+            // Test Update Activities
             await new TestFlow(adapter, async (context, cancellationToken) =>
             {
                 conversationId = context.Activity.Conversation.Id;
@@ -196,6 +215,7 @@ namespace Microsoft.Bot.Builder.Tests
                     .AssertReply("new response")
                 .StartTestAsync();
 
+            // Assert
             Assert.AreEqual(mockTelemetryClient.Invocations.Count, 4);
             Assert.AreEqual(mockTelemetryClient.Invocations[3].Arguments[0], "BotMessageUpdate"); // Check update message
             Assert.IsTrue(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).Count == 5);
@@ -212,11 +232,15 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("Middleware")]
         public async Task Transcript_LogDeleteActivities()
         {
+            // Arrange
             var mockTelemetryClient = new Mock<IBotTelemetryClient>();
             TestAdapter adapter = new TestAdapter()
                 .Use(new TelemetryLoggerMiddleware(mockTelemetryClient.Object, logPersonalInformation: true));
             string conversationId = null;
             string activityId = null;
+
+            // Act
+            // Verify Delete Activities are logged.
             await new TestFlow(adapter, async (context, cancellationToken) =>
             {
                 conversationId = context.Activity.Conversation.Id;
@@ -235,6 +259,8 @@ namespace Microsoft.Bot.Builder.Tests
                     .AssertReply("response")
                 .Send("deleteIt")
                 .StartTestAsync();
+
+            // Assert
             Assert.AreEqual(mockTelemetryClient.Invocations.Count, 4);
             Assert.AreEqual(mockTelemetryClient.Invocations[3].Arguments[0], "BotMessageDelete"); // Check delete message
             Assert.IsTrue(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).Count == 3);
@@ -247,11 +273,14 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("Telemetry")]
         public async Task Telemetry_OverrideReceive()
         {
+            // Arrange
             var mockTelemetryClient = new Mock<IBotTelemetryClient>();
             TestAdapter adapter = new TestAdapter()
                 .Use(new OverrideReceiveLogger(mockTelemetryClient.Object, logPersonalInformation: true));
             string conversationId = null;
 
+            // Act
+            // Override the TelemetryMiddleware component and override the Receive event.
             await new TestFlow(adapter, async (context, cancellationToken) =>
             {
                 conversationId = context.Activity.Conversation.Id;
@@ -272,6 +301,7 @@ namespace Microsoft.Bot.Builder.Tests
                     .AssertReply("echo:bar")
                 .StartTestAsync();
 
+            // Assert
             Assert.AreEqual(mockTelemetryClient.Invocations.Count, 8);
             Assert.AreEqual(mockTelemetryClient.Invocations[0].Arguments[0], TelemetryLoggerConstants.BotMsgReceiveEvent); // Check initial message
             Assert.IsTrue(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).Count == 2);
@@ -313,11 +343,14 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("Telemetry")]
         public async Task Telemetry_OverrideSend()
         {
+            // Arrange
             var mockTelemetryClient = new Mock<IBotTelemetryClient>();
             TestAdapter adapter = new TestAdapter()
                 .Use(new OverrideSendLogger(mockTelemetryClient.Object, logPersonalInformation: true));
             string conversationId = null;
 
+            // Act
+            // Override the TelemetryMiddleware component and override the Send event.
             await new TestFlow(adapter, async (context, cancellationToken) =>
             {
                 conversationId = context.Activity.Conversation.Id;
@@ -466,7 +499,7 @@ namespace Microsoft.Bot.Builder.Tests
             }
 
 
-            protected override async Task OnUpdateActivity(Activity activity, CancellationToken cancellation)
+            protected override async Task OnUpdateActivityAsync(Activity activity, CancellationToken cancellation)
             {
                 var properties = new Dictionary<string, string>
                 {
@@ -476,7 +509,7 @@ namespace Microsoft.Bot.Builder.Tests
                 TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgUpdateEvent, properties);
                 return;
             }
-            protected override async Task OnDeleteActivity(Activity activity, CancellationToken cancellation)
+            protected override async Task OnDeleteActivityAsync(Activity activity, CancellationToken cancellation)
             {
                 var properties = new Dictionary<string, string>
                 {
