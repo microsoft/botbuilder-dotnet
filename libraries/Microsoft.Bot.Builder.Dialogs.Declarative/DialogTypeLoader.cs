@@ -12,7 +12,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative
 {
-    public static class CognitiveLoader
+    public static class DeclarativeTypeLoader
     {
         public static T Load<T>(string json)
         {

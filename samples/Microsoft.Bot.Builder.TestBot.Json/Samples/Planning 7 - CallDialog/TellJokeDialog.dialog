@@ -1,21 +1,26 @@
 {
   "$schema": "../../Schemas/app.schema",
-  "$type": "Microsoft.SequenceDialog",
-  "$id": "TellJokeDialog",
+  "$type": "Microsoft.RuleDialog",
+  "$id": "FortuneTellerDialog",
   "storage": {
     "$type": "Microsoft.MemoryStorage"
   },
-  "steps": [
+  "rules": [
     {
-      "$type": "Microsoft.SendActivity",
-      "activity": "Why did the chicken cross the road?"
-    },
-    {
-      "$type": "Microsoft.WaitForInput"
-    },
-    {
-      "$type": "Microsoft.SendActivity",
-      "activity": "To get to the other side"
+      "$type": "Microsoft.FallbackRule",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "Why did the chicken cross the road?"
+        },
+        {
+          "$type": "Microsoft.WaitForInput"
+        },
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "To get to the other side"
+        }
+      ]
     }
   ]
 }

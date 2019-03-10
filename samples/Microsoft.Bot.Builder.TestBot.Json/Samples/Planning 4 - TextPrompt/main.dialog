@@ -1,6 +1,6 @@
 {
   "$schema": "../../Schemas/app.schema",
-  "$type": "Microsoft.PlanningDialog",
+  "$type": "Microsoft.RuleDialog",
   "$id":  "root",
   "storage": {
     "$type": "Microsoft.MemoryStorage"

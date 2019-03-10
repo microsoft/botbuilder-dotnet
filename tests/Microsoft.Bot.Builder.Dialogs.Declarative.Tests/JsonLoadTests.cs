@@ -241,7 +241,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
         private TestFlow BuildTestFlow(string json)
         {
-            var dialog = CognitiveLoader.Load<IDialog>(json);
+            var dialog = DeclarativeTypeLoader.Load<IDialog>(json);
 
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");

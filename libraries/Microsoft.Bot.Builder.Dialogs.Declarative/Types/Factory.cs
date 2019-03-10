@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             // while things are changing rapidly still
 
             // Rules
-            Register("Microsoft.DoStepsRule", typeof(IntentRule));
+            Register("Microsoft.IntentRule", typeof(IntentRule));
             Register("Microsoft.EventRule", typeof(EventRule));
             Register("Microsoft.FallbackRule", typeof(FallbackRule));
             Register("Microsoft.IfPropertyRule", typeof(IfPropertyRule));
@@ -116,13 +116,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.GotoDialog", typeof(GotoDialog));
             Register("Microsoft.IfProperty", typeof(IfProperty));
             Register("Microsoft.SendActivity", typeof(SendActivity));
-            Register("Microsoft.SendActivityTemplate", typeof(SendActivityTemplate));
             Register("Microsoft.WaitForInput", typeof(WaitForInput));
 
             // Dialogs
             Register("Microsoft.ComponentDialog", typeof(ComponentDialog), new ComponentDialogLoader());
-            Register("Microsoft.SequenceDialog", typeof(SequenceDialog));
-            Register("Microsoft.PlanningDialog", typeof(RuleDialog));
+            Register("Microsoft.RuleDialog", typeof(RuleDialog));
             Register("Microsoft.TextPrompt", typeof(TextPrompt));
             Register("Microsoft.IntegerPrompt", typeof(IntegerPrompt));
             Register("Microsoft.FloatPrompt", typeof(FloatPrompt));

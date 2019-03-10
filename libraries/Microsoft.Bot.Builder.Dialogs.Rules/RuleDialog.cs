@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         protected readonly DialogSet dialogs = new DialogSet();
         protected DialogSet runDialogs = new DialogSet(); // Used by the Run method
 
-        public List<IRule> Rules { get; set; } = new List<IRule>();
+        public virtual List<IRule> Rules { get; set; } = new List<IRule>();
 
         public IStatePropertyAccessor<BotState> BotState { get; set; }
 
@@ -332,14 +332,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                 }
             }
 
-            // Create DialogContext
-            this.runDialogs.Add(this);
-
-            foreach (var rule in Rules)
+            if (runDialogs.GetDialogs().Count() == 0)
             {
-                rule.Steps.ForEach(s => dialogs.Add(s));
-            }
+                // Create DialogContext
+                this.runDialogs.Add(this);
 
+                foreach (var rule in Rules)
+                {
+                    rule.Steps.ForEach(s => dialogs.Add(s));
+                }
+            }
+            
             var dc = new DialogContext(runDialogs,
                 context,
                 new DialogState()

@@ -1,6 +1,6 @@
 {
   "$schema": "../../Schemas/app.schema",
-  "$type": "Microsoft.PlanningDialog",
+  "$type": "Microsoft.RuleDialog",
   "$id": "root",
   "storage": {
     "$type": "Microsoft.MemoryStorage"
@@ -14,22 +14,26 @@
   },
   "rules": [
     {
-      "$type": "Microsoft.DoStepsRule",
+      "$type": "Microsoft.IntentRule",
       "intent": "JokeIntent",
       "steps": [
         {
           "$type": "Microsoft.CallDialog",
-          "dialogId": "TellJokeDialog"
+          "dialog": {
+            "$ref": "Samples/Planning 7 - CallDialog/TellJokeDialog.dialog"
+          }
         }
       ]
     },
     {
-      "$type": "Microsoft.DoStepsRule",
+      "$type": "Microsoft.IntentRule",
       "intent": "FortuneTellerIntent",
       "steps": [
         {
           "$type": "Microsoft.CallDialog",
-          "activity": "FortuneTellerDialog"
+          "dialog": {
+            "$ref": "Samples/Planning 7 - CallDialog/FortuneTellerDialog.dialog"
+          }
         }
       ]
     },
@@ -61,14 +65,6 @@
           "activity": "Hello {user.name}, nice to talk to you!"
         }
       ]
-    }
-  ],
-  "steps": [
-    {
-      "$ref": "TellJokeDialog.dialog"
-    },
-    {
-      "$ref": "FortuneTellerDialog.dialog"
     }
   ]
 }

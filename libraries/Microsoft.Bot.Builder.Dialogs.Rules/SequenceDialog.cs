@@ -10,16 +10,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
 {
     public class SequenceDialog : RuleDialog
     {
-        public override List<IDialog> Steps
+        public override List<IDialog> Steps { get; set; }
+
+        public override List<IRule> Rules
         {
             get
             {
-                return base.Steps;
+                return new List<IRule>() { new FallbackRule(steps) }.Concat(base.Rules).ToList();
             }
             set
             {
-                // Add the rules and allow the steps to work declaratively
-                AddRule(new[] { new FallbackRule(value) });
+                base.Rules = value;
             }
         }
 

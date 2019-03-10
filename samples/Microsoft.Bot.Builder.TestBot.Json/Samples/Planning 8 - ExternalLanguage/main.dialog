@@ -1,6 +1,6 @@
 {
     "$schema": "../../Schemas/app.schema",
-    "$type": "Microsoft.PlanningDialog",
+    "$type": "Microsoft.RuleDialog",
     "$id": "root",
     "storage": {
         "$type": "Microsoft.MemoryStorage"
@@ -16,7 +16,7 @@
     },
     "rules": [
         {
-            "$type": "Microsoft.DoStepsRule",
+            "$type": "Microsoft.IntentRule",
             "intent": "JokeIntent",
             "steps": [
                 {
@@ -26,7 +26,7 @@
             ]
         },
         {
-            "$type": "Microsoft.DoStepsRule",
+            "$type": "Microsoft.IntentRule",
             "intent": "FortuneTellerIntent",
             "steps": [
                 {
@@ -45,7 +45,7 @@
             ]
         },
         {
-            "$type": "Microsoft.DoStepsRule",
+            "$type": "Microsoft.IntentRule",
             "intent": "GreetingIntent",
             "steps": [
                 {
@@ -55,7 +55,7 @@
             ]
         },
         {
-            "$type": "Microsoft.DoStepsRule",
+            "$type": "Microsoft.IntentRule",
             "intent": "HelpIntent",
             "steps": [
                 {

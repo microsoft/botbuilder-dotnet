@@ -8,11 +8,11 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 {
-    public class CallDialog : Dialog
+    public class CallDialog : Dialog, IDialogDependencies
     {
         public object Options { get; set; }
 
-        public string DialogId { get; set; }
+        public IDialog Dialog { get; set; }
 
         public string Property
         {
@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
             }
         }
 
-        public CallDialog(string dialogId = null, string property = null, object options = null) 
+        public CallDialog(string id = null, string property = null, object options = null) 
             : base()
         {
             this.OutputBinding = "dialog.lastResult";
@@ -42,18 +42,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
                 Property = property;
             }
 
-            DialogId = dialogId;
+            Id = id;
         }
 
         protected override string OnComputeId()
         {
-            return $"CallDialog[{Id}:{this.BindingPath()}]";
+            return $"CallDialog[{Dialog.Id}:{this.BindingPath()}]";
         }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             Options = Options.Merge(options ?? new object());
-            return await dc.BeginDialogAsync(DialogId, Options, cancellationToken).ConfigureAwait(false);
+            return await dc.BeginDialogAsync(Dialog?.Id ?? throw new Exception("CallDialog requires a dialog to be called."), Options, cancellationToken).ConfigureAwait(false);
+        }
+
+        public List<IDialog> ListDependencies()
+        {
+            return new List<IDialog>() { Dialog };
         }
     }
 }

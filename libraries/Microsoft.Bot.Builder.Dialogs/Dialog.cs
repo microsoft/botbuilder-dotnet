@@ -19,14 +19,27 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public Dialog(string dialogId = null)
         {
-            Id = dialogId ?? OnComputeId();
+            Id = dialogId;// ?? OnComputeId();
             _telemetryClient = NullBotTelemetryClient.Instance;
         }
 
+        private string id;
+        
         /// <summary>
         /// Unique id for the dialog.
         /// </summary>
-        public string Id { get; set; }
+        public string Id
+        {
+            get
+            {
+                id = id ?? OnComputeId();
+                return id;
+            }
+            set
+            {
+                id = value;
+            }
+        }
 
         /// <summary>
         /// Set of tags assigned to the dialog.
