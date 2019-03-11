@@ -28,10 +28,12 @@ namespace Microsoft.Bot.Builder.Azure
         private static SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
         private readonly string _databaseId;
+        private readonly string _partitionKey;
         private readonly string _collectionId;
         private readonly RequestOptions _documentCollectionCreationRequestOptions = null;
         private readonly RequestOptions _databaseCreationRequestOptions = null;
         private readonly IDocumentClient _client;
+        private readonly object cosmosDbStorageOptions;
         private string _collectionLink = null;
 
         /// <summary>
@@ -68,6 +70,7 @@ namespace Microsoft.Bot.Builder.Azure
 
             _databaseId = cosmosDbStorageOptions.DatabaseId;
             _collectionId = cosmosDbStorageOptions.CollectionId;
+            _partitionKey = cosmosDbStorageOptions.PartitionKey;
             _documentCollectionCreationRequestOptions = cosmosDbStorageOptions.DocumentCollectionRequestOptions;
             _databaseCreationRequestOptions = cosmosDbStorageOptions.DatabaseCreationRequestOptions;
 
@@ -141,11 +144,14 @@ namespace Microsoft.Bot.Builder.Azure
 
             // Ensure Initialization has been run
             await InitializeAsync().ConfigureAwait(false);
+            var options = new RequestOptions();
+            options.PartitionKey = new PartitionKey(this._partitionKey);
 
             // Parallelize deletion
             var tasks = keys.Select(key =>
                 _client.DeleteDocumentAsync(
                     UriFactory.CreateDocumentUri(_databaseId, _collectionId, CosmosDbKeyEscape.EscapeKey(key)),
+                    options,
                     cancellationToken: cancellationToken));
 
             // await to deletion tasks to complete
