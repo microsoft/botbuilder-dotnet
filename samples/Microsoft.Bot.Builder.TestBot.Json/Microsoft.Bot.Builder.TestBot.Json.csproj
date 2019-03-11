@@ -20,6 +20,7 @@
     <None Remove="Samples\Planning 3 - IfProperty\main.dialog" />
     <None Remove="Samples\Planning 2 - WaitForInput\main.dialog" />
     <None Remove="Samples\Planning 7 - CallDialog\TellJokeDialog.dialog" />
+    <None Remove="Samples\Planning 9 - CancelDialog\main.dialog" />
   </ItemGroup>
 
   <ItemGroup>
@@ -60,6 +61,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Samples\Planning 2 - WaitForInput\main.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Samples\Planning 9 - CancelDialog\main.dialog">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

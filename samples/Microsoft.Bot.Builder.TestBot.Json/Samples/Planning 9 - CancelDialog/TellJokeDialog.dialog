@@ -1,0 +1,41 @@
+{
+  "$schema": "../../Schemas/app.schema",
+  "$type": "Microsoft.RuleDialog",
+  "$id": "TellJokeDialog",
+  "storage": {
+    "$type": "Microsoft.MemoryStorage"
+  },
+  "recognizer": {
+    "$type": "Microsoft.RegexRecognizer",
+    "rules": {
+      "CancelIntent": "cancel|never mind"
+    }
+  },
+  "rules": [
+    {
+      "$type": "Microsoft.FallbackRule",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "Why did the chicken cross the road?"
+        },
+        {
+          "$type": "Microsoft.WaitForInput"
+        },
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "To get to the other side"
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "CancelIntent",
+      "steps": [
+        {
+          "$type": "Microsoft.CancelDialog"
+        }
+      ]
+    }
+  ]
+}

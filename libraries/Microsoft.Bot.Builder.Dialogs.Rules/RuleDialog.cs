@@ -236,7 +236,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Forward to current sequence step
-            var state = instance.State as PlanningState;
+            var state = (instance.State as StateMap)["planningState"] as PlanningState;
             var plan = state.Plan;
 
             if (plan?.Steps.Count > 0)
@@ -253,7 +253,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             // Forwards cancellation to sequences
             if (reason == DialogReason.CancelCalled)
             {
-                var state = instance.State as PlanningState;
+                var state = (instance.State as StateMap)["planningState"] as PlanningState;
 
                 if (state.Plan != null)
                 {
@@ -518,8 +518,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                     else
                     {
                         // End dialog and return default result
-                        var state = planning.ActiveDialog.State as PlanningState;
-                        return await planning.EndDialogAsync(state?.Result).ConfigureAwait(false);
+                        if (planning.ActiveDialog != null)
+                        {
+                            var state = (planning.ActiveDialog.State as StateMap)["planningState"] as PlanningState;
+                            return await planning.EndDialogAsync(state?.Result).ConfigureAwait(false);
+                        }
+
+                        return await planning.EndDialogAsync().ConfigureAwait(false);
                     }
                 }
             };
