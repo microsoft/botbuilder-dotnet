@@ -33,7 +33,6 @@ namespace Microsoft.Bot.Builder.Azure
         private readonly RequestOptions _documentCollectionCreationRequestOptions = null;
         private readonly RequestOptions _databaseCreationRequestOptions = null;
         private readonly IDocumentClient _client;
-        private readonly object cosmosDbStorageOptions;
         private string _collectionLink = null;
 
         /// <summary>
