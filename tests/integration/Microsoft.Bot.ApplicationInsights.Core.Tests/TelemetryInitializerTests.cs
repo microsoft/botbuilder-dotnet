@@ -2,15 +2,15 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.ApplicationInsights;
 using System.Collections.Generic;
-using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Channel;
-using Moq;
 using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Http;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Bot.Schema;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
@@ -22,7 +22,6 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
         [TestMethod]
         public void VerifyAllTelemtryPropoerties()
         {
-
             var configuration = new TelemetryConfiguration();
             var sentItems = new List<ITelemetry>();
             var mockTelemetryChannel = new Mock<ITelemetryChannel>();
@@ -71,7 +70,6 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
         [TestMethod]
         public void VerifyTraceProperties()
         {
-
             var configuration = new TelemetryConfiguration();
             var sentItems = new List<ITelemetry>();
             var mockTelemetryChannel = new Mock<ITelemetryChannel>();
@@ -113,13 +111,11 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             Assert.IsTrue(telem.Properties["channelId"] == "CHANNELID");
             Assert.IsTrue(telem.Context.Session.Id == conversationID);
             Assert.IsTrue(telem.Context.User.Id == channelID + fromID);
-
         }
 
         [TestMethod]
         public void VerifyRequestProperties()
         {
-
             var configuration = new TelemetryConfiguration();
             var sentItems = new List<ITelemetry>();
             var mockTelemetryChannel = new Mock<ITelemetryChannel>();
@@ -161,14 +157,11 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             Assert.IsTrue(telem.Properties["channelId"] == "CHANNELID");
             Assert.IsTrue(telem.Context.Session.Id == conversationID);
             Assert.IsTrue(telem.Context.User.Id == channelID + fromID);
-
         }
-
 
         [TestMethod]
         public void InvalidMessage_NoConversation()
         {
-
             var configuration = new TelemetryConfiguration();
             var sentItems = new List<ITelemetry>();
             var mockTelemetryChannel = new Mock<ITelemetryChannel>();
@@ -211,6 +204,5 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             Assert.IsTrue(telem.Properties["hello"] == "value");
             Assert.IsTrue(telem.Metrics["metric"] == 0.6);
         }
-
     }
 }
