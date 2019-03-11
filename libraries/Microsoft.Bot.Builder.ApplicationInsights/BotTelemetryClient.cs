@@ -38,6 +38,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights
                     telemetry.Properties.Add(pair.Key, pair.Value);
                 }
             }
+
             if (metrics != null)
             {
                 foreach (var pair in metrics)
@@ -74,19 +75,18 @@ namespace Microsoft.Bot.Builder.ApplicationInsights
                 Timestamp = startTime,
                 Duration = duration,
                 ResultCode = resultCode,
-                Success = success
+                Success = success,
             };
 
             _telemetryClient.TrackDependency(telemetry);
         }
-
 
         /// <summary>
         /// Logs custom events with extensible named fields.
         /// </summary>
         /// <param name="eventName">A name for the event.</param>
         /// <param name="properties">Named string values you can use to search and classify events.</param>
-        /// <param name="metrics">Measurements associated with this event.</param>        
+        /// <param name="metrics">Measurements associated with this event.</param>
         public virtual void TrackEvent(string eventName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
         {
             var telemetry = new EventTelemetry(eventName);
@@ -97,6 +97,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights
                     telemetry.Properties.Add(pair.Key, pair.Value);
                 }
             }
+
             if (metrics != null)
             {
                 foreach (var pair in metrics)
@@ -104,6 +105,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights
                     telemetry.Metrics.Add(pair.Key, pair.Value);
                 }
             }
+
             _telemetryClient.TrackEvent(telemetry);
         }
 
@@ -123,6 +125,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights
                     telemetry.Properties.Add(pair.Key, pair.Value);
                 }
             }
+
             if (metrics != null)
             {
                 foreach (var pair in metrics)
@@ -130,20 +133,21 @@ namespace Microsoft.Bot.Builder.ApplicationInsights
                     telemetry.Metrics.Add(pair.Key, pair.Value);
                 }
             }
+
             _telemetryClient.TrackException(telemetry);
         }
 
         /// <summary>
-        /// Send a trace message
+        /// Send a trace message.
         /// </summary>
         /// <param name="message">Message to display.</param>
-        /// <param name="severityLevel">Trace severaity level <see cref="Severity"/></param>
+        /// <param name="severityLevel">Trace severaity level <see cref="Severity"/>.</param>
         /// <param name="properties">Named string values you can use to search and classify events.</param>
         public virtual void TrackTrace(string message, Severity severityLevel, IDictionary<string, string> properties)
         {
             var telemetry = new TraceTelemetry(message)
             {
-                SeverityLevel = (SeverityLevel)severityLevel
+                SeverityLevel = (SeverityLevel)severityLevel,
             };
 
             if (properties != null)
@@ -153,6 +157,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights
                     telemetry.Properties.Add(pair.Key, pair.Value);
                 }
             }
+
             _telemetryClient.TrackTrace(telemetry);
         }
 
