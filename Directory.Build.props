@@ -7,6 +7,10 @@
     <CodeAnalysisRuleSet>$(SolutionDir)BotBuilder-DotNet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008" PrivateAssets="all" />
+  </ItemGroup>
+
   <PropertyGroup>
     <Company>Microsoft</Company>
 
