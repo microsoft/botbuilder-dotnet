@@ -21,9 +21,13 @@ using RichardSzalay.MockHttp;
 namespace Microsoft.Bot.Builder.AI.Luis.Tests
 {
     [TestClass]
+
     // The LUIS application used in these unit tests is in TestData/TestLuistApp.json
     public class LuisRecognizerTests
     {
+        // Access the checked-in oracles so that if they are changed you can compare the changes and easily modify them.
+        private const string _testData = @"..\..\..\TestData\";
+
         private readonly string _luisAppId = TestUtilities.GetKey("LUISAPPID", "38330cad-f768-4619-96f9-69ea333e594b");
 
         // By default (when the Mocks are being used), the subscription key used can be any GUID. Only if the tests
@@ -36,9 +40,10 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             Intents = new Dictionary<string, IntentScore>()
                 {
                     { "Test", new IntentScore { Score = 0.2 } },
-                    { "Greeting", new IntentScore { Score = 0.4 } }
-                }
+                    { "Greeting", new IntentScore { Score = 0.4 } },
+                },
         };
+
         // LUIS tests run off of recorded HTTP responses to avoid service dependencies.
         // To update the recorded responses:
         // 1) Change _mock to false below
@@ -76,7 +81,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             {
                 AppId = _luisAppId,
                 SubscriptionKey = _subscriptionKey,
-                Region = "westus"
+                Region = "westus",
             };
 
             const string utterance = "My name is Emad";
@@ -339,7 +344,8 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         // 1) Create a <name>.json file with an object { Text:<query> } in it.
         // 2) Run this test which will fail and generate a <name>.json.new file.
         // 3) Check the .new file and if correct, replace the original .json file with it.
-        public async Task TestJson<T>(string file) where T : IRecognizerConvert, new()
+        public async Task TestJson<T>(string file)
+            where T : IRecognizerConvert, new()
         {
             var expectedPath = GetFilePath(file);
             var newPath = expectedPath + ".new";
@@ -393,7 +399,9 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                     await context.SendActivityAsync(botResponse);
                 }
             })
-                .Test(utterance, activity =>
+                .Test(
+                utterance,
+                activity =>
                 {
                     var traceActivity = activity as ITraceActivity;
                     Assert.IsNotNull(traceActivity);
@@ -413,8 +421,8 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                     Assert.AreEqual(luisTraceInfo["luisResult"]["query"], utterance);
                     Assert.AreEqual(luisTraceInfo["luisModel"]["ModelID"], _luisAppId);
                     Assert.AreEqual(luisTraceInfo["luisOptions"]["Staging"], default(bool?));
-
-                }, "luisTraceInfo")
+                },
+                "luisTraceInfo")
                 .Send(utterance)
                 .AssertReply(botResponse, "passthrough")
                 .StartTestAsync();
@@ -484,7 +492,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             {
                 EndpointKey = "this-is-not-a-key",
                 ApplicationId = "this-is-not-an-application-id",
-                Endpoint = "https://westus.api.cognitive.microsoft.com"
+                Endpoint = "https://westus.api.cognitive.microsoft.com",
             };
 
             var clientHandler = new EmptyLuisResponseClientHandler();
@@ -498,7 +506,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 Text = "please book from May 5 to June 6",
                 Recipient = new ChannelAccount(),           // to no where
                 From = new ChannelAccount(),                // from no one
-                Conversation = new ConversationAccount()    // on no conversation
+                Conversation = new ConversationAccount(),   // on no conversation
             };
 
             var turnContext = new TurnContext(adapter, activity);
@@ -512,6 +520,20 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
             // And that we added the bot.builder package details.
             Assert.IsTrue(userAgent.Contains("Microsoft.Bot.Builder.AI.Luis/4"));
+        }
+
+        private static TurnContext GetContext(string utterance)
+        {
+            var b = new TestAdapter();
+            var a = new Activity
+            {
+                Type = ActivityTypes.Message,
+                Text = utterance,
+                Conversation = new ConversationAccount(),
+                Recipient = new ChannelAccount(),
+                From = new ChannelAccount(),
+            };
+            return new TurnContext(b, a);
         }
 
         // Compare two JSON structures and ensure entity and intent scores are within delta
@@ -580,20 +602,6 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             Assert.IsTrue(score <= 1);
         }
 
-        private static TurnContext GetContext(string utterance)
-        {
-            var b = new TestAdapter();
-            var a = new Activity
-            {
-                Type = ActivityTypes.Message,
-                Text = utterance,
-                Conversation = new ConversationAccount(),
-                Recipient = new ChannelAccount(),
-                From = new ChannelAccount()
-            };
-            return new TurnContext(b, a);
-        }
-
         private IRecognizer GetLuisRecognizer(MockedHttpClientHandler httpClientHandler, bool verbose = false, LuisPredictionOptions options = null)
         {
             var luisApp = new LuisApplication(_luisAppId, _subscriptionKey, _endpoint);
@@ -634,9 +642,6 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
         private string GetRequestUrl() => $"{_endpoint}/luis/v2.0/apps/{_luisAppId}";
 
-        // Access the checked-in oracles so that if they are changed you can compare the changes and easily modify them.
-        private const string _testData = @"..\..\..\TestData\";
-
         private Stream GetResponse(string fileName)
         {
             var path = Path.Combine(_testData, fileName);
@@ -647,27 +652,6 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         {
             var path = Path.Combine(_testData, fileName);
             return path;
-        }
-    }
-
-    public class MockedHttpClientHandler : HttpClientHandler
-    {
-        private readonly HttpClient client;
-
-        public MockedHttpClientHandler(HttpClient client)
-        {
-            this.client = client;
-        }
-
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            var mockedRequest = new HttpRequestMessage()
-            {
-                RequestUri = request.RequestUri,
-                Content = request.Content,
-                Method = request.Method
-            };
-            return client.SendAsync(mockedRequest, cancellationToken);
         }
     }
 }
