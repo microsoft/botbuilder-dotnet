@@ -100,6 +100,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return evaluator.EvaluateTemplate(templateName, scope);
         }
 
+        public List<string> AnalyzeTemplate(string templateName)
+        {
+            var analyzer = new Analyzer(evaluationContext);
+            return analyzer.AnalyzeTemplate(templateName);
+        }
+
 
         /// <summary>
         /// Use to evaluate an inline template str
