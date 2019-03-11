@@ -87,10 +87,13 @@ namespace Microsoft.Bot.Connector
             //  https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md
             HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("BotBuilder", GetClientVersion(this)));
 
-            // Additional Info. 
+            // Additional Info. Conditionally add this to avoid any illegal characters in the ProductInfo.
             // https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md
-            var userAgent = $"({GetASPNetVersion()}; {GetOsVersion()}; {GetArchitecture()})";
-            HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(userAgent));
+            var platformUserAgent = $"({GetASPNetVersion()}; {GetOsVersion()}; {GetArchitecture()})";
+            if (ProductInfoHeaderValue.TryParse(platformUserAgent, out var item))
+            {
+                HttpClient.DefaultRequestHeaders.UserAgent.Add(item);
+            }
 
             HttpClient.DefaultRequestHeaders.ExpectContinue = false;
 
