@@ -46,14 +46,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
             // Using a stack to track the evalution trace
             evalutationTargetStack.Push(new EvaluationTarget(templateName, null));
-            var result = Visit(Context.TemplateContexts[templateName]);
-            var innerVariables = ExtractParameters(templateName);
-            var finalResult = result.Where(u => !innerVariables.Contains(u)).ToList();
+            var templateResult = Visit(Context.TemplateContexts[templateName]);
+
+            var variablesInnerTemplate = ExtractParameters(templateName);
+            var cleanResult = templateResult?.Where(u => !variablesInnerTemplate.Contains(u)).ToList();
             
-            result = Distinct(finalResult);
+            templateResult = cleanResult?.Distinct().ToList();
             evalutationTargetStack.Pop();
 
-            return result;
+            return templateResult;
         }
 
         public override List<string> VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
@@ -156,12 +157,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     throw new Exception($"Not a valid template ref: {exp}");
                 }
 
-                
                 var templateName = exp.Substring(0, argsStartPos);
-                //TODO support parames,remove params variables
 
                 return AnalyzeTemplate(templateName);
-
             }
             else
             {
@@ -195,37 +193,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return result;
         }
         
-       
-        private List<string> Distinct(List<string> input)
-        {
-            if (input == null || input.Count <= 1)
-                return input;
-
-            input = input.Select(u => GetRootVariable(u)).ToList();
-            return input.Distinct().ToList();
-        }
-
-        private string GetRootVariable(string input)
-        {
-            if (string.IsNullOrEmpty(input))
-                return input;
-
-            var dotIndex = input.IndexOf(".");
-            if(dotIndex > 0) //if start with . , we use as a valid variable 
-            {
-                input = input.Substring(0, dotIndex);
-            }
-
-            var BracketIndex = input.IndexOf("[");
-            if (BracketIndex >= 0) 
-            {
-                input = input.Substring(0, BracketIndex);
-            }
-
-            return input;
-        }
-
-        
         private List<string> GetAnalyzersFromTerm(Term term)
         {
             var result = new List<string>();
@@ -252,9 +219,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             switch (token.Input)
             {
                 case ".":
-                    {
-                        return GetAnalyzersFromTerm(term.Terms[0]);
-                    }
                 case "[":
                     {
                         return GetAnalyzersFromTerm(term.Terms[0]);
