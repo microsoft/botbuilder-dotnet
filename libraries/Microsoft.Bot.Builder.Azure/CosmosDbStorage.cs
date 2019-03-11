@@ -143,8 +143,7 @@ namespace Microsoft.Bot.Builder.Azure
 
             // Ensure Initialization has been run
             await InitializeAsync().ConfigureAwait(false);
-            var options = new RequestOptions();
-            options.PartitionKey = new PartitionKey(this._partitionKey);
+            var options = new RequestOptions() { PartitionKey = new PartitionKey(this._partitionKey) };
 
             // Parallelize deletion
             var tasks = keys.Select(key =>
