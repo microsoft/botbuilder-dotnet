@@ -11,6 +11,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.TextTranslator
 {
+    /// <summary>
+    /// Text Translator Class.
+    /// </summary>
     public class TextTranslator
     {
         private static readonly HttpClient DefaultHttpClient = new HttpClient();
@@ -18,18 +21,34 @@ namespace Microsoft.Bot.Builder.AI.TextTranslator
         private TextTranslatorEndpoint _endpoint;
         private HttpClient _httpClient;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextTranslator"/> class.
+        /// </summary>
         public TextTranslator(TextTranslatorEndpoint endpoint, HttpClient httpClient = null)
         {
-            _endpoint = endpoint;
+            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
             _httpClient = httpClient ?? DefaultHttpClient;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextTranslator"/> class.
+        /// </summary>
         public TextTranslator(TextTranslatorService textTranslatorService, HttpClient httpClient = null)
         {
+            if (textTranslatorService == null)
+            {
+                throw new ArgumentNullException(nameof(textTranslatorService));
+            }
+
             _endpoint = new TextTranslatorEndpoint(textTranslatorService);
             _httpClient = httpClient ?? DefaultHttpClient;
         }
 
+        /// <summary>Translates the asynchronous.</summary>
+        /// <param name="turnContext">The turn context.</param>
+        /// <param name="targetLanguage">The target language.</param>
+        /// <param name="sourceLanguage">The source language.</param>
+        /// <returns>The translated text.</returns>
         public async Task<TranslatorResult> TranslateAsync(ITurnContext turnContext, string targetLanguage, string sourceLanguage = null)
         {
             if (turnContext == null)
@@ -56,6 +75,11 @@ namespace Microsoft.Bot.Builder.AI.TextTranslator
             return await TranslateAsync(turnContext.Activity.Text, targetLanguage, sourceLanguage).ConfigureAwait(false);
         }
 
+        /// <summary>Translates the asynchronous.</summary>
+        /// <param name="text">The text.</param>
+        /// <param name="targetLanguage">The target language.</param>
+        /// <param name="sourceLanguage">The source language.</param>
+        /// <returns>The translated text.</returns>
         public async Task<TranslatorResult> TranslateAsync(string text, string targetLanguage, string sourceLanguage = null)
         {
             switch (_endpoint.Engine)
