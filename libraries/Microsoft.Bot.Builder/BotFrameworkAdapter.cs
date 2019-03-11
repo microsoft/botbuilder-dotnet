@@ -817,7 +817,7 @@ namespace Microsoft.Bot.Builder
             }
 
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
-            if(connectorClient == null)
+            if (connectorClient == null)
             {
                 throw new InvalidOperationException("An IConnectorClient is required in TurnState for this operation.");
             }
