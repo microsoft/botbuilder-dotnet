@@ -12,3 +12,13 @@
 - [wPhrase] [pizzaOrderConfirmation] 
 - CASE: {orderType == 'sandwich'}
 - [sandwichOrderConfirmation] 
+
+
+# template1
+- [template2] {age}
+
+# template2
+- {alarms.humanize(template3, ',', 'and')} {name}
+
+#template3(input)
+- {input.property} {other}
