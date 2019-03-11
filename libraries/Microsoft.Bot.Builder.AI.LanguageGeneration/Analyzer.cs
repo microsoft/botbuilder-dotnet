@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Microsoft.Expressions;
+using System.Linq;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
@@ -46,15 +47,16 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
             // Using a stack to track the evalution trace
             evalutationTargetStack.Push(new EvaluationTarget(templateName, null));
-            var templateResult = Visit(Context.TemplateContexts[templateName]);
+            var rawDependencies = Visit(Context.TemplateContexts[templateName]);
 
-            var variablesInnerTemplate = ExtractParameters(templateName);
-            var cleanResult = templateResult?.Where(u => !variablesInnerTemplate.Contains(u)).ToList();
-            
-            templateResult = cleanResult?.Distinct().ToList();
+            var parameters = ExtractParameters(templateName);
+
+            // we need to exclude parameters from raw dependencies
+            var dependencies = rawDependencies.Except(parameters).Distinct().ToList();
+
             evalutationTargetStack.Pop();
 
-            return templateResult;
+            return dependencies;
         }
 
         public override List<string> VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
@@ -64,7 +66,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             {
                 return Visit(context.templateBody());
             }
-            return null;
+            throw new Exception("template name match failed");
         }
 
         public override List<string> VisitNormalBody([NotNull] LGFileParser.NormalBodyContext context)
@@ -139,7 +141,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         {
             exp = exp.TrimStart('{').TrimEnd('}');
             var term = ExpressionEngine.Parse(exp);
-            return GetAnalyzersFromTerm(term);
+            return AnalyzeTerm(term);
         }
 
 
@@ -193,7 +195,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return result;
         }
         
-        private List<string> GetAnalyzersFromTerm(Term term)
+        private List<string> AnalyzeTerm(Term term)
         {
             var result = new List<string>();
 
@@ -221,7 +223,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 case ".":
                 case "[":
                     {
-                        return GetAnalyzersFromTerm(term.Terms[0]);
+                        return AnalyzeTerm(term.Terms[0]);
                     }
                 case "(":
                     {
@@ -229,7 +231,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
                         if (name.Equals("."))
                         {
-                            result.AddRange(GetAnalyzersFromTerm(term.Terms[0].Terms[0]));
+                            result.AddRange(AnalyzeTerm(term.Terms[0].Terms[0]));
                            
                             foreach(var item in term.Terms.Skip(1))
                             {
@@ -239,7 +241,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                                 }
                                 else
                                 {
-                                    result.AddRange(GetAnalyzersFromTerm(item));
+                                    result.AddRange(AnalyzeTerm(item));
                                 }
                                 
                             }
@@ -255,7 +257,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                                 }
                                 else
                                 {
-                                    result.AddRange(GetAnalyzersFromTerm(item));
+                                    result.AddRange(AnalyzeTerm(item));
                                 }
                             }
                             return result;
@@ -269,7 +271,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             {
                 foreach (var item in term.Terms)
                 {
-                    result.AddRange(GetAnalyzersFromTerm(item));
+                    result.AddRange(AnalyzeTerm(item));
                 }
                 return result;
             }
@@ -282,8 +284,5 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             bool hasParameters = Context.TemplateParameters.TryGetValue(templateName, out List<string> parameters);
             return hasParameters ? parameters : new List<string>();
         }
-
-
-
     }
 }
