@@ -1,22 +1,22 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Web;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Channel;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi;
+using Microsoft.Bot.Schema;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using Newtonsoft.Json.Linq;
+
 namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Web;
-    using Microsoft.ApplicationInsights;
-    using Microsoft.ApplicationInsights.Channel;
-    using Microsoft.ApplicationInsights.DataContracts;
-    using Microsoft.ApplicationInsights.Extensibility;
-    using Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi;
-    using Microsoft.Bot.Schema;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Moq;
-    using Newtonsoft.Json.Linq;
-
     [TestClass]
     [TestCategory("ApplicationInsights")]
     public class TelemetryInitializerTests
