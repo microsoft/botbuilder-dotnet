@@ -45,6 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
 
     public class RuleDialog : Dialog
     {
+        private bool installedDependencies = false;
         protected readonly DialogSet dialogs = new DialogSet();
         protected DialogSet runDialogs = new DialogSet(); // Used by the Run method
 
@@ -57,21 +58,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         public IRecognizer Recognizer { get; set; }
 
         public IStorage Storage { get; set; }
-
-        protected List<IDialog> steps = new List<IDialog>();
-
-        public virtual List<IDialog> Steps
-        {
-            get { return steps; }
-            set
-            {
-                if (value != null)
-                {
-                    AddDialog(value);
-                }
-                steps = value;
-            }
-        }
 
         public override IBotTelemetryClient TelemetryClient
         {
@@ -94,6 +80,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (!installedDependencies)
+            {
+                installedDependencies = true;
+
+                Rules.ForEach(r => AddDialog(r.Steps.ToArray()));
+            }
+
             var activeDialogState = dc.ActiveDialog.State as StateMap;
             activeDialogState["planningState"] = new PlanningState();
             var state = activeDialogState["planningState"] as PlanningState;
