@@ -18,6 +18,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>    
     <Description>Classes for loading and saving bot configuration files</Description>
     <CodeAnalysisRuleSet>Microsoft.Bot.Configuration.ruleset</CodeAnalysisRuleSet>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

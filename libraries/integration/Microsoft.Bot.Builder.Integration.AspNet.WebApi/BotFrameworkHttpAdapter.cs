@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 {
@@ -14,8 +15,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
     /// </summary>
     public class BotFrameworkHttpAdapter : BotFrameworkAdapter, IBotFrameworkHttpAdapter
     {
-        public BotFrameworkHttpAdapter(ICredentialProvider credentialProvider = null)
-            : base(credentialProvider ?? new SimpleCredentialProvider())
+        public BotFrameworkHttpAdapter(ICredentialProvider credentialProvider = null, IChannelProvider channelProvider = null, ILogger<BotFrameworkHttpAdapter> logger = null)
+            : base(credentialProvider ?? new SimpleCredentialProvider(), channelProvider, null, null, null, logger)
         {
         }
 
