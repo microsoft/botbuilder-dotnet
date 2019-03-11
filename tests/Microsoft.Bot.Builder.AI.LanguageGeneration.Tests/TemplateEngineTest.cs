@@ -240,17 +240,17 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var engine = TemplateEngine.FromFile(GetExampleFilePath("Analyzer.lg"));
             
-            var evaled1 = engine.Dependencies("orderReadOut");
+            var evaled1 = engine.AnalyzeTemplate("orderReadOut");
             var evaled1Options = new List<string> { "orderType","userName","base","topping","bread","meat"};
             Assert.IsTrue(evaled1.All(evaled1Options.Contains) && evaled1.Count == evaled1Options.Count);
 
 
-            var evaled2 = engine.Dependencies("sandwichOrderConfirmation");
+            var evaled2 = engine.AnalyzeTemplate("sandwichOrderConfirmation");
             var evaled2Options = new List<string> { "bread", "meat" };
             Assert.IsTrue(evaled2.All(evaled2Options.Contains) && evaled2.Count == evaled2Options.Count);
             
 
-            var evaled3 = engine.Dependencies("template1");
+            var evaled3 = engine.AnalyzeTemplate("template1");
             var evaled3Options = new List<string> { "alarms", "name", "age","other" };
             Assert.IsTrue(evaled3.All(evaled3Options.Contains) && evaled3.Count == evaled3Options.Count);
 

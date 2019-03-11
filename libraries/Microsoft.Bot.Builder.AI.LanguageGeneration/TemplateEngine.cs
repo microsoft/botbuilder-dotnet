@@ -99,11 +99,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return evaluator.EvaluateTemplate(templateName, scope);
         }
 
-        public List<string> Dependencies(string templateName)
+        public List<string> AnalyzeTemplate(string templateName)
         {
             var analyzer = new Analyzer(evaluationContext);
             return analyzer.AnalyzeTemplate(templateName);
-
         }
 
 
