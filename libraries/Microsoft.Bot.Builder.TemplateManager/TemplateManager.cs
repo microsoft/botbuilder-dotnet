@@ -8,10 +8,10 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder.TemplateManager
 {
     /// <summary>
-    /// TemplateManager manages set of ITemplateRenderer implementations
+    /// TemplateManager manages set of ITemplateRenderer implementations.
     /// </summary>
     /// <remarks>
-    /// ITemplateRenderer implements 
+    /// ITemplateRenderer implements.
     /// </remarks>
     public class TemplateManager
     {
@@ -23,21 +23,24 @@ namespace Microsoft.Bot.Builder.TemplateManager
         }
 
         /// <summary>
-        /// Add a template engine for binding templates
+        /// Add a template engine for binding templates.
         /// </summary>
-        /// <param name="renderer"></param>
-
+        /// <param name="renderer">Data for binding templates.</param>
+        /// <returns>Reurns a template manager.</returns>
         public TemplateManager Register(ITemplateRenderer renderer)
         {
             if (!_templateRenderers.Contains(renderer))
+            {
                 _templateRenderers.Add(renderer);
+            }
+
             return this;
         }
 
         /// <summary>
-        /// List registered template engines
+        /// List registered template engines.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>List of rendered templates.</returns>
         public IList<ITemplateRenderer> List()
         {
             return _templateRenderers;
@@ -54,12 +57,12 @@ namespace Microsoft.Bot.Builder.TemplateManager
         }
 
         /// <summary>
-        /// Send a reply with the template
+        /// Send a reply with the template.
         /// </summary>
-        /// <param name="turnContext"></param>
-        /// <param name="templateId"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        /// <param name="turnContext">The context of the turn.</param>
+        /// <param name="templateId">Id of the template.</param>
+        /// <param name="data">Data to render the template.</param>
+        /// <returns>Task.</returns>
         public async Task ReplyWith(ITurnContext turnContext, string templateId, object data = null)
         {
             BotAssert.ContextNotNull(turnContext);
@@ -71,18 +74,18 @@ namespace Microsoft.Bot.Builder.TemplateManager
                 await turnContext.SendActivityAsync(boundActivity);
                 return;
             }
+
             return;
         }
 
-
         /// <summary>
-        /// Render the template
+        /// Render the template.
         /// </summary>
-        /// <param name="turnContext"></param>
-        /// <param name="language"></param>
-        /// <param name="templateId"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        /// <param name="turnContext">Context turn.</param>
+        /// <param name="language">Template language.</param>
+        /// <param name="templateId">The id of the template.</param>
+        /// <param name="data">Data to render the tempplate with.</param>
+        /// <returns>Task.</returns>
         public async Task<Activity> RenderTemplate(ITurnContext turnContext, string language, string templateId, object data = null)
         {
             var fallbackLocales = new List<string>(_languageFallback);
@@ -113,6 +116,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
                     }
                 }
             }
+
             return null;
         }
     }
