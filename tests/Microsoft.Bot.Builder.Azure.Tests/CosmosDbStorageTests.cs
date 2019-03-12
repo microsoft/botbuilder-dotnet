@@ -240,7 +240,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await base._createObjectTest(_storage);
+                await base.CreateObjectTest(_storage);
             }
         }
 
@@ -250,7 +250,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await base._readUnknownTest(_storage);
+                await base.ReadUnknownTest(_storage);
             }
         }
 
@@ -260,7 +260,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await base._updateObjectTest(_storage);
+                await base.UpdateObjectTest(_storage);
             }
         }
 
@@ -270,7 +270,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await base._deleteObjectTest(_storage);
+                await base.DeleteObjectTest(_storage);
             }
         }
 
@@ -280,7 +280,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await base._handleCrazyKeys(_storage);
+                await base.HandleCrazyKeys(_storage);
             }
         }
 
