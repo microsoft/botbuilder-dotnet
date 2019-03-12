@@ -4,7 +4,7 @@
 namespace Microsoft.Bot.Schema
 {
     /// <summary>
-    /// Extension methods for converting strongly typed Card objects to Attachement
+    /// Extension methods for converting strongly typed Card objects to Attachement.
     /// </summary>
     public static partial class Extensions
     {
@@ -58,7 +58,6 @@ namespace Microsoft.Bot.Schema
             return CreateAttachment(card, AudioCard.ContentType);
         }
 
-
         /// <summary>
         /// Creates a new attachment from <see cref="VideoCard"/>.
         /// </summary>
@@ -84,7 +83,7 @@ namespace Microsoft.Bot.Schema
             return new Attachment
             {
                 Content = card,
-                ContentType = contentType
+                ContentType = contentType,
             };
         }
     }
