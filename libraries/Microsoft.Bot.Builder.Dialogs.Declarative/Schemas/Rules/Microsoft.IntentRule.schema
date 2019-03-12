@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$implements": [
+    "Microsoft.IRule"
+  ],
+  "title": "Intent Rule",
+  "description": "Intent Rule.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "intent": {
+      "type": "string",
+      "description": "This is the intent to be triggered.",
+      "examples": [
+        "JokeIntent"
+      ]
+    },
+    "steps": {
+      "type": "array",
+      "description": "steps to execute",
+      "items": {
+        "$type": "Microsoft.IDialog"
+      }
+    }
+  },
+  "required": [
+    "intent",
+    "steps"
+  ]
+}
