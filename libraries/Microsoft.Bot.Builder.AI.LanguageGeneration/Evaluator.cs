@@ -114,6 +114,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 {
                     case LGFileParser.DASH:
                         break;
+                    case LGFileParser.ESCAPE_CHARACTER:
+                        builder.Append(EvalEscapeCharacter(node.GetText()));
+                        break;
+                    case LGFileParser.INVALID_ESCAPE:
+                        throw new Exception($"escape character {node.GetText()} is invalid");
                     case LGFileParser.EXPRESSION:
                         builder.Append(EvalExpression(node.GetText()));
                         break;
@@ -130,7 +135,28 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             }
             return builder.ToString();
         }
-        
+
+        private string EvalEscapeCharacter(string exp)
+        {
+            var validCharactersDict = new Dictionary<string, string> {
+                //Top four items :C# later render engine will treat them as escape characters, so the format is unchanged
+                { @"\r","\r"},
+                { @"\n","\n"},
+                { @"\t","\t"},
+                { @"\\","\\"},
+
+                { @"\[","["},
+                { @"\]","]"},
+                { @"\{","{"},
+                { @"\}","}"},
+            };
+
+            if (validCharactersDict.ContainsKey(exp))
+                return validCharactersDict[exp];
+
+            throw new Exception($"escape character {exp} is invalid");
+
+        }
 
         private bool EvalCondition(string exp)
         {
