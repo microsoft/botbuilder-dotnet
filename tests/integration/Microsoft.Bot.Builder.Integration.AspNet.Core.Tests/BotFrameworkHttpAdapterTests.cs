@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             // Arrange
             var headerDictionaryMock = new Mock<IHeaderDictionary>();
             headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>(null);
-            
+
             var httpRequestMock = new Mock<HttpRequest>();
             httpRequestMock.Setup(r => r.Body).Returns(CreateMessageActivityStream());
             httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
@@ -106,8 +106,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                     Value = new InvokeResponse
                     {
                         Status = 200,
-                        Body = new JObject { { "quite.honestly", "im.feeling.really.attacked.right.now" } }
-                    }
+                        Body = new JObject { { "quite.honestly", "im.feeling.really.attacked.right.now" } },
+                    },
                 };
             }
         }
