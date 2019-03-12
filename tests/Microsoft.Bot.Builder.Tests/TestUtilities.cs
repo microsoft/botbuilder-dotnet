@@ -21,12 +21,12 @@ namespace Microsoft.Bot.Builder.Tests
                 ChannelId = "EmptyContext",
                 Conversation = new ConversationAccount
                 {
-                    Id = "test"
+                    Id = "test",
                 },
                 From = new ChannelAccount
                 {
                     Id = "empty@empty.context.org",
-                }
+                },
             };
             var bc = new TurnContext(b, a);
 
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Tests
                 return (T)bc;
             }
             else
-                throw new ArgumentException($"Unknown Type {typeof(T).Name}");            
+                throw new ArgumentException($"Unknown Type {typeof(T).Name}");
         }
         */
 
@@ -71,8 +71,11 @@ namespace Microsoft.Bot.Builder.Tests
                 // fallback to environment variables
                 value = Environment.GetEnvironmentVariable(key);
                 if (string.IsNullOrWhiteSpace(value))
+                {
                     value = null;
+                }
             }
+
             return value;
         }
     }

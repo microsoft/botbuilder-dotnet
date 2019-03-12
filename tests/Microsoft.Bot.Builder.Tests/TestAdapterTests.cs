@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             try
             {
-                await new TestFlow(adapter, async (context, cancellationToken) => 
+                await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
                     await context.SendActivityAsync(context.Activity.CreateReply("one"));
                 })
@@ -121,7 +121,6 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
         }
 
-
         [TestMethod]
         public async Task TestAdapter_SendReply()
         {
@@ -141,7 +140,6 @@ namespace Microsoft.Bot.Builder.Tests
                 .Send("foo").AssertReplyOneOf(new string[] { "echo:bar", "echo:foo", "echo:blat" }, "say with string works")
                 .StartTestAsync();
         }
-
 
         [TestMethod]
         public async Task TestAdapter_MultipleReplies()
@@ -190,8 +188,8 @@ namespace Microsoft.Bot.Builder.Tests
                 ChannelId = "directline",
                 From = new ChannelAccount()
                 {
-                    Id = "testUser"
-                }
+                    Id = "testUser",
+                },
             };
             TurnContext turnContext = new TurnContext(adapter, activity);
 
@@ -208,8 +206,8 @@ namespace Microsoft.Bot.Builder.Tests
                 ChannelId = "directline",
                 From = new ChannelAccount()
                 {
-                    Id = "testUser"
-                }
+                    Id = "testUser",
+                },
             };
             TurnContext turnContext = new TurnContext(adapter, activity);
 
@@ -230,8 +228,8 @@ namespace Microsoft.Bot.Builder.Tests
                 ChannelId = channelId,
                 From = new ChannelAccount()
                 {
-                    Id = userId
-                }
+                    Id = userId,
+                },
             };
             TurnContext turnContext = new TurnContext(adapter, activity);
 
@@ -257,8 +255,8 @@ namespace Microsoft.Bot.Builder.Tests
                 ChannelId = channelId,
                 From = new ChannelAccount()
                 {
-                    Id = userId
-                }
+                    Id = userId,
+                },
             };
             TurnContext turnContext = new TurnContext(adapter, activity);
 
@@ -293,11 +291,10 @@ namespace Microsoft.Bot.Builder.Tests
                 ChannelId = channelId,
                 From = new ChannelAccount()
                 {
-                    Id = userId
-                }
+                    Id = userId,
+                },
             };
             TurnContext turnContext = new TurnContext(adapter, activity);
-
 
             var link = await adapter.GetOauthSignInLinkAsync(turnContext, connectionName, userId, null, CancellationToken.None);
             Assert.IsNotNull(link);
@@ -316,11 +313,10 @@ namespace Microsoft.Bot.Builder.Tests
                 ChannelId = channelId,
                 From = new ChannelAccount()
                 {
-                    Id = userId
-                }
+                    Id = userId,
+                },
             };
             TurnContext turnContext = new TurnContext(adapter, activity);
-
 
             var link = await adapter.GetOauthSignInLinkAsync(turnContext, connectionName, CancellationToken.None);
             Assert.IsNotNull(link);
@@ -340,12 +336,11 @@ namespace Microsoft.Bot.Builder.Tests
                 ChannelId = channelId,
                 From = new ChannelAccount()
                 {
-                    Id = userId
-                }
+                    Id = userId,
+                },
             };
             TurnContext turnContext = new TurnContext(adapter, activity);
 
-            
             await adapter.SignOutUserAsync(turnContext);
             await adapter.SignOutUserAsync(turnContext, connectionName);
             await adapter.SignOutUserAsync(turnContext, connectionName, userId);
@@ -365,8 +360,8 @@ namespace Microsoft.Bot.Builder.Tests
                 ChannelId = channelId,
                 From = new ChannelAccount()
                 {
-                    Id = userId
-                }
+                    Id = userId,
+                },
             };
             TurnContext turnContext = new TurnContext(adapter, activity);
 
@@ -394,8 +389,8 @@ namespace Microsoft.Bot.Builder.Tests
                 ChannelId = channelId,
                 From = new ChannelAccount()
                 {
-                    Id = userId
-                }
+                    Id = userId,
+                },
             };
             TurnContext turnContext = new TurnContext(adapter, activity);
 
@@ -431,8 +426,8 @@ namespace Microsoft.Bot.Builder.Tests
                 ChannelId = channelId,
                 From = new ChannelAccount()
                 {
-                    Id = userId
-                }
+                    Id = userId,
+                },
             };
             TurnContext turnContext = new TurnContext(adapter, activity);
 
@@ -456,8 +451,8 @@ namespace Microsoft.Bot.Builder.Tests
                 ChannelId = channelId,
                 From = new ChannelAccount()
                 {
-                    Id = userId
-                }
+                    Id = userId,
+                },
             };
             TurnContext turnContext = new TurnContext(adapter, activity);
 

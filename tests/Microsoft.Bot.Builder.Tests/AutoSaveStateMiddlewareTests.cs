@@ -37,9 +37,8 @@ namespace Microsoft.Bot.Builder.Tests
                 // get userCount and convCount from hSet
                 var userCount = await userProperty.GetAsync(context, () => USER_INITITAL_COUNT).ConfigureAwait(false);
                 var convCount = await convProperty.GetAsync(context, () => CONVERSATION_INITIAL_COUNT).ConfigureAwait(false);
-                            
-                // System.Diagnostics.Debug.WriteLine($"{context.Activity.Id} UserCount({context.Activity.From.Id}):{userCount} convCount({context.Activity.Conversation.Id}):{convCount}");
 
+                // System.Diagnostics.Debug.WriteLine($"{context.Activity.Id} UserCount({context.Activity.From.Id}):{userCount} convCount({context.Activity.Conversation.Id}):{convCount}");
                 if (context.Activity.Type == ActivityTypes.Message)
                 {
                     if (context.Activity.Text == "get userCount")
@@ -78,7 +77,7 @@ namespace Microsoft.Bot.Builder.Tests
                 ServiceUrl = "https://test.com",
                 User = new ChannelAccount("user1", "User1"),
                 Bot = new ChannelAccount("bot", "Bot"),
-                Conversation = new ConversationAccount(false, "convo2", "Conversation2")
+                Conversation = new ConversationAccount(false, "convo2", "Conversation2"),
             })
                 .Use(new AutoSaveStateMiddleware(userState, convState));
 
@@ -158,7 +157,7 @@ namespace Microsoft.Bot.Builder.Tests
                 ServiceUrl = "https://test.com",
                 User = new ChannelAccount("user1", "User1"),
                 Bot = new ChannelAccount("bot", "Bot"),
-                Conversation = new ConversationAccount(false, "convo2", "Conversation2")
+                Conversation = new ConversationAccount(false, "convo2", "Conversation2"),
             })
                 .Use(bss2);
 
@@ -168,9 +167,6 @@ namespace Microsoft.Bot.Builder.Tests
                 .Send("get convCount")
                     .AssertReply((CONVERSATION_INITIAL_COUNT + 1).ToString(), "conversationCount for conversation2 should be reset")
                 .StartTestAsync();
-
         }
-
-
     }
 }
