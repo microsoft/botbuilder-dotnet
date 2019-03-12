@@ -228,7 +228,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var options = new Dictionary<string, string> { { "value", "test" } };
 
             var childComponent = new ComponentDialog("childComponent");
-            var steps = new WaterfallStep[]
+            var childSteps = new WaterfallStep[]
             {
                 async (step, ct) =>
                 {
@@ -244,11 +244,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             };
             childComponent.AddDialog(new WaterfallDialog(
                 "childDialog",
-                steps));
+                childSteps));
 
             var parentComponent = new ComponentDialog("parentComponent");
             parentComponent.AddDialog(childComponent);
-            var steps1 = new WaterfallStep[]
+            var parentSteps = new WaterfallStep[]
             {
                 async (step, dc) =>
                 {
@@ -261,7 +261,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             };
             parentComponent.AddDialog(new WaterfallDialog(
                 "parentDialog",
-                steps1));
+                parentSteps));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
