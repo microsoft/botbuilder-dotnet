@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Configuration.Tests
 {
     [TestClass]
-    public class ConfingurationLoadAndSaveTests
+    public class ConfigurationLoadAndSaveTests
     {
         private const string TestBotFileName = @"..\..\..\test.bot";
         private const string OutputBotFileName = "save.bot";
@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Configuration.Tests
             var config = await BotConfiguration.LoadAsync(TestBotFileName);
             Assert.AreEqual("test", config.Name);
             Assert.AreEqual("test description", config.Description);
-            Assert.AreEqual("", config.Padlock);
+            Assert.AreEqual(string.Empty, config.Padlock);
             Assert.AreEqual(12, config.Services.Count);
             dynamic properties = config.Properties;
             Assert.AreEqual(true, (bool)properties.extra, "extra property should round trip");
@@ -68,7 +68,6 @@ namespace Microsoft.Bot.Configuration.Tests
             }
         }
 
-
         [TestMethod]
         public async Task LoadAndSaveUnencryptedBotFile()
         {
@@ -102,7 +101,9 @@ namespace Microsoft.Bot.Configuration.Tests
                 await BotConfiguration.LoadAsync(OutputBotFileName);
                 Assert.Fail("Load should have thrown due to no secret");
             }
-            catch { }
+            catch
+            {
+            }
         }
 
         [TestMethod]
@@ -190,7 +191,10 @@ namespace Microsoft.Bot.Configuration.Tests
                 await config2.SaveAsAsync(OutputBotFileName);
                 Assert.Fail("Save() should have thrown due to no secret");
             }
-            catch { }
+            catch
+            {
+            }
+
             config2.ClearSecret();
             await config2.SaveAsAsync(OutputBotFileName, secret);
         }
@@ -200,7 +204,7 @@ namespace Microsoft.Bot.Configuration.Tests
         {
             string secret = BotConfiguration.GenerateKey();
             var config = await BotConfiguration.LoadAsync(TestBotFileName);
-            Assert.AreEqual("", config.Padlock, "There should be no padlock");
+            Assert.AreEqual(string.Empty, config.Padlock, "There should be no padlock");
 
             // save with secret
             await config.SaveAsAsync("savesecret.bot", secret);
@@ -229,6 +233,7 @@ namespace Microsoft.Bot.Configuration.Tests
                             Assert.AreEqual(appInsights.ApiKeys["key1"], "testKey1", "failed to decrypt key1");
                             Assert.AreEqual(appInsights.ApiKeys["key2"], "testKey2", "failed to decrypt key2");
                         }
+
                         break;
 
                     case ServiceTypes.BlobStorage:
@@ -237,6 +242,7 @@ namespace Microsoft.Bot.Configuration.Tests
                             Assert.AreEqual("UseDevelopmentStorage=true;", blobStorage.ConnectionString, "failed to decrypt connectionString");
                             Assert.AreEqual("testContainer", blobStorage.Container, "failed to decrypt Container");
                         }
+
                         break;
 
                     case ServiceTypes.CosmosDB:
@@ -246,8 +252,8 @@ namespace Microsoft.Bot.Configuration.Tests
                             Assert.AreEqual("C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==", cosmosDb.Key, "failed to decrypt key");
                             Assert.AreEqual("testDatabase", cosmosDb.Database, "failed to decrypt database");
                             Assert.AreEqual("testCollection", cosmosDb.Collection, "failed to decrypt collection");
-
                         }
+
                         break;
 
                     case ServiceTypes.Dispatch:
@@ -256,6 +262,7 @@ namespace Microsoft.Bot.Configuration.Tests
                             Assert.IsTrue(dispatch.AuthoringKey.Contains("0000"), "failed to decrypt authoringkey");
                             Assert.IsTrue(dispatch.SubscriptionKey.Contains("0000"), "failed to decrypt subscriptionKey");
                         }
+
                         break;
 
                     case ServiceTypes.Endpoint:
@@ -263,6 +270,7 @@ namespace Microsoft.Bot.Configuration.Tests
                             var endpoint = (EndpointService)config2.Services[i];
                             Assert.AreEqual("testpassword", endpoint.AppPassword, "failed to decrypt appPassword");
                         }
+
                         break;
 
                     case ServiceTypes.File:
@@ -274,6 +282,7 @@ namespace Microsoft.Bot.Configuration.Tests
                             Assert.IsTrue(luis.AuthoringKey.Contains("0000"), "failed to decrypt authoringkey");
                             Assert.IsTrue(luis.SubscriptionKey.Contains("0000"), "failed to decrypt subscriptionKey");
                         }
+
                         break;
 
                     case ServiceTypes.QnA:
@@ -283,6 +292,7 @@ namespace Microsoft.Bot.Configuration.Tests
                             Assert.IsTrue(qna.EndpointKey.Contains("0000"), "failed to decrypt EndpointKey");
                             Assert.IsTrue(qna.SubscriptionKey.Contains("0000"), "failed to decrypt SubscriptionKey");
                         }
+
                         break;
 
                     case ServiceTypes.Generic:
@@ -292,6 +302,7 @@ namespace Microsoft.Bot.Configuration.Tests
                             Assert.AreEqual(generic.Configuration["key1"], "testKey1", "failed to decrypt key1");
                             Assert.AreEqual(generic.Configuration["key2"], "testKey2", "failed to decrypt key2");
                         }
+
                         break;
 
                     default:
@@ -315,6 +326,7 @@ namespace Microsoft.Bot.Configuration.Tests
                             Assert.AreNotEqual(appInsights.ApiKeys["key1"], "testKey1", "failed to encrypt key1");
                             Assert.AreNotEqual(appInsights.ApiKeys["key2"], "testKey2", "failed to encrypt key2");
                         }
+
                         break;
 
                     case ServiceTypes.BlobStorage:
@@ -323,6 +335,7 @@ namespace Microsoft.Bot.Configuration.Tests
                             Assert.AreNotEqual("UseDevelopmentStorage=true;", azureStorage.ConnectionString, "failed to encrypt connectionString");
                             Assert.AreEqual("testContainer", azureStorage.Container, "should not change container");
                         }
+
                         break;
 
                     case ServiceTypes.CosmosDB:
@@ -333,6 +346,7 @@ namespace Microsoft.Bot.Configuration.Tests
                             Assert.AreEqual("testDatabase", cosmosdb.Database, "should not change database");
                             Assert.AreEqual("testCollection", cosmosdb.Collection, "should not change collection");
                         }
+
                         break;
 
                     case ServiceTypes.Bot:
@@ -346,6 +360,7 @@ namespace Microsoft.Bot.Configuration.Tests
                             Assert.IsFalse(dispatch.AuthoringKey.Contains("0000"), "failed to encrypt authoringkey");
                             Assert.IsFalse(dispatch.SubscriptionKey.Contains("0000"), "failed to encrypt subscriptionKey");
                         }
+
                         break;
 
                     case ServiceTypes.Endpoint:
@@ -355,6 +370,7 @@ namespace Microsoft.Bot.Configuration.Tests
                             Assert.IsTrue(endpoint.AppId.Contains("0000"), "appId should not be changed");
                             Assert.IsFalse(endpoint.AppPassword.Contains("testpassword"), "failed to encrypt appPassword");
                         }
+
                         break;
 
                     case ServiceTypes.File:
@@ -368,6 +384,7 @@ namespace Microsoft.Bot.Configuration.Tests
                             Assert.IsFalse(luis.AuthoringKey.Contains("0000"), "failed to encrypt authoringkey");
                             Assert.IsFalse(luis.SubscriptionKey.Contains("0000"), "failed to encrypt subscriptionKey");
                         }
+
                         break;
 
                     case ServiceTypes.QnA:
@@ -378,6 +395,7 @@ namespace Microsoft.Bot.Configuration.Tests
                             Assert.IsFalse(qna.EndpointKey.Contains("0000"), "failed to encrypt EndpointKey");
                             Assert.IsFalse(qna.SubscriptionKey.Contains("0000"), "failed to encrypt SubscriptionKey");
                         }
+
                         break;
                     case ServiceTypes.Generic:
                         {
@@ -386,6 +404,7 @@ namespace Microsoft.Bot.Configuration.Tests
                             Assert.AreNotEqual(generic.Configuration["key1"], "testKey1", "failed to encrypt key1");
                             Assert.AreNotEqual(generic.Configuration["key2"], "testKey2", "failed to encrypt key2");
                         }
+
                         break;
                     default:
                         // ignore unknown service type
@@ -400,13 +419,13 @@ namespace Microsoft.Bot.Configuration.Tests
             var secretKey = "d+Mhts8yQIJIj9P/l1pO7n1fQExss7vvE8t9rg8qXsc=";
             var config = await BotConfiguration.LoadAsync(@"..\..\..\legacy.bot", secretKey);
             Assert.AreEqual("xyzpdq", ((EndpointService)config.Services[0]).AppPassword, "value should be unencrypted");
-            Assert.IsTrue(!String.IsNullOrEmpty(config.Padlock), "padlock should exist");
+            Assert.IsTrue(!string.IsNullOrEmpty(config.Padlock), "padlock should exist");
             Assert.IsNull(config.Properties["secretKey"], "secretKey should not exist");
 
             await config.SaveAsAsync(OutputBotFileName, secretKey);
             config = await BotConfiguration.LoadAsync(OutputBotFileName, secretKey);
             File.Delete(OutputBotFileName);
-            Assert.IsTrue(!String.IsNullOrEmpty(config.Padlock), "padlock should exist");
+            Assert.IsTrue(!string.IsNullOrEmpty(config.Padlock), "padlock should exist");
             Assert.IsNull(config.Properties["secretKey"], "secretKey should not exist");
         }
 
@@ -417,7 +436,7 @@ namespace Microsoft.Bot.Configuration.Tests
             var endpointSvc = publicConfig.Services.Single(x => x.Type == ServiceTypes.Endpoint) as EndpointService;
             Assert.IsNotNull(endpointSvc);
             Assert.IsNull(endpointSvc.ChannelService);
-            
+
             var govConfig = BotConfiguration.Load(@"..\..\..\govTest.bot");
             endpointSvc = govConfig.Services.Single(x => x.Type == ServiceTypes.Endpoint) as EndpointService;
             Assert.IsNotNull(endpointSvc);
