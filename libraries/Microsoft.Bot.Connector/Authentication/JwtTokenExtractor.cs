@@ -17,55 +17,56 @@ using Microsoft.IdentityModel.Tokens;
 namespace Microsoft.Bot.Connector.Authentication
 {
     public class JwtTokenExtractor
-    {        
+    {
         /// <summary>
-        /// Cache for OpenIdConnect configuration managers (one per metadata URL)
+        /// Cache for OpenIdConnect configuration managers (one per metadata URL).
         /// </summary>
         private static readonly ConcurrentDictionary<string, ConfigurationManager<OpenIdConnectConfiguration>> _openIdMetadataCache =
             new ConcurrentDictionary<string, ConfigurationManager<OpenIdConnectConfiguration>>();
 
         /// <summary>
-        /// Cache for Endorsement configuration managers (one per metadata URL)
+        /// Cache for Endorsement configuration managers (one per metadata URL).
         /// </summary>
         private static readonly ConcurrentDictionary<string, ConfigurationManager<IDictionary<string, HashSet<string>>>> _endorsementsCache =
             new ConcurrentDictionary<string, ConfigurationManager<IDictionary<string, HashSet<string>>>>();
 
         /// <summary>
-        /// Token validation parameters for this instance
+        /// Token validation parameters for this instance.
         /// </summary>
         private readonly TokenValidationParameters _tokenValidationParameters;
 
         /// <summary>
-        /// OpenIdConnect configuration manager for this instance
+        /// OpenIdConnect configuration manager for this instance.
         /// </summary>
         private readonly ConfigurationManager<OpenIdConnectConfiguration> _openIdMetadata;
 
         /// <summary>
-        /// Endorsements configuration manager for this instance
+        /// Endorsements configuration manager for this instance.
         /// </summary>
         private readonly ConfigurationManager<IDictionary<string, HashSet<string>>> _endorsementsData;
 
         /// <summary>
-        /// Allowed signing algorithms
+        /// Allowed signing algorithms.
         /// </summary>
         private readonly HashSet<string> _allowedSigningAlgorithms;
-                
+
         /// <summary>
-        /// Extracts relevant data from JWT Tokens
+        /// Initializes a new instance of the <see cref="JwtTokenExtractor"/> class.
+        /// Extracts relevant data from JWT Tokens.
         /// </summary>
         /// <param name="httpClient">As part of validating JWT Tokens, endorsements need to be feteched from
         /// sources specified by the relevant security URLs. This HttpClient is used to allow for resource
-        /// pooling around those retrievals. As those resources require TLS sharing the HttpClient is 
+        /// pooling around those retrievals. As those resources require TLS sharing the HttpClient is
         /// important to overall perfomance.</param>
-        /// <param name="tokenValidationParameters"></param>
-        /// <param name="metadataUrl"></param>
-        /// <param name="allowedSigningAlgorithms"></param>
+        /// <param name="tokenValidationParameters">tokenValidationParameters.</param>
+        /// <param name="metadataUrl">metadataUrl.</param>
+        /// <param name="allowedSigningAlgorithms">allowedSigningAlgorithms.</param>
         public JwtTokenExtractor(HttpClient httpClient, TokenValidationParameters tokenValidationParameters, string metadataUrl, HashSet<string> allowedSigningAlgorithms)
         {
             // Make our own copy so we can edit it
             _tokenValidationParameters = tokenValidationParameters.Clone();
             _tokenValidationParameters.RequireSignedTokens = true;
-            _allowedSigningAlgorithms = allowedSigningAlgorithms;            
+            _allowedSigningAlgorithms = allowedSigningAlgorithms;
 
             _openIdMetadata = _openIdMetadataCache.GetOrAdd(metadataUrl, key =>
             {
@@ -82,7 +83,9 @@ namespace Microsoft.Bot.Connector.Authentication
         public async Task<ClaimsIdentity> GetIdentityAsync(string authorizationHeader, string channelId)
         {
             if (authorizationHeader == null)
+            {
                 return null;
+            }
 
             string[] parts = authorizationHeader?.Split(' ');
             if (parts.Length == 2)
@@ -91,17 +94,21 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             return null;
-        }        
+        }
 
         public async Task<ClaimsIdentity> GetIdentityAsync(string scheme, string parameter, string channelId)
         {
             // No header in correct scheme or no token
             if (scheme != "Bearer" || string.IsNullOrEmpty(parameter))
+            {
                 return null;
+            }
 
             // Issuer isn't allowed? No need to check signature
             if (!HasAllowedIssuer(parameter))
+            {
                 return null;
+            }
 
             try
             {
@@ -119,14 +126,18 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             JwtSecurityToken token = new JwtSecurityToken(jwtToken);
             if (_tokenValidationParameters.ValidIssuer != null && _tokenValidationParameters.ValidIssuer == token.Issuer)
+            {
                 return true;
+            }
 
             if ((_tokenValidationParameters.ValidIssuers ?? Enumerable.Empty<string>()).Contains(token.Issuer))
+            {
                 return true;
+            }
 
             return false;
         }
-              
+
         private async Task<ClaimsPrincipal> ValidateTokenAsync(string jwtToken, string channelId)
         {
             // _openIdMetadata only does a full refresh when the cache expires every 5 days
@@ -141,7 +152,9 @@ namespace Microsoft.Bot.Connector.Authentication
 
                 // No config? We can't continue
                 if (config == null)
+                {
                     throw;
+                }
             }
 
             // Update the signing tokens from the last refresh
@@ -153,13 +166,13 @@ namespace Microsoft.Bot.Connector.Authentication
                 var principal = tokenHandler.ValidateToken(jwtToken, _tokenValidationParameters, out SecurityToken parsedToken);
                 var parsedJwtToken = parsedToken as JwtSecurityToken;
 
-                // Validate Channel / Token Endorsements. For this, the channelID present on the Activity 
-                // needs to be matched by an endorsement.  
+                // Validate Channel / Token Endorsements. For this, the channelID present on the Activity
+                // needs to be matched by an endorsement.
                 var keyId = (string)parsedJwtToken?.Header?[AuthenticationConstants.KeyIdHeader];
                 var endorsements = await _endorsementsData.GetConfigurationAsync();
 
                 // Note: On the Emulator Code Path, the endorsements collection is empty so the validation code
-                // below won't run. This is normal. 
+                // below won't run. This is normal.
                 if (!string.IsNullOrEmpty(keyId) && endorsements.TryGetValue(keyId, out var endorsementsForKey))
                 {
                     var isEndorsed = EndorsementsValidator.Validate(channelId, endorsementsForKey);
@@ -177,11 +190,12 @@ namespace Microsoft.Bot.Connector.Authentication
                         throw new UnauthorizedAccessException($"Token signing algorithm '{algorithm}' not in allowed list");
                     }
                 }
+
                 return principal;
             }
             catch (SecurityTokenSignatureKeyNotFoundException)
             {
-                var keys = string.Join(", ", ((config?.SigningKeys) ?? Enumerable.Empty<SecurityKey>()).Select(t => t.KeyId));
+                var keys = string.Join(", ", (config?.SigningKeys ?? Enumerable.Empty<SecurityKey>()).Select(t => t.KeyId));
                 Trace.TraceError("Error finding key for token. Available keys: " + keys);
                 throw;
             }
