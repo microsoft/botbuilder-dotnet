@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void NumberPromptWithEmptyIdShouldFail()
         {
-            var emptyId = "";
+            var emptyId = string.Empty;
             var numberPrompt = new NumberPrompt<int>(emptyId);
         }
 
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void NumberPromptWithNullIdShouldFail()
         {
-            var nullId = "";
+            var nullId = string.Empty;
             nullId = null;
             var numberPrompt = new NumberPrompt<int>(nullId);
         }
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .Use(new AutoSaveStateMiddleware(convoState));
 
             var dialogs = new DialogSet(dialogState);
-            
+
             var numberPrompt = new NumberPrompt<int>("NumberPrompt", defaultLocale: Culture.English);
             dialogs.Add(numberPrompt);
 
@@ -90,9 +90,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
                 {
-                    var options = new PromptOptions {
+                    var options = new PromptOptions
+                    {
                         Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." },
-                        RetryPrompt = new Activity {  Type = ActivityTypes.Message, Text = "You must enter a number." }
+                        RetryPrompt = new Activity { Type = ActivityTypes.Message, Text = "You must enter a number." },
                     };
                     await dc.PromptAsync("NumberPrompt", options, cancellationToken);
                 }
@@ -125,11 +126,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             PromptValidator<int> validator = (promptContext, cancellationToken) =>
             {
                 var result = promptContext.Recognized.Value;
-                
+
                 if (result < 100 && result > 0)
                 {
                     return Task.FromResult(true);
                 }
+
                 return Task.FromResult(false);
             };
             var numberPrompt = new NumberPrompt<int>("NumberPrompt", validator, Culture.English);
@@ -142,9 +144,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
                 {
-                    var options = new PromptOptions {
+                    var options = new PromptOptions
+                    {
                         Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." },
-                        RetryPrompt = new Activity {  Type = ActivityTypes.Message, Text = "You must enter a positive number less than 100." }
+                        RetryPrompt = new Activity { Type = ActivityTypes.Message, Text = "You must enter a positive number less than 100." },
                     };
                     await dc.PromptAsync("NumberPrompt", options, cancellationToken);
                 }
@@ -162,7 +165,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("Bot received the number '64'.")
             .StartTestAsync();
         }
-        
+
         [TestMethod]
         public async Task FloatNumberPrompt()
         {
@@ -186,7 +189,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     var options = new PromptOptions
                     {
-                        Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." }
+                        Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." },
                     };
                     await dc.PromptAsync("NumberPrompt", options, cancellationToken);
                 }
@@ -202,7 +205,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("Bot received the number '3.14'.")
             .StartTestAsync();
         }
-        
+
         [TestMethod]
         public async Task LongNumberPrompt()
         {
@@ -226,7 +229,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     var options = new PromptOptions
                     {
-                        Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." }
+                        Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." },
                     };
                     await dc.PromptAsync("NumberPrompt", options, cancellationToken);
                 }
@@ -242,7 +245,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("Bot received the number '42'.")
             .StartTestAsync();
         }
-        
+
         [TestMethod]
         public async Task DoubleNumberPrompt()
         {
@@ -266,7 +269,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     var options = new PromptOptions
                     {
-                        Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." }
+                        Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." },
                     };
                     await dc.PromptAsync("NumberPrompt", options);
                 }
@@ -306,7 +309,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     var options = new PromptOptions
                     {
-                        Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." }
+                        Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." },
                     };
                     await dc.PromptAsync("NumberPrompt", options, cancellationToken);
                 }

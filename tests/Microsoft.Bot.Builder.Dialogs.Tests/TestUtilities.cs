@@ -13,28 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
     public class TestUtilities
     {
-        public static TurnContext CreateEmptyContext()
-        {
-            var b = new TestAdapter();
-            var a = new Activity
-            {
-                Type = ActivityTypes.Message,
-                ChannelId = "EmptyContext",
-                From = new ChannelAccount
-                {
-                    Id = "empty@empty.context.org",
-                }, 
-                Conversation = new ConversationAccount()
-                {
-                    Id="213123123123"
-                }
-            };
-            var bc = new TurnContext(b, a);
-
-            return bc;
-        }
-
-        static Lazy<Dictionary<string, string>> environmentKeys = new Lazy<Dictionary<string, string>>(() =>
+        private static Lazy<Dictionary<string, string>> environmentKeys = new Lazy<Dictionary<string, string>>(() =>
         {
             try
             {
@@ -50,6 +29,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             }
         });
 
+        public static TurnContext CreateEmptyContext()
+        {
+            var b = new TestAdapter();
+            var a = new Activity
+            {
+                Type = ActivityTypes.Message,
+                ChannelId = "EmptyContext",
+                From = new ChannelAccount
+                {
+                    Id = "empty@empty.context.org",
+                },
+
+                Conversation = new ConversationAccount()
+                {
+                    Id = "213123123123",
+                },
+            };
+            var bc = new TurnContext(b, a);
+
+            return bc;
+        }
+
         public static string GetKey(string key)
         {
             if (!environmentKeys.Value.TryGetValue(key, out var value))
@@ -57,8 +58,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 // fallback to environment variables
                 value = Environment.GetEnvironmentVariable(key);
                 if (string.IsNullOrWhiteSpace(value))
+                {
                     value = null;
+                }
             }
+
             return value;
         }
     }
