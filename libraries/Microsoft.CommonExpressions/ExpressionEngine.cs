@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Antlr4.Runtime;
 
 namespace Microsoft.Expressions
 {
@@ -29,6 +30,24 @@ namespace Microsoft.Expressions
             return Evaluate(term, scope, getValue, getMethod);
         }
 
+
+        public static object EvaluatrWithAntlr(string expression, object scope, GetValueDelegate getValue = null, GetMethodDelegate getMethod = null)
+        {
+            var inputStream = new AntlrInputStream(expression);
+            var lexer = new ExpressionLexer(inputStream);
+            var tokenStream = new CommonTokenStream(lexer);
+            var parser = new ExpressionParser(tokenStream);
+            parser.BuildParseTree = true;
+            parser.ErrorHandler = new BailErrorStrategy();
+
+            var exp = parser.expression();
+            var evaluator = new ExpressionEvaluator();
+
+            var result = evaluator.Evaluate(exp, scope, getValue, getMethod);
+            return result;
+        }
+
+
         /// <summary>
         /// Parse the input into Term
         /// </summary>
@@ -36,9 +55,9 @@ namespace Microsoft.Expressions
         /// <returns></returns>
         public static Term Parse(string expression)
         {
-            using (var tokens = Lexer.Tokens(expression).GetEnumerator())
+            using (var tokens = InnerLexer.Tokens(expression).GetEnumerator())
             {
-                Lexer.Next(tokens);
+                InnerLexer.Next(tokens);
                 return Expression(tokens, 0);
             }
         }
@@ -59,7 +78,7 @@ namespace Microsoft.Expressions
             var value = token.Value;
 
             // token value is identifier -> look up binding in scope
-            var identifier = value as Lexer.Identifier;
+            var identifier = value as InnerLexer.Identifier;
             if (identifier != null)
             {
                 return getValue(scope, identifier.Name);
@@ -143,7 +162,7 @@ namespace Microsoft.Expressions
         private static Term Prefix(IEnumerator<Token> tokens)
         {
             var token = tokens.Current;
-            Lexer.Next(tokens);
+            InnerLexer.Next(tokens);
             if (OperatorTable.PrefixByToken.TryGetValue(token.Input, out var prefix))
             {
                 return Term.From(token, prefix, Expression(tokens, prefix.Power));
@@ -155,7 +174,7 @@ namespace Microsoft.Expressions
                 case "(":
                     {
                         var term = Expression(tokens, 0);
-                        Lexer.Match(tokens, ")");
+                        InnerLexer.Match(tokens, ")");
                         return term;
                     }
                 default:
@@ -166,7 +185,7 @@ namespace Microsoft.Expressions
         private static Term Infix(IEnumerator<Token> tokens, Term left)
         {
             var token = tokens.Current;
-            Lexer.Next(tokens);
+            InnerLexer.Next(tokens);
 
             if (OperatorTable.InfixByToken.TryGetValue(token.Input, out var infix))
             {
@@ -186,11 +205,11 @@ namespace Microsoft.Expressions
                                     {
                                         break;
                                     }
-                                    Lexer.Match(tokens, ",");
+                                    InnerLexer.Match(tokens, ",");
                                 }
                             }
 
-                            Lexer.Match(tokens, ")");
+                            InnerLexer.Match(tokens, ")");
                             return Term.From(token, infix, terms.ToArray());
                         }
                     case "[":
@@ -199,7 +218,7 @@ namespace Microsoft.Expressions
                                 left,
                                 Expression(tokens, 0)
                             };
-                            Lexer.Match(tokens, "]");
+                            InnerLexer.Match(tokens, "]");
                             return Term.From(token, infix, terms);
                         }
                     default:

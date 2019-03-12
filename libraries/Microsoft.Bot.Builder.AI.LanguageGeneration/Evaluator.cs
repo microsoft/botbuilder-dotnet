@@ -222,7 +222,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
         private object EvalByExpressionEngine(string exp, object scope)
         {
-            return ExpressionEngine.Evaluate(exp, scope, GetValueX.GetValueX, GetMethodX.GetMethodX);
+            //return ExpressionEngine.Evaluate(exp, scope, GetValueX.GetValueX, GetMethodX.GetMethodX);
+            return ExpressionEngine.EvaluatrWithAntlr(exp, scope, GetValueX.GetValueX, GetMethodX.GetMethodX);
         }
 
         public object ConstructScope(string templateName, List<object> args)

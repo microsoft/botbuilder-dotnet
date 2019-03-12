@@ -203,7 +203,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var value = token.Value;
 
             // token value is identifier -> look up binding in scope
-            var identifier = value as Lexer.Identifier;
+            var identifier = value as InnerLexer.Identifier;
             if (identifier != null)
             {
                 return new List<string> { identifier.Name };
