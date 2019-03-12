@@ -34,36 +34,35 @@ namespace Microsoft.Bot.Builder.TestBot
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddSingleton<IAdapterIntegration>(sp =>
-            //{
+            // services.AddSingleton<IAdapterIntegration>(sp =>
+            // {
             //    var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
             //    var accessors = sp.GetRequiredService<TestBotAccessors>();
 
-            //    options.Middleware.Add(new AutoSaveStateMiddleware(accessors.ConversationState));
+            // options.Middleware.Add(new AutoSaveStateMiddleware(accessors.ConversationState));
             //    options.Middleware.Add(new ShowTypingMiddleware());
 
-            //    var botFrameworkAdapter = new BotFrameworkAdapter(options.CredentialProvider, options.ChannelProvider, options.ConnectorClientRetryPolicy, options.HttpClient)
+            // var botFrameworkAdapter = new BotFrameworkAdapter(options.CredentialProvider, options.ChannelProvider, options.ConnectorClientRetryPolicy, options.HttpClient)
             //    {
             //        OnTurnError = options.OnTurnError,
             //    };
 
-            //    foreach (var middleware in options.Middleware)
+            // foreach (var middleware in options.Middleware)
             //    {
             //        botFrameworkAdapter.Use(middleware);
             //    }
 
-            //    //return botFrameworkAdapter;
+            // return botFrameworkAdapter;
 
-            //    return new InteceptorAdapter(botFrameworkAdapter);
-            //});
-
+            // return new InteceptorAdapter(botFrameworkAdapter);
+            // });
             IStorage dataStore = new MemoryStorage();
             var conversationState = new ConversationState(dataStore);
 
             var accessors = new TestBotAccessors
             {
                 ConversationDialogState = conversationState.CreateProperty<DialogState>("DialogState"),
-                ConversationState = conversationState
+                ConversationState = conversationState,
             };
 
             services.AddBot<IBot>(
@@ -81,13 +80,13 @@ namespace Microsoft.Bot.Builder.TestBot
                     options.Middleware.Add(new AutoSaveStateMiddleware(conversationState));
                 });
 
-            //services.AddBot<TestBot>(options =>
-            //{
+            // services.AddBot<TestBot>(options =>
+            // {
             //    IStorage dataStore = new MemoryStorage();
             //    options.State.Add(new ConversationState(dataStore));
             //    options.Middleware.Add(new AutoSaveStateMiddleware(options.State.ToArray()));
             //    options.Middleware.Add(new ShowTypingMiddleware());
-            //});
+            // });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -99,13 +98,12 @@ namespace Microsoft.Bot.Builder.TestBot
             }
 
             // NOTE: Uncomment this to force request buffering to test accessing the request body in buffered scenarios (default is always unbuffered)
-            //app.Use(async (httpContext, next) =>
-            //{
+            // app.Use(async (httpContext, next) =>
+            // {
             //    httpContext.Request.EnableBuffering();
 
-            //    await next();
-            //});
-
+            // await next();
+            // });
             app.UseDefaultFiles()
                 .UseStaticFiles()
                 .UseBotFramework();

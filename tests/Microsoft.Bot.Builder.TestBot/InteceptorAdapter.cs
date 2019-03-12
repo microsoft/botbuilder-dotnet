@@ -26,7 +26,5 @@ namespace Microsoft.Bot.Builder.TestBot
         {
             return _innerAdapter.ProcessActivityAsync(authHeader, activity, callback, cancellationToken);
         }
-
-
     }
 }
