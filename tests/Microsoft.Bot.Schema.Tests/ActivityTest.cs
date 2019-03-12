@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Schema.Tests
 
             var reply = new ResourceResponse
             {
-                Id = "1234"
+                Id = "1234",
             };
 
             var conversationReference = activity.GetReplyConversationReference(reply);
@@ -55,17 +55,17 @@ namespace Microsoft.Bot.Schema.Tests
                 ServiceUrl = "cr_serviceUrl",
                 Conversation = new ConversationAccount
                 {
-                    Id = "cr_456"
+                    Id = "cr_456",
                 },
                 User = new ChannelAccount
                 {
-                    Id = "cr_abc"
+                    Id = "cr_abc",
                 },
                 Bot = new ChannelAccount
                 {
-                    Id = "cr_def"
+                    Id = "cr_def",
                 },
-                ActivityId = "cr_12345"
+                ActivityId = "cr_12345",
             };
 
             activity.ApplyConversationReference(conversationReference, true);
@@ -90,17 +90,17 @@ namespace Microsoft.Bot.Schema.Tests
                 ServiceUrl = "serviceUrl",
                 Conversation = new ConversationAccount
                 {
-                    Id = "456"
+                    Id = "456",
                 },
                 User = new ChannelAccount
                 {
-                    Id = "abc"
+                    Id = "abc",
                 },
                 Bot = new ChannelAccount
                 {
-                    Id = "def"
+                    Id = "def",
                 },
-                ActivityId = "12345"
+                ActivityId = "12345",
             };
 
             activity.ApplyConversationReference(conversationReference, false);
@@ -121,7 +121,7 @@ namespace Microsoft.Bot.Schema.Tests
                 Id = "ChannelAccount_Id_1",
                 Name = "ChannelAccount_Name_1",
                 Properties = new JObject { { "Name", "Value" } },
-                Role = "ChannelAccount_Role_1"
+                Role = "ChannelAccount_Role_1",
             };
 
             var account2 = new ChannelAccount
@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Schema.Tests
                 Id = "ChannelAccount_Id_2",
                 Name = "ChannelAccount_Name_2",
                 Properties = new JObject { { "Name", "Value" } },
-                Role = "ChannelAccount_Role_2"
+                Role = "ChannelAccount_Role_2",
             };
 
             var conversationAccount = new ConversationAccount
@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Schema.Tests
                 IsGroup = true,
                 Name = "Name",
                 Properties = new JObject { { "Name", "Value" } },
-                Role = "ConversationAccount_Role"
+                Role = "ConversationAccount_Role",
             };
 
             var activity = new Activity
@@ -149,7 +149,7 @@ namespace Microsoft.Bot.Schema.Tests
                 Recipient = account2,
                 Conversation = conversationAccount,
                 ChannelId = "ChannelId123",
-                ServiceUrl = "ServiceUrl123"
+                ServiceUrl = "ServiceUrl123",
             };
 
             return activity;
