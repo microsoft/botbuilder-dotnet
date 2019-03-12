@@ -15,107 +15,122 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Connector
 {
     public static class OAuthClientConfig
-    {        
+    {
         /// <summary>
+        /// Gets or sets the default endpoint that is used for API requests.
+        /// </summary>
+        /// <value>
         /// The default endpoint that is used for API requests.
-        /// </summary>
+        /// </value>
         public static string OAuthEndpoint { get; set; } = AuthenticationConstants.OAuthUrl;
-        
+
         /// <summary>
-        /// When using the Emulator, whether to emulate the OAuthCard behavior or use connected flows
+        /// Gets or sets a value indicating whether when using the Emulator, whether to emulate the OAuthCard behavior or use connected flows.
         /// </summary>
+        /// <value>
+        /// When using the Emulator, whether to emulate the OAuthCard behavior or use connected flows.
+        /// </value>
         public static bool EmulateOAuthCards { get; set; } = false;
 
         /// <summary>
         /// Send a dummy OAuth card when the bot is being used on the Emulator for testing without fetching a real token.
         /// </summary>
+        /// <param name="client">client.</param>
         /// <param name="emulateOAuthCards">Indicates whether the Emulator should emulate the OAuth card.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         public static async Task SendEmulateOAuthCardsAsync(OAuthClient client, bool emulateOAuthCards)
         {
             // Tracing
-            bool _shouldTrace = ServiceClientTracing.IsEnabled;
-            string _invocationId = null;
-            if (_shouldTrace)
+            bool shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
             {
-                _invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("emulateOAuthCards", emulateOAuthCards);
-                ServiceClientTracing.Enter(_invocationId, client, "GetToken", tracingParameters);
+                ServiceClientTracing.Enter(invocationId, client, "GetToken", tracingParameters);
             }
+
             // Construct URL
-            var _baseUrl = client.BaseUri.AbsoluteUri;
-            var _url = new Uri(new Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "api/usertoken/emulateOAuthCards?emulate={emulate}").ToString();
-            _url = _url.Replace("{emulate}", emulateOAuthCards.ToString());
+            var baseUrl = client.BaseUri.AbsoluteUri;
+            var url = new Uri(new Uri(baseUrl + (baseUrl.EndsWith("/") ? string.Empty : "/")), "api/usertoken/emulateOAuthCards?emulate={emulate}").ToString();
+            url = url.Replace("{emulate}", emulateOAuthCards.ToString());
 
             // Create HTTP transport objects
-            var _httpRequest = new HttpRequestMessage();
-            HttpResponseMessage _httpResponse = null;
-            _httpRequest.Method = new HttpMethod("POST");
-            _httpRequest.RequestUri = new System.Uri(_url);
+            var httpRequest = new HttpRequestMessage();
+            HttpResponseMessage httpResponse = null;
+            httpRequest.Method = new HttpMethod("POST");
+            httpRequest.RequestUri = new System.Uri(url);
 
             var cancellationToken = CancellationToken.None;
 
             // Serialize Request
-            string _requestContent = null;
+            string requestContent = null;
+
             // Set Credentials
             if (client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+                await client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             }
+
             // Send Request
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
+                ServiceClientTracing.SendRequest(invocationId, httpRequest);
             }
+
             cancellationToken.ThrowIfCancellationRequested();
-            _httpResponse = await client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
-            if (_shouldTrace)
+            httpResponse = await client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            if (shouldTrace)
             {
-                ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
+                ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
             }
-            HttpStatusCode _statusCode = _httpResponse.StatusCode;
+
+            HttpStatusCode statusCode = httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
-            string _responseContent = null;
-            if ((int)_statusCode != 200 && (int)_statusCode != 404)
+            string responseContent = null;
+            if ((int)statusCode != 200 && (int)statusCode != 404)
             {
-                var ex = new ErrorResponseException(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
+                var ex = new ErrorResponseException(string.Format("Operation returned an invalid status code '{0}'", statusCode));
                 try
                 {
-                    _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse _errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, client.DeserializationSettings);
-                    if (_errorBody != null)
+                    responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, client.DeserializationSettings);
+                    if (errorBody != null)
                     {
-                        ex.Body = _errorBody;
+                        ex.Body = errorBody;
                     }
                 }
                 catch (JsonException)
                 {
                     // Ignore the exception
                 }
-                ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
-                ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
-                if (_shouldTrace)
+
+                ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
+                ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
+                if (shouldTrace)
                 {
-                    ServiceClientTracing.Error(_invocationId, ex);
+                    ServiceClientTracing.Error(invocationId, ex);
                 }
-                _httpRequest.Dispose();
-                if (_httpResponse != null)
+
+                httpRequest.Dispose();
+                if (httpResponse != null)
                 {
-                    _httpResponse.Dispose();
+                    httpResponse.Dispose();
                 }
+
                 throw ex;
             }
 
             // Create Result
-            var _result = new HttpOperationResponse<int>();
-            _result.Request = _httpRequest;
-            _result.Response = _httpResponse;
-            
-            if (_shouldTrace)
+            var result = new HttpOperationResponse<int>();
+            result.Request = httpRequest;
+            result.Response = httpResponse;
+
+            if (shouldTrace)
             {
-                ServiceClientTracing.Exit(_invocationId, _result);
+                ServiceClientTracing.Exit(invocationId, result);
             }
         }
     }
