@@ -223,6 +223,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             return Task.FromResult(result);
         }
 
+        protected override string OnComputeId()
+        {
+            return $"DatetimePrompt[{this.BindingPath()}]";
+        }
+
         private DateTimeResolution ReadResolution(IDictionary<string, string> resolution)
         {
             var result = new DateTimeResolution();

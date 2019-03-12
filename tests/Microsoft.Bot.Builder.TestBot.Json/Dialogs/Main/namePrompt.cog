@@ -1,9 +1,0 @@
-{
-    "$type": "Microsoft.TextPrompt",
-    "$id": "namePrompt",
-    "property": "name",
-    "pattern": "\\w{3,50}",
-    "initialPrompt": "What's your name?",
-    "retryPrompt": "Let's try again, what's your name?",
-    "noMatchResponse": "You need to give me at least 3 chars to 30 chars as a name."
-}

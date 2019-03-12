@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Composition.Expressions;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -23,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         public string Template { get; set; }
 
-        public async Task<IMessageActivity> BindToData(ITurnContext context, object data)
+        public async Task<IMessageActivity> BindToData(ITurnContext context, object data, Func<string, object, object> binder)
         {
             if (!string.IsNullOrEmpty(this.Template))
             {
@@ -37,7 +36,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                         id: null,
                         data: data,
                         tags: null,
-                        types: null).ConfigureAwait(false);
+                        types: null,
+                        binder: binder).ConfigureAwait(false);
                     return result;
                 }
 
@@ -55,7 +55,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                         id: null,
                         data: data,
                         tags: null,
-                        types: null).ConfigureAwait(false);
+                        types: null,
+                        valueBinder: binder).ConfigureAwait(false);
                     if (result != null)
                     {
                         message.Text = result;

@@ -4,13 +4,15 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Dialogs.Composition.Expressions
+namespace Microsoft.Bot.Builder.Dialogs.Expressions
 {
     public interface IExpressionEval
     {
-        Task<object> Evaluate(IDictionary<String, object> vars);
+        Task<object> Evaluate(DialogContextState state);
 
-        Task<object> Evaluate(string expression, IDictionary<String, object> vars);
+        Task<object> Evaluate(IDictionary<string, object> vars);
+
+        Task<object> Evaluate(string expression, IDictionary<string, object> vars);
     }
 
 }

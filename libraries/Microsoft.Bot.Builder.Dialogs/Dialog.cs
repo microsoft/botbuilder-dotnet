@@ -19,20 +19,54 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public Dialog(string dialogId = null)
         {
-            Id = dialogId;
+            Id = dialogId;// ?? OnComputeId();
             _telemetryClient = NullBotTelemetryClient.Instance;
         }
 
+        private string id;
+        
         /// <summary>
-        /// Unique id for the dialog
+        /// Unique id for the dialog.
         /// </summary>
-        public string Id { get; set; }
+        public string Id
+        {
+            get
+            {
+                id = id ?? OnComputeId();
+                return id;
+            }
+            set
+            {
+                id = value;
+            }
+        }
+
+        /// <summary>
+        /// Set of tags assigned to the dialog.
+        /// </summary>
+        public List<string> Tags { get; private set; } = new List<string>();
+
+        /// <summary>
+        /// JSONPath expression for the memory slots to bind the dialogs options to on a call to `beginDialog()`.
+        /// </summary>
+        public Dictionary<string, string> InputBindings { get; set; } = new Dictionary<string, string>();
+
+        /// <summary>
+        /// JSONPath expression for the memory slot to bind the dialogs result to when `endDialog()` is called.
+        /// </summary>
+        public string OutputBinding { get; set; }
+
+        public virtual string Property
+        {
+            get { return OutputBinding; }
+            set { OutputBinding = value; }
+        }
 
         /// <summary>
         /// Gets or sets the telemetry client for logging events.
         /// </summary>
         /// <value>The Telemetry Client logger.</value>
-        public IBotTelemetryClient TelemetryClient
+        public virtual IBotTelemetryClient TelemetryClient
         {
             get
             {
@@ -97,6 +131,60 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             // No-op by default
             return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Should be overridden by dialogs that support multi-turn conversations. A function for 
+        /// processing the utterance is returned along with a code indicating the dialogs desire to 
+        /// process the utterance.This can be one of the following values. 
+        /// - CanProcess - The dialog is capable of processing the utterance but parent dialogs 
+        /// should feel free to intercept the utterance if they'd like.
+        /// - ShouldProcess - The dialog (or one of its children) wants to process the utterance
+        /// so parents should not intercept it.
+        /// The default implementation calls the legacy ContinueDialogAsync for 
+        /// compatibility reasons.That method simply calls DialogContext.EndDialog().
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public virtual async Task<DialogConsultation> ConsultDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return new DialogConsultation()
+            {
+                Desire = DialogConsultationDesires.CanProcess,
+                Processor = (dialogContext) => this.ContinueDialogAsync(dialogContext),
+            };
+        }
+
+        /// <summary>
+        /// Called when an event has been raised, using `DialogContext.emitEvent()`, by either the current dialog or a dialog that the current dialog started.
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <param name="e">The event being raised.</param>
+        /// <returns>True if the event is handled by the current dialog and bubbling should stop.</returns>
+        public virtual async Task<bool> OnDialogEventAsync(DialogContext dc, DialogEvent e)
+        {
+            return false;
+        }
+
+        protected virtual string OnComputeId()
+        {
+            return $"dialog[{this.BindingPath()}]";
+        }
+
+        protected virtual string BindingPath()
+        {
+            const string valueKey = "value";
+
+            if (InputBindings.ContainsKey(valueKey))
+            {
+                return InputBindings[valueKey];
+            }
+            else if (!string.IsNullOrEmpty(OutputBinding))
+            {
+                return OutputBinding;
+            }
+
+            return string.Empty;
         }
     }
 }

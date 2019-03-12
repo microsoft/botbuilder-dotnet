@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Composition.Resources;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             }
         }
 
-        public async Task<string> Generate(string targetLocale, string inlineTemplate = null, string id = null, object data = null, string[] types = null, string[] tags = null)
+        public async Task<string> Generate(string targetLocale, string inlineTemplate = null, string id = null, object data = null, string[] types = null, string[] tags = null, Func<string, object, object> valueBinder = null)
         {
             await LoadResources().ConfigureAwait(false);
 
@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             {
                 if (this.engines.TryGetValue(locale, out TemplateEngine engine))
                 {
-                    var lgResult = BindToTemplate(engine, inlineTemplate, id, data, types, tags);
+                    var lgResult = BindToTemplate(engine, inlineTemplate, id, data, types, tags, valueBinder);
                     if (lgResult != null)
                     {
                         return lgResult;
@@ -110,13 +110,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         }
 
 
-        private string BindToTemplate(TemplateEngine engine, string inline, string id, object data, string[] types, string[] tags)
+        private string BindToTemplate(TemplateEngine engine, string inline, string id, object data, string[] types, string[] tags, Func<string, object, object> valueBinder)
         {
             string result;
             if (!String.IsNullOrEmpty(inline))
             {
                 // do inline evaluation first
-                return this.TryEvaluate(engine, inline, data);
+                return this.TryEvaluate(engine, inline, data, valueBinder);
             }
             else if (!String.IsNullOrEmpty(id))
             {
@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     {
                         foreach (var type in types)
                         {
-                            result = this.TryEvaluate(engine, $"[{tag}-{type}-{id}]", data);
+                            result = this.TryEvaluate(engine, $"[{tag}-{type}-{id}]", data, valueBinder);
                             if (result != null)
                                 return result;
                         }
@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 {
                     foreach (var type in types)
                     {
-                        result = this.TryEvaluate(engine, $"[{type}-{id}]", data);
+                        result = this.TryEvaluate(engine, $"[{type}-{id}]", data, valueBinder);
                         if (result != null)
                             return result;
                     }
@@ -150,14 +150,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 {
                     foreach (var tag in tags)
                     {
-                        result = this.TryEvaluate(engine, $"[{tag}-{id}]", data);
+                        result = this.TryEvaluate(engine, $"[{tag}-{id}]", data, valueBinder);
                         if (result != null)
                             return result;
                     }
                 }
 
                 // try exact match on id 
-                result = this.TryEvaluate(engine, $"[{id}]", data);
+                result = this.TryEvaluate(engine, $"[{id}]", data, valueBinder);
                 if (result != null)
                     return result;
 
@@ -166,12 +166,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             throw new ArgumentException("One of Inline or Id needs to be set");
         }
 
-        private string TryEvaluate(TemplateEngine engine, string text, object data)
+        private string TryEvaluate(TemplateEngine engine, string text, object data, Func<string, object, object> valueBinder)
         {
             try
             {
                 // do inline evaluation first
-                return engine.EvaluateInline(text, data);
+                return engine.Evaluate(text, data, valueBinder != null ? new FuncParameterGetValue(valueBinder) : null, null);
             }
             catch (Exception)
             {

@@ -24,10 +24,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             _telemetryClient = NullBotTelemetryClient.Instance;
         }
 
-        internal DialogSet()
+        public DialogSet()
         {
-            // TODO: This is only used by ComponentDialog and future release
-            // will refactor to use IStatePropertyAccessor from context
             _dialogState = null;
             _telemetryClient = NullBotTelemetryClient.Instance;
         }
@@ -56,6 +54,10 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         /// <summary>
         /// Adds a new dialog to the set and returns the added dialog.
+        /// If the Dialog.Id being added already exists in the set, the dialogs id will be updated to 
+        /// include a suffix which makes it unique.So adding 2 dialogs named "duplicate" to the set
+        /// would result in the first one having an id of "duplicate" and the second one having an id
+        /// of "duplicate2".
         /// </summary>
         /// <param name="dialog">The dialog to add.</param>
         /// <returns>The DialogSet for fluent calls to Add().</returns>
@@ -69,16 +71,42 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (_dialogs.ContainsKey(dialog.Id))
             {
-                throw new ArgumentException($"DialogSet.Add(): A dialog with an id of '{dialog.Id}' already added.");
+                var nextSuffix = 2;
+
+                while (true)
+                {
+                    var suffixId = dialog.Id + nextSuffix.ToString();
+
+                    if (!_dialogs.ContainsKey(suffixId))
+                    {
+                        dialog.Id = suffixId;
+                        break;
+                    }
+                    else
+                    {
+                        nextSuffix++;
+                    }
+                }
             }
 
             dialog.TelemetryClient = _telemetryClient;
             _dialogs[dialog.Id] = dialog;
 
+            // Automatically add any dependencies the dialog might have
+            if (dialog is IDialogDependencies dialogWithDependencies)
+            {
+                dialogWithDependencies.ListDependencies()?.ForEach(d => Add(d));
+            }
+
             return this;
         }
 
-        public async Task<DialogContext> CreateContextAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<DialogContext> CreateContextAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return CreateContextAsync(turnContext, null, null, cancellationToken);
+        }
+
+        public async Task<DialogContext> CreateContextAsync(ITurnContext turnContext, StateMap conversationState, StateMap userState, CancellationToken cancellationToken = default(CancellationToken))
         {
             BotAssert.ContextNotNull(turnContext);
 
@@ -91,9 +119,9 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Load/initialize dialog state
             var state = await _dialogState.GetAsync(turnContext, () => { return new DialogState(); }, cancellationToken).ConfigureAwait(false);
-            
+
             // Create and return context
-            return new DialogContext(this, turnContext, state);
+            return new DialogContext(this, turnContext, state, conversationState, userState);
         }
 
         /// <summary>
@@ -112,6 +140,33 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 return result;
             }
+
+            // If we get to this point, we may be in a situation in which dialogs were added to the
+            // DialogSet but at the point of being added there dependencies were different.
+            // We do an effort here to re-install depdendencies in case they changed.
+            //var dependencies = new List<IDialog>();
+
+            //foreach (var dialog in _dialogs)
+            //{
+            //    // Automatically add any dependencies the dialog might have
+            //    if (dialog.Value is IDialogDependencies dialogWithDependencies)
+            //    {
+            //        var currentDependencies = dialogWithDependencies.ListDependencies();
+
+            //        if (currentDependencies != null)
+            //        {
+            //            dependencies.AddRange(currentDependencies);
+            //        }
+            //    }
+            //}
+
+            //dependencies.ForEach(d => Add(d));
+
+            //// Try again with the newly populated dependencies
+            //if (_dialogs.TryGetValue(dialogId, out result))
+            //{
+            //    return result;
+            //}
 
             return null;
         }

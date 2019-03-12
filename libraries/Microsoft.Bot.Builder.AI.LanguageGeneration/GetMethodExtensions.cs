@@ -7,7 +7,12 @@ using System.Linq;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
-    class GetMethodExtensions
+    public interface IGetMethod
+    {
+        EvaluationDelegate GetMethodX(string name);
+    }
+
+    class GetMethodExtensions : IGetMethod
     {
         // Hold an evaluator instance to make sure all functions have access
         // This ensentially make all functions as closure
@@ -71,7 +76,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 }
                 else
                 {
-                    var firstPart = String.Join(sep1, li.OfType<object>().SkipLast(1));
+                    var firstPart = String.Join(sep1, li.OfType<object>().SkipWhile(o => o != null && o != li.OfType<object>().LastOrDefault()));
                     return firstPart + sep2 + li.OfType<object>().Last().ToString();
                 }
             }

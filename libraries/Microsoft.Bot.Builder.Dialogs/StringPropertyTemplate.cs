@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public string Property { get; set; }
 
-        public async Task<string> BindToData(ITurnContext context, object data)
+        public async Task<string> BindToData(ITurnContext context, object data, Func<string, object, object> binder = null)
         {
             ILanguageGenerator languageGenerator = context.TurnState.Get<ILanguageGenerator>();
             if (languageGenerator != null)
@@ -41,7 +41,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                     id: this.Property,
                     data: data,
                     tags: null,
-                    types: this.Types.ToArray()).ConfigureAwait(false);
+                    types: this.Types.ToArray(),
+                    valueBinder: binder).ConfigureAwait(false);
                 return result;
             }
 

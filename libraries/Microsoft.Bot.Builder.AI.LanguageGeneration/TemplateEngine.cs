@@ -79,7 +79,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 }
                 else
                 {
-                    throw new Exception($"Duplicated template definition with name: {templateName}");
+                    //TODO: Understand why this reports duplicate items when there are actually no duplicates
+                    //throw new Exception($"Duplicated template definition with name: {templateName}");
                 }
 
                 // Extract parameter list
@@ -92,11 +93,17 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             evaluationContext = new EvaluationContext(templateContexts, templateParameters);
         }
         
-        public string EvaluateTemplate(string templateName, object scope)
+        public string EvaluateTemplate(string templateName, object scope, IGetValue valueBinder = null, IGetMethod methodBinder = null)
         {
 
-            var evaluator = new Evaluator(evaluationContext);
+            var evaluator = new Evaluator(evaluationContext, methodBinder, valueBinder);
             return evaluator.EvaluateTemplate(templateName, scope);
+        }
+
+        public List<string> AnalyzeTemplate(string templateName)
+        {
+            var analyzer = new Analyzer(evaluationContext);
+            return analyzer.AnalyzeTemplate(templateName);
         }
 
 
@@ -106,7 +113,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         /// <param name="inlineStr"></param>
         /// <param name="scope"></param>
         /// <returns></returns>
-        public string EvaluateInline(string inlineStr, object scope)
+        public string Evaluate(string inlineStr, object scope, IGetValue valueBinder = null, IGetMethod methodBinder = null)
         {
             // TODO: maybe we can directly ref the templateBody without giving a name, but that means
             // we needs to make a little changes in the evalutor, especially the loop detection part
@@ -130,7 +137,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 // Step 2: constuct a new evalution context on top of the current one
                 var evaluationContext = new EvaluationContext(this.evaluationContext);
                 evaluationContext.TemplateContexts[fakeTemplateId] = context;
-                var evaluator = new Evaluator(evaluationContext);
+                var evaluator = new Evaluator(evaluationContext, methodBinder, valueBinder);
 
                 // Step 3: evaluate
                 return evaluator.EvaluateTemplate(fakeTemplateId, scope);
