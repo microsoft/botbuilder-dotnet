@@ -8,7 +8,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.TemplateManager.Tests
 {
-
     [TestClass]
     [TestCategory("Template")]
     public class TemplateManagerTests
@@ -25,29 +24,29 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
             {
                 ["default"] = new TemplateIdMap
                 {
-                    { "stringTemplate", (context, data) => $"default: { data.name}" },
-                    { "activityTemplate", (context, data) => { return new Activity() { Type = ActivityTypes.Message, Text = $"(Activity)default: { data.name}" }; } },
-                    { "stringTemplate2", (context, data) => $"default: Yo { data.name}" }
+                    { "stringTemplate", (context, data) => $"default: {data.name}" },
+                    { "activityTemplate", (context, data) => { return new Activity() { Type = ActivityTypes.Message, Text = $"(Activity)default: {data.name}" }; } },
+                    { "stringTemplate2", (context, data) => $"default: Yo {data.name}" },
                 },
                 ["en"] = new TemplateIdMap
                 {
-                    { "stringTemplate", (context, data) => $"en: { data.name}" },
-                    { "activityTemplate", (context, data) => { return new Activity() { Type = ActivityTypes.Message, Text = $"(Activity)en: { data.name}" }; } },
-                    { "stringTemplate2", (context, data) => $"en: Yo { data.name}" }
+                    { "stringTemplate", (context, data) => $"en: {data.name}" },
+                    { "activityTemplate", (context, data) => { return new Activity() { Type = ActivityTypes.Message, Text = $"(Activity)en: {data.name}" }; } },
+                    { "stringTemplate2", (context, data) => $"en: Yo {data.name}" },
                 },
                 ["fr"] = new TemplateIdMap
                 {
-                    { "stringTemplate", (context, data) => $"fr: { data.name}" },
-                    { "activityTemplate", (context, data) => { return new Activity() { Type = ActivityTypes.Message, Text = $"(Activity)fr: { data.name}" }; } },
-                    { "stringTemplate2", (context, data) => $"fr: Yo { data.name}" }
-                }
+                    { "stringTemplate", (context, data) => $"fr: {data.name}" },
+                    { "activityTemplate", (context, data) => { return new Activity() { Type = ActivityTypes.Message, Text = $"(Activity)fr: {data.name}" }; } },
+                    { "stringTemplate2", (context, data) => $"fr: Yo {data.name}" },
+                },
             };
             templates2 = new LanguageTemplateDictionary
             {
                 ["en"] = new TemplateIdMap
                 {
-                    { "stringTemplate2", (context, data) => $"en: StringTemplate2 override {data.name}" }
-                }
+                    { "stringTemplate2", (context, data) => $"en: StringTemplate2 override {data.name}" },
+                },
             };
         }
 
@@ -105,11 +104,9 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
             Assert.AreEqual("(Activity)en: joe", activity.Text);
         }
 
-
         [TestMethod]
         public async Task TemplateManager_defaultlookup()
         {
-
             TestAdapter adapter = new TestAdapter();
 
             var templateManager = new TemplateManager()
@@ -129,7 +126,6 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         [TestMethod]
         public async Task TemplateManager_enLookup()
         {
-
             TestAdapter adapter = new TestAdapter();
             var templateManager = new TemplateManager()
                 .Register(new DictionaryRenderer(templates1))
@@ -149,7 +145,6 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         [TestMethod]
         public async Task TemplateManager_frLookup()
         {
-
             TestAdapter adapter = new TestAdapter();
             var templateManager = new TemplateManager()
                 .Register(new DictionaryRenderer(templates1))
@@ -169,7 +164,6 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         [TestMethod]
         public async Task TemplateManager_override()
         {
-
             TestAdapter adapter = new TestAdapter();
             var templateManager = new TemplateManager()
                 .Register(new DictionaryRenderer(templates1))
@@ -189,7 +183,6 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         [TestMethod]
         public async Task TemplateManager_useTemplateEngine()
         {
-
             TestAdapter adapter = new TestAdapter();
             var templateManager = new TemplateManager()
                 .Register(new DictionaryRenderer(templates1))
