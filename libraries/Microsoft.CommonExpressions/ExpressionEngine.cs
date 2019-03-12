@@ -55,9 +55,9 @@ namespace Microsoft.Expressions
         /// <returns></returns>
         public static Term Parse(string expression)
         {
-            using (var tokens = InnerLexer.Tokens(expression).GetEnumerator())
+            using (var tokens = Lexer.Tokens(expression).GetEnumerator())
             {
-                InnerLexer.Next(tokens);
+                Lexer.Next(tokens);
                 return Expression(tokens, 0);
             }
         }
@@ -78,7 +78,7 @@ namespace Microsoft.Expressions
             var value = token.Value;
 
             // token value is identifier -> look up binding in scope
-            var identifier = value as InnerLexer.Identifier;
+            var identifier = value as Lexer.Identifier;
             if (identifier != null)
             {
                 return getValue(scope, identifier.Name);
@@ -162,7 +162,7 @@ namespace Microsoft.Expressions
         private static Term Prefix(IEnumerator<Token> tokens)
         {
             var token = tokens.Current;
-            InnerLexer.Next(tokens);
+            Lexer.Next(tokens);
             if (OperatorTable.PrefixByToken.TryGetValue(token.Input, out var prefix))
             {
                 return Term.From(token, prefix, Expression(tokens, prefix.Power));
@@ -174,7 +174,7 @@ namespace Microsoft.Expressions
                 case "(":
                     {
                         var term = Expression(tokens, 0);
-                        InnerLexer.Match(tokens, ")");
+                        Lexer.Match(tokens, ")");
                         return term;
                     }
                 default:
@@ -185,7 +185,7 @@ namespace Microsoft.Expressions
         private static Term Infix(IEnumerator<Token> tokens, Term left)
         {
             var token = tokens.Current;
-            InnerLexer.Next(tokens);
+            Lexer.Next(tokens);
 
             if (OperatorTable.InfixByToken.TryGetValue(token.Input, out var infix))
             {
@@ -205,11 +205,11 @@ namespace Microsoft.Expressions
                                     {
                                         break;
                                     }
-                                    InnerLexer.Match(tokens, ",");
+                                    Lexer.Match(tokens, ",");
                                 }
                             }
 
-                            InnerLexer.Match(tokens, ")");
+                            Lexer.Match(tokens, ")");
                             return Term.From(token, infix, terms.ToArray());
                         }
                     case "[":
@@ -218,7 +218,7 @@ namespace Microsoft.Expressions
                                 left,
                                 Expression(tokens, 0)
                             };
-                            InnerLexer.Match(tokens, "]");
+                            Lexer.Match(tokens, "]");
                             return Term.From(token, infix, terms);
                         }
                     default:

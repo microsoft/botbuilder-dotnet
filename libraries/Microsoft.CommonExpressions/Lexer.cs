@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace Microsoft.Expressions
 {
-    public static class InnerLexer
+    public static class Lexer
     {
         public static readonly string[] Patterns = new[]
         {

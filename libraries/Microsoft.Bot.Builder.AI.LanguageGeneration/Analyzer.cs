@@ -6,8 +6,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
-using Microsoft.Expressions;
-using System.Linq;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
@@ -140,7 +138,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         private List<string> AnalyzeExpression(string exp)
         {
             exp = exp.TrimStart('{').TrimEnd('}');
-            var term = ExpressionEngine.Parse(exp);
+            var term = Expressions.ExpressionEngine.Parse(exp);
             return AnalyzeTerm(term);
         }
 
@@ -195,7 +193,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return result;
         }
         
-        private List<string> AnalyzeTerm(Term term)
+        private List<string> AnalyzeTerm(Expressions.Term term)
         {
             var result = new List<string>();
 
@@ -203,7 +201,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var value = token.Value;
 
             // token value is identifier -> look up binding in scope
-            var identifier = value as InnerLexer.Identifier;
+            var identifier = value as Expressions.Lexer.Identifier;
             if (identifier != null)
             {
                 return new List<string> { identifier.Name };
