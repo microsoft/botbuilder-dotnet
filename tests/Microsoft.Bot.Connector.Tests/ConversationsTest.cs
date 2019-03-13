@@ -34,14 +34,14 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Create Conversation"
+                Text = "TEST Create Conversation",
             };
 
             var param = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
                 Bot = Bot,
-                Activity = activity
+                Activity = activity,
             };
 
             await UseClientFor(async client =>
@@ -63,14 +63,14 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Create Conversation with invalid Bot"
+                Text = "TEST Create Conversation with invalid Bot",
             };
 
             var param = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
                 Bot = new ChannelAccount() { Id = "invalid-id" },
-                Activity = activity
+                Activity = activity,
             };
 
             await UseClientFor(async client =>
@@ -93,14 +93,14 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Create Conversation without members"
+                Text = "TEST Create Conversation without members",
             };
 
             var param = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { },
                 Bot = Bot,
-                Activity = activity
+                Activity = activity,
             };
 
             await UseClientFor(async client =>
@@ -123,14 +123,14 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Create Conversation with Bot member"
+                Text = "TEST Create Conversation with Bot member",
             };
 
             var param = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { Bot },
                 Bot = Bot,
-                Activity = activity
+                Activity = activity,
             };
 
             await UseClientFor(async client =>
@@ -162,27 +162,28 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Create Conversation"
+                Text = "TEST Create Conversation",
             };
 
             var param = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
                 Bot = Bot,
-                Activity = activity
+                Activity = activity,
             };
 
             var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
 
-            await AssertTracingFor(async () =>
+            await AssertTracingFor(
+                async () =>
                 await UseClientFor(async client =>
                 {
                     var result = await client.Conversations.CreateConversationWithHttpMessagesAsync(param, customHeaders, default(CancellationToken));
                     Assert.NotNull(result.Body);
                     Assert.NotNull(result.Body.ActivityId);
                 }),
-            nameof(ConversationsExtensions.CreateConversationAsync),
-            assertHttpRequestMessage:
+                nameof(ConversationsExtensions.CreateConversationAsync),
+                assertHttpRequestMessage:
                 (h) => h.Headers.Contains("customHeader") && h.Headers.GetValues("customHeader").Contains("customValue"));
         }
 
@@ -192,7 +193,7 @@ namespace Connector.Tests
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
-                Bot = Bot
+                Bot = Bot,
             };
 
             await UseClientFor(async client =>
@@ -205,7 +206,10 @@ namespace Connector.Tests
                 foreach (var member in members)
                 {
                     hasUser = member.Id == User.Id;
-                    if (hasUser) break;
+                    if (hasUser)
+                    {
+                        break;
+                    }
                 }
 
                 Assert.True(hasUser);
@@ -219,11 +223,10 @@ namespace Connector.Tests
         [Fact]
         public async Task GetConversationMembersWithInvalidConversationId()
         {
-
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
-                Bot = Bot
+                Bot = Bot,
             };
 
             await UseClientFor(async client =>
@@ -242,7 +245,6 @@ namespace Connector.Tests
         [Fact]
         public async Task GetConversationMembersWithNullConversationId()
         {
-
             await UseClientFor(async client =>
             {
                 var ex = await Assert.ThrowsAsync<ValidationException>(() => client.Conversations.GetConversationMembersAsync(null));
@@ -256,7 +258,7 @@ namespace Connector.Tests
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
-                Bot = Bot
+                Bot = Bot,
             };
 
             var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
@@ -273,7 +275,10 @@ namespace Connector.Tests
                                     foreach (var member in members.Body)
                                     {
                                         hasUser = member.Id == User.Id;
-                                        if (hasUser) break;
+                                        if (hasUser)
+                                        {
+                                            break;
+                                        }
                                     }
 
                                     Assert.True(hasUser);
@@ -289,7 +294,7 @@ namespace Connector.Tests
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
-                Bot = Bot
+                Bot = Bot,
             };
 
             await UseClientFor(async client =>
@@ -302,7 +307,10 @@ namespace Connector.Tests
                 foreach (var member in membersResult.Members)
                 {
                     hasUser = member.Id == User.Id;
-                    if (hasUser) break;
+                    if (hasUser)
+                    {
+                        break;
+                    }
                 }
 
                 Assert.True(hasUser);
@@ -319,7 +327,7 @@ namespace Connector.Tests
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
-                Bot = Bot
+                Bot = Bot,
             };
 
             await UseClientFor(async client =>
@@ -340,7 +348,7 @@ namespace Connector.Tests
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
-                Bot = Bot
+                Bot = Bot,
             };
 
             await UseClientFor(async client =>
@@ -353,7 +361,10 @@ namespace Connector.Tests
                 foreach (var member in membersResult.Members)
                 {
                     hasUser = member.Id == User.Id;
-                    if (hasUser) break;
+                    if (hasUser)
+                    {
+                        break;
+                    }
                 }
 
                 Assert.True(hasUser);
@@ -370,12 +381,13 @@ namespace Connector.Tests
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
-                Bot = Bot
+                Bot = Bot,
             };
 
             var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
 
-            await AssertTracingFor(async () =>
+            await AssertTracingFor(
+                async () =>
                 await UseClientFor(async client =>
                 {
                     var conversation = await client.Conversations.CreateConversationAsync(createMessage);
@@ -387,7 +399,10 @@ namespace Connector.Tests
                     foreach (var member in members.Body.Members)
                     {
                         hasUser = member.Id == User.Id;
-                        if (hasUser) break;
+                        if (hasUser)
+                        {
+                            break;
+                        }
                     }
 
                     Assert.True(hasUser);
@@ -406,14 +421,14 @@ namespace Connector.Tests
                 Recipient = User,
                 From = Bot,
                 Name = "acticity",
-                Text = "TEST Send to Conversation"
+                Text = "TEST Send to Conversation",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
                 Bot = Bot,
-                Activity = activity
+                Activity = activity,
             };
 
             await UseClientFor(async client =>
@@ -422,7 +437,6 @@ namespace Connector.Tests
                 var response = await client.Conversations.SendToConversationAsync(conversation.Id, activity);
                 Assert.NotNull(response.Id);
             });
-
         }
 
         [Fact]
@@ -432,21 +446,20 @@ namespace Connector.Tests
         [Fact]
         public async Task SendToConversationWithInvalidConversationId()
         {
-
             var activity = new Activity()
             {
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
                 Name = "acticity",
-                Text = "TEST Send to Conversation with invalid conversation id"
+                Text = "TEST Send to Conversation with invalid conversation id",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
                 Bot = Bot,
-                Activity = activity
+                Activity = activity,
             };
 
             await UseClientFor(async client =>
@@ -468,7 +481,7 @@ namespace Connector.Tests
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
-                Bot = Bot
+                Bot = Bot,
             };
 
             await UseClientFor(async client =>
@@ -480,7 +493,7 @@ namespace Connector.Tests
                     Recipient = User,
                     From = new ChannelAccount() { Id = "B21S8SG7K:T03CWQ0QB" },
                     Name = "acticity",
-                    Text = "TEST Send to Conversation"
+                    Text = "TEST Send to Conversation",
                 };
                 var ex = await Assert.ThrowsAsync<ErrorResponseException>(() => client.Conversations.SendToConversationAsync(conversationId: string.Concat(conversation.Id, "M"), activity: activity));
                 Assert.Equal("MissingProperty", ex.Body.Error.Code);
@@ -501,14 +514,14 @@ namespace Connector.Tests
                 Recipient = User,
                 From = Bot,
                 Name = "acticity",
-                Text = "TEST Send to Conversation with null conversation id"
+                Text = "TEST Send to Conversation with null conversation id",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
                 Bot = Bot,
-                Activity = activity
+                Activity = activity,
             };
 
             await UseClientFor(async client =>
@@ -524,7 +537,7 @@ namespace Connector.Tests
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
-                Bot = Bot
+                Bot = Bot,
             };
 
             await UseClientFor(async client =>
@@ -554,8 +567,8 @@ namespace Connector.Tests
                         {
                             Title = "A static image",
                             Subtitle = "JPEG image",
-                            Images = new CardImage[] { new CardImage() { Url = "https://docs.microsoft.com/bot-framework/media/designing-bots/core/dialogs-screens.png" } }
-                        }
+                            Images = new CardImage[] { new CardImage() { Url = "https://docs.microsoft.com/bot-framework/media/designing-bots/core/dialogs-screens.png" } },
+                        },
                     },
                     new Attachment()
                     {
@@ -564,17 +577,16 @@ namespace Connector.Tests
                         {
                             Title = "An animation",
                             Subtitle = "GIF image",
-                            Images = new CardImage[] { new CardImage() { Url = "http://i.giphy.com/Ki55RUbOV5njy.gif" } }
-                        }
+                            Images = new CardImage[] { new CardImage() { Url = "http://i.giphy.com/Ki55RUbOV5njy.gif" } },
+                        },
                     },
-                }
-
+                },
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
-                Bot = Bot
+                Bot = Bot,
             };
 
             await UseClientFor(async client =>
@@ -598,19 +610,20 @@ namespace Connector.Tests
                 Recipient = User,
                 From = Bot,
                 Name = "acticity",
-                Text = "TEST Send to Conversation"
+                Text = "TEST Send to Conversation",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
                 Bot = Bot,
-                Activity = activity
+                Activity = activity,
             };
 
             var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
 
-            await AssertTracingFor(async () =>
+            await AssertTracingFor(
+                async () =>
                 await UseClientFor(async client =>
                 {
                     var conversation = await client.Conversations.CreateConversationAsync(createMessage);
@@ -630,14 +643,14 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Get Activity Members"
+                Text = "TEST Get Activity Members",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
                 Bot = Bot,
-                Activity = activity
+                Activity = activity,
             };
 
             await UseClientFor(async client =>
@@ -650,7 +663,10 @@ namespace Connector.Tests
                 foreach (var member in members)
                 {
                     hasUser = member.Id == User.Id;
-                    if (hasUser) break;
+                    if (hasUser)
+                    {
+                        break;
+                    }
                 }
 
                 Assert.True(hasUser);
@@ -669,14 +685,14 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Get Activity Members with invalid conversation id"
+                Text = "TEST Get Activity Members with invalid conversation id",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
                 Bot = Bot,
-                Activity = activity
+                Activity = activity,
             };
 
             await UseClientFor(async client =>
@@ -700,14 +716,14 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Get Activity Members with null conversation id"
+                Text = "TEST Get Activity Members with null conversation id",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
                 Bot = Bot,
-                Activity = activity
+                Activity = activity,
             };
 
             await UseClientFor(async client =>
@@ -726,14 +742,14 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Get Activity Members with null activity id"
+                Text = "TEST Get Activity Members with null activity id",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
                 Bot = Bot,
-                Activity = activity
+                Activity = activity,
             };
 
             await UseClientFor(async client =>
@@ -752,14 +768,14 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Get Activity Members"
+                Text = "TEST Get Activity Members",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
                 Bot = Bot,
-                Activity = activity
+                Activity = activity,
             };
 
             var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
@@ -777,13 +793,16 @@ namespace Connector.Tests
                         foreach (var member in members.Body)
                         {
                             hasUser = member.Id == User.Id;
-                            if (hasUser) break;
+                            if (hasUser)
+                            {
+                                break;
+                            }
                         }
 
                         Assert.True(hasUser);
                     }),
-                    nameof(ConversationsExtensions.GetActivityMembersAsync),
-                    assertHttpRequestMessage:
+                nameof(ConversationsExtensions.GetActivityMembersAsync),
+                assertHttpRequestMessage:
                         (h) => h.Headers.Contains("customHeader") && h.Headers.GetValues("customHeader").Contains("customValue"));
         }
 
@@ -795,7 +814,7 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Activity gets a reply"
+                Text = "TEST Activity gets a reply",
             };
 
             var reply = new Activity()
@@ -803,13 +822,13 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Reply to Activity"
+                Text = "TEST Reply to Activity",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
-                Bot = Bot
+                Bot = Bot,
             };
 
             await UseClientFor(async client =>
@@ -829,13 +848,12 @@ namespace Connector.Tests
         [Fact]
         public async Task ReplyToActivityWithInvalidConversationId()
         {
-
             var activity = new Activity()
             {
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Reply activity with invalid conversation id"
+                Text = "TEST Reply activity with invalid conversation id",
             };
 
             var reply = new Activity()
@@ -843,13 +861,13 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Reply mustn't shown"
+                Text = "TEST Reply mustn't shown",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
-                Bot = Bot
+                Bot = Bot,
             };
 
             await UseClientFor(async client =>
@@ -869,13 +887,12 @@ namespace Connector.Tests
         [Fact]
         public async Task ReplyToActivityWithNullConversationId()
         {
-
             var activity = new Activity()
             {
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Reply activity with null conversation id"
+                Text = "TEST Reply activity with null conversation id",
             };
 
             var reply = new Activity()
@@ -883,13 +900,13 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Reply mustn't shown"
+                Text = "TEST Reply mustn't shown",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
-                Bot = Bot
+                Bot = Bot,
             };
 
             await UseClientFor(async client =>
@@ -904,13 +921,12 @@ namespace Connector.Tests
         [Fact]
         public async Task ReplyToActivityWithNullActivityId()
         {
-
             var activity = new Activity()
             {
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Reply activity with null activity id"
+                Text = "TEST Reply activity with null activity id",
             };
 
             var reply = new Activity()
@@ -918,13 +934,13 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Reply mustn't shown"
+                Text = "TEST Reply mustn't shown",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
-                Bot = Bot
+                Bot = Bot,
             };
 
             await UseClientFor(async client =>
@@ -939,19 +955,18 @@ namespace Connector.Tests
         [Fact]
         public async Task ReplyToActivityWithNullReply()
         {
-
             var activity = new Activity()
             {
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Reply activity with null reply"
+                Text = "TEST Reply activity with null reply",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
-                Bot = Bot
+                Bot = Bot,
             };
 
             await UseClientFor(async client =>
@@ -971,7 +986,7 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Activity gets a reply"
+                Text = "TEST Activity gets a reply",
             };
 
             var reply = new Activity()
@@ -979,18 +994,19 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Reply to Activity"
+                Text = "TEST Reply to Activity",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
-                Bot = Bot
+                Bot = Bot,
             };
 
             var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
 
-            await AssertTracingFor(async () =>
+            await AssertTracingFor(
+                async () =>
                 await UseClientFor(async client =>
                 {
                     var conversation = await client.Conversations.CreateConversationAsync(createMessage);
@@ -1013,14 +1029,14 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Activity to be deleted"
+                Text = "TEST Activity to be deleted",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
                 Bot = Bot,
-                Activity = activity
+                Activity = activity,
             };
 
             await UseClientFor(async client =>
@@ -1043,14 +1059,14 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Activity to be deleted with invalid conversation Id"
+                Text = "TEST Activity to be deleted with invalid conversation Id",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
                 Bot = Bot,
-                Activity = activity
+                Activity = activity,
             };
 
             await UseClientFor(async client =>
@@ -1074,14 +1090,14 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Activity to be deleted with null conversation Id"
+                Text = "TEST Activity to be deleted with null conversation Id",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
                 Bot = Bot,
-                Activity = activity
+                Activity = activity,
             };
 
             await UseClientFor(async client =>
@@ -1100,14 +1116,14 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Activity to be deleted with null activity Id"
+                Text = "TEST Activity to be deleted with null activity Id",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
                 Bot = Bot,
-                Activity = activity
+                Activity = activity,
             };
 
             await UseClientFor(async client =>
@@ -1126,14 +1142,14 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Activity to be deleted"
+                Text = "TEST Activity to be deleted",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
                 Bot = Bot,
-                Activity = activity
+                Activity = activity,
             };
 
             var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
@@ -1147,8 +1163,8 @@ namespace Connector.Tests
                             conversation.Id, conversation.ActivityId, customHeaders, default(CancellationToken));
                         Assert.NotNull(conversation.ActivityId);
                     }),
-                    nameof(ConversationsExtensions.DeleteActivityAsync),
-                    assertHttpRequestMessage:
+                nameof(ConversationsExtensions.DeleteActivityAsync),
+                assertHttpRequestMessage:
                         (h) => h.Headers.Contains("customHeader") && h.Headers.GetValues("customHeader").Contains("customValue"));
         }
 
@@ -1160,13 +1176,13 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Activity to be updated"
+                Text = "TEST Activity to be updated",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
-                Bot = Bot
+                Bot = Bot,
             };
 
             await UseClientFor(async client =>
@@ -1179,12 +1195,11 @@ namespace Connector.Tests
                     Type = ActivityTypes.Message,
                     Recipient = User,
                     From = Bot,
-                    Text = "TEST Successfully activity updated"
+                    Text = "TEST Successfully activity updated",
                 };
                 var updateResponse = await client.Conversations.UpdateActivityAsync(conversation.Id, response.Id, update);
                 Assert.NotNull(updateResponse.Id);
             });
-
         }
 
         [Fact]
@@ -1199,13 +1214,13 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Activity to be updated with invalid conversation Id"
+                Text = "TEST Activity to be updated with invalid conversation Id",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
-                Bot = Bot
+                Bot = Bot,
             };
 
             await UseClientFor(async client =>
@@ -1218,7 +1233,7 @@ namespace Connector.Tests
                     Type = ActivityTypes.Message,
                     Recipient = User,
                     From = Bot,
-                    Text = "TEST Activity mustn't be updated"
+                    Text = "TEST Activity mustn't be updated",
                 };
                 var ex = await Assert.ThrowsAsync<ErrorResponseException>(() => client.Conversations.UpdateActivityAsync("B21S8SG7K:T03CWQ0QB", response.Id, update));
                 Assert.Equal("ServiceError", ex.Body.Error.Code);
@@ -1238,13 +1253,13 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Activity to be updated with null conversation Id"
+                Text = "TEST Activity to be updated with null conversation Id",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
-                Bot = Bot
+                Bot = Bot,
             };
 
             await UseClientFor(async client =>
@@ -1257,7 +1272,7 @@ namespace Connector.Tests
                     Type = ActivityTypes.Message,
                     Recipient = User,
                     From = Bot,
-                    Text = "TEST Activity mustn't be updated"
+                    Text = "TEST Activity mustn't be updated",
                 };
                 var ex = await Assert.ThrowsAsync<ValidationException>(() => client.Conversations.UpdateActivityAsync(null, response.Id, update));
                 Assert.Contains("cannot be null", ex.Message);
@@ -1272,13 +1287,13 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Activity to be updated with null activity Id"
+                Text = "TEST Activity to be updated with null activity Id",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
-                Bot = Bot
+                Bot = Bot,
             };
 
             await UseClientFor(async client =>
@@ -1291,7 +1306,7 @@ namespace Connector.Tests
                     Type = ActivityTypes.Message,
                     Recipient = User,
                     From = Bot,
-                    Text = "TEST Activity mustn't be updated"
+                    Text = "TEST Activity mustn't be updated",
                 };
                 var ex = await Assert.ThrowsAsync<ValidationException>(() => client.Conversations.UpdateActivityAsync(conversation.Id, null, update));
                 Assert.Contains("cannot be null", ex.Message);
@@ -1306,13 +1321,13 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Activity to be updated with null activity"
+                Text = "TEST Activity to be updated with null activity",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
-                Bot = Bot
+                Bot = Bot,
             };
 
             await UseClientFor(async client =>
@@ -1323,6 +1338,7 @@ namespace Connector.Tests
                 Assert.Contains("cannot be null", ex.Message);
             });
         }
+
         [Fact]
         public async Task UpdateActivityWithCustomHeaders()
         {
@@ -1331,18 +1347,19 @@ namespace Connector.Tests
                 Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Text = "TEST Activity to be updated"
+                Text = "TEST Activity to be updated",
             };
 
             var createMessage = new ConversationParameters()
             {
                 Members = new ChannelAccount[] { User },
-                Bot = Bot
+                Bot = Bot,
             };
 
             var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
 
-            await AssertTracingFor(async () =>
+            await AssertTracingFor(
+                async () =>
                 await UseClientFor(async client =>
                 {
                     var conversation = await client.Conversations.CreateConversationAsync(createMessage);
@@ -1353,7 +1370,7 @@ namespace Connector.Tests
                         Type = ActivityTypes.Message,
                         Recipient = User,
                         From = Bot,
-                        Text = "TEST Successfully activity updated"
+                        Text = "TEST Successfully activity updated",
                     };
                     var updateResponse = await client.Conversations.UpdateActivityWithHttpMessagesAsync(
                         conversation.Id, response.Id, update, customHeaders, default(CancellationToken));
