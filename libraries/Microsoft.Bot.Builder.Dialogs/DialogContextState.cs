@@ -140,10 +140,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var resultContextState = resultToken.ToObject<DialogContextVisibleState>();
             foreach (var kv in resultContextState.User)
             {
-                if (!this.User.ContainsKey(kv.Key))
-                {
-                    this.User.Add(kv.Key, kv.Value);
-                }
+                this.User[kv.Key] = kv.Value;
             }
 
             foreach (var kv in resultContextState.Conversation)
