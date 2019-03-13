@@ -12,7 +12,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-
     public class MyWaterfallDialog : WaterfallDialog
     {
         public MyWaterfallDialog(string id)
