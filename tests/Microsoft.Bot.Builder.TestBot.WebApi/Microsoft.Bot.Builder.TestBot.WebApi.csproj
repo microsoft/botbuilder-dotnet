@@ -103,15 +103,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Global.asax" />
+    <Content Include="WebApiApplication.asax" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="App_Start\UnityWebApiActivator.cs" />
     <Compile Include="App_Start\BotConfig.cs" />
-    <Compile Include="Global.asax.cs">
-      <DependentUpon>Global.asax</DependentUpon>
+    <Compile Include="WebApiApplication.asax.cs">
+      <DependentUpon>WebApiApplication.asax</DependentUpon>
     </Compile>
     <Compile Include="InteceptorAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

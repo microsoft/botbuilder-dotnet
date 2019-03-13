@@ -12,8 +12,10 @@ namespace Microsoft.Bot.Builder.TestBot.WebApi
     /// </summary>
     public static class UnityConfig
     {
+        #pragma warning disable SA1124 // Do not use regions
         #region Unity Container
         private static Lazy<IUnityContainer> container =
+        #pragma warning restore SA1124 // Do not use regions
           new Lazy<IUnityContainer>(() =>
           {
               var container = new UnityContainer();
@@ -22,8 +24,11 @@ namespace Microsoft.Bot.Builder.TestBot.WebApi
           });
 
         /// <summary>
-        /// Configured Unity Container.
+        /// Gets configured Unity Container.
         /// </summary>
+        /// <value>
+        /// Configured Unity Container.
+        /// </value>
         public static IUnityContainer Container => container.Value;
         #endregion
 
@@ -42,10 +47,8 @@ namespace Microsoft.Bot.Builder.TestBot.WebApi
             // NOTE: To load from web.config uncomment the line below.
             // Make sure to add a Unity.Configuration to the using statements.
             // container.LoadConfiguration();
-
             // TODO: Register your type's mappings here.
             // container.RegisterType<IProductRepository, ProductRepository>();
-
             var options = new BotFrameworkOptions();
 
             options.Middleware.Add(new ShowTypingMiddleware());
@@ -60,8 +63,7 @@ namespace Microsoft.Bot.Builder.TestBot.WebApi
                 botFrameworkAdapter.Use(middleware);
             }
 
-            //return botFrameworkAdapter;
-
+            // return botFrameworkAdapter;
             var adapter = new InteceptorAdapter(botFrameworkAdapter);
 
             container.RegisterInstance<IAdapterIntegration>(adapter);

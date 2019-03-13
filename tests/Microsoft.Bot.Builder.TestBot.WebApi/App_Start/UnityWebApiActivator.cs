@@ -1,4 +1,4 @@
-using System.Web.Http;
+﻿using System.Web.Http;
 
 using Unity.AspNet.WebApi;
 
@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.TestBot.WebApi
         /// <summary>
         /// Integrates Unity when the application starts.
         /// </summary>
-        public static void Start() 
+        public static void Start()
         {
             // Use UnityHierarchicalDependencyResolver if you want to use
             // a new child container for each IHttpController resolution.
