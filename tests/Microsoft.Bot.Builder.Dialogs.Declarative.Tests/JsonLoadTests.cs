@@ -6,6 +6,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Tests.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Plugins;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.AI.LanguageGeneration;
+using Microsoft.Bot.Schema;
+using System.Collections.Generic;
+using Microsoft.Bot.Builder.Dialogs.Rules;
+using System;
 
 namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 {
@@ -20,222 +26,167 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
         public TestContext TestContext { get; set; }
 
-        /// <summary>
-        /// An intent command dialog that has no inner dialogs. Only commands and a
-        /// rule based simple recognizer that is defined inline
-        /// </summary>
         [TestMethod]
-        public async Task JsonDialogLoad_TextPromptWithMatchValidator()
+        public async Task JsonDialogLoad_Fallback()
         {
-            string json = File.ReadAllText("TestFlows/TextPrompt.json");
+            string json = File.ReadAllText("Samples/Planning 1 - Fallback/main.dialog");
 
-            Factory.Register("http://schemas.botframework.com/RuleRecognizer", typeof(RuleRecognizer));
+            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
             .Send("hello")
-            .AssertReply("What is your name?") 
-            .Send("x")
-            .AssertReply("You need to give me at least 3 chars to 30 chars as a name.")
-            .Send("Carlos")
+            .AssertReply("Hello planning!")
             .StartTestAsync();
         }
 
         [TestMethod]
-        public async Task JsonDialogLoad_NumberPromptWithMatchValidator()
+        public async Task JsonDialogLoad_WaitForInput()
         {
-            string json = File.ReadAllText("TestFlows/NumberPrompt.json");
+            string json = File.ReadAllText("Samples/Planning 2 - WaitForInput/main.dialog");
 
-            Factory.Register("http://schemas.botframework.com/RuleRecognizer", typeof(RuleRecognizer));
+            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
             .Send("hello")
-                .AssertReply("What is your age?")
-            .Send("x")
-                .AssertReply("I didn't recognize a number in your response.")
-                .AssertReply("Let's try again, what's your age?")
-            .Send("-250")
-                .AssertReply("Nobody can be negative aged!")
-                .AssertReply("Let's try again, what's your age?")
-            .Send("250")
-                .AssertReply("I don't think anyone can be that old.")
-                .AssertReply("Let's try again, what's your age?")
-            .Send("31")
+            .AssertReply("Hello, I'm Zoidberg. What is your name?")
+            .Send("Carlos")
+            .AssertReply("Hello Carlos, nice to meet you!")
             .StartTestAsync();
         }
 
         [TestMethod]
-        public async Task JsonDialogLoad_SequenceWithRefPrompts()
+        public async Task JsonDialogLoad_IfProperty()
         {
-            string json = File.ReadAllText("TestFlows/SequenceWithPrompts/SequenceWithRefPrompts.json");
+            string json = File.ReadAllText("Samples/Planning 3 - IfProperty/main.dialog");
 
-            Factory.Register("http://schemas.botframework.com/RuleRecognizer", typeof(RuleRecognizer));
+            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
             .Send("hello")
-                .AssertReply("What is your name?")
-            .Send("x")
-                .AssertReply("You need to give me at least 3 chars to 30 chars as a name.")
+            .AssertReply("Hello, I'm Zoidberg. What is your name?")
             .Send("Carlos")
-                .AssertReply("What is your age?")
-            .Send("x")
-                .AssertReply("I didn't recognize a number in your response.")
-                .AssertReply("Let's try again, what's your age?")
-            .Send("-250")
-                .AssertReply("Nobody can be negative aged!")
-                .AssertReply("Let's try again, what's your age?")
-            .Send("250")
-                .AssertReply("I don't think anyone can be that old.")
-                .AssertReply("Let's try again, what's your age?")
-            .Send("31")
-
+            .AssertReply("Hello Carlos, nice to talk to you!")
             .StartTestAsync();
         }
 
         [TestMethod]
-        public async Task JsonDialogLoad_SequenceWithRefPromptsOverrides()
+        public async Task JsonDialogLoad_TextPrompt()
         {
-            string json = File.ReadAllText("TestFlows/SequenceWithPrompts/SequenceWithRefPromptsOverrides.json");
+            string json = File.ReadAllText("Samples/Planning 4 - TextPrompt/main.dialog");
 
-            Factory.Register("http://schemas.botframework.com/RuleRecognizer", typeof(RuleRecognizer));
+            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
             .Send("hello")
-                .AssertReply("What is your name?")
-            .Send("x")
-                .AssertReply("You need to give me at least 3 chars to 30 chars as a name.")
+            .AssertReply("Hello, I'm Zoidberg. What is your name?")
             .Send("Carlos")
-                .AssertReply("What is your age?")
-            .Send("x")
-                .AssertReply("I didn't recognize a number in your response.")
-                .AssertReply("C'mon, tell me your age, I won't tell!")
-            .Send("-250")
-                .AssertReply("Nobody can be negative aged!")
-                .AssertReply("C'mon, tell me your age, I won't tell!")
-            .Send("250")
-                .AssertReply("I don't think anyone can be that old.")
-                .AssertReply("C'mon, tell me your age, I won't tell!")
-            .Send("31")
-
+            .AssertReply("Hello Carlos, nice to talk to you!")
             .StartTestAsync();
         }
 
         [TestMethod]
-        public async Task JsonDialogLoad_SequenceWithInlinePrompts()
+        public async Task JsonDialogLoad_WelcomePrompt()
         {
-            string json = File.ReadAllText("TestFlows/SequenceWithPrompts/SequenceWithInlinePrompts.json");
+            string json = File.ReadAllText("Samples/Planning 5 - WelcomeRule/main.dialog");
 
-            Factory.Register("http://schemas.botframework.com/RuleRecognizer", typeof(RuleRecognizer));
+            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
+            .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
             .Send("hello")
-                .AssertReply("What is your name?")
-            .Send("x")
-                .AssertReply("You need to give me at least 3 chars to 30 chars as a name.")
+            .AssertReply("Welcome!")
+            .AssertReply("Hello, I'm Zoidberg. What is your name?")
             .Send("Carlos")
-                .AssertReply("What is your age?")
-            .Send("x")
-                .AssertReply("I didn't recognize a number in your response.")
-                .AssertReply("Let's try again, what's your age?")
-            .Send("-250")
-                .AssertReply("Nobody can be negative aged!")
-                .AssertReply("Let's try again, what's your age?")
-            .Send("250")
-                .AssertReply("I don't think anyone can be that old.")
-                .AssertReply("Let's try again, what's your age?")
-            .Send("31")
-
+            .AssertReply("Hello Carlos, nice to talk to you!")
             .StartTestAsync();
         }
 
         [TestMethod]
-        public async Task JsonDialogLoad_SimpleLGBinding()
+        public async Task JsonDialogLoad_DoSteps()
         {
-            string json = File.ReadAllText("TestFlows/SimpleLGBinding.json");
+            string json = File.ReadAllText("Samples/Planning 6 - DoSteps/main.dialog");
+
+            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
+            .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
             .Send("hello")
-                .AssertReply("What's your name?")
+            .AssertReply("Welcome!")
+            .AssertReply("Hello, I'm Zoidberg. What is your name?")
             .Send("Carlos")
-                .AssertReply("Hi Carlos")
-                .AssertReply("I have a few questions Carlos, where were you born?")
-            .Send("Argentina")
-                .AssertReply("No kidding! Argentina is my favourite Country!!!")
-            .StartTestAsync();
-        }
-
-        /// <summary>
-        /// An intent dialog that with a simple recognizer and two child dialogs.
-        /// </summary>
-        [TestMethod]
-        public async Task JsonDialogLoad_IntentDialogRelativeReferences()
-        {
-            string json = File.ReadAllText("TestFlows/IntentDialogRelativeReferences.json");
-
-            Factory.Register("http://schemas.botframework.com/RuleRecognizer", typeof(RuleRecognizer));
-
-            await BuildTestFlow(json)
-            .Send("name")
-            .AssertReply("What is your name?")
-            .Send("Carlos")
-            .Send("age")
-            .AssertReply("What is your age?") 
+            .AssertReply("Hello Carlos, nice to talk to you!")
+            .Send("Do you know a joke?")
+            .AssertReply("Why did the chicken cross the road?")
+            .Send("Why?")
+            .AssertReply("To get to the other side")
+            .Send("What happened in the future?")
+            .AssertReply("Seeing into the future...")
+            .AssertReply("I see great things happening...")
+            .AssertReply("Perhaps even a successful bot demo")
             .StartTestAsync();
         }
 
         [TestMethod]
-        public async Task JsonDialogLoad_IntentDialogLuisRecognizer()
+        public async Task JsonDialogLoad_CallDialog()
         {
-            string json = File.ReadAllText("TestFlows/LuisRecognizerBasic.json");
+            string json = File.ReadAllText("Samples/Planning 7 - CallDialog/main.dialog");
 
-            Factory.Register("http://schemas.botframework.com/RuleRecognizer", typeof(RuleRecognizer));
+            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
-            .Send("name")
-            .AssertReply("What is your name?")
+            .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
+            .Send("hello")
+            .AssertReply("Welcome!")
+            .AssertReply("Hello, I'm Zoidberg. What is your name?")
             .Send("Carlos")
-            .Send("age")
-            .AssertReply("What is your age?")
+            .AssertReply("Hello Carlos, nice to talk to you!")
+            .Send("Do you know a joke?")
+            .AssertReply("Why did the chicken cross the road?")
+            .Send("Why?")
+            .AssertReply("To get to the other side")
+            .Send("What happened in the future?")
+            .AssertReply("I see great things in your future...")
+            .AssertReply("Potentially a successful demo")
             .StartTestAsync();
         }
 
         [TestMethod]
-        [Ignore("Work in progress")]
-        public async Task JsonDialogLoad_FileDependencyPlugin()
+        public async Task JsonDialogLoad_ExternalLanguage()
         {
-            string json = File.ReadAllText("TestFlows/FilePluginEchoDialog.json");
+            string json = File.ReadAllText("Samples/Planning 8 - ExternalLanguage/main.dialog");
 
-            IPlugin filePlugin = new FilePlugin(
-                new FileDependencyInfo()
-                {
-                    AssemblyPath =
-                    @"..\..\..\..\Microsoft.Bot.Builder.Dialogs.Flow.Tests\bin\Debug\netcoreapp2.1\Microsoft.Bot.Builder.Dialogs.Flows.Tests.dll",
-                    ClassName = "EchoDialog",
-                    SchemaUri = "custom::EchoDialog"
-                });
-
-            await Factory.RegisterPlugin(filePlugin);
+            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
-            .Send("howdy")
-            .AssertReply("howdy")
-            .Send("echo")
-            .AssertReply("echo")
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task JsonDialogLoad_IntentDialogFileReferences()
-        {
-            string json = File.ReadAllText("TestFlows/IntentDialogRelativeReferences.json");
-
-            Factory.Register("http://schemas.botframework.com/RuleRecognizer", typeof(RuleRecognizer));
-
-            await BuildTestFlow(json)
-            .Send("name")
-            .AssertReply("What is your name?")
+            .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
+            .Send("hello")
+            .AssertReplyOneOf(new string[]
+            {
+                "Zoidberg here, welcome to my world!",
+                "Hello, my name is Zoidberg and I'll be your guide.",
+                "Hail Zoidberg!"
+            })
+            .AssertReplyOneOf(new string[]
+            {
+                "Hello. What is your name?",
+                "I would like to know you better, what's your name?"
+            })
             .Send("Carlos")
-            .Send("age")
-            .AssertReply("What is your age?")
+            .AssertReplyOneOf(new string[]
+            {
+                "Hello Carlos, nice to talk to you!",
+                "Hi Carlos, you seem nice!",
+                "Whassup Carlos?"
+            })
+            .Send("Help")
+            .AssertReply("I can tell jokes and also forsee the future!")
+            .Send("Do you know a joke?")
+            .AssertReply("Why did the chicken cross the road?")
+            .Send("Why?")
+            .AssertReply("To get to the other side")
+            .Send("What happened in the future?")
+            .AssertReply("I see great things in your future...")
+            .AssertReply("Potentially a successful demo")
             .StartTestAsync();
         }
 
@@ -246,9 +197,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
+            string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, $@"..\..\..\Microsoft.Bot.Builder.Dialogs.Declarative.Tests.csproj"));
+            var botResourceManager = new BotResourceManager()
+                .AddProjectResources(projPath);
+            var lg = new LGLanguageGenerator(botResourceManager);
+
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()))
-                .Use(new AutoSaveStateMiddleware(convoState));
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new RegisterClassMiddleware<IBotResourceProvider>(botResourceManager))
+                .Use(new RegisterClassMiddleware<ILanguageGenerator>(lg))
+                .Use(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)));
 
             var dialogs = new DialogSet(dialogState);
 
@@ -256,11 +215,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dialogContext = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dialogContext.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty || results.Status == DialogTurnStatus.Complete)
-                    results = await dialogContext.BeginDialogAsync(dialog.Id, null, cancellationToken);
+                if (dialog is RuleDialog planningDialog)
+                {
+                    await planningDialog.OnTurnAsync(turnContext, null, cancellationToken).ConfigureAwait(false);
+                }
             });
         }
     }

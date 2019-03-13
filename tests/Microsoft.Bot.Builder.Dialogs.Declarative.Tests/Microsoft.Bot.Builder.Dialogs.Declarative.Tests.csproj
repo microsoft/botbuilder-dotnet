@@ -1,20 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="en-us.lg" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="en-us.lg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
@@ -23,51 +13,138 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.AI.LanguageGeneration\Microsoft.Bot.Builder.AI.LanguageGeneration.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Composition\Microsoft.Bot.Builder.Dialogs.Composition.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Declarative\Microsoft.Bot.Builder.Dialogs.Declarative.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TestFlows\LuisRecognizerBasic.json">
+    <None Update="Samples\Planning 1 - Fallback\main.dialog">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFlows\IntentDialogRelativeReferences.json">
+    <None Update="Samples\Planning 2 - WaitForInput\main.dialog">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFlows\SimpleLGBinding.json">
+    <None Update="Samples\Planning 3 - IfProperty\main.dialog">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFlows\SequenceWithPrompts\NumberPrompt.json">
+    <None Update="Samples\Planning 4 - TextPrompt\main.dialog">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFlows\SequenceWithPrompts\SequenceWithInlinePrompts.json">
+    <None Update="Samples\Planning 5 - WelcomeRule\main.dialog">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFlows\SequenceWithPrompts\SequenceWithRefPromptsOverrides.json">
+    <None Update="Samples\Planning 6 - DoSteps\main.dialog">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFlows\SequenceWithPrompts\SequenceWithRefPrompts.json">
+    <None Update="Samples\Planning 7 - CallDialog\FortuneTellerDialog.dialog">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFlows\NumberPrompt.json">
+    <None Update="Samples\Planning 7 - CallDialog\main.dialog">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFlows\SequenceWithPrompts\TextPrompt.json">
+    <None Update="Samples\Planning 7 - CallDialog\TellJokeDialog.dialog">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFlows\FilePluginEchoDialog.json">
+    <None Update="Samples\Planning 8 - ExternalLanguage\FortuneTellerDialog.dialog">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFlows\TextPrompt.json">
+    <None Update="Samples\Planning 8 - ExternalLanguage\Greeting.dialog">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFlows\IntentDialogFileReferences.json">
+    <None Update="Samples\Planning 8 - ExternalLanguage\main.dialog">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Dialogs\" />
+    <None Update="Samples\Planning 8 - ExternalLanguage\main.lg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Samples\Planning 8 - ExternalLanguage\TellJokeDialog.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Planning 1 - Fallback\main.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Planning 2 - WaitForInput\main.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Planning 3 - IfProperty\main.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Planning 4 - TextPrompt\main.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Planning 5 - WelcomeRule\main.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Planning 6 - DoSteps\main.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Planning 7 - CallDialog\FortuneTellerDialog.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Planning 7 - CallDialog\main.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Planning 7 - CallDialog\TellJokeDialog.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Planning 8 - ExternalLanguage\FortuneTellerDialog.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Planning 8 - ExternalLanguage\Greeting.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Planning 8 - ExternalLanguage\main.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Planning 8 - ExternalLanguage\main.lg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Planning 8 - ExternalLanguage\TellJokeDialog.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Samples\Planning 1 - Fallback\main.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Samples\Planning 2 - WaitForInput\main.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Samples\Planning 3 - IfProperty\main.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Samples\Planning 4 - TextPrompt\main.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Samples\Planning 5 - WelcomeRule\main.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Samples\Planning 6 - DoSteps\main.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Samples\Planning 7 - CallDialog\FortuneTellerDialog.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Samples\Planning 7 - CallDialog\main.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Samples\Planning 7 - CallDialog\TellJokeDialog.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Samples\Planning 8 - ExternalLanguage\FortuneTellerDialog.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Samples\Planning 8 - ExternalLanguage\Greeting.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Samples\Planning 8 - ExternalLanguage\main.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Samples\Planning 8 - ExternalLanguage\main.lg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFlows\Samples\Planning 8 - ExternalLanguage\TellJokeDialog.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

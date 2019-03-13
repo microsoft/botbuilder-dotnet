@@ -1,9 +1,0 @@
-{
-  "$type": "http://schemas.botframework.com/TextPrompt",
-  "$id": "namePrompt",
-  "property": "value.name",
-  "pattern": "\\w{3,50}",
-  "initialPrompt": "What is your name?",
-  "retryPrompt": "Let's try again, what's your name?",
-  "notMatchedActivity": "You need to give me at least 3 chars to 30 chars as a name."
-}
