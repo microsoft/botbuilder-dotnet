@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Connector.Tests
             ChannelValidation.ToBotFromChannelTokenValidationParameters.ValidateLifetime = false;
             client = new HttpClient
             {
-                BaseAddress = new Uri("https://webchat.botframework.com/")
+                BaseAddress = new Uri("https://webchat.botframework.com/"),
             };
             emptyClient = new HttpClient();
         }
@@ -64,7 +64,6 @@ namespace Microsoft.Bot.Connector.Tests
             var header = string.Empty;
             var credentials = new SimpleCredentialProvider(string.Empty, string.Empty);
 
-
             await Assert.ThrowsAsync<ArgumentNullException>(
                 async () => await JwtTokenValidation.ValidateAuthHeader(header, credentials, new SimpleChannelProvider(), string.Empty, null, emptyClient));
         }
@@ -85,7 +84,7 @@ namespace Microsoft.Bot.Connector.Tests
             string header = $"Bearer {await new MicrosoftAppCredentials("2cd87869-38a0-4182-9251-d056e8f0ac24", "2.30Vs3VQLKt974F").GetTokenAsync()}";
             var credentials = new SimpleCredentialProvider("00000000-0000-0000-0000-000000000000", string.Empty);
             await Assert.ThrowsAsync<UnauthorizedAccessException>(
-                async () => await JwtTokenValidation.ValidateAuthHeader(header, credentials, new SimpleChannelProvider(), string.Empty, null, emptyClient));            
+                async () => await JwtTokenValidation.ValidateAuthHeader(header, credentials, new SimpleChannelProvider(), string.Empty, null, emptyClient));
         }
 
         /// <summary>
@@ -164,7 +163,7 @@ namespace Microsoft.Bot.Connector.Tests
 
             Assert.False(MicrosoftAppCredentials.IsTrustedServiceUrl("https://webchat.botframework.com/"));
         }
-        
+
         [Fact]
         public async void Emulator_AuthHeader_CorrectAppIdAndServiceUrl_WithGovChannelService_ShouldValidate()
         {
@@ -197,8 +196,10 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
-            var credentials = new SimpleCredentialProvider(appId, String.Empty);
-            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+            var credentials = new SimpleCredentialProvider(appId, string.Empty);
+            var identity = new SimpleClaimsIdentity(
+                new List<Claim>()
+                {
                 new Claim(AuthenticationConstants.AudienceClaim, appId, null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
                 new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
             }, true);
@@ -210,8 +211,10 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
-            var credentials = new SimpleCredentialProvider(appId, String.Empty);
-            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+            var credentials = new SimpleCredentialProvider(appId, string.Empty);
+            var identity = new SimpleClaimsIdentity(
+                new List<Claim>()
+                {
                 new Claim(AuthenticationConstants.AudienceClaim, appId, null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
                 new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
             }, false);
@@ -225,22 +228,26 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
-            var credentials = new SimpleCredentialProvider(appId, String.Empty);
-            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+            var credentials = new SimpleCredentialProvider(appId, string.Empty);
+            var identity = new SimpleClaimsIdentity(
+                new List<Claim>()
+                {
                 new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
             }, true);
 
             await Assert.ThrowsAsync<UnauthorizedAccessException>(
                 async () => await GovernmentChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
         }
-        
+
         [Fact]
         public async void GovernmentChannelValidation_WrongAudienceClaim_Fails()
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
-            var credentials = new SimpleCredentialProvider(appId, String.Empty);
-            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+            var credentials = new SimpleCredentialProvider(appId, string.Empty);
+            var identity = new SimpleClaimsIdentity(
+                new List<Claim>()
+                {
                 new Claim(AuthenticationConstants.AudienceClaim, "abc", null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
                 new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
             }, true);
@@ -248,14 +255,16 @@ namespace Microsoft.Bot.Connector.Tests
             await Assert.ThrowsAsync<UnauthorizedAccessException>(
                 async () => await GovernmentChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
         }
-        
+
         [Fact]
         public async void GovernmentChannelValidation_WrongAudienceClaimIssuer_Fails()
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
-            var credentials = new SimpleCredentialProvider(appId, String.Empty);
-            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+            var credentials = new SimpleCredentialProvider(appId, string.Empty);
+            var identity = new SimpleClaimsIdentity(
+                new List<Claim>()
+                {
                 new Claim(AuthenticationConstants.AudienceClaim, appId, null, "wrongissuer"),
                 new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
             }, true);
@@ -269,9 +278,11 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
-            var credentials = new SimpleCredentialProvider(appId, String.Empty);
-            var identity = new SimpleClaimsIdentity(new List<Claim>() {
-                new Claim(AuthenticationConstants.AudienceClaim, "", null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
+            var credentials = new SimpleCredentialProvider(appId, string.Empty);
+            var identity = new SimpleClaimsIdentity(
+                new List<Claim>()
+                {
+                new Claim(AuthenticationConstants.AudienceClaim, string.Empty, null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
                 new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
             }, true);
 
@@ -284,10 +295,12 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
-            var credentials = new SimpleCredentialProvider(appId, String.Empty);
-            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+            var credentials = new SimpleCredentialProvider(appId, string.Empty);
+            var identity = new SimpleClaimsIdentity(
+                new List<Claim>()
+                {
                 new Claim(AuthenticationConstants.AudienceClaim, appId, null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
-                new Claim(AuthenticationConstants.ServiceUrlClaim, "", null),
+                new Claim(AuthenticationConstants.ServiceUrlClaim, string.Empty, null),
             }, true);
 
             await Assert.ThrowsAsync<UnauthorizedAccessException>(
@@ -299,8 +312,10 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
-            var credentials = new SimpleCredentialProvider(appId, String.Empty);
-            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+            var credentials = new SimpleCredentialProvider(appId, string.Empty);
+            var identity = new SimpleClaimsIdentity(
+                new List<Claim>()
+                {
                 new Claim(AuthenticationConstants.AudienceClaim, appId, null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
                 new Claim(AuthenticationConstants.ServiceUrlClaim, "other", null),
             }, true);
@@ -314,8 +329,10 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
-            var credentials = new SimpleCredentialProvider(appId, String.Empty);
-            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+            var credentials = new SimpleCredentialProvider(appId, string.Empty);
+            var identity = new SimpleClaimsIdentity(
+                new List<Claim>()
+                {
                 new Claim(AuthenticationConstants.AudienceClaim, appId, null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
                 new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
             }, true);
@@ -327,8 +344,10 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
-            var credentials = new SimpleCredentialProvider(appId, String.Empty);
-            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+            var credentials = new SimpleCredentialProvider(appId, string.Empty);
+            var identity = new SimpleClaimsIdentity(
+                new List<Claim>()
+                {
                 new Claim(AuthenticationConstants.AudienceClaim, appId, null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
                 new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
             }, false);
@@ -342,8 +361,10 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
-            var credentials = new SimpleCredentialProvider(appId, String.Empty);
-            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+            var credentials = new SimpleCredentialProvider(appId, string.Empty);
+            var identity = new SimpleClaimsIdentity(
+                new List<Claim>()
+                {
                 new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
             }, true);
 
@@ -356,8 +377,10 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
-            var credentials = new SimpleCredentialProvider(appId, String.Empty);
-            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+            var credentials = new SimpleCredentialProvider(appId, string.Empty);
+            var identity = new SimpleClaimsIdentity(
+                new List<Claim>()
+                {
                 new Claim(AuthenticationConstants.AudienceClaim, "abc", null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
                 new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
             }, true);
@@ -371,8 +394,10 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
-            var credentials = new SimpleCredentialProvider(appId, String.Empty);
-            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+            var credentials = new SimpleCredentialProvider(appId, string.Empty);
+            var identity = new SimpleClaimsIdentity(
+                new List<Claim>()
+                {
                 new Claim(AuthenticationConstants.AudienceClaim, appId, null, "wrongissuer"),
                 new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
             }, true);
@@ -386,9 +411,11 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
-            var credentials = new SimpleCredentialProvider(appId, String.Empty);
-            var identity = new SimpleClaimsIdentity(new List<Claim>() {
-                new Claim(AuthenticationConstants.AudienceClaim, "", null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
+            var credentials = new SimpleCredentialProvider(appId, string.Empty);
+            var identity = new SimpleClaimsIdentity(
+                new List<Claim>()
+                {
+                new Claim(AuthenticationConstants.AudienceClaim, string.Empty, null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
                 new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
             }, true);
 
@@ -401,10 +428,12 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
-            var credentials = new SimpleCredentialProvider(appId, String.Empty);
-            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+            var credentials = new SimpleCredentialProvider(appId, string.Empty);
+            var identity = new SimpleClaimsIdentity(
+                new List<Claim>()
+                {
                 new Claim(AuthenticationConstants.AudienceClaim, appId, null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
-                new Claim(AuthenticationConstants.ServiceUrlClaim, "", null),
+                new Claim(AuthenticationConstants.ServiceUrlClaim, string.Empty, null),
             }, true);
 
             await Assert.ThrowsAsync<UnauthorizedAccessException>(
@@ -416,8 +445,10 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
-            var credentials = new SimpleCredentialProvider(appId, String.Empty);
-            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+            var credentials = new SimpleCredentialProvider(appId, string.Empty);
+            var identity = new SimpleClaimsIdentity(
+                new List<Claim>()
+                {
                 new Claim(AuthenticationConstants.AudienceClaim, appId, null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
                 new Claim(AuthenticationConstants.ServiceUrlClaim, "other", null),
             }, true);
@@ -440,6 +471,7 @@ namespace Microsoft.Bot.Connector.Tests
 
             Assert.True(result.IsAuthenticated);
         }
+
         private async Task JwtTokenValidation_ValidateAuthHeader_WithChannelService_Throws(string appId, string pwd, string channelService)
         {
             string header = $"Bearer {await new MicrosoftAppCredentials(appId, pwd).GetTokenAsync()}";
@@ -465,12 +497,16 @@ namespace Microsoft.Bot.Connector.Tests
         {
             private bool _isAuthenticated;
 
-            public SimpleClaimsIdentity(IEnumerable<Claim> claims, bool isAuthenticated) : base(claims)
+            public SimpleClaimsIdentity(IEnumerable<Claim> claims, bool isAuthenticated)
+                : base(claims)
             {
                 _isAuthenticated = isAuthenticated;
             }
 
-            public override bool IsAuthenticated { get { return _isAuthenticated; } }
+            public override bool IsAuthenticated
+            {
+                get { return _isAuthenticated; }
+            }
         }
     }
 }

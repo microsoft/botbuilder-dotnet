@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Connector.Tests
 
             Assert.Contains("login.microsoftonline.us", cred.OAuthEndpoint);
         }
-        
+
         [Fact]
         public void MicrosoftGovernmentAppCredentials_Uses_Gov_Scope()
         {

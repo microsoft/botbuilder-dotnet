@@ -60,24 +60,6 @@ namespace Connector.Tests
              });
         }
 
-        // [Fact] - Disabled due to bug in service
-        //public async Task GetSignInLinkAsync_ShouldReturnValidUrl()
-        //{
-        //    var activity = new Activity()
-        //    {
-        //        Id = "myid",
-        //        From = new ChannelAccount() { Id = "fromId" },
-        //        ServiceUrl = "https://localhost"
-        //    };
-        //    await UseOAuthClientFor(async client =>
-        //     {
-        //         var uri = await client.GetSignInLinkAsync(activity, "mygithubconnection");
-        //         Assert.False(string.IsNullOrEmpty(uri));
-        //         Uri uriResult;
-        //         Assert.True(Uri.TryCreate(uri, UriKind.Absolute, out uriResult) && uriResult.Scheme == Uri.UriSchemeHttps);
-        //     });
-        //}
-
         [Fact]
         public async Task SignOutUser_ShouldThrowOnEmptyUserId()
         {
@@ -119,5 +101,23 @@ namespace Connector.Tests
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             await Assert.ThrowsAsync<ValidationException>(() => client.UserToken.GetAadTokensAsync("user", "connection", null));
         }
+
+        // [Fact] - Disabled due to bug in service
+        // public async Task GetSignInLinkAsync_ShouldReturnValidUrl()
+        // {
+        //    var activity = new Activity()
+        //    {
+        //        Id = "myid",
+        //        From = new ChannelAccount() { Id = "fromId" },
+        //        ServiceUrl = "https://localhost"
+        //    };
+        //    await UseOAuthClientFor(async client =>
+        //     {
+        //         var uri = await client.GetSignInLinkAsync(activity, "mygithubconnection");
+        //         Assert.False(string.IsNullOrEmpty(uri));
+        //         Uri uriResult;
+        //         Assert.True(Uri.TryCreate(uri, UriKind.Absolute, out uriResult) && uriResult.Scheme == Uri.UriSchemeHttps);
+        //     });
+        // }
     }
 }
