@@ -24,7 +24,7 @@
 # Greeting.Name.retryPrompt
 - [Greeting.Name.initialPrompt]
 
-# [Greeting.Name.notMatched
+# Greeting.Name.notMatched
 - That didn't match what I'm looking for, your name needs to be between 3 and 50 characters.
 - Oh no, I'm silly and confused again.
 
