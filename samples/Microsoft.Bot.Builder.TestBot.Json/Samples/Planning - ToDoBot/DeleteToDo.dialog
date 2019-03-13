@@ -1,0 +1,33 @@
+{
+  "$schema": "../../Schemas/app.schema",
+  "$type": "Microsoft.RuleDialog",
+  "$id":  "DeleteToDoDialog",
+  "storage": {
+    "$type": "Microsoft.MemoryStorage"
+  },
+  "rules": [
+    {
+      "$type": "Microsoft.FallbackRule",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "OK, Which todo would you like to remove? Please enter the title."
+        },
+        {
+          "$type": "Microsoft.WaitForInput",
+          "property": "user.todo"
+        },
+        {
+          "$type": "Microsoft.ChangeList",
+          "changeType": "3",
+          "listProperty": "user.todos",
+          "itemProperty": "user.todo"
+        },
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "Successfully delete a todo named \"{user.todo}\""
+        }
+      ]
+    }
+  ]   
+}

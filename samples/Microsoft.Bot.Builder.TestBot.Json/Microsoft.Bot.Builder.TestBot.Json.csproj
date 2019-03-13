@@ -7,6 +7,11 @@
   <ItemGroup>
     <None Remove="en-us.lg" />
     <None Remove="main.dialog" />
+    <None Remove="Samples\Planning - ToDoBot\AddToDo.dialog" />
+    <None Remove="Samples\Planning - ToDoBot\ClearToDos.dialog" />
+    <None Remove="Samples\Planning - ToDoBot\DeleteToDo.dialog" />
+    <None Remove="Samples\Planning - ToDoBot\main.dialog" />
+    <None Remove="Samples\Planning - ToDoBot\ShowToDos.dialog" />
     <None Remove="Samples\Planning 1 - Fallback\main.dialog" />
     <None Remove="Samples\Planning 8 - ExternalLanguage\FortuneTellerDialog.dialog" />
     <None Remove="Samples\Planning 8 - ExternalLanguage\main.dialog" />
@@ -23,6 +28,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Samples\Planning - ToDoBot\DeleteToDo.dialog" />
+    <Content Include="Samples\Planning - ToDoBot\ClearToDos.dialog" />
+    <Content Include="Samples\Planning - ToDoBot\ShowToDos.dialog" />
+    <Content Include="Samples\Planning - ToDoBot\AddToDo.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Samples\Planning - ToDoBot\main.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Samples\Planning 1 - Fallback\main.dialog">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -84,6 +98,18 @@
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Samples\Planning - ToDoBot\DeleteToDo.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Samples\Planning - ToDoBot\ClearToDos.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Samples\Planning - ToDoBot\ShowToDos.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

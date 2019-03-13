@@ -117,6 +117,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.IfProperty", typeof(IfProperty));
             Register("Microsoft.SendActivity", typeof(SendActivity));
             Register("Microsoft.WaitForInput", typeof(WaitForInput));
+            Register("Microsoft.SaveEntity", typeof(SaveEntity));
+            Register("Microsoft.ChangeList", typeof(ChangeList));
+            Register("Microsoft.SendList", typeof(SendList));
 
             // Dialogs
             Register("Microsoft.ComponentDialog", typeof(ComponentDialog), new ComponentDialogLoader());
