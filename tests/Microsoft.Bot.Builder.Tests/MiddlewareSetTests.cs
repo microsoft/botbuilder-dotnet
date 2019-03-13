@@ -182,12 +182,14 @@ namespace Microsoft.Bot.Builder.Tests
 
             // The middlware in this pipeline calls next(), so the delegate should be called
             bool didAllRun = false;
-            await m.ReceiveActivityWithStatusAsync(null, (ctx, cancellationToken) =>
-            {
-                didAllRun = true;
-                return Task.CompletedTask;
-            },
-            default(CancellationToken));
+            await m.ReceiveActivityWithStatusAsync(
+                null,
+                (ctx, cancellationToken) =>
+                {
+                    didAllRun = true;
+                    return Task.CompletedTask;
+                },
+                default(CancellationToken));
 
             Assert.IsTrue(called1);
             Assert.IsTrue(didAllRun);
@@ -201,12 +203,14 @@ namespace Microsoft.Bot.Builder.Tests
 
             // This middlware pipeline has no entries. This should result in
             // the status being TRUE.
-            await m.ReceiveActivityWithStatusAsync(null, (ctx, cancellationToken) =>
-            {
-                didAllRun = true;
-                return Task.CompletedTask;
-            },
-            default(CancellationToken));
+            await m.ReceiveActivityWithStatusAsync(
+                null,
+                (ctx, cancellationToken) =>
+                {
+                    didAllRun = true;
+                    return Task.CompletedTask;
+                },
+                default(CancellationToken));
             Assert.IsTrue(didAllRun);
         }
 
@@ -233,12 +237,14 @@ namespace Microsoft.Bot.Builder.Tests
             m.Use(two);
 
             bool didAllRun = false;
-            await m.ReceiveActivityWithStatusAsync(null, (ctx, cancellationToken) =>
-            {
-                didAllRun = true;
-                return Task.CompletedTask;
-            },
-            default(CancellationToken));
+            await m.ReceiveActivityWithStatusAsync(
+                null,
+                (ctx, cancellationToken) =>
+                {
+                    didAllRun = true;
+                    return Task.CompletedTask;
+                },
+                default(CancellationToken));
             Assert.IsTrue(called1);
             Assert.IsTrue(called2);
 
@@ -258,12 +264,14 @@ namespace Microsoft.Bot.Builder.Tests
 
             // The middlware in this pipeline DOES NOT call next(), so this must not be called
             bool didAllRun = false;
-            await m.ReceiveActivityWithStatusAsync(null, (ctx, cancellationToken) =>
-            {
-                didAllRun = true;
-                return Task.CompletedTask;
-            },
-            default(CancellationToken));
+            await m.ReceiveActivityWithStatusAsync(
+                null,
+                (ctx, cancellationToken) =>
+                {
+                    didAllRun = true;
+                    return Task.CompletedTask;
+                },
+                default(CancellationToken));
 
             Assert.IsTrue(called1);
 

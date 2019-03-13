@@ -88,15 +88,4 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.IsTrue(callbackInvoked);
         }
     }
-
-    public class CallCountingMiddleware : IMiddleware
-    {
-        public int Calls { get; set; }
-
-        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
-        {
-            Calls++;
-            await next(cancellationToken);
-        }
-    }
 }

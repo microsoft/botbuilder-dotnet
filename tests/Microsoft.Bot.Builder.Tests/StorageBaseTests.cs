@@ -62,11 +62,6 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual("1", storeItem.Id);
         }
 
-        public class TypedObject
-        {
-            public string Name { get; set; }
-        }
-
         protected async Task UpdateObjectTest(IStorage storage)
         {
             var originalPocoItem = new PocoItem() { Id = "1", Count = 1 };
@@ -247,23 +242,5 @@ namespace Microsoft.Bot.Builder.Tests
             var createPoco = readStoreItems["createPoco"] as PocoItem;
             Assert.AreEqual(createPoco.Id, "1", "createPoco.id should be 1");
         }
-    }
-
-    public class PocoItem
-    {
-        public string Id { get; set; }
-
-        public int Count { get; set; }
-
-        public string[] ExtraBytes { get; set; }
-    }
-
-    public class PocoStoreItem : IStoreItem
-    {
-        public string ETag { get; set; }
-
-        public string Id { get; set; }
-
-        public int Count { get; set; }
     }
 }

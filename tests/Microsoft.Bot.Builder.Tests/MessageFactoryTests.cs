@@ -147,29 +147,29 @@ namespace Microsoft.Bot.Builder.Tests
             string ssml = Guid.NewGuid().ToString();
             string inputHint = InputHints.ExpectingInput;
 
-            string caValue1 = Guid.NewGuid().ToString();
-            string caTitle1 = Guid.NewGuid().ToString();
+            string cardValue1 = Guid.NewGuid().ToString();
+            string cardTitle1 = Guid.NewGuid().ToString();
 
             CardAction cardAction1 = new CardAction
             {
                 Type = ActionTypes.ImBack,
-                Value = caValue1,
-                Title = caTitle1,
+                Value = cardValue1,
+                Title = cardTitle1,
             };
 
-            string caValue2 = Guid.NewGuid().ToString();
-            string caTitle2 = Guid.NewGuid().ToString();
+            string cardValue2 = Guid.NewGuid().ToString();
+            string cardTitle2 = Guid.NewGuid().ToString();
 
             CardAction cardAction2 = new CardAction
             {
                 Type = ActionTypes.ImBack,
-                Value = caValue2,
-                Title = caTitle2,
+                Value = cardValue2,
+                Title = cardTitle2,
             };
 
             HashSet<CardAction> cardActions = new HashSet<CardAction> { cardAction1, cardAction2 };
-            HashSet<object> values = new HashSet<object> { caValue1, caValue2 };
-            HashSet<string> titles = new HashSet<string> { caTitle1, caTitle2 };
+            HashSet<object> values = new HashSet<object> { cardValue1, cardValue2 };
+            HashSet<string> titles = new HashSet<string> { cardTitle1, cardTitle2 };
 
             IMessageActivity message = MessageFactory.SuggestedActions(cardActions, text, ssml, inputHint);
 
