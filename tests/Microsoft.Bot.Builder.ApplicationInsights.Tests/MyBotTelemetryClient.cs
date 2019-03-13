@@ -13,7 +13,6 @@ using Moq;
 
 namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
 {
-
     public class MyBotTelemetryClient : BotTelemetryClient
     {
         public MyBotTelemetryClient(TelemetryClient telemetryClient)
