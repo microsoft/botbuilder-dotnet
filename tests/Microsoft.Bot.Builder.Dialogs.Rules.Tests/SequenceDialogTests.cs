@@ -50,74 +50,74 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             });
         }
 
-        [TestMethod]
-        public async Task Planning_TopLevelFallback()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
+        //[TestMethod]
+        //public async Task Planning_TopLevelFallback()
+        //{
+        //    var convoState = new ConversationState(new MemoryStorage());
+        //    var userState = new UserState(new MemoryStorage());
 
-            var sequenceDialog = new SequenceDialog("sequenceTest", 
-                new List<IDialog>()
-                    {
-                        new SendActivity("Hello Planning!")
-                    });
+        //    var sequenceDialog = new SequenceDialog("sequenceTest", 
+        //        new List<IDialog>()
+        //            {
+        //                new SendActivity("Hello Planning!")
+        //            });
 
-            sequenceDialog.UserState = userState.CreateProperty<StateMap>("userStateProperty");
-            sequenceDialog.BotState = convoState.CreateProperty<BotState>("botStateProperty");
+        //    sequenceDialog.UserState = userState.CreateProperty<StateMap>("userStateProperty");
+        //    sequenceDialog.BotState = convoState.CreateProperty<BotState>("botStateProperty");
 
-            await CreateFlow(sequenceDialog, convoState, userState)
-            .Send("start")
-                .AssertReply("Hello Planning!")
-            .StartTestAsync();
-        }
+        //    await CreateFlow(sequenceDialog, convoState, userState)
+        //    .Send("start")
+        //        .AssertReply("Hello Planning!")
+        //    .StartTestAsync();
+        //}
 
-        [TestMethod]
-        public async Task Planning_TopLevelFallbackMultipleActivities()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
+        //[TestMethod]
+        //public async Task Planning_TopLevelFallbackMultipleActivities()
+        //{
+        //    var convoState = new ConversationState(new MemoryStorage());
+        //    var userState = new UserState(new MemoryStorage());
 
-            var sequenceDialog = new SequenceDialog("planningTest", 
-                new List<IDialog>()
-                    {
-                        new SendActivity("Hello Planning!"),
-                        new SendActivity("Howdy awain")
-                    });
+        //    var sequenceDialog = new SequenceDialog("planningTest", 
+        //        new List<IDialog>()
+        //            {
+        //                new SendActivity("Hello Planning!"),
+        //                new SendActivity("Howdy awain")
+        //            });
 
-            sequenceDialog.UserState = userState.CreateProperty<StateMap>("userStateProperty");
-            sequenceDialog.BotState = convoState.CreateProperty<BotState>("botStateProperty");
+        //    sequenceDialog.UserState = userState.CreateProperty<StateMap>("userStateProperty");
+        //    sequenceDialog.BotState = convoState.CreateProperty<BotState>("botStateProperty");
 
 
-            await CreateFlow(sequenceDialog, convoState, userState)
-            .Send("start")
-                .AssertReply("Hello Planning!")
-                .AssertReply("Howdy awain")
-            .StartTestAsync();
-        }
+        //    await CreateFlow(sequenceDialog, convoState, userState)
+        //    .Send("start")
+        //        .AssertReply("Hello Planning!")
+        //        .AssertReply("Howdy awain")
+        //    .StartTestAsync();
+        //}
 
-        [TestMethod]
-        public async Task Planning_WaitForInput()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
+        //[TestMethod]
+        //public async Task Planning_WaitForInput()
+        //{
+        //    var convoState = new ConversationState(new MemoryStorage());
+        //    var userState = new UserState(new MemoryStorage());
 
-            var sequenceDialog = new SequenceDialog("planningTest", 
-                new List<IDialog>()
-                    {
-                        new SendActivity("Hello, what is your name?"),
-                        new WaitForInput("user.name"),
-                        new SendActivity("Hello {user.name}, nice to meet you!"),
-                    });
+        //    var sequenceDialog = new SequenceDialog("planningTest", 
+        //        new List<IDialog>()
+        //            {
+        //                new SendActivity("Hello, what is your name?"),
+        //                new WaitForInput("user.name"),
+        //                new SendActivity("Hello {user.name}, nice to meet you!"),
+        //            });
 
-            sequenceDialog.UserState = userState.CreateProperty<StateMap>("userStateProperty");
-            sequenceDialog.BotState = convoState.CreateProperty<BotState>("botStateProperty");
+        //    sequenceDialog.UserState = userState.CreateProperty<StateMap>("userStateProperty");
+        //    sequenceDialog.BotState = convoState.CreateProperty<BotState>("botStateProperty");
 
-            await CreateFlow(sequenceDialog, convoState, userState)
-            .Send("hi")
-                .AssertReply("Hello, what is your name?")
-            .Send("Carlos")
-                .AssertReply("Hello Carlos, nice to meet you!")
-            .StartTestAsync();
-        }
+        //    await CreateFlow(sequenceDialog, convoState, userState)
+        //    .Send("hi")
+        //        .AssertReply("Hello, what is your name?")
+        //    .Send("Carlos")
+        //        .AssertReply("Hello Carlos, nice to meet you!")
+        //    .StartTestAsync();
+        //}
     }
 }
