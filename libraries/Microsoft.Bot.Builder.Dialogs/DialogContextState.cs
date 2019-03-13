@@ -20,6 +20,9 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         [JsonProperty(PropertyName = "dialog")]
         public StateMap Dialog { get; set; }
+
+        [JsonProperty(PropertyName = "entities")]
+        public StateMap Entities { get; set; }
     }
 
     public class DialogContextState
@@ -72,6 +75,22 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 instance.State = value;
 
+            }
+        }
+
+        [JsonProperty(PropertyName = "entities")]
+        public StateMap Entities
+        {
+            get
+            {
+                var entities = dialogContext.Context.TurnState.Get<object>("turn_entities");
+                if (entities == null)
+                {
+                    entities = new StateMap();
+                    dialogContext.Context.TurnState.Add("turn_entities", entities);
+                }
+
+                return entities as StateMap;
             }
         }
 

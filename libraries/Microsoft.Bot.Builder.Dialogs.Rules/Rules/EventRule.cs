@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
             return true;
         }
 
-        protected virtual PlanChangeList OnCreateChangeList(PlanningContext planning, object dialogOptions = null)
+        protected virtual PlanChangeList OnCreateChangeList(PlanningContext planning, DialogEvent dialogEvent, object dialogOptions = null)
         {
             var changeList = new PlanChangeList()
             {

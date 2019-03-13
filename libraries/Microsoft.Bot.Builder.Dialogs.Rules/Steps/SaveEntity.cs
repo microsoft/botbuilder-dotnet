@@ -25,14 +25,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
             }
         }
 
-        public string entityName;
+        public string entityName { get; set; }
 
-        public string property;
+        public string property { get; set; }
 
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            // TODO Get the entities from turn context and set to the user state.
+            if (dc.State.Entities.ContainsKey(entityName))
+            {
+                var values = dc.State.Entities[entityName];
+                dc.State.SetValue(property, values);
+            }
             return await dc.EndDialogAsync();
         }
     }
