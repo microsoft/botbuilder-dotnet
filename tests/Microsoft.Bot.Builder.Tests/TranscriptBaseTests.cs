@@ -13,56 +13,17 @@ namespace Microsoft.Bot.Builder.Tests
 {
     public class TranscriptBaseTests
     {
-        public ITranscriptStore store;
-
         public TranscriptBaseTests()
         {
         }
 
-        private List<Activity> CreateActivities(string conversationId, DateTime ts, int count = 5)
-        {
-            List<Activity> activities = new List<Activity>();
-            for (int i = 1; i <= count; i++)
-            {
-                var activity = new Activity()
-                {
-                    Type = ActivityTypes.Message,
-                    Timestamp = ts,
-                    Id = Guid.NewGuid().ToString(),
-                    Text = i.ToString(),
-                    ChannelId = "test",
-                    From = new ChannelAccount($"User" + i),
-                    Conversation = new ConversationAccount(id: conversationId),
-                    Recipient = new ChannelAccount("Bot1", "2"),
-                    ServiceUrl = "http://foo.com/api/messages",
-                };
-                activities.Add(activity);
-                ts += TimeSpan.FromMinutes(1);
-
-                activity = new Activity()
-                {
-                    Type = ActivityTypes.Message,
-                    Timestamp = ts,
-                    Id = Guid.NewGuid().ToString(),
-                    Text = i.ToString(),
-                    ChannelId = "test",
-                    From = new ChannelAccount("Bot1", "2"),
-                    Conversation = new ConversationAccount(id: conversationId),
-                    Recipient = new ChannelAccount($"User" + i),
-                    ServiceUrl = "http://foo.com/api/messages",
-                };
-                activities.Add(activity);
-                ts += TimeSpan.FromMinutes(1);
-            }
-
-            return activities;
-        }
+        public ITranscriptStore Store { get; set; }
 
         public async Task BadArgs()
         {
             try
             {
-                await store.LogActivityAsync(null);
+                await Store.LogActivityAsync(null);
                 Assert.Fail("LogActivity Should have thrown on null ");
             }
             catch (ArgumentNullException)
@@ -75,7 +36,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             try
             {
-                await store.GetTranscriptActivitiesAsync(null, null);
+                await Store.GetTranscriptActivitiesAsync(null, null);
                 Assert.Fail("GetConversationActivities Should have thrown on null");
             }
             catch (ArgumentNullException)
@@ -88,7 +49,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             try
             {
-                await store.GetTranscriptActivitiesAsync("asdfds", null);
+                await Store.GetTranscriptActivitiesAsync("asdfds", null);
                 Assert.Fail("GetConversationActivities Should have thrown on null");
             }
             catch (ArgumentNullException)
@@ -101,7 +62,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             try
             {
-                await store.ListTranscriptsAsync(null);
+                await Store.ListTranscriptsAsync(null);
                 Assert.Fail("ListConversations Should have thrown on null");
             }
             catch (ArgumentNullException)
@@ -114,7 +75,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             try
             {
-                await store.DeleteTranscriptAsync(null, null);
+                await Store.DeleteTranscriptAsync(null, null);
                 Assert.Fail("DeleteConversation Should have thrown on null channelId");
             }
             catch (ArgumentNullException)
@@ -127,7 +88,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             try
             {
-                await store.DeleteTranscriptAsync("test", null);
+                await Store.DeleteTranscriptAsync("test", null);
                 Assert.Fail("DeleteConversation Should have thrown on null conversationId");
             }
             catch (ArgumentNullException)
@@ -144,9 +105,9 @@ namespace Microsoft.Bot.Builder.Tests
             string conversationId = "_LogActivity";
             var activities = CreateActivities(conversationId, DateTime.UtcNow);
             var activity = activities.First();
-            await store.LogActivityAsync(activity);
+            await Store.LogActivityAsync(activity);
 
-            var results = await store.GetTranscriptActivitiesAsync("test", conversationId);
+            var results = await Store.GetTranscriptActivitiesAsync("test", conversationId);
             Assert.AreEqual(1, results.Items.Length);
 
             Assert.AreEqual(JsonConvert.SerializeObject(activity), JsonConvert.SerializeObject(results.Items[0]));
@@ -160,36 +121,36 @@ namespace Microsoft.Bot.Builder.Tests
 
             foreach (var activity in activities)
             {
-                await store.LogActivityAsync(activity);
+                await Store.LogActivityAsync(activity);
             }
 
             // make sure other channels and conversations don't return results
-            var pagedResult = await store.GetTranscriptActivitiesAsync("bogus", conversationId);
+            var pagedResult = await Store.GetTranscriptActivitiesAsync("bogus", conversationId);
             Assert.IsNull(pagedResult.ContinuationToken);
             Assert.AreEqual(0, pagedResult.Items.Length);
 
             // make sure other channels and conversations don't return results
-            pagedResult = await store.GetTranscriptActivitiesAsync("test", "bogus");
+            pagedResult = await Store.GetTranscriptActivitiesAsync("test", "bogus");
             Assert.IsNull(pagedResult.ContinuationToken);
             Assert.AreEqual(0, pagedResult.Items.Length);
 
-            pagedResult = await store.GetTranscriptActivitiesAsync("test", conversationId);
+            pagedResult = await Store.GetTranscriptActivitiesAsync("test", conversationId);
             Assert.IsNull(pagedResult.ContinuationToken);
             Assert.AreEqual(activities.Count, pagedResult.Items.Length);
 
-            int iActivity = 0;
+            int indexActivity = 0;
             foreach (var result in pagedResult.Items.OrderBy(result => result.Timestamp))
             {
-                Assert.AreEqual(JsonConvert.SerializeObject(activities[iActivity++]), JsonConvert.SerializeObject(result));
+                Assert.AreEqual(JsonConvert.SerializeObject(activities[indexActivity++]), JsonConvert.SerializeObject(result));
             }
 
-            pagedResult = await store.GetTranscriptActivitiesAsync("test", conversationId, startDate: start + TimeSpan.FromMinutes(5));
+            pagedResult = await Store.GetTranscriptActivitiesAsync("test", conversationId, startDate: start + TimeSpan.FromMinutes(5));
             Assert.AreEqual(activities.Count / 2, pagedResult.Items.Length);
 
-            iActivity = 5;
+            indexActivity = 5;
             foreach (var result in pagedResult.Items.OrderBy(result => result.Timestamp))
             {
-                Assert.AreEqual(JsonConvert.SerializeObject(activities[iActivity++]), JsonConvert.SerializeObject(result));
+                Assert.AreEqual(JsonConvert.SerializeObject(activities[indexActivity++]), JsonConvert.SerializeObject(result));
             }
         }
 
@@ -201,7 +162,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             foreach (var activity in activities)
             {
-                await store.LogActivityAsync(activity);
+                await Store.LogActivityAsync(activity);
             }
 
             string conversationId2 = "_DeleteConversation2";
@@ -210,19 +171,19 @@ namespace Microsoft.Bot.Builder.Tests
 
             foreach (var activity in activities2)
             {
-                await store.LogActivityAsync(activity);
+                await Store.LogActivityAsync(activity);
             }
 
-            var pagedResult = await store.GetTranscriptActivitiesAsync("test", conversationId);
-            var pagedResult2 = await store.GetTranscriptActivitiesAsync("test", conversationId2);
+            var pagedResult = await Store.GetTranscriptActivitiesAsync("test", conversationId);
+            var pagedResult2 = await Store.GetTranscriptActivitiesAsync("test", conversationId2);
 
             Assert.AreEqual(activities.Count, pagedResult.Items.Length);
             Assert.AreEqual(activities.Count, pagedResult2.Items.Length);
 
-            await store.DeleteTranscriptAsync("test", conversationId);
+            await Store.DeleteTranscriptAsync("test", conversationId);
 
-            pagedResult = await store.GetTranscriptActivitiesAsync("test", conversationId);
-            pagedResult2 = await store.GetTranscriptActivitiesAsync("test", conversationId2);
+            pagedResult = await Store.GetTranscriptActivitiesAsync("test", conversationId);
+            pagedResult2 = await Store.GetTranscriptActivitiesAsync("test", conversationId2);
 
             Assert.AreEqual(0, pagedResult.Items.Length);
             Assert.AreEqual(activities.Count, pagedResult2.Items.Length);
@@ -233,12 +194,12 @@ namespace Microsoft.Bot.Builder.Tests
             string conversationId = "_GetConversationActivitiesPaging";
             DateTime start = DateTime.UtcNow;
             var activities = CreateActivities(conversationId, start, 50);
-            
+
             // log in parallel batches of 10
             int pos = 0;
             foreach (var group in activities.GroupBy(a => pos++ / 10))
             {
-                await Task.WhenAll(group.Select(a => store.LogActivityAsync(a)));
+                await Task.WhenAll(group.Select(a => Store.LogActivityAsync(a)));
             }
 
             HashSet<string> seen = new HashSet<string>();
@@ -246,7 +207,7 @@ namespace Microsoft.Bot.Builder.Tests
             var pageSize = 0;
             do
             {
-                pagedResult = await store.GetTranscriptActivitiesAsync("test", conversationId, pagedResult?.ContinuationToken);
+                pagedResult = await Store.GetTranscriptActivitiesAsync("test", conversationId, pagedResult?.ContinuationToken);
                 Assert.IsNotNull(pagedResult);
                 Assert.IsNotNull(pagedResult.Items);
 
@@ -286,7 +247,7 @@ namespace Microsoft.Bot.Builder.Tests
             int pos = 0;
             foreach (var group in activities.GroupBy(a => pos++ / 10))
             {
-                await Task.WhenAll(group.Select(a => store.LogActivityAsync(a)));
+                await Task.WhenAll(group.Select(a => Store.LogActivityAsync(a)));
             }
 
             HashSet<string> seen = new HashSet<string>();
@@ -295,7 +256,7 @@ namespace Microsoft.Bot.Builder.Tests
             var pageSize = 0;
             do
             {
-                pagedResult = await store.GetTranscriptActivitiesAsync("test", conversationId, pagedResult?.ContinuationToken, startDate);
+                pagedResult = await Store.GetTranscriptActivitiesAsync("test", conversationId, pagedResult?.ContinuationToken, startDate);
                 Assert.IsNotNull(pagedResult);
                 Assert.IsNotNull(pagedResult.Items);
 
@@ -349,7 +310,7 @@ namespace Microsoft.Bot.Builder.Tests
             int pos = 0;
             foreach (var group in activities.GroupBy(a => pos++ / 10))
             {
-                await Task.WhenAll(group.Select(a => store.LogActivityAsync(a)));
+                await Task.WhenAll(group.Select(a => Store.LogActivityAsync(a)));
             }
 
             HashSet<string> seen = new HashSet<string>();
@@ -357,7 +318,7 @@ namespace Microsoft.Bot.Builder.Tests
             var pageSize = 0;
             do
             {
-                pagedResult = await store.ListTranscriptsAsync("test", pagedResult?.ContinuationToken);
+                pagedResult = await Store.ListTranscriptsAsync("test", pagedResult?.ContinuationToken);
                 Assert.IsNotNull(pagedResult);
                 Assert.IsNotNull(pagedResult.Items);
 
@@ -388,6 +349,45 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Assert.IsTrue(seen.Contains(conversationId));
             }
+        }
+
+        private List<Activity> CreateActivities(string conversationId, DateTime ts, int count = 5)
+        {
+            List<Activity> activities = new List<Activity>();
+            for (int i = 1; i <= count; i++)
+            {
+                var activity = new Activity()
+                {
+                    Type = ActivityTypes.Message,
+                    Timestamp = ts,
+                    Id = Guid.NewGuid().ToString(),
+                    Text = i.ToString(),
+                    ChannelId = "test",
+                    From = new ChannelAccount($"User" + i),
+                    Conversation = new ConversationAccount(id: conversationId),
+                    Recipient = new ChannelAccount("Bot1", "2"),
+                    ServiceUrl = "http://foo.com/api/messages",
+                };
+                activities.Add(activity);
+                ts += TimeSpan.FromMinutes(1);
+
+                activity = new Activity()
+                {
+                    Type = ActivityTypes.Message,
+                    Timestamp = ts,
+                    Id = Guid.NewGuid().ToString(),
+                    Text = i.ToString(),
+                    ChannelId = "test",
+                    From = new ChannelAccount("Bot1", "2"),
+                    Conversation = new ConversationAccount(id: conversationId),
+                    Recipient = new ChannelAccount($"User" + i),
+                    ServiceUrl = "http://foo.com/api/messages",
+                };
+                activities.Add(activity);
+                ts += TimeSpan.FromMinutes(1);
+            }
+
+            return activities;
         }
     }
 }

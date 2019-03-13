@@ -21,6 +21,10 @@ namespace Microsoft.Bot.Builder.Tests
         private const string DefaultTranscriptRepositoryZipLocation = "https://github.com/Microsoft/BotBuilder/archive/master.zip";
         private const string TranscriptsZipFolder = "/Common/Transcripts/"; // Folder within the repo/zip
 
+        private static readonly object _syncRoot = new object();
+
+        private static string TranscriptsLocalPath { get; set; } = @"..\..\..\..\..\tests\Transcripts\";
+
         /// <summary>
         /// Loads a list of activities from a transcript file.
         /// Use the context of the test to find the transcript file.
@@ -79,10 +83,6 @@ namespace Microsoft.Bot.Builder.Tests
             return activities.Take(activities.Count - 1).Append(lastActivity);
         }
 
-        private static readonly object _syncRoot = new object();
-
-        private static string TranscriptsLocalPath { get; set; } = @"..\..\..\..\..\tests\Transcripts\";
-
         public static string EnsureTranscriptsDownload()
         {
             if (!string.IsNullOrWhiteSpace(TranscriptsLocalPath))
@@ -120,6 +120,27 @@ namespace Microsoft.Bot.Builder.Tests
 
                 return TranscriptsLocalPath;
             }
+        }
+
+        /// <summary>
+        /// Get a conversation reference.
+        /// This method can be used to set the conversation reference needed to create a <see cref="Adapters.TestAdapter"/>.
+        /// </summary>
+        /// <param name="activity">IActivity.</param>
+        /// <returns>A valid conversation reference to the activity provides.</returns>
+        public static ConversationReference GetConversationReference(this IActivity activity)
+        {
+            bool IsReply(IActivity act) => string.Equals("bot", act.From?.Role, StringComparison.InvariantCultureIgnoreCase);
+            var bot = IsReply(activity) ? activity.From : activity.Recipient;
+            var user = IsReply(activity) ? activity.Recipient : activity.From;
+            return new ConversationReference
+            {
+                User = user,
+                Bot = bot,
+                Conversation = activity.Conversation,
+                ChannelId = activity.ChannelId,
+                ServiceUrl = activity.ServiceUrl,
+            };
         }
 
         private static void ExtractZipFolder(string zipFilePath, string zipFolder, string path)
@@ -199,27 +220,6 @@ namespace Microsoft.Bot.Builder.Tests
             }
 
             return content;
-        }
-
-        /// <summary>
-        /// Get a conversation reference.
-        /// This method can be used to set the conversation reference needed to create a <see cref="Adapters.TestAdapter"/>.
-        /// </summary>
-        /// <param name="activity"></param>
-        /// <returns>A valid conversation reference to the activity provides.</returns>
-        public static ConversationReference GetConversationReference(this IActivity activity)
-        {
-            bool IsReply(IActivity act) => string.Equals("bot", act.From?.Role, StringComparison.InvariantCultureIgnoreCase);
-            var bot = IsReply(activity) ? activity.From : activity.Recipient;
-            var user = IsReply(activity) ? activity.Recipient : activity.From;
-            return new ConversationReference
-            {
-                User = user,
-                Bot = bot,
-                Conversation = activity.Conversation,
-                ChannelId = activity.ChannelId,
-                ServiceUrl = activity.ServiceUrl,
-            };
         }
     }
 }

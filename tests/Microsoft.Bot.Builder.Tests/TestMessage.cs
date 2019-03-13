@@ -34,6 +34,5 @@ namespace Microsoft.Bot.Builder.Tests
             };
             return a;
         }
-
     }
 }

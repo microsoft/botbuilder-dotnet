@@ -330,7 +330,6 @@ namespace Microsoft.Bot.Builder.Tests
             string connectionName = "myConnection";
             string channelId = "directline";
             string userId = "testUser";
-            string token = "abc123";
             Activity activity = new Activity()
             {
                 ChannelId = channelId,

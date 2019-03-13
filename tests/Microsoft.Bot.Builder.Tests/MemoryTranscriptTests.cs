@@ -9,9 +9,10 @@ namespace Microsoft.Bot.Builder.Tests
     [TestClass]
     public class MemoryTranscriptTests : TranscriptBaseTests
     {
-        public MemoryTranscriptTests() : base()
+        public MemoryTranscriptTests()
+            : base()
         {
-            this.store = new MemoryTranscriptStore();
+            this.Store = new MemoryTranscriptStore();
         }
 
         [TestMethod]
