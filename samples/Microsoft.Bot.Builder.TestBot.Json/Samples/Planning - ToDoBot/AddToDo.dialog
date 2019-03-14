@@ -12,11 +12,11 @@
         {
           "$type": "Microsoft.SaveEntity",
           "entityName": "title",
-          "property": "dialog.result.todo"
+          "property": "user.todo"
         },
         {
           "$type": "Microsoft.IfProperty",
-          "expression": "dialog.result.todo == null",
+          "expression": "user.todo == null",
           "ifTrue": [
             {
               "$type": "Microsoft.SendActivity",
@@ -24,7 +24,7 @@
             },
             {
               "$type": "Microsoft.WaitForInput",
-              "property": "dialog.result.todo"
+              "property": "user.todo"
             }
           ]
         },
@@ -32,11 +32,11 @@
           "$type": "Microsoft.ChangeList",
           "changeType": "0",
           "listProperty": "user.todos",
-          "itemProperty": "dialog.result.todo"
+          "itemProperty": "user.todo"
         },
         {
           "$type": "Microsoft.SendActivity",
-          "activity": "Successfully added a todo named \"{dialog.result.todo}\""
+          "activity": "Successfully added a todo named \"{user.todo}\""
         }
       ]
     }

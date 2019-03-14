@@ -47,7 +47,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Recognizers
                     var entities = new Dictionary<string, string>();
                     foreach (var name in regex.GetGroupNames())
                     {
-                        entities.Add(name, match.Groups[name].Value);
+                        if (!string.IsNullOrEmpty(match.Groups[name].Value))
+                        {
+                            entities.Add(name, match.Groups[name].Value);
+                        }
                     }
                     result.Entities = JObject.FromObject(entities);
                 }

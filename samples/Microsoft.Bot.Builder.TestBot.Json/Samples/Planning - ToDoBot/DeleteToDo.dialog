@@ -10,12 +10,23 @@
       "$type": "Microsoft.FallbackRule",
       "steps": [
         {
-          "$type": "Microsoft.SendActivity",
-          "activity": "OK, Which todo would you like to remove? Please enter the title."
+          "$type": "Microsoft.SaveEntity",
+          "entityName": "title",
+          "property": "user.todo"
         },
         {
-          "$type": "Microsoft.WaitForInput",
-          "property": "user.todo"
+          "$type": "Microsoft.IfProperty",
+          "expression": "user.todo == null",
+          "ifTrue": [
+            {
+              "$type": "Microsoft.SendActivity",
+              "activity": "OK, please enter the title of the todo you want to remove."
+            },
+            {
+              "$type": "Microsoft.WaitForInput",
+              "property": "user.todo"
+            }
+          ]
         },
         {
           "$type": "Microsoft.ChangeList",
@@ -25,7 +36,7 @@
         },
         {
           "$type": "Microsoft.SendActivity",
-          "activity": "Successfully delete a todo named \"{user.todo}\""
+          "activity": "Successfully removed a todo named \"{user.todo}\""
         }
       ]
     }
