@@ -30,8 +30,10 @@
 - DEFAULT:
     - [WelcomeTemplate]
 
-> Additional features -
+> Several additional features -
 > - Parametrization of templates
+> - Ability to specify multi-line variations
+> - Ability to apply templates to cards
 > - Prebuilt functions support
 > - Inline expression evaluation
 > - Ability to independently update bot's response assets without need to redeploy bot
