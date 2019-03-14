@@ -55,6 +55,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 (IServiceProvider sp) =>
                 {
                     return new TestBot(accessors);
+                    //return new TestBotLG(accessors);
                 },
                 (BotFrameworkOptions options) =>
                 {
