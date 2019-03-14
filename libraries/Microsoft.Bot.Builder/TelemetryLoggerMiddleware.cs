@@ -136,7 +136,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A task that represents the work queued to execute.</returns>
         protected virtual async Task OnSendActivityAsync(Activity activity, CancellationToken cancellation)
         {
-            TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgSendEvent, await FillSendEvendPropertiesAsync(activity).ConfigureAwait(false));
+            TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgSendEvent, await FillSendEventPropertiesAsync(activity).ConfigureAwait(false));
             return;
         }
 
@@ -225,7 +225,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="activity">Last activity sent from user.</param>
         /// <param name="additionalProperties">Additional properties to add to the event.</param>
         /// <returns>A dictionary that is sent as "Properties" to IBotTelemetryClient.TrackEvent method for the BotMessageSend event.</returns>
-        protected Task<Dictionary<string, string>> FillSendEvendPropertiesAsync(Activity activity, Dictionary<string, string> additionalProperties = null)
+        protected Task<Dictionary<string, string>> FillSendEventPropertiesAsync(Activity activity, Dictionary<string, string> additionalProperties = null)
         {
             var properties = new Dictionary<string, string>()
                 {
