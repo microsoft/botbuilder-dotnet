@@ -43,3 +43,29 @@
 # TimeOfDayExmple
 - [TimeOfDayReadOut(timeOfDay)]
 - Uh, ask me that again.. Just for fun.
+
+> You can have multi-line responses with template resolution. Multi-line content is enclosed in ```. 
+> Resolution applied to content within @{}
+> \ is escape charater.
+# MultiLineExample
+- ```
+    This is a multi-line list
+    - one
+    - two
+    - Greeting: @{[WelcomeTemplate]}
+```
+- ```
+    This a variation
+    - three
+    - Greeting: @{[WelcomeTemplate]}
+```
+> Several additional features -
+> - Ability to apply templates to cards
+
+
+> - Prebuilt functions support
+> - Inline expression evaluation
+
+> - Ability to independently update bot's response assets without need to redeploy bot
+> - Simple text file format to easily integrate with your existing development processes
+> - Command line tools to parse, validate and collate LG files

@@ -7,14 +7,12 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
 using System.IO;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
     public class TestBotLG : IBot
     {
-        private DialogSet _dialogs;
-        private SemaphoreSlim _semaphore;
-
         private readonly TemplateEngine engine;
 
         private string GetLGResourceFile(string fileName)
@@ -25,7 +23,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         public TestBotLG(TestBotAccessors accessors)
         {
             // load LG file into engine
-            engine = TemplateEngine.FromFile(GetLGResourceFile("3.LG"));
+            engine = TemplateEngine.FromFile(GetLGResourceFile("7.LG"));
         }
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
@@ -35,7 +33,24 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 if (turnContext.Activity.Text.ToLower() == "hi")
                 {
                     await turnContext.SendActivityAsync(engine.EvaluateTemplate("GreetingTemplate", null));
-                } else
+                } else if (turnContext.Activity.Text.ToLower().Contains("marco"))
+                {
+                    await turnContext.SendActivityAsync(engine.EvaluateTemplate("WordGameReply", new { GameName = "MarcoPolo" } ));
+                } else if (turnContext.Activity.Text.ToLower().Contains("what time is it"))
+                {
+                    await turnContext.SendActivityAsync(engine.EvaluateTemplate("TimeOfDayExmple", new { timeOfDay = "morning" }));
+                } else if (turnContext.Activity.Text.ToLower().Contains("multi"))
+                {
+                    await turnContext.SendActivityAsync(engine.EvaluateTemplate("MultiLineExample", null));
+                } else if (turnContext.Activity.Text.ToLower().Contains("card"))
+                {
+                    HeroCard card = JsonConvert.DeserializeObject<HeroCard>(engine.EvaluateTemplate("CardExample", null));
+                    var reply = turnContext.Activity.CreateReply();
+                    reply.Attachments = new List<Attachment>();
+                    reply.Attachments.Add(card.ToAttachment());
+                    await turnContext.SendActivityAsync(reply);
+                }
+                else
                 {
                     await turnContext.SendActivityAsync(engine.EvaluateTemplate("EchoTemplate", turnContext));
                 }
@@ -44,13 +59,8 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             {
                 if (turnContext.Activity.MembersAdded != null)
                 {
-                    // Iterate over all new members added to the conversation
                     foreach (var member in turnContext.Activity.MembersAdded)
                     {
-                        // Greet anyone that was not the target (recipient) of this message
-                        // the 'bot' is the recipient for events from the channel,
-                        // turnContext.Activity.MembersAdded == turnContext.Activity.Recipient.Id indicates the
-                        // bot was added to the conversation.
                         if (member.Id != turnContext.Activity.Recipient.Id)
                         {
                             await turnContext.SendActivityAsync(engine.EvaluateTemplate("WelcomeTemplate", null));
