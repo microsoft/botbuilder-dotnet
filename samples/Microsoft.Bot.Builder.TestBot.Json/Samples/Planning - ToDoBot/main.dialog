@@ -8,7 +8,7 @@
   "recognizer": {
     "$type": "Microsoft.RegexRecognizer",
     "rules": {
-      "AddIntent": "(?:add|create) .*(?:to-do|todo|task)",
+      "AddIntent": "(?:add|create) .*(?:to-do|todo|task) named (?<title>.*)",
       "DeleteIntent": "(?:delete|remove|clear) (?:to-do|todo|task)",
       "ShowIntent": "(?:show|see|view) .*(?:to-do|todo|task)",
       "ClearIntent": "(?:delete|remove|clear) (?:all|every) (?:to-dos|todos|tasks)"
