@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Pop all commands off the stack
             var i = dc.Stack.Count - 1;
 
-            while (i > 0)
+            while (i >= 0)
             {
                 // Commands store the index of the state they are inheriting so we can tell a command
                 // by looking to see if its state is of type int
