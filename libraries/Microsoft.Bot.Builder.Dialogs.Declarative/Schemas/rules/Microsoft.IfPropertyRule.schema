@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$role": "unionType(Microsoft.IRule)",
+  "title": "If Property Rule",
+  "description": "IfPropertyRule will be triggered when the conditionals are true",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "steps": {
+      "type": "array",
+      "description": "steps to execute",
+      "items": {
+        "$type": "Microsoft.IDialog"
+      }
+    }
+    "conditionals": {
+      "type": "array",
+      "description": "conditions",
+      "items": {
+        "$type":"Microsoft.IExpression",
+        "title": "Condition",
+        "description": "Expression to evaluate.",
+      }
+    }
+  },
+  "required": [
+    "steps",
+    "conditionals"
+  ]
+}

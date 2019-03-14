@@ -1,8 +1,8 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "$role": "unionType(Microsoft.IDialog)"
-    "title": "Call Dialog",
-    "description": "Step which calls another dialog.",
+    "title": "Goto Dialog",
+    "description": "Step which goes to another dialog.",
     "type": "object",
     "additionalProperties": false,
     "properties": {
@@ -16,14 +16,6 @@
             "additionalProperties": true,
             "title": "Options",
             "description": "Options to pass to the dialog."
-        },
-        "property": {
-            "$type":"Microsoft.IExpression",
-            "title": "Property",
-            "description": "The property to bind to the dialog and store the result in",
-            "examples": [
-                "user.name"
-            ]
         }
     }
 }

@@ -1,18 +1,11 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$role": "unionType(Microsoft.IRule)",
-  "title": "Intent Rule",
-  "description": "Intent Rule, which will be triggered when the intent is matched.",
+  "title": "Event Rule",
+  "description": "Event Rule will be triggered when a event happen",
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "intent": {
-      "type": "string",
-      "description": "This is the intent to be triggered.",
-      "examples": [
-        "JokeIntent"
-      ]
-    },
     "steps": {
       "type": "array",
       "description": "steps to execute",
@@ -20,9 +13,16 @@
         "$type": "Microsoft.IDialog"
       }
     }
+    "events": {
+      "type": "array",
+      "description": "event to be triggered",
+      "items": {
+        "$type": "string"
+      }
+    }
   },
   "required": [
-    "intent",
     "steps"
+    "events"
   ]
 }

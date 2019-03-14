@@ -27,4 +27,8 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Schemas\Rules\" />
+  </ItemGroup>
+
 </Project>

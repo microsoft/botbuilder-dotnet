@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$role": "unionType(Microsoft.IDialog)"
+    "title": "Send List Step",
+    "description": "This is a step which sends an list to the user",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "listProperty": {
+            "$type":"Microsoft.IExpression",
+            "title": "List Property",
+            "description": "Expression which is the list property."
+        }
+        "messageTemplate":
+        {
+            "$type":"string",
+            "title": "message Template",
+            "description": "message that will be shown before the list."
+        }
+    }
+}

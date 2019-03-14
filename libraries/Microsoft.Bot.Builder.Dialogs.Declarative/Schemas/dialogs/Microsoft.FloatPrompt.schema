@@ -1,8 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$implements": [
-        "Microsoft.IDialog"
-    ],
+    "$role": "unionType(Microsoft.IDialog)",
     "title": "Float  prompt",
     "description": "This represents a dialog which gathers a number in a specified range",
     "type": "object",

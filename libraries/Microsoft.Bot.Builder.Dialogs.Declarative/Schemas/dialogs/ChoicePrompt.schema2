@@ -3,9 +3,7 @@
     "type": "object",
     "title": "Choice prompt",
     "description": "This represents a dialog which provides choices to the user and recognized the selected choice",
-    "$implements": [
-        "Microsoft.IDialog"
-    ],
+    "$role": "unionType(Microsoft.IDialog)",
     "allOf": [
         {
             "$ref":"../component.schema#"

@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "Rule Dialog",
+    "description": "This represents a dialog can add rules and execute rules",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "storage": {
+            "$type": "Microsoft.IStorage",
+            "description": "The memory storage",
+            "examples": [
+                "Microsoft.MemoryStorage"
+            ]
+        },
+        "recognizer": {
+            "$type": "Microsoft.IRecognizer",
+            "description": "The recognizers",
+        },
+        "rules": {
+            "$type":"array",
+            "title": "The rules",
+            "items": {
+                "$type": "Microsoft.IRules",
+                "description": "The rules",
+            }
+        }
+    }
+}

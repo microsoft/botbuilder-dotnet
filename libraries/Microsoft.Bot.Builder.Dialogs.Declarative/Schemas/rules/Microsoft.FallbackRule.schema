@@ -1,18 +1,11 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$role": "unionType(Microsoft.IRule)",
-  "title": "Intent Rule",
-  "description": "Intent Rule, which will be triggered when the intent is matched.",
+  "title": "Fallback Rule",
+  "description": "Fallback Rule will be triggered when no other rules being triggered",
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "intent": {
-      "type": "string",
-      "description": "This is the intent to be triggered.",
-      "examples": [
-        "JokeIntent"
-      ]
-    },
     "steps": {
       "type": "array",
       "description": "steps to execute",
@@ -22,7 +15,6 @@
     }
   },
   "required": [
-    "intent",
     "steps"
   ]
 }

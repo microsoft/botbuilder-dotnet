@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$role": "unionType(Microsoft.IDialog)"
+    "title": "Change List",
+    "description": "This is a step which add/remove/clear items to/from a list",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "listProperty": {
+            "$type":"Microsoft.IExpression",
+            "title": "Property",
+            "description": "Expression which is the list property."
+        }
+        "itemProperty": {
+            "$type":"Microsoft.IExpression",
+            "title": "Property",
+            "description": "Expression which is the item property."
+        }
+        "changeListType": {
+            "$type":"string",
+            "title": "change List type",
+            "description": "push/pop/take/remove/clear"
+        }
+    }
+}
