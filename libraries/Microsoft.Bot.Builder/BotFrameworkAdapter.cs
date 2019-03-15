@@ -127,7 +127,14 @@ namespace Microsoft.Bot.Builder
         {
             if (string.IsNullOrWhiteSpace(botAppId))
             {
-                throw new ArgumentNullException(nameof(botAppId));
+                var credentials = (SimpleCredentialProvider)this._credentialProvider;
+
+                botAppId = credentials.AppId;
+
+                if (string.IsNullOrWhiteSpace(botAppId))
+                {
+                    throw new ArgumentNullException(nameof(botAppId));
+                }
             }
 
             if (reference == null)
@@ -817,6 +824,7 @@ namespace Microsoft.Bot.Builder
             }
 
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
+
             if (connectorClient == null)
             {
                 throw new InvalidOperationException("An IConnectorClient is required in TurnState for this operation.");
