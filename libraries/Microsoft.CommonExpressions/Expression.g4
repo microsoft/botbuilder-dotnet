@@ -2,9 +2,9 @@
 
 expression
     : expression ('*'|'/') expression           #binaryOpExp
-    | expression ('+'|'-') expression  #binaryOpExp
-    | expression ('=='|'!='|'<>') expression   #binaryOpExp
-    | expression ('<'|'<='|'>'|'>=') expression   #binaryOpExp
+    | expression ('+'|'-') expression           #binaryOpExp
+    | expression ('=='|'!='|'<>') expression    #binaryOpExp
+    | expression ('<'|'<='|'>'|'>=') expression #binaryOpExp
     | primaryExpression                         #primaryExp
     ;
  
