@@ -187,7 +187,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             {
                 if (!string.IsNullOrWhiteSpace(text))
                 {
-                    properties.Add(QnATelemetryConstants.OriginalQuestionProperty, text);
+                    properties.Add(QnATelemetryConstants.QuestionProperty, text);
                 }
 
                 if (!string.IsNullOrWhiteSpace(userName))
@@ -200,7 +200,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             if (queryResults.Length > 0)
             {
                 var queryResult = queryResults[0];
-                properties.Add(QnATelemetryConstants.QuestionProperty, JsonConvert.SerializeObject(queryResult.Questions));
+                properties.Add(QnATelemetryConstants.MatchedQuestionProperty, JsonConvert.SerializeObject(queryResult.Questions));
                 properties.Add(QnATelemetryConstants.QuestionIdProperty, queryResult.Id.ToString());
                 properties.Add(QnATelemetryConstants.AnswerProperty, queryResult.Answer);
                 metrics.Add(QnATelemetryConstants.ScoreProperty, queryResult.Score);

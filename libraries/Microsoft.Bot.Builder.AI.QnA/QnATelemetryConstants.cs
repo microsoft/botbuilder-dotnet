@@ -8,15 +8,15 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// </summary>
     public static class QnATelemetryConstants
     {
-        public const string QnaMsgEvent = "QnaMessage"; // Event name
-        public const string KnowledgeBaseIdProperty = "knowledgeBaseId";
-        public const string AnswerProperty = "answer";
-        public const string ArticleFoundProperty = "articleFound";
-        public const string ChannelIdProperty = "channelId";
-        public const string OriginalQuestionProperty = "originalQuestion";
-        public const string QuestionProperty = "question";
-        public const string QuestionIdProperty = "questionId";
-        public const string ScoreProperty = "score";
-        public const string UsernameProperty = "username";
+        public static readonly string QnaMsgEvent = "QnaMessage"; // Event name
+        public static readonly string KnowledgeBaseIdProperty = "knowledgeBaseId";
+        public static readonly string AnswerProperty = "answer";
+        public static readonly string ArticleFoundProperty = "articleFound";
+        public static readonly string ChannelIdProperty = "channelId";
+        public static readonly string MatchedQuestionProperty = "matchedQuestion";
+        public static readonly string QuestionProperty = "question";
+        public static readonly string QuestionIdProperty = "questionId";
+        public static readonly string ScoreProperty = "score";
+        public static readonly string UsernameProperty = "username";
     }
 }
