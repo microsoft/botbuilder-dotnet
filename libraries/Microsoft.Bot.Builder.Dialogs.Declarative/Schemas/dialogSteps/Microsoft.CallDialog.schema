@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$role": "unionType(Microsoft.IDialog)"
+    "$role": "unionType(Microsoft.IDialog)",
     "title": "Call Dialog",
     "description": "Step which calls another dialog.",
     "type": "object",

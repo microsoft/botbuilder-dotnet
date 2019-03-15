@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/CogSchema/src/cogSchema.schema",
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
     "$id": "app.schema",
     "type": "object",
     "title": "Component types",
@@ -16,9 +16,9 @@
             "$ref": "#/definitions/Microsoft.CancelDialog"
         },
         {
-            "title": "Microsoft.ClearPropertyStep",
-            "description": "This is a step which removes a property from memory",
-            "$ref": "#/definitions/Microsoft.ClearPropertyStep"
+            "title": "Microsoft.ChangeList",
+            "description": "This is a step which add/remove/clear items to/from a list",
+            "$ref": "#/definitions/Microsoft.ChangeList"
         },
         {
             "title": "Microsoft.DateTimePrompt",
@@ -31,9 +31,14 @@
             "$ref": "#/definitions/Microsoft.EndDialog"
         },
         {
-            "title": "Microsoft.EndOfTurnStep",
-            "description": "This is a step which ends the current turn",
-            "$ref": "#/definitions/Microsoft.EndOfTurnStep"
+            "title": "Microsoft.EventRule",
+            "description": "Event Rule will be triggered when a event happen",
+            "$ref": "#/definitions/Microsoft.EventRule"
+        },
+        {
+            "title": "Microsoft.FallbackRule",
+            "description": "Fallback Rule will be triggered when no other rules being triggered",
+            "$ref": "#/definitions/Microsoft.FallbackRule"
         },
         {
             "title": "Microsoft.FloatPrompt",
@@ -41,9 +46,19 @@
             "$ref": "#/definitions/Microsoft.FloatPrompt"
         },
         {
-            "title": "Microsoft.IfElseStep",
+            "title": "Microsoft.GotoDialog",
+            "description": "Step which goes to another dialog.",
+            "$ref": "#/definitions/Microsoft.GotoDialog"
+        },
+        {
+            "title": "Microsoft.IfProperty",
             "description": "Step which conditionally decides which step to execute next.",
-            "$ref": "#/definitions/Microsoft.IfElseStep"
+            "$ref": "#/definitions/Microsoft.IfProperty"
+        },
+        {
+            "title": "Microsoft.IfPropertyRule",
+            "description": "IfPropertyRule will be triggered when the conditionals are true",
+            "$ref": "#/definitions/Microsoft.IfPropertyRule"
         },
         {
             "title": "Microsoft.IntegerPrompt",
@@ -51,9 +66,9 @@
             "$ref": "#/definitions/Microsoft.IntegerPrompt"
         },
         {
-            "title": "Microsoft.IntentDialog",
-            "description": "Configures a recognizer and the intent routes",
-            "$ref": "#/definitions/Microsoft.IntentDialog"
+            "title": "Microsoft.IntentRule",
+            "description": "Intent Rule, which will be triggered when the intent is matched.",
+            "$ref": "#/definitions/Microsoft.IntentRule"
         },
         {
             "title": "Microsoft.LuisRecognizer",
@@ -66,182 +81,208 @@
             "$ref": "#/definitions/Microsoft.QnaMakerRecognizer"
         },
         {
+            "title": "Microsoft.RePlacePlanRule",
+            "description": "Similar as intent Rule, but the dialog stack will be clean up when it is triggered.",
+            "$ref": "#/definitions/Microsoft.RePlacePlanRule"
+        },
+        {
             "title": "Microsoft.RegexRecognizer",
             "description": "Example regular expression recognizer.",
             "$ref": "#/definitions/Microsoft.RegexRecognizer"
         },
         {
-            "title": "Microsoft.SendActivityStep",
+            "title": "Microsoft.RuleDialog",
+            "description": "This represents a dialog can add rules and execute rules",
+            "$ref": "#/definitions/Microsoft.RuleDialog"
+        },
+        {
+            "title": "Microsoft.SaveEntity",
+            "description": "This is a step which save an recognized entity to storage",
+            "$ref": "#/definitions/Microsoft.SaveEntity"
+        },
+        {
+            "title": "Microsoft.SendActivity",
             "description": "This is a step which sends an activity to the user",
-            "$ref": "#/definitions/Microsoft.SendActivityStep"
+            "$ref": "#/definitions/Microsoft.SendActivity"
         },
         {
-            "title": "Microsoft.SendActivityTemplateStep",
-            "description": "This is a step which sends an activity to the user",
-            "$ref": "#/definitions/Microsoft.SendActivityTemplateStep"
-        },
-        {
-            "title": "Microsoft.SequenceDialog",
-            "description": "Configures a data driven dialog via a collection of steps/dialogs.",
-            "$ref": "#/definitions/Microsoft.SequenceDialog"
-        },
-        {
-            "title": "Microsoft.SetPropertyStep",
-            "description": "This is a step which sets a property in memory to a value",
-            "$ref": "#/definitions/Microsoft.SetPropertyStep"
-        },
-        {
-            "title": "Microsoft.SwitchStep",
-            "description": "Step which conditionally decides which step to execute next.",
-            "$ref": "#/definitions/Microsoft.SwitchStep"
+            "title": "Microsoft.SendList",
+            "description": "This is a step which sends an list to the user",
+            "$ref": "#/definitions/Microsoft.SendList"
         },
         {
             "title": "Microsoft.TextPrompt",
             "description": "This represents a dialog which gathers a text from the user",
             "$ref": "#/definitions/Microsoft.TextPrompt"
+        },
+        {
+            "title": "Microsoft.UtteranceRecognizeRule",
+            "description": "Utterance Recognize will be triggered when the utterance is recognized as intents or entities",
+            "$ref": "#/definitions/Microsoft.UtteranceRecognizeRule"
+        },
+        {
+            "title": "Microsoft.WaitForInput",
+            "description": "Step which accepts an input from user.",
+            "$ref": "#/definitions/Microsoft.WaitForInput"
+        },
+        {
+            "title": "Microsoft.WelcomeRule",
+            "description": "Welcome Rule will be triggered when user start conversation or update conversation",
+            "$ref": "#/definitions/Microsoft.WelcomeRule"
         }
     ],
     "definitions": {
-        "Microsoft.IActivityTemplate": {
-            "title": "Microsoft ActivityTemplate",
-            "description": "Definition of Microsoft.IActivityTemplate which will be expanded by components that $implements it.",
-            "$role": "unionType",
-            "oneOf": [
-                {
+        "Microsoft.CallDialog": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Call Dialog",
+            "description": "Step which calls another dialog.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
-                    "title": "string"
-                }
-            ]
-        },
-        "Microsoft.IDialog": {
-            "title": "Microsoft IDialog",
-            "description": "Definition of Microsoft.IDialog which will be expanded by components that $implements it.",
-            "$role": "unionType",
-            "oneOf": [
-                {
-                    "title": "Microsoft.DateTimePrompt",
-                    "description": "This represents a dialog which gathers a DateTime in a specified range",
-                    "$ref": "#/definitions/Microsoft.DateTimePrompt"
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.CallDialog"
                 },
-                {
-                    "title": "Microsoft.FloatPrompt",
-                    "description": "This represents a dialog which gathers a number in a specified range",
-                    "$ref": "#/definitions/Microsoft.FloatPrompt"
-                },
-                {
-                    "title": "Microsoft.IntegerPrompt",
-                    "description": "This represents a dialog which gathers a number in a specified range",
-                    "$ref": "#/definitions/Microsoft.IntegerPrompt"
-                },
-                {
-                    "title": "Microsoft.IntentDialog",
-                    "description": "Configures a recognizer and the intent routes",
-                    "$ref": "#/definitions/Microsoft.IntentDialog"
-                },
-                {
-                    "title": "Microsoft.SequenceDialog",
-                    "description": "Configures a data driven dialog via a collection of steps/dialogs.",
-                    "$ref": "#/definitions/Microsoft.SequenceDialog"
-                },
-                {
-                    "title": "Microsoft.TextPrompt",
-                    "description": "This represents a dialog which gathers a text from the user",
-                    "$ref": "#/definitions/Microsoft.TextPrompt"
-                }
-            ]
-        },
-        "Microsoft.IDialogStep": {
-            "title": "Microsoft IDialogStep",
-            "description": "Definition of Microsoft.IDialogStep which will be expanded by components that $implements it.",
-            "$role": "unionType",
-            "oneOf": [
-                {
-                    "title": "Microsoft.CallDialog",
-                    "description": "Step which calls another dialog.",
-                    "$ref": "#/definitions/Microsoft.CallDialog"
-                },
-                {
-                    "title": "Microsoft.CancelDialog",
-                    "description": "This is a step which cancels the current dialog, returning no result",
-                    "$ref": "#/definitions/Microsoft.CancelDialog"
-                },
-                {
-                    "title": "Microsoft.ClearPropertyStep",
-                    "description": "This is a step which removes a property from memory",
-                    "$ref": "#/definitions/Microsoft.ClearPropertyStep"
-                },
-                {
-                    "title": "Microsoft.EndDialog",
-                    "description": "This is a step which ends the current dialog, returning the result",
-                    "$ref": "#/definitions/Microsoft.EndDialog"
-                },
-                {
-                    "title": "Microsoft.EndOfTurnStep",
-                    "description": "This is a step which ends the current turn",
-                    "$ref": "#/definitions/Microsoft.EndOfTurnStep"
-                },
-                {
-                    "title": "Microsoft.IfElseStep",
-                    "description": "Step which conditionally decides which step to execute next.",
-                    "$ref": "#/definitions/Microsoft.IfElseStep"
-                },
-                {
-                    "title": "Microsoft.SendActivityStep",
-                    "description": "This is a step which sends an activity to the user",
-                    "$ref": "#/definitions/Microsoft.SendActivityStep"
-                },
-                {
-                    "title": "Microsoft.SendActivityTemplateStep",
-                    "description": "This is a step which sends an activity to the user",
-                    "$ref": "#/definitions/Microsoft.SendActivityTemplateStep"
-                },
-                {
-                    "title": "Microsoft.SetPropertyStep",
-                    "description": "This is a step which sets a property in memory to a value",
-                    "$ref": "#/definitions/Microsoft.SetPropertyStep"
-                },
-                {
-                    "title": "Microsoft.SwitchStep",
-                    "description": "Step which conditionally decides which step to execute next.",
-                    "$ref": "#/definitions/Microsoft.SwitchStep"
-                }
-            ]
-        },
-        "Microsoft.IExpression": {
-            "title": "Microsoft IActivityTemplate",
-            "description": "Definition of Microsoft.IExpression which will be expanded by components that $implements it.",
-            "$role": "unionType",
-            "oneOf": [
-                {
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
                     "type": "string",
-                    "title": "string"
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "dialog": {
+                    "$type": "Microsoft.IDialog",
+                    "title": "Dialog",
+                    "description": "This is the dialog to call.",
+                    "$ref": "#/definitions/Microsoft.IDialog"
+                },
+                "options": {
+                    "type": "object",
+                    "title": "Options",
+                    "description": "Options to pass to the dialog.",
+                    "additionalProperties": true
+                },
+                "property": {
+                    "$type": "Microsoft.IExpression",
+                    "title": "Property",
+                    "description": "The property to bind to the dialog and store the result in",
+                    "examples": [
+                        "user.name"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IExpression"
                 }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "$type"
             ]
         },
-        "Microsoft.IRecognizer": {
-            "title": "Microsoft IRecognizer",
-            "description": "Definition of Microsoft.IRecognizer which will be expanded by components that $implements it.",
-            "$role": "unionType",
-            "oneOf": [
-                {
+        "Microsoft.CancelDialog": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Cancel Dialog",
+            "description": "This is a step which cancels the current dialog, returning no result",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
-                    "title": "string"
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.CancelDialog"
                 },
-                {
-                    "title": "Microsoft.LuisRecognizer",
-                    "description": "LUIS recognizer.",
-                    "$ref": "#/definitions/Microsoft.LuisRecognizer"
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
                 },
-                {
-                    "title": "Microsoft.QnaMakerRecognizer",
-                    "description": "This represents a configuration of the QNAMaker as a recognizer",
-                    "$ref": "#/definitions/Microsoft.QnaMakerRecognizer"
-                },
-                {
-                    "title": "Microsoft.RegexRecognizer",
-                    "description": "Example regular expression recognizer.",
-                    "$ref": "#/definitions/Microsoft.RegexRecognizer"
+                "$id": {
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "Microsoft.ChangeList": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Change List",
+            "description": "This is a step which add/remove/clear items to/from a list",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.ChangeList"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "listProperty": {
+                    "$type": "Microsoft.IExpression",
+                    "title": "Property",
+                    "description": "Expression which is the list property.",
+                    "$ref": "#/definitions/Microsoft.IExpression"
+                },
+                "itemProperty": {
+                    "$type": "Microsoft.IExpression",
+                    "title": "Property",
+                    "description": "Expression which is the item property.",
+                    "$ref": "#/definitions/Microsoft.IExpression"
+                },
+                "changeType": {
+                    "type": "string",
+                    "title": "change List type",
+                    "description": "push/pop/take/remove/clear",
+                    "enum": [
+                        "push",
+                        "pop",
+                        "take",
+                        "remove",
+                        "clear"
+                    ]
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "$type"
             ]
         },
         "Microsoft.DateTimePrompt": {
@@ -348,6 +389,175 @@
                 "$type"
             ]
         },
+        "Microsoft.EndDialog": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "End Dialog",
+            "description": "This is a step which ends the current dialog, returning the result",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.EndDialog"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "property": {
+                    "$type": "Microsoft.IExpression",
+                    "title": "Property",
+                    "description": "The property from dialog memory to return as the result",
+                    "examples": [
+                        "user.name"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IExpression"
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "Microsoft.EventRule": {
+            "$role": "unionType(Microsoft.IRule)",
+            "title": "Event Rule",
+            "description": "Event Rule will be triggered when a event happen",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.EventRule"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "steps": {
+                    "type": "array",
+                    "description": "steps to execute",
+                    "items": {
+                        "$type": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                },
+                "events": {
+                    "type": "array",
+                    "description": "event to be triggered",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "$type"
+            ],
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "steps",
+                        "events"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.FallbackRule": {
+            "$role": "unionType(Microsoft.IRule)",
+            "title": "Fallback Rule",
+            "description": "Fallback Rule will be triggered when no other rules being triggered",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.FallbackRule"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "steps": {
+                    "type": "array",
+                    "description": "steps to execute",
+                    "items": {
+                        "$type": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                }
+            },
+            "required": [
+                "$type"
+            ],
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "steps"
+                    ]
+                }
+            ]
+        },
         "Microsoft.FloatPrompt": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Float  prompt",
@@ -450,6 +660,370 @@
             },
             "required": [
                 "$type"
+            ]
+        },
+        "Microsoft.GotoDialog": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Goto Dialog",
+            "description": "Step which goes to another dialog.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.GotoDialog"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "dialogId": {
+                    "$type": "Microsoft.IDialog",
+                    "title": "Dialog",
+                    "description": "This is the dialog to call.",
+                    "$ref": "#/definitions/Microsoft.IDialog"
+                },
+                "options": {
+                    "type": "object",
+                    "title": "Options",
+                    "description": "Options to pass to the dialog.",
+                    "additionalProperties": true
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "Microsoft.IActivityTemplate": {
+            "title": "Microsoft ActivityTemplate",
+            "description": "Definition of Microsoft.IActivityTemplate which will be expanded by components that $implements it.",
+            "$role": "unionType"
+        },
+        "Microsoft.IDialog": {
+            "title": "Microsoft IDialog",
+            "description": "Definition of Microsoft.IDialog which will include types with a $role:unionType(Microsoft.IDialog).",
+            "$role": "unionType",
+            "oneOf": [
+                {
+                    "title": "Microsoft.CallDialog",
+                    "description": "Step which calls another dialog.",
+                    "$ref": "#/definitions/Microsoft.CallDialog"
+                },
+                {
+                    "title": "Microsoft.CancelDialog",
+                    "description": "This is a step which cancels the current dialog, returning no result",
+                    "$ref": "#/definitions/Microsoft.CancelDialog"
+                },
+                {
+                    "title": "Microsoft.ChangeList",
+                    "description": "This is a step which add/remove/clear items to/from a list",
+                    "$ref": "#/definitions/Microsoft.ChangeList"
+                },
+                {
+                    "title": "Microsoft.DateTimePrompt",
+                    "description": "This represents a dialog which gathers a DateTime in a specified range",
+                    "$ref": "#/definitions/Microsoft.DateTimePrompt"
+                },
+                {
+                    "title": "Microsoft.EndDialog",
+                    "description": "This is a step which ends the current dialog, returning the result",
+                    "$ref": "#/definitions/Microsoft.EndDialog"
+                },
+                {
+                    "title": "Microsoft.FloatPrompt",
+                    "description": "This represents a dialog which gathers a number in a specified range",
+                    "$ref": "#/definitions/Microsoft.FloatPrompt"
+                },
+                {
+                    "title": "Microsoft.GotoDialog",
+                    "description": "Step which goes to another dialog.",
+                    "$ref": "#/definitions/Microsoft.GotoDialog"
+                },
+                {
+                    "title": "Microsoft.IfProperty",
+                    "description": "Step which conditionally decides which step to execute next.",
+                    "$ref": "#/definitions/Microsoft.IfProperty"
+                },
+                {
+                    "title": "Microsoft.IntegerPrompt",
+                    "description": "This represents a dialog which gathers a number in a specified range",
+                    "$ref": "#/definitions/Microsoft.IntegerPrompt"
+                },
+                {
+                    "title": "Microsoft.RuleDialog",
+                    "description": "This represents a dialog can add rules and execute rules",
+                    "$ref": "#/definitions/Microsoft.RuleDialog"
+                },
+                {
+                    "title": "Microsoft.SaveEntity",
+                    "description": "This is a step which save an recognized entity to storage",
+                    "$ref": "#/definitions/Microsoft.SaveEntity"
+                },
+                {
+                    "title": "Microsoft.SendActivity",
+                    "description": "This is a step which sends an activity to the user",
+                    "$ref": "#/definitions/Microsoft.SendActivity"
+                },
+                {
+                    "title": "Microsoft.SendList",
+                    "description": "This is a step which sends an list to the user",
+                    "$ref": "#/definitions/Microsoft.SendList"
+                },
+                {
+                    "title": "Microsoft.TextPrompt",
+                    "description": "This represents a dialog which gathers a text from the user",
+                    "$ref": "#/definitions/Microsoft.TextPrompt"
+                },
+                {
+                    "title": "Microsoft.WaitForInput",
+                    "description": "Step which accepts an input from user.",
+                    "$ref": "#/definitions/Microsoft.WaitForInput"
+                }
+            ]
+        },
+        "Microsoft.IDialogStep": {
+            "title": "Microsoft IDialogStep",
+            "description": "Definition of Microsoft.IDialogStep which include types with a $role:unionType(Microsoft.IDialogStep).",
+            "$role": "unionType"
+        },
+        "Microsoft.IExpression": {
+            "title": "Microsoft IActivityTemplate",
+            "description": "Definition of Microsoft.IExpression which will be expanded by components that $implements it.",
+            "$role": "unionType"
+        },
+        "Microsoft.IRecognizer": {
+            "title": "Microsoft IRecognizer",
+            "description": "Definition of Microsoft.IRecognizer which will include types with a $role:unionType(Microsoft.IRecognizer).",
+            "$role": "unionType",
+            "oneOf": [
+                {
+                    "title": "Microsoft.LuisRecognizer",
+                    "description": "LUIS recognizer.",
+                    "$ref": "#/definitions/Microsoft.LuisRecognizer"
+                },
+                {
+                    "title": "Microsoft.QnaMakerRecognizer",
+                    "description": "This represents a configuration of the QNAMaker as a recognizer",
+                    "$ref": "#/definitions/Microsoft.QnaMakerRecognizer"
+                },
+                {
+                    "title": "Microsoft.RegexRecognizer",
+                    "description": "Example regular expression recognizer.",
+                    "$ref": "#/definitions/Microsoft.RegexRecognizer"
+                }
+            ]
+        },
+        "Microsoft.IRule": {
+            "title": "Microsoft IRule",
+            "description": "Definition of Microsoft.IRule which will include types with a $role:unionType(Microsoft.IRule).",
+            "$role": "unionType",
+            "oneOf": [
+                {
+                    "title": "Microsoft.EventRule",
+                    "description": "Event Rule will be triggered when a event happen",
+                    "$ref": "#/definitions/Microsoft.EventRule"
+                },
+                {
+                    "title": "Microsoft.FallbackRule",
+                    "description": "Fallback Rule will be triggered when no other rules being triggered",
+                    "$ref": "#/definitions/Microsoft.FallbackRule"
+                },
+                {
+                    "title": "Microsoft.IfPropertyRule",
+                    "description": "IfPropertyRule will be triggered when the conditionals are true",
+                    "$ref": "#/definitions/Microsoft.IfPropertyRule"
+                },
+                {
+                    "title": "Microsoft.IntentRule",
+                    "description": "Intent Rule, which will be triggered when the intent is matched.",
+                    "$ref": "#/definitions/Microsoft.IntentRule"
+                },
+                {
+                    "title": "Microsoft.RePlacePlanRule",
+                    "description": "Similar as intent Rule, but the dialog stack will be clean up when it is triggered.",
+                    "$ref": "#/definitions/Microsoft.RePlacePlanRule"
+                },
+                {
+                    "title": "Microsoft.UtteranceRecognizeRule",
+                    "description": "Utterance Recognize will be triggered when the utterance is recognized as intents or entities",
+                    "$ref": "#/definitions/Microsoft.UtteranceRecognizeRule"
+                },
+                {
+                    "title": "Microsoft.WelcomeRule",
+                    "description": "Welcome Rule will be triggered when user start conversation or update conversation",
+                    "$ref": "#/definitions/Microsoft.WelcomeRule"
+                }
+            ]
+        },
+        "Microsoft.IStorage": {
+            "title": "Microsoft IStorage",
+            "description": "Definition of Microsoft.IStorage which will include types with a $role:unionType(Microsoft.IStorage).",
+            "$role": "unionType"
+        },
+        "Microsoft.IfProperty": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "If Property Step",
+            "description": "Step which conditionally decides which step to execute next.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.IfProperty"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "ifTrue": {
+                    "oneOf": [
+                        {
+                            "$type": "Microsoft.IDialogStep",
+                            "$ref": "#/definitions/Microsoft.IDialogStep"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "$type": "Microsoft.IDialogStep",
+                                "$ref": "#/definitions/Microsoft.IDialogStep"
+                            },
+                            "title": "array"
+                        }
+                    ],
+                    "title": "If True",
+                    "description": "Step to execute if expression is true."
+                },
+                "ifFalse": {
+                    "oneOf": [
+                        {
+                            "$type": "Microsoft.IDialogStep",
+                            "$ref": "#/definitions/Microsoft.IDialogStep"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "$type": "Microsoft.IDialogStep",
+                                "$ref": "#/definitions/Microsoft.IDialogStep"
+                            },
+                            "title": "array"
+                        }
+                    ],
+                    "title": "If False",
+                    "description": "Step to execute if expression is false."
+                },
+                "expression": {
+                    "$type": "Microsoft.IExpression",
+                    "title": "Condition",
+                    "description": "Expression to evaluate.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IExpression"
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "Microsoft.IfPropertyRule": {
+            "$role": "unionType(Microsoft.IRule)",
+            "title": "If Property Rule",
+            "description": "IfPropertyRule will be triggered when the conditionals are true",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.IfPropertyRule"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "steps": {
+                    "type": "array",
+                    "description": "steps to execute",
+                    "items": {
+                        "$type": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                },
+                "conditionals": {
+                    "type": "array",
+                    "description": "conditions",
+                    "items": {
+                        "$type": "Microsoft.IExpression",
+                        "title": "Condition",
+                        "description": "Expression to evaluate.",
+                        "$ref": "#/definitions/Microsoft.IExpression"
+                    }
+                }
+            },
+            "required": [
+                "$type"
+            ],
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "steps",
+                        "conditionals"
+                    ]
+                }
             ]
         },
         "Microsoft.IntegerPrompt": {
@@ -556,10 +1130,10 @@
                 "$type"
             ]
         },
-        "Microsoft.IntentDialog": {
-            "$role": "unionType(Microsoft.IDialog)",
-            "title": "Intent Dialog",
-            "description": "Configures a recognizer and the intent routes",
+        "Microsoft.IntentRule": {
+            "$role": "unionType(Microsoft.IRule)",
+            "title": "Intent Rule",
+            "description": "Intent Rule, which will be triggered when the intent is matched.",
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -568,7 +1142,7 @@
                     "description": "Schema definition for $type added by cogSchema.",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.IntentDialog"
+                    "const": "Microsoft.IntentRule"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -582,14 +1156,25 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
-                "recognizer": {
-                    "$type": "Microsoft.IRecognizer",
-                    "$ref": "#/definitions/Microsoft.IRecognizer"
+                "intent": {
+                    "type": "string",
+                    "description": "This is the intent to be triggered.",
+                    "examples": [
+                        "JokeIntent"
+                    ]
                 },
-                "routes": {
-                    "type": "object",
-                    "description": "maps intent->IDialog",
-                    "additionalProperties": {
+                "entities": {
+                    "type": "array",
+                    "title": "The entities to be triggered.",
+                    "items": {
+                        "type": "string",
+                        "description": "The entities"
+                    }
+                },
+                "steps": {
+                    "type": "array",
+                    "description": "steps to execute",
+                    "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
@@ -613,1345 +1198,10 @@
                 {
                     "title": "Type",
                     "required": [
-                        "recognizer",
-                        "routes"
+                        "intent",
+                        "steps"
                     ]
                 }
-            ]
-        },
-        "Microsoft.SequenceDialog": {
-            "$role": "unionType(Microsoft.IDialog)",
-            "title": "Sequence Dialog",
-            "description": "Configures a data driven dialog via a collection of steps/dialogs.",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Schema definition for $type added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.SequenceDialog"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Schema deifnition for $copy added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Schema definition for $id added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "sequence": {
-                    "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
-                    "items": {
-                        "$type": "Microsoft.IDialogStep",
-                        "$ref": "#/definitions/Microsoft.IDialogStep"
-                    }
-                }
-            },
-            "required": [
-                "$type"
-            ],
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "sequence"
-                    ]
-                }
-            ]
-        },
-        "Microsoft.TextPrompt": {
-            "$role": "unionType(Microsoft.IDialog)",
-            "title": "Text prompt",
-            "description": "This represents a dialog which gathers a text from the user",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Schema definition for $type added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.TextPrompt"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Schema deifnition for $copy added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Schema definition for $id added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "property": {
-                    "type": "string",
-                    "description": "This is the property to set the result.",
-                    "examples": [
-                        "value.name"
-                    ]
-                },
-                "pattern": {
-                    "type": "string",
-                    "title": "Pattern",
-                    "description": "A regular expression pattern which must match",
-                    "examples": [
-                        "\\w{3,30}"
-                    ]
-                },
-                "initialPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "Initial Prompt",
-                    "description": "The message to send to start.",
-                    "examples": [
-                        "What is your name?"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "retryPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "Retry Prompt",
-                    "description": "The message to send to prompt again.",
-                    "examples": [
-                        "Let's try again. What is your name?"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "noMatchResponse": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "No match",
-                    "description": "The message to send to when the input didn't match.",
-                    "examples": [
-                        "That doesn't match the pattern requirements.",
-                        "A valid phone number looks like xxx-xxx-xxxx."
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                }
-            },
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "$type"
-            ]
-        },
-        "Microsoft.CallDialog": {
-            "$role": "unionType(Microsoft.IDialogStep)",
-            "title": "Call Dialog",
-            "description": "Step which calls another dialog.",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Schema definition for $type added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.CallDialog"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Schema deifnition for $copy added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Schema definition for $id added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "dialog": {
-                    "$type": "Microsoft.IDialog",
-                    "title": "Dialog",
-                    "description": "This is the dialog to call.",
-                    "$ref": "#/definitions/Microsoft.IDialog"
-                },
-                "options": {
-                    "type": "object",
-                    "title": "Options",
-                    "description": "Options to pass to the dialog.",
-                    "additionalProperties": true
-                },
-                "property": {
-                    "$type": "Microsoft.IExpression",
-                    "title": "Property",
-                    "description": "The property to bind to the dialog and store the result in",
-                    "examples": [
-                        "user.name"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IExpression"
-                }
-            },
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "$type"
-            ]
-        },
-        "Microsoft.CancelDialog": {
-            "$role": "unionType(Microsoft.IDialogStep)",
-            "title": "Cancel Dialog",
-            "description": "This is a step which cancels the current dialog, returning no result",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Schema definition for $type added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.CancelDialog"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Schema deifnition for $copy added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Schema definition for $id added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                }
-            },
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "$type"
-            ]
-        },
-        "Microsoft.ClearPropertyStep": {
-            "$role": "unionType(Microsoft.IDialogStep)",
-            "title": "Clear Property",
-            "description": "This is a step which removes a property from memory",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Schema definition for $type added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.ClearPropertyStep"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Schema deifnition for $copy added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Schema definition for $id added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "property": {
-                    "$type": "Microsoft.IExpression",
-                    "title": "Property",
-                    "description": "Expression which is the property to clear.",
-                    "$ref": "#/definitions/Microsoft.IExpression"
-                }
-            },
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "$type"
-            ]
-        },
-        "Microsoft.EndDialog": {
-            "$role": "unionType(Microsoft.IDialogStep)",
-            "title": "End Dialog",
-            "description": "This is a step which ends the current dialog, returning the result",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Schema definition for $type added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.EndDialog"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Schema deifnition for $copy added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Schema definition for $id added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "property": {
-                    "$type": "Microsoft.IExpression",
-                    "title": "Property",
-                    "description": "The property from dialog memory to return as the result",
-                    "examples": [
-                        "user.name"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IExpression"
-                }
-            },
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "$type"
-            ]
-        },
-        "Microsoft.EndOfTurnStep": {
-            "type": "object",
-            "title": "End Of Trun",
-            "description": "This is a step which ends the current turn",
-            "$role": "unionType(Microsoft.IDialogStep)",
-            "additionalProperties": false,
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Schema definition for $type added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.EndOfTurnStep"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Schema deifnition for $copy added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Schema definition for $id added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                }
-            },
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "$type"
-            ]
-        },
-        "Microsoft.IfElseStep": {
-            "$role": "unionType(Microsoft.IDialogStep)",
-            "title": "If Step",
-            "description": "Step which conditionally decides which step to execute next.",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Schema definition for $type added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.IfElseStep"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Schema deifnition for $copy added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Schema definition for $id added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "ifTrue": {
-                    "oneOf": [
-                        {
-                            "$type": "Microsoft.IDialogStep",
-                            "$ref": "#/definitions/Microsoft.IDialogStep"
-                        },
-                        {
-                            "type": "array",
-                            "items": {
-                                "$type": "Microsoft.IDialogStep",
-                                "$ref": "#/definitions/Microsoft.IDialogStep"
-                            },
-                            "title": "array"
-                        }
-                    ],
-                    "title": "If True",
-                    "description": "Step to execute if expression is true."
-                },
-                "ifFalse": {
-                    "oneOf": [
-                        {
-                            "$type": "Microsoft.IDialogStep",
-                            "$ref": "#/definitions/Microsoft.IDialogStep"
-                        },
-                        {
-                            "type": "array",
-                            "items": {
-                                "$type": "Microsoft.IDialogStep",
-                                "$ref": "#/definitions/Microsoft.IDialogStep"
-                            },
-                            "title": "array"
-                        }
-                    ],
-                    "title": "If False",
-                    "description": "Step to execute if expression is false."
-                },
-                "condition": {
-                    "$type": "Microsoft.IExpression",
-                    "title": "Condition",
-                    "description": "Expression to evaluate.",
-                    "examples": [
-                        "user.age > 3"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IExpression"
-                }
-            },
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "$type"
-            ]
-        },
-        "Microsoft.SendActivityStep": {
-            "$role": "unionType(Microsoft.IDialogStep)",
-            "title": "Send Activity Step",
-            "description": "This is a step which sends an activity to the user",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Schema definition for $type added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.SendActivityStep"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Schema deifnition for $copy added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Schema definition for $id added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "activity": {
-                    "description": "An Activity is the basic communication type for the Bot Framework 3.0 protocol.",
-                    "title": "Activity",
-                    "type": "object",
-                    "required": [
-                        "channelId",
-                        "conversation",
-                        "type"
-                    ],
-                    "properties": {
-                        "type": {
-                            "description": "Contains the activity type. Possible values include: 'message', 'contactRelationUpdate',\n'conversationUpdate', 'typing', 'endOfConversation', 'event', 'invoke', 'deleteUserData',\n'messageUpdate', 'messageDelete', 'installationUpdate', 'messageReaction', 'suggestion',\n'trace', 'handoff'",
-                            "type": "string",
-                            "title": "type"
-                        },
-                        "id": {
-                            "description": "Contains an ID that uniquely identifies the activity on the channel.",
-                            "type": "string",
-                            "title": "id"
-                        },
-                        "timestamp": {
-                            "description": "Contains the date and time that the message was sent, in UTC, expressed in ISO-8601 format.",
-                            "type": "string",
-                            "format": "date-time",
-                            "title": "timestamp"
-                        },
-                        "localTimestamp": {
-                            "description": "Contains the date and time that the message was sent, in local time, expressed in ISO-8601\nformat.\nFor example, 2016-09-23T13:07:49.4714686-07:00.",
-                            "type": "string",
-                            "format": "date-time",
-                            "title": "localTimestamp"
-                        },
-                        "localTimezone": {
-                            "description": "Contains the name of the timezone in which the message, in local time, expressed in IANA Time\nZone database format.\nFor example, America/Los_Angeles.",
-                            "type": "string",
-                            "title": "localTimezone"
-                        },
-                        "serviceUrl": {
-                            "description": "Contains the URL that specifies the channel's service endpoint. Set by the channel.",
-                            "type": "string",
-                            "title": "serviceUrl"
-                        },
-                        "channelId": {
-                            "description": "Contains an ID that uniquely identifies the channel. Set by the channel.",
-                            "type": "string",
-                            "title": "channelId"
-                        },
-                        "from": {
-                            "description": "Identifies the sender of the message.",
-                            "title": "from",
-                            "type": "object",
-                            "required": [
-                                "id",
-                                "name"
-                            ],
-                            "properties": {
-                                "id": {
-                                    "description": "Channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or\n123456)",
-                                    "type": "string",
-                                    "title": "id"
-                                },
-                                "name": {
-                                    "description": "Display friendly name",
-                                    "type": "string",
-                                    "title": "name"
-                                },
-                                "aadObjectId": {
-                                    "description": "This account's object ID within Azure Active Directory (AAD)",
-                                    "type": "string",
-                                    "title": "aadObjectId"
-                                },
-                                "role": {
-                                    "description": "Role of the entity behind the account (Example: User, Bot, etc.). Possible values include:\n'user', 'bot'",
-                                    "type": "string",
-                                    "title": "role"
-                                }
-                            }
-                        },
-                        "conversation": {
-                            "description": "Identifies the conversation to which the activity belongs.",
-                            "title": "conversation",
-                            "type": "object",
-                            "required": [
-                                "conversationType",
-                                "id",
-                                "isGroup",
-                                "name"
-                            ],
-                            "properties": {
-                                "isGroup": {
-                                    "description": "Indicates whether the conversation contains more than two participants at the time the\nactivity was generated",
-                                    "type": "boolean",
-                                    "title": "isGroup"
-                                },
-                                "conversationType": {
-                                    "description": "Indicates the type of the conversation in channels that distinguish between conversation types",
-                                    "type": "string",
-                                    "title": "conversationType"
-                                },
-                                "id": {
-                                    "description": "Channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or\n123456)",
-                                    "type": "string",
-                                    "title": "id"
-                                },
-                                "name": {
-                                    "description": "Display friendly name",
-                                    "type": "string",
-                                    "title": "name"
-                                },
-                                "aadObjectId": {
-                                    "description": "This account's object ID within Azure Active Directory (AAD)",
-                                    "type": "string",
-                                    "title": "aadObjectId"
-                                },
-                                "role": {
-                                    "description": "Role of the entity behind the account (Example: User, Bot, etc.). Possible values include:\n'user', 'bot'",
-                                    "enum": [
-                                        "bot",
-                                        "user"
-                                    ],
-                                    "type": "string",
-                                    "title": "role"
-                                }
-                            }
-                        },
-                        "recipient": {
-                            "description": "Identifies the recipient of the message.",
-                            "title": "recipient",
-                            "type": "object",
-                            "required": [
-                                "id",
-                                "name"
-                            ],
-                            "properties": {
-                                "id": {
-                                    "description": "Channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or\n123456)",
-                                    "type": "string",
-                                    "title": "id"
-                                },
-                                "name": {
-                                    "description": "Display friendly name",
-                                    "type": "string",
-                                    "title": "name"
-                                },
-                                "aadObjectId": {
-                                    "description": "This account's object ID within Azure Active Directory (AAD)",
-                                    "type": "string",
-                                    "title": "aadObjectId"
-                                },
-                                "role": {
-                                    "description": "Role of the entity behind the account (Example: User, Bot, etc.). Possible values include:\n'user', 'bot'",
-                                    "type": "string",
-                                    "title": "role"
-                                }
-                            }
-                        },
-                        "textFormat": {
-                            "description": "Format of text fields Default:markdown. Possible values include: 'markdown', 'plain', 'xml'",
-                            "type": "string",
-                            "title": "textFormat"
-                        },
-                        "attachmentLayout": {
-                            "description": "The layout hint for multiple attachments. Default: list. Possible values include: 'list',\n'carousel'",
-                            "type": "string",
-                            "title": "attachmentLayout"
-                        },
-                        "membersAdded": {
-                            "description": "The collection of members added to the conversation.",
-                            "type": "array",
-                            "title": "membersAdded",
-                            "items": {
-                                "description": "Channel account information needed to route a message",
-                                "title": "ChannelAccount",
-                                "type": "object",
-                                "required": [
-                                    "id",
-                                    "name"
-                                ],
-                                "properties": {
-                                    "id": {
-                                        "description": "Channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or\n123456)",
-                                        "type": "string",
-                                        "title": "id"
-                                    },
-                                    "name": {
-                                        "description": "Display friendly name",
-                                        "type": "string",
-                                        "title": "name"
-                                    },
-                                    "aadObjectId": {
-                                        "description": "This account's object ID within Azure Active Directory (AAD)",
-                                        "type": "string",
-                                        "title": "aadObjectId"
-                                    },
-                                    "role": {
-                                        "description": "Role of the entity behind the account (Example: User, Bot, etc.). Possible values include:\n'user', 'bot'",
-                                        "type": "string",
-                                        "title": "role"
-                                    }
-                                }
-                            }
-                        },
-                        "membersRemoved": {
-                            "description": "The collection of members removed from the conversation.",
-                            "type": "array",
-                            "title": "membersRemoved",
-                            "items": {
-                                "description": "Channel account information needed to route a message",
-                                "title": "ChannelAccount",
-                                "type": "object",
-                                "required": [
-                                    "id",
-                                    "name"
-                                ],
-                                "properties": {
-                                    "id": {
-                                        "description": "Channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or\n123456)",
-                                        "type": "string",
-                                        "title": "id"
-                                    },
-                                    "name": {
-                                        "description": "Display friendly name",
-                                        "type": "string",
-                                        "title": "name"
-                                    },
-                                    "aadObjectId": {
-                                        "description": "This account's object ID within Azure Active Directory (AAD)",
-                                        "type": "string",
-                                        "title": "aadObjectId"
-                                    },
-                                    "role": {
-                                        "description": "Role of the entity behind the account (Example: User, Bot, etc.). Possible values include:\n'user', 'bot'",
-                                        "type": "string",
-                                        "title": "role"
-                                    }
-                                }
-                            }
-                        },
-                        "reactionsAdded": {
-                            "description": "The collection of reactions added to the conversation.",
-                            "type": "array",
-                            "title": "reactionsAdded",
-                            "items": {
-                                "description": "Message reaction object",
-                                "title": "MessageReaction",
-                                "type": "object",
-                                "required": [
-                                    "type"
-                                ],
-                                "properties": {
-                                    "type": {
-                                        "description": "Message reaction type. Possible values include: 'like', 'plusOne'",
-                                        "type": "string",
-                                        "title": "type"
-                                    }
-                                }
-                            }
-                        },
-                        "reactionsRemoved": {
-                            "description": "The collection of reactions removed from the conversation.",
-                            "type": "array",
-                            "title": "reactionsRemoved",
-                            "items": {
-                                "description": "Message reaction object",
-                                "title": "MessageReaction",
-                                "type": "object",
-                                "required": [
-                                    "type"
-                                ],
-                                "properties": {
-                                    "type": {
-                                        "description": "Message reaction type. Possible values include: 'like', 'plusOne'",
-                                        "type": "string",
-                                        "title": "type"
-                                    }
-                                }
-                            }
-                        },
-                        "topicName": {
-                            "description": "The updated topic name of the conversation.",
-                            "type": "string",
-                            "title": "topicName"
-                        },
-                        "historyDisclosed": {
-                            "description": "Indicates whether the prior history of the channel is disclosed.",
-                            "type": "boolean",
-                            "title": "historyDisclosed"
-                        },
-                        "locale": {
-                            "description": "A locale name for the contents of the text field.\nThe locale name is a combination of an ISO 639 two- or three-letter culture code associated\nwith a language\nand an ISO 3166 two-letter subculture code associated with a country or region.\nThe locale name can also correspond to a valid BCP-47 language tag.",
-                            "type": "string",
-                            "title": "locale"
-                        },
-                        "text": {
-                            "description": "The text content of the message.",
-                            "type": "string",
-                            "title": "text"
-                        },
-                        "speak": {
-                            "description": "The text to speak.",
-                            "type": "string",
-                            "title": "speak"
-                        },
-                        "inputHint": {
-                            "description": "Indicates whether your bot is accepting,\nexpecting, or ignoring user input after the message is delivered to the client. Possible\nvalues include: 'acceptingInput', 'ignoringInput', 'expectingInput'",
-                            "type": "string",
-                            "title": "inputHint"
-                        },
-                        "summary": {
-                            "description": "The text to display if the channel cannot render cards.",
-                            "type": "string",
-                            "title": "summary"
-                        },
-                        "suggestedActions": {
-                            "description": "The suggested actions for the activity.",
-                            "title": "suggestedActions",
-                            "type": "object",
-                            "required": [
-                                "actions",
-                                "to"
-                            ],
-                            "properties": {
-                                "to": {
-                                    "description": "Ids of the recipients that the actions should be shown to.  These Ids are relative to the\nchannelId and a subset of all recipients of the activity",
-                                    "type": "array",
-                                    "title": "to",
-                                    "items": {
-                                        "type": "string"
-                                    }
-                                },
-                                "actions": {
-                                    "description": "Actions that can be shown to the user",
-                                    "type": "array",
-                                    "title": "actions",
-                                    "items": {
-                                        "description": "A clickable action",
-                                        "title": "CardAction",
-                                        "type": "object",
-                                        "required": [
-                                            "title",
-                                            "type",
-                                            "value"
-                                        ],
-                                        "properties": {
-                                            "type": {
-                                                "description": "The type of action implemented by this button. Possible values include: 'openUrl', 'imBack',\n'postBack', 'playAudio', 'playVideo', 'showImage', 'downloadFile', 'signin', 'call',\n'payment', 'messageBack'",
-                                                "type": "string",
-                                                "title": "type"
-                                            },
-                                            "title": {
-                                                "description": "Text description which appears on the button",
-                                                "type": "string",
-                                                "title": "title"
-                                            },
-                                            "image": {
-                                                "description": "Image URL which will appear on the button, next to text label",
-                                                "type": "string",
-                                                "title": "image"
-                                            },
-                                            "text": {
-                                                "description": "Text for this action",
-                                                "type": "string",
-                                                "title": "text"
-                                            },
-                                            "displayText": {
-                                                "description": "(Optional) text to display in the chat feed if the button is clicked",
-                                                "type": "string",
-                                                "title": "displayText"
-                                            },
-                                            "value": {
-                                                "description": "Supplementary parameter for action. Content of this property depends on the ActionType",
-                                                "title": "value"
-                                            },
-                                            "channelData": {
-                                                "description": "Channel-specific data associated with this action",
-                                                "title": "channelData"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "attachments": {
-                            "description": "Attachments",
-                            "type": "array",
-                            "title": "attachments",
-                            "items": {
-                                "description": "An attachment within an activity",
-                                "title": "Attachment",
-                                "type": "object",
-                                "required": [
-                                    "contentType"
-                                ],
-                                "properties": {
-                                    "contentType": {
-                                        "description": "mimetype/Contenttype for the file",
-                                        "type": "string",
-                                        "title": "contentType"
-                                    },
-                                    "contentUrl": {
-                                        "description": "Content Url",
-                                        "type": "string",
-                                        "title": "contentUrl"
-                                    },
-                                    "content": {
-                                        "description": "Embedded content",
-                                        "title": "content"
-                                    },
-                                    "name": {
-                                        "description": "(OPTIONAL) The name of the attachment",
-                                        "type": "string",
-                                        "title": "name"
-                                    },
-                                    "thumbnailUrl": {
-                                        "description": "(OPTIONAL) Thumbnail associated with attachment",
-                                        "type": "string",
-                                        "title": "thumbnailUrl"
-                                    }
-                                }
-                            }
-                        },
-                        "entities": {
-                            "description": "Represents the entities that were mentioned in the message.",
-                            "type": "array",
-                            "title": "entities",
-                            "items": {
-                                "description": "Metadata object pertaining to an activity",
-                                "title": "Entity",
-                                "type": "object",
-                                "required": [
-                                    "type"
-                                ],
-                                "properties": {
-                                    "type": {
-                                        "description": "Type of this entity (RFC 3987 IRI)",
-                                        "type": "string",
-                                        "title": "type"
-                                    }
-                                }
-                            }
-                        },
-                        "channelData": {
-                            "description": "Contains channel-specific content.",
-                            "title": "channelData"
-                        },
-                        "action": {
-                            "description": "Indicates whether the recipient of a contactRelationUpdate was added or removed from the\nsender's contact list.",
-                            "type": "string",
-                            "title": "action"
-                        },
-                        "replyToId": {
-                            "description": "Contains the ID of the message to which this message is a reply.",
-                            "type": "string",
-                            "title": "replyToId"
-                        },
-                        "label": {
-                            "description": "A descriptive label for the activity.",
-                            "type": "string",
-                            "title": "label"
-                        },
-                        "valueType": {
-                            "description": "The type of the activity's value object.",
-                            "type": "string",
-                            "title": "valueType"
-                        },
-                        "value": {
-                            "description": "A value that is associated with the activity.",
-                            "title": "value"
-                        },
-                        "name": {
-                            "description": "The name of the operation associated with an invoke or event activity.",
-                            "type": "string",
-                            "title": "name"
-                        },
-                        "relatesTo": {
-                            "description": "A reference to another conversation or activity.",
-                            "title": "relatesTo",
-                            "type": "object",
-                            "required": [
-                                "bot",
-                                "channelId",
-                                "conversation",
-                                "serviceUrl"
-                            ],
-                            "properties": {
-                                "activityId": {
-                                    "description": "(Optional) ID of the activity to refer to",
-                                    "type": "string",
-                                    "title": "activityId"
-                                },
-                                "user": {
-                                    "description": "(Optional) User participating in this conversation",
-                                    "title": "user",
-                                    "type": "object",
-                                    "required": [
-                                        "id",
-                                        "name"
-                                    ],
-                                    "properties": {
-                                        "id": {
-                                            "description": "Channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or\n123456)",
-                                            "type": "string",
-                                            "title": "id"
-                                        },
-                                        "name": {
-                                            "description": "Display friendly name",
-                                            "type": "string",
-                                            "title": "name"
-                                        },
-                                        "aadObjectId": {
-                                            "description": "This account's object ID within Azure Active Directory (AAD)",
-                                            "type": "string",
-                                            "title": "aadObjectId"
-                                        },
-                                        "role": {
-                                            "description": "Role of the entity behind the account (Example: User, Bot, etc.). Possible values include:\n'user', 'bot'",
-                                            "type": "string",
-                                            "title": "role"
-                                        }
-                                    }
-                                },
-                                "bot": {
-                                    "description": "Bot participating in this conversation",
-                                    "title": "bot",
-                                    "type": "object",
-                                    "required": [
-                                        "id",
-                                        "name"
-                                    ],
-                                    "properties": {
-                                        "id": {
-                                            "description": "Channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or\n123456)",
-                                            "type": "string",
-                                            "title": "id"
-                                        },
-                                        "name": {
-                                            "description": "Display friendly name",
-                                            "type": "string",
-                                            "title": "name"
-                                        },
-                                        "aadObjectId": {
-                                            "description": "This account's object ID within Azure Active Directory (AAD)",
-                                            "type": "string",
-                                            "title": "aadObjectId"
-                                        },
-                                        "role": {
-                                            "description": "Role of the entity behind the account (Example: User, Bot, etc.). Possible values include:\n'user', 'bot'",
-                                            "type": "string",
-                                            "title": "role"
-                                        }
-                                    }
-                                },
-                                "conversation": {
-                                    "description": "Conversation reference",
-                                    "title": "conversation",
-                                    "type": "object",
-                                    "required": [
-                                        "conversationType",
-                                        "id",
-                                        "isGroup",
-                                        "name"
-                                    ],
-                                    "properties": {
-                                        "isGroup": {
-                                            "description": "Indicates whether the conversation contains more than two participants at the time the\nactivity was generated",
-                                            "type": "boolean",
-                                            "title": "isGroup"
-                                        },
-                                        "conversationType": {
-                                            "description": "Indicates the type of the conversation in channels that distinguish between conversation types",
-                                            "type": "string",
-                                            "title": "conversationType"
-                                        },
-                                        "id": {
-                                            "description": "Channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or\n123456)",
-                                            "type": "string",
-                                            "title": "id"
-                                        },
-                                        "name": {
-                                            "description": "Display friendly name",
-                                            "type": "string",
-                                            "title": "name"
-                                        },
-                                        "aadObjectId": {
-                                            "description": "This account's object ID within Azure Active Directory (AAD)",
-                                            "type": "string",
-                                            "title": "aadObjectId"
-                                        },
-                                        "role": {
-                                            "description": "Role of the entity behind the account (Example: User, Bot, etc.). Possible values include:\n'user', 'bot'",
-                                            "enum": [
-                                                "bot",
-                                                "user"
-                                            ],
-                                            "type": "string",
-                                            "title": "role"
-                                        }
-                                    }
-                                },
-                                "channelId": {
-                                    "description": "Channel ID",
-                                    "type": "string",
-                                    "title": "channelId"
-                                },
-                                "serviceUrl": {
-                                    "description": "Service endpoint where operations concerning the referenced conversation may be performed",
-                                    "type": "string",
-                                    "title": "serviceUrl"
-                                }
-                            }
-                        },
-                        "code": {
-                            "description": "The a code for endOfConversation activities that indicates why the conversation ended.\nPossible values include: 'unknown', 'completedSuccessfully', 'userCancelled', 'botTimedOut',\n'botIssuedInvalidMessage', 'channelFailed'",
-                            "type": "string",
-                            "title": "code"
-                        },
-                        "expiration": {
-                            "description": "The time at which the activity should be considered to be \"expired\" and should not be\npresented to the recipient.",
-                            "type": "string",
-                            "format": "date-time",
-                            "title": "expiration"
-                        },
-                        "importance": {
-                            "description": "The importance of the activity. Possible values include: 'low', 'normal', 'high'",
-                            "type": "string",
-                            "title": "importance"
-                        },
-                        "deliveryMode": {
-                            "description": "A delivery hint to signal to the recipient alternate delivery paths for the activity.\nThe default delivery mode is \"default\". Possible values include: 'normal', 'notification'",
-                            "type": "string",
-                            "title": "deliveryMode"
-                        },
-                        "listenFor": {
-                            "description": "List of phrases and references that speech and language priming systems should listen for",
-                            "type": "array",
-                            "title": "listenFor",
-                            "items": {
-                                "type": "string"
-                            }
-                        },
-                        "textHighlights": {
-                            "description": "The collection of text fragments to highlight when the activity contains a ReplyToId value.",
-                            "type": "array",
-                            "title": "textHighlights",
-                            "items": {
-                                "description": "Refers to a substring of content within another field",
-                                "title": "TextHighlight",
-                                "type": "object",
-                                "required": [
-                                    "occurrence",
-                                    "text"
-                                ],
-                                "properties": {
-                                    "text": {
-                                        "description": "Defines the snippet of text to highlight",
-                                        "type": "string",
-                                        "title": "text"
-                                    },
-                                    "occurrence": {
-                                        "description": "Occurrence of the text field within the referenced text, if multiple exist.",
-                                        "type": "number",
-                                        "title": "occurrence"
-                                    }
-                                }
-                            }
-                        },
-                        "semanticAction": {
-                            "description": "An optional programmatic action accompanying this request",
-                            "title": "semanticAction",
-                            "type": "object",
-                            "required": [
-                                "entities",
-                                "id"
-                            ],
-                            "properties": {
-                                "id": {
-                                    "description": "ID of this action",
-                                    "type": "string",
-                                    "title": "id"
-                                },
-                                "entities": {
-                                    "description": "Entities associated with this action",
-                                    "type": "object",
-                                    "title": "entities",
-                                    "additionalProperties": {
-                                        "description": "Metadata object pertaining to an activity",
-                                        "title": "Entity",
-                                        "type": "object",
-                                        "required": [
-                                            "type"
-                                        ],
-                                        "properties": {
-                                            "type": {
-                                                "description": "Type of this entity (RFC 3987 IRI)",
-                                                "type": "string",
-                                                "title": "type"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "$type"
-            ]
-        },
-        "Microsoft.SendActivityTemplateStep": {
-            "$role": "unionType(Microsoft.IDialogStep)",
-            "title": "Send Activity Step",
-            "description": "This is a step which sends an activity to the user",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Schema definition for $type added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.SendActivityTemplateStep"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Schema deifnition for $copy added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Schema definition for $id added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "activity": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "Activity",
-                    "description": "Activity to send to the user.",
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                }
-            },
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "$type"
-            ]
-        },
-        "Microsoft.SetPropertyStep": {
-            "$role": "unionType(Microsoft.IDialogStep)",
-            "title": "Set Property",
-            "description": "This is a step which sets a property in memory to a value",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Schema definition for $type added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.SetPropertyStep"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Schema deifnition for $copy added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Schema definition for $id added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "property": {
-                    "$type": "Microsoft.IExpression",
-                    "title": "Property",
-                    "description": "Expression which is the property to set.",
-                    "$ref": "#/definitions/Microsoft.IExpression"
-                },
-                "value": {
-                    "$type": "Microsoft.IExpression",
-                    "title": "Value",
-                    "description": "Expression which is the value to use.",
-                    "$ref": "#/definitions/Microsoft.IExpression"
-                }
-            },
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "$type"
-            ]
-        },
-        "Microsoft.SwitchStep": {
-            "$role": "unionType(Microsoft.IDialogStep)",
-            "title": "Switch Step",
-            "description": "Step which conditionally decides which step to execute next.",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Schema definition for $type added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.SwitchStep"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Schema deifnition for $copy added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Schema definition for $id added by cogSchema.",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "condition": {
-                    "$type": "Microsoft.IExpression",
-                    "title": "Condition",
-                    "description": "Expression to evaluate.",
-                    "examples": [
-                        "user.age > 3"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IExpression"
-                },
-                "cases": {
-                    "type": "object",
-                    "title": "Cases",
-                    "description": "Step to execute if expression is true.",
-                    "additionalProperties": {
-                        "oneOf": [
-                            {
-                                "$type": "Microsoft.IDialogStep",
-                                "$ref": "#/definitions/Microsoft.IDialogStep"
-                            },
-                            {
-                                "type": "array",
-                                "items": {
-                                    "$type": "Microsoft.IDialogStep",
-                                    "$ref": "#/definitions/Microsoft.IDialogStep"
-                                },
-                                "title": "array"
-                            }
-                        ]
-                    }
-                },
-                "ignoreCase": {
-                    "type": "boolean",
-                    "title": "Ignore carse",
-                    "description": "Control whether case comparison is case sensitive."
-                }
-            },
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "$type"
             ]
         },
         "Microsoft.LuisRecognizer": {
@@ -2091,6 +1341,80 @@
                 }
             ]
         },
+        "Microsoft.RePlacePlanRule": {
+            "$role": "unionType(Microsoft.IRule)",
+            "title": "Replace Plan Rule",
+            "description": "Similar as intent Rule, but the dialog stack will be clean up when it is triggered.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RePlacePlanRule"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "intent": {
+                    "type": "string",
+                    "description": "This is the intent to be triggered.",
+                    "examples": [
+                        "JokeIntent"
+                    ]
+                },
+                "entities": {
+                    "type": "array",
+                    "title": "The entities to be triggered.",
+                    "items": {
+                        "type": "string",
+                        "description": "The entities"
+                    }
+                },
+                "steps": {
+                    "type": "array",
+                    "description": "steps to execute",
+                    "items": {
+                        "$type": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                }
+            },
+            "required": [
+                "$type"
+            ],
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "intent",
+                        "steps"
+                    ]
+                }
+            ]
+        },
         "Microsoft.RegexRecognizer": {
             "$role": "unionType(Microsoft.IRecognizer)",
             "title": "Regular Expression Recognizer",
@@ -2140,6 +1464,456 @@
                     "title": "Type",
                     "required": [
                         "pattern"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.RuleDialog": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Rule Dialog",
+            "description": "This represents a dialog can add rules and execute rules",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RuleDialog"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "storage": {
+                    "$type": "Microsoft.IStorage",
+                    "description": "The memory storage",
+                    "examples": [
+                        "Microsoft.MemoryStorage"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IStorage"
+                },
+                "recognizer": {
+                    "$type": "Microsoft.IRecognizer",
+                    "description": "The recognizers",
+                    "$ref": "#/definitions/Microsoft.IRecognizer"
+                },
+                "rules": {
+                    "type": "array",
+                    "title": "The rules",
+                    "items": {
+                        "$type": "Microsoft.IRule",
+                        "description": "The rules",
+                        "$ref": "#/definitions/Microsoft.IRule"
+                    }
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "Microsoft.SaveEntity": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Save Entity",
+            "description": "This is a step which save an recognized entity to storage",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.SaveEntity"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "property": {
+                    "$type": "Microsoft.IExpression",
+                    "title": "Property",
+                    "description": "Expression which is the property to set.",
+                    "$ref": "#/definitions/Microsoft.IExpression"
+                },
+                "entityName": {
+                    "$type": "Microsoft.IExpression",
+                    "title": "Value",
+                    "description": "Expression which is the value to use.",
+                    "$ref": "#/definitions/Microsoft.IExpression"
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "Microsoft.SendActivity": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Send Activity Step",
+            "description": "This is a step which sends an activity to the user",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.SendActivity"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "activity": {
+                    "type": "string",
+                    "description": "This text sent to user."
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "Microsoft.SendList": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Send List Step",
+            "description": "This is a step which sends an list to the user",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.SendList"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "listProperty": {
+                    "$type": "Microsoft.IExpression",
+                    "title": "List Property",
+                    "description": "Expression which is the list property.",
+                    "$ref": "#/definitions/Microsoft.IExpression"
+                },
+                "messageTemplate": {
+                    "type": "string",
+                    "title": "message Template",
+                    "description": "message that will be shown before the list."
+                },
+                "itemTemplate": {
+                    "type": "string",
+                    "title": "item Template",
+                    "description": "message that will be shown before the items."
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "Microsoft.TextPrompt": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Text prompt",
+            "description": "This represents a dialog which gathers a text from the user",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.TextPrompt"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "property": {
+                    "type": "string",
+                    "description": "This is the property to set the result.",
+                    "examples": [
+                        "value.name"
+                    ]
+                },
+                "pattern": {
+                    "type": "string",
+                    "title": "Pattern",
+                    "description": "A regular expression pattern which must match",
+                    "examples": [
+                        "\\w{3,30}"
+                    ]
+                },
+                "initialPrompt": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Initial Prompt",
+                    "description": "The message to send to start.",
+                    "examples": [
+                        "What is your name?"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "retryPrompt": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Retry Prompt",
+                    "description": "The message to send to prompt again.",
+                    "examples": [
+                        "Let's try again. What is your name?"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "noMatchResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "No match",
+                    "description": "The message to send to when the input didn't match.",
+                    "examples": [
+                        "That doesn't match the pattern requirements.",
+                        "A valid phone number looks like xxx-xxx-xxxx."
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "Microsoft.UtteranceRecognizeRule": {
+            "$role": "unionType(Microsoft.IRule)",
+            "title": "Utterance Recognize Rule",
+            "description": "Utterance Recognize will be triggered when the utterance is recognized as intents or entities",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.UtteranceRecognizeRule"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "intent": {
+                    "type": "string",
+                    "description": "This is the intent to be triggered.",
+                    "examples": [
+                        "JokeIntent"
+                    ]
+                },
+                "entities": {
+                    "type": "array",
+                    "title": "The entities to be triggered.",
+                    "items": {
+                        "type": "string",
+                        "description": "The entities"
+                    }
+                },
+                "steps": {
+                    "type": "array",
+                    "description": "steps to execute",
+                    "items": {
+                        "$type": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                }
+            },
+            "required": [
+                "$type"
+            ],
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "steps"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.WaitForInput": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Wait for Input Step",
+            "description": "Step which accepts an input from user.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.WaitForInput"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "property": {
+                    "$type": "Microsoft.IExpression",
+                    "title": "Property",
+                    "description": "property which saves the input into.",
+                    "$ref": "#/definitions/Microsoft.IExpression"
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "Microsoft.WelcomeRule": {
+            "$role": "unionType(Microsoft.IRule)",
+            "title": "Welcome Rule",
+            "description": "Welcome Rule will be triggered when user start conversation or update conversation",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Schema definition for $type added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.WelcomeRule"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Schema deifnition for $copy added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Schema definition for $id added by cogSchema.",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "steps": {
+                    "type": "array",
+                    "description": "steps to execute",
+                    "items": {
+                        "$type": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                }
+            },
+            "required": [
+                "$type"
+            ],
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "steps"
                     ]
                 }
             ]

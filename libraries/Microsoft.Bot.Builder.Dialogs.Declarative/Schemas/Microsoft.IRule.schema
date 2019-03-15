@@ -1,0 +1,6 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Microsoft IRule",
+    "description": "Definition of Microsoft.IRule which will include types with a $role:unionType(Microsoft.IRule).",
+    "$role": "unionType"
+}

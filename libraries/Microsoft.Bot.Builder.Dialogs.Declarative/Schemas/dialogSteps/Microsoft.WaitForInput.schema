@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$role": "unionType(Microsoft.IDialog)"
+    "$role": "unionType(Microsoft.IDialog)",
     "title": "Wait for Input Step",
     "description": "Step which accepts an input from user.",
     "type": "object",

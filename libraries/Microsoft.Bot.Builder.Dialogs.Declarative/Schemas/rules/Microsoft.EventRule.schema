@@ -12,17 +12,17 @@
       "items": {
         "$type": "Microsoft.IDialog"
       }
-    }
+    },
     "events": {
       "type": "array",
       "description": "event to be triggered",
       "items": {
-        "$type": "string"
+        "type": "string"
       }
     }
   },
   "required": [
-    "steps"
+    "steps",
     "events"
   ]
 }

@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$role": "unionType(Microsoft.IDialog)"
+    "$role": "unionType(Microsoft.IDialog)",
     "title": "End Dialog",
     "description": "This is a step which ends the current dialog, returning the result",
     "type": "object",

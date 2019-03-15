@@ -1,0 +1,6 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Microsoft IStorage",
+    "description": "Definition of Microsoft.IStorage which will include types with a $role:unionType(Microsoft.IStorage).",
+    "$role": "unionType"
+}

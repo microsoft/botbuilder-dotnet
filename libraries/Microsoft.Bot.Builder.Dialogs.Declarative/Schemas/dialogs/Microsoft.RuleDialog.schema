@@ -18,10 +18,10 @@
             "description": "The recognizers",
         },
         "rules": {
-            "$type":"array",
+            "type":"array",
             "title": "The rules",
             "items": {
-                "$type": "Microsoft.IRules",
+                "$type": "Microsoft.IRule",
                 "description": "The rules",
             }
         }
