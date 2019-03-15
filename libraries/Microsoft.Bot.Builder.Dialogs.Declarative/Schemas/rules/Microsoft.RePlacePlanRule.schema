@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$role": "unionType(Microsoft.IRule)",
-  "title": "Utterance Recognize Rule",
-  "description": "Utterance Recognize will be triggered when the utterance is recognized as intents or entities",
+  "title": "Replace Plan Rule",
+  "description": "Similar as intent Rule, but the dialog stack will be clean up when it is triggered.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -13,7 +13,7 @@
         "JokeIntent"
       ]
     },
-    "entities": {
+     "entities": {
       "$type":"array",
       "title": "The entities to be triggered.",
       "items": {
@@ -30,6 +30,7 @@
     }
   },
   "required": [
+    "intent",
     "steps"
   ]
 }

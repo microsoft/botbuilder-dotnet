@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "$role": "unionType(Microsoft.IDialog)"
-    "title": "If Step",
+    "title": "If Property Step",
     "description": "Step which conditionally decides which step to execute next.",
     "type": "object",
     "additionalProperties": false,
@@ -36,7 +36,7 @@
             "title": "If False",
             "description": "Step to execute if expression is false."
         },
-        "condition": {
+        "expression": {
             "$type":"Microsoft.IExpression",
             "title": "Condition",
             "description": "Expression to evaluate.",

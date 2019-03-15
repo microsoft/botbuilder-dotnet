@@ -10,12 +10,18 @@
             "$type":"Microsoft.IExpression",
             "title": "List Property",
             "description": "Expression which is the list property."
-        }
+        },
         "messageTemplate":
         {
             "$type":"string",
             "title": "message Template",
             "description": "message that will be shown before the list."
+        },
+        "itemTemplate":
+        {
+            "$type":"string",
+            "title": "item Template",
+            "description": "message that will be shown before the items."
         }
     }
 }

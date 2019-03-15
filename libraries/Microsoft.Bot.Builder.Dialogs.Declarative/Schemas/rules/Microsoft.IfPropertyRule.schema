@@ -12,7 +12,7 @@
       "items": {
         "$type": "Microsoft.IDialog"
       }
-    }
+    },
     "conditionals": {
       "type": "array",
       "description": "conditions",

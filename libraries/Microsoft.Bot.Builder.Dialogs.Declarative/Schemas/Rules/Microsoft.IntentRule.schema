@@ -13,6 +13,14 @@
         "JokeIntent"
       ]
     },
+     "entities": {
+      "$type":"array",
+      "title": "The entities to be triggered.",
+      "items": {
+        "$type": "string",
+        "description": "The entities",
+      }
+    },
     "steps": {
       "type": "array",
       "description": "steps to execute",

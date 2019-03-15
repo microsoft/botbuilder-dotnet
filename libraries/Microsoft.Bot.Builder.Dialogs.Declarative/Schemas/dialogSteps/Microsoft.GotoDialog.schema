@@ -6,7 +6,7 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
-        "dialog": {
+        "dialogId": {
             "$type":"Microsoft.IDialog",
             "title": "Dialog",
             "description": "This is the dialog to call."
