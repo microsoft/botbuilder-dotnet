@@ -11,6 +11,10 @@
       "steps": [
         {
           "$type": "Microsoft.SendActivity",
+          "activity": "Seeing into the future..."
+        },
+        {
+          "$type": "Microsoft.SendActivity",
           "activity": "I see great things in your future..."
         },
         {
