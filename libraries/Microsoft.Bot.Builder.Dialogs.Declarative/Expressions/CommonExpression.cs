@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Antlr4.Runtime.Tree;
 using Microsoft.Bot.Builder.Dialogs.Expressions;
 using Microsoft.Expressions;
 
@@ -9,7 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Expressions
     public class CommonExpression : IExpressionEval
     {
         private string _expression;
-        private Term _parseTree;
+        private IParseTree _parseTree;
 
         public CommonExpression() { }
         public CommonExpression(string condition)
