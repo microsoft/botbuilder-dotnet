@@ -1,28 +1,21 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
-using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Expressions;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Rules.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Rules.Rules;
 using Microsoft.Bot.Builder.Dialogs.Rules.Steps;
-using Microsoft.Bot.Schema;
-using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 {
     [TestClass]
-    public class PlanningDialogTests
+    public class StepsTests
     {
         public TestContext TestContext { get; set; }
 
@@ -54,51 +47,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             });
         }
 
-        [TestMethod]
-        public async Task Planning_TopLevelFallback()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
-            var planningDialog = new RuleDialog("planningTest");
-
-            planningDialog.AddRule(new List<IRule>()
-            {
-                new FallbackRule(
-                    new List<IDialog>()
-                    {
-                        new SendActivity("Hello Planning!")
-                    })});
-
-            await CreateFlow(planningDialog, convoState, userState)
-            .Send("start")
-                .AssertReply("Hello Planning!")
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task Planning_TopLevelFallbackMultipleActivities()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
-            var planningDialog = new RuleDialog("planningTest");
-
-            planningDialog.AddRule(new List<IRule>()
-            {
-                new FallbackRule(
-                    new List<IDialog>()
-                    {
-                        new SendActivity("Hello Planning!"),
-                        new SendActivity("Howdy awain")
-                    })});
-
-            await CreateFlow(planningDialog, convoState, userState)
-            .Send("start")
-                .AssertReply("Hello Planning!")
-                .AssertReply("Howdy awain")
-            .StartTestAsync();
-        }
 
         [TestMethod]
         public async Task Planning_WaitForInput()
@@ -166,7 +114,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var userState = new UserState(new MemoryStorage());
 
             var planningDialog = new RuleDialog("planningTest");
-            
+
             planningDialog.AddRule(new List<IRule>()
             {
                 new FallbackRule(
@@ -184,54 +132,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                                 }
                             }
                         },
-                        new SendActivity("Hello {user.name}, nice to meet you!") 
-                    })});
-
-            await CreateFlow(planningDialog, convoState, userState)
-            .Send("hi")
-                .AssertReply("Hello, what is your name?")
-            .Send("Carlos")
-                .AssertReply("Hello Carlos, nice to meet you!")
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task Planning_WelcomeRule()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
-            var planningDialog = new RuleDialog("planningTest");
-            
-            planningDialog.AddRule(new List<IRule>()
-            {
-                new WelcomeRule(
-                    new List<IDialog>()
-                    {
-                        new SendActivity("Welcome my friend!")
-                    }),
-                new FallbackRule(
-                    new List<IDialog>()
-                    {
-                        new IfProperty()
-                        {
-                            Expression = new CommonExpression("user.name == null"),
-                            IfTrue = new List<IDialog>()
-                            {
-                                new TextPrompt()
-                                {
-                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
-                                    OutputBinding = "user.name"
-                                }
-                            }
-                        },
                         new SendActivity("Hello {user.name}, nice to meet you!")
                     })});
 
             await CreateFlow(planningDialog, convoState, userState)
-            .Send(new Activity() { Type = ActivityTypes.ConversationUpdate, MembersAdded = new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") } })
             .Send("hi")
-                .AssertReply("Welcome my friend!")
                 .AssertReply("Hello, what is your name?")
             .Send("Carlos")
                 .AssertReply("Hello Carlos, nice to meet you!")
@@ -246,11 +151,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             var planningDialog = new RuleDialog("planningTest");
 
-            planningDialog.Recognizer = new RegexRecognizer() { Rules = new Dictionary<string, string>() { { "JokeIntent", "joke" }  } };
+            planningDialog.Recognizer = new RegexRecognizer() { Rules = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 
             planningDialog.AddRule(new List<IRule>()
             {
-                new IntentRule("JokeIntent", 
+                new IntentRule("JokeIntent",
                     steps: new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
@@ -289,127 +194,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
-        public async Task Planning_ReplacePlan()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
-            var planningDialog = new RuleDialog("planningTest");
-
-            planningDialog.Recognizer = new RegexRecognizer() { Rules = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
-
-            planningDialog.AddRule(new List<IRule>()
-            {
-                new ReplacePlanRule("JokeIntent",
-                    steps: new List<IDialog>()
-                    {
-                        new SendActivity("Why did the chicken cross the road?"),
-                        new WaitForInput(),
-                        new SendActivity("To get to the other side")
-                    }),
-                new WelcomeRule(
-                    steps: new List<IDialog>()
-                    {
-                        new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
-                    }),
-                new FallbackRule(
-                    new List<IDialog>()
-                    {
-                        new IfProperty()
-                        {
-                            Expression = new CommonExpression("user.name == null"),
-                            IfTrue = new List<IDialog>()
-                            {
-                                new TextPrompt()
-                                {
-                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
-                                    OutputBinding = "user.name"
-                                }
-                            }
-                        },
-                        new SendActivity("Hello {user.name}, nice to meet you!")
-                    })});
-
-            await CreateFlow(planningDialog, convoState, userState)
-            .Send("hi")
-                .AssertReply("I'm a joke bot. To get started say 'tell me a joke'")                
-                .AssertReply("Hello, what is your name?")
-            .Send("Carlos")
-                .AssertReply("Hello Carlos, nice to meet you!")
-            .Send("Do you know a joke?")
-                .AssertReply("Why did the chicken cross the road?")
-            .Send("Why?")
-                .AssertReply("To get to the other side")
-            .Send("hi")
-                .AssertReply("Hello Carlos, nice to meet you!")
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task Planning_NestedInlineSequences()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
-            var planningDialog = new RuleDialog("planningTest");
-
-            planningDialog.Recognizer = new RegexRecognizer() { Rules = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
-
-            planningDialog.AddRule(new List<IRule>()
-            {
-                new ReplacePlanRule("JokeIntent",
-                    steps: new List<IDialog>()
-                    {
-                        new SequenceDialog("TellJokeDialog",
-                            new List<IDialog>()
-                            {
-                                new SendActivity("Why did the chicken cross the road?"),
-                                new WaitForInput(),
-                                new SendActivity("To get to the other side")
-                            })
-                    }),
-                new WelcomeRule(
-                    steps: new List<IDialog>()
-                    {
-                        new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
-                    }),
-                new FallbackRule(
-                    new List<IDialog>()
-                    {
-                        new SequenceDialog("AskNameDialog",
-                            new List<IDialog>()
-                            {
-                                new IfProperty()
-                                {
-                                    Expression = new CommonExpression("user.name == null"),
-                                    IfTrue = new List<IDialog>()
-                                    {
-                                        new TextPrompt()
-                                        {
-                                            InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
-                                            OutputBinding = "user.name"
-                                        }
-                                    }
-                                },
-                                new SendActivity("Hello {user.name}, nice to meet you!")
-                            })
-                    })});
-
-            await CreateFlow(planningDialog, convoState, userState)
-            .Send("hi")
-                .AssertReply("I'm a joke bot. To get started say 'tell me a joke'")
-                .AssertReply("Hello, what is your name?")
-            .Send("Carlos")
-                .AssertReply("Hello Carlos, nice to meet you!")
-            .Send("Do you know a joke?")
-                .AssertReply("Why did the chicken cross the road?")
-            .Send("Why?")
-                .AssertReply("To get to the other side")
-            .Send("hi")
-                .AssertReply("Hello Carlos, nice to meet you!")
-            .StartTestAsync();
-        }
 
         [TestMethod]
         public async Task Planning_CallDialog()
@@ -421,26 +205,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             planningDialog.Recognizer = new RegexRecognizer() { Rules = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 
-            planningDialog.AddRule(new List<IRule>()
+            var tellJokeDialog = new RuleDialog("TellJokeDialog");
+            tellJokeDialog.AddRule(new List<IRule>()
             {
-                new ReplacePlanRule("JokeIntent",
-                    steps: new List<IDialog>()
-                    {
-                        new CallDialog("TellJokeDialog")
-                    }),
-                new WelcomeRule(
-                    steps: new List<IDialog>()
-                    {
-                        new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
-                    }),
                 new FallbackRule(
                     new List<IDialog>()
                     {
-                        new CallDialog("AskNameDialog")
-                    })});
+                        new SendActivity("Why did the chicken cross the road?"),
+                        new WaitForInput(),
+                        new SendActivity("To get to the other side")
+                    }
+                 )
+            });
 
-            planningDialog.AddDialog(new[] {
-                new SequenceDialog("AskNameDialog",
+            var askNameDialog = new RuleDialog("AskNameDialog");
+            askNameDialog.AddRule(new List<IRule>()
+            {
+                new FallbackRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -457,17 +238,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                         },
                         new SendActivity("Hello {user.name}, nice to meet you!")
                     })
-                });
+            });
 
-            planningDialog.AddDialog(new[] {
-                new SequenceDialog("TellJokeDialog",
+            planningDialog.AddRule(new List<IRule>()
+            {
+                new ReplacePlanRule("JokeIntent",
+                    steps: new List<IDialog>()
+                    {
+                        new CallDialog() { Dialog = tellJokeDialog }
+                    }),
+                new WelcomeRule(
+                    steps: new List<IDialog>()
+                    {
+                        new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
+                    }),
+                new FallbackRule(
                     new List<IDialog>()
                     {
-                        new SendActivity("Why did the chicken cross the road?"),
-                        new WaitForInput(),
-                        new SendActivity("To get to the other side")
+                        new CallDialog() { Dialog = askNameDialog }
                     })
-                });
+            });
 
             await CreateFlow(planningDialog, convoState, userState)
             .Send("hi")
@@ -481,6 +271,138 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 .AssertReply("To get to the other side")
             .Send("hi")
                 .AssertReply("Hello Carlos, nice to meet you!")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task Planning_GotoDialog()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var planningDialog = new RuleDialog("planningTest");
+
+            planningDialog.Recognizer = new RegexRecognizer() { Rules = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
+
+            var tellJokeDialog = new RuleDialog("TellJokeDialog");
+            tellJokeDialog.AddRule(new List<IRule>()
+            {
+                new FallbackRule(
+                    new List<IDialog>()
+                    {
+                        new SendActivity("Why did the chicken cross the road?"),
+                        new WaitForInput(),
+                        new SendActivity("To get to the other side")
+                    }
+                 )
+            });
+
+            var askNameDialog = new RuleDialog("AskNameDialog");
+            askNameDialog.AddRule(new List<IRule>()
+            {
+                new FallbackRule(
+                    new List<IDialog>()
+                    {
+                        new IfProperty()
+                        {
+                            Expression = new CommonExpression("user.name == null"),
+                            IfTrue = new List<IDialog>()
+                            {
+                                new TextPrompt()
+                                {
+                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
+                                    OutputBinding = "user.name"
+                                }
+                            }
+                        },
+                        new SendActivity("Hello {user.name}, nice to meet you!")
+                    })
+            });
+
+            planningDialog.AddRule(new List<IRule>()
+            {
+                new ReplacePlanRule("JokeIntent",
+                    steps: new List<IDialog>()
+                    {
+                        new GotoDialog() { DialogId = "TellJokeDialog" }
+                    }),
+                new WelcomeRule(
+                    steps: new List<IDialog>()
+                    {
+                        new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
+                    }),
+                new FallbackRule(
+                    new List<IDialog>()
+                    {
+                        new GotoDialog() { DialogId = "AskNameDialog" }
+                    })
+            });
+
+            planningDialog.AddDialog(new List<IDialog>()
+            {
+                tellJokeDialog,
+                askNameDialog
+            });
+
+            await CreateFlow(planningDialog, convoState, userState)
+            .Send("hi")
+                .AssertReply("I'm a joke bot. To get started say 'tell me a joke'")
+                .AssertReply("Hello, what is your name?")
+            .Send("Carlos")
+                .AssertReply("Hello Carlos, nice to meet you!")
+            .Send("Do you know a joke?")
+                .AssertReply("Why did the chicken cross the road?")
+            .Send("Why?")
+                .AssertReply("To get to the other side")
+            .Send("hi")
+                .AssertReply("Hello Carlos, nice to meet you!")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task Planning_EndDialog()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var planningDialog = new RuleDialog("planningTest");
+
+            planningDialog.Recognizer = new RegexRecognizer() { Rules = new Dictionary<string, string>() { { "EndIntent", "end" } } };
+
+            var tellJokeDialog = new RuleDialog("TellJokeDialog");
+            tellJokeDialog.AddRule(new List<IRule>()
+            {
+                new IntentRule("EndIntent",
+                    steps: new List<IDialog>()
+                    {
+                        new EndDialog()
+                    }),
+                new FallbackRule(
+                    new List<IDialog>()
+                    {
+                        new SendActivity("Why did the chicken cross the road?"),
+                        new WaitForInput(),
+                        new SendActivity("To get to the other side")
+                    }
+                 )
+            });
+            tellJokeDialog.Recognizer = new RegexRecognizer() { Rules = new Dictionary<string, string>() { { "EndIntent", "end" } } };
+
+            planningDialog.AddRule(new List<IRule>()
+            {
+                new FallbackRule(
+                    new List<IDialog>()
+                    {
+                        new CallDialog() { Dialog = tellJokeDialog },
+                        new SendActivity("You went out from ask name dialog.")
+                    })
+            });
+
+            await CreateFlow(planningDialog, convoState, userState)
+            .Send("hi")
+                .AssertReply("Why did the chicken cross the road?")
+            .Send("end")
+                .AssertReply("You went out from ask name dialog.")
             .StartTestAsync();
         }
     }

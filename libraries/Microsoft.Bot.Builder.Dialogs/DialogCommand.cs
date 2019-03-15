@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             PopCommands(dc);
 
-            if (dc.Stack.Count > 0 || dc.ParentContext == null)
+            if (dc.Stack.Count > 1 || dc.ParentContext == null)
             {
                 return await dc.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
             }

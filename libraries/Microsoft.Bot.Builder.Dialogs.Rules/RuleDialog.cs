@@ -236,7 +236,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Forward to current sequence step
-            var state = instance.State as PlanningState;
+            var state = (instance.State as StateMap)["planningState"] as PlanningState;
             var plan = state.Plan;
 
             if (plan?.Steps.Count > 0)
