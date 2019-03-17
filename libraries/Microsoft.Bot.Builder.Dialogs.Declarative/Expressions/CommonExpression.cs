@@ -35,14 +35,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Expressions
             return Task.FromResult(result);
         }
 
-        public async Task<object> Evaluate(IDictionary<string, object> state)
+        public Task<object> Evaluate(IDictionary<string, object> state)
         {
             if (this._parseTree != null)
             {
                 try
                 {
                     var result = ExpressionEngine.Evaluate(this._parseTree, state);
-                    return result;
+                    return Task.FromResult(result);
                 }
                 catch (Exception err)
                 {

@@ -1,19 +1,19 @@
 {
-  "$schema": "../../Schemas/app.schema",
-  "$type": "Microsoft.RuleDialog",
-  "$id":  "root",
-  "storage": {
-    "$type": "Microsoft.MemoryStorage"
-  },
-  "rules": [
-    {
-      "$type": "Microsoft.FallbackRule",
-      "steps": [
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.RuleDialog",
+    "$id": "root",
+    "storage": {
+        "$type": "Microsoft.MemoryStorage"
+    },
+    "rules": [
         {
-          "$type": "Microsoft.SendActivity",
-          "activity": "Hello planning!"
+            "$type": "Microsoft.FallbackRule",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Hello planning!"
+                }
+            ]
         }
-      ]
-    }
-  ]   
+    ]
 }

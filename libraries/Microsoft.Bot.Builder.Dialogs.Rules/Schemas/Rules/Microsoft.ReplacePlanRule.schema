@@ -1,0 +1,13 @@
+﻿{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$ref": "./Microsoft.UtteranceRecognizedRule.schema",
+    "$role": "unionType(Microsoft.IRule)",
+    "title": "ReplacePlan Rule",
+    "description": "Defines a sequence of steps to take when a plan has been replaced with a new plan",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "intent",
+        "steps"
+    ]
+}

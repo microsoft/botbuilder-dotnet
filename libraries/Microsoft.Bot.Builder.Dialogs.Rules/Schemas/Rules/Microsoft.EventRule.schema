@@ -1,0 +1,40 @@
+﻿{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IRule)",
+    "title": "Event Rule",
+    "description": "Defines a rule for an event which is triggered by some sourcy",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "events": {
+            "type": "array",
+            "description": "Events to trigger this rule for",
+            "items": {
+                "type": "string"
+            }
+        },
+        "steps": {
+            "type": "array",
+            "description": "Sequence of steps or dialogs to execute",
+            "items": {
+                "$type": "Microsoft.IDialog"
+            }
+        },
+        "changeType": {
+            "type": "string",
+            "oneOf": [
+                "NewPlan",
+                "DoSteps",
+                "DoStepsBeforeTags",
+                "DoStepsLater",
+                "EndPlan",
+                "ReplacePlan"
+
+            ]
+        }
+    },
+    "required": [
+        "events",
+        "steps"
+    ]
+}

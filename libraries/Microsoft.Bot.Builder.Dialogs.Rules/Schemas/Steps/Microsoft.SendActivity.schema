@@ -1,0 +1,15 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "Send Activity Step",
+    "description": "This is a step which sends an activity to the user",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "activity": {
+            "$type": "Microsoft.IActivityTemplate",
+            "title": "Activity",
+            "description": "Activity to send to the user"
+        }
+    }
+}

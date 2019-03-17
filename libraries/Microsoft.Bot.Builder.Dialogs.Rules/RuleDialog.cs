@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         {
             get
             {
-                return base.TelemetryClient; 
+                return base.TelemetryClient;
             }
             set
             {
@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             }
         }
 
-        public RuleDialog(string dialogId = null) 
+        public RuleDialog(string dialogId = null)
             : base(dialogId)
         {
         }
@@ -284,12 +284,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             }
         }
 
-        public void AddRule(IEnumerable<IRule> rules)
+        public void AddRule(IRule rule)
+        {
+            rule.Steps.ForEach(s => dialogs.Add(s));
+            this.Rules.Add(rule);
+        }
+
+        public void AddRules(IEnumerable<IRule> rules)
         {
             foreach (var rule in rules)
             {
-                rule.Steps.ForEach(s => dialogs.Add(s));
-                this.Rules.Add(rule);
+                this.AddRule(rule);
             }
         }
 
@@ -335,7 +340,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                     rule.Steps.ForEach(s => dialogs.Add(s));
                 }
             }
-            
+
             var dc = new DialogContext(runDialogs,
                 context,
                 new DialogState()
@@ -544,7 +549,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                 Entities = JObject.Parse("{}")
             };
 
-            return Recognizer != null ? await Recognizer.RecognizeAsync(context, cancellationToken) : noneIntent; 
+            return Recognizer != null ? await Recognizer.RecognizeAsync(context, cancellationToken) : noneIntent;
         }
 
         protected virtual async Task<bool> EvaluateRulesAsync(PlanningContext planning, DialogEvent dialogEvent)

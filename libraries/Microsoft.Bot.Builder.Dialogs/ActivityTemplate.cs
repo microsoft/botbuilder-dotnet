@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Defines an activity Template where the template expression is local aka "inline".
     /// </summary>
-    public class ActivityTemplate : ITemplate<IMessageActivity>
+    public class ActivityTemplate : IActivityTemplate
     {
         // Fixed text constructor for inline template
         public ActivityTemplate(string template)
@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         public string Template { get; set; }
 
-        public async Task<IMessageActivity> BindToData(ITurnContext context, object data, Func<string, object, object> binder)
+        public async Task<Activity> BindToData(ITurnContext context, object data, Func<string, object, object> binder)
         {
             if (!string.IsNullOrEmpty(this.Template))
             {
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         tags: null,
                         types: null,
                         binder: binder).ConfigureAwait(false);
-                    return result;
+                    return result as Activity;
                 }
 
                 // fallback to just text based LG if there is a language generator

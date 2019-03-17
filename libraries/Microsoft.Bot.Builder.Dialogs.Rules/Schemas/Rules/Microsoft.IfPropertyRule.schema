@@ -1,0 +1,34 @@
+﻿{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IRule)",
+    "title": "",
+    "description": "",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "conditionals": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "expression": {
+                    "$type": "Microsoft.IExpression"
+                },
+                "rules": {
+                    "type": "array",
+                    "items": {
+                        "$type": "Microsoft.IRule"
+                    }
+                }
+            }
+        },
+        "else": {
+            "type": "array",
+            "items": {
+                "$type": "Microsoft.IRule"
+            }
+        }
+    },
+    "required": [
+        "conditionals"
+    ]
+}

@@ -1,5 +1,5 @@
 {
-    "$schema": "../../Schemas/app.schema",
+    "$schema": "../../app.schema",
     "$type": "Microsoft.RuleDialog",
     "$id": "root",
     "storage": {

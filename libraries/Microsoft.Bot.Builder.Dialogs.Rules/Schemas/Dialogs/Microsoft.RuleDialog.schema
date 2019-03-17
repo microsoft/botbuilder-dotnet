@@ -1,0 +1,23 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "Rule Dialog",
+    "description": "Configures a data driven dialog via a collection of steps/dialogs.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "rules": {
+            "type": "array",
+            "description": "Array of rules to use to evaluate conversation",
+            "items": {
+                "$type": "Microsoft.IRule"
+            }
+        },
+        "recognizer": {
+            "$type": "Microsoft.IRecognizer"
+        }
+    },
+    "required": [
+        "rules"
+    ]
+}
