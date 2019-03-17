@@ -11,7 +11,8 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// Middleware for logging incoming, outgoing, updated or deleted Activity messages using IBotTelemetryClient.
+    /// Middleware for logging incoming, outgoing, updated or deleted Activity messages.
+    /// Uses the IBotTelemetryClient interface.
     /// </summary>
     public class TelemetryLoggerMiddleware : IMiddleware
     {
@@ -22,97 +23,24 @@ namespace Microsoft.Bot.Builder
         /// <param name="logPersonalInformation"> (Optional) TRUE to include personally indentifiable information.</param>
         public TelemetryLoggerMiddleware(IBotTelemetryClient telemetryClient, bool logPersonalInformation = false)
         {
-            TelemetryClient = telemetryClient ?? throw new ArgumentNullException(nameof(telemetryClient));
+            TelemetryClient = telemetryClient ?? new NullBotTelemetryClient();
             LogPersonalInformation = logPersonalInformation;
         }
 
         /// <summary>
-        /// Gets a value indicating whether indicates whether to log personal information into events.
-        /// By default, the following properties will not be logged if this is set to false:
-        ///   Activity.From.Name
-        ///   Activity.Text
-        ///   Activity.Speak
+        /// Gets a value indicating whether determines whether to log personal information that came from the user.
         /// </summary>
-        /// <value>
-        /// A value indicating whether indicates whether to log personal information into events.
-        /// </value>
+        /// <value>If true, will log personal information into the IBotTelemetryClient.TrackEvent method; otherwise the properties will be filtered.</value>
         public bool LogPersonalInformation { get; }
 
         /// <summary>
-        /// Gets the IBotTelemetryClient.
+        /// Gets the currently configured <see cref="IBotTelemetryClient"/> that logs the QnaMessage event.
         /// </summary>
-        /// <value>
-        /// The IBotTelemetryClient.
-        /// </value>
+        /// <value>The <see cref=IBotTelemetryClient"/> being used to log events.</value>
         public IBotTelemetryClient TelemetryClient { get; }
 
         /// <summary>
-        /// Invoked when a message is received from the user.
-        /// Performs logging of telemetry data using the IBotTelemetryClient.TrackEvent() method.
-        /// This event name used is "BotMessageReceived".
-        /// </summary>
-        /// <param name="activity">Current activity sent from user.</param>
-        /// <param name="cancellation"> cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        public Task OnReceiveActivityAsync(Activity activity, CancellationToken cancellation)
-        {
-            TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgReceiveEvent, FillReceiveEventProperties(activity));
-
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// Invoked when the bot sends a message to the user.
-        /// Performs logging of telemetry data using the IBotTelemetryClient.TrackEvent() method.
-        /// This event name used is "BotMessageSend".
-        /// </summary>
-        /// <param name="activity">Current activity sent from user.</param>
-        /// <param name="cancellation"> cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        public Task OnSendActivityAsync(Activity activity, CancellationToken cancellation)
-        {
-            TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgSendEvent, FillSendEvendProperties(activity));
-
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// Invoked when the bot updates a message.
-        /// Performs logging of telemetry data using the IBotTelemetryClient.TrackEvent() method.
-        /// This event name used is "BotMessageUpdate".
-        /// </summary>
-        /// <param name="activity">Current activity sent from user.</param>
-        /// <param name="cancellation"> cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        public Task OnUpdateActivityAsync(Activity activity, CancellationToken cancellation)
-        {
-            TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgUpdateEvent, FillUpdateEventProperties(activity));
-
-            return Task.CompletedTask;
-
-        }
-
-        /// <summary>
-        /// Invoked when the bot deletes a message.
-        /// Performs logging of telemetry data using the IBotTelemetryClient.TrackEvent() method.
-        /// This event name used is "BotMessageDelete".
-        /// </summary>
-        /// <param name="activity">Current activity sent from user.</param>
-        /// <param name="cancellation"> cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        public Task OnDeleteActivityAsync(Activity activity, CancellationToken cancellation)
-        {
-            TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgDeleteEvent, FillDeleteEventProperties(activity));
-
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// Logs events based on incoming and outgoing activities using the IBotTelemetryClient interface.
+        /// Logs events based on incoming and outgoing activities using the <see cref="IBotTelemetryClient"/> interface.
         /// </summary>
         /// <param name="context">The context object for this turn.</param>
         /// <param name="nextTurn">The delegate to call to continue the bot middleware pipeline.</param>
@@ -183,13 +111,73 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Fills the Event properties for BotMessageReceived.
-        /// These properties are logged in the IBotTelemetryClient.TrackEvent method when a message is received from the user.
+        /// Invoked when a message is received from the user.
+        /// Performs logging of telemetry data using the IBotTelemetryClient.TrackEvent() method.
+        /// This event name used is "BotMessageReceived".
+        /// </summary>
+        /// <param name="activity">Current activity sent from user.</param>
+        /// <param name="cancellation"> cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual async Task OnReceiveActivityAsync(Activity activity, CancellationToken cancellation)
+        {
+            TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgReceiveEvent, await FillReceiveEventPropertiesAsync(activity).ConfigureAwait(false));
+            return;
+        }
+
+        /// <summary>
+        /// Invoked when the bot sends a message to the user.
+        /// Performs logging of telemetry data using the IBotTelemetryClient.TrackEvent() method.
+        /// This event name used is "BotMessageSend".
+        /// </summary>
+        /// <param name="activity">Current activity sent from user.</param>
+        /// <param name="cancellation"> cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual async Task OnSendActivityAsync(Activity activity, CancellationToken cancellation)
+        {
+            TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgSendEvent, await FillSendEventPropertiesAsync(activity).ConfigureAwait(false));
+            return;
+        }
+
+        /// <summary>
+        /// Invoked when the bot updates a message.
+        /// Performs logging of telemetry data using the IBotTelemetryClient.TrackEvent() method.
+        /// This event name used is "BotMessageUpdate".
+        /// </summary>
+        /// <param name="activity">Current activity sent from user.</param>
+        /// <param name="cancellation"> cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual async Task OnUpdateActivityAsync(Activity activity, CancellationToken cancellation)
+        {
+            TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgUpdateEvent, await FillUpdateEventPropertiesAsync(activity).ConfigureAwait(false));
+            return;
+        }
+
+        /// <summary>
+        /// Invoked when the bot deletes a message.
+        /// Performs logging of telemetry data using the IBotTelemetryClient.TrackEvent() method.
+        /// This event name used is "BotMessageDelete".
+        /// </summary>
+        /// <param name="activity">Current activity sent from user.</param>
+        /// <param name="cancellation"> cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual async Task OnDeleteActivityAsync(Activity activity, CancellationToken cancellation)
+        {
+            TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgDeleteEvent, await FillDeleteEventPropertiesAsync(activity).ConfigureAwait(false));
+            return;
+        }
+ 
+        /// <summary>
+        /// Fills the event properties for the BotMessageReceived.
+        /// Adheres to the LogPersonalInformation flag to filter Name, Text and Speak properties.
         /// </summary>
         /// <param name="activity">Last activity sent from user.</param>
         /// <param name="additionalProperties">Additional properties to add to the event.</param>
         /// <returns>A dictionary that is sent as "Properties" to IBotTelemetryClient.TrackEvent method for the BotMessageReceived event.</returns>
-        protected Dictionary<string, string> FillReceiveEventProperties(Activity activity, Dictionary<string, string> additionalProperties = null)
+        protected Task<Dictionary<string, string>> FillReceiveEventPropertiesAsync(Activity activity, Dictionary<string, string> additionalProperties = null)
         {
             var properties = new Dictionary<string, string>()
                 {
@@ -222,12 +210,12 @@ namespace Microsoft.Bot.Builder
             // Additional Properties can override "stock" properties.
             if (additionalProperties != null)
             {
-                return additionalProperties.Concat(properties)
+                return Task.FromResult(additionalProperties.Concat(properties)
                            .GroupBy(kv => kv.Key)
-                           .ToDictionary(g => g.Key, g => g.First().Value);
+                           .ToDictionary(g => g.Key, g => g.First().Value));
             }
 
-            return properties;
+            return Task.FromResult(properties);
         }
 
         /// <summary>
@@ -237,7 +225,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="activity">Last activity sent from user.</param>
         /// <param name="additionalProperties">Additional properties to add to the event.</param>
         /// <returns>A dictionary that is sent as "Properties" to IBotTelemetryClient.TrackEvent method for the BotMessageSend event.</returns>
-        protected Dictionary<string, string> FillSendEvendProperties(Activity activity, Dictionary<string, string> additionalProperties = null)
+        protected Task<Dictionary<string, string>> FillSendEventPropertiesAsync(Activity activity, Dictionary<string, string> additionalProperties = null)
         {
             var properties = new Dictionary<string, string>()
                 {
@@ -269,12 +257,12 @@ namespace Microsoft.Bot.Builder
             // Additional Properties can override "stock" properties.
             if (additionalProperties != null)
             {
-                return additionalProperties.Concat(properties)
+                return Task.FromResult(additionalProperties.Concat(properties)
                            .GroupBy(kv => kv.Key)
-                           .ToDictionary(g => g.Key, g => g.First().Value);
+                           .ToDictionary(g => g.Key, g => g.First().Value));
             }
 
-            return properties;
+            return Task.FromResult(properties);
         }
 
         /// <summary>
@@ -286,7 +274,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="activity">Last activity sent from user.</param>
         /// <param name="additionalProperties">Additional properties to add to the event.</param>
         /// <returns>A dictionary that is sent as "Properties" to IBotTelemetryClient.TrackEvent method for the BotMessageUpdate event.</returns>
-        protected Dictionary<string, string> FillUpdateEventProperties(Activity activity, Dictionary<string, string> additionalProperties = null)
+        protected Task<Dictionary<string, string>> FillUpdateEventPropertiesAsync(Activity activity, Dictionary<string, string> additionalProperties = null)
         {
             var properties = new Dictionary<string, string>()
                 {
@@ -305,14 +293,12 @@ namespace Microsoft.Bot.Builder
             // Additional Properties can override "stock" properties.
             if (additionalProperties != null)
             {
-                return additionalProperties.Concat(properties)
+                return Task.FromResult(additionalProperties.Concat(properties)
                            .GroupBy(kv => kv.Key)
-                           .ToDictionary(g => g.Key, g => g.First().Value);
+                           .ToDictionary(g => g.Key, g => g.First().Value));
             }
 
-            return properties;
-
-            return properties;
+            return Task.FromResult(properties);
         }
 
         /// <summary>
@@ -322,7 +308,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="activity">The Activity object deleted by bot.</param>
         /// <param name="additionalProperties">Additional properties to add to the event.</param>
         /// <returns>A dictionary that is sent as "Properties" to IBotTelemetryClient.TrackEvent method for the BotMessageDelete event.</returns>
-        protected Dictionary<string, string> FillDeleteEventProperties(IMessageDeleteActivity activity, Dictionary<string, string> additionalProperties = null)
+        protected Task<Dictionary<string, string>> FillDeleteEventPropertiesAsync(IMessageDeleteActivity activity, Dictionary<string, string> additionalProperties = null)
         {
             var properties = new Dictionary<string, string>()
                 {
@@ -334,12 +320,12 @@ namespace Microsoft.Bot.Builder
             // Additional Properties can override "stock" properties.
             if (additionalProperties != null)
             {
-                return additionalProperties.Concat(properties)
+                return Task.FromResult(additionalProperties.Concat(properties)
                            .GroupBy(kv => kv.Key)
-                           .ToDictionary(g => g.Key, g => g.First().Value);
+                           .ToDictionary(g => g.Key, g => g.First().Value));
             }
 
-            return properties;
+            return Task.FromResult(properties);
         }
     }
 }
