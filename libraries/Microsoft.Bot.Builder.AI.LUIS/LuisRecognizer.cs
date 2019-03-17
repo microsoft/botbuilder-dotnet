@@ -8,7 +8,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
-using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
@@ -20,7 +19,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
     /// <summary>
     /// A LUIS based implementation of <see cref="IRecognizer"/>.
     /// </summary>
-    public class LuisRecognizer : IRecognizer
+    public class LuisRecognizer : IRecognizer, ITelemetryRecognizer
     {
         /// <summary>
         /// The value type for a LUIS trace activity.
@@ -31,7 +30,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// The context label for a LUIS trace activity.
         /// </summary>
         public const string LuisTraceLabel = "Luis Trace";
-        private const string _metadataKey = "$instance";
+
         private readonly ILUISRuntimeClient _runtime;
         private readonly LuisApplication _application;
         private readonly LuisPredictionOptions _options;
@@ -44,11 +43,15 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="predictionOptions">(Optional) The LUIS prediction options to use.</param>
         /// <param name="includeApiResults">(Optional) TRUE to include raw LUIS API response.</param>
         /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
-        public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null)
+        /// <param name="telemetryClient">The IBotTelemetryClient used to log the LuisResult event.</param>
+        public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null, IBotTelemetryClient telemetryClient = null, bool logPersonalInformation = false)
         {
             _application = application ?? throw new ArgumentNullException(nameof(application));
             _options = predictionOptions ?? new LuisPredictionOptions();
             _includeApiResults = includeApiResults;
+
+            TelemetryClient = telemetryClient ?? new NullBotTelemetryClient();
+            LogPersonalInformation = logPersonalInformation;
 
             var credentials = new ApiKeyServiceClientCredentials(application.EndpointKey);
             var delegatingHandler = new LuisDelegatingHandler();
@@ -71,7 +74,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="includeApiResults">(Optional) TRUE to include raw LUIS API response.</param>
         /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
         public LuisRecognizer(LuisService service, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null)
-            : this(new LuisApplication(service), predictionOptions, includeApiResults, clientHandler)
+            : this(new LuisApplication(service), predictionOptions, includeApiResults, clientHandler, null)
         {
         }
 
@@ -83,9 +86,35 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="includeApiResults">(Optional) TRUE to include raw LUIS API response.</param>
         /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
         public LuisRecognizer(string applicationEndpoint, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null)
-            : this(new LuisApplication(applicationEndpoint), predictionOptions, includeApiResults, clientHandler)
+            : this(new LuisApplication(applicationEndpoint), predictionOptions, includeApiResults, clientHandler, null)
         {
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LuisRecognizer"/> class.
+        /// </summary>
+        /// <param name="telemetryClient">The IBotTelemetryClient used to log the LuisResult event.</param>
+        /// <param name="application">The LUIS application to use to recognize text.</param>
+        /// <param name="predictionOptions">The LUIS prediction options to use.</param>
+        /// <param name="includeApiResults">TRUE to include raw LUIS API response.</param>
+        /// <param name="logPersonalInformation">TRUE to include personally indentifiable information.</param>
+        public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, IBotTelemetryClient telemetryClient = null, bool logPersonalInformation = false)
+            : this(application, predictionOptions, includeApiResults, null, telemetryClient)
+        {
+            LogPersonalInformation = logPersonalInformation;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to log personal information that came from the user to telemetry.
+        /// </summary>
+        /// <value>If true, personal information is logged to Telemetry; otherwise the properties will be filtered.</value>
+        public bool LogPersonalInformation { get; set; }
+
+        /// <summary>
+        /// Gets the currently configured <see cref="IBotTelemetryClient"/> that logs the LuisResult event.
+        /// </summary>
+        /// <value>The <see cref=IBotTelemetryClient"/> being used to log events.</value>
+        public IBotTelemetryClient TelemetryClient { get; }
 
         /// <summary>
         /// Returns the name of the top scoring intent from a set of LUIS results.
@@ -121,300 +150,127 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
         /// <inheritdoc />
         public async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
-            => await RecognizeInternalAsync(turnContext, cancellationToken).ConfigureAwait(false);
+            => await RecognizeInternalAsync(turnContext, null, null, cancellationToken).ConfigureAwait(false);
 
         /// <inheritdoc />
         public async Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken)
             where T : IRecognizerConvert, new()
         {
             var result = new T();
-            result.Convert(await RecognizeInternalAsync(turnContext, cancellationToken).ConfigureAwait(false));
+            result.Convert(await RecognizeInternalAsync(turnContext, null, null, cancellationToken).ConfigureAwait(false));
             return result;
         }
 
-        private static string NormalizedIntent(string intent) => intent.Replace('.', '_').Replace(' ', '_');
-
-        private static IDictionary<string, IntentScore> GetIntents(LuisResult luisResult)
+        /// <summary>
+        /// Return results of the analysis (Suggested actions and intents).
+        /// </summary>
+        /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
+        /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>The LUIS results of the analysis of the current message text in the current turn's context activity.</returns>
+        public async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (luisResult.Intents != null)
-            {
-                return luisResult.Intents.ToDictionary(
-                    i => NormalizedIntent(i.Intent),
-                    i => new IntentScore { Score = i.Score ?? 0 });
-            }
-            else
-            {
-                return new Dictionary<string, IntentScore>()
-                {
-                    {
-                        NormalizedIntent(luisResult.TopScoringIntent.Intent),
-                        new IntentScore() { Score = luisResult.TopScoringIntent.Score ?? 0 }
-                    },
-                };
-            }
+            return await RecognizeInternalAsync(turnContext, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
         }
-
-        private static JObject ExtractEntitiesAndMetadata(IList<EntityModel> entities, IList<CompositeEntityModel> compositeEntities, bool verbose)
-        {
-            var entitiesAndMetadata = new JObject();
-            if (verbose)
-            {
-                entitiesAndMetadata[_metadataKey] = new JObject();
-            }
-
-            var compositeEntityTypes = new HashSet<string>();
-
-            // We start by populating composite entities so that entities covered by them are removed from the entities list
-            if (compositeEntities != null && compositeEntities.Any())
-            {
-                compositeEntityTypes = new HashSet<string>(compositeEntities.Select(ce => ce.ParentType));
-                entities = compositeEntities.Aggregate(entities, (current, compositeEntity) => PopulateCompositeEntityModel(compositeEntity, current, entitiesAndMetadata, verbose));
-            }
-
-            foreach (var entity in entities)
-            {
-                // we'll address composite entities separately
-                if (compositeEntityTypes.Contains(entity.Type))
-                {
-                    continue;
-                }
-
-                AddProperty(entitiesAndMetadata, ExtractNormalizedEntityName(entity), ExtractEntityValue(entity));
-
-                if (verbose)
-                {
-                    AddProperty((JObject)entitiesAndMetadata[_metadataKey], ExtractNormalizedEntityName(entity), ExtractEntityMetadata(entity));
-                }
-            }
-
-            return entitiesAndMetadata;
-        }
-
-        private static JToken Number(dynamic value)
-        {
-            if (value == null)
-            {
-                return null;
-            }
-
-            return long.TryParse((string)value, out var longVal) ?
-                            new JValue(longVal) :
-                            new JValue(double.Parse((string)value));
-        }
-
-        private static JToken ExtractEntityValue(EntityModel entity)
-        {
-#pragma warning disable IDE0007 // Use implicit type
-            if (entity.AdditionalProperties == null || !entity.AdditionalProperties.TryGetValue("resolution", out dynamic resolution))
-#pragma warning restore IDE0007 // Use implicit type
-            {
-                return entity.Entity;
-            }
-
-            if (entity.Type.StartsWith("builtin.datetime."))
-            {
-                return JObject.FromObject(resolution);
-            }
-            else if (entity.Type.StartsWith("builtin.datetimeV2."))
-            {
-                if (resolution.values == null || resolution.values.Count == 0)
-                {
-                    return JArray.FromObject(resolution);
-                }
-
-                var resolutionValues = (IEnumerable<dynamic>)resolution.values;
-                var type = resolution.values[0].type;
-                var timexes = resolutionValues.Select(val => val.timex);
-                var distinctTimexes = timexes.Distinct();
-                return new JObject(new JProperty("type", type), new JProperty("timex", JArray.FromObject(distinctTimexes)));
-            }
-            else
-            {
-                switch (entity.Type)
-                {
-                    case "builtin.number":
-                    case "builtin.ordinal": return Number(resolution.value);
-                    case "builtin.percentage":
-                        {
-                            var svalue = (string)resolution.value;
-                            if (svalue.EndsWith("%"))
-                            {
-                                svalue = svalue.Substring(0, svalue.Length - 1);
-                            }
-
-                            return Number(svalue);
-                        }
-
-                    case "builtin.age":
-                    case "builtin.dimension":
-                    case "builtin.currency":
-                    case "builtin.temperature":
-                        {
-                            var units = (string)resolution.unit;
-                            var val = Number(resolution.value);
-                            var obj = new JObject();
-                            if (val != null)
-                            {
-                                obj.Add("number", val);
-                            }
-
-                            obj.Add("units", units);
-                            return obj;
-                        }
-
-                    default:
-                        return resolution.value ?? JArray.FromObject(resolution.values);
-                }
-            }
-        }
-
-        private static JObject ExtractEntityMetadata(EntityModel entity)
-        {
-            dynamic obj = JObject.FromObject(new
-            {
-                startIndex = (int)entity.StartIndex,
-                endIndex = (int)entity.EndIndex + 1,
-                text = entity.Entity,
-                type = entity.Type,
-            });
-            if (entity.AdditionalProperties != null)
-            {
-                if (entity.AdditionalProperties.TryGetValue("score", out var score))
-                {
-                    obj.score = (double)score;
-                }
-
-#pragma warning disable IDE0007 // Use implicit type
-                if (entity.AdditionalProperties.TryGetValue("resolution", out dynamic resolution) && resolution.subtype != null)
-#pragma warning restore IDE0007 // Use implicit type
-                {
-                    obj.subtype = resolution.subtype;
-                }
-            }
-
-            return obj;
-        }
-
-        private static string ExtractNormalizedEntityName(EntityModel entity)
-        {
-            // Type::Role -> Role
-            var type = entity.Type.Split(':').Last();
-            if (type.StartsWith("builtin.datetimeV2."))
-            {
-                type = "datetime";
-            }
-
-            if (type.StartsWith("builtin.currency"))
-            {
-                type = "money";
-            }
-
-            if (type.StartsWith("builtin."))
-            {
-                type = type.Substring(8);
-            }
-
-            var role = entity.AdditionalProperties != null && entity.AdditionalProperties.ContainsKey("role") ? (string)entity.AdditionalProperties["role"] : string.Empty;
-            if (!string.IsNullOrWhiteSpace(role))
-            {
-                type = role;
-            }
-
-            return type.Replace('.', '_').Replace(' ', '_');
-        }
-
-        private static IList<EntityModel> PopulateCompositeEntityModel(CompositeEntityModel compositeEntity, IList<EntityModel> entities, JObject entitiesAndMetadata, bool verbose)
-        {
-            var childrenEntites = new JObject();
-            var childrenEntitiesMetadata = new JObject();
-            if (verbose)
-            {
-                childrenEntites[_metadataKey] = new JObject();
-            }
-
-            // This is now implemented as O(n^2) search and can be reduced to O(2n) using a map as an optimization if n grows
-            var compositeEntityMetadata = entities.FirstOrDefault(e => e.Type == compositeEntity.ParentType && e.Entity == compositeEntity.Value);
-
-            // This is an error case and should not happen in theory
-            if (compositeEntityMetadata == null)
-            {
-                return entities;
-            }
-
-            if (verbose)
-            {
-                childrenEntitiesMetadata = ExtractEntityMetadata(compositeEntityMetadata);
-                childrenEntites[_metadataKey] = new JObject();
-            }
-
-            var coveredSet = new HashSet<EntityModel>();
-            foreach (var child in compositeEntity.Children)
-            {
-                foreach (var entity in entities)
-                {
-                    // We already covered this entity
-                    if (coveredSet.Contains(entity))
-                    {
-                        continue;
-                    }
-
-                    // This entity doesn't belong to this composite entity
-                    if (child.Type != entity.Type || !CompositeContainsEntity(compositeEntityMetadata, entity))
-                    {
-                        continue;
-                    }
-
-                    // Add to the set to ensure that we don't consider the same child entity more than once per composite
-                    coveredSet.Add(entity);
-                    AddProperty(childrenEntites, ExtractNormalizedEntityName(entity), ExtractEntityValue(entity));
-
-                    if (verbose)
-                    {
-                        AddProperty((JObject)childrenEntites[_metadataKey], ExtractNormalizedEntityName(entity), ExtractEntityMetadata(entity));
-                    }
-                }
-            }
-
-            AddProperty(entitiesAndMetadata, ExtractNormalizedEntityName(compositeEntityMetadata), childrenEntites);
-            if (verbose)
-            {
-                AddProperty((JObject)entitiesAndMetadata[_metadataKey], ExtractNormalizedEntityName(compositeEntityMetadata), childrenEntitiesMetadata);
-            }
-
-            // filter entities that were covered by this composite entity
-            return entities.Except(coveredSet).ToList();
-        }
-
-        private static bool CompositeContainsEntity(EntityModel compositeEntityMetadata, EntityModel entity)
-            => entity.StartIndex >= compositeEntityMetadata.StartIndex &&
-                   entity.EndIndex <= compositeEntityMetadata.EndIndex;
 
         /// <summary>
-        /// If a property doesn't exist add it to a new array, otherwise append it to the existing array.
+        /// Return results of the analysis (Suggested actions and intents).
         /// </summary>
-        private static void AddProperty(JObject obj, string key, JToken value)
+        /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
+        /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>The LUIS results of the analysis of the current message text in the current turn's context activity.</returns>
+        public async Task<T> RecognizeAsync<T>(ITurnContext turnContext, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
+            where T : IRecognizerConvert, new()
         {
-            if (((IDictionary<string, JToken>)obj).ContainsKey(key))
-            {
-                ((JArray)obj[key]).Add(value);
-            }
-            else
-            {
-                obj[key] = new JArray(value);
-            }
+            var result = new T();
+            result.Convert(await RecognizeInternalAsync(turnContext, telemetryProperties, telemetryMetrics,  cancellationToken).ConfigureAwait(false));
+            return result;
         }
 
-        private static void AddProperties(LuisResult luis, RecognizerResult result)
+        /// <summary>
+        /// Invoked prior to a LuisResult being logged.
+        /// </summary>
+        /// <param name="recognizerResult">The Luis Results for the call.</param>
+        /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
+        /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns><see cref="Task"/>.</returns>
+        protected virtual async Task OnRecognizerResultAsync(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (luis.SentimentAnalysis != null)
-            {
-                result.Properties.Add("sentiment", new JObject(
-                    new JProperty("label", luis.SentimentAnalysis.Label),
-                    new JProperty("score", luis.SentimentAnalysis.Score)));
-            }
+            var properties = await FillLuisEventPropertiesAsync(recognizerResult, turnContext, telemetryProperties, cancellationToken).ConfigureAwait(false);
+
+            // Track the event
+            TelemetryClient.TrackEvent(LuisTelemetryConstants.LuisResult, properties, telemetryMetrics);
+
+            return;
         }
 
-        private async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+        /// <summary>
+        /// Fills the event properties for LuisResult event for telemetry.
+        /// These properties are logged when the recognizer is called.
+        /// </summary>
+        /// <param name="recognizerResult">Last activity sent from user.</param>
+        /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
+        /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// additionalProperties
+        /// <returns>A dictionary that is sent as "Properties" to IBotTelemetryClient.TrackEvent method for the BotMessageSend event.</returns>
+        protected Task<Dictionary<string, string>> FillLuisEventPropertiesAsync(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var topLuisIntent = recognizerResult.GetTopScoringIntent();
+            var intentScore = topLuisIntent.score.ToString("N2");
+            var topTwoIntents = (recognizerResult.Intents.Count > 0) ? recognizerResult.Intents.OrderByDescending(x => x.Value.Score).Take(2).ToArray() : null;
+
+            // Add the intent score and conversation id properties
+            var properties = new Dictionary<string, string>()
+            {
+                { LuisTelemetryConstants.ApplicationIdProperty, _application.ApplicationId },
+                { LuisTelemetryConstants.IntentProperty, topTwoIntents?[0].Key ?? string.Empty },
+                { LuisTelemetryConstants.IntentScoreProperty, topTwoIntents?[0].Value.Score?.ToString("N2") ?? "0.00" },
+                { LuisTelemetryConstants.Intent2Property, (topTwoIntents?.Count() > 1) ? topTwoIntents?[1].Key ?? string.Empty : string.Empty },
+                { LuisTelemetryConstants.IntentScore2Property, (topTwoIntents?.Count() > 1) ? topTwoIntents?[1].Value.Score?.ToString("N2") ?? "0.00" : "0.00" },
+                { LuisTelemetryConstants.FromIdProperty, turnContext.Activity.From.Id },
+
+            };
+
+            if (recognizerResult.Properties.TryGetValue("sentiment", out var sentiment) && sentiment is JObject)
+            {
+                if (((JObject)sentiment).TryGetValue("label", out var label))
+                {
+                    properties.Add(LuisTelemetryConstants.SentimentLabelProperty, label.Value<string>());
+                }
+
+                if (((JObject)sentiment).TryGetValue("score", out var score))
+                {
+                    properties.Add(LuisTelemetryConstants.SentimentScoreProperty, score.Value<string>());
+                }
+            }
+
+            var entities = recognizerResult.Entities?.ToString();
+            properties.Add(LuisTelemetryConstants.EntitiesProperty, entities);
+
+            // Use the LogPersonalInformation flag to toggle logging PII data, text is a common example
+            if (LogPersonalInformation && !string.IsNullOrEmpty(turnContext.Activity.Text))
+            {
+                properties.Add(LuisTelemetryConstants.QuestionProperty, turnContext.Activity.Text);
+            }
+
+            // Additional Properties can override "stock" properties.
+            if (telemetryProperties != null)
+            {
+                return Task.FromResult(telemetryProperties.Concat(properties)
+                           .GroupBy(kv => kv.Key)
+                           .ToDictionary(g => g.Key, g => g.First().Value));
+            }
+
+            return Task.FromResult(properties);
+        }
+
+        private async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics, CancellationToken cancellationToken)
         {
             BotAssert.ContextNotNull(turnContext);
 
@@ -445,14 +301,17 @@ namespace Microsoft.Bot.Builder.AI.Luis
             {
                 Text = utterance,
                 AlteredText = luisResult.AlteredQuery,
-                Intents = GetIntents(luisResult),
-                Entities = ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, _options.IncludeInstanceData ?? true),
+                Intents = LuisUtil.GetIntents(luisResult),
+                Entities = LuisUtil.ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, _options.IncludeInstanceData ?? true),
             };
-            AddProperties(luisResult, recognizerResult);
+            LuisUtil.AddProperties(luisResult, recognizerResult);
             if (_includeApiResults)
             {
                 recognizerResult.Properties.Add("luisResult", luisResult);
             }
+
+            // Log telemetry
+            await OnRecognizerResultAsync(recognizerResult, turnContext, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
 
             var traceInfo = JObject.FromObject(
                 new
