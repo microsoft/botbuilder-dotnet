@@ -223,14 +223,18 @@ namespace Microsoft.Bot.Builder.AI.Luis
         {
             var topLuisIntent = recognizerResult.GetTopScoringIntent();
             var intentScore = topLuisIntent.score.ToString("N2");
+            var topTwoIntents = (recognizerResult.Intents.Count > 0) ? recognizerResult.Intents.OrderByDescending(x => x.Value.Score).Take(2).ToArray() : null;
 
             // Add the intent score and conversation id properties
             var properties = new Dictionary<string, string>()
             {
                 { LuisTelemetryConstants.ApplicationIdProperty, _application.ApplicationId },
-                { LuisTelemetryConstants.IntentProperty, topLuisIntent.intent },
-                { LuisTelemetryConstants.IntentScoreProperty, intentScore },
+                { LuisTelemetryConstants.IntentProperty, topTwoIntents?[0].Key ?? string.Empty },
+                { LuisTelemetryConstants.IntentScoreProperty, topTwoIntents?[0].Value.Score?.ToString("N2") ?? "0.00" },
+                { LuisTelemetryConstants.Intent2Property, (topTwoIntents?.Count() > 1) ? topTwoIntents?[1].Key ?? string.Empty : string.Empty },
+                { LuisTelemetryConstants.IntentScore2Property, (topTwoIntents?.Count() > 1) ? topTwoIntents?[1].Value.Score?.ToString("N2") ?? "0.00" : "0.00" },
                 { LuisTelemetryConstants.FromIdProperty, turnContext.Activity.From.Id },
+
             };
 
             if (recognizerResult.Properties.TryGetValue("sentiment", out var sentiment) && sentiment is JObject)
