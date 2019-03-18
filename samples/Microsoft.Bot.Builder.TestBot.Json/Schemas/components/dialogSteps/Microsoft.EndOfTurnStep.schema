@@ -1,9 +1,0 @@
-{
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/CogSchema/src/cogSchema.schema",
-    "type": "object",
-    "title": "End Of Trun",
-    "description": "This is a step which ends the current turn",
-    "$role": "unionType(Microsoft.IDialogStep)",
-    "additionalProperties": false,
-    "properties": {}
-}

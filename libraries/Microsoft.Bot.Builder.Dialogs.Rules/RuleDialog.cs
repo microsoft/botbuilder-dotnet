@@ -57,13 +57,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
 
         public IRecognizer Recognizer { get; set; }
 
-        public IStorage Storage { get; set; }
+        // public IStorage Storage { get; set; }
 
         public override IBotTelemetryClient TelemetryClient
         {
             get
             {
-                return base.TelemetryClient; 
+                return base.TelemetryClient;
             }
             set
             {
@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             }
         }
 
-        public RuleDialog(string dialogId = null) 
+        public RuleDialog(string dialogId = null)
             : base(dialogId)
         {
         }
@@ -284,12 +284,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             }
         }
 
-        public void AddRule(IEnumerable<IRule> rules)
+        public void AddRule(IRule rule)
+        {
+            rule.Steps.ForEach(s => dialogs.Add(s));
+            this.Rules.Add(rule);
+        }
+
+        public void AddRules(IEnumerable<IRule> rules)
         {
             foreach (var rule in rules)
             {
-                rule.Steps.ForEach(s => dialogs.Add(s));
-                this.Rules.Add(rule);
+                this.AddRule(rule);
             }
         }
 
@@ -315,14 +320,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         {
             var saveState = false;
             var keys = ComputeKeys(context);
+            var storage = context.TurnState.Get<IStorage>();
 
             if (storedState == null)
             {
-                if (Storage != null)
-                {
-                    storedState = await LoadBotState(Storage, keys).ConfigureAwait(false);
-                    saveState = true;
-                }
+                storedState = await LoadBotState(storage, keys).ConfigureAwait(false);
+                saveState = true;
             }
 
             if (runDialogs.GetDialogs().Count() == 0)
@@ -335,7 +338,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                     rule.Steps.ForEach(s => dialogs.Add(s));
                 }
             }
-            
+
             var dc = new DialogContext(runDialogs,
                 context,
                 new DialogState()
@@ -357,7 +360,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
 
             if (saveState)
             {
-                await SaveBotState(Storage, storedState, keys).ConfigureAwait(false);
+                await SaveBotState(storage, storedState, keys).ConfigureAwait(false);
                 return new BotTurnResult()
                 {
                     TurnResult = result,
@@ -544,7 +547,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                 Entities = JObject.Parse("{}")
             };
 
-            return Recognizer != null ? await Recognizer.RecognizeAsync(context, cancellationToken) : noneIntent; 
+            return Recognizer != null ? await Recognizer.RecognizeAsync(context, cancellationToken) : noneIntent;
         }
 
         protected virtual async Task<bool> EvaluateRulesAsync(PlanningContext planning, DialogEvent dialogEvent)

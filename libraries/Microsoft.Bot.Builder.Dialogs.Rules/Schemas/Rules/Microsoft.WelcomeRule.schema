@@ -1,0 +1,11 @@
+﻿{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$ref": "./Microsoft.EventRule.schema#",
+    "$role": "unionType(Microsoft.IRule)",
+    "title": "Welcome Rule",
+    "description": "Defines a sequence of steps to take if the user is a new user",
+    "type": "object",
+    "required": [
+        "steps"
+    ]
+}

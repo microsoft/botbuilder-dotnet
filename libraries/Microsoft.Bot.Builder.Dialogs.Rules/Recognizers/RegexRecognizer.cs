@@ -10,9 +10,15 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Recognizers
 {
+    /// <summary>
+    /// IRecognizer implementation which uses regex expressions to identify intents
+    /// </summary>
     public class RegexRecognizer : IRecognizer
     {
-        public Dictionary<string, string> Rules = new Dictionary<string, string>();
+        /// <summary>
+        /// Dictionary of patterns -> Intent names
+        /// </summary>
+        public Dictionary<string, string> Intents = new Dictionary<string, string>();
         
         public async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
@@ -31,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Recognizers
                 Intents = new Dictionary<string, IntentScore>(),
             };
 
-            foreach (var kv in Rules)
+            foreach (var kv in Intents)
             {
                 var intent = kv.Key;
                 var regex = new Regex(kv.Value);

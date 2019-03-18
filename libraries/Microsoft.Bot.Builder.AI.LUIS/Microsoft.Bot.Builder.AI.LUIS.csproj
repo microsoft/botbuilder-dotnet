@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<Version Condition=" '$(PackageVersion)' == '' ">4.0.0-local</Version>
-		<Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
-		<PackageVersion Condition=" '$(PackageVersion)' == '' ">4.0.0-local</PackageVersion>
-		<PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
-		<Configurations>Debug;Release;Documentation;Debug - NuGet Packages;</Configurations>
-	</PropertyGroup>
+  <PropertyGroup>
+    <Version Condition=" '$(PackageVersion)' == '' ">4.5.0-local</Version>
+    <Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
+    <PackageVersion Condition=" '$(PackageVersion)' == '' ">4.5.0-local</PackageVersion>
+    <PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
+    <Configurations>Debug;Release;Documentation;Debug - NuGet Packages;</Configurations>
+  </PropertyGroup>
 
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 		<SignAssembly>true</SignAssembly>
 		<DelaySign>true</DelaySign>
 		<AssemblyOriginatorKeyFile>..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
@@ -19,6 +19,7 @@
 		<PackageId>Microsoft.Bot.Builder.AI.Luis</PackageId>
 		<Description>LUIS Middleware and Recognizers for the Microsoft Bot Builder SDK</Description>
 		<Summary>This library implements C# classes for building bots using LUIS.</Summary>
+    <ContentTargetFolders>content</ContentTargetFolders>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -47,6 +48,14 @@
 	  <AssemblyName>Microsoft.Bot.Builder.AI.Luis</AssemblyName>
 	  <RootNamespace>Microsoft.Bot.Builder.AI.Luis</RootNamespace>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="Microsoft.LuisRecognizer.schema" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Microsoft.LuisRecognizer.schema" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime" Version="2.0.0" />

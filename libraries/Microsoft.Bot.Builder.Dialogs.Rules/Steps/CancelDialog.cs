@@ -7,6 +7,9 @@ using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 {
+    /// <summary>
+    /// Command to cancel the current active dialog
+    /// </summary>
     public class CancelDialog : DialogCommand
     {
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))

@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
-            
+
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(convoState, userState))
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
@@ -90,15 +90,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             dialogs.Add(new WaterfallDialog("test", new WaterfallStep[]
             {
-                async (step, cancellationToken) => 
+                async (step, cancellationToken) =>
                 {
+                    await Task.Delay(0);
                     step.State.User["name"] = "bill";
                     step.State.Conversation["order"] = 1;
                     step.State.Dialog["result"] = "foo";
                     return Dialog.EndOfTurn;
                 },
-                async (step, cancellationToken) => 
+                async (step, cancellationToken) =>
                 {
+                    await Task.Delay(0);
                     Assert.AreEqual("bill", step.State.User["name"]);
                     Assert.AreEqual(1, step.State.Conversation["order"]);
                     Assert.AreEqual("foo", step.State.Dialog["result"]);
@@ -139,6 +141,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 async (step, cancellationToken) =>
                 {
+                    await Task.Delay(0);
                     step.State.User["name"] = "user";
                     step.State.Conversation["name"] = "convo";
                     step.State.Dialog["name"] = "foo";
@@ -146,6 +149,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 },
                 async (step, cancellationToken) =>
                 {
+                    await Task.Delay(0);
                     var result = step.State.Query("user.name");
                     Assert.IsTrue(result.Count() == 1 && result.First().ToString() == "user");
 
@@ -196,13 +200,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 async (step, cancellationToken) =>
                 {
-                    step.State.User["name"] = "user";
+                    await Task.Delay(0);
+                    step.State.User[    "name"] = "user";
                     step.State.Conversation["name"] = "convo";
                     step.State.Dialog["name"] = "foo";
                     return Dialog.EndOfTurn;
                 },
                 async (step, cancellationToken) =>
                 {
+                    await Task.Delay(0);
                     Assert.AreEqual("user", step.State.GetValue<string>("user.name"));
                     Assert.AreEqual(null, step.State.GetValue<string>("user.lastName"));
                     Assert.AreEqual("default", step.State.GetValue<string>("user.lastName", "default"));
@@ -244,6 +250,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 async (step, cancellationToken) =>
                 {
+                    await Task.Delay(0);
                     step.State.User["name"] = "testUser";
                     step.State.SetValue("user.address", "15155");
                     step.State.SetValue("user.profile.firstName", "bill");
@@ -255,6 +262,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 },
                 async (step, cancellationToken) =>
                 {
+                    await Task.Delay(0);
                     Assert.AreEqual("bill", step.State.GetValue<string>("user.profile.firstName"));
                     Assert.AreEqual("joe", step.State.GetValue<string>("conversation.profile.firstName"));
                     Assert.AreEqual("johnny", step.State.GetValue<string>("dialog.profile.firstName"));
@@ -302,6 +310,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 },
                 async (step, cancellationToken) =>
                 {
+                    await Task.Delay(0);
                     Assert.AreEqual("bill", step.State.GetValue<string>("dialog.result.name"));
                     return Dialog.EndOfTurn;
                 }
@@ -649,7 +658,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         private static async Task<DialogTurnResult> Waterfall2_Step1(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             await stepContext.Context.SendActivityAsync("step1");
-            return Dialog.EndOfTurn; 
+            return Dialog.EndOfTurn;
         }
         private static async Task<DialogTurnResult> Waterfall2_Step2(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
@@ -659,7 +668,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         private static async Task<DialogTurnResult> Waterfall2_Step3(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             await stepContext.Context.SendActivityAsync("step3");
-            return Dialog.EndOfTurn; 
+            return Dialog.EndOfTurn;
         }
     }
 
