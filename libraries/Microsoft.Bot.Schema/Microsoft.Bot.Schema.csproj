@@ -27,5 +27,6 @@
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
 		<PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
+    <PackageReference Include="StyleCop.Analyzers" Version="$(NuGet-StyleCop-Analyzers)" />
 	</ItemGroup>
 </Project>

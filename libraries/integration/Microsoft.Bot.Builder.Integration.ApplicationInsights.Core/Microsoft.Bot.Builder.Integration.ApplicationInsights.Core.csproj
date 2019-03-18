@@ -24,7 +24,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.5.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.1" />
-    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />    
+    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
+    <PackageReference Include="StyleCop.Analyzers" Version="$(NuGet-StyleCop-Analyzers)" />
   </ItemGroup>
 
   <ItemGroup>
