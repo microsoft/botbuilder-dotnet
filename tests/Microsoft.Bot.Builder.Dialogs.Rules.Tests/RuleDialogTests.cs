@@ -32,6 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var lg = new LGLanguageGenerator(botResourceManager);
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
                 .Use(new RegisterClassMiddleware<IBotResourceProvider>(botResourceManager))
                 .Use(new RegisterClassMiddleware<ILanguageGenerator>(lg))
                 .Use(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)))
@@ -44,7 +45,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             ruleDialog.BotState = convoState.CreateProperty<BotState>("bot");
             ruleDialog.UserState = userState.CreateProperty<StateMap>("user"); ;
-            ruleDialog.Storage = new MemoryStorage();
 
             var dialogs = new DialogSet(dialogState);
 

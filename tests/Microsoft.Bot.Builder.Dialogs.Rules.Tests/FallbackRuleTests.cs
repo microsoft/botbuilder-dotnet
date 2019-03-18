@@ -32,6 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new RegisterClassMiddleware<IBotResourceProvider>(botResourceManager))
                 .Use(new RegisterClassMiddleware<ILanguageGenerator>(lg))
+                .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
                 .Use(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)))
                 .Use(new AutoSaveStateMiddleware(convoState, userState))
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
@@ -42,7 +43,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
             var dialogs = new DialogSet(dialogState);
 
-            planningDialog.Storage = new MemoryStorage();
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
