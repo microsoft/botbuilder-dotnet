@@ -2,12 +2,9 @@
   "$schema": "../../app.schema",
   "$type": "Microsoft.RuleDialog",
   "$id": "root",
-  "storage": {
-    "$type": "Microsoft.MemoryStorage"
-  },
   "recognizer": {
     "$type": "Microsoft.RegexRecognizer",
-    "rules": {
+    "intents": {
       "JokeIntent": "joke",
       "FortuneTellerIntent":  "fortune|future"
     }

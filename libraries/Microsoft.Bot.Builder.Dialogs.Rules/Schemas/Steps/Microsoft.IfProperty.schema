@@ -36,7 +36,7 @@
             "title": "If False",
             "description": "Step to execute if expression is false."
         },
-        "condition": {
+        "expression": {
             "$type": "Microsoft.IExpression",
             "title": "Condition",
             "description": "Expression to evaluate.",
@@ -44,5 +44,9 @@
                 "user.age > 3"
             ]
         }
-    }
+    },
+    "required": [
+        "expression",
+        "ifTrue"
+    ]
 }

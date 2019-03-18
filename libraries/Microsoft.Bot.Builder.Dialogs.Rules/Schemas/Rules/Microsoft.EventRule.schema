@@ -22,14 +22,13 @@
         },
         "changeType": {
             "type": "string",
-            "oneOf": [
+            "enum": [
                 "NewPlan",
                 "DoSteps",
                 "DoStepsBeforeTags",
                 "DoStepsLater",
                 "EndPlan",
                 "ReplacePlan"
-
             ]
         }
     },

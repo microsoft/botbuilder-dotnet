@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
 
         public IRecognizer Recognizer { get; set; }
 
-        public IStorage Storage { get; set; }
+        // public IStorage Storage { get; set; }
 
         public override IBotTelemetryClient TelemetryClient
         {
@@ -320,14 +320,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         {
             var saveState = false;
             var keys = ComputeKeys(context);
+            var storage = context.TurnState.Get<IStorage>();
 
             if (storedState == null)
             {
-                if (Storage != null)
-                {
-                    storedState = await LoadBotState(Storage, keys).ConfigureAwait(false);
-                    saveState = true;
-                }
+                storedState = await LoadBotState(storage, keys).ConfigureAwait(false);
+                saveState = true;
             }
 
             if (runDialogs.GetDialogs().Count() == 0)
@@ -362,7 +360,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
 
             if (saveState)
             {
-                await SaveBotState(Storage, storedState, keys).ConfigureAwait(false);
+                await SaveBotState(storage, storedState, keys).ConfigureAwait(false);
                 return new BotTurnResult()
                 {
                     TurnResult = result,

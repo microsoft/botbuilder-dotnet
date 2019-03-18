@@ -60,7 +60,6 @@
     <None Remove="Schemas\Rules\Microsoft.IfPropertyRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.IntentRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.ReplacePlanRule.schema" />
-    <None Remove="Schemas\Rules\Microsoft.UtteranceRecognizedRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.WelcomeRule.schema" />
     <None Remove="Schemas\Steps\Microsoft.CallDialog.schema" />
     <None Remove="Schemas\Steps\Microsoft.CancelDialog.schema" />
@@ -80,7 +79,6 @@
     <Content Include="Schemas\Rules\Microsoft.IfPropertyRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.IntentRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.ReplacePlanRule.schema" />
-    <Content Include="Schemas\Rules\Microsoft.UtteranceRecognizedRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.WelcomeRule.schema" />
     <Content Include="Schemas\Steps\Microsoft.CallDialog.schema" />
     <Content Include="Schemas\Steps\Microsoft.CancelDialog.schema" />

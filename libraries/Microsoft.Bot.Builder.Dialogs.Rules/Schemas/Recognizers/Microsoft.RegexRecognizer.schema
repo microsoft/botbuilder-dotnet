@@ -4,18 +4,15 @@
     "title": "Regex Recognizer",
     "description": "Recognizer which uses regex expressions to generate intents and entities.",
     "type": "object",
-    "additionalProperties": false,
     "properties": {
         "intents": {
             "type": "object",
-            "title":"RegEx patterns to intents",
+            "title": "RegEx patterns to intents",
             "description": "Pattern->Intents mappings",
-            "items": {
-                "type":"string"
-            }
+            "additionalProperties": { "type": "string" }
         }
     },
     "required": [
-        "sequence"
+        "intents"
     ]
 }

@@ -62,7 +62,7 @@
         },
         {
             "title": "Microsoft.IntentRule",
-            "description": "This defines the steps to take when an Intent is recognized (and optionally entities)",
+            "description": "Defines a sequence of steps to take if an intent is recognized",
             "$ref": "#/definitions/Microsoft.IntentRule"
         },
         {
@@ -99,6 +99,11 @@
             "title": "Microsoft.TextPrompt",
             "description": "This represents a dialog which gathers a text from the user",
             "$ref": "#/definitions/Microsoft.TextPrompt"
+        },
+        {
+            "title": "Microsoft.UtteranceRecognizedRule",
+            "description": "",
+            "$ref": "#/definitions/Microsoft.UtteranceRecognizedRule"
         },
         {
             "title": "Microsoft.WaitForInput",
@@ -206,7 +211,9 @@
             ]
         },
         "Microsoft.DateTimePrompt": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$implements": [
+                "Microsoft.IDialog"
+            ],
             "title": "DateTime prompt",
             "description": "This represents a dialog which gathers a DateTime in a specified range",
             "type": "object",
@@ -397,13 +404,13 @@
                 },
                 "changeType": {
                     "type": "string",
-                    "enum": [
-                        "NewPlan",
-                        "DoSteps",
-                        "DoStepsBeforeTags",
-                        "DoStepsLater",
-                        "EndPlan",
-                        "ReplacePlan"
+                    "oneOf": [
+                        {},
+                        {},
+                        {},
+                        {},
+                        {},
+                        {}
                     ]
                 }
             },
@@ -432,14 +439,14 @@
             ]
         },
         "Microsoft.FallbackRule": {
+            "$role": "unionType(Microsoft.IRule)",
             "title": "Fallback Rule",
             "description": "Defines a sequence of steps to take if there is no match",
+            "type": "object",
+            "additionalProperties": false,
             "required": [
                 "$type"
             ],
-            "$role": "unionType(Microsoft.IRule)",
-            "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -477,13 +484,13 @@
                 },
                 "changeType": {
                     "type": "string",
-                    "enum": [
-                        "NewPlan",
-                        "DoSteps",
-                        "DoStepsBeforeTags",
-                        "DoStepsLater",
-                        "EndPlan",
-                        "ReplacePlan"
+                    "oneOf": [
+                        {},
+                        {},
+                        {},
+                        {},
+                        {},
+                        {}
                     ]
                 }
             },
@@ -508,7 +515,9 @@
             ]
         },
         "Microsoft.FloatPrompt": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$implements": [
+                "Microsoft.IDialog"
+            ],
             "title": "Float  prompt",
             "description": "This represents a dialog which gathers a number in a specified range",
             "type": "object",
@@ -695,19 +704,9 @@
                     "$ref": "#/definitions/Microsoft.CancelDialog"
                 },
                 {
-                    "title": "Microsoft.DateTimePrompt",
-                    "description": "This represents a dialog which gathers a DateTime in a specified range",
-                    "$ref": "#/definitions/Microsoft.DateTimePrompt"
-                },
-                {
                     "title": "Microsoft.EndDialog",
                     "description": "Command which ends the current dialog, returning the resultProperty as the result of the dialog.",
                     "$ref": "#/definitions/Microsoft.EndDialog"
-                },
-                {
-                    "title": "Microsoft.FloatPrompt",
-                    "description": "This represents a dialog which gathers a number in a specified range",
-                    "$ref": "#/definitions/Microsoft.FloatPrompt"
                 },
                 {
                     "title": "Microsoft.GotoDialog",
@@ -733,11 +732,6 @@
                     "title": "Microsoft.SendActivity",
                     "description": "This is a step which sends an activity to the user",
                     "$ref": "#/definitions/Microsoft.SendActivity"
-                },
-                {
-                    "title": "Microsoft.TextPrompt",
-                    "description": "This represents a dialog which gathers a text from the user",
-                    "$ref": "#/definitions/Microsoft.TextPrompt"
                 },
                 {
                     "title": "Microsoft.WaitForInput",
@@ -805,13 +799,18 @@
                 },
                 {
                     "title": "Microsoft.IntentRule",
-                    "description": "This defines the steps to take when an Intent is recognized (and optionally entities)",
+                    "description": "Defines a sequence of steps to take if an intent is recognized",
                     "$ref": "#/definitions/Microsoft.IntentRule"
                 },
                 {
                     "title": "Microsoft.ReplacePlanRule",
                     "description": "Defines a sequence of steps to take when a plan has been replaced with a new plan",
                     "$ref": "#/definitions/Microsoft.ReplacePlanRule"
+                },
+                {
+                    "title": "Microsoft.UtteranceRecognizedRule",
+                    "description": "",
+                    "$ref": "#/definitions/Microsoft.UtteranceRecognizedRule"
                 },
                 {
                     "title": "Microsoft.WelcomeRule",
@@ -893,7 +892,7 @@
                     "title": "If False",
                     "description": "Step to execute if expression is false."
                 },
-                "expression": {
+                "condition": {
                     "$type": "Microsoft.IExpression",
                     "title": "Condition",
                     "description": "Expression to evaluate.",
@@ -903,28 +902,13 @@
                     "$ref": "#/definitions/Microsoft.IExpression"
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
                 }
             },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "expression",
-                        "ifTrue"
-                    ]
-                }
+            "required": [
+                "$type"
             ]
         },
         "Microsoft.IfPropertyRule": {
@@ -1108,9 +1092,12 @@
         "Microsoft.IntentRule": {
             "$role": "unionType(Microsoft.IRule)",
             "title": "Intent Rule",
-            "description": "This defines the steps to take when an Intent is recognized (and optionally entities)",
+            "description": "Defines a sequence of steps to take if an intent is recognized",
             "type": "object",
             "additionalProperties": false,
+            "required": [
+                "$type"
+            ],
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -1140,37 +1127,8 @@
                     "type": "array",
                     "title": "Entities",
                     "description": "The entities required to trigger this rule"
-                },
-                "events": {
-                    "type": "array",
-                    "description": "Events to trigger this rule for",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "steps": {
-                    "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
-                    "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
-                    }
-                },
-                "changeType": {
-                    "type": "string",
-                    "enum": [
-                        "NewPlan",
-                        "DoSteps",
-                        "DoStepsBeforeTags",
-                        "DoStepsLater",
-                        "EndPlan",
-                        "ReplacePlan"
-                    ]
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -1334,6 +1292,7 @@
             "title": "Regex Recognizer",
             "description": "Recognizer which uses regex expressions to generate intents and entities.",
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -1358,7 +1317,7 @@
                     "type": "object",
                     "title": "RegEx patterns to intents",
                     "description": "Pattern->Intents mappings",
-                    "additionalProperties": {
+                    "items": {
                         "type": "string"
                     }
                 }
@@ -1366,7 +1325,6 @@
             "required": [
                 "$type"
             ],
-            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -1382,7 +1340,7 @@
                 {
                     "title": "Type",
                     "required": [
-                        "intents"
+                        "sequence"
                     ]
                 }
             ]
@@ -1416,31 +1374,15 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
-                "events": {
-                    "type": "array",
-                    "description": "Events to trigger this rule for",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "steps": {
-                    "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
-                    "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
-                    }
-                },
-                "changeType": {
+                "intent": {
                     "type": "string",
-                    "enum": [
-                        "NewPlan",
-                        "DoSteps",
-                        "DoStepsBeforeTags",
-                        "DoStepsLater",
-                        "EndPlan",
-                        "ReplacePlan"
-                    ]
+                    "title": "Intent",
+                    "description": "Intent name to trigger on"
+                },
+                "entities": {
+                    "type": "array",
+                    "title": "Entities",
+                    "description": "The entities required to trigger this rule"
                 }
             },
             "patternProperties": {
@@ -1458,6 +1400,7 @@
                 {
                     "title": "Type",
                     "required": [
+                        "intent",
                         "steps"
                     ]
                 }
@@ -1568,7 +1511,9 @@
             ]
         },
         "Microsoft.TextPrompt": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$implements": [
+                "Microsoft.IDialog"
+            ],
             "title": "Text prompt",
             "description": "This represents a dialog which gathers a text from the user",
             "type": "object",
@@ -1646,6 +1591,67 @@
                 "$type"
             ]
         },
+        "Microsoft.UtteranceRecognizedRule": {
+            "$role": "unionType(Microsoft.IRule)",
+            "title": "",
+            "description": "",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.UtteranceRecognizedRule"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "intent": {
+                    "type": "string",
+                    "title": "Intent",
+                    "description": "Intent name to trigger on"
+                },
+                "entities": {
+                    "type": "array",
+                    "title": "Entities",
+                    "description": "The entities required to trigger this rule"
+                }
+            },
+            "required": [
+                "$type"
+            ],
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "intent",
+                        "steps"
+                    ]
+                }
+            ]
+        },
         "Microsoft.WaitForInput": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Wait for input from the user",
@@ -1699,10 +1705,10 @@
             "title": "Welcome Rule",
             "description": "Defines a sequence of steps to take if the user is a new user",
             "type": "object",
+            "additionalProperties": false,
             "required": [
                 "$type"
             ],
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -1740,13 +1746,13 @@
                 },
                 "changeType": {
                     "type": "string",
-                    "enum": [
-                        "NewPlan",
-                        "DoSteps",
-                        "DoStepsBeforeTags",
-                        "DoStepsLater",
-                        "EndPlan",
-                        "ReplacePlan"
+                    "oneOf": [
+                        {},
+                        {},
+                        {},
+                        {},
+                        {},
+                        {}
                     ]
                 }
             },
