@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <remarks>
     /// This defines an string template which is driven by the types array and property name.
     /// </remarks>
-    public class StringPropertyTemplate : ITemplate<string>
+    public class StringPropertyTemplate : ITextTemplate
     {
         public StringPropertyTemplate()
         {

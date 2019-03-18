@@ -4,38 +4,25 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 {
-    public class GotoDialog : DialogCommand
+    /// <summary>
+    /// Step which calls another dialog
+    /// </summary>
+    public class GotoDialog : BaseCallDialog
     {
-        public string DialogId { get; set; }
-
-        public object Options { get; set; }
-
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public GotoDialog(string dialogIdToCall = null, string id = null, string property = null, object options = null) 
+            : base(dialogIdToCall, id, property, options)
         {
-            object parentOptions;
-
-            if (options != null && Options != null)
-            {
-                parentOptions = options.Merge<object>(Options);
-            }
-            else if (options == null)
-            {
-                parentOptions = Options;
-            }
-            else if (Options == null)
-            {
-                parentOptions = Options;
-            }
-
-            return await ReplaceParentDialogAsync(dc, DialogId, options, cancellationToken).ConfigureAwait(false);
         }
 
-        protected override string OnComputeId()
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return $"Goto({DialogId})";
+            Options = Options.Merge(options ?? new object());
+            var dialog = this.resolveDialog(dc);
+            return await dc.ReplaceDialogAsync(dialog.Id, Options, cancellationToken).ConfigureAwait(false);
         }
     }
 }

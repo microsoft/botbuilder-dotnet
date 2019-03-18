@@ -1,0 +1,35 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IRecognizer)",
+    "title": "LUIS Recognizer",
+    "description": "LUIS recognizer.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "application": {
+            "type": "object",
+            "properties": {
+                "applicationId": {
+                    "type": "string"
+                },
+                "endpoint": {
+                    "type": "string"
+                },
+                "endpointKey": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "applicationId",
+                "endpoint",
+                "endpointKey"
+            ]
+        },
+        "priority": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "applicationId"
+    ]
+}

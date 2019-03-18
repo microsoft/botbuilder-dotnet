@@ -7,6 +7,9 @@ using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 {
+    /// <summary>
+    /// Command to end the current dialog, returning the resultProperty as the result of the dialog.
+    /// </summary>
     public class EndDialog : DialogCommand
     {
         /// <summary>

@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
     /// <summary>
     /// Helper info which help boost the evaluation process
     /// </summary>
-    class EvaluationContext
+    public class EvaluationContext
     {
         public EvaluationContext()
         {

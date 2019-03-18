@@ -7,7 +7,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Defines an text Template where the template expression is local aka "inline".
     /// </summary>
-    public class TextTemplate : ITemplate<string>
+    public class TextTemplate : ITextTemplate
     {
         // Fixed text constructor for inline template
         public TextTemplate(string template)
