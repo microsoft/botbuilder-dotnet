@@ -35,7 +35,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
                     return false;
                 }
 
-                if (!recognizerResult.Intents.Any(r => r.Key == Intent))
+                if(recognizerResult.GetTopScoringIntent().score < 0.5)
+                {
+                    return false;
+                }
+
+                if (recognizerResult.GetTopScoringIntent().intent != Intent)
+                //if (!recognizerResult.Intents.Any(r => r.Key == Intent))
                 {
                     return false;
                 }

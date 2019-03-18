@@ -120,6 +120,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.SaveEntity", typeof(SaveEntity));
             Register("Microsoft.ChangeList", typeof(ChangeList));
             Register("Microsoft.SendList", typeof(SendList));
+            Register("Microsoft.ClearProperty", typeof(ClearProperty));
 
             // Dialogs
             Register("Microsoft.ComponentDialog", typeof(ComponentDialog), new ComponentDialogLoader());

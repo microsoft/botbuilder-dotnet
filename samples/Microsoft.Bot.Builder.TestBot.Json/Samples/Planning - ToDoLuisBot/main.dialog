@@ -1,0 +1,73 @@
+{
+  "$schema": "../../Schemas/app.schema",
+  "$type": "Microsoft.RuleDialog",
+  "$id": "root",
+  "storage": {
+    "$type": "Microsoft.MemoryStorage"
+  },
+  "recognizer": {
+    "$type": "Microsoft.LuisRecognizer",
+    "applicationId": "e4b3cf81-d69c-4323-9374-707655ba9703",
+    "endpointKey": "95140545afd44a1997e2eaf47007fa7b",
+    "endpoint": "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/e4b3cf81-d69c-4323-9374-707655ba9703?verbose=true&timezoneOffset=-360&subscription-key=95140545afd44a1997e2eaf47007fa7b&q="
+  },
+  "rules": [
+    {
+      "$type": "Microsoft.WelcomeRule",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "Hi! I'm a ToDo bot. Say \"add a todo named first one\" to get started."
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "AddToDo",
+      "steps": [
+        {
+          "$type": "Microsoft.CallDialog",
+          "dialog": {
+            "$ref": "Samples/Planning - ToDoBot/AddToDo.dialog"
+          }
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "DeleteToDo",
+      "steps": [
+        {
+          "$type": "Microsoft.CallDialog",
+          "dialog": {
+            "$ref": "Samples/Planning - ToDoBot/DeleteToDo.dialog"
+          }
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "MarkToDo",
+      "steps": [
+        {
+          "$type": "Microsoft.CallDialog",
+          "dialog": {
+            "$ref": "Samples/Planning - ToDoBot/ClearToDos.dialog"
+          }
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "ShowToDo",
+      "steps": [
+        {
+          "$type": "Microsoft.CallDialog",
+          "dialog": {
+            "$ref": "Samples/Planning - ToDoBot/ShowToDos.dialog"
+          }
+        }
+      ]
+    }
+  ]
+}

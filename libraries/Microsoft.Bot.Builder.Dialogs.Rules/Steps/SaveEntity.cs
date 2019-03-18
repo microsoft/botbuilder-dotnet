@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 {
@@ -35,7 +33,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
             if (dc.State.Entities.ContainsKey(entityName))
             {
                 var values = dc.State.Entities[entityName];
-                dc.State.SetValue(property, values);
+                if (values.GetType() == typeof(JArray))
+                {
+                    dc.State.SetValue(property, ((JArray)values)[0]);
+                }
+                else
+                {
+                    dc.State.SetValue(property, values);
+                }
             }
             return await dc.EndDialogAsync();
         }
