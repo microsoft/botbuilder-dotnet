@@ -25,7 +25,6 @@ namespace Microsoft.Bot.Connector.Tests
         {
             GetEnvironmentVarsTestAppIdPassword();
             MicrosoftAppCredentials credentials = new MicrosoftAppCredentials(testAppId, testPassword);
-            //MicrosoftAppCredentials credentials = new MicrosoftAppCredentials("645cd89f-a83e-4af9-abb5-a454e917cbc4", "jvoMWRBA67:zjgePZ359_-_");
             var result = await credentials.GetTokenAsync();
             Assert.NotNull(result);
         }
@@ -35,7 +34,6 @@ namespace Microsoft.Bot.Connector.Tests
         {
             GetEnvironmentVarsTestAppIdPassword();
             MicrosoftAppCredentials credentials = new MicrosoftAppCredentials(testAppId, testPassword);
-            //MicrosoftAppCredentials credentials = new MicrosoftAppCredentials("645cd89f-a83e-4af9-abb5-a454e917cbc4", "jvoMWRBA67:zjgePZ359_-_");
             var result = await credentials.GetTokenAsync();
             Assert.NotNull(result);
             var result2 = await credentials.GetTokenAsync();
@@ -50,7 +48,6 @@ namespace Microsoft.Bot.Connector.Tests
         {
             GetEnvironmentVarsTestAppIdPassword();
             MicrosoftAppCredentials credentials = new MicrosoftAppCredentials(testAppId, testPassword);
-            //MicrosoftAppCredentials credentials = new MicrosoftAppCredentials("645cd89f-a83e-4af9-abb5-a454e917cbc4", "jvoMWRBA67:zjgePZ359_-_");
             List<Task<string>> tasks = new List<Task<string>>();
             for (int i = 0; i < 1000; i++)
             {
