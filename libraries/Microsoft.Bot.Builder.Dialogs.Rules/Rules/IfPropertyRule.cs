@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 {
     public class IfPropertyRuleCondition
     {
-        public Func<DialogContextState, Task<bool>> Expression { get; set; }
+        public IExpressionEval Expression { get; set; }
         public List<IRule> Rules { get; set; }
 
     }
@@ -28,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
         }
 
 
-        public IfPropertyRule(Func<DialogContextState, Task<bool>> expression, List<IRule> rules)
+        public IfPropertyRule(IExpressionEval expression, List<IRule> rules)
         {
             if (expression != null && rules != null)
             {
@@ -53,7 +54,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
             {
                 var conditional = Conditionals[i];
 
-                if (await conditional.Expression(planning.State).ConfigureAwait(false))
+                var result = await conditional.Expression.Evaluate(planning.State).ConfigureAwait(false);
+                if ((bool)result)
                 {
                     // Evaluate child rules
                     for (int j = 0; j < conditional.Rules.Count; j++)
@@ -73,7 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
             return changes.Count > 0 ? changes : null;
         }
 
-        public void ElseIf(Func<DialogContextState, Task<bool>> expression, List<IRule> rules)
+        public void ElseIf(IExpressionEval expression, List<IRule> rules)
         {
             Conditionals.Add(new IfPropertyRuleCondition()
             {
@@ -82,13 +84,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
             });
         }
 
-        public void Else(Func<DialogContextState, Task<bool>> expression, List<IRule> rules)
+        public void Else(List<IRule> rules)
         {
             Conditionals.Add(new IfPropertyRuleCondition()
             {
-                Expression = async state => true,
+                Expression = new StaticExpression(true),
                 Rules = rules
             });
+        }
+
+        internal class StaticExpression : IExpressionEval
+        {
+            private bool result;
+            internal StaticExpression(bool result)
+            {
+                this.result = result;
+            }
+
+            public Task<object> Evaluate(DialogContextState state)
+            {
+                return Task.FromResult((object)this.result);
+            }
+
+            public Task<object> Evaluate(IDictionary<string, object> vars)
+            {
+                return Task.FromResult((object)this.result);
+            }
+
+            public Task<object> Evaluate(string expression, IDictionary<string, object> vars)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

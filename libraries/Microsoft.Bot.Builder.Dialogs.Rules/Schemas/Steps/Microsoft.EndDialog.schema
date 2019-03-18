@@ -1,0 +1,18 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "End Dialog",
+    "description": "Command which ends the current dialog, returning the resultProperty as the result of the dialog.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "resultProperty": {
+            "$type": "Microsoft.IExpression",
+            "title": "Result Property",
+            "description": "Specifies an in-memory state property that should be returned to the calling dialog.",
+            "examples": [
+                "user.name"
+            ]
+        }
+    }
+}

@@ -55,6 +55,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 (IServiceProvider sp) =>
                 {
                     return new TestBot(accessors);
+                    //return new TestBotLG(accessors);
                 },
                 (BotFrameworkOptions options) =>
                 {
@@ -71,6 +72,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
                     // create LG 
                     var lg = new LGLanguageGenerator(botResourceManager);
+                    options.Middleware.Add(new RegisterClassMiddleware<IStorage>(dataStore));
                     options.Middleware.Add(new RegisterClassMiddleware<IBotResourceProvider>(botResourceManager));
                     options.Middleware.Add(new RegisterClassMiddleware<ILanguageGenerator>(lg));
                     options.Middleware.Add(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)));

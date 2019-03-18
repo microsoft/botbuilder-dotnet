@@ -13,6 +13,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             return OnRunCommandAsync(dc, options);
         }
 
+        public virtual List<IDialog> ListDependencies()
+        {
+            return new List<IDialog>();
+        }
+
         protected abstract Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken));
 
         protected async Task<DialogTurnResult> EndParentDialogAsync(DialogContext dc, object result = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -98,11 +103,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                     break;
                 }
             }
-        }
-
-        public virtual List<IDialog> ListDependencies()
-        {
-            return new List<IDialog>();
         }
     }
 }

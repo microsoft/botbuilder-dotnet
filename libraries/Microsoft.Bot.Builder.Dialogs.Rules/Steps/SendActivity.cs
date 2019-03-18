@@ -7,7 +7,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 {
     public class SendActivity : DialogCommand
     {
-        public ITemplate<IMessageActivity> Activity { get; set; }
+        public ITemplate<Activity> Activity { get; set; }
 
         public SendActivity() : base()
         {

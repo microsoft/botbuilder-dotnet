@@ -18,9 +18,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             return types;
         }
 
-        public static ITemplate<IMessageActivity> DefineMessageActivityProperty(this Dialog dialog, string name)
+        public static ITemplate<Activity> DefineActivityProperty(this Dialog dialog, string name)
         {
-            return new MessagePropertyTemplate(DataBinding.GetTypes(dialog.GetType()), name);
+            return new ActivityPropertyTemplate(DataBinding.GetTypes(dialog.GetType()), name);
         }
 
         public static ITemplate<string> DefineStringProperty(this Dialog dialog, string name)

@@ -1,6 +1,0 @@
-{
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Microsoft IDialogStep",
-    "description": "Definition of Microsoft.IDialogStep which will be expanded by components that $implements it.",
-    "oneOf": []
-}
