@@ -13,6 +13,9 @@ namespace Microsoft.Bot.Connector.Tests
     /// </summary>
     public class GetTokenRefreshTests
     {
+        private string testAppId = null;
+        private string testPassword = null;
+
         public GetTokenRefreshTests()
         {
         }
@@ -20,16 +23,19 @@ namespace Microsoft.Bot.Connector.Tests
         [Fact]
         public async Task TokenTests_GetCredentialsWorks()
         {
-            MicrosoftAppCredentials credentials = new MicrosoftAppCredentials("645cd89f-a83e-4af9-abb5-a454e917cbc4", "jvoMWRBA67:zjgePZ359_-_");
+            GetEnvironmentVarsTestAppIdPassword();
+            MicrosoftAppCredentials credentials = new MicrosoftAppCredentials(testAppId, testPassword);
+            //MicrosoftAppCredentials credentials = new MicrosoftAppCredentials("645cd89f-a83e-4af9-abb5-a454e917cbc4", "jvoMWRBA67:zjgePZ359_-_");
             var result = await credentials.GetTokenAsync();
             Assert.NotNull(result);
         }
 
-
         [Fact]
         public async Task TokenTests_RefreshTokenWorks()
         {
-            MicrosoftAppCredentials credentials = new MicrosoftAppCredentials("645cd89f-a83e-4af9-abb5-a454e917cbc4", "jvoMWRBA67:zjgePZ359_-_");
+            GetEnvironmentVarsTestAppIdPassword();
+            MicrosoftAppCredentials credentials = new MicrosoftAppCredentials(testAppId, testPassword);
+            //MicrosoftAppCredentials credentials = new MicrosoftAppCredentials("645cd89f-a83e-4af9-abb5-a454e917cbc4", "jvoMWRBA67:zjgePZ359_-_");
             var result = await credentials.GetTokenAsync();
             Assert.NotNull(result);
             var result2 = await credentials.GetTokenAsync();
@@ -42,7 +48,9 @@ namespace Microsoft.Bot.Connector.Tests
         [Fact]
         public async Task TokenTests_RefreshTestLoad()
         {
-            MicrosoftAppCredentials credentials = new MicrosoftAppCredentials("645cd89f-a83e-4af9-abb5-a454e917cbc4", "jvoMWRBA67:zjgePZ359_-_");
+            GetEnvironmentVarsTestAppIdPassword();
+            MicrosoftAppCredentials credentials = new MicrosoftAppCredentials(testAppId, testPassword);
+            //MicrosoftAppCredentials credentials = new MicrosoftAppCredentials("645cd89f-a83e-4af9-abb5-a454e917cbc4", "jvoMWRBA67:zjgePZ359_-_");
             List<Task<string>> tasks = new List<Task<string>>();
             for (int i = 0; i < 1000; i++)
             {
@@ -87,6 +95,23 @@ namespace Microsoft.Bot.Connector.Tests
                 }
             }
 
+        }
+
+        private void GetEnvironmentVarsTestAppIdPassword()
+        {
+            if (string.IsNullOrWhiteSpace(testAppId) || string.IsNullOrWhiteSpace(testPassword))
+            {
+                testAppId = Environment.GetEnvironmentVariable("TestAppId");
+                if (string.IsNullOrWhiteSpace(testAppId))
+                {
+                    throw new Exception("Environment variable 'TestAppId' not found.");
+                }
+                testPassword = Environment.GetEnvironmentVariable("TestPassword");
+                if (string.IsNullOrWhiteSpace(testPassword))
+                {
+                    throw new Exception("Environment variable 'TestPassword' not found.");
+                }
+            }
         }
     }
 }
