@@ -118,7 +118,6 @@
     <Compile Include="TestBot.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -152,6 +151,11 @@
       <Project>{c1f54cdc-ad1d-45bb-8f7d-f49e411afaf1}</Project>
       <Name>Microsoft.Bot.Schema</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.WebApi">
+      <Version>5.2.6</Version>
+    </PackageReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
