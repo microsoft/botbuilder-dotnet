@@ -1,7 +1,7 @@
 {
   "$schema": "../../app.schema",
   "$type": "Microsoft.RuleDialog",
-  "$id": "FortuneTellerDialog",
+  "$id": "TellJoke",
   "rules": [
     {
       "$type": "Microsoft.FallbackRule",

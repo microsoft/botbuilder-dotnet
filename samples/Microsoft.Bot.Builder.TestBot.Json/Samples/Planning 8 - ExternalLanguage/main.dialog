@@ -16,20 +16,24 @@
             "$type": "Microsoft.IntentRule",
             "intent": "JokeIntent",
             "steps": [
-                {
-                    "$type": "Microsoft.CallDialog",
-                    "dialog": "TellJoke"
+              {
+                "$type": "Microsoft.CallDialog",
+                "dialog": {
+                  "$ref": "Samples/Planning 8 - ExternalLanguage/TellJoke.dialog"
                 }
+              }
             ]
         },
         {
             "$type": "Microsoft.IntentRule",
             "intent": "FortuneTellerIntent",
             "steps": [
-                {
-                    "$type": "Microsoft.CallDialog",
-                    "dialog": "FortuneTeller"
+              {
+                "$type": "Microsoft.CallDialog",
+                "dialog": {
+                  "$ref": "Samples/Planning 8 - ExternalLanguage/FortuneTeller.dialog"
                 }
+              }
             ]
         },
         {
@@ -45,10 +49,12 @@
             "$type": "Microsoft.IntentRule",
             "intent": "GreetingIntent",
             "steps": [
-                {
-                    "$type": "Microsoft.CallDialog",
-                    "dialog": "Greeting"
+              {
+                "$type": "Microsoft.CallDialog",
+                "dialog": {
+                  "$ref": "Samples/Planning 8 - ExternalLanguage/Greeting.dialog"
                 }
+              }
             ]
         },
         {
