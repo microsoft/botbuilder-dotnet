@@ -17,7 +17,7 @@
       "steps": [
         {
           "$type": "Microsoft.SendActivity",
-          "activity": "Hi! I'm a ToDo bot. Say \"add a todo named first one\" to get started."
+          "activity": "Hi! I'm a ToDo bot. Say \"add a todo called first one\" to get started."
         }
       ]
     },

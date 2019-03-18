@@ -37,6 +37,10 @@
         {
           "$type": "Microsoft.SendActivity",
           "activity": "Successfully removed a todo named \"{user.todo}\""
+        },
+        {
+          "$type": "Microsoft.ClearProperty",
+          "property": "user.todo"
         }
       ]
     }
