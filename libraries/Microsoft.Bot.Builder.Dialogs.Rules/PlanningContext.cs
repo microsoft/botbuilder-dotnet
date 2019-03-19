@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         public PlanningContext(DialogContext dc, DialogContext parentDc, DialogSet dialogs, DialogState state, PlanningState plans)
             : base(dialogs, dc.Context, state, dc.State.Conversation, dc.State.User)
         {
-            this.ParentContext = parentDc;
+            this.Parent = parentDc;
             this.Plans = plans ?? throw new ArgumentNullException(nameof(plans));
         }
 
@@ -319,7 +319,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
 
         public static PlanningContext Create(DialogContext dc, PlanningState plans)
         {
-            return new PlanningContext(dc, dc.ParentContext, dc.Dialogs, new DialogState() { DialogStack = dc.Stack }, plans);
+            return new PlanningContext(dc, dc.Parent, dc.Dialogs, new DialogState() { DialogStack = dc.Stack }, plans);
         }
 
         public static PlanningContext CreateForStep(PlanningContext planning, DialogSet dialogs)

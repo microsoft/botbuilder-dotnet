@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Choices
@@ -33,7 +34,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             var hasMessageFeed = Channel.HasMessageFeed(channelId);
             var longTitles = maxTitleLength > maxActionTitleLength;
 
-            if (!longTitles && (supportsSuggestedActions || (!hasMessageFeed && supportsCardActions)))
+            if (!longTitles && !supportsSuggestedActions && supportsCardActions)
+            {
+                // SuggestedActions is the preferred approach, but for channels that don't
+                // support them (e.g. Teams, Cortana) we should use a HeroCard with CardActions
+                return HeroCard(list, text, speak);
+            }
+            else if (!longTitles && supportsSuggestedActions)
             {
                 // We always prefer showing choices using suggested actions. If the titles are too long, however,
                 // we'll have to show them as a text list.
@@ -66,22 +73,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 
             // Format list of choices
             var connector = string.Empty;
-            var txt = text ?? string.Empty;
-            txt += " ";
-
+            var txtBuilder = new StringBuilder(text)
+                .Append(' ');
             for (var index = 0; index < choices.Count; index++)
             {
                 var choice = choices[index];
-
                 var title = choice.Action != null && choice.Action.Title != null ? choice.Action.Title : choice.Value;
 
-                txt += $"{connector}";
+                txtBuilder.Append(connector);
                 if (opt.IncludeNumbers.Value)
                 {
-                    txt += "(" + (index + 1).ToString() + ") ";
+                    txtBuilder
+                        .Append('(')
+                        .Append(index + 1)
+                        .Append(") ");
                 }
 
-                txt += $"{title}";
+                txtBuilder.Append(title);
                 if (index == (choices.Count - 2))
                 {
                     connector = (index == 0 ? opt.InlineOr : opt.InlineOrMore) ?? string.Empty;
@@ -92,10 +100,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 }
             }
 
-            txt += string.Empty;
-
             // Return activity with choices as an inline list.
-            return MessageFactory.Text(txt, speak, InputHints.ExpectingInput);
+            return MessageFactory.Text(txtBuilder.ToString(), speak, InputHints.ExpectingInput);
         }
 
         public static Activity List(IList<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
@@ -112,8 +118,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 
             // Format list of choices
             var connector = string.Empty;
-            var txt = text ?? string.Empty;
-            txt += "\n\n   ";
+            var txtBuilder = new StringBuilder(text)
+                .Append("\n\n   ");
 
             for (var index = 0; index < choices.Count; index++)
             {
@@ -121,22 +127,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 
                 var title = choice.Action != null && choice.Action.Title != null ? choice.Action.Title : choice.Value;
 
-                txt += connector;
+                txtBuilder.Append(connector);
                 if (includeNumbers)
                 {
-                    txt += (index + 1).ToString() + ". ";
+                    txtBuilder
+                        .Append(index + 1)
+                        .Append(". ");
                 }
                 else
                 {
-                    txt += "- ";
+                    txtBuilder.Append("- ");
                 }
 
-                txt += title;
+                txtBuilder.Append(title);
                 connector = "\n   ";
             }
 
             // Return activity with choices as a numbered list.
-            return MessageFactory.Text(txt, speak, InputHints.ExpectingInput);
+            return MessageFactory.Text(txtBuilder.ToString(), speak, InputHints.ExpectingInput);
         }
 
         public static IMessageActivity SuggestedAction(IList<string> choices, string text = null, string speak = null)
@@ -146,10 +154,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 
         public static IMessageActivity SuggestedAction(IList<Choice> choices, string text = null, string speak = null)
         {
+            // Return activity with choices as suggested actions
+            return MessageFactory.SuggestedActions(ExtractActions(choices), text, speak, InputHints.ExpectingInput);
+        }
+
+        public static IMessageActivity HeroCard(IList<Choice> choices, string text = null, string speak = null)
+        {
+            var attachments = new List<Attachment>
+            {
+                new HeroCard(text: text, buttons: ExtractActions(choices)).ToAttachment(),
+            };
+
+            // Return activity with choices as HeroCard with buttons
+            return MessageFactory.Attachment(attachments, null, speak, InputHints.ExpectingInput);
+        }
+
+        public static IList<Choice> ToChoices(IList<string> choices)
+        {
+            return (choices == null)
+                    ?
+                new List<Choice>()
+                    :
+                choices.Select(choice => new Choice { Value = choice }).ToList();
+        }
+
+        private static List<CardAction> ExtractActions(IList<Choice> choices)
+        {
             choices = choices ?? new List<Choice>();
 
             // Map choices to actions
-            var actions = choices.Select((choice) =>
+            return choices.Select((choice) =>
             {
                 if (choice.Action != null)
                 {
@@ -165,18 +199,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                     };
                 }
             }).ToList();
-
-            // Return activity with choices as suggested actions
-            return MessageFactory.SuggestedActions(actions, text, speak, InputHints.ExpectingInput);
-        }
-
-        public static IList<Choice> ToChoices(IList<string> choices)
-        {
-            return (choices == null)
-                    ?
-                new List<Choice>()
-                    :
-                choices.Select(choice => new Choice { Value = choice }).ToList();
         }
     }
 }

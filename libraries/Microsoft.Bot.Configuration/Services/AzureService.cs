@@ -13,31 +13,32 @@ namespace Microsoft.Bot.Configuration
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureService"/> class.
         /// </summary>
+        /// <param name="type">Identifies the service type.</param>
         public AzureService(string type)
             : base(type)
         {
         }
 
         /// <summary>
-        /// Gets or sets tenantId for the service (contoso.onmicrosoft.com).
+        /// Gets or sets tenant ID for the service, for example "contoso.onmicrosoft.com".
         /// </summary>
         [JsonProperty("tenantId")]
         public string TenantId { get; set; }
 
         /// <summary>
-        /// Gets or sets subscriptionId.
+        /// Gets or sets subscription ID.
         /// </summary>
         [JsonProperty("subscriptionId")]
         public string SubscriptionId { get; set; }
 
         /// <summary>
-        /// Gets or sets resource group.
+        /// Gets or sets the resource group.
         /// </summary>
         [JsonProperty("resourceGroup")]
         public string ResourceGroup { get; set; }
 
         /// <summary>
-        /// Gets or sets ServiceName.
+        /// Gets or sets the service name.
         /// </summary>
         [JsonProperty("serviceName")]
         public string ServiceName { get; set; }

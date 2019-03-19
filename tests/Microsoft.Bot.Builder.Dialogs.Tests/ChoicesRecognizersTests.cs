@@ -112,7 +112,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             AssertChoice(found[1], "bread", 0, 1.0f);
         }
 
-        // RecognizeChoice
+        [TestMethod]
+        public void ShouldAcceptNullUtteranceInFindChoices()
+        {
+            var found = Find.FindChoices(null, colorChoices);
+            Assert.AreEqual(0, found.Count);
+        }
+
+        // RecognizeChoices
 
         [TestMethod]
         public void ShouldFindAChoiceInAnUtteranceByName()
@@ -166,6 +173,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(2, found.Count);
             AssertChoice(found[0], "red", 0, 1.0f);
             AssertChoice(found[1], "blue", 2, 1.0f);
+        }
+
+        [TestMethod]
+        public void ShouldAcceptNullUtteranceInRecognizeChoices()
+        {
+            var found = ChoiceRecognizers.RecognizeChoices(null, colorChoices);
+            Assert.AreEqual(0, found.Count);
         }
 
         // Helper functions

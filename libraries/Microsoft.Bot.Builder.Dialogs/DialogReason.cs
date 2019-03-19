@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         EndCalled,
 
         /// <summary>
-        /// A dialog is ending because its being replaced through a call to `DialogContext.ReplaceDialogAsync()`.
+        /// A dialog is ending because it's being replaced through a call to `DialogContext.ReplaceDialogAsync()`.
         /// </summary>
         ReplaceCalled,
 
