@@ -29,7 +29,15 @@ namespace Microsoft.Expressions
             {
                 return ((Array)instance).GetValue((int)property);
             }
-            return Reflection(instance, property);
+            try
+            {
+                return Reflection(instance, property);
+            }
+            catch (Exception)
+            {
+                throw new Exception($"Sorry, instance {instance} does not have property {property}");
+            }
+            
         };
 
         /// <summary>

@@ -54,7 +54,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                         return s;
                     }
                 }
-                return ((dynamic)instance)[property];
+                try
+                {
+                    return ((dynamic)instance)[property];
+                }
+                catch (Exception)
+                {
+                    throw new Exception($"Sorry, instance {instance} does not have property {property}");
+                }
             }
 
             
