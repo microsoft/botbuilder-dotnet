@@ -51,10 +51,15 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 UserState = userState
             };
 
+            // manage all bot resources
+            var botResourceManager = new BotResourceManager()
+                // add current folder, it's project file, packages, projects, etc.
+                .AddProjectResources(HostingEnvironment.ContentRootPath);
+
             services.AddBot<IBot>(
                 (IServiceProvider sp) =>
                 {
-                    return new TestBot(accessors);
+                    return new TestBot(accessors, botResourceManager);
                 },
                 (BotFrameworkOptions options) =>
                 {
@@ -64,13 +69,11 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                         await conversationState.SaveChangesAsync(turnContext);
                     };
 
-                    // manage all bot resources
-                    var botResourceManager = new BotResourceManager()
-                        // add current folder, it's project file, packages, projects, etc.
-                        .AddProjectResources(HostingEnvironment.ContentRootPath);
+                    
 
                     // create LG 
                     var lg = new LGLanguageGenerator(botResourceManager);
+                    options.Middleware.Add(new RegisterClassMiddleware<IStorage>(dataStore));
                     options.Middleware.Add(new RegisterClassMiddleware<IBotResourceProvider>(botResourceManager));
                     options.Middleware.Add(new RegisterClassMiddleware<ILanguageGenerator>(lg));
                     options.Middleware.Add(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)));

@@ -1,0 +1,68 @@
+{
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.RuleDialog",
+    "$id": "root",
+    "recognizer": {
+        "$type": "Microsoft.RegexRecognizer",
+        "intents": {
+            "HelpIntent": "help",
+            "GreetingIntent": "hi|hello|hiya|greetings",
+            "JokeIntent": "joke",
+            "FortuneTellerIntent": "fortune|future"
+        }
+    },
+    "rules": [
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "JokeIntent",
+            "steps": [
+              "ExternalLanguage.TellJoke"
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "FortuneTellerIntent",
+            "steps": [
+              "ExternalLanguage.FortuneTeller"
+            ]
+        },
+        {
+            "$type": "Microsoft.WelcomeRule",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "[welcome]"
+                }
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "GreetingIntent",
+            "steps": [
+              {
+                "$type": "Microsoft.CallDialog",
+                "dialog": "ExternalLanguage.Greeting"
+              }
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "HelpIntent",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "[help]"
+                }
+            ]
+        },
+        {
+            "$type": "Microsoft.FallbackRule",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "[help]"
+                }
+            ]
+        }
+    ]
+}

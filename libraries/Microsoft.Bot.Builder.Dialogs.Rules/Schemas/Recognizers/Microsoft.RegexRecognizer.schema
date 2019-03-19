@@ -1,0 +1,18 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IRecognizer)",
+    "title": "Regex Recognizer",
+    "description": "Recognizer which uses regex expressions to generate intents and entities.",
+    "type": "object",
+    "properties": {
+        "intents": {
+            "type": "object",
+            "title": "RegEx patterns to intents",
+            "description": "Pattern->Intents mappings",
+            "additionalProperties": { "type": "string" }
+        }
+    },
+    "required": [
+        "intents"
+    ]
+}

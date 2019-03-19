@@ -139,6 +139,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(Exception))]
         public void TestBasicLoopRef()
         {
             var engine = TemplateEngine.FromFile(GetExampleFilePath("7.lg"));
@@ -235,6 +236,21 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         }
 
+
+
+
+        [TestMethod]
+        public void TestEscapeCharacter()
+        {
+            var engine = TemplateEngine.FromFile(GetExampleFilePath("EscapeCharacter.lg"));
+            var evaled1 = engine.EvaluateTemplate("wPhrase", null);
+            Assert.AreEqual(evaled1, "Hi \r\n\t[]{}\\");
+
+            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("wPhrase2", null));
+            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("wPhrase3", null));
+        }
+
+
         [TestMethod]
         public void TestAnalyzer()
         {
@@ -255,5 +271,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsTrue(evaled3.All(evaled3Options.Contains) && evaled3.Count == evaled3Options.Count);
 
         }
+
     }
 }

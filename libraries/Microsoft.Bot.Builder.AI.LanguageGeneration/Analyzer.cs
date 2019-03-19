@@ -1,33 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Microsoft.Expressions;
-using System.Linq;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
-
-    /// <summary>
-    /// List all analyzers like dependencies
-    /// 
-    /// </summary>
-    class Analyzer : LGFileParserBaseVisitor<List<string>>
+    public class Analyzer : LGFileParserBaseVisitor<List<string>>
     {
         public readonly EvaluationContext Context;
 
         private Stack<EvaluationTarget> evalutationTargetStack = new Stack<EvaluationTarget>();
-        private EvaluationTarget currentTarget()
+        private EvaluationTarget CurrentTarget()
         {
             // just don't want to write evaluationTargetStack.Peek() everywhere
             return evalutationTargetStack.Peek();
         }
-
-
+                 
         public Analyzer(EvaluationContext context)
         {
             Context = context;
@@ -42,7 +33,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
             if (evalutationTargetStack.Any(e => e.TemplateName == templateName))
             {
-                throw new Exception($"Loop deteced: {String.Join(" => ", evalutationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                throw new Exception($"Loop detected: {String.Join(" => ", evalutationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
             // Using a stack to track the evalution trace
@@ -62,7 +53,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         public override List<string> VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
         {
             var templateNameContext = context.templateNameLine();
-            if (templateNameContext.templateName().GetText().Equals(currentTarget().TemplateName))
+            if (templateNameContext.templateName().GetText().Equals(CurrentTarget().TemplateName))
             {
                 return Visit(context.templateBody());
             }
@@ -78,7 +69,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         {
             var result = new List<string>();
 
-            foreach(var templateStr in context.normalTemplateString())
+            foreach (var templateStr in context.normalTemplateString())
             {
                 var item = Visit(templateStr);
                 result.AddRange(item);
@@ -140,10 +131,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         private List<string> AnalyzeExpression(string exp)
         {
             exp = exp.TrimStart('{').TrimEnd('}');
-            var term = ExpressionEngine.Parse(exp);
-            return AnalyzeTerm(term);
+            var parseTree = ExpressionEngine.Parse(exp);
+            return AnalyzeParserTree(parseTree);
         }
 
+        private List<string> AnalyzeParserTree(IParseTree parserTree)
+        {
+            var result = new List<string>();
+            
+            var visitor = new ExpressionAnalyzerVisitor(Context);
+
+            return visitor.Analyzer(parserTree);
+        }
 
         private List<string> AnalyzeTemplateRef(string exp)
         {
@@ -194,94 +193,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
             return result;
         }
-        
-        private List<string> AnalyzeTerm(Term term)
-        {
-            var result = new List<string>();
-
-            var token = term.Token;
-            var value = token.Value;
-
-            // token value is identifier -> look up binding in scope
-            var identifier = value as Lexer.Identifier;
-            if (identifier != null)
-            {
-                return new List<string> { identifier.Name };
-            }
-
-            // otherwise token literal value should be evaluated to a constant value
-            if (value != null)
-            {
-                return result;
-            }
-
-            // special handling for operators
-            // 1. without eagerly evaluated operands, or
-            // 2. require access to the environment
-            switch (token.Input)
-            {
-                case ".":
-                case "[":
-                    {
-                        return AnalyzeTerm(term.Terms[0]);
-                    }
-                case "(":
-                    {
-                        var name = term.Terms[0].Token.Input;
-
-                        if (name.Equals("."))
-                        {
-                            result.AddRange(AnalyzeTerm(term.Terms[0].Terms[0]));
-                           
-                            foreach(var item in term.Terms.Skip(1))
-                            {
-                                if (Context.TemplateContexts.ContainsKey(item.Token.Input))
-                                {
-                                    result.AddRange(AnalyzeTemplate(item.Token.Input));
-                                }
-                                else
-                                {
-                                    result.AddRange(AnalyzeTerm(item));
-                                }
-                                
-                            }
-                            return result;
-                        }
-                        else
-                        {
-                            foreach (var item in term.Terms.Skip(1))
-                            {
-                                if (Context.TemplateContexts.ContainsKey(item.Token.Input))
-                                {
-                                    result.AddRange(AnalyzeTemplate(item.Token.Input));
-                                }
-                                else
-                                {
-                                    result.AddRange(AnalyzeTerm(item));
-                                }
-                            }
-                            return result;
-                        }
-                    }
-            }
-
-            // otherwise look in table for operators with eagerly evaluated operands
-            var entry = term.Entry;
-            if (entry != null)
-            {
-                foreach (var item in term.Terms)
-                {
-                    result.AddRange(AnalyzeTerm(item));
-                }
-                return result;
-            }
-
-            throw new NotImplementedException();
-        }
 
         private List<string> ExtractParameters(string templateName)
         {
-            bool hasParameters = Context.TemplateParameters.TryGetValue(templateName, out List<string> parameters);
+            var hasParameters = Context.TemplateParameters.TryGetValue(templateName, out var parameters);
             return hasParameters ? parameters : new List<string>();
         }
     }

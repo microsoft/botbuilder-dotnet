@@ -96,6 +96,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task TestCreateFromText()
         {
+            await Task.Delay(0);
             string text = @"[Herocard 
     title=Cheese gromit! 
     subtitle=cheezy

@@ -1,0 +1,16 @@
+{
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.RuleDialog",
+    "$id": "root",
+    "rules": [
+        {
+            "$type": "Microsoft.FallbackRule",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Hello planning!"
+                }
+            ]
+        }
+    ]
+}

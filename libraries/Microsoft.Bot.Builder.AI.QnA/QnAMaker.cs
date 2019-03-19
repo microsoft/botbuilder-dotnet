@@ -30,6 +30,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private readonly QnAMakerEndpoint _endpoint;
         private readonly QnAMakerOptions _options;
 
+        private readonly bool _isLegacyProtocol;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="QnAMaker"/> class.
         /// </summary>
@@ -58,37 +60,16 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentException(nameof(endpoint.EndpointKey));
             }
 
+            if (_endpoint.Host.EndsWith("v2.0"))
+            {
+                throw new NotSupportedException("v2.0 of QnA Maker service is no longer supported in the Bot Framework. Please upgrade your QnA Maker service at www.qnamaker.ai.");
+            }
+
+            _isLegacyProtocol = _endpoint.Host.EndsWith("v3.0");
+
             _options = options ?? new QnAMakerOptions();
 
-            if (_options.ScoreThreshold == 0)
-            {
-                _options.ScoreThreshold = 0.3F;
-            }
-
-            if (_options.Top == 0)
-            {
-                _options.Top = 1;
-            }
-
-            if (_options.ScoreThreshold < 0 || _options.ScoreThreshold > 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(_options.ScoreThreshold), "Score threshold should be a value between 0 and 1");
-            }
-
-            if (_options.Top < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(_options.Top), "Top should be an integer greater than 0");
-            }
-
-            if (_options.StrictFilters == null)
-            {
-                _options.StrictFilters = new Metadata[] { };
-            }
-
-            if (_options.MetadataBoost == null)
-            {
-                _options.MetadataBoost = new Metadata[] { };
-            }
+            ValidateOptions(_options);
         }
 
         /// <summary>
@@ -121,13 +102,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentNullException(nameof(turnContext.Activity));
             }
 
-            if (options == null)
-            {
-                options = _options;
-            }
-
-            ValidateOptions(options);
-
             var messageActivity = turnContext.Activity.AsMessageActivity();
             if (messageActivity == null)
             {
@@ -139,102 +113,49 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentException("Null or empty text");
             }
 
-            var requestUrl = $"{_endpoint.Host}/knowledgebases/{_endpoint.KnowledgeBaseId}/generateanswer";
+            var hydratedOptions = HydrateOptions(options);
+            ValidateOptions(hydratedOptions);
 
-            var request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
+            var result = await QueryQnaServiceAsync((Activity)messageActivity, hydratedOptions).ConfigureAwait(false);
 
-            var jsonRequest = JsonConvert.SerializeObject(
-                new
-                {
-                    question = messageActivity.Text,
-                    top = options.Top,
-                    strictFilters = options.StrictFilters,
-                    metadataBoost = options.MetadataBoost,
-                }, Formatting.None);
-
-            request.Content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
-
-            var isLegacyProtocol = _endpoint.Host.EndsWith("v2.0") || _endpoint.Host.EndsWith("v3.0");
-
-            if (isLegacyProtocol)
-            {
-                request.Headers.Add("Ocp-Apim-Subscription-Key", _endpoint.EndpointKey);
-            }
-            else
-            {
-                request.Headers.Add("Authorization", $"EndpointKey {_endpoint.EndpointKey}");
-            }
-
-            AddUserAgent(request);
-
-            var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
-            if (!response.IsSuccessStatusCode)
-            {
-                return null;
-            }
-
-            var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-            var results = isLegacyProtocol ?
-                ConvertLegacyResults(JsonConvert.DeserializeObject<InternalQueryResults>(jsonResponse))
-                    :
-                JsonConvert.DeserializeObject<QueryResults>(jsonResponse);
-
-            foreach (var answer in results.Answers)
-            {
-                answer.Score = answer.Score / 100;
-            }
-
-            var result = results.Answers.Where(answer => answer.Score > options.ScoreThreshold).ToArray();
-
-            var traceInfo = new QnAMakerTraceInfo
-            {
-                Message = (Activity)messageActivity,
-                QueryResults = result,
-                KnowledgeBaseId = _endpoint.KnowledgeBaseId,
-                ScoreThreshold = options.ScoreThreshold,
-                Top = options.Top,
-                StrictFilters = options.StrictFilters,
-                MetadataBoost = options.MetadataBoost,
-            };
-            var traceActivity = Activity.CreateTraceActivity(QnAMakerName, QnAMakerTraceType, traceInfo, QnAMakerTraceLabel);
-            await turnContext.SendActivityAsync(traceActivity).ConfigureAwait(false);
+            await EmitTraceInfoAsync(turnContext, (Activity)messageActivity, result, hydratedOptions).ConfigureAwait(false);
 
             return result;
         }
 
-        private void AddUserAgent(HttpRequestMessage request)
+        /// <summary>
+        /// Combines QnAMakerOptions passed into the QnAMaker constructor with the options passed as arguments into GetAnswersAsync().
+        /// </summary>
+        /// <param name="queryOptions">The options for the QnA Maker knowledge base.</param>
+        private QnAMakerOptions HydrateOptions(QnAMakerOptions queryOptions)
         {
-            // Bot Builder Package name and version
-            var assemblyName = this.GetType().Assembly.GetName();
-            request.Headers.UserAgent.Add(new ProductInfoHeaderValue(assemblyName.Name, assemblyName.Version.ToString()));
+            var hydratedOptions = _options;
 
-            // Platform information: OS and language runtime
-            var framework = Assembly
-                .GetEntryAssembly()?
-                .GetCustomAttribute<TargetFrameworkAttribute>()?
-                .FrameworkName;
-            var comment = $"({Environment.OSVersion.VersionString};{framework})";
-            request.Headers.UserAgent.Add(new ProductInfoHeaderValue(comment));
+            if (queryOptions != null)
+            {
+                if (queryOptions.ScoreThreshold != hydratedOptions.ScoreThreshold && queryOptions.ScoreThreshold != 0)
+                {
+                    hydratedOptions.ScoreThreshold = queryOptions.ScoreThreshold;
+                }
+
+                if (queryOptions.Top != hydratedOptions.Top && queryOptions.Top != 0)
+                {
+                    hydratedOptions.Top = queryOptions.Top;
+                }
+
+                if (queryOptions.StrictFilters?.Length > 0)
+                {
+                   hydratedOptions.StrictFilters = queryOptions.StrictFilters;
+                }
+
+                if (queryOptions.MetadataBoost?.Length > 0)
+                {
+                   hydratedOptions.MetadataBoost = queryOptions.MetadataBoost;
+                }
+            }
+
+            return hydratedOptions;
         }
-
-        // The old version of the protocol returns the id in a field called qnaId the
-        // following classes and helper function translate this old structure
-        private QueryResults ConvertLegacyResults(InternalQueryResults legacyResults) => new QueryResults
-        {
-            Answers = legacyResults.Answers
-                    .Select(answer => new QueryResult
-                    {
-                        // The old version of the protocol returns the "id" in a field called "qnaId"
-                        Id = answer.QnaId,
-                        Answer = answer.Answer,
-                        Metadata = answer.Metadata,
-                        Score = answer.Score,
-                        Source = answer.Source,
-                        Questions = answer.Questions,
-                    })
-                    .ToArray(),
-        };
 
         private void ValidateOptions(QnAMakerOptions options)
         {
@@ -268,6 +189,125 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 options.MetadataBoost = new Metadata[] { };
             }
         }
+
+        private async Task<QueryResult[]> QueryQnaServiceAsync(Activity messageActivity, QnAMakerOptions options)
+        {
+            var request = BuildRequest(messageActivity, options);
+
+            var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
+
+            response.EnsureSuccessStatusCode();
+
+            var result = await FormatQnaResultAsync(response, options).ConfigureAwait(false);
+
+            return result;
+        }
+
+        private async Task EmitTraceInfoAsync(ITurnContext turnContext, Activity messageActivity, QueryResult[] result, QnAMakerOptions options)
+        {
+            var traceInfo = new QnAMakerTraceInfo
+            {
+                Message = (Activity)messageActivity,
+                QueryResults = result,
+                KnowledgeBaseId = _endpoint.KnowledgeBaseId,
+                ScoreThreshold = options.ScoreThreshold,
+                Top = options.Top,
+                StrictFilters = options.StrictFilters,
+                MetadataBoost = options.MetadataBoost,
+            };
+            var traceActivity = Activity.CreateTraceActivity(QnAMakerName, QnAMakerTraceType, traceInfo, QnAMakerTraceLabel);
+            await turnContext.SendActivityAsync(traceActivity).ConfigureAwait(false);
+        }
+
+        private HttpRequestMessage BuildRequest(Activity messageActivity, QnAMakerOptions options)
+        {
+            var requestUrl = $"{_endpoint.Host}/knowledgebases/{_endpoint.KnowledgeBaseId}/generateanswer";
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
+
+            var jsonRequest = JsonConvert.SerializeObject(
+                new
+                {
+                    question = messageActivity.Text,
+                    top = options.Top,
+                    strictFilters = options.StrictFilters,
+                    metadataBoost = options.MetadataBoost,
+                    scoreThreshold = options.ScoreThreshold,
+                }, Formatting.None);
+
+            request.Content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+
+            SetHeaders(request);
+
+            return request;
+        }
+
+        private async Task<QueryResult[]> FormatQnaResultAsync(HttpResponseMessage response, QnAMakerOptions options)
+        {
+            var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            var results = _isLegacyProtocol ?
+                ConvertLegacyResults(JsonConvert.DeserializeObject<InternalQueryResults>(jsonResponse))
+                    :
+                JsonConvert.DeserializeObject<QueryResults>(jsonResponse);
+
+            foreach (var answer in results.Answers)
+            {
+                answer.Score = answer.Score / 100;
+            }
+
+            var result = results.Answers.Where(answer => answer.Score > options.ScoreThreshold).ToArray();
+
+            return result;
+        }
+
+        private void SetHeaders(HttpRequestMessage request)
+        {
+            if (_isLegacyProtocol)
+            {
+                request.Headers.Add("Ocp-Apim-Subscription-Key", _endpoint.EndpointKey);
+            }
+            else
+            {
+                request.Headers.Add("Authorization", $"EndpointKey {_endpoint.EndpointKey}");
+            }
+
+            AddUserAgent(request);
+        }
+
+        private void AddUserAgent(HttpRequestMessage request)
+        {
+            // Bot Builder Package name and version
+            var assemblyName = this.GetType().Assembly.GetName();
+            request.Headers.UserAgent.Add(new ProductInfoHeaderValue(assemblyName.Name, assemblyName.Version.ToString()));
+
+            // Platform information: OS and language runtime
+            var framework = Assembly
+                .GetEntryAssembly()?
+                .GetCustomAttribute<TargetFrameworkAttribute>()?
+                .FrameworkName;
+            var comment = $"({Environment.OSVersion.VersionString};{framework})";
+            request.Headers.UserAgent.Add(new ProductInfoHeaderValue(comment));
+        }
+
+        // The old version of the protocol returns the id in a field called qnaId the
+        // following classes and helper function translate this old structure
+        // This method can consume results from v3.0 of QnA API, but not v2.0.
+        private QueryResults ConvertLegacyResults(InternalQueryResults legacyResults) => new QueryResults
+        {
+            Answers = legacyResults.Answers
+                    .Select(answer => new QueryResult
+                    {
+                        // The old version of the protocol returns the "id" in a field called "qnaId"
+                        Id = answer.QnaId,
+                        Answer = answer.Answer,
+                        Metadata = answer.Metadata,
+                        Score = answer.Score,
+                        Source = answer.Source,
+                        Questions = answer.Questions,
+                    })
+                    .ToArray(),
+        };
 
         private class InternalQueryResult : QueryResult
         {

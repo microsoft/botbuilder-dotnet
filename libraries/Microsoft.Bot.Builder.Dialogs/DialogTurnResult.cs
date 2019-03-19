@@ -4,8 +4,8 @@
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
-    /// Result returned to the caller of one of the various stack manipulation methods and used to
-    /// return the result from a final call to `DialogContext.end()` to the bots logic.
+    /// Result returned to the caller of one of the various stack manipulation methods,
+    /// and used to return the result from a final call to `DialogContext.EndDialogAsync()` to the bot's logic.
     /// </summary>
     public class DialogTurnResult
     {
@@ -27,10 +27,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Gets or sets the result returned by a dialog that was just ended.
         /// This will only be populated in certain cases:
         ///
-        /// - The bot calls `dc.begin()` to start a new dialog and the dialog ends immediately.
-        /// - The bot calls `dc.continue()` and a dialog that was active ends.
+        /// - The bot calls `DialogContext.BeginDialogAsync()` to start a new dialog and the dialog ends immediately.
+        /// - The bot calls `DialogContext.ContinueDialogAsync()` and a dialog that was active ends.
         ///
-        /// In all cases where it's populated, [active](#active) will be `false`.
+        /// In all cases where it's populated, <see cref="DialogContext.ActiveDialog"/> will be `null`.
         /// </summary>
         /// <value>
         /// The result returned by a dialog that was just ended.

@@ -45,9 +45,9 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 if (instance == null)
                 {
-                    if (dialogContext.ParentContext != null)
+                    if (dialogContext.Parent != null)
                     {
-                        instance = dialogContext.ParentContext.ActiveDialog;
+                        instance = dialogContext.Parent.ActiveDialog;
                     }
                     else
                     {
@@ -64,9 +64,9 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 if (instance == null)
                 {
-                    if (dialogContext.ParentContext != null)
+                    if (dialogContext.Parent != null)
                     {
-                        instance = dialogContext.ParentContext.ActiveDialog;
+                        instance = dialogContext.Parent.ActiveDialog;
                     }
                     else
                     {
@@ -108,9 +108,9 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (instance == null)
             {
-                if (dialogContext.ParentContext != null)
+                if (dialogContext.Parent != null)
                 {
-                    instance = dialogContext.ParentContext.ActiveDialog;
+                    instance = dialogContext.Parent.ActiveDialog;
                 }
             }
 

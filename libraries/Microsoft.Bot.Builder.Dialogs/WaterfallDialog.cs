@@ -12,8 +12,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
     /// Dialog optimized for prompting a user with a series of questions. Waterfalls accept a stack of
-    /// functions which will be executed in sequence.Each waterfall step can ask a question of the user
-    /// and the users response will be passed as an argument to the next waterfall step.
+    /// functions which will be executed in sequence. Each waterfall step can ask a question of the user
+    /// and the user's response will be passed as an argument to the next waterfall step.
     /// </summary>
     public class WaterfallDialog : Dialog
     {
@@ -27,8 +27,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Initializes a new instance of the <see cref="WaterfallDialog"/> class.
         /// </summary>
-        /// <param name="dialogId">The dialog id.</param>
-        /// <param name="steps">Optional steps to be defined by caller.</param>
+        /// <param name="dialogId">The dialog ID.</param>
+        /// <param name="steps">Optional steps to be defined by the caller.</param>
         public WaterfallDialog(string dialogId, IEnumerable<WaterfallStep> steps = null)
             : base(dialogId)
         {
@@ -43,10 +43,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Add a new step to the waterfall.
+        /// Adds a new step to the waterfall.
         /// </summary>
         /// <param name="step">Step to add.</param>
-        /// <returns>Waterfall dialog for fluent calls to .AddStep().</returns>
+        /// <returns>Waterfall dialog for fluent calls to `AddStep()`.</returns>
         public WaterfallDialog AddStep(WaterfallStep step)
         {
             _steps.Add(step ?? throw new ArgumentNullException(nameof(step)));
@@ -117,9 +117,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Called when the dialog is ending.
         /// </summary>
-        /// <param name="turnContext">Context for the current turn of conversation.</param>
+        /// <param name="turnContext">Context for the current turn of the conversation.</param>
         /// <param name="instance">The instance of the current dialog.</param>
-        /// <param name="reason">he reason the dialog is ending.</param>
+        /// <param name="reason">The reason the dialog is ending.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>

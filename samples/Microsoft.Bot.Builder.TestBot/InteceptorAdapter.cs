@@ -17,9 +17,16 @@ namespace Microsoft.Bot.Builder.TestBot
             _innerAdapter = innerAdapter;
         }
 
+        public Task ContinueConversationAsync(string botId, ConversationReference reference, BotCallbackHandler callback, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return _innerAdapter.ContinueConversationAsync(botId, reference, callback, cancellationToken);
+        }
+
         public Task<InvokeResponse> ProcessActivityAsync(string authHeader, Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             return _innerAdapter.ProcessActivityAsync(authHeader, activity, callback, cancellationToken);
         }
+
+
     }
 }

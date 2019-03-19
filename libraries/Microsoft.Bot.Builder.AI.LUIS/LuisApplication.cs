@@ -2,6 +2,8 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Linq;
+using System.Web;
 using Microsoft.Bot.Configuration;
 
 namespace Microsoft.Bot.Builder.AI.Luis
@@ -22,7 +24,32 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="endpointKey">LUIS subscription or endpoint key.</param>
         /// <param name="endpoint">LUIS endpoint to use like https://westus.api.cognitive.microsoft.com.</param>
         public LuisApplication(string applicationId, string endpointKey, string endpoint)
+            : this((applicationId, endpointKey, endpoint))
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LuisApplication"/> class.
+        /// </summary>
+        /// <param name="service">LUIS coonfiguration.</param>
+        public LuisApplication(LuisService service)
+            : this((service.AppId, service.SubscriptionKey, service.GetEndpoint()))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LuisApplication"/> class.
+        /// </summary>
+        /// <param name="applicationEndpoint">LUIS application endpoint.</param>
+        public LuisApplication(string applicationEndpoint)
+            : this(Parse(applicationEndpoint))
+        {
+        }
+
+        private LuisApplication(ValueTuple<string, string, string> props)
+        {
+            var (applicationId, endpointKey, endpoint) = props;
+
             if (!Guid.TryParse(applicationId, out var appGuid))
             {
                 throw new ArgumentException($"\"{applicationId}\" is not a valid LUIS application id.");
@@ -49,15 +76,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LuisApplication"/> class.
-        /// </summary>
-        /// <param name="service">LUIS coonfiguration.</param>
-        public LuisApplication(LuisService service)
-            : this(service.AppId, service.SubscriptionKey, service.GetEndpoint())
-        {
-        }
-
-        /// <summary>
         /// Gets or sets lUIS application ID.
         /// </summary>
         /// <value>
@@ -80,5 +98,18 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// LUIS endpoint where application is hosted.
         /// </value>
         public string Endpoint { get; set; }
+
+        private static (string applicationId, string endpointKey, string endpoint) Parse(string applicationEndpoint)
+        {
+            if (!Uri.TryCreate(applicationEndpoint, UriKind.Absolute, out var uri))
+            {
+                throw new ArgumentException(nameof(applicationEndpoint));
+            }
+
+            var applicationId = uri.Segments.Last();
+            var endpointKey = HttpUtility.ParseQueryString(uri.Query).Get("subscription-key");
+            var endpoint = uri.GetLeftPart(UriPartial.Authority);
+            return (applicationId, endpointKey, endpoint);
+        }
     }
 }

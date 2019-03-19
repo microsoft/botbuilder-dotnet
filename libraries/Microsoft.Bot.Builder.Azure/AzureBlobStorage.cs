@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +12,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Blob.Protocol;
 using Microsoft.WindowsAzure.Storage.Core;
+using Microsoft.WindowsAzure.Storage.RetryPolicies;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Azure
@@ -24,10 +24,9 @@ namespace Microsoft.Bot.Builder.Azure
     /// This class uses a single Azure Storage Blob Container.
     /// Each entity or <see cref="IStoreItem"/> is serialized into a JSON string and stored in an individual text blob.
     /// Each blob is named after the store item key,  which is encoded so that it conforms a valid blob name.
-    /// Concurrency is managed on a per-entity (that is, per-blob) basis. If an entity is an <see cref="IStoreItem"/>,
-    /// the storage object will set the entity's <see cref="IStoreItem.ETag"/> property value to the blob's ETag upon read.
-    /// Afterward, an <see cref="AccessCondition"/> with the ETag value will be generated during Write.
-    /// New entities start with a null ETag.
+    /// If an entity is an <see cref="IStoreItem"/>, the storage object will set the entity's <see cref="IStoreItem.ETag"/>
+    /// property value to the blob's ETag upon read. Afterward, an <see cref="AccessCondition"/> with the ETag value
+    /// will be generated during Write. New entities start with a null ETag.
     /// </remarks>
     public class AzureBlobStorage : IStorage
     {
@@ -39,7 +38,7 @@ namespace Microsoft.Bot.Builder.Azure
 
         private readonly CloudStorageAccount _storageAccount;
         private readonly string _containerName;
-        private CloudBlobContainer _container;
+        private int _checkforContainerExistance;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureBlobStorage"/> class.
@@ -63,6 +62,9 @@ namespace Microsoft.Bot.Builder.Azure
 
             // Checks if a container name is valid
             NameValidator.ValidateContainerName(containerName);
+
+            // Triggers a check for the existance of the container
+            _checkforContainerExistance = 1;
         }
 
         /// <summary>
@@ -79,14 +81,14 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentNullException(nameof(keys));
             }
 
-            var blobContainer = await GetBlobContainer().ConfigureAwait(false);
-            await Task.WhenAll(
-                keys.Select(key =>
-                {
-                    var blobName = GetBlobName(key);
-                    var blobReference = blobContainer.GetBlobReference(blobName);
-                    return blobReference.DeleteIfExistsAsync();
-                })).ConfigureAwait(false);
+            var blobClient = _storageAccount.CreateCloudBlobClient();
+            var blobContainer = blobClient.GetContainerReference(_containerName);
+            foreach (var key in keys)
+            {
+                var blobName = GetBlobName(key);
+                var blobReference = blobContainer.GetBlobReference(blobName);
+                await blobReference.DeleteIfExistsAsync(cancellationToken).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -103,57 +105,34 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentNullException(nameof(keys));
             }
 
-            var blobContainer = await GetBlobContainer().ConfigureAwait(false);
+            var blobClient = _storageAccount.CreateCloudBlobClient();
+            var blobContainer = blobClient.GetContainerReference(_containerName);
 
-            var readTasks = new List<Task<KeyValuePair<string, object>>>();
+            var items = new Dictionary<string, object>();
 
             foreach (var key in keys)
-            {
-                readTasks.Add(ReadIndividualKey(key));
-            }
-
-            await Task.WhenAll(readTasks).ConfigureAwait(false);
-
-            // Project back the entries that were read, filtering out any entries that were not found.
-            // This gives us a Dictionary(key, value)
-            var items = readTasks.Select(readTask => readTask.Result)
-                .Where(kvp => kvp.Key != null)
-                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-
-            return items;
-
-            async Task<KeyValuePair<string, object>> ReadIndividualKey(string key)
             {
                 var blobName = GetBlobName(key);
                 var blobReference = blobContainer.GetBlobReference(blobName);
 
                 try
                 {
-                    using (var blobStream = await blobReference.OpenReadAsync().ConfigureAwait(false))
-                    using (var jsonReader = new JsonTextReader(new StreamReader(blobStream)))
-                    {
-                        var obj = JsonSerializer.Deserialize(jsonReader);
-
-                        if (obj is IStoreItem storeItem)
-                        {
-                            storeItem.ETag = blobReference.Properties.ETag;
-                        }
-
-                        return new KeyValuePair<string, object>(key, obj);
-                    }
+                    items.Add(key, await InnerReadBlobAsync(blobReference, cancellationToken).ConfigureAwait(false));
                 }
                 catch (StorageException ex)
                     when ((HttpStatusCode)ex.RequestInformation.HttpStatusCode == HttpStatusCode.NotFound)
                 {
-                    return new KeyValuePair<string, object>();
+                    continue;
                 }
                 catch (AggregateException ex)
                     when (ex.InnerException is StorageException iex
                     && (HttpStatusCode)iex.RequestInformation.HttpStatusCode == HttpStatusCode.NotFound)
                 {
-                    return new KeyValuePair<string, object>();
+                    continue;
                 }
             }
+
+            return items;
         }
 
         /// <summary>
@@ -170,44 +149,51 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentNullException(nameof(changes));
             }
 
-            var blobContainer = await GetBlobContainer().ConfigureAwait(false);
+            var blobClient = _storageAccount.CreateCloudBlobClient();
+            var blobContainer = blobClient.GetContainerReference(_containerName);
+
+            // this should only happen once - assuming this is a singleton
+            if (Interlocked.CompareExchange(ref _checkforContainerExistance, 0, 1) == 1)
+            {
+                await blobContainer.CreateIfNotExistsAsync(cancellationToken).ConfigureAwait(false);
+            }
+
             var blobRequestOptions = new BlobRequestOptions();
             var operationContext = new OperationContext();
 
-            await Task.WhenAll(
-                changes.Select(async (keyValuePair) =>
+            foreach (var keyValuePair in changes)
+            {
+                var newValue = keyValuePair.Value;
+                var storeItem = newValue as IStoreItem;
+
+                // "*" eTag in IStoreItem converts to null condition for AccessCondition
+                var accessCondition = storeItem?.ETag != "*"
+                    ? AccessCondition.GenerateIfMatchCondition(storeItem?.ETag)
+                    : AccessCondition.GenerateEmptyCondition();
+
+                var blobName = GetBlobName(keyValuePair.Key);
+                var blobReference = blobContainer.GetBlockBlobReference(blobName);
+
+                try
                 {
-                    var newValue = keyValuePair.Value;
-                    var storeItem = newValue as IStoreItem;
-
-                    // "*" eTag in IStoreItem converts to null condition for AccessCondition
-                    var accessCondition = storeItem?.ETag == "*"
-                        ? AccessCondition.GenerateEmptyCondition()
-                        : AccessCondition.GenerateIfMatchCondition(storeItem?.ETag);
-
-                    var blobName = GetBlobName(keyValuePair.Key);
-                    var blobReference = blobContainer.GetBlockBlobReference(blobName);
-
-                    try
+                    using (var memoryStream = new MultiBufferMemoryStream(blobReference.ServiceClient.BufferManager))
+                    using (var streamWriter = new StreamWriter(memoryStream))
                     {
-                        using (var memoryStream = new MultiBufferMemoryStream(blobReference.ServiceClient.BufferManager))
-                        using (var streamWriter = new StreamWriter(memoryStream))
-                        {
-                            JsonSerializer.Serialize(streamWriter, newValue);
-                            streamWriter.Flush();
-                            memoryStream.Seek(0, SeekOrigin.Begin);
-                            await blobReference.UploadFromStreamAsync(memoryStream, accessCondition, blobRequestOptions, operationContext).ConfigureAwait(false);
-                        }
+                        JsonSerializer.Serialize(streamWriter, newValue);
+                        streamWriter.Flush();
+                        memoryStream.Seek(0, SeekOrigin.Begin);
+                        await blobReference.UploadFromStreamAsync(memoryStream, accessCondition, blobRequestOptions, operationContext, cancellationToken).ConfigureAwait(false);
                     }
-                    catch (StorageException ex)
-                    when (ex.RequestInformation.HttpStatusCode == (int)HttpStatusCode.BadRequest
-                    && ex.RequestInformation.ErrorCode == BlobErrorCodeStrings.InvalidBlockList)
-                    {
-                        throw new Exception(
-                            $"An error ocurred while trying to write an object. The underlying '{BlobErrorCodeStrings.InvalidBlockList}' error is commonly caused due to concurrently uploading an object larger than 128MB in size.",
-                            ex);
-                    }
-                })).ConfigureAwait(false);
+                }
+                catch (StorageException ex)
+                when (ex.RequestInformation.HttpStatusCode == (int)HttpStatusCode.BadRequest
+                && ex.RequestInformation.ErrorCode == BlobErrorCodeStrings.InvalidBlockList)
+                {
+                    throw new Exception(
+                        $"An error ocurred while trying to write an object. The underlying '{BlobErrorCodeStrings.InvalidBlockList}' error is commonly caused due to concurrently uploading an object larger than 128MB in size.",
+                        ex);
+                }
+            }
         }
 
         private static string GetBlobName(string key)
@@ -222,25 +208,43 @@ namespace Microsoft.Bot.Builder.Azure
             return blobName;
         }
 
-        private ValueTask<CloudBlobContainer> GetBlobContainer()
+        private static async Task<object> InnerReadBlobAsync(CloudBlob blobReference, CancellationToken cancellationToken)
         {
-            if (_container != null)
+            var i = 0;
+            while (true)
             {
-                return new ValueTask<CloudBlobContainer>(_container);
-            }
+                try
+                {
+                    // add request options to retry on timeouts and server errors
+                    var options = new BlobRequestOptions { RetryPolicy = new LinearRetry(TimeSpan.FromSeconds(20), 4) };
 
-            return new ValueTask<CloudBlobContainer>(EnsureBlobContainerExists());
+                    using (var blobStream = await blobReference.OpenReadAsync(null, options, new OperationContext(), cancellationToken).ConfigureAwait(false))
+                    using (var jsonReader = new JsonTextReader(new StreamReader(blobStream)))
+                    {
+                        var obj = JsonSerializer.Deserialize(jsonReader);
 
-            async Task<CloudBlobContainer> EnsureBlobContainerExists()
-            {
-                var blobClient = _storageAccount.CreateCloudBlobClient();
-                var container = blobClient.GetContainerReference(_containerName);
+                        if (obj is IStoreItem storeItem)
+                        {
+                            storeItem.ETag = blobReference.Properties.ETag;
+                        }
 
-                await container.CreateIfNotExistsAsync().ConfigureAwait(false);
-
-                _container = container;
-
-                return _container;
+                        return obj;
+                    }
+                }
+                catch (StorageException ex)
+                    when ((HttpStatusCode)ex.RequestInformation.HttpStatusCode == HttpStatusCode.PreconditionFailed)
+                {
+                    // additional retry logic, even though this is a read operation blob storage can return 412 if there is contention
+                    if (i++ < 8)
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(20)).ConfigureAwait(false);
+                        continue;
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
             }
         }
     }

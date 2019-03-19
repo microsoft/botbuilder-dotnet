@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 
         public override bool CanConvert(Type objectType)
         {
-            return typeof(ITemplate<IMessageActivity>) == objectType;
+            return typeof(ITemplate<Activity>) == objectType;
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)

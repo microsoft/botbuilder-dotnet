@@ -56,10 +56,10 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="channelId">The ID of the channel the conversation is in.</param>
         /// <param name="conversationId">The ID of the conversation.</param>
-        /// <param name="continuationToken"></param>
+        /// <param name="continuationToken">The continuation token from the previous page of results.</param>
         /// <param name="startDate">A cutoff date. Activities older than this date are not included.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>If the task completes successfully, the result contains the matching activities.</remarks>
+        /// <remarks>If the task completes successfully, the result contains a page of matching activities.</remarks>
         public Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTimeOffset startDate = default(DateTimeOffset))
         {
             if (channelId == null)
@@ -149,12 +149,12 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Gets the conversations on a channel from the store.
+        /// Gets a page of conversations for a channel from the store.
         /// </summary>
         /// <param name="channelId">The ID of the channel.</param>
-        /// <param name="continuationToken"></param>
+        /// <param name="continuationToken">The continuation token from the previous page of results.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks></remarks>
+        /// <remarks>If the task is successful, the result contains a page of conversations.</remarks>
         public Task<PagedResult<TranscriptInfo>> ListTranscriptsAsync(string channelId, string continuationToken = null)
         {
             if (channelId == null)

@@ -1,0 +1,6 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "title": "Microsoft IRecognizer",
+    "description": "Union of components which implement the IRecognizer interface",
+    "$role": "unionType"
+}
