@@ -14,32 +14,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
         {
             if (!string.IsNullOrEmpty(entityName))
             {
-                this.entityName = entityName;
+                this.EntityName = entityName;
             }
 
             if (!string.IsNullOrEmpty(property))
             {
-                this.property = property;
+                this.Property = property;
             }
         }
 
-        public string entityName { get; set; }
-
-        public string property { get; set; }
-
+        public string EntityName { get; set; }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (dc.State.Entities.ContainsKey(entityName))
+            if (dc.State.Entities.ContainsKey(EntityName))
             {
-                var values = dc.State.Entities[entityName];
+                var values = dc.State.Entities[EntityName];
                 if (values.GetType() == typeof(JArray))
                 {
-                    dc.State.SetValue(property, ((JArray)values)[0]);
+                    dc.State.SetValue(Property, ((JArray)values)[0]);
                 }
                 else
                 {
-                    dc.State.SetValue(property, values);
+                    dc.State.SetValue(Property, values);
                 }
             }
             return await dc.EndDialogAsync();

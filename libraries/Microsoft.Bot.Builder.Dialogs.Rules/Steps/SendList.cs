@@ -15,69 +15,59 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 
         protected override string OnComputeId()
         {
-            return $"sendList[{listProperty}]";
+            return $"sendList[{ListProperty}]";
         }
 
-        public string listProperty;
+        public string ListProperty { set; get; }
 
-        public string messageTemplate
-        {
-            set; get;
-        }
+        public string MessageTemplate { set; get; }
         
-        public string itemTemplate
-        {
-            set; get;
-        }
+        public string ItemTemplate { set; get; }
 
         public SendList(string listProperty, string messageTemplate = null, string itemTemplate = null)
         {
-          
-            if (!string.IsNullOrEmpty(listProperty))
-            {
-                this.listProperty = listProperty;
-            }
+            this.ListProperty = listProperty;
 
             if (!string.IsNullOrEmpty(messageTemplate))
             {
-                this.messageTemplate = messageTemplate;
+                this.MessageTemplate = messageTemplate;
             }
 
             if (!string.IsNullOrEmpty(itemTemplate))
             {
-                this.itemTemplate = itemTemplate;
+                this.ItemTemplate = itemTemplate;
             }
         }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (string.IsNullOrEmpty(messageTemplate))
+            if (string.IsNullOrEmpty(MessageTemplate))
             {
-                messageTemplate = "{list}";
+                MessageTemplate = "{list}";
             }
-            else if (messageTemplate.IndexOf("{list") < 0)
+            else if (MessageTemplate.IndexOf("{list") < 0)
             {
-                messageTemplate += "\n\n{list}";
+                MessageTemplate += "\n\n{list}";
             }
 
-            if (string.IsNullOrEmpty(itemTemplate))
+            if (string.IsNullOrEmpty(ItemTemplate))
             {
-                itemTemplate = "- {item}\n";
+                ItemTemplate = "- {item}\n";
             }
-            else if (this.itemTemplate.IndexOf("{item") < 0)
+            else if (this.ItemTemplate.IndexOf("{item") < 0)
             {
-                itemTemplate += " {item}\n";
+                ItemTemplate += " {item}\n";
             }
 
             var list = string.Empty;
-            var value = dc.State.GetValue<List<object>>(listProperty);
+            var value = dc.State.GetValue<List<object>>(ListProperty);
 
             foreach (var v in value)
             {
-                list += itemTemplate.Replace("{item}", v.ToString());
+                list += ItemTemplate.Replace("{item}", v.ToString());
             }
 
-            var activity = messageTemplate.Replace("{list}", list);
+            var activity = MessageTemplate.Replace("{list}", list);
 
             if (!string.IsNullOrEmpty(activity))
             {

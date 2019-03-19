@@ -27,6 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
     public class DialogContextState
     {
+        private const string TurnEntities = "turn_entities";
         private readonly DialogContext dialogContext;
 
         [JsonProperty(PropertyName = "user")]
@@ -83,11 +84,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             get
             {
-                var entities = dialogContext.Context.TurnState.Get<object>("turn_entities");
+                var entities = dialogContext.Context.TurnState.Get<object>(TurnEntities);
                 if (entities == null)
                 {
                     entities = new StateMap();
-                    dialogContext.Context.TurnState.Add("turn_entities", entities);
+                    dialogContext.Context.TurnState.Add(TurnEntities, entities);
                 }
 
                 return entities as StateMap;
