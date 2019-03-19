@@ -5,6 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -83,8 +84,87 @@ namespace Microsoft.Bot.Builder.Tests
                 callbackInvoked = true;
                 return Task.CompletedTask;
             }
+            await adapter.ContinueConversationAsync("MyBot", cr, continueCallback, default(CancellationToken));
+            Assert.IsTrue(callbackInvoked);
+        }
 
-            await adapter.ContinueConversationAsync("MyBot", cr, ContinueCallback, default(CancellationToken));
+        [TestMethod]
+        public async Task ContinueConversation_AppIdNotInformedAsync()
+        {
+            bool callbackInvoked = false;
+            var adapter = new BotFrameworkAdapter(new SimpleCredentialProvider("AppId", "AppSecret"));
+            ConversationReference cr = new ConversationReference
+            {
+                ActivityId = "activityId",
+                Bot = new ChannelAccount
+                {
+                    Id = "channelId",
+                    Name = "testChannelAccount",
+                    Role = "bot",
+                },
+                ChannelId = "testChannel",
+                ServiceUrl = "https://test.com",
+                Conversation = new ConversationAccount
+                {
+                    ConversationType = "",
+                    Id = "testConversationId",
+                    IsGroup = false,
+                    Name = "testConversationName",
+                    Role = "user",
+                },
+                User = new ChannelAccount
+                {
+                    Id = "channelId",
+                    Name = "testChannelAccount",
+                    Role = "bot",
+                },
+            };
+            Task continueCallback(ITurnContext turnContext, CancellationToken cancellationToken)
+            {
+                callbackInvoked = true;
+                return Task.CompletedTask;
+            }
+            await adapter.ContinueConversationAsync(null, cr, continueCallback, default(CancellationToken));
+            Assert.IsTrue(callbackInvoked);
+        }
+
+        [TestMethod]
+        public async Task ContinueConversation_AppIdInformedAsync()
+        {
+            bool callbackInvoked = false;
+            var adapter = new BotFrameworkAdapter(new SimpleCredentialProvider("AppId", "AppSecret"));
+            ConversationReference cr = new ConversationReference
+            {
+                ActivityId = "activityId",
+                Bot = new ChannelAccount
+                {
+                    Id = "channelId",
+                    Name = "testChannelAccount",
+                    Role = "bot",
+                },
+                ChannelId = "testChannel",
+                ServiceUrl = "https://test.com",
+                Conversation = new ConversationAccount
+                {
+                    ConversationType = "",
+                    Id = "testConversationId",
+                    IsGroup = false,
+                    Name = "testConversationName",
+                    Role = "user",
+                },
+                User = new ChannelAccount
+                {
+                    Id = "channelId",
+                    Name = "testChannelAccount",
+                    Role = "bot",
+                },
+            };
+            Task continueCallback(ITurnContext turnContext, CancellationToken cancellationToken)
+            {
+                callbackInvoked = true;
+                return Task.CompletedTask;
+            }
+            await adapter.ContinueConversationAsync("AppId", cr, continueCallback, default(CancellationToken));
             Assert.IsTrue(callbackInvoked);
         }
     }
