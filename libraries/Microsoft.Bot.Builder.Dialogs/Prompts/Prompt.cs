@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Dynamic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -38,9 +39,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             _validator = validator;
 
-            this.InitialPrompt = this.DefineMessageActivityProperty(nameof(InitialPrompt));
-            this.RetryPrompt = this.DefineMessageActivityProperty(nameof(RetryPrompt));
-            this.NoMatchResponse = this.DefineMessageActivityProperty(nameof(NoMatchResponse));
+            this.InitialPrompt = this.DefineActivityProperty(nameof(InitialPrompt));
+            this.RetryPrompt = this.DefineActivityProperty(nameof(RetryPrompt));
+            this.NoMatchResponse = this.DefineActivityProperty(nameof(NoMatchResponse));
         }
 
         /// <summary>
@@ -49,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The initial prompt to send the user as <seealso cref="Activity"/>Activity.
         /// </value>
-        public ITemplate<IMessageActivity> InitialPrompt { get; set; }
+        public ITemplate<Activity> InitialPrompt { get; set; }
 
         /// <summary>
         /// Gets or sets the retry prompt to send the user as <seealso cref="Activity"/>Activity.
@@ -57,12 +58,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The retry prompt to send the user as <seealso cref="Activity"/>Activity.
         /// </value>
-        public ITemplate<IMessageActivity> RetryPrompt { get; set; }
+        public ITemplate<Activity> RetryPrompt { get; set; }
 
         /// <summary>
         /// Gets or sets the activity to send when the input didn't match at all
         /// </summary>
-        public ITemplate<IMessageActivity> NoMatchResponse { get; set; }
+        public ITemplate<Activity> NoMatchResponse { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -196,6 +197,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                     msg = ChoiceFactory.SuggestedAction(choices, text);
                     break;
 
+                case ListStyle.HeroCard:
+                    msg = ChoiceFactory.HeroCard(choices, text);
+                    break;
+
                 case ListStyle.None:
                     msg = Activity.CreateMessageActivity();
                     msg.Text = text;
@@ -206,16 +211,22 @@ namespace Microsoft.Bot.Builder.Dialogs
                     break;
             }
 
-            // Update prompt with text and actions
+            // Update prompt with text, actions and attachments
             if (prompt != null)
             {
                 // clone the prompt the set in the options (note ActivityEx has Properties so this is the safest mechanism)
                 prompt = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(prompt));
 
                 prompt.Text = msg.Text;
+
                 if (msg.SuggestedActions != null && msg.SuggestedActions.Actions != null && msg.SuggestedActions.Actions.Count > 0)
                 {
                     prompt.SuggestedActions = msg.SuggestedActions;
+                }
+
+                if (msg.Attachments != null && msg.Attachments.Any())
+                {
+                    prompt.Attachments = msg.Attachments;
                 }
 
                 return prompt;

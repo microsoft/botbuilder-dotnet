@@ -74,6 +74,16 @@ namespace Microsoft.Bot.Builder
     public delegate Task DeleteActivityHandler(ITurnContext turnContext, ConversationReference reference, Func<Task> next);
 
     /// <summary>
+    /// A ITurnContext where the inbound Activity property is strongly typed.
+    /// </summary>
+    /// <typeparam name="T">An IActivity derived type, that is one of IMessageActivity, IConversationUpdateActivity etc.</typeparam>
+    public interface ITurnContext<T> : ITurnContext
+        where T : IActivity
+    {
+        new T Activity { get; }
+    }
+
+    /// <summary>
     /// Provides context for a turn of a bot.
     /// </summary>
     /// <remarks>Context provides information needed to process an incoming activity.
@@ -90,7 +100,7 @@ namespace Microsoft.Bot.Builder
         BotAdapter Adapter { get; }
 
         /// <summary>
-        /// Collection of values cached with the context object for the lifetime of the turn.
+        /// Gets the collection of values cached with the context object for the lifetime of the turn.
         /// </summary>
         /// <value>The collection of services registered on this context object.</value>
         TurnContextStateCollection TurnState { get; }

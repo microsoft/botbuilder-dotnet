@@ -1,15 +1,12 @@
 {
-  "$schema": "../../Schemas/app.schema",
+  "$schema": "../../app.schema",
   "$type": "Microsoft.RuleDialog",
   "$id": "root",
-  "storage": {
-    "$type": "Microsoft.MemoryStorage"
-  },
   "recognizer": {
     "$type": "Microsoft.RegexRecognizer",
-    "rules": {
+    "intents": {
       "JokeIntent": "joke",
-      "FortuneTellerIntent":  "fortune|future"
+      "FortuneTellerIntent": "fortune|future"
     }
   },
   "rules": [
@@ -19,9 +16,7 @@
       "steps": [
         {
           "$type": "Microsoft.CallDialog",
-          "dialog": {
-            "$ref": "Samples/Planning 7 - CallDialog/TellJokeDialog.dialog"
-          }
+          "dialog": "TellJokeDialog"
         }
       ]
     },
@@ -31,9 +26,7 @@
       "steps": [
         {
           "$type": "Microsoft.CallDialog",
-          "dialog": {
-            "$ref": "Samples/Planning 7 - CallDialog/FortuneTellerDialog.dialog"
-          }
+          "dialog": "FortuneTellerDialog"
         }
       ]
     },

@@ -8,57 +8,21 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 {
-    public class CallDialog : Dialog, IDialogDependencies
+    /// <summary>
+    /// Step which calls another dialog
+    /// </summary>
+    public class CallDialog : BaseCallDialog
     {
-        public object Options { get; set; }
-
-        public IDialog Dialog { get; set; }
-
-        public string Property
+        public CallDialog(string dialogIdToCall = null, string id = null, string property = null, object options = null)
+            : base(dialogIdToCall, id, property, options)
         {
-            get
-            {
-                return InputBindings["value"];
-            }
-            set
-            {
-                InputBindings["value"] = value;
-                OutputBinding = value;
-            }
-        }
-
-        public CallDialog(string id = null, string property = null, object options = null) 
-            : base()
-        {
-            this.OutputBinding = "dialog.lastResult";
-;           
-            if (options != null)
-            {
-                this.Options = options;
-            }
-
-            if (!string.IsNullOrEmpty(property))
-            {
-                Property = property;
-            }
-
-            Id = id;
-        }
-
-        protected override string OnComputeId()
-        {
-            return $"CallDialog[{Dialog.Id}:{this.BindingPath()}]";
         }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             Options = Options.Merge(options ?? new object());
-            return await dc.BeginDialogAsync(Dialog?.Id ?? throw new Exception("CallDialog requires a dialog to be called."), Options, cancellationToken).ConfigureAwait(false);
-        }
-
-        public List<IDialog> ListDependencies()
-        {
-            return new List<IDialog>() { Dialog };
+            var dialog = this.resolveDialog(dc);
+            return await dc.BeginDialogAsync(dialog.Id, Options, cancellationToken).ConfigureAwait(false);
         }
     }
 }

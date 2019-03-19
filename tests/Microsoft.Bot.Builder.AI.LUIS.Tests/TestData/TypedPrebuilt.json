@@ -171,6 +171,7 @@
     "sentimentAnalysis": {
       "label": "neutral",
       "score": 0.5
-    }
+    },
+    "connectedServiceResult": null
   }
 }

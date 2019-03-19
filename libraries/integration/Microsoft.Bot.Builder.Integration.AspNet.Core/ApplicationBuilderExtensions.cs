@@ -50,14 +50,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
                 if (!string.IsNullOrEmpty(oauthApiEndpoint))
                 {
-                    OAuthClient.OAuthEndpoint = oauthApiEndpoint;
+                    OAuthClientConfig.OAuthEndpoint = oauthApiEndpoint;
                 }
 
                 var emulateOAuthCards = configuration.GetSection(AuthenticationConstants.EmulateOAuthCardsKey)?.Value;
 
                 if (!string.IsNullOrEmpty(emulateOAuthCards) && bool.TryParse(emulateOAuthCards, out bool emualteOAuthCardsValue))
                 {
-                    OAuthClient.EmulateOAuthCards = emualteOAuthCardsValue;
+                    OAuthClientConfig.EmulateOAuthCards = emualteOAuthCardsValue;
                 }
             }
 

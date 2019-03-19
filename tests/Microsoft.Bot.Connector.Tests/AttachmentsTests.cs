@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
@@ -32,6 +34,10 @@ namespace Connector.Tests
         }
 
         [Fact]
+        public async Task UploadAttachmentAndGetAttachment_WithTracing()
+            => await AssertTracingFor(UploadAttachmentAndGetAttachment, nameof(ConversationsExtensions.UploadAttachmentAsync));
+
+        [Fact]
         public async Task UploadAttachmentWithoutOriginalFails()
         {
             await UseClientFor(async client =>
@@ -47,6 +53,10 @@ namespace Connector.Tests
                 Assert.Contains("original", ex.Body.Error.Message);
             });
         }
+
+        [Fact]
+        public async Task UploadAttachmentWithoutOriginalFails_WithTracing()
+            => await AssertTracingFor(UploadAttachmentWithoutOriginalFails, nameof(ConversationsExtensions.UploadAttachmentAsync), isSuccesful: false);
 
         [Fact]
         public async Task UploadAttachmentWithNullConversationId()
@@ -71,6 +81,24 @@ namespace Connector.Tests
         }
 
         [Fact]
+        public async Task UploadAttachmentAndGetAttachmentWithCustomHeader()
+        {
+            var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
+
+            await AssertTracingFor(async () =>
+                await UseClientFor(async client =>
+                {
+                    var attachment = new AttachmentData("image/png", "Bot.png", ReadFile("bot.png"), ReadFile("bot_icon.png"));
+                    var response = await client.Conversations.UploadAttachmentWithHttpMessagesAsync(conversationId, attachment, customHeaders);
+                    Assert.NotNull(response.Body);
+                    Assert.NotNull(response.Body.Id);
+                }),
+                nameof(ConversationsExtensions.UploadAttachmentAsync),
+                assertHttpRequestMessage:
+                    (h) => h.Headers.Contains("customHeader") && h.Headers.GetValues("customHeader").Contains("customValue"));
+        }
+
+        [Fact]
         public async Task GetAttachmentInfoWithInvalidIdFails()
         {
             await UseClientFor(async client =>
@@ -79,6 +107,10 @@ namespace Connector.Tests
                 Assert.Contains("NotFound", ex.Message);
             });
         }
+
+        [Fact]
+        public async Task GetAttachmentInfoWithInvalidIdFails_WithTracing()
+            => await AssertTracingFor(GetAttachmentInfoWithInvalidIdFails, nameof(AttachmentsExtensions.GetAttachmentInfoAsync), isSuccesful: false);
 
         [Fact]
         public async Task GetAttachmentInfoWithNullIdFails()
@@ -110,6 +142,10 @@ namespace Connector.Tests
         }
 
         [Fact]
+        public async Task GetAttachmentView_WithTracing()
+            => await AssertTracingFor(GetAttachmentView, nameof(AttachmentsExtensions.GetAttachmentAsync));
+
+        [Fact]
         public async Task GetAttachmentViewWithInvalidAttachmentIdFails()
         {
             await UseClientFor(async client =>
@@ -118,6 +154,10 @@ namespace Connector.Tests
                 Assert.Contains("NotFound", ex.Message);
             });
         }
+
+        [Fact]
+        public async Task GetAttachmentViewWithInvalidAttachmentIdFails_WithTracing()
+            => await AssertTracingFor(GetAttachmentViewWithInvalidAttachmentIdFails, nameof(AttachmentsExtensions.GetAttachmentAsync), isSuccesful: false);
 
         [Fact]
         public async Task GetAttachmentViewWithNullAttachmentIdFails()
@@ -144,6 +184,10 @@ namespace Connector.Tests
                 Assert.Contains("NotFound", ex.Message);
             });
         }
+
+        [Fact]
+        public async Task GetAttachmentViewWithInvalidViewIdFails_WithTracing()
+            => await AssertTracingFor(GetAttachmentViewWithInvalidViewIdFails, nameof(AttachmentsExtensions.GetAttachmentAsync), isSuccesful: false);
 
         [Fact]
         public async Task GetAttachmentViewWithNullViewIdFails()

@@ -16,7 +16,7 @@
 - Hello, my name is Zoidberg and I'll be your guide. [help]
 - Hail Zoidberg!
 
-# Greeting.Name.intialPrompt
+# Greeting.Name.initialPrompt
 - Hello. What is your name?
 - I would like to know you better, what's your name?
 - I would like to know you better, what's your name?
@@ -24,7 +24,7 @@
 # Greeting.Name.retryPrompt
 - [Greeting.Name.initialPrompt]
 
-# [Greeting.Name.notMatched
+# Greeting.Name.notMatched
 - That didn't match what I'm looking for, your name needs to be between 3 and 50 characters.
 - Oh no, I'm silly and confused again.
 

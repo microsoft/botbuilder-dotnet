@@ -1,0 +1,6 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "title": "Microsoft IRule",
+    "description": "Union of components which implement the IRule interface",
+    "$role": "unionType"
+}

@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<Version Condition=" '$(PackageVersion)' == '' ">4.0.0-local</Version>
-		<Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
-		<PackageVersion Condition=" '$(PackageVersion)' == '' ">4.0.0-local</PackageVersion>
-		<PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
-		<Configurations>Debug;Release;Documentation;Debug - NuGet Packages;</Configurations>
-	</PropertyGroup>
+  <PropertyGroup>
+    <Version Condition=" '$(PackageVersion)' == '' ">4.5.0-local</Version>
+    <Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
+    <PackageVersion Condition=" '$(PackageVersion)' == '' ">4.5.0-local</PackageVersion>
+    <PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
+    <Configurations>Debug;Release;Documentation;Debug - NuGet Packages;</Configurations>
+  </PropertyGroup>
 
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 		<SignAssembly>true</SignAssembly>
 		<DelaySign>true</DelaySign>
 		<AssemblyOriginatorKeyFile>..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
@@ -15,11 +15,11 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
-		<PackageId>Microsoft.Bot.Builder.AI.QnA</PackageId>
+		<TargetFramework>netstandard2.0</TargetFramework>		
 		<Description>Classes for using QnA Maker Cognitive Service on the Microsoft Bot Builder SDK</Description>
 		<Summary>This library implements C# classes for building bots using Microsoft Cognitive services.</Summary>
-	</PropertyGroup>
+    <ContentTargetFolders>content</ContentTargetFolders>
+  </PropertyGroup>
 
 	<PropertyGroup>
 		<Company>Microsoft</Company>
@@ -50,12 +50,20 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Microsoft.QnaMakerRecognizer.schema" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Microsoft.QnaMakerRecognizer.schema" />
+	</ItemGroup>
+
+	<ItemGroup>
     <PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
     <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
-    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.1" />
+    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008" PrivateAssets="all" />
 	</ItemGroup>
 

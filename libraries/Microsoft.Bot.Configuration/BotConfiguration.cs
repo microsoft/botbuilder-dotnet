@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Configuration
                 throw new ArgumentNullException(nameof(file));
             }
 
-            string json = string.Empty;
+            var json = string.Empty;
             using (var stream = File.OpenText(file))
             {
                 json = await stream.ReadToEndAsync().ConfigureAwait(false);
@@ -159,29 +159,20 @@ namespace Microsoft.Bot.Configuration
         /// Generate a new key suitable for encrypting.
         /// </summary>
         /// <returns>key to use with <see cref="Encrypt(string)"/> method. </returns>
-        public static string GenerateKey()
-        {
-            return EncryptUtilities.GenerateKey();
-        }
+        public static string GenerateKey() => EncryptUtilities.GenerateKey();
 
         /// <summary>
         /// Save the file with secret.
         /// </summary>
         /// <param name="secret">Secret for encryption. </param>
         /// <returns><see cref="Task"/>.</returns>
-        public Task SaveAsync(string secret = null)
-        {
-            return this.SaveAsAsync(this.Location, secret);
-        }
+        public Task SaveAsync(string secret = null) => this.SaveAsAsync(this.Location, secret);
 
         /// <summary>
         /// Save the file with secret.
         /// </summary>
         /// <param name="secret">Secret for encryption. </param>
-        public void Save(string secret = null)
-        {
-            this.SaveAsync(secret).GetAwaiter().GetResult();
-        }
+        public void Save(string secret = null) => this.SaveAsync(secret).GetAwaiter().GetResult();
 
         /// <summary>
         /// Save the configuration to a .bot file.
@@ -255,10 +246,7 @@ namespace Microsoft.Bot.Configuration
         /// <summary>
         /// Clear secret.
         /// </summary>
-        public void ClearSecret()
-        {
-            this.Padlock = string.Empty;
-        }
+        public void ClearSecret() => this.Padlock = string.Empty;
 
         /// <summary>
         /// Connect a service to the bot file.
@@ -318,10 +306,10 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
-        /// Find service by name or id.
+        /// Find a service by its name or ID.
         /// </summary>
-        /// <param name="nameOrId">Name or service id.</param>
-        /// <returns>Found <see cref="ConnectedService"/>.</returns>
+        /// <param name="nameOrId">The name or service ID to find.</param>
+        /// <returns>The <see cref="ConnectedService"/>; or null if the service isn't found.</returns>
         public ConnectedService FindServiceByNameOrId(string nameOrId)
         {
             if (string.IsNullOrEmpty(nameOrId))
@@ -333,10 +321,28 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
-        /// Find a service by id.
+        /// Find a specific type of service by its name or ID.
         /// </summary>
-        /// <param name="id">Id of the service.</param>
-        /// <returns><see cref="ConnectedService"/>.</returns>
+        /// <typeparam name="T">The service type.</typeparam>
+        /// <param name="nameOrId">The name or service ID to find.</param>
+        /// <returns>The <see cref="ConnectedService"/>; or null if the service isn't found.</returns>
+        public T FindServiceByNameOrId<T>(string nameOrId)
+            where T : ConnectedService
+        {
+            if (string.IsNullOrEmpty(nameOrId))
+            {
+                throw new ArgumentNullException(nameof(nameOrId));
+            }
+
+            return (T)this.Services.FirstOrDefault(s =>
+                s is T && (s.Id == nameOrId || s.Name == nameOrId));
+        }
+
+        /// <summary>
+        /// Find a service by ID.
+        /// </summary>
+        /// <param name="id">The ID of the service to find.</param>
+        /// <returns>The <see cref="ConnectedService"/>; or null if the service isn't found.</returns>
         public ConnectedService FindService(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -348,10 +354,11 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
-        /// Remove service by name or id.
+        /// Remove a service by its name or ID.
         /// </summary>
-        /// <param name="nameOrId">Name or service id.</param>
-        /// <returns>Found <see cref="ConnectedService"/>.</returns>
+        /// <param name="nameOrId">The name or service ID.</param>
+        /// <returns>The <see cref="ConnectedService"/> that was found and removed.</returns>
+        /// <exception cref="Exception">No such service was found.</exception>
         public ConnectedService DisconnectServiceByNameOrId(string nameOrId)
         {
             if (string.IsNullOrEmpty(nameOrId))
@@ -370,9 +377,34 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
-        /// Remove a service by id.
+        /// Remove a specific type of service by its name or ID.
         /// </summary>
-        /// <param name="id">Id of the service.</param>
+        /// <typeparam name="T">The service type.</typeparam>
+        /// <param name="nameOrId">The name or service ID.</param>
+        /// <returns>The <see cref="ConnectedService"/> that was found and removed.</returns>
+        /// <exception cref="Exception">No such service was found.</exception>
+        public T DisconnectServiceByNameOrId<T>(string nameOrId)
+            where T : ConnectedService
+        {
+            if (string.IsNullOrEmpty(nameOrId))
+            {
+                throw new ArgumentNullException(nameof(nameOrId));
+            }
+
+            var service = this.FindServiceByNameOrId<T>(nameOrId);
+            if (service == null)
+            {
+                throw new Exception($"a service with id or name of[{nameOrId}] was not found");
+            }
+
+            this.Services.Remove(service);
+            return service;
+        }
+
+        /// <summary>
+        /// Remove a service by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the service.</param>
         public void DisconnectService(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -423,7 +455,7 @@ namespace Microsoft.Bot.Configuration
         protected virtual void MigrateData()
         {
             // migrate old secretKey
-            string secretKey = (string)this.Properties[SECRETKEY];
+            var secretKey = (string)this.Properties[SECRETKEY];
             if (secretKey != null)
             {
                 if (this.Padlock == null)
@@ -468,29 +500,23 @@ namespace Microsoft.Bot.Configuration
         /// </summary>
         internal class BotServiceConverter : JsonConverter
         {
-            public override bool CanWrite
-            {
-                get { return false; }
-            }
+            public override bool CanWrite => false;
 
             /// <summary>
             /// Checks whether the connected service can be converted to the provided type.
             /// </summary>
             /// <param name="objectType">Type to be checked for conversion. </param>
             /// <returns>Whether the connected service can be converted to the provided type.</returns>
-            public override bool CanConvert(Type objectType)
-            {
-                return objectType == typeof(List<ConnectedService>);
-            }
+            public override bool CanConvert(Type objectType) => objectType == typeof(List<ConnectedService>);
 
             /// <inheritdoc/>
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
-                List<ConnectedService> services = new List<ConnectedService>();
-                JArray array = JArray.Load(reader);
-                foreach (JToken token in array)
+                var services = new List<ConnectedService>();
+                var array = JArray.Load(reader);
+                foreach (var token in array)
                 {
-                    string type = token.Value<string>("type");
+                    var type = token.Value<string>("type");
                     switch (type)
                     {
                         case ServiceTypes.Bot:
@@ -534,10 +560,7 @@ namespace Microsoft.Bot.Configuration
             }
 
             /// <inheritdoc/>
-            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-            {
-                throw new NotImplementedException();
-            }
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) => throw new NotImplementedException();
         }
     }
 }

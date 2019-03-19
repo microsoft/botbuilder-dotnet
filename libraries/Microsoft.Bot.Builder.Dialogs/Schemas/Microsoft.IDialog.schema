@@ -1,0 +1,11 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "title": "Microsoft IDialog",
+    "description": "Union of components which implement the IDialog interface",
+    "$role": "unionType",
+    "oneOf": [
+        {
+            "type": "string"
+        }
+    ]
+}

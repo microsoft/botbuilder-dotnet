@@ -33,6 +33,34 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [TestMethod]
+        public void Long_Key_Should_Be_Truncated()
+        {
+            var tooLongKey = new string('a', CosmosDbKeyEscape.MaxKeyLength + 1);
+
+            var sanitizedKey = CosmosDbKeyEscape.EscapeKey(tooLongKey);
+            Assert.IsTrue(sanitizedKey.Length <= CosmosDbKeyEscape.MaxKeyLength, "Key too long");
+
+            // The resulting key should be:
+            var hash = tooLongKey.GetHashCode().ToString("x");
+            var correctKey = sanitizedKey.Substring(0, CosmosDbKeyEscape.MaxKeyLength - hash.Length) + hash;
+
+            Assert.AreEqual(correctKey, sanitizedKey);            
+        }
+
+        [TestMethod]
+        public void Long_Key_With_Illegal_Characters_Should_Be_Truncated()
+        {
+            var tooLongKeyWithIllegalCharacters = "?test?" + new string('A', 1000);
+            var sanitizedKey = CosmosDbKeyEscape.EscapeKey(tooLongKeyWithIllegalCharacters);
+
+            // Verify the key ws truncated
+            Assert.IsTrue(sanitizedKey.Length <= CosmosDbKeyEscape.MaxKeyLength, "Key too long");
+
+            // Make sure the escaping still happened
+            Assert.IsTrue(sanitizedKey.StartsWith("*3ftest*3f"));                                   
+        }
+
+        [TestMethod]
         public void Sanitize_Key_Should_Escape_Illegal_Character()
         {
             // Ascii code of "?" is "3f".

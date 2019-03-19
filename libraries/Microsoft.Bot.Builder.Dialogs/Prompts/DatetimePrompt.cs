@@ -29,8 +29,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             MinValue = DateTime.MinValue;
             MaxValue = DateTime.MaxValue;
 
-            this.TooSmallResponse = this.DefineMessageActivityProperty(nameof(TooSmallResponse));
-            this.TooLargeResponse = this.DefineMessageActivityProperty(nameof(TooLargeResponse));
+            this.TooSmallResponse = this.DefineActivityProperty(nameof(TooSmallResponse));
+            this.TooLargeResponse = this.DefineActivityProperty(nameof(TooLargeResponse));
         }
 
         public string DefaultLocale { get; set; }
@@ -39,9 +39,9 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public DateTime MaxValue { get; set; }
 
-        public ITemplate<IMessageActivity> TooSmallResponse { get; set; }
+        public ITemplate<Activity> TooSmallResponse { get; set; }
 
-        public ITemplate<IMessageActivity> TooLargeResponse { get; set; }
+        public ITemplate<Activity> TooLargeResponse { get; set; }
 
         protected override async Task OnBeforePromptAsync(DialogContext dc, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
         {

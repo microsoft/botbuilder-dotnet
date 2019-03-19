@@ -41,7 +41,9 @@ namespace Microsoft.Bot.Schema
         /// conversation</param>
         /// <param name="channelData">Channel specific payload for creating the
         /// conversation</param>
-        public ConversationParameters(bool? isGroup = default(bool?), ChannelAccount bot = default(ChannelAccount), IList<ChannelAccount> members = default(IList<ChannelAccount>), string topicName = default(string), Activity activity = default(Activity), object channelData = default(object))
+        /// <param name="tenantId">(Optional) The tenant ID in which the
+        /// conversation should be created</param>
+        public ConversationParameters(bool? isGroup = default(bool?), ChannelAccount bot = default(ChannelAccount), IList<ChannelAccount> members = default(IList<ChannelAccount>), string topicName = default(string), Activity activity = default(Activity), object channelData = default(object), string tenantId = default(string))
         {
             IsGroup = isGroup;
             Bot = bot;
@@ -49,6 +51,7 @@ namespace Microsoft.Bot.Schema
             TopicName = topicName;
             Activity = activity;
             ChannelData = channelData;
+            TenantId = tenantId;
             CustomInit();
         }
 
@@ -94,6 +97,13 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "channelData")]
         public object ChannelData { get; set; }
+
+        /// <summary>
+        /// Gets or sets (Optional) The tenant ID in which the conversation
+        /// should be created
+        /// </summary>
+        [JsonProperty(PropertyName = "tenantId")]
+        public string TenantId { get; set; }
 
     }
 }

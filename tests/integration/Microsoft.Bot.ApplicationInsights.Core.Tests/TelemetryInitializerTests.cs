@@ -61,6 +61,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             Assert.IsTrue(telem != null);
             Assert.IsTrue(telem.Properties["activityId"] == activityID);
             Assert.IsTrue(telem.Properties["activityType"] == "message");
+            Assert.IsTrue(telem.Properties["channelId"] == "CHANNELID");
             Assert.IsTrue(telem.Context.Session.Id == conversationID);
             Assert.IsTrue(telem.Context.User.Id == channelID + fromID);
             Assert.IsTrue(telem.Properties["hello"] == "value");
@@ -109,6 +110,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             Assert.IsTrue(telem != null);
             Assert.IsTrue(telem.Properties["activityId"] == activityID);
             Assert.IsTrue(telem.Properties["activityType"] == "message");
+            Assert.IsTrue(telem.Properties["channelId"] == "CHANNELID");
             Assert.IsTrue(telem.Context.Session.Id == conversationID);
             Assert.IsTrue(telem.Context.User.Id == channelID + fromID);
 
@@ -156,6 +158,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             Assert.IsTrue(telem != null);
             Assert.IsTrue(telem.Properties["activityId"] == activityID);
             Assert.IsTrue(telem.Properties["activityType"] == "message");
+            Assert.IsTrue(telem.Properties["channelId"] == "CHANNELID");
             Assert.IsTrue(telem.Context.Session.Id == conversationID);
             Assert.IsTrue(telem.Context.User.Id == channelID + fromID);
 
@@ -203,6 +206,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             Assert.IsTrue(telem != null);
             Assert.IsTrue(properties.Properties["activityId"] == activityID);
             Assert.IsTrue(properties.Properties["activityType"] == "message");
+            Assert.IsTrue(telem.Properties["channelId"] == "CHANNELID");
             Assert.IsTrue(telem.Context.User.Id == channelID + fromID);
             Assert.IsTrue(telem.Properties["hello"] == "value");
             Assert.IsTrue(telem.Metrics["metric"] == 0.6);

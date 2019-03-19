@@ -100,14 +100,24 @@
             "type": "file",
             "id": "10",
             "name": "testFile",
-            "path": "..\\..\\test.bot",
+            "path": "..\\..\\test.bot"
         },
         {
             "type": "unknown",
             "id": "11",
             "name": "unknown"
+        },
+        {
+            "type": "generic",
+            "id": "12",
+            "name": "testAbs",
+            "description": "A service with the same name as another service, but of a different type",
+            "url": "https://bing.com",
+            "configuration": {
+                "key1": "testKey1",
+                "key2": "testKey2"
+            }
         }
-
     ],
     "secretKey": ""
 }
