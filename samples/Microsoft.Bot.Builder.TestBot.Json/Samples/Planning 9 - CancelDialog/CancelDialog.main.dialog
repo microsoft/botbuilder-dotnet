@@ -1,32 +1,33 @@
-{
-  "$schema": "../../app.schema",
+﻿{
+  "$schema": "../../Schemas/app.schema",
   "$type": "Microsoft.RuleDialog",
-  "$id": "root",
+  "storage": {
+    "$type": "Microsoft.MemoryStorage"
+  },
   "recognizer": {
     "$type": "Microsoft.RegexRecognizer",
-    "intents": {
-      "JokeIntent": "joke",
-      "FortuneTellerIntent": "fortune|future"
+    "rules": {
+      "JokeIntent": "joke"
     }
   },
   "rules": [
+    {
+      "$type": "Microsoft.EventRule",
+      "events": [ "cancelDialog" ],
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "ok."
+        }
+      ]
+    },
     {
       "$type": "Microsoft.IntentRule",
       "intent": "JokeIntent",
       "steps": [
         {
           "$type": "Microsoft.CallDialog",
-          "dialog": "TellJokeDialog"
-        }
-      ]
-    },
-    {
-      "$type": "Microsoft.IntentRule",
-      "intent": "FortuneTellerIntent",
-      "steps": [
-        {
-          "$type": "Microsoft.CallDialog",
-          "dialog": "FortuneTellerDialog"
+          "dialog": "CancelDialog.TellJoke"
         }
       ]
     },
@@ -35,7 +36,7 @@
       "steps": [
         {
           "$type": "Microsoft.SendActivity",
-          "activity": "Welcome!"
+          "activity": "I'm a joke bot. To get started say \"joke\"."
         }
       ]
     },

@@ -192,15 +192,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
         private TestFlow BuildTestFlow(string json)
         {
+            string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, $@"..\..\..\Microsoft.Bot.Builder.Dialogs.Declarative.Tests.csproj"));
+            var botResourceManager = new BotResourceManager()
+               // add current folder, it's project file, packages, projects, etc.
+               .AddProjectResources(projPath);
+
+            var dialog = DeclarativeTypeLoader.Load<IDialog>(json, botResourceManager);
+
             IStorage dataStore = new MemoryStorage();
-            var dialog = DeclarativeTypeLoader.Load<IDialog>(json);
 
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, $@"..\..\..\Microsoft.Bot.Builder.Dialogs.Declarative.Tests.csproj"));
-            var botResourceManager = new BotResourceManager()
-                .AddProjectResources(projPath);
             var lg = new LGLanguageGenerator(botResourceManager);
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
