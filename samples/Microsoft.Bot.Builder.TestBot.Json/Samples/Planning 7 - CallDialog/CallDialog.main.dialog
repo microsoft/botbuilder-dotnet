@@ -16,7 +16,7 @@
       "steps": [
         {
           "$type": "Microsoft.CallDialog",
-          "dialog": "TellJokeDialog"
+          "dialog": "CallDialog.TellJokeDialog"
         }
       ]
     },
@@ -26,7 +26,7 @@
       "steps": [
         {
           "$type": "Microsoft.CallDialog",
-          "dialog": "FortuneTellerDialog"
+          "dialog": "CallDialog.FortuneTellerDialog"
         }
       ]
     },

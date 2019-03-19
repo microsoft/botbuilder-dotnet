@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Tests.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Plugins;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 
 namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 {
@@ -241,7 +242,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
         private TestFlow BuildTestFlow(string json)
         {
-            var dialog = DeclarativeTypeLoader.Load<IDialog>(json);
+            var botResourceManager = new BotResourceManager()
+               // add current folder, it's project file, packages, projects, etc.
+               .AddProjectResources(".");
+
+            var dialog = DeclarativeTypeLoader.Load<IDialog>(json, botResourceManager);
 
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
