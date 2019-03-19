@@ -253,7 +253,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             // Forwards cancellation to sequences
             if (reason == DialogReason.CancelCalled)
             {
-                var state = instance.State as PlanningState;
+                var state = (instance.State as StateMap)["planningState"] as PlanningState;
 
                 if (state.Plan != null)
                 {
@@ -521,8 +521,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                     else
                     {
                         // End dialog and return default result
-                        var state = planning.ActiveDialog.State as PlanningState;
-                        return await planning.EndDialogAsync(state?.Result).ConfigureAwait(false);
+                        if (planning.ActiveDialog != null)
+                        {
+                            var state = (planning.ActiveDialog.State as StateMap)["planningState"] as PlanningState;
+                            return await planning.EndDialogAsync(state?.Result).ConfigureAwait(false);
+                        }
+
+                        return await planning.EndDialogAsync().ConfigureAwait(false);
                     }
                 }
             };

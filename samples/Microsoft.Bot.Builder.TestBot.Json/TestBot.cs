@@ -29,7 +29,10 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             // rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 5 - WelcomeRule\main.dialog"));
             //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 6 - DoSteps\main.dialog"));
             //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 7 - CallDialog\main.dialog"));
+            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 8 - ExternalLanguage\main.dialog"));
+            
             rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 8 - ExternalLanguage\main.dialog"));
+            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 9 - CancelDialog\main.dialog"));
 
             _dialogs = new DialogSet(accessors.ConversationDialogState);
             _dialogs.Add(rootDialog);

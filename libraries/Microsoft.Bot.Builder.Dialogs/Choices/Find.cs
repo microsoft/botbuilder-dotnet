@@ -21,11 +21,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 
         public static List<ModelResult<FoundChoice>> FindChoices(string utterance, IList<Choice> choices, FindChoicesOptions options = null)
         {
-            if (string.IsNullOrEmpty(utterance))
-            {
-                throw new ArgumentNullException(nameof(utterance));
-            }
-
             if (choices == null)
             {
                 throw new ArgumentNullException(nameof(choices));

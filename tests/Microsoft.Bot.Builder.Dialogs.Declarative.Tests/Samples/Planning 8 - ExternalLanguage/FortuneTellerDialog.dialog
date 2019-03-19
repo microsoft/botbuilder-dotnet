@@ -1,0 +1,23 @@
+{
+  "$schema": "../../Schemas/app.schema",
+  "$type": "Microsoft.RuleDialog",
+  "$id": "FortuneTellerDialog",
+  "storage": {
+    "$type": "Microsoft.MemoryStorage"
+  },
+  "rules": [
+    {
+      "$type": "Microsoft.FallbackRule",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "I see great things in your future..."
+        },
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "Potentially a successful demo"
+        }
+      ]
+    }
+  ]
+}

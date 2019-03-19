@@ -16,22 +16,22 @@ namespace Microsoft.Bot.Builder.Tests
 {
     [TestClass]
     [TestCategory("BotFrameworkOptions")]
-    class BotFrameworkOptionsTests
+    public class BotFrameworkOptionsTests
     {
         [TestMethod]
         public void EnsureProperties()
         {
             BotFrameworkOptions options = new BotFrameworkOptions();
             Assert.IsNotNull(options.CredentialProvider);
-            Assert.IsNotNull(options.HttpClient);
+            Assert.IsNull(options.HttpClient);
             Assert.IsNotNull(options.Middleware);
             Assert.IsNull(options.OnTurnError);
             Assert.IsNotNull(options.Paths);
+#pragma warning disable 0618 // Disable the warning, as this test needs to be here. 
             Assert.IsNotNull(options.State);
-            Assert.IsNotNull(options.ConnectorClientRetryPolicy);
-            Assert.IsNotNull(options.HttpClient);
+#pragma warning restore 0618
+            Assert.IsNull(options.ConnectorClientRetryPolicy);            
         }
-
 
         [TestMethod]
         public void EnsureDefaultPathsCorrect()

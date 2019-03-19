@@ -1,0 +1,53 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Extensions.Logging;
+
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core
+{
+    /// <summary>
+    /// A Bot Builder Adapter implementation used to handled bot Framework HTTP requests.
+    /// </summary>
+    public class BotFrameworkHttpAdapter : BotFrameworkAdapter, IBotFrameworkHttpAdapter
+    {
+        public BotFrameworkHttpAdapter(ICredentialProvider credentialProvider = null, IChannelProvider channelProvider = null, ILogger<BotFrameworkHttpAdapter> logger = null)
+            : base(credentialProvider ?? new SimpleCredentialProvider(), channelProvider, null, null, null, logger)
+        {
+        }
+
+        public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (httpRequest == null)
+            {
+                throw new ArgumentNullException(nameof(httpRequest));
+            }
+
+            if (httpResponse == null)
+            {
+                throw new ArgumentNullException(nameof(httpResponse));
+            }
+
+            if (bot == null)
+            {
+                throw new ArgumentNullException(nameof(bot));
+            }
+
+            // deserialize the incoming Activity
+            var activity = HttpHelper.ReadRequest(httpRequest);
+
+            // grab the auth header from the inbound http request
+            var authHeader = httpRequest.Headers["Authorization"];
+
+            // process the inbound activity with the bot
+            var invokeResponse = await ProcessActivityAsync(authHeader, activity, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
+
+            // write the response, potentially serializing the InvokeResponse
+            HttpHelper.WriteResponse(httpResponse, invokeResponse);
+        }
+    }
+}

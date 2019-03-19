@@ -13,7 +13,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi
 {
     /// <summary>
-    /// Initializer that sets the user ID based on Bot data.
+    /// Initializer that sets the user ID and session ID (in addition to other bot-specific properties such as activity ID).
     /// </summary>
     public class TelemetryBotIdInitializer : ITelemetryInitializer
     {
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi
                         telemetryProperties.Add("activityId", (string)body["id"]);
 
                         // Set the channel id https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#channel-id
-                        telemetryProperties.Add("channelId", (string)body["channelId "]);
+                        telemetryProperties.Add("channelId", (string)channelId);
 
                         // Set the activity type https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#type
                         telemetryProperties.Add("activityType", (string)body["type"]);
