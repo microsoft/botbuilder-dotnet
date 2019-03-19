@@ -13,6 +13,7 @@ namespace Microsoft.Expressions
 
         public static readonly Dictionary<string, string> OperatorFunctionNames = new Dictionary<string, string>
         {
+            {"^", "pow"},
             {"/", "div"},
             {"*", "mul"},
             {"+", "add"},
@@ -22,7 +23,9 @@ namespace Microsoft.Expressions
             {"<", "lessThan"},
             {"<=", "lessThanOrEqual"},
             {">", "greaterThan"},
-            {">=", "greaterThanorEqual"}
+            {">=", "greaterThanorEqual"},
+            {"&&", "and"},
+            {"||", "or"}
         };
 
         public ExpressionEvaluator(GetValueDelegate getValue = null, GetMethodDelegate getMethod = null)

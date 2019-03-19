@@ -36,6 +36,9 @@ namespace Microsoft.Expressions
             {"lessThanOrEqual", BuildinFunctions.LessThanOrEqual},
             {"greaterThan", BuildinFunctions.GreaterThan},
             {"greaterThanOrEqual", BuildinFunctions.GreaterThanOrEqual},
+            {"pow", BuildinFunctions.Pow},
+            {"and", BuildinFunctions.And},
+            {"or", BuildinFunctions.Or}
         };
 
 

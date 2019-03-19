@@ -25,6 +25,19 @@ namespace Microsoft.Expressions.Tests
             Test("bag.list[bag.index - 2]", "blue"),
             Test("bag.list[bag.index - 2] + 'more'", "bluemore"),
             Test("min(1.0, two) + max(one, 2.0)", 3.0),
+
+            // operator as functions tests
+            Test("add(1, 2)", 3),
+            Test("add(1.0, 2.0)", 3.0),
+            Test("add(mul(1, 2), 3)", 5),
+
+            Test("2^2", 4),
+            Test("3^2^2", 81),
+            Test("pow(2,2)", 4),
+
+            Test("one > 0.5 && two < 2.5", true),
+            Test("one > 0.5 || two < 1.5", true),
+
         };
 
         [DataTestMethod]
