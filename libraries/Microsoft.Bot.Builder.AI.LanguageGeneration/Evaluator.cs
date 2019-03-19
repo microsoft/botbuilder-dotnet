@@ -65,6 +65,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var templateNameContext = context.templateNameLine();
             if (templateNameContext.templateName().GetText().Equals(CurrentTarget().TemplateName))
             {
+                if(context.templateBody() == null)
+                {
+                    throw new Exception($"There is no template body in template {CurrentTarget().TemplateName}");
+                }
                 return Visit(context.templateBody());
             }
             return null;

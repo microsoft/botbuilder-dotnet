@@ -20,7 +20,7 @@ newline
     ;
 
 templateDefinition
-	: templateNameLine newline templateBody
+	: templateNameLine newline templateBody?
 	;
 
 templateNameLine
