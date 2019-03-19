@@ -27,19 +27,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new RegisterClassMiddleware<IBotResourceProvider>(botResourceManager))
                 .Use(new RegisterClassMiddleware<ILanguageGenerator>(lg))
+                .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
                 .Use(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)))
                 .Use(new AutoSaveStateMiddleware(convoState, userState))
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
+            var userStateProperty = userState.CreateProperty<Dictionary<string, object>>("user");
             var convoStateProperty = convoState.CreateProperty<Dictionary<string, object>>("conversation");
 
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            planningDialog.BotState = convoState.CreateProperty<BotState>("bot");
-            planningDialog.UserState = userState.CreateProperty<StateMap>("user"); ;
-            planningDialog.Storage = new MemoryStorage();
-
             var dialogs = new DialogSet(dialogState);
+
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -56,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             var planningDialog = new RuleDialog("planningTest");
 
-            planningDialog.AddRule(new List<IRule>()
+            planningDialog.AddRules(new List<IRule>()
             {
                 new FallbackRule(
                     new List<IDialog>()
@@ -82,7 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             var planningDialog = new RuleDialog("planningTest");
 
-            planningDialog.AddRule(new List<IRule>()
+            planningDialog.AddRules(new List<IRule>()
             {
                 new FallbackRule(
                     new List<IDialog>()
@@ -115,7 +113,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             var planningDialog = new RuleDialog("planningTest");
 
-            planningDialog.AddRule(new List<IRule>()
+            planningDialog.AddRules(new List<IRule>()
             {
                 new FallbackRule(
                     new List<IDialog>()
@@ -151,9 +149,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             var planningDialog = new RuleDialog("planningTest");
 
-            planningDialog.Recognizer = new RegexRecognizer() { Rules = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
+            planningDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 
-            planningDialog.AddRule(new List<IRule>()
+            planningDialog.AddRules(new List<IRule>()
             {
                 new IntentRule("JokeIntent",
                     steps: new List<IDialog>()
@@ -203,10 +201,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             var planningDialog = new RuleDialog("planningTest");
 
-            planningDialog.Recognizer = new RegexRecognizer() { Rules = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
+            planningDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 
             var tellJokeDialog = new RuleDialog("TellJokeDialog");
-            tellJokeDialog.AddRule(new List<IRule>()
+            tellJokeDialog.AddRules(new List<IRule>()
             {
                 new FallbackRule(
                     new List<IDialog>()
@@ -219,7 +217,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             });
 
             var askNameDialog = new RuleDialog("AskNameDialog");
-            askNameDialog.AddRule(new List<IRule>()
+            askNameDialog.AddRules(new List<IRule>()
             {
                 new FallbackRule(
                     new List<IDialog>()
@@ -240,7 +238,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     })
             });
 
-            planningDialog.AddRule(new List<IRule>()
+            planningDialog.AddRules(new List<IRule>()
             {
                 new ReplacePlanRule("JokeIntent",
                     steps: new List<IDialog>()
@@ -282,10 +280,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             var planningDialog = new RuleDialog("planningTest");
 
-            planningDialog.Recognizer = new RegexRecognizer() { Rules = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
+            planningDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 
             var tellJokeDialog = new RuleDialog("TellJokeDialog");
-            tellJokeDialog.AddRule(new List<IRule>()
+            tellJokeDialog.AddRules(new List<IRule>()
             {
                 new FallbackRule(
                     new List<IDialog>()
@@ -298,7 +296,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             });
 
             var askNameDialog = new RuleDialog("AskNameDialog");
-            askNameDialog.AddRule(new List<IRule>()
+            askNameDialog.AddRules(new List<IRule>()
             {
                 new FallbackRule(
                     new List<IDialog>()
@@ -319,12 +317,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     })
             });
 
-            planningDialog.AddRule(new List<IRule>()
+            planningDialog.AddRules(new List<IRule>()
             {
                 new ReplacePlanRule("JokeIntent",
                     steps: new List<IDialog>()
                     {
-                        new GotoDialog() { DialogId = "TellJokeDialog" }
+                        new GotoDialog("TellJokeDialog")
                     }),
                 new WelcomeRule(
                     steps: new List<IDialog>()
@@ -334,7 +332,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new FallbackRule(
                     new List<IDialog>()
                     {
-                        new GotoDialog() { DialogId = "AskNameDialog" }
+                        new GotoDialog("AskNameDialog")
                     })
             });
 
@@ -367,10 +365,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             var planningDialog = new RuleDialog("planningTest");
 
-            planningDialog.Recognizer = new RegexRecognizer() { Rules = new Dictionary<string, string>() { { "EndIntent", "end" } } };
+            planningDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "EndIntent", "end" } } };
 
             var tellJokeDialog = new RuleDialog("TellJokeDialog");
-            tellJokeDialog.AddRule(new List<IRule>()
+            tellJokeDialog.AddRules(new List<IRule>()
             {
                 new IntentRule("EndIntent",
                     steps: new List<IDialog>()
@@ -386,9 +384,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     }
                  )
             });
-            tellJokeDialog.Recognizer = new RegexRecognizer() { Rules = new Dictionary<string, string>() { { "EndIntent", "end" } } };
+            tellJokeDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "EndIntent", "end" } } };
 
-            planningDialog.AddRule(new List<IRule>()
+            planningDialog.AddRules(new List<IRule>()
             {
                 new FallbackRule(
                     new List<IDialog>()
