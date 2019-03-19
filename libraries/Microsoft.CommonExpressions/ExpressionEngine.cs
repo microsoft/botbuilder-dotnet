@@ -38,6 +38,8 @@ namespace Microsoft.Expressions
             var lexer = new ExpressionLexer(inputStream);
             var tokenStream = new CommonTokenStream(lexer);
             var parser = new ExpressionParser(tokenStream);
+            parser.RemoveErrorListeners();
+            parser.AddErrorListener(ParserErrorListener.Instance);
             parser.BuildParseTree = true;
             parser.ErrorHandler = new BailErrorStrategy();
 
