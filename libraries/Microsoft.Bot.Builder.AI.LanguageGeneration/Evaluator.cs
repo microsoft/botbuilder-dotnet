@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
             if (evalutationTargetStack.Any(e => e.TemplateName == templateName))
             { 
-                throw new Exception($"Loop deteced: {String.Join(" => ", evalutationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                throw new Exception($"Loop detected: {String.Join(" => ", evalutationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
             // Using a stack to track the evalution trace

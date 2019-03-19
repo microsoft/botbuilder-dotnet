@@ -10,17 +10,16 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     public class WaterfallStepContext : DialogContext
     {
-        private readonly WaterfallDialog _parent;
+        private readonly WaterfallDialog _parentWaterfall;
         private bool _nextCalled;
         
         /// <summary>
         /// Provides context for a turn of a waterfall dialog. Contains ITurnContext as property 'Context'.
         /// </summary>
-        internal WaterfallStepContext(WaterfallDialog parent, DialogContext dc, object options,  IDictionary<string, object> values, int index, DialogReason reason, object result = null)
+        internal WaterfallStepContext(WaterfallDialog parentWaterfall, DialogContext dc, object options,  IDictionary<string, object> values, int index, DialogReason reason, object result = null)
             : base(dc.Dialogs, dc.Context, new DialogState(dc.Stack), dc.State.Conversation, dc.State.User)
         {
-            this.ParentContext = dc.ParentContext;
-            _parent = parent;
+            _parentWaterfall = parentWaterfall;
             _nextCalled = false;
             Parent = dc.Parent;
             Index = index;
@@ -66,12 +65,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Ensure next hasn't been called
             if (_nextCalled)
             {
-                throw new Exception($"WaterfallStepContext.NextAsync(): method already called for dialog and step '{_parent.Id}[{Index}]'.");
+                throw new Exception($"WaterfallStepContext.NextAsync(): method already called for dialog and step '{_parentWaterfall.Id}[{Index}]'.");
             }
 
             // Trigger next step
             _nextCalled = true;
-            return await _parent.ResumeDialogAsync(this, DialogReason.NextCalled, result).ConfigureAwait(false);
+            return await _parentWaterfall.ResumeDialogAsync(this, DialogReason.NextCalled, result).ConfigureAwait(false);
         }
     }
 }

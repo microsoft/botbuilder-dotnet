@@ -15,14 +15,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     public class OAuthPromptTests
     {
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void OAuthPromptWithEmptyIdShouldFail()
-        {
-            var emptyId = "";
-            var confirmPrompt = new OAuthPrompt(emptyId, new OAuthPromptSettings());
-        }
-
-        [TestMethod]
         public async Task OAuthPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());

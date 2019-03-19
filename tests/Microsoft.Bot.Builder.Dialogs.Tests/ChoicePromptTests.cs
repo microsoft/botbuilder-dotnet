@@ -274,7 +274,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     if (results.Status == DialogTurnStatus.Empty)
                     {
                         await dc.PromptAsync("ChoicePrompt",
-                            new PromptOptions
+                            new ChoicePromptOptions
                             {
                                 Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                                 Choices = colorChoices

@@ -44,6 +44,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="includeApiResults">(Optional) TRUE to include raw LUIS API response.</param>
         /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
         /// <param name="telemetryClient">The IBotTelemetryClient used to log the LuisResult event.</param>
+        /// <param name="logPersonalInformation">TRUE to include personally indentifiable information.</param>
         public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null, IBotTelemetryClient telemetryClient = null, bool logPersonalInformation = false)
         {
             _application = application ?? throw new ArgumentNullException(nameof(application));
@@ -88,20 +89,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
         public LuisRecognizer(string applicationEndpoint, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null)
             : this(new LuisApplication(applicationEndpoint), predictionOptions, includeApiResults, clientHandler, null)
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LuisRecognizer"/> class.
-        /// </summary>
-        /// <param name="telemetryClient">The IBotTelemetryClient used to log the LuisResult event.</param>
-        /// <param name="application">The LUIS application to use to recognize text.</param>
-        /// <param name="predictionOptions">The LUIS prediction options to use.</param>
-        /// <param name="includeApiResults">TRUE to include raw LUIS API response.</param>
-        /// <param name="logPersonalInformation">TRUE to include personally indentifiable information.</param>
-        public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, IBotTelemetryClient telemetryClient = null, bool logPersonalInformation = false)
-            : this(application, predictionOptions, includeApiResults, null, telemetryClient)
-        {
-            LogPersonalInformation = logPersonalInformation;
         }
 
         /// <summary>

@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dialogId">ID of the dialog/prompt to look up.</param>
         /// <returns>The dialog if found, otherwise null.</returns>
-        public Dialog Find(string dialogId)
+        public IDialog Find(string dialogId)
         {
             if (string.IsNullOrWhiteSpace(dialogId))
             {
