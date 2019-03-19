@@ -35,10 +35,6 @@
 		<DocumentationFile>bin\$(Configuration)\net461\Microsoft.Bot.Builder.Integration.AspNet.WebApi.xml</DocumentationFile>		
 	</PropertyGroup>
 
-	<PropertyGroup>
-	  <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Integration.AspNet.WebApi.ruleset</CodeAnalysisRuleSet>
-	</PropertyGroup>
-
 	<ItemGroup>
 		<PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.6" />
@@ -46,7 +42,6 @@
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
     <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008" PrivateAssets="all" />
   </ItemGroup>
 
 	<ItemGroup>

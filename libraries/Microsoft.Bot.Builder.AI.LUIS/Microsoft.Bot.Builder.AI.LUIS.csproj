@@ -19,7 +19,6 @@
 		<PackageId>Microsoft.Bot.Builder.AI.Luis</PackageId>
 		<Description>LUIS Middleware and Recognizers for the Microsoft Bot Builder SDK</Description>
 		<Summary>This library implements C# classes for building bots using LUIS.</Summary>
-    <CodeAnalysisRuleSet>Microsoft.Bot.Builder.AI.LUIS.ruleset</CodeAnalysisRuleSet>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -31,7 +30,6 @@
     <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
 		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
 		<PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008" PrivateAssets="all" />
 	</ItemGroup>
 
   <ItemGroup>

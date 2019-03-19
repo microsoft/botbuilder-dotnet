@@ -4,6 +4,14 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <CodeAnalysisRuleSet>$(SolutionDir)BotBuilder-DotNet.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" PrivateAssets="all" />
+  </ItemGroup>
+
+  <PropertyGroup>
     <Company>Microsoft</Company>
 
     <!-- Rules found at: https://aka.ms/Microsoft-NuGet-Compliance -->
