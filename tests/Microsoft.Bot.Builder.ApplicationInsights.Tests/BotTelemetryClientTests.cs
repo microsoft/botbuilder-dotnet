@@ -40,6 +40,12 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
 
                 var botTelemetryClient = new BotTelemetryClient(telemetryClient);
             }
+            [TestMethod]
+            public void OverrideTest()
+            {
+                var telemetryClient = new TelemetryClient();
+                var myTelemetryClient = new MyBotTelemetryClient(telemetryClient);
+            }
         }
 
         [TestClass]
@@ -65,14 +71,10 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
                 _botTelemetryClient.TrackAvailability("test", DateTimeOffset.Now, new TimeSpan(1000), "run location", true,
                     "message", new Dictionary<string, string>() { { "hello", "value" } }, new Dictionary<string, double>() { { "metric", 0.6 } });
 
-                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<AvailabilityTelemetry>(t =>
-                    t.Name == "test"
-                        &&
-                    t.Message == "message"
-                        &&
-                    t.Properties["hello"] == "value"
-                        &&
-                    t.Metrics["metric"] == 0.6)));
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<AvailabilityTelemetry>(t => t.Name == "test")));
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<AvailabilityTelemetry>(t => t.Message == "message")));
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<AvailabilityTelemetry>(t => t.Properties["hello"] == "value")));
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<AvailabilityTelemetry>(t => t.Metrics["metric"] == 0.6)));
             }
 
 
@@ -81,13 +83,9 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
             {
                 _botTelemetryClient.TrackEvent("test", new Dictionary<string, string>() { { "hello", "value" } }, new Dictionary<string, double>() { { "metric", 0.6 } });
 
-                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<EventTelemetry>(t =>
-                    t.Name == "test"
-                        &&
-                    t.Properties["hello"] == "value"
-                        &&
-                    t.Metrics["metric"] == 0.6
-                )));
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<EventTelemetry>(t => t.Name == "test")));
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<EventTelemetry>(t => t.Properties["hello"] == "value")));
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<EventTelemetry>(t => t.Metrics["metric"] == 0.6)));
             }
 
             [TestMethod]
@@ -95,18 +93,12 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
             {
                 _botTelemetryClient.TrackDependency("test", "target", "dependencyname", "data", DateTimeOffset.Now, new TimeSpan(10000), "result", false);
 
-                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<DependencyTelemetry>(t =>
-                    t.Type == "test"
-                        &&
-                    t.Target == "target"
-                        &&
-                    t.Name == "dependencyname"
-                        &&
-                    t.Data == "data"
-                        &&
-                    t.ResultCode == "result"
-                        &&
-                    t.Success == false)));
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<DependencyTelemetry>(t => t.Type == "test")));
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<DependencyTelemetry>(t => t.Target == "target")));
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<DependencyTelemetry>(t => t.Name == "dependencyname")));
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<DependencyTelemetry>(t => t.Data == "data")));
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<DependencyTelemetry>(t => t.ResultCode == "result")));
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<DependencyTelemetry>(t => t.Success == false)));
             }
 
             [TestMethod]
@@ -115,13 +107,9 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
                 var expectedException = new Exception("test-exception");
 
                 _botTelemetryClient.TrackException(expectedException, new Dictionary<string, string>() { { "foo", "bar" } }, new Dictionary<string, double>() { { "metric", 0.6 } });
-
-                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<ExceptionTelemetry>(t =>
-                    t.Exception == expectedException
-                        &&
-                    t.Properties["foo"] == "bar"
-                        &&
-                    t.Metrics["metric"] == 0.6)));
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<ExceptionTelemetry>(t => t.Exception == expectedException)));
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<ExceptionTelemetry>(t => t.Properties["foo"] == "bar")));
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<ExceptionTelemetry>(t => t.Metrics["metric"] == 0.6)));
             }
 
             [TestMethod]
@@ -129,13 +117,48 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
             {
                 _botTelemetryClient.TrackTrace("hello", Severity.Critical, new Dictionary<string, string>() { { "foo", "bar" } });
 
-                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<TraceTelemetry>(t =>
-                    t.Message == "hello"
-                        &&
-                    t.SeverityLevel == SeverityLevel.Critical
-                        &&
-                    t.Properties["foo"] == "bar")));
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<TraceTelemetry>(t => t.Message == "hello")));
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<TraceTelemetry>(t => t.SeverityLevel == SeverityLevel.Critical)));
+                _mockTelemetryChannel.Verify(tc => tc.Send(It.Is<TraceTelemetry>(t => t.Properties["foo"] == "bar")));
             }
+        }
+    }
+    public class MyBotTelemetryClient : BotTelemetryClient
+    {
+        public MyBotTelemetryClient(TelemetryClient telemetryClient)
+            : base(telemetryClient)
+        {
+            
+        }
+
+        public override void TrackDependency(string dependencyTypeName, string target, string dependencyName, string data, DateTimeOffset startTime, TimeSpan duration, string resultCode, bool success)
+        {
+            base.TrackDependency(dependencyName, target, dependencyName, data, startTime, duration, resultCode, success);
+        }
+
+        public override void TrackAvailability(string name, DateTimeOffset timeStamp, TimeSpan duration, string runLocation, bool success, string message = null, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
+        {
+            base.TrackAvailability(name, timeStamp, duration, runLocation, success, message, properties, metrics);
+        }
+
+        public override void TrackEvent(string eventName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
+        {
+            base.TrackEvent(eventName, properties, metrics);
+        }
+
+        public override void TrackException(Exception exception, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
+        {
+            base.TrackException(exception, properties, metrics);
+        }
+
+        public override void TrackTrace(string message, Severity severityLevel, IDictionary<string, string> properties)
+        {
+            base.TrackTrace(message, severityLevel, properties);
+        }
+
+        public override void Flush()
+        {
+            base.Flush();
         }
     }
 }

@@ -894,6 +894,10 @@
         "channelData": {
           "description": "Channel specific payload for creating the conversation",
           "type": "object"
+        },
+        "tenantId":{
+          "description":"(Optional) The tenant ID in which the conversation should be created",
+          "type":"object"
         }
       }
     },
@@ -1143,6 +1147,10 @@
         "role": {
           "$ref": "#/definitions/RoleTypes",
           "description": "Role of the entity behind the account (Example: User, Bot, etc.)"
+        },
+        "tenantId": {
+          "description": "This conversation's tenant ID",
+          "type": "object"
         }
       }
     },
@@ -2069,6 +2077,10 @@
       "description": "A response that includes a user token",
       "type": "object",
       "properties": {
+        "channelId": {
+          "description": "The channelId of the TokenResponse",
+          "type": "string"
+        },
         "connectionName": {
           "description": "The connection name",
           "type": "string"

@@ -31,8 +31,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Gets or sets or set the <see cref="IBotTelemetryClient"/> to use.
-        /// When setting this property, all the contained dialogs TelemetryClient properties are also set.
+        /// Gets or sets the <see cref="IBotTelemetryClient"/> to use.
+        /// When setting this property, all of the contained dialogs' TelemetryClient properties are also set.
         /// </summary>
         /// <value>The <see cref="IBotTelemetryClient"/> to use when logging.</value>
         public IBotTelemetryClient TelemetryClient
@@ -125,11 +125,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Finds a dialog that was previously added to the set using [add()](#add).
+        /// Finds a dialog that was previously added to the set using <see cref="Add(Dialog)"/>.
         /// </summary>
-        /// <param name="dialogId">ID of the dialog/prompt to lookup.</param>
-        /// <returns>dialog if found otherwise null.</returns>
-        public IDialog Find(string dialogId)
+        /// <param name="dialogId">ID of the dialog/prompt to look up.</param>
+        /// <returns>The dialog if found, otherwise null.</returns>
+        public Dialog Find(string dialogId)
         {
             if (string.IsNullOrWhiteSpace(dialogId))
             {

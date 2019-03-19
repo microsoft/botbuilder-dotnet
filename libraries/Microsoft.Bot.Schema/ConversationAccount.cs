@@ -42,7 +42,8 @@ namespace Microsoft.Bot.Schema
         /// Active Directory (AAD)</param>
         /// <param name="role">Role of the entity behind the account (Example:
         /// User, Bot, etc.). Possible values include: 'user', 'bot'</param>
-        public ConversationAccount(bool? isGroup = default(bool?), string conversationType = default(string), string id = default(string), string name = default(string), string role = default(string), string aadObjectId = default(string))
+        /// <param name="tenantId">This conversation's tenant ID</param>
+        public ConversationAccount(bool? isGroup = default(bool?), string conversationType = default(string), string id = default(string), string name = default(string), string aadObjectId = default(string), string role = default(string), string tenantId = default(string))
         {
             IsGroup = isGroup;
             ConversationType = conversationType;
@@ -50,6 +51,7 @@ namespace Microsoft.Bot.Schema
             Name = name;
             AadObjectId = aadObjectId;
             Role = role;
+            TenantId = tenantId;
             CustomInit();
         }
 
@@ -98,6 +100,12 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "role")]
         public string Role { get; set; }
+
+        /// <summary>
+        /// Gets or sets this conversation's tenant ID
+        /// </summary>
+        [JsonProperty(PropertyName = "tenantId")]
+        public string TenantId { get; set; }
 
     }
 }

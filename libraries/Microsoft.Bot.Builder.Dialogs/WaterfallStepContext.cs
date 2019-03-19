@@ -12,13 +12,17 @@ namespace Microsoft.Bot.Builder.Dialogs
     {
         private readonly WaterfallDialog _parent;
         private bool _nextCalled;
-
+        
+        /// <summary>
+        /// Provides context for a turn of a waterfall dialog. Contains ITurnContext as property 'Context'.
+        /// </summary>
         internal WaterfallStepContext(WaterfallDialog parent, DialogContext dc, object options,  IDictionary<string, object> values, int index, DialogReason reason, object result = null)
             : base(dc.Dialogs, dc.Context, new DialogState(dc.Stack), dc.State.Conversation, dc.State.User)
         {
             this.ParentContext = dc.ParentContext;
             _parent = parent;
             _nextCalled = false;
+            Parent = dc.Parent;
             Index = index;
             Options = options;
             Reason = reason;

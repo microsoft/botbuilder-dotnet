@@ -1,0 +1,396 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "token",
+    "title": "Microsoft Bot Token API - V3.1",
+    "termsOfService": "https://www.microsoft.com/en-us/legal/intellectualproperty/copyright/default.aspx",
+    "contact": {
+      "name": "Bot Framework",
+      "url": "https://botframework.com",
+      "email": "botframework@microsoft.com"
+    },
+    "license": {
+      "name": "The MIT License (MIT)",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "host": "token.botframework.com",
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/api/botsignin/GetSignInUrl": {
+      "get": {
+        "tags": [
+          "BotSignIn"
+        ],
+        "operationId": "BotSignIn_GetSignInUrl",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml"
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "code_challenge",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "emulatorUrl",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "finalRedirect",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/api/usertoken/GetToken": {
+      "get": {
+        "tags": [
+          "UserToken"
+        ],
+        "operationId": "UserToken_GetToken",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "connectionName",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "channelId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A Token Response object will be returned\r\n",
+            "schema": {
+              "$ref": "#/definitions/TokenResponse"
+            }
+          },
+          "404": {
+            "description": "Resource was not found\r\n",
+            "schema": {
+              "$ref": "#/definitions/TokenResponse"
+            }
+          },
+          "default": {
+            "description": "The operation failed and the response is an error object describing the status code and failure.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/usertoken/GetAadTokens": {
+      "post": {
+        "tags": [
+          "UserToken"
+        ],
+        "operationId": "UserToken_GetAadTokens",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml",
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "connectionName",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "aadResourceUrls",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AadResourceUrls"
+            }
+          },
+          {
+            "name": "channelId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of key value pairs",
+            "schema": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/definitions/TokenResponse"
+              }
+            }
+          },
+          "default": {
+            "description": "The operation failed and the response is an error object describing the status code and failure.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/usertoken/SignOut": {
+      "delete": {
+        "tags": [
+          "UserToken"
+        ],
+        "operationId": "UserToken_SignOut",
+        "consumes": [],
+        "produces": [],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "connectionName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "channelId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The operation succeeded, there is no response.",
+            "schema": {
+              "$ref": "#/definitions/Void"
+            }
+          },
+          "204": {
+            "description": "No Content"
+          },
+          "default": {
+            "description": "The operation failed and the response is an error object describing the status code and failure.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/usertoken/GetTokenStatus": {
+      "get": {
+        "tags": [
+          "UserToken"
+        ],
+        "operationId": "UserToken_GetTokenStatus",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "channelId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "include",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of TokenStatus objects",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/TokenStatus"
+              }
+            }
+          },
+          "default": {
+            "description": "The operation failed and the response is an error object describing the status code and failure.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "TokenResponse": {
+      "type": "object",
+      "properties": {
+        "channelId": {
+          "type": "string"
+        },
+        "connectionName": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        },
+        "expiration": {
+          "type": "string"
+        }
+      }
+    },
+    "ErrorResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/definitions/Error"
+        }
+      }
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "innerHttpError": {
+          "$ref": "#/definitions/InnerHttpError"
+        }
+      }
+    },
+    "InnerHttpError": {
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "body": {
+          "type": "object"
+        }
+      }
+    },
+    "AadResourceUrls": {
+      "type": "object",
+      "properties": {
+        "resourceUrls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Void": {
+      "type": "object",
+      "properties": {}
+    },
+    "TokenStatus": {
+      "description": "The status of a particular token",
+      "type": "object",
+      "properties": {
+        "channelId": {
+          "description": "The channelId of the token status pertains to",
+          "type": "string"
+        },
+        "connectionName": {
+          "description": "The name of the connection the token status pertains to",
+          "type": "string"
+        },
+        "hasToken": {
+          "description": "True if a token is stored for this ConnectionName",
+          "type": "boolean"
+        },
+        "serviceProviderDisplayName": {
+          "description": "The display name of the service provider for which this Token belongs to",
+          "type": "string"
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "bearer_auth": {
+      "type": "apiKey",
+      "description": "Access token to authenticate calls to the Bot Connector Service.",
+      "name": "Authorization",
+      "in": "header"
+    }
+  }
+}

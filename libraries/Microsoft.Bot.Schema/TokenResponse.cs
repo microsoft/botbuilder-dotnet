@@ -13,9 +13,6 @@ namespace Microsoft.Bot.Schema
     using Newtonsoft.Json;
     using System.Linq;
 
-    /// <summary>
-    /// A response that includes a user token
-    /// </summary>
     public partial class TokenResponse
     {
         /// <summary>
@@ -29,12 +26,9 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Initializes a new instance of the TokenResponse class.
         /// </summary>
-        /// <param name="connectionName">The connection name</param>
-        /// <param name="token">The user token</param>
-        /// <param name="expiration">Expiration for the token, in ISO 8601
-        /// format (e.g. "2007-04-05T14:30Z")</param>
-        public TokenResponse(string connectionName = default(string), string token = default(string), string expiration = default(string))
+        public TokenResponse(string channelId = default(string), string connectionName = default(string), string token = default(string), string expiration = default(string))
         {
+            ChannelId = channelId;
             ConnectionName = connectionName;
             Token = token;
             Expiration = expiration;
@@ -47,20 +41,21 @@ namespace Microsoft.Bot.Schema
         partial void CustomInit();
 
         /// <summary>
-        /// Gets or sets the connection name
+        /// </summary>
+        [JsonProperty(PropertyName = "channelId")]
+        public string ChannelId { get; set; }
+
+        /// <summary>
         /// </summary>
         [JsonProperty(PropertyName = "connectionName")]
         public string ConnectionName { get; set; }
 
         /// <summary>
-        /// Gets or sets the user token
         /// </summary>
         [JsonProperty(PropertyName = "token")]
         public string Token { get; set; }
 
         /// <summary>
-        /// Gets or sets expiration for the token, in ISO 8601 format (e.g.
-        /// "2007-04-05T14:30Z")
         /// </summary>
         [JsonProperty(PropertyName = "expiration")]
         public string Expiration { get; set; }

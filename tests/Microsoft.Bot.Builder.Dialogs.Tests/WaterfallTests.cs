@@ -373,11 +373,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public Task WaterfallWithStepsNull()
+        public void WaterfallWithStepsNull()
         {
             var waterfall = new WaterfallDialog("test");
-            waterfall.AddStep(null);
-            return Task.CompletedTask;
+            waterfall.AddStep(null);            
         }
 
         [TestMethod]
