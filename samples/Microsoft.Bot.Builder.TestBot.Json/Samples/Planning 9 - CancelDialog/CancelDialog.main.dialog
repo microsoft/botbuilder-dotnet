@@ -1,7 +1,6 @@
 ﻿{
   "$schema": "../../Schemas/app.schema",
   "$type": "Microsoft.RuleDialog",
-  "$id": "root",
   "storage": {
     "$type": "Microsoft.MemoryStorage"
   },
@@ -28,9 +27,7 @@
       "steps": [
         {
           "$type": "Microsoft.CallDialog",
-          "dialog": {
-            "$ref": "Samples/Planning 9 - CancelDialog/TellJokeDialog.dialog"
-          }
+          "dialog": "CancelDialog.TellJoke"
         }
       ]
     },

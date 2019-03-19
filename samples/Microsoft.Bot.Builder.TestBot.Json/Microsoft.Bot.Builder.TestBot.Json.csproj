@@ -21,7 +21,7 @@
     <None Remove="Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.lg" />
     <None Remove="Samples\Planning 8 - ExternalLanguage\FortuneTellerDialog.dialog" />
     <None Remove="Samples\Planning 8 - ExternalLanguage\TellJokeDialog.dialog" />
-    <None Remove="Samples\Planning 9 - CancelDialog\main.dialog" />
+    <None Remove="Samples\Planning 9 - CancelDialog\CancelDialog.main.dialog" />
     <None Remove="Samples\RootDialog\RootDialog.lg" />
   </ItemGroup>
 
@@ -39,7 +39,7 @@
     <Content Include="Samples\Planning 4 - TextPrompt\TextPrompt.main.dialog" />
     <Content Include="Samples\Planning 3 - IfProperty\IfProperty.main.dialog" />
     <Content Include="Samples\Planning 2 - WaitForInput\WaitforInput.main.dialog" />
-    <Content Include="Samples\Planning 9 - CancelDialog\main.dialog" />
+    <Content Include="Samples\Planning 9 - CancelDialog\CancelDialog.main.dialog" />
 
   </ItemGroup>
 
