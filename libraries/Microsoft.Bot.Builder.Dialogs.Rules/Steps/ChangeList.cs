@@ -10,11 +10,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
     {
         public enum ChangeListType
         {
-            push,
-            pop,
-            take,
-            remove,
-            clear
+            Push,
+            Pop,
+            Take,
+            Remove,
+            Clear
         }
 
 
