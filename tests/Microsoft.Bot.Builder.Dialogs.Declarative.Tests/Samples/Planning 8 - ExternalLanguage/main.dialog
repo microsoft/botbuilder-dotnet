@@ -7,7 +7,7 @@
   },
   "recognizer": {
     "$type": "Microsoft.RegexRecognizer",
-    "rules": {
+    "intents": {
       "HelpIntent": "help",
       "GreetingIntent": "hi|hello|hiya|greetings",
       "JokeIntent": "joke",

@@ -96,7 +96,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.TestBot.WebApi", "samples\Microsoft.Bot.Builder.TestBot.WebApi\Microsoft.Bot.Builder.TestBot.WebApi.csproj", "{A920C660-CAAC-421B-AE0C-B79BE31DA472}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Declarative.Tests", "tests\Microsoft.Bot.Builder.Dialogs.Declarative.Tests\Microsoft.Bot.Builder.Dialogs.Declarative.Tests.csproj", "{76AF6A61-27F3-459A-8DFD-07089A8D03DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Declarative.Tests", "tests\Microsoft.Bot.Builder.Dialogs.Declarative.Tests\Microsoft.Bot.Builder.Dialogs.Declarative.Tests.csproj", "{52C2D3AE-CCCF-485A-8965-97E99BE26697}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -433,14 +433,14 @@ Global
 		{A920C660-CAAC-421B-AE0C-B79BE31DA472}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{A920C660-CAAC-421B-AE0C-B79BE31DA472}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A920C660-CAAC-421B-AE0C-B79BE31DA472}.Release|Any CPU.Build.0 = Release|Any CPU
-		{76AF6A61-27F3-459A-8DFD-07089A8D03DB}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{76AF6A61-27F3-459A-8DFD-07089A8D03DB}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{76AF6A61-27F3-459A-8DFD-07089A8D03DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{76AF6A61-27F3-459A-8DFD-07089A8D03DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{76AF6A61-27F3-459A-8DFD-07089A8D03DB}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
-		{76AF6A61-27F3-459A-8DFD-07089A8D03DB}.Documentation|Any CPU.Build.0 = Debug|Any CPU
-		{76AF6A61-27F3-459A-8DFD-07089A8D03DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{76AF6A61-27F3-459A-8DFD-07089A8D03DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52C2D3AE-CCCF-485A-8965-97E99BE26697}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{52C2D3AE-CCCF-485A-8965-97E99BE26697}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{52C2D3AE-CCCF-485A-8965-97E99BE26697}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52C2D3AE-CCCF-485A-8965-97E99BE26697}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52C2D3AE-CCCF-485A-8965-97E99BE26697}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{52C2D3AE-CCCF-485A-8965-97E99BE26697}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{52C2D3AE-CCCF-485A-8965-97E99BE26697}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52C2D3AE-CCCF-485A-8965-97E99BE26697}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -490,7 +490,7 @@ Global
 		{9940D79A-B7D7-42ED-A353-0A889B458842} = {1DEDDC46-F2F4-448F-A0B7-FD48682EEC80}
 		{758AA8A8-D476-473A-9761-84D2317D8268} = {1DEDDC46-F2F4-448F-A0B7-FD48682EEC80}
 		{A920C660-CAAC-421B-AE0C-B79BE31DA472} = {1DEDDC46-F2F4-448F-A0B7-FD48682EEC80}
-		{76AF6A61-27F3-459A-8DFD-07089A8D03DB} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{52C2D3AE-CCCF-485A-8965-97E99BE26697} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

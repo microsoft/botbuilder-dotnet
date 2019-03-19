@@ -192,6 +192,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
         private TestFlow BuildTestFlow(string json)
         {
+            IStorage dataStore = new MemoryStorage();
             var dialog = DeclarativeTypeLoader.Load<IDialog>(json);
 
             var convoState = new ConversationState(new MemoryStorage());
@@ -207,7 +208,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                 .Use(new AutoSaveStateMiddleware(convoState))
                 .Use(new RegisterClassMiddleware<IBotResourceProvider>(botResourceManager))
                 .Use(new RegisterClassMiddleware<ILanguageGenerator>(lg))
-                .Use(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)));
+                .Use(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)))
+                .Use(new RegisterClassMiddleware<IStorage>(dataStore));
 
             var dialogs = new DialogSet(dialogState);
 
