@@ -15,6 +15,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
     internal class StartupOverideTelemClient
     {
         private readonly Mock<IBotTelemetryClient> _telemClient;
+
         public StartupOverideTelemClient(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -32,15 +33,11 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
         public void ConfigureServices(IServiceCollection services)
         {
             var botConfig = BotConfiguration.Load("testbot.bot", null);
-            
             services.AddBotApplicationInsights(_telemClient.Object);
 
-
-            // Adding IConfiguration in sample test server.  Otherwise this appears to be 
+            // Adding IConfiguration in sample test server.  Otherwise this appears to be
             // registered.
             services.AddSingleton<IConfiguration>(this.Configuration);
-
-
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -50,6 +47,5 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             Assert.IsNotNull(telemetryClient);
             Assert.AreEqual(telemetryClient, _telemClient.Object);
         }
-
     }
 }
