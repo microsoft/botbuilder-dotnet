@@ -1,7 +1,6 @@
 {
   "$schema": "../../Schemas/app.schema",
   "$type": "Microsoft.RuleDialog",
-  "$id": "TellJokeDialog",
   "storage": {
     "$type": "Microsoft.MemoryStorage"
   },
