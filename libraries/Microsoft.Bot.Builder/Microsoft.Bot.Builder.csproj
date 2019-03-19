@@ -8,10 +8,6 @@
 		<Configurations>Debug;Release;Documentation;Debug - NuGet Packages;</Configurations>
 	</PropertyGroup>
 
-  <PropertyGroup>
-    <CodeAnalysisRuleSet>BotBuilder.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 		<SignAssembly>true</SignAssembly>
 		<DelaySign>true</DelaySign>
@@ -32,7 +28,6 @@
 		<PackageReference Include="Microsoft.Bot.Connector" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
 		<PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
-		<PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008" PrivateAssets="all" />
 	</ItemGroup>
 
 	<ItemGroup>

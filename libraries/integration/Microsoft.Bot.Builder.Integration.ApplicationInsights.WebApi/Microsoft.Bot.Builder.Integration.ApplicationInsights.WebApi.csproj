@@ -34,10 +34,6 @@
 		<DocumentationFile>bin\$(Configuration)\net461\Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi.xml</DocumentationFile>		
 	</PropertyGroup>
 
-	<PropertyGroup>
-	  <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi.ruleset</CodeAnalysisRuleSet>
-	</PropertyGroup>
-
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 	  <DebugType>full</DebugType>
 	  <DebugSymbols>true</DebugSymbols>
@@ -49,7 +45,6 @@
 		 <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
     <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008" PrivateAssets="all" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.8.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.Agent.Intercept" Version="2.4.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.DependencyCollector" Version="2.8.1" />    
