@@ -20,6 +20,7 @@
     <None Remove="Samples\Planning 3 - IfProperty\main.dialog" />
     <None Remove="Samples\Planning 2 - WaitForInput\main.dialog" />
     <None Remove="Samples\Planning 7 - CallDialog\TellJokeDialog.dialog" />
+    <None Remove="Samples\Planning 9 - CancelDialog\main.dialog" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,6 +35,7 @@
     <Content Include="Samples\Planning 4 - TextPrompt\main.dialog" />
     <Content Include="Samples\Planning 3 - IfProperty\main.dialog" />
     <Content Include="Samples\Planning 2 - WaitForInput\main.dialog" />
+    <Content Include="Samples\Planning 9 - CancelDialog\main.dialog" />
   </ItemGroup>
 
   <ItemGroup>
