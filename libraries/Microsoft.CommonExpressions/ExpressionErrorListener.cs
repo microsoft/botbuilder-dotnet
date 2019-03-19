@@ -12,6 +12,7 @@ namespace Microsoft.Expressions
 
         public override void SyntaxError([NotNull] IRecognizer recognizer, [Nullable] IToken offendingSymbol, int line, int charPositionInLine, [NotNull] string msg, [Nullable] RecognitionException e)
         {
+            throw new Exception($"line {line}:{charPositionInLine} {msg}");
             throw new Exception("line " + line + ":" + charPositionInLine + " " + msg);
         }
     }
