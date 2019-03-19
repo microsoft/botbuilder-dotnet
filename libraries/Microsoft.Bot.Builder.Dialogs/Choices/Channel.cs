@@ -15,6 +15,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 case Connector.Channels.Skype:
                     return buttonCnt <= 10;
 
+                case Connector.Channels.Line:
+                    return buttonCnt <= 13;
+
                 case Connector.Channels.Kik:
                     return buttonCnt <= 20;
 
@@ -39,6 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 case Connector.Channels.Msteams:
                     return buttonCnt <= 3;
 
+                case Connector.Channels.Line:
                 case Connector.Channels.Slack:
                 case Connector.Channels.Emulator:
                 case Connector.Channels.Directline:
