@@ -1,0 +1,53 @@
+{
+  "Entries": [
+    {
+      "RequestUri": "/v3/attachments/bt13796-GJS4yaxDLI/views/original",
+      "EncodedRequestUri": "L3YzL2F0dGFjaG1lbnRzL2J0MTM3OTYtR0pTNHlheERMSS92aWV3cy9vcmlnaW5hbA==",
+      "RequestMethod": "GET",
+      "RequestBody": "",
+      "RequestHeaders": {
+        "User-Agent": [
+          "FxVersion/4.7.2600.0",
+          "OSName/Windows10Enterprise",
+          "OSVersion/6.3.16299",
+          "Microsoft.Bot.Connector.ConnectorClient/0.0.0.0",
+          "Microsoft-BotFramework/4.0",
+          "(BotBuilder .Net/0.0.0.0)"
+        ]
+      },
+      "ResponseBody": "",
+      "ResponseHeaders": {
+        "Content-Length": [
+          "0"
+        ],
+        "Expires": [
+          "-1"
+        ],
+        "Pragma": [
+          "no-cache"
+        ],
+        "Request-Context": [
+          "appId=cid-v1:6814484e-c0d5-40ea-9dba-74ff29ca4f62"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000"
+        ],
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Date": [
+          "Mon, 22 Jan 2018 17:10:53 GMT"
+        ],
+        "Server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "X-Powered-By": [
+          "ASP.NET"
+        ]
+      },
+      "StatusCode": 404
+    }
+  ],
+  "Names": {},
+  "Variables": {}
+}

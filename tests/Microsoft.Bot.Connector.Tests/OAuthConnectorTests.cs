@@ -12,33 +12,31 @@ namespace Connector.Tests
 {
     public class OAuthConnectorTests : BaseTest
     {
-        private ConnectorClient mockConnectorClient = new ConnectorClient(new Uri("https://localhost"));
-
         [Fact]
         public void OAuthClient_ShouldNotThrowOnHttpUrl()
         {
-            var client = new OAuthClient(mockConnectorClient, "http://localhost");
+            var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             Assert.NotNull(client);
         }
 
         [Fact]
-        public void OAuthClient_ShouldThrowOnNullClient()
+        public void OAuthClient_ShouldThrowOnNullCredentials()
         {
-            Assert.Throws<ArgumentNullException>(() => new OAuthClient(null, "https://localhost"));
+            Assert.Throws<ArgumentNullException>(() => new OAuthClient(new Uri("https://localhost"), null));
         }
 
         [Fact]
         public async Task GetUserToken_ShouldThrowOnEmptyUserId()
         {
-            var client = new OAuthClient(mockConnectorClient, "https://localhost");
-            await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetUserTokenAsync(string.Empty, "mockConnection", string.Empty));
+            var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
+            await Assert.ThrowsAsync<ValidationException>(() => client.UserToken.GetTokenAsync(null, "mockConnection", string.Empty));
         }
 
         [Fact]
         public async Task GetUserToken_ShouldThrowOnEmptyConnectionName()
         {
-            var client = new OAuthClient(mockConnectorClient, "https://localhost");
-            await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetUserTokenAsync("userid", string.Empty, string.Empty));
+            var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
+            await Assert.ThrowsAsync<ValidationException>(() => client.UserToken.GetTokenAsync("userid", null, string.Empty));
         }
 
         [Fact]
@@ -46,7 +44,7 @@ namespace Connector.Tests
         {
             await UseOAuthClientFor(async client =>
              {
-                 var token = await client.GetUserTokenAsync("default-user", "mygithubconnection", string.Empty);
+                 var token = await client.UserToken.GetTokenAsync("default-user", "mygithubconnection", null, null);
                  Assert.NotNull(token);
                  Assert.False(string.IsNullOrEmpty(token.Token));
              });
@@ -57,7 +55,7 @@ namespace Connector.Tests
         {
             await UseOAuthClientFor(async client =>
              {
-                 var token = await client.GetUserTokenAsync("default-user", "mygithubconnection1", string.Empty);
+                 var token = await client.UserToken.GetTokenAsync("default-user", "mygithubconnection1", null, null);
                  Assert.Null(token);
              });
         }
@@ -83,60 +81,43 @@ namespace Connector.Tests
         [Fact]
         public async Task SignOutUser_ShouldThrowOnEmptyUserId()
         {
-            var client = new OAuthClient(mockConnectorClient, "https://localhost");
-            await Assert.ThrowsAsync<ArgumentNullException>(() => client.SignOutUserAsync(string.Empty, "mockConnection"));
+            var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
+            await Assert.ThrowsAsync<ValidationException>(() => client.UserToken.SignOutAsync(null, "mockConnection"));
         }
 
         [Fact]
         public async Task GetSigninLink_ShouldThrowOnNullState()
         {
-            var client = new OAuthClient(mockConnectorClient, "https://localhost");
-            await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetSignInLinkAsync(null));
+            var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
+            await Assert.ThrowsAsync<ValidationException>(() => client.BotSignIn.GetSignInUrlAsync(null));
         }
 
         [Fact]
         public async Task GetTokenStatus_ShouldThrowOnNullUserId()
         {
-            var client = new OAuthClient(mockConnectorClient, "https://localhost");
-            await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetTokenStatusAsync(null));
+            var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
+            await Assert.ThrowsAsync<ValidationException>(() => client.UserToken.GetTokenStatusAsync(null));
         }
 
         [Fact]
         public async Task GetAadTokensAsync_ShouldThrowOnNullUserId()
         {
-            var client = new OAuthClient(mockConnectorClient, "https://localhost");
-            await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetAadTokensAsync(null, "connection", new string[] { "hello" }));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetAadTokensAsync("", "connection", new string[] { "hello" }));
+            var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
+            await Assert.ThrowsAsync<ValidationException>(() => client.UserToken.GetAadTokensAsync(null, "connection", new AadResourceUrls() { ResourceUrls = new string[] { "hello" } }));
         }
 
         [Fact]
         public async Task GetAadTokensAsync_ShouldThrowOnNullConncetionName()
         {
-            var client = new OAuthClient(mockConnectorClient, "https://localhost");
-            await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetAadTokensAsync("user", null, new string[] { "hello" }));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetAadTokensAsync("user", "", new string[] { "hello" }));
+            var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
+            await Assert.ThrowsAsync<ValidationException>(() => client.UserToken.GetAadTokensAsync("user", null, new AadResourceUrls() { ResourceUrls = new string[] { "hello" } }));
         }
 
         [Fact]
         public async Task GetAadTokensAsync_ShouldThrowOnNullResourceUrls()
         {
-            var client = new OAuthClient(mockConnectorClient, "https://localhost");
-            await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetAadTokensAsync("user", "connection", null));
-        }
-
-        [Fact]
-        public async Task GetAadTokensAsync_ShouldThrowOnNullResourceUrl()
-        {
-            var client = new OAuthClient(mockConnectorClient, "https://localhost");
-            await Assert.ThrowsAsync<ArgumentException>(() => client.GetAadTokensAsync("user", "connection", new string[] { null }));
-            await Assert.ThrowsAsync<ArgumentException>(() => client.GetAadTokensAsync("user", "connection", new string[] { "" }));
-        }
-
-        [Fact]
-        public async Task GetAadTokensAsync_ShouldThrowOnEmptyResourceUrls()
-        {
-            var client = new OAuthClient(mockConnectorClient, "https://localhost");
-            await Assert.ThrowsAsync<ArgumentException>(() => client.GetAadTokensAsync("user", "connection", new string[] { }));
+            var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
+            await Assert.ThrowsAsync<ValidationException>(() => client.UserToken.GetAadTokensAsync("user", "connection", null));
         }
     }
 }

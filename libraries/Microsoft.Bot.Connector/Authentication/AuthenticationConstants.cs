@@ -13,12 +13,12 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// TO CHANNEL FROM BOT: Login URL
         /// </summary>
-        public const string ToChannelFromBotLoginUrl = "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token";
+        public const string ToChannelFromBotLoginUrl = "https://login.microsoftonline.com/botframework.com";
 
         /// <summary>
         /// TO CHANNEL FROM BOT: OAuth scope to request
         /// </summary>
-        public const string ToChannelFromBotOAuthScope = "https://api.botframework.com/.default";
+        public const string ToChannelFromBotOAuthScope = "https://api.botframework.com";
         
         /// <summary>
         /// TO BOT FROM CHANNEL: Token issuer
