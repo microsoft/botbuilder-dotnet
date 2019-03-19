@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Antlr4.Runtime.Tree;
 
 namespace Microsoft.Bot.Builder.Dialogs.Expressions
 {
@@ -13,6 +14,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Expressions
         Task<object> Evaluate(IDictionary<string, object> vars);
 
         Task<object> Evaluate(string expression, IDictionary<string, object> vars);
+
+        IParseTree Parse();
     }
 
 }

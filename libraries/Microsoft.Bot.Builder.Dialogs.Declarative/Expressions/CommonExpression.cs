@@ -62,5 +62,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Expressions
             var result = ExpressionEngine.Evaluate(parseTree, vars);
             return Task.FromResult(result);
         }
+
+        public IParseTree Parse()
+        {
+            return this._parseTree;
+        }
     }
 }

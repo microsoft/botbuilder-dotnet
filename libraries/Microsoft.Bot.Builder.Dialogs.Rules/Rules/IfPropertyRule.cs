@@ -4,6 +4,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Expressions;
+using Antlr4.Runtime.Tree;
+using Microsoft.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 {
@@ -114,6 +116,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
             public Task<object> Evaluate(string expression, IDictionary<string, object> vars)
             {
                 throw new NotImplementedException();
+            }
+
+            public IParseTree Parse()
+            {
+                return ExpressionEngine.Parse("true");
             }
         }
     }
