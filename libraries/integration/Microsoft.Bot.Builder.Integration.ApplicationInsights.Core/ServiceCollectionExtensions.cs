@@ -126,7 +126,6 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
             services.AddSingleton(botTelemetryClient);
 
             return services;
-
         }
 
         private static void CreateBotTelemetry(IServiceCollection services)
