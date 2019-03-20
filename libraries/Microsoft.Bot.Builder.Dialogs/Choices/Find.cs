@@ -232,7 +232,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 // occurring in the value that weren't in the utterance. So an utterance
                 // of "second last" matched against a value of "second from last" would
                 // result in an accuracy of 0.5.
-                var accuracy = matched / (matched + totalDeviation);
+                var accuracy = (float)matched / (matched + totalDeviation);
 
                 // The final score is simply the completeness multiplied by the accuracy.
                 var score = completeness * accuracy;
