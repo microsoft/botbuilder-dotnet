@@ -2,9 +2,6 @@
   "$schema": "../../Schemas/app.schema",
   "$type": "Microsoft.RuleDialog",
   "$id": "root",
-  "storage": {
-    "$type": "Microsoft.MemoryStorage"
-  },
   "recognizer": {
     "$type": "Microsoft.LuisRecognizer",
     "applicationId": "e4b3cf81-d69c-4323-9374-707655ba9703",
@@ -27,9 +24,7 @@
       "steps": [
         {
           "$type": "Microsoft.CallDialog",
-          "dialog": {
-            "$ref": "Samples/Planning - ToDoBot/AddToDo.dialog"
-          }
+          "dialog": "ToDoLuisBot.AddToDo"
         }
       ]
     },
@@ -39,21 +34,7 @@
       "steps": [
         {
           "$type": "Microsoft.CallDialog",
-          "dialog": {
-            "$ref": "Samples/Planning - ToDoBot/DeleteToDo.dialog"
-          }
-        }
-      ]
-    },
-    {
-      "$type": "Microsoft.IntentRule",
-      "intent": "MarkToDo",
-      "steps": [
-        {
-          "$type": "Microsoft.CallDialog",
-          "dialog": {
-            "$ref": "Samples/Planning - ToDoBot/ClearToDos.dialog"
-          }
+          "dialog": "ToDoLuisBot.DeleteToDo"
         }
       ]
     },
@@ -63,9 +44,17 @@
       "steps": [
         {
           "$type": "Microsoft.CallDialog",
-          "dialog": {
-            "$ref": "Samples/Planning - ToDoBot/ShowToDos.dialog"
-          }
+          "dialog": "ToDoLuisBot.ShowToDos"
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "ClearToDo",
+      "steps": [
+        {
+          "$type": "Microsoft.CallDialog",
+          "dialog": "ToDoLuisBot.ClearToDos"
         }
       ]
     }
