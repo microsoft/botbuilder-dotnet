@@ -129,6 +129,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 var lexer = new LGFileLexer(input);
                 var tokens = new CommonTokenStream(lexer);
                 var parser = new LGFileParser(tokens);
+                parser.RemoveErrorListeners();
+                parser.AddErrorListener(TemplateErrorListener.Instance);
                 parser.BuildParseTree = true;
                 parser.ErrorHandler = new BailErrorStrategy();
                 // the only difference here is that we parse as templateBody, not as the whole file
@@ -179,6 +181,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 var lexer = new LGFileLexer(input);
                 var tokens = new CommonTokenStream(lexer);
                 var parser = new LGFileParser(tokens);
+                parser.RemoveErrorListeners();
+                parser.AddErrorListener(TemplateErrorListener.Instance);
                 parser.BuildParseTree = true;
                 parser.ErrorHandler = new BailErrorStrategy();
 
