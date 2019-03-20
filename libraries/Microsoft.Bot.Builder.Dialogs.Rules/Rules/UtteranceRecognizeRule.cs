@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Expressions;
+using Microsoft.Bot.Builder.Dialogs.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 {
@@ -38,16 +40,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
             base.GatherConstraints(constraints);
 
             // add constraints for the intents property
-            if (!String.IsNullOrEmpty(this.Intent))
-            {
-                constraints.Add($"Dialog.DialogEvent.Value.Intents.Count > 0 && Dialog.DialogEvent.Value.Intents[0] == '{this.Intent}'");
-            }
+            //if (!String.IsNullOrEmpty(this.Intent))
+            //{
+            //    constraints.Add($"dialog.DialogEvent.Value.Intents.Count > 0 && dialog.DialogEvent.Value.Intents[0] == '{this.Intent}'");
+            //}
 
             //foreach (var entity in this.Entities)
             //{
             //    constraints.Add($"CONTAINS(DialogEvent.Entities, '{entity}')");
             //}
         }
+
+
+        public override IExpression GetExpressionEval(PlanningContext planningContext, DialogEvent dialogEvent)
+        {
+            var baseExpression = base.GetExpressionEval(planningContext, dialogEvent);
+
+            return new FunctionExpression(async (vars) =>
+            {
+                if (baseExpression != null)
+                {
+                    var result = (bool)await baseExpression.Evaluate(vars);
+                    if (result == false)
+                    {
+                        return false;
+                    }
+                }
+
+                var recognizerResult = dialogEvent.Value as RecognizerResult;
+                if (recognizerResult != null && recognizerResult.Intents.TryGetValue(this.Intent, out IntentScore score))
+                {
+                    return true;
+                }
+                return false;
+            });
+
+        }
+
+
 
         protected override PlanChangeList OnCreateChangeList(PlanningContext planning, object dialogOptions = null)
         {

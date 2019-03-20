@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Expressions;
 using Microsoft.Bot.Builder.Dialogs.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
@@ -24,15 +25,43 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
         {
             base.GatherConstraints(constraints);
 
-            // add in the constraints for Events property
-            StringBuilder sb = new StringBuilder();
-            string append = string.Empty;
-            foreach (var evt in Events)
-            {
-                sb.Append($"{append} dialog.DialogEvent.Name == '{evt}' ");
-                append = "||";
-            }
-            constraints.Add(sb.ToString());
+            //// add in the constraints for Events property
+            //StringBuilder sb = new StringBuilder();
+            //string append = string.Empty;
+            //foreach (var evt in Events)
+            //{
+            //    sb.Append($"{append} dialog.DialogEvent.Name == '{evt}' ");
+            //    append = "||";
+            //}
+            //constraints.Add(sb.ToString());
         }
+
+        public override IExpression GetExpressionEval(PlanningContext planningContext, DialogEvent dialogEvent)
+        {
+            var baseExpression = base.GetExpressionEval(planningContext, dialogEvent);
+
+            return new FunctionExpression(async (vars) =>
+            {
+                if (baseExpression != null)
+                {
+                    var result = (bool)await baseExpression.Evaluate(vars);
+                    if (result == false)
+                    {
+                        return false;
+                    }
+                }
+
+                foreach(var evt in this.Events)
+                {
+                    if (dialogEvent.Name == evt)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            });
+
+        }
+
     }
 }
