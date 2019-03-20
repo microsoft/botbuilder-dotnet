@@ -10,7 +10,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-
     public class EventActivityPrompt : ActivityPrompt
     {
         public EventActivityPrompt(string dialogId, PromptValidator<Activity> validator)
