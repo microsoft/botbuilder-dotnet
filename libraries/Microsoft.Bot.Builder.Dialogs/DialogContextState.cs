@@ -228,7 +228,14 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
                     else
                     {
-                        value.Replace(JToken.FromObject(newValue));
+                        if (newValue == null)
+                        {
+                            value.Parent.Remove();
+                        }
+                        else
+                        {
+                            value.Replace(JToken.FromObject(newValue));
+                        }
                     }
                 }
             }
