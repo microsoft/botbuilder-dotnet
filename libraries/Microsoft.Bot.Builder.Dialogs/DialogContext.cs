@@ -322,7 +322,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>The dialog context.</returns>
         public Task<DialogTurnResult> CancelAllDialogsAsync(CancellationToken cancellationToken)
         {
-            return CancelAllDialogsAsync(null, null, cancellationToken);
+            return CancelAllDialogsAsync("cancelDialog", null, cancellationToken);
         }
 
         public async Task<DialogTurnResult> CancelAllDialogsAsync(string eventName = "cancelDialog", object eventValue = null, CancellationToken cancellationToken = default(CancellationToken))

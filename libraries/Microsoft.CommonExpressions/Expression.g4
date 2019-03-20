@@ -1,10 +1,13 @@
 ﻿grammar Expression;
 
 expression
-    : expression ('*'|'/') expression           #binaryOpExp
+    : <assoc=right> expression '^' expression   #binaryOpExp
+    | expression ('*'|'/') expression           #binaryOpExp
     | expression ('+'|'-') expression           #binaryOpExp
     | expression ('=='|'!='|'<>') expression    #binaryOpExp
     | expression ('<'|'<='|'>'|'>=') expression #binaryOpExp
+    | expression '&&' expression                #binaryOpExp
+    | expression '||' expression                #binaryOpExp
     | primaryExpression                         #primaryExp
     ;
  

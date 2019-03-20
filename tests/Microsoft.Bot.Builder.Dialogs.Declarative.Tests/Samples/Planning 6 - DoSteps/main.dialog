@@ -1,12 +1,15 @@
 {
-  "$schema": "../../app.schema",
+  "$schema": "../../Schemas/app.schema",
   "$type": "Microsoft.RuleDialog",
   "$id": "root",
+  "storage": {
+    "$type": "Microsoft.MemoryStorage"
+  },
   "recognizer": {
     "$type": "Microsoft.RegexRecognizer",
     "intents": {
       "JokeIntent": "joke",
-      "FortuneTellerIntent": "fortune|future"
+      "FortuneTellerIntent":  "fortune|future"
     }
   },
   "rules": [
@@ -15,8 +18,15 @@
       "intent": "JokeIntent",
       "steps": [
         {
-          "$type": "Microsoft.CallDialog",
-          "dialog": "TellJokeDialog"
+          "$type": "Microsoft.SendActivity",
+          "activity": "Why did the chicken cross the road?"
+        },
+        {
+          "$type": "Microsoft.WaitForInput"
+        },
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "To get to the other side"
         }
       ]
     },
@@ -25,8 +35,16 @@
       "intent": "FortuneTellerIntent",
       "steps": [
         {
-          "$type": "Microsoft.CallDialog",
-          "dialog": "FortuneTellerDialog"
+          "$type": "Microsoft.SendActivity",
+          "activity": "Seeing into the future..."
+        },
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "I see great things happening..."
+        },
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "Perhaps even a successful bot demo"
         }
       ]
     },

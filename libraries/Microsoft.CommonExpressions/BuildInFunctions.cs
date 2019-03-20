@@ -60,7 +60,15 @@ namespace Microsoft.Expressions
                         operands[0] is IComparable operand0 && operands[1] is IComparable operand1 ?
                         operand0.CompareTo(operand1) >= 0 : throw new Exception();
 
+        public static EvaluationDelegate Pow = operands =>
+                        operands[0] is double double0 && operands[1] is double double1 ? Math.Pow(double0, double1) :
+                        operands[0] is int int0 && operands[1] is int int1 ? (object)(int)Math.Pow(int0, int1) :
+                        throw new Exception();
 
+        public static EvaluationDelegate And = operands =>
+                        operands[0] is bool bool0 && operands[1] is bool bool1 ? bool0 && bool1 : throw new Exception();
 
+        public static EvaluationDelegate Or = operands =>
+                        operands[0] is bool bool0 && operands[1] is bool bool1 ? bool0 || bool1 : throw new Exception();
     }
 }

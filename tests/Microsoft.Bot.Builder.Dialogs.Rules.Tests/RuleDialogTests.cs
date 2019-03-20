@@ -496,5 +496,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 .AssertReply("Hello Carlos, nice to meet you!")
             .StartTestAsync();
         }
+
+        [TestMethod]
+        public async Task Planning_IntentRule()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var planningDialog = new RuleDialog("planningTest");
+
+            planningDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
+
+            planningDialog.AddRules(new List<IRule>()
+            {
+                new ReplacePlanRule("JokeIntent",
+                    steps: new List<IDialog>()
+                    {
+                        new SendActivity("Why did the chicken cross the road?"),
+                        new WaitForInput(),
+                        new SendActivity("To get to the other side")
+                    }),
+                new WelcomeRule(
+                    steps: new List<IDialog>()
+                    {
+                        new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
+                    })});
+
+            await CreateFlow(planningDialog, convoState, userState)
+            .Send("Do you know a joke?")
+                .AssertReply("I'm a joke bot. To get started say 'tell me a joke'")
+                .AssertReply("Why did the chicken cross the road?")
+            .Send("Why?")
+                .AssertReply("To get to the other side")
+            .StartTestAsync();
+        }
     }
 }

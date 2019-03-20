@@ -11,6 +11,23 @@ namespace Microsoft.Expressions
         private readonly GetMethodDelegate GetMethod;
         private object Scope;
 
+        public static readonly Dictionary<string, string> OperatorFunctionNames = new Dictionary<string, string>
+        {
+            {"^", "pow"},
+            {"/", "div"},
+            {"*", "mul"},
+            {"+", "add"},
+            {"-", "sub"},
+            {"==", "equal"},
+            {"!=", "notEqual"},
+            {"<", "lessThan"},
+            {"<=", "lessThanOrEqual"},
+            {">", "greaterThan"},
+            {">=", "greaterThanorEqual"},
+            {"&&", "and"},
+            {"||", "or"}
+        };
+
         public ExpressionEvaluator(GetValueDelegate getValue = null, GetMethodDelegate getMethod = null)
         {
             GetValue = getValue;
@@ -37,7 +54,8 @@ namespace Microsoft.Expressions
         public override object VisitBinaryOpExp([NotNull] ExpressionParser.BinaryOpExpContext context)
         {
             var binaryOperationName = context.GetChild(1).GetText();
-            var method = MethodBinder.All(binaryOperationName);
+            var methodName = OperatorFunctionNames[binaryOperationName];
+            var method = GetMethod(methodName);
 
             var left = Visit(context.expression(0));
             var right = Visit(context.expression(1));
@@ -93,8 +111,8 @@ namespace Microsoft.Expressions
             if (int.TryParse(context.GetText(), out var intValue))
                 return intValue;
 
-            if (float.TryParse(context.GetText(), out var floatValue))
-                return floatValue;
+            if (double.TryParse(context.GetText(), out var doubleValue))
+                return doubleValue;
 
             throw new Exception($"{context.GetText()} is not a number.");
         }

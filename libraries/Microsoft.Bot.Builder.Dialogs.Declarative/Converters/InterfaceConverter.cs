@@ -31,7 +31,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 
             if (refResolver.IsRef(jsonObject))
             {
-                jsonObject = refResolver.Resolve(jsonObject);
+                // We can't do this asynchornously as the Json.NET interface is synchronous
+                jsonObject = refResolver.ResolveAsync(jsonObject).GetAwaiter().GetResult();
             }
 
             //jsonObject["id"] = jsonObject["id"] ?? jsonObject["$id"];
