@@ -62,6 +62,16 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
         public override string VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
         {
+            var parameters = context.templateNameLine().parameters();
+            if (parameters != null)
+            {
+                if (parameters.CLOSE_PARENTHESIS() == null
+                    || parameters.OPEN_PARENTHESIS() == null)
+                {
+                    throw new Exception($"parameters: {parameters.GetText()} format error");
+                }
+            }
+
             var templateNameContext = context.templateNameLine();
             if (templateNameContext.templateName().GetText().Equals(CurrentTarget().TemplateName))
             {

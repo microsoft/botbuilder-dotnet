@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 }
                 catch (Exception)
                 {
-                    throw new Exception($"Sorry, instance {instance} does not have property {property}");
+                    throw new Exception($"instance {instance} does not have property {property}");
                 }
             }
 

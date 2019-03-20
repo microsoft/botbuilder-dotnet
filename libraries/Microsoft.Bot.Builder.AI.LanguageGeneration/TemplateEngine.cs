@@ -88,13 +88,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 var parameters = template.templateNameLine().parameters();
                 if (parameters != null)
                 {
-                    var s = parameters.GetText();
-                    if (parameters.CLOSE_PARENTHESIS() == null
-                        || parameters.OPEN_PARENTHESIS() == null)
-                    {
-                        throw new Exception($"parameters: {parameters.GetText()} format error");
-                    }
-
                     templateParameters[templateName] = parameters.IDENTIFIER().Select(x => x.GetText()).ToList();
                 }
             }

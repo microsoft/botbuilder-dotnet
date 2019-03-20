@@ -272,5 +272,32 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         }
 
+        [TestMethod]
+        public void TestExceptionCatch()
+        {
+            var engine = TemplateEngine.FromFile(GetExampleFilePath("ExceptionCatch.lg"));
+
+            //There is no template body in template EmptyTemplate
+            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("EmptyTemplate", null));
+
+            //parameters: (errorparams format error
+            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("templateRef", null));
+
+            //instance  does not have property Name
+            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("template2", null));
+
+            //instance objecta does not have property property1
+            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("template3", new { a = "objecta"}));
+
+            //Case condition -CASE:hi should have expression body
+            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("template4", null));
+
+            //Case -CASE:{number == 1} should have template body
+            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("template5", new { number = 1}));
+
+            //Default rule -DEFAULT: should have template body
+            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("template6", new { number = 1 }));
+        }
+
     }
 }
