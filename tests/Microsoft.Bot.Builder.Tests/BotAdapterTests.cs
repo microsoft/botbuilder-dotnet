@@ -167,5 +167,47 @@ namespace Microsoft.Bot.Builder.Tests
             await adapter.ContinueConversationAsync("AppId", cr, continueCallback, default(CancellationToken));
             Assert.IsTrue(callbackInvoked);
         }
+
+    [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException),
+            "An AppId of null was inappropriately allowed.")]
+        public async Task ContinueConversation_AppIdNullAsync()
+        {
+            bool callbackInvoked = false;
+            var adapter = new BotFrameworkAdapter(new SimpleCredentialProvider());
+            ConversationReference cr = new ConversationReference
+            {
+                ActivityId = "activityId",
+                Bot = new ChannelAccount
+                {
+                    Id = "channelId",
+                    Name = "testChannelAccount",
+                    Role = "bot",
+                },
+                ChannelId = "testChannel",
+                ServiceUrl = "https://test.com",
+                Conversation = new ConversationAccount
+                {
+                    ConversationType = "",
+                    Id = "testConversationId",
+                    IsGroup = false,
+                    Name = "testConversationName",
+                    Role = "user",
+                },
+                User = new ChannelAccount
+                {
+                    Id = "channelId",
+                    Name = "testChannelAccount",
+                    Role = "bot",
+                },
+            };
+            Task continueCallback(ITurnContext turnContext, CancellationToken cancellationToken)
+            {
+                callbackInvoked = true;
+                return Task.CompletedTask;
+            }
+            await adapter.ContinueConversationAsync(null, cr, continueCallback, default(CancellationToken));
+            Assert.IsTrue(callbackInvoked);
+        }
     }
 }
