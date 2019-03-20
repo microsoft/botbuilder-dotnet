@@ -53,15 +53,15 @@ conditionalTemplateBody
     ;
 
 caseRule
-    : caseCondition newline normalTemplateBody 
+    : caseCondition newline normalTemplateBody? 
     ;
 
 defaultRule
-    : defaultCondition newline normalTemplateBody
+    : defaultCondition newline normalTemplateBody?
     ;
 
 caseCondition
-	: DASH CASE EXPRESSION
+	: DASH CASE (WS|TEXT|EXPRESSION)*
 	;
 defaultCondition
     : DASH DEFAULT

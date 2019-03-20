@@ -91,21 +91,33 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var caseRules = context.conditionalTemplateBody().caseRule();
             foreach (var caseRule in caseRules)
             {
-                var conditionExpression = caseRule.caseCondition().EXPRESSION().GetText();
+                
+                if (caseRule.caseCondition().EXPRESSION() == null
+                    || caseRule.caseCondition().EXPRESSION().Length == 0)
+                {
+                    throw new Exception($"Case condition {caseRule.caseCondition().GetText()} should have expression body");
+                }
+                var conditionExpression = caseRule.caseCondition().EXPRESSION(0).GetText();
                 if (EvalCondition(conditionExpression))
                 {
+                    if (caseRule.normalTemplateBody() == null)
+                    {
+                        throw new Exception($"Case {caseRule.GetText()} should have template body");
+                    }
                     return Visit(caseRule.normalTemplateBody());
                 }
             }
 
-            if (context?.conditionalTemplateBody()?.defaultRule() != null)
-            {
-                return Visit(context.conditionalTemplateBody().defaultRule().normalTemplateBody());
-            }
-            else
-            {
+            var defaultRule = context?.conditionalTemplateBody()?.defaultRule();
+            if (defaultRule == null)
                 return null;
+
+            if (defaultRule.normalTemplateBody() == null)
+            {
+                throw new Exception($"Default rule {defaultRule.GetText()} should have template body");
             }
+
+            return Visit(defaultRule.normalTemplateBody());
         }
         
 

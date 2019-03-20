@@ -13,6 +13,7 @@ namespace Microsoft.Expressions
 
         public static readonly Dictionary<string, string> OperatorFunctionNames = new Dictionary<string, string>
         {
+            // All operation added in Expression.g4 should be added to this mapping too
             {"^", "pow"},
             {"/", "div"},
             {"*", "mul"},
@@ -88,7 +89,7 @@ namespace Microsoft.Expressions
                 return method(parameters.ToArray());
             }
 
-            throw new Exception("This format is wrong.");
+            throw new Exception($"Format: {context.GetText()} is invalid.");
         }
 
         public override object VisitIdAtom([NotNull] ExpressionParser.IdAtomContext context) => GetValue(Scope, context.GetText());

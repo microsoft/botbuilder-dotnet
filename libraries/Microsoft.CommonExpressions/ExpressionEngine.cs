@@ -16,15 +16,8 @@ namespace Microsoft.Expressions
         /// <returns></returns>
         public static object Evaluate(string expression, object scope, GetValueDelegate getValue = null, GetMethodDelegate getMethod = null)
         {
-            try
-            {
-                var parser = Parse(expression);
-                return Evaluate(parser, scope, getValue, getMethod);
-            }
-            catch (Exception)
-            {
-                throw new Exception("some thing is wrong in expression");
-            }
+            var parser = Parse(expression);
+            return Evaluate(parser, scope, getValue, getMethod);
         }
 
         /// <summary>
