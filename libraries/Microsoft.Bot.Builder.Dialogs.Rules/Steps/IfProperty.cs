@@ -11,14 +11,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 {
     public class IfPropertyCondition
     {
-        public IExpressionEval Expression { get; set; }
+        public IExpression Expression { get; set; }
 
         public List<IDialog> Steps { get; set; }
     }
 
     public class IfProperty : DialogCommand, IDialogDependencies
     {
-        public IExpressionEval Expression { get; set; }
+        public IExpression Expression { get; set; }
 
         public List<IDialog> IfTrue { get; set; } = new List<IDialog>();
 

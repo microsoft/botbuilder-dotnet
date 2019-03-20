@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(IExpressionEval);
+            return objectType == typeof(IExpression);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)

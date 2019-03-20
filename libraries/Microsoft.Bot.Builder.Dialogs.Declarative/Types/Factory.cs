@@ -104,9 +104,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.IntentRule", typeof(IntentRule));
             Register("Microsoft.EventRule", typeof(EventRule));
             Register("Microsoft.FallbackRule", typeof(FallbackRule));
-            Register("Microsoft.IfPropertyRule", typeof(IfPropertyRule));
+            //Register("Microsoft.IfPropertyRule", typeof(IfPropertyRule));
             Register("Microsoft.ReplacePlanRule", typeof(ReplacePlanRule));
-            Register("Microsoft.UtteranceRecognizeRule", typeof(UtteranceRecognizeRule));
+            //Register("Microsoft.UtteranceRecognizeRule", typeof(UtteranceRecognizeRule));
             Register("Microsoft.WelcomeRule", typeof(WelcomeRule));
 
             // Steps

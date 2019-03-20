@@ -7,15 +7,24 @@ using Microsoft.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Expressions
 {
-    public class CommonExpression : IExpressionEval
+
+    public class CommonExpressionFactory : IExpressionFactory
+    {
+        public IExpression CreateExpression(string expression)
+        {
+            return new CommonExpression(expression);
+        }
+    }
+
+    public class CommonExpression : IExpression
     {
         private string _expression;
         private IParseTree _parseTree;
 
         public CommonExpression() { }
-        public CommonExpression(string condition)
+        public CommonExpression(string expression)
         {
-            this.Expression = condition;
+            this.Expression = expression;
         }
 
         public string Expression
@@ -28,12 +37,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Expressions
             }
         }
 
-        public Task<object> Evaluate(DialogContextState state)
-        {
-            //var parseTree = ExpressionEngine.Parse(expression);
-            var result = ExpressionEngine.Evaluate(this._parseTree, state, getValue: (instance, key) => state.GetValue<object>(instance, key?.ToString()));
-            return Task.FromResult(result);
-        }
+        //public Task<object> Evaluate(DialogContextState state)
+        //{
+        //    //var parseTree = ExpressionEngine.Parse(expression);
+        //    var result = ExpressionEngine.Evaluate(this._parseTree, state, getValue: (instance, key) => state.GetValue<object>(instance, key?.ToString()));
+        //    return Task.FromResult(result);
+        //}
 
         public Task<object> Evaluate(IDictionary<string, object> state)
         {
@@ -56,11 +65,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Expressions
             throw new ArgumentNullException(nameof(Expression));
         }
 
-        public Task<object> Evaluate(string expression, IDictionary<string, object> vars)
+
+        public Task<object> GetParseTree()
         {
-            var parseTree = ExpressionEngine.Parse(expression);
-            var result = ExpressionEngine.Evaluate(parseTree, vars);
-            return Task.FromResult(result);
+            return Task.FromResult((object)this._parseTree);
         }
+
+        //public Task<object> Evaluate(string expression, IDictionary<string, object> vars)
+        //{
+        //    var parseTree = ExpressionEngine.Parse(expression);
+        //    var result = ExpressionEngine.Evaluate(parseTree, vars);
+        //    return Task.FromResult(result);
+        //}
     }
 }

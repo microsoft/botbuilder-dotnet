@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Expressions;
+using Microsoft.Bot.Builder.Dialogs.Expressions;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
@@ -13,85 +15,80 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 
         public string WelcomeProperty { get; set; }
 
-        public WelcomeRule()
-            : base(new List<string>()
-            {
-                PlanningEvents.ActivityReceived.ToString(),
-                PlanningEvents.PlanStarted.ToString(),
-                PlanningEvents.Fallback.ToString(),
-            })
-        {
-        }
-
-        public WelcomeRule(List<IDialog> steps = null, string conversationProperty = welcomeProperty)
-            : base(new List<string>()
-            {
-                PlanningEvents.ActivityReceived.ToString(),
-                PlanningEvents.PlanStarted.ToString(),
-                PlanningEvents.Fallback.ToString(),
-            }, steps, PlanChangeTypes.DoSteps)
+        public WelcomeRule(List<IDialog> steps = null, string conversationProperty = welcomeProperty, string constraint = null)
+            : base(events: new List<string>()
+                {
+                    PlanningEvents.ActivityReceived.ToString(),
+                    PlanningEvents.PlanStarted.ToString(),
+                    PlanningEvents.Fallback.ToString(),
+                },
+                  steps: steps,
+                  changeType: PlanChangeTypes.DoSteps, 
+                  constraint: constraint)
         {
             this.WelcomeProperty = conversationProperty;
         }
 
-        protected override async Task<bool> OnIsTriggeredAsync(PlanningContext planning, DialogEvent dialogEvent)
+        public override IExpression GetExpressionEval(PlanningContext planningContext, DialogEvent dialogEvent)
         {
-            if (dialogEvent.Name == PlanningEvents.ActivityReceived.ToString())
-            {
-                return HandleActivityReceived(planning);
-            }
-            else if (dialogEvent.Name == PlanningEvents.PlanStarted.ToString())
-            {
-                return HandlePlanStarted(planning);
-            }
+            var baseExpression = base.GetExpressionEval(planningContext, dialogEvent);
 
-            return false;
+            return new FunctionExpression(async (vars) =>
+               {
+                   // Have we already welcomed the user?
+                   if (planningContext.State.GetValue<bool>(welcomeProperty))
+                   {
+                       // don't trigger
+                       return false;
+                   }
+
+                   // see if basic conditions have been met
+                   if (baseExpression != null)
+                   {
+                       var result = (bool?)await baseExpression.Evaluate(vars);
+                       if (result == false)
+                       {
+                           return result;
+                       }
+                   }
+
+                   // inspect activity and decide if we should fire
+                   if (dialogEvent.Name == PlanningEvents.ActivityReceived.ToString())
+                   {
+                       // Filter to only ConversationUpdate activities
+                       var activity = planningContext.Context.Activity;
+
+                       if (activity.Type == ActivityTypes.ConversationUpdate && activity.MembersAdded?.Count > 0)
+                       {
+                           foreach (var member in activity.MembersAdded)
+                           {
+                               if (member.Id != activity.Recipient.Id)
+                               {
+                                   return true;
+                               }
+                           }
+                       }
+
+                       return false;
+                   }
+                   else if (dialogEvent.Name == PlanningEvents.PlanStarted.ToString())
+                   {
+                       // Trigger the greeting
+                       return true;
+                   }
+
+                   return false;
+               });
+
         }
 
-        private bool HandleActivityReceived(PlanningContext planning)
+        public override Task<List<PlanChangeList>> OnExecuteAsync(PlanningContext planning)
         {
-            // Filter to only ConversationUpdate activities
-            var activity = planning.Context.Activity;
+            // set that we have executed this
+            planning.State.SetValue(welcomeProperty, true);
 
-            if (activity.Type == ActivityTypes.ConversationUpdate && activity.MembersAdded?.Count > 0)
-            {
-                // Have we already welcomed the user?
-                if (!planning.State.GetValue<bool>(welcomeProperty))
-                {
-                    // Ensure a user is being added
-                    var userAdded = false;
-
-                    foreach (var member in activity.MembersAdded)
-                    {
-                        if (member.Id != activity.Recipient.Id)
-                        {
-                            userAdded = true;
-                        }
-                    }
-
-                    // Trigger only if user added
-                    if (userAdded)
-                    {
-                        planning.State.SetValue(welcomeProperty, true);
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        private bool HandlePlanStarted(PlanningContext planning)
-        {
-            // Have we already welcomed the user?
-            if (!planning.State.GetValue<bool>(welcomeProperty))
-            {
-                // Trigger the greeting
-                planning.State.SetValue(welcomeProperty, true);
-                return true;
-            }
-
-            return false;
+            // add steps for the rule to the plan
+            return base.OnExecuteAsync(planning);
         }
     }
 }

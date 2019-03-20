@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public StateMap Dialog { get; set; }
     }
 
-    public class DialogContextState
+    public class DialogContextState : IDictionary<string, object>
     {
         private readonly DialogContext dialogContext;
 
@@ -72,6 +73,32 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 instance.State = value;
 
+            }
+        }
+
+        public ICollection<string> Keys => new[] { "user", "conversation", "dialog" };
+
+        public ICollection<object> Values => new[] { User, Conversation, Dialog };
+
+        public int Count => 3;
+
+        public bool IsReadOnly => true;
+
+        public object this[string key]
+        {
+            get
+            {
+                if (TryGetValue(key, out object result))
+                {
+                    return result;
+                }
+
+                return null;
+            }
+
+            set
+            {
+                throw new NotImplementedException();
             }
         }
 
@@ -165,6 +192,78 @@ namespace Microsoft.Bot.Builder.Dialogs
             // this.User = resultContextState.User;
             // this.Conversation = resultContextState.Conversation;
             // this.Dialog = resultContextState.Dialog;
+        }
+
+        public void Add(string key, object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool ContainsKey(string key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Remove(string key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool TryGetValue(string key, out object value)
+        {
+            value = null;
+            switch (key.ToLower())
+            {
+                case "user":
+                    value = this.User;
+                    return true;
+                case "conversation":
+                    value = this.Conversation;
+                    return true;
+                case "dialog":
+                    value = this.Dialog;
+                    return true;
+            }
+
+            return false;
+        }
+
+        public void Add(KeyValuePair<string, object> item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Contains(KeyValuePair<string, object> item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Remove(KeyValuePair<string, object> item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+        {
+            yield return new KeyValuePair<string, object>("user", this.User);
+            yield return new KeyValuePair<string, object>("conversation", this.Conversation);
+            yield return new KeyValuePair<string, object>("dialog", this.Dialog);
+            yield break;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            throw new NotImplementedException();
         }
     }
 

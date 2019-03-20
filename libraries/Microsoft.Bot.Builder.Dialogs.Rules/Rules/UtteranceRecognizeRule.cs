@@ -9,41 +9,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 {
     public class UtteranceRecognizeRule : EventRule
     {
-        public string Intent { get; set; }
-
-        public List<string> Entities { get; set; }
-
-        public UtteranceRecognizeRule(string intent = null, List<string> entities = null, List<IDialog> steps = null, PlanChangeTypes changeType = PlanChangeTypes.DoSteps)
-            : base(new List<string>()
+        public UtteranceRecognizeRule(string intent = null, List<string> entities = null, List<IDialog> steps = null, PlanChangeTypes changeType = PlanChangeTypes.DoSteps, string constraint = null)
+            : base(events: new List<string>()
             {
                 PlanningEvents.UtteranceRecognized.ToString()
-            }, 
-            steps, 
-            changeType)
+            },
+            steps: steps,
+            changeType: changeType,
+            constraint: constraint)
         {
             Intent = intent ?? null;
             Entities = entities ?? new List<string>();
-        }        
+        }
 
-        protected override async Task<bool> OnIsTriggeredAsync(PlanningContext planning, DialogEvent dialogEvent)
+
+        /// <summary>
+        /// Intent to match on
+        /// </summary>
+        public string Intent { get; set; }
+
+        /// <summary>
+        /// Entities which must be recognized for this rule to trigger
+        /// </summary>
+        public List<string> Entities { get; set; }
+
+        protected override void GatherConstraints(List<string> constraints)
         {
-            if (dialogEvent.Value is RecognizerResult recognizerResult)
-            {
-                // Ensure all intents recognized
-                if (recognizerResult.Intents == null)
-                {
-                    return false;
-                }
+            base.GatherConstraints(constraints);
 
-                if (!recognizerResult.Intents.Any(r => r.Key == Intent))
-                {
-                    return false;
-                }
-                
-                // TODO: Ensure all entities recognized
+            // add constraints for the intents property
+            if (!String.IsNullOrEmpty(this.Intent))
+            {
+                constraints.Add($"Dialog.DialogEvent.Value.Intents.Count > 0 && Dialog.DialogEvent.Value.Intents[0] == '{this.Intent}'");
             }
 
-            return true;
+            //foreach (var entity in this.Entities)
+            //{
+            //    constraints.Add($"CONTAINS(DialogEvent.Entities, '{entity}')");
+            //}
         }
 
         protected override PlanChangeList OnCreateChangeList(PlanningContext planning, object dialogOptions = null)

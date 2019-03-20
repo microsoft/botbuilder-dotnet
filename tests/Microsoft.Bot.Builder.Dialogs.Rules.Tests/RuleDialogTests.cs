@@ -33,6 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
+                .Use(new RegisterClassMiddleware<IExpressionFactory>(new CommonExpressionFactory()))
                 .Use(new RegisterClassMiddleware<IBotResourceProvider>(botResourceManager))
                 .Use(new RegisterClassMiddleware<ILanguageGenerator>(lg))
                 .Use(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)))
@@ -220,7 +221,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     })});
 
             await CreateFlow(ruleDialog, convoState, userState)
-            .Send(new Activity() { Type = ActivityTypes.ConversationUpdate, MembersAdded = new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") } })
+            .Send(new Activity() { Type = ActivityTypes.ConversationUpdate, MembersAdded = new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") , new ChannelAccount("user", "User") } })
             .Send("hi")
                 .AssertReply("Welcome my friend!")
                 .AssertReply("Hello, what is your name?")

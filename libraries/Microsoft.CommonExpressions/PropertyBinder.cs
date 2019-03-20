@@ -40,6 +40,11 @@ namespace Microsoft.Expressions
         /// <summary>
         /// Use IDictionary<string, object> to get acces to properties of instance object</string>
         /// </summary>
-        public static GetValueDelegate Dictionary = (object instance, object property) => ((IDictionary<string, object>)instance)[(string)property];
+        public static GetValueDelegate Dictionary = (object instance, object property) =>
+        {
+            object result = null;
+            ((IDictionary<string, object>)instance).TryGetValue((string)property, out result);
+            return result;
+        };
     }
 }
