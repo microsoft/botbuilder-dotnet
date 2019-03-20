@@ -34,7 +34,6 @@ namespace Microsoft.Expressions
             parser.RemoveErrorListeners();
             parser.AddErrorListener(ExpressionErrorListener.Instance);
             parser.BuildParseTree = true;
-            parser.ErrorHandler = new BailErrorStrategy();
 
             return parser.expression();
         }
