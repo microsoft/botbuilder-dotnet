@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     new SendActivity("Hello Planning!")
                 }));
 
-            ruleDialog.UserState = userState.CreateProperty<StateMap>("userStateProperty");
+            ruleDialog.UserState = userState.CreateProperty<Dictionary<string, object>>("userStateProperty");
             ruleDialog.BotState = convoState.CreateProperty<BotState>("botStateProperty");
 
             await CreateFlow(ruleDialog, convoState, userState)
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                         new SendActivity("Howdy awain")
                     }));
 
-            ruleDialog.UserState = userState.CreateProperty<StateMap>("userStateProperty");
+            ruleDialog.UserState = userState.CreateProperty<Dictionary<string, object>>("userStateProperty");
             ruleDialog.BotState = convoState.CreateProperty<BotState>("botStateProperty");
 
 
@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                         new SendActivity("Hello {user.name}, nice to meet you!"),
                     }));
 
-            ruleDialog.UserState = userState.CreateProperty<StateMap>("userStateProperty");
+            ruleDialog.UserState = userState.CreateProperty<Dictionary<string, object>>("userStateProperty");
             ruleDialog.BotState = convoState.CreateProperty<BotState>("botStateProperty");
 
             await CreateFlow(ruleDialog, convoState, userState)

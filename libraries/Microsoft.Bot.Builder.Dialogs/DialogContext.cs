@@ -20,28 +20,38 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialogs">Parent dialog set.</param>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
         /// <param name="state">Current dialog state.</param>
-        public DialogContext(DialogSet dialogs, DialogContext parentDialogContext, DialogState state, StateMap conversationState = null, StateMap userState = null)
+        public DialogContext(DialogSet dialogs, DialogContext parentDialogContext, DialogState state, Dictionary<string, object> conversationState = null, Dictionary<string, object> userState = null)
         {
             Dialogs = dialogs;
             Parent = parentDialogContext ?? throw new ArgumentNullException(nameof(parentDialogContext));
             Context = Parent.Context;
             Stack = state.DialogStack;
-            conversationState = conversationState ?? state?.ConversationState ?? new StateMap();
-            userState = userState ?? state?.UserState ?? new StateMap();
+            conversationState = conversationState ?? state?.ConversationState ?? new Dictionary<string, object>();
+            userState = userState ?? state?.UserState ?? new Dictionary<string, object>();
+            if (!Context.TurnState.TryGetValue("TurnStateMap", out object turnState))
+            {
+                turnState = new Dictionary<string, object>();
+                Context.TurnState["TurnStateMap"] = turnState;
+            }
 
-            State = new DialogContextState(this, userState, conversationState);
+            State = new DialogContextState(this, userState, conversationState, turnState as Dictionary<string, object>);
         }
 
-        public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state, StateMap conversationState = null, StateMap userState = null)
+        public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state, Dictionary<string, object> conversationState = null, Dictionary<string, object> userState = null)
         {
             Parent = null;
             Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
             Context = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
             Stack = state.DialogStack;
-            conversationState = conversationState ?? state?.ConversationState ?? new StateMap();
-            userState = userState ?? state?.UserState ?? new StateMap();
+            conversationState = conversationState ?? state?.ConversationState ?? new Dictionary<string, object>();
+            userState = userState ?? state?.UserState ?? new Dictionary<string, object>();
+            if (!Context.TurnState.TryGetValue("TurnStateMap", out object turnState))
+            {
+                turnState = new Dictionary<string, object>();
+                Context.TurnState["TurnStateMap"] = turnState;
+            }
 
-            State = new DialogContextState(this, userState, conversationState);
+            State = new DialogContextState(this, userState, conversationState, turnState as Dictionary<string, object>);
         }
 
         public DialogContext Parent { get; protected set; }
@@ -122,11 +132,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        public StateMap DialogState
+        public Dictionary<string, object> DialogState
         {
             get
             {
-                return ActiveDialog?.State as StateMap;
+                return ActiveDialog?.State as Dictionary<string, object>;
             }
         }
 
@@ -203,7 +213,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (state == null)
             {
-                state = new StateMap();
+                state = new Dictionary<string, object>();
             }
 
             // Push new instance onto stack.

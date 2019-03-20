@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
             ruleDialog.BotState = convoState.CreateProperty<BotState>("bot");
-            ruleDialog.UserState = userState.CreateProperty<StateMap>("user"); ;
+            ruleDialog.UserState = userState.CreateProperty<Dictionary<string, object>>("user"); ;
 
             var dialogs = new DialogSet(dialogState);
 

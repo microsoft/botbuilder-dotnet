@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -123,8 +124,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Delegate to inner dialog.
-            var dialogState = (DialogState)((StateMap)instance.State)[PersistedDialogState];
-            var innerDc = new DialogContext(_dialogs, turnContext, dialogState, new StateMap(), new StateMap());
+            var dialogState = (DialogState)((Dictionary<string, object>)instance.State)[PersistedDialogState];
+            var innerDc = new DialogContext(_dialogs, turnContext, dialogState, new Dictionary<string, object>(), new Dictionary<string, object>());
             await innerDc.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
 
             // Notify component
@@ -136,8 +137,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Forward cancel to inner dialogs
             if (reason == DialogReason.CancelCalled)
             {
-                var dialogState = (DialogState)((StateMap)instance.State)[PersistedDialogState];
-                var innerDc = new DialogContext(_dialogs, turnContext, dialogState, new StateMap(), new StateMap());
+                var dialogState = (DialogState)((Dictionary<string, object>)instance.State)[PersistedDialogState];
+                var innerDc = new DialogContext(_dialogs, turnContext, dialogState, new Dictionary<string, object>(), new Dictionary<string, object>());
                 await innerDc.CancelAllDialogsAsync(cancellationToken).ConfigureAwait(false);
             }
 

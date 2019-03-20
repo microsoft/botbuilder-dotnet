@@ -14,13 +14,13 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class DialogContextVisibleState
     {
         [JsonProperty(PropertyName = "user")]
-        public StateMap User { get; set; }
+        public Dictionary<string, object> User { get; set; }
 
         [JsonProperty(PropertyName = "conversation")]
-        public StateMap Conversation { get; set; }
+        public Dictionary<string, object> Conversation { get; set; }
 
         [JsonProperty(PropertyName = "dialog")]
-        public StateMap Dialog { get; set; }
+        public Dictionary<string, object> Dialog { get; set; }
     }
 
     public class DialogContextState : IDictionary<string, object>
@@ -28,13 +28,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         private readonly DialogContext dialogContext;
 
         [JsonProperty(PropertyName = "user")]
-        public StateMap User { get; set; }
+        public Dictionary<string, object> User { get; set; }
 
         [JsonProperty(PropertyName = "conversation")]
-        public StateMap Conversation { get; set; }
+        public Dictionary<string, object> Conversation { get; set; }
 
         [JsonProperty(PropertyName = "dialog")]
-        public StateMap Dialog
+        public Dictionary<string, object> Dialog
         {
             get
             {
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
                 }
 
-                return (StateMap)instance.State;
+                return (Dictionary<string, object>)instance.State;
             }
 
             set
@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         [JsonProperty(PropertyName ="turn")]
-        public StateMap Turn { get; set; }
+        public Dictionary<string, object> Turn { get; set; }
 
         public ICollection<string> Keys => new[] { "user", "conversation", "dialog", "turn" };
 
@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        public DialogContextState(DialogContext dc, StateMap userState, StateMap conversationState, StateMap turnState)
+        public DialogContextState(DialogContext dc, Dictionary<string, object> userState, Dictionary<string, object> conversationState, Dictionary<string, object> turnState)
         {
             this.dialogContext = dc ?? throw new ArgumentNullException(nameof(dc));
             this.User = userState;
@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 Conversation = this.Conversation,
                 User = this.User,
-                Dialog = (StateMap)instance?.State,
+                Dialog = (Dictionary<string, object>)instance?.State,
             };
         }
 

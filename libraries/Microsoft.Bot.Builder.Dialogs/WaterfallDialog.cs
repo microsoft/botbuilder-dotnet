@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             if (reason == DialogReason.CancelCalled)
             {
-                var state = new StateMap((StateMap)instance.State);
+                var state = new Dictionary<string, object>((Dictionary<string, object>)instance.State);
 
                 // Create step context
                 var index = Convert.ToInt32(state[StepIndex]);
@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else if (reason == DialogReason.EndCalled)
             {
-                var state = new StateMap((StateMap)instance.State);
+                var state = new Dictionary<string, object>((Dictionary<string, object>)instance.State);
                 var instanceId = state[PersistedInstanceId] as string;
                 var properties = new Dictionary<string, string>()
                 {

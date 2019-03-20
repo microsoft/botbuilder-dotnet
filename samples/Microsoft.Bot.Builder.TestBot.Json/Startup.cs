@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
@@ -43,7 +44,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             IStorage dataStore = new MemoryStorage();
             var conversationState = new ConversationState(dataStore);
             var userState = new UserState(dataStore);
-            var userStateMap = userState.CreateProperty<StateMap>("user");
+            var userStateMap = userState.CreateProperty<Dictionary<string, object>>("user");
             var accessors = new TestBotAccessors
             {
                 ConversationDialogState = conversationState.CreateProperty<DialogState>("DialogState"),

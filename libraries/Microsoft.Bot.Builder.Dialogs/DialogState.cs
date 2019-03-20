@@ -15,13 +15,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         public DialogState(List<DialogInstance> stack)
         {
             DialogStack = stack ?? new List<DialogInstance>();
-            ConversationState = new StateMap();
-            UserState = new StateMap();
+            ConversationState = new Dictionary<string, object>();
+            UserState = new Dictionary<string, object>();
         }
 
         public List<DialogInstance> DialogStack { get; set; }
 
-        public StateMap ConversationState { get; set; }
-        public StateMap UserState { get; set; }
+        public Dictionary<string, object> ConversationState { get; set; }
+        public Dictionary<string, object> UserState { get; set; }
     }
 }
