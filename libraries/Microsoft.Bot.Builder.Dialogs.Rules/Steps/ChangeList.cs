@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 
             switch (ChangeType)
             {
-                case ChangeListType.pop:
+                case ChangeListType.Pop:
                     item = list[list.Count - 1];
                     list.RemoveAt(list.Count - 1);
                     if (!string.IsNullOrEmpty(ItemProperty))
@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
                     }
                     lastResult = item;
                     break;
-                case ChangeListType.push:
+                case ChangeListType.Push:
                     EnsureItemProperty();
                     item = dc.State.GetValue<object>(ItemProperty);
                     lastResult = item != null;
@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
                         list.Add(item);
                     }
                     break;
-                case ChangeListType.take:
+                case ChangeListType.Take:
                     if (list.Count == 0)
                     {
                         break;
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
                     }
                     lastResult = item;
                     break;
-                case ChangeListType.remove:
+                case ChangeListType.Remove:
                     EnsureItemProperty();
                     item = dc.State.GetValue<object>(ItemProperty);
                     if (item != null)
@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
                         list.Remove(item);
                     }
                     break;
-                case ChangeListType.clear:
+                case ChangeListType.Clear:
                     lastResult = list.Count > 0;
                     list.Clear();
                     break;
