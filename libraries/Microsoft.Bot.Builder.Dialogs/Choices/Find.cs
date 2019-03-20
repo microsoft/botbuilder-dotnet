@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             }
 
             // Sort matches by score descending
-            matches.Sort((a, b) => (int)(b.Resolution.Score - a.Resolution.Score));
+            matches.Sort((a, b) => b.Resolution.Score.CompareTo(a.Resolution.Score));
 
             // Filter out duplicate matching indexes and overlapping characters.
             // - The start & end positions are token positions and need to be translated to
