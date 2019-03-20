@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 // would be used, so it's safe to just splitting them by spaces.
                 // That enables the using of regex in searched utterances.
                 // (Start and End for created Tokens are not set)
-                var searchedTokens = entry.Value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                var searchedTokens = entry.Value.Split(new[] { " ", "\\s+", "\\s" }, StringSplitOptions.RemoveEmptyEntries)
                     .Select(w => new Token { Text = w, Normalized = w.ToLower() })
                     .ToList();
                 while (startPos < tokens.Count)
@@ -206,22 +206,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 {
                     // Calculate the distance between the current tokens position and the previous tokens distance.
                     var distance = matched > 0 ? pos - startPos : 0;
-                    if (distance <= maxDistance)
+                    if (distance > maxDistance || (distance > 0 && !options.AllowPartialMatches))
                     {
-                        // Update count of tokens matched and move start pointer to search for next token after
-                        // the current token.
-                        matched++;
-                        totalDeviation += distance;
-                        startPos = pos + 1;
-
-                        // Update start & end position that will track the span of the utterance that's matched.
-                        if (start < 0)
-                        {
-                            start = pos;
-                        }
-
-                        end = pos;
+                        break;
                     }
+
+                    // Update count of tokens matched and move start pointer to search for next token after
+                    // the current token.
+                    matched++;
+                    totalDeviation += distance;
+                    startPos = pos + 1;
+
+                    // Update start & end position that will track the span of the utterance that's matched.
+                    if (start < 0)
+                    {
+                        start = pos;
+                    }
+
+                    end = pos;
                 }
             }
 
