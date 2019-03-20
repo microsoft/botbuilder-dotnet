@@ -90,19 +90,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
         {
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LuisRecognizer"/> class.
-        /// </summary>
-        /// <param name="telemetryClient">The IBotTelemetryClient used to log the LuisResult event.</param>
-        /// <param name="application">The LUIS application to use to recognize text.</param>
-        /// <param name="predictionOptions">The LUIS prediction options to use.</param>
-        /// <param name="includeApiResults">TRUE to include raw LUIS API response.</param>
-        /// <param name="logPersonalInformation">TRUE to include personally indentifiable information.</param>
-        public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, IBotTelemetryClient telemetryClient = null, bool logPersonalInformation = false)
-            : this(application, predictionOptions, includeApiResults, null, telemetryClient)
-        {
-            LogPersonalInformation = logPersonalInformation;
-        }
 
         /// <summary>
         /// Gets or sets a value indicating whether to log personal information that came from the user to telemetry.
