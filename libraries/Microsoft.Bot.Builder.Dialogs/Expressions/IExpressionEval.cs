@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Expressions
 
         Task<object> Evaluate(string expression, IDictionary<string, object> vars);
 
-        IParseTree Parse();
+        Expression Parse();
     }
 
 }
