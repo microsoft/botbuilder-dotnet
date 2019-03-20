@@ -76,9 +76,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        public ICollection<string> Keys => new[] { "user", "conversation", "dialog" };
+        [JsonProperty(PropertyName ="turn")]
+        public StateMap Turn { get; set; }
 
-        public ICollection<object> Values => new[] { User, Conversation, Dialog };
+        public ICollection<string> Keys => new[] { "user", "conversation", "dialog", "turn" };
+
+        public ICollection<object> Values => new[] { User, Conversation, Dialog, Turn };
 
         public int Count => 3;
 
@@ -102,11 +105,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        public DialogContextState(DialogContext dc, StateMap userState, StateMap conversationState)
+        public DialogContextState(DialogContext dc, StateMap userState, StateMap conversationState, StateMap turnState)
         {
             this.dialogContext = dc ?? throw new ArgumentNullException(nameof(dc));
             this.User = userState;
             this.Conversation = conversationState;
+            this.Turn = turnState;
         }
 
         public DialogContextVisibleState ToJson()
@@ -223,6 +227,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 case "dialog":
                     value = this.Dialog;
                     return true;
+                case "turn":
+                    value = this.Turn;
+                    return true;
             }
 
             return false;
@@ -258,6 +265,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             yield return new KeyValuePair<string, object>("user", this.User);
             yield return new KeyValuePair<string, object>("conversation", this.Conversation);
             yield return new KeyValuePair<string, object>("dialog", this.Dialog);
+            yield return new KeyValuePair<string, object>("turn", this.Turn);
             yield break;
         }
 

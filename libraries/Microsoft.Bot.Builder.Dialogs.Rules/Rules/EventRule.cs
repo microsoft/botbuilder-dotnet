@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
             //string append = string.Empty;
             //foreach (var evt in Events)
             //{
-            //    sb.Append($"{append} dialog.DialogEvent.Name == '{evt}' ");
+            //    sb.Append($"{append} turn.DialogEvent.Name == '{evt}' ");
             //    append = "||";
             //}
             //constraints.Add(sb.ToString());

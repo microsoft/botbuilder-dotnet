@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
             // add constraints for the intents property
             //if (!String.IsNullOrEmpty(this.Intent))
             //{
-            //    constraints.Add($"dialog.DialogEvent.Value.Intents.Count > 0 && dialog.DialogEvent.Value.Intents[0] == '{this.Intent}'");
+            //    constraints.Add($"turn.DialogEvent.Value.Intents.Count > 0 && turn.DialogEvent.Value.Intents[0] == '{this.Intent}'");
             //}
 
             //foreach (var entity in this.Entities)

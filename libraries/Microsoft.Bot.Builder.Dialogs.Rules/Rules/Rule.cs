@@ -60,8 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 
             return new FunctionExpression(async (vars) =>
             {
-                // TODO figure out cleaner way to do this, we need access to the dialogevent in the variable space
-                planningContext.State.Dialog["DialogEvent"] = dialogEvent;
+                planningContext.State.Turn["DialogEvent"] = dialogEvent;
 
                 if (this.expression != null)
                 {
