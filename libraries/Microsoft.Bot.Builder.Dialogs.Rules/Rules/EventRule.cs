@@ -38,29 +38,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 
         public override IExpression GetExpressionEval(PlanningContext planningContext, DialogEvent dialogEvent)
         {
-            var baseExpression = base.GetExpressionEval(planningContext, dialogEvent);
-
-            return new FunctionExpression(async (vars) =>
-            {
-                if (baseExpression != null)
-                {
-                    var result = (bool)await baseExpression.Evaluate(vars);
-                    if (result == false)
+            return new AndExpressions(
+                base.GetExpressionEval(planningContext, dialogEvent),
+                new FunctionExpression(async (vars) =>
                     {
+                        foreach (var evt in this.Events)
+                        {
+                            if (dialogEvent.Name == evt)
+                            {
+                                return true;
+                            }
+                        }
                         return false;
-                    }
-                }
-
-                foreach(var evt in this.Events)
-                {
-                    if (dialogEvent.Name == evt)
-                    {
-                        return true;
-                    }
-                }
-                return false;
-            });
-
+                    })
+            );
         }
 
     }

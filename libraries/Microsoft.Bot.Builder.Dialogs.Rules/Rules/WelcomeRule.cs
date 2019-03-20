@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
                     PlanningEvents.Fallback.ToString(),
                 },
                   steps: steps,
-                  changeType: PlanChangeTypes.DoSteps, 
+                  changeType: PlanChangeTypes.DoSteps,
                   constraint: constraint)
         {
             this.WelcomeProperty = conversationProperty;
@@ -31,60 +31,55 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 
         public override IExpression GetExpressionEval(PlanningContext planningContext, DialogEvent dialogEvent)
         {
-            var baseExpression = base.GetExpressionEval(planningContext, dialogEvent);
-
-            return new FunctionExpression(async (vars) =>
-               {
-                   // Have we already welcomed the user?
-                   if (planningContext.State.GetValue<bool>(welcomeProperty))
+            return new AndExpressions(
+                base.GetExpressionEval(planningContext, dialogEvent),
+                new FunctionExpression(async (vars) =>
                    {
-                       // don't trigger
-                       return false;
-                   }
-
-                   // see if basic conditions have been met
-                   if (baseExpression != null)
-                   {
-                       var result = (bool?)await baseExpression.Evaluate(vars);
-                       if (result == false)
+                       // Have we already welcomed the user?
+                       if (planningContext.State.GetValue<bool>(welcomeProperty))
                        {
-                           return result;
+                           // don't trigger
+                           return false;
                        }
-                   }
 
-                   // inspect activity and decide if we should fire
-                   if (dialogEvent.Name == PlanningEvents.ActivityReceived.ToString())
-                   {
-                       // Filter to only ConversationUpdate activities
-                       var activity = planningContext.Context.Activity;
-
-                       if (activity.Type == ActivityTypes.ConversationUpdate && activity.MembersAdded?.Count > 0)
+                       // inspect activity and decide if we should fire
+                       if (dialogEvent.Name == PlanningEvents.ActivityReceived.ToString())
                        {
-                           foreach (var member in activity.MembersAdded)
+                           // Filter to only ConversationUpdate activities
+                           var activity = planningContext.Context.Activity;
+
+                           if (activity.Type == ActivityTypes.ConversationUpdate && activity.MembersAdded?.Count > 0)
                            {
-                               if (member.Id != activity.Recipient.Id)
+                               foreach (var member in activity.MembersAdded)
                                {
-                                   return true;
+                                   if (member.Id != activity.Recipient.Id)
+                                   {
+                                       return true;
+                                   }
                                }
                            }
+
+                           return false;
+                       }
+                       else if (dialogEvent.Name == PlanningEvents.PlanStarted.ToString())
+                       {
+                           // Trigger the greeting
+                           return true;
                        }
 
                        return false;
-                   }
-                   else if (dialogEvent.Name == PlanningEvents.PlanStarted.ToString())
-                   {
-                       // Trigger the greeting
-                       return true;
-                   }
-
-                   return false;
-               });
+                   })
+            );
 
         }
 
         public override Task<List<PlanChangeList>> OnExecuteAsync(PlanningContext planning)
         {
             // set that we have executed this
+            // BUGBUG: currently this is getting set even if we don't win the consultation round.
+            //         This should be changed to a step that sets the property as part of the plan
+            //         change made.  Just insert the new step at the begining of the steps for the plan 
+            //         change returned.
             planning.State.SetValue(welcomeProperty, true);
 
             // add steps for the rule to the plan

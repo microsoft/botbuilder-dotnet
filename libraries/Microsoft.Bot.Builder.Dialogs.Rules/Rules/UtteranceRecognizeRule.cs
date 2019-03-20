@@ -54,27 +54,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 
         public override IExpression GetExpressionEval(PlanningContext planningContext, DialogEvent dialogEvent)
         {
-            var baseExpression = base.GetExpressionEval(planningContext, dialogEvent);
-
-            return new FunctionExpression(async (vars) =>
-            {
-                if (baseExpression != null)
+            return new AndExpressions(
+                base.GetExpressionEval(planningContext, dialogEvent), 
+                new FunctionExpression(async (vars) =>
                 {
-                    var result = (bool)await baseExpression.Evaluate(vars);
-                    if (result == false)
+                    var recognizerResult = dialogEvent.Value as RecognizerResult;
+                    if (recognizerResult != null && recognizerResult.Intents.TryGetValue(this.Intent, out IntentScore score))
                     {
-                        return false;
+                        return true;
                     }
-                }
-
-                var recognizerResult = dialogEvent.Value as RecognizerResult;
-                if (recognizerResult != null && recognizerResult.Intents.TryGetValue(this.Intent, out IntentScore score))
-                {
-                    return true;
-                }
-                return false;
-            });
-
+                    return false;
+                })
+            );
         }
 
 
