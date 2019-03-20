@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 
 [assembly: AssemblyTitle("Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests")]
 [assembly: AssemblyDescription("Test suite for Microsoft.Bot.Builder.Integration.AspNet.WebApi.")]

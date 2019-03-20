@@ -89,11 +89,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests
                     Value = new InvokeResponse
                     {
                         Status = 200,
-                        Body = new JObject { { "quite.honestly", "im.feeling.really.attacked.right.now" } }
-                    }
+                        Body = new JObject { { "quite.honestly", "im.feeling.really.attacked.right.now" } },
+                    },
                 };
             }
         }
     }
 }
-
