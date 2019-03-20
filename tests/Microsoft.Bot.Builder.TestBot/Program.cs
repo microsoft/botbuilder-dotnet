@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Bot.Builder.TestBot
+namespace Microsoft.BotBuilderSamples
 {
     public class Program
     {
@@ -19,6 +16,11 @@ namespace Microsoft.Bot.Builder.TestBot
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .ConfigureLogging((logging) =>
+                {
+                    logging.AddDebug();
+                    logging.AddConsole();
+                })
                 .UseStartup<Startup>();
     }
 }
