@@ -1,4 +1,4 @@
-# Bot Framework SDK Rule and Declarative Hack
+# Bot Framework SDK Hack
 
 Welcome and thank you for taking part at a Bot Framework hack.
 
