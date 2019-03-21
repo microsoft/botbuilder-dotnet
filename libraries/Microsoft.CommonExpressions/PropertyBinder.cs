@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Microsoft.Expressions
@@ -21,7 +22,7 @@ namespace Microsoft.Expressions
         /// </summary>
         public static GetValueDelegate Auto = (object instance, object property) =>
         {
-            if (instance is IDictionary<string, object>)
+            if (instance is IDictionary<string, object> || instance is IDictionary)
             {
                 return Dictionary(instance, property);
             }
@@ -43,6 +44,12 @@ namespace Microsoft.Expressions
         public static GetValueDelegate Dictionary = (object instance, object property) =>
         {
             object result = null;
+            var dictionary = instance as IDictionary;
+            if (dictionary != null && dictionary.Contains(property))
+            {
+                result = dictionary[property];
+                return result;
+            }
             ((IDictionary<string, object>)instance).TryGetValue((string)property, out result);
             return result;
         };

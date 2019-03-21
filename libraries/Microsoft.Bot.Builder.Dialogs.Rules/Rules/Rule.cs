@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Expressions;
 using Microsoft.Bot.Builder.Dialogs.Expressions;
+using Microsoft.Bot.Builder.Dialogs.Rules.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 {
@@ -41,11 +42,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
         /// <summary>
         /// Get the expression for this rule by calling GatherConstraints()
         /// </summary>
-        public virtual IExpression GetExpressionEval(PlanningContext planningContext, DialogEvent dialogEvent)
+        public virtual IExpression GetExpression(PlanningContext planningContext, DialogEvent dialogEvent)
         {
-            var expressionFactory = planningContext.Context.TurnState.Get<IExpressionFactory>();
+            var expressionFactory = planningContext.Context.TurnState.Get<IExpressionFactory>() ?? new CommonExpressionFactory();
 
-            if (expressionFactory != null && this.expression == null)
+            if (this.expression == null)
             {
                 List<String> expressions = new List<string>();
 
@@ -54,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 
                 if (expressions.Any())
                 {
-                    this.expression = expressionFactory.CreateExpression(String.Join(" && ", expressions));
+                    this.expression = expressionFactory.CreateExpression($"({String.Join(") && (", expressions)})");
                 }
             }
 
@@ -64,7 +65,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 
                 if (this.expression != null)
                 {
-                    return await this.expression.Evaluate(vars);
+                    try
+                    {
+                        return await this.expression.Evaluate(vars);
+                    }
+                    catch (Exception)
+                    {
+                        return false;
+                    }
                 }
                 return true;
             });

@@ -12,6 +12,7 @@ using Microsoft.Bot.Builder.AI.LanguageGeneration;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Expressions;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Rules.Expressions;
 using Microsoft.Bot.Builder.Dialogs.Rules.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Rules.Rules;
 using Microsoft.Bot.Builder.Dialogs.Rules.Steps;

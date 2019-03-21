@@ -25,33 +25,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
         {
             base.GatherConstraints(constraints);
 
-            //// add in the constraints for Events property
-            //StringBuilder sb = new StringBuilder();
-            //string append = string.Empty;
-            //foreach (var evt in Events)
-            //{
-            //    sb.Append($"{append} turn.DialogEvent.Name == '{evt}' ");
-            //    append = "||";
-            //}
-            //constraints.Add(sb.ToString());
-        }
-
-        public override IExpression GetExpressionEval(PlanningContext planningContext, DialogEvent dialogEvent)
-        {
-            return new AndExpressions(
-                base.GetExpressionEval(planningContext, dialogEvent),
-                new FunctionExpression(async (vars) =>
-                    {
-                        foreach (var evt in this.Events)
-                        {
-                            if (dialogEvent.Name == evt)
-                            {
-                                return true;
-                            }
-                        }
-                        return false;
-                    })
-            );
+            // add in the constraints for Events property
+            StringBuilder sb = new StringBuilder();
+            string append = string.Empty;
+            foreach (var evt in Events)
+            {
+                sb.Append($"{append} (turn.DialogEvent.Name == '{evt}') ");
+                append = "||";
+            }
+            constraints.Add(sb.ToString());
         }
 
     }

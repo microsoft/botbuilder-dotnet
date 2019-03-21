@@ -628,7 +628,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         {
             for (int i = 0; i < Rules.Count; i++)
             {
-                var result = (bool)await Rules[i].GetExpressionEval(planning, dialogEvent).Evaluate(planning.State);
+                var result = (bool)await Rules[i].GetExpression(planning, dialogEvent).Evaluate(planning.State);
                 if (result == true)
                 {
                     var changes = await Rules[i].ExecuteAsync(planning).ConfigureAwait(false);
@@ -651,7 +651,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
 
             for (int i = 0; i < Rules.Count; i++)
             {
-                var result = (bool)await Rules[i].GetExpressionEval(planning, dialogEvent).Evaluate(planning.State);
+                var result = (bool)await Rules[i].GetExpression(planning, dialogEvent).Evaluate(planning.State);
                 if (result == true)
                 {
                     var changes = await Rules[i].ExecuteAsync(planning).ConfigureAwait(false);

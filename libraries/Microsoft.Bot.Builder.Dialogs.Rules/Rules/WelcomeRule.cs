@@ -29,10 +29,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
             this.WelcomeProperty = conversationProperty;
         }
 
-        public override IExpression GetExpressionEval(PlanningContext planningContext, DialogEvent dialogEvent)
+        public override IExpression GetExpression(PlanningContext planningContext, DialogEvent dialogEvent)
         {
             return new AndExpressions(
-                base.GetExpressionEval(planningContext, dialogEvent),
+                base.GetExpression(planningContext, dialogEvent),
                 new FunctionExpression(async (vars) =>
                    {
                        // Have we already welcomed the user?

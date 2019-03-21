@@ -112,7 +112,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             set
             {
-                throw new NotImplementedException();
+                System.Diagnostics.Trace.TraceError("DialogContextState doesn't support adding/changinge the base properties");
             }
         }
 

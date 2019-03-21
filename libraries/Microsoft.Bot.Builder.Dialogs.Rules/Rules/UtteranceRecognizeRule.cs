@@ -40,34 +40,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
             base.GatherConstraints(constraints);
 
             // add constraints for the intents property
-            //if (!String.IsNullOrEmpty(this.Intent))
-            //{
-            //    constraints.Add($"turn.DialogEvent.Value.Intents.Count > 0 && turn.DialogEvent.Value.Intents[0] == '{this.Intent}'");
-            //}
+            if (!String.IsNullOrEmpty(this.Intent))
+            {
+                constraints.Add($"turn.DialogEvent.Value.Intents.{this.Intent}.Score > 0.5");
+            }
 
             //foreach (var entity in this.Entities)
             //{
             //    constraints.Add($"CONTAINS(DialogEvent.Entities, '{entity}')");
             //}
         }
-
-
-        public override IExpression GetExpressionEval(PlanningContext planningContext, DialogEvent dialogEvent)
-        {
-            return new AndExpressions(
-                base.GetExpressionEval(planningContext, dialogEvent), 
-                new FunctionExpression(async (vars) =>
-                {
-                    var recognizerResult = dialogEvent.Value as RecognizerResult;
-                    if (recognizerResult != null && recognizerResult.Intents.TryGetValue(this.Intent, out IntentScore score))
-                    {
-                        return true;
-                    }
-                    return false;
-                })
-            );
-        }
-
 
 
         protected override PlanChangeList OnCreateChangeList(PlanningContext planning, object dialogOptions = null)
