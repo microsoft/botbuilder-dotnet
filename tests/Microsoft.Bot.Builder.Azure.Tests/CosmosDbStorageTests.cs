@@ -387,6 +387,39 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
+        [TestMethod]
+        public async Task DeleteFromCosmosStorageWithPartitionKey()
+        {
+            var storage = new CosmosDbStorage(new CosmosDbStorageOptions()
+            {
+                PartitionKey = string.Empty,
+                AuthKey = CosmosAuthKey,
+                CollectionId = CosmosCollectionName,
+                CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
+                DatabaseId = CosmosDatabaseName,
+            });
+
+            await storage.DeleteAsync(new string[] { "foo" }, CancellationToken.None);
+        }
+
+        [TestMethod]
+        public async Task DeleteFromCosmosStorageWithoutPartitionKey()
+        {
+            var storage = new CosmosDbStorage(new CosmosDbStorageOptions()
+            {
+                PartitionKey = string.Empty,
+                AuthKey = CosmosAuthKey,
+                CollectionId = CosmosCollectionName,
+                CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
+                DatabaseId = CosmosDatabaseName,
+            });
+
+            string extStr = "PartitionKey value must be supplied for this operation";
+            Assert.ThrowsException<InvalidOperationException>(() => extStr);
+
+            await storage.DeleteAsync(new string[] { "foo" }, CancellationToken.None);
+        }
+
         public bool CheckEmulator()
         {
             if (!_hasEmulator.Value)
