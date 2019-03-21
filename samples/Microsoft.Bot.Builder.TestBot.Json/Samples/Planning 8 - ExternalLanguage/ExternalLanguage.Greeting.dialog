@@ -1,6 +1,6 @@
 ﻿{
   "$schema": "../../app.schema",
-  "$type": "Microsoft.RuleDialog",
+  "$type": "Microsoft.AdaptiveDialog",
   "$id": "Greeting",
   "rules": [
     {

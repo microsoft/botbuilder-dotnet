@@ -1,6 +1,6 @@
 {
   "$schema": "../../Schemas/app.schema",
-  "$type": "Microsoft.RuleDialog",
+  "$type": "Microsoft.AdaptiveDialog",
   "$id":  "ShowToDoDialog",
   "storage": {
     "$type": "Microsoft.MemoryStorage"

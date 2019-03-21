@@ -1,7 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "Rule Dialog",
+    "title": "Adaptive Dialog",
     "description": "Configures a data driven dialog via a collection of steps/dialogs.",
     "type": "object",
     "additionalProperties": false,

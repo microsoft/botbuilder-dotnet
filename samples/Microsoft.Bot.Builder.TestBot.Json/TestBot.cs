@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (rootDialog is RuleDialog planningDialog)
+            if (rootDialog is AdaptiveDialog planningDialog)
             {
                 await planningDialog.OnTurnAsync(turnContext, null, cancellationToken).ConfigureAwait(false);
             }

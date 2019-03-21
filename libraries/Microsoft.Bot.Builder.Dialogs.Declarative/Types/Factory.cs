@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
 
             // Dialogs
             Register("Microsoft.ComponentDialog", typeof(ComponentDialog), new ComponentDialogLoader());
-            Register("Microsoft.RuleDialog", typeof(RuleDialog));
+            Register("Microsoft.AdaptiveDialog", typeof(AdaptiveDialog));
             Register("Microsoft.TextPrompt", typeof(TextPrompt));
             Register("Microsoft.IntegerPrompt", typeof(IntegerPrompt));
             Register("Microsoft.FloatPrompt", typeof(FloatPrompt));

@@ -53,7 +53,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Schemas\Dialogs\Microsoft.RuleDialog.schema" />
+    <None Remove="Schemas\Dialogs\Microsoft.AdaptiveDialog.schema" />
     <None Remove="Schemas\Recognizers\Microsoft.RegexRecognizer.schema" />
     <None Remove="Schemas\Rules\Microsoft.EventRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.FallbackRule.schema" />
@@ -71,7 +71,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Content Include="Schemas\Dialogs\Microsoft.RuleDialog.schema" />
+    <Content Include="Schemas\Dialogs\Microsoft.AdaptiveDialog.schema" />
     <Content Include="Schemas\Microsoft.IRule.schema" />
     <Content Include="Schemas\Recognizers\Microsoft.RegexRecognizer.schema" />
     <Content Include="Schemas\Rules\Microsoft.EventRule.schema" />

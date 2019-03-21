@@ -23,11 +23,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 {
     [TestClass]
-    public class RuleDialogTests
+    public class AdaptiveDialogTests
     {
         public TestContext TestContext { get; set; }
 
-        private TestFlow CreateFlow(RuleDialog ruleDialog, ConversationState convoState, UserState userState)
+        private TestFlow CreateFlow(AdaptiveDialog ruleDialog, ConversationState convoState, UserState userState)
         {
             var botResourceManager = new BotResourceManager();
             var lg = new LGLanguageGenerator(botResourceManager);
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var ruleDialog = new RuleDialog("planningTest");
+            var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.AddRule(new DefaultRule(
                     new List<IDialog>()
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var ruleDialog = new RuleDialog("planningTest");
+            var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.AddRule(new DefaultRule(new List<IDialog>()
                     {
@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var ruleDialog = new RuleDialog("planningTest");
+            var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.AddRule(
                 new DefaultRule(
@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var planningDialog = new RuleDialog("planningTest");
+            var planningDialog = new AdaptiveDialog("planningTest");
 
             planningDialog.AddRules(new List<IRule>()
             {
@@ -199,7 +199,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var ruleDialog = new RuleDialog("planningTest");
+            var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.AddRule(new DefaultRule(
                     new List<IDialog>()
@@ -230,7 +230,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var ruleDialog = new RuleDialog("planningTest");
+            var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.AddRule(
                 new DefaultRule(
@@ -265,7 +265,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var ruleDialog = new RuleDialog("planningTest");
+            var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.AddRules(new List<IRule>()
             {
@@ -308,7 +308,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var ruleDialog = new RuleDialog("planningTest");
+            var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 
@@ -359,7 +359,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var ruleDialog = new RuleDialog("planningTest");
+            var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 
@@ -416,7 +416,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var ruleDialog = new RuleDialog("planningTest");
+            var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 
@@ -425,7 +425,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new ReplacePlanRule("JokeIntent",
                     steps: new List<IDialog>()
                     {
-                        new RuleDialog("TellJokeDialog")
+                        new AdaptiveDialog("TellJokeDialog")
                         {
                             Rules = new List<IRule>() {
                                 new DefaultRule(new List<IDialog>()
@@ -445,7 +445,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new DefaultRule(
                     new List<IDialog>()
                     {
-                        new RuleDialog("AskNameDialog")
+                        new AdaptiveDialog("AskNameDialog")
                         {
                             Rules = new List<IRule>()
                             {
@@ -492,7 +492,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var ruleDialog = new RuleDialog("planningTest");
+            var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 
@@ -515,7 +515,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     })});
 
             ruleDialog.AddDialog(new[] {
-                new RuleDialog("AskNameDialog")
+                new AdaptiveDialog("AskNameDialog")
                 {
                     Rules = new List<IRule>()
                     {
@@ -541,7 +541,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 });
 
             ruleDialog.AddDialog(new[] {
-                new RuleDialog("TellJokeDialog")
+                new AdaptiveDialog("TellJokeDialog")
                     {
                         Rules = new List<IRule>() {
                             new DefaultRule(new List<IDialog>()
@@ -575,7 +575,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var planningDialog = new RuleDialog("planningTest");
+            var planningDialog = new AdaptiveDialog("planningTest");
 
             planningDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 

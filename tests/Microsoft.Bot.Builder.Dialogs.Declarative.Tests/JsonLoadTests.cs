@@ -220,7 +220,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                if (dialog is RuleDialog planningDialog)
+                if (dialog is AdaptiveDialog planningDialog)
                 {
                     await planningDialog.OnTurnAsync(turnContext, null, cancellationToken).ConfigureAwait(false);
                 }

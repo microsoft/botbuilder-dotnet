@@ -1,6 +1,6 @@
 {
   "$schema": "../../Schemas/app.schema",
-  "$type": "Microsoft.RuleDialog",
+  "$type": "Microsoft.AdaptiveDialog",
   "$id": "root",
   "recognizer": {
     "$type": "Microsoft.LuisRecognizer",

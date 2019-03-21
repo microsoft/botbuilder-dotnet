@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         public StoredBotState NewState { get; set; }
     }
 
-    public class RuleDialog : Dialog
+    public class AdaptiveDialog : Dialog
     {
         private bool installedDependencies = false;
         protected readonly DialogSet dialogs = new DialogSet();
@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             }
         }
 
-        public RuleDialog(string dialogId = null)
+        public AdaptiveDialog(string dialogId = null)
             : base(dialogId)
         {
         }
