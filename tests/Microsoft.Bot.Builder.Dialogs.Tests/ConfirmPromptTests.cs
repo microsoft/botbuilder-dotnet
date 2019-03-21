@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void ConfirmPromptWithEmptyIdShouldFail()
         {
-            var emptyId = "";
+            var emptyId = string.Empty;
             var confirmPrompt = new ConfirmPrompt(emptyId);
         }
 
@@ -25,10 +25,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void ConfirmPromptWithNullIdShouldFail()
         {
-            var nullId = "";
+            var nullId = string.Empty;
             nullId = null;
             var confirmPrompt = new ConfirmPrompt(nullId);
         }
+
         [TestMethod]
         public async Task ConfirmPrompt()
         {
@@ -94,13 +95,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         Prompt = new Activity
                         {
                             Type = ActivityTypes.Message,
-                            Text = "Please confirm."
+                            Text = "Please confirm.",
                         },
                         RetryPrompt = new Activity
                         {
                             Type = ActivityTypes.Message,
-                            Text = "Please confirm, say 'yes' or 'no' or something like that."
-                        }
+                            Text = "Please confirm, say 'yes' or 'no' or something like that.",
+                        },
                     };
                     await dc.PromptAsync("ConfirmPrompt", options, cancellationToken);
                 }
@@ -179,6 +180,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var dialogs = new DialogSet(dialogState);
             var prompt = new ConfirmPrompt("ConfirmPrompt", defaultLocale: Culture.English);
+
             // Set options
             prompt.ChoiceOptions = new Choices.ChoiceFactoryOptions { IncludeNumbers = true };
             prompt.Style = Choices.ListStyle.Inline;
@@ -196,13 +198,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         Prompt = new Activity
                         {
                             Type = ActivityTypes.Message,
-                            Text = "Please confirm."
+                            Text = "Please confirm.",
                         },
                         RetryPrompt = new Activity
                         {
                             Type = ActivityTypes.Message,
-                            Text = "Please confirm, say 'yes' or 'no' or something like that."
-                        }
+                            Text = "Please confirm, say 'yes' or 'no' or something like that.",
+                        },
                     };
                     await dc.PromptAsync("ConfirmPrompt", options, cancellationToken);
                 }
@@ -238,6 +240,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var dialogs = new DialogSet(dialogState);
             var prompt = new ConfirmPrompt("ConfirmPrompt", defaultLocale: Culture.English);
+
             // Set options
             prompt.ChoiceOptions = new Choices.ChoiceFactoryOptions { IncludeNumbers = true };
             prompt.Style = Choices.ListStyle.Inline;
@@ -255,13 +258,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         Prompt = new Activity
                         {
                             Type = ActivityTypes.Message,
-                            Text = "Please confirm."
+                            Text = "Please confirm.",
                         },
                         RetryPrompt = new Activity
                         {
                             Type = ActivityTypes.Message,
-                            Text = "Please confirm, say 'yes' or 'no' or something like that."
-                        }
+                            Text = "Please confirm, say 'yes' or 'no' or something like that.",
+                        },
                     };
                     await dc.PromptAsync("ConfirmPrompt", options, cancellationToken);
                 }
@@ -299,10 +302,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var dialogs = new DialogSet(dialogState);
             var prompt = new ConfirmPrompt("ConfirmPrompt", defaultLocale: Culture.English);
+
             // Set options
             prompt.ChoiceOptions = new Choices.ChoiceFactoryOptions { IncludeNumbers = false, InlineSeparator = "~" };
             dialogs.Add(prompt);
-
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -316,13 +319,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         Prompt = new Activity
                         {
                             Type = ActivityTypes.Message,
-                            Text = "Please confirm."
+                            Text = "Please confirm.",
                         },
                         RetryPrompt = new Activity
                         {
                             Type = ActivityTypes.Message,
-                            Text = "Please confirm, say 'yes' or 'no' or something like that."
-                        }
+                            Text = "Please confirm, say 'yes' or 'no' or something like that.",
+                        },
                     };
                     await dc.PromptAsync("ConfirmPrompt", options, cancellationToken);
                 }
