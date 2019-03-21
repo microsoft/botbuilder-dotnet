@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new SendActivity("Hello, what is your name?"),
@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -161,7 +161,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                         new WaitForInput(),
                         new SendActivity("To get to the other side")
                     }),
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -207,7 +207,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var tellJokeDialog = new RuleDialog("TellJokeDialog");
             tellJokeDialog.AddRules(new List<IRule>()
             {
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
@@ -220,7 +220,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var askNameDialog = new RuleDialog("AskNameDialog");
             askNameDialog.AddRules(new List<IRule>()
             {
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -251,7 +251,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                     }),
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new CallDialog() { Dialog = askNameDialog }
@@ -286,7 +286,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var tellJokeDialog = new RuleDialog("TellJokeDialog");
             tellJokeDialog.AddRules(new List<IRule>()
             {
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
@@ -299,7 +299,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var askNameDialog = new RuleDialog("AskNameDialog");
             askNameDialog.AddRules(new List<IRule>()
             {
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -330,7 +330,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                     }),
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new GotoDialog("AskNameDialog")
@@ -376,7 +376,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new EndDialog()
                     }),
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
@@ -389,7 +389,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new CallDialog() { Dialog = tellJokeDialog },

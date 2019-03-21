@@ -31,9 +31,9 @@
             "$ref": "#/definitions/Microsoft.EventRule"
         },
         {
-            "title": "Microsoft.FallbackRule",
+            "title": "Microsoft.DefaultRule",
             "description": "Defines a sequence of steps to take if there is no match",
-            "$ref": "#/definitions/Microsoft.FallbackRule"
+            "$ref": "#/definitions/Microsoft.DefaultRule"
         },
         {
             "title": "Microsoft.FloatPrompt",
@@ -431,7 +431,7 @@
                 }
             ]
         },
-        "Microsoft.FallbackRule": {
+        "Microsoft.DefaultRule": {
             "title": "Fallback Rule",
             "description": "Defines a sequence of steps to take if there is no match",
             "required": [
@@ -446,7 +446,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.FallbackRule"
+                    "const": "Microsoft.DefaultRule"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -794,9 +794,9 @@
                     "$ref": "#/definitions/Microsoft.EventRule"
                 },
                 {
-                    "title": "Microsoft.FallbackRule",
+                    "title": "Microsoft.DefaultRule",
                     "description": "Defines a sequence of steps to take if there is no match",
-                    "$ref": "#/definitions/Microsoft.FallbackRule"
+                    "$ref": "#/definitions/Microsoft.DefaultRule"
                 },
                 {
                     "title": "Microsoft.IfPropertyRule",

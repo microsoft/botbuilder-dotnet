@@ -101,9 +101,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             // while things are changing rapidly still
 
             // Rules
+            Register("Microsoft.BeginDialogRule", typeof(BeginDialogRule));
             Register("Microsoft.IntentRule", typeof(IntentRule));
             Register("Microsoft.EventRule", typeof(EventRule));
-            Register("Microsoft.FallbackRule", typeof(FallbackRule));
+            Register("Microsoft.DefaultRule", typeof(DefaultRule));
             //Register("Microsoft.IfPropertyRule", typeof(IfPropertyRule));
             Register("Microsoft.ReplacePlanRule", typeof(ReplacePlanRule));
             //Register("Microsoft.UtteranceRecognizeRule", typeof(UtteranceRecognizeRule));

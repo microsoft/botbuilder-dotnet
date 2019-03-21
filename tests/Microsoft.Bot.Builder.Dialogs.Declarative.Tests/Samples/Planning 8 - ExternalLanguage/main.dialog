@@ -71,7 +71,7 @@
       ]
     },
     {
-      "$type": "Microsoft.FallbackRule",
+      "$type": "Microsoft.DefaultRule",
       "steps": [
         {
           "$type": "Microsoft.SendActivity",
