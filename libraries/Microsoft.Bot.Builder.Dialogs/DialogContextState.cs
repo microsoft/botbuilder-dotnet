@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     dialogContext.Context.TurnState.Add(TurnEntities, entities);
                 }
 
-                return entities as StateMap;
+                return entities as Dictionary<string, object>;
             }
         }
 
@@ -259,38 +259,29 @@ namespace Microsoft.Bot.Builder.Dialogs
             throw new NotImplementedException();
         }
 
-        current = currentObject[segment];
-                    }
-}
-            }
-            else
-            {
-                foreach (var value in tokens)
-                {
-                    if (value == root)
-                    {
-                        root = JToken.FromObject(newValue);
-                    }
-                    else
-                    {
-                        value.Replace(JToken.FromObject(newValue));
-                    }
-                }
-            }
+        public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Remove(KeyValuePair<string, object> item)
+        {
+            throw new NotImplementedException();
+        }
 
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
-{
-    yield return new KeyValuePair<string, object>("user", this.User);
-    yield return new KeyValuePair<string, object>("conversation", this.Conversation);
-    yield return new KeyValuePair<string, object>("dialog", this.Dialog);
-    yield return new KeyValuePair<string, object>("turn", this.Turn);
-    yield break;
-}
+        {
+            yield return new KeyValuePair<string, object>("user", this.User);
+            yield return new KeyValuePair<string, object>("conversation", this.Conversation);
+            yield return new KeyValuePair<string, object>("dialog", this.Dialog);
+            yield return new KeyValuePair<string, object>("turn", this.Turn);
+            yield break;
+        }
 
-IEnumerator IEnumerable.GetEnumerator()
-{
-    throw new NotImplementedException();
-}
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
 
     }
 }

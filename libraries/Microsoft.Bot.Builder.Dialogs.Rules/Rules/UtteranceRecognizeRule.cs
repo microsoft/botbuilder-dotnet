@@ -51,9 +51,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
             //}
         }
 
-
-        protected override PlanChangeList OnCreateChangeList(PlanningContext planning, DialogEvent dialogEvent, object dialogOptions = null)
+        protected override PlanChangeList OnCreateChangeList(PlanningContext planning, object dialogOptions = null)
         {
+            var dialogEvent = planning.State.Turn["DialogEvent"] as DialogEvent;
             if (dialogEvent.Value is RecognizerResult recognizerResult)
             {
                 Dictionary<string, object> entitiesRecognized = new Dictionary<string, object>();

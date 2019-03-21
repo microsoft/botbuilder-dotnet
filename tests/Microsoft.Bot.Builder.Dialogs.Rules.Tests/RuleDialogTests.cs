@@ -130,7 +130,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             var planningDialog = new RuleDialog("planningTest");
 
-            planningDialog.AddRule(new List<IRule>()
+            planningDialog.AddRules(new List<IRule>()
             {
                 new FallbackRule(
                     new List<IDialog>()
@@ -138,36 +138,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                         // Add item
                         new SendActivity("Please add an item to todos."),
                         new WaitForInput("user.todo"),
-                        new ChangeList(ChangeList.ChangeListType.push, "user.todos", "user.todo"),
+                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "user.todo"),
                         new SendList("user.todos"),
                         new SendActivity("Please add an item to todos."),
                         new WaitForInput("user.todo"),
-                        new ChangeList(ChangeList.ChangeListType.push, "user.todos", "user.todo"),
+                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "user.todo"),
                         new SendList("user.todos"),
 
                         // Remove item
                         new SendActivity("Enter a item to remove."),
                         new WaitForInput("user.todo"),
-                        new ChangeList(ChangeList.ChangeListType.remove, "user.todos", "user.todo"),
+                        new ChangeList(ChangeList.ChangeListType.Remove, "user.todos", "user.todo"),
                         new SendList("user.todos"),
 
                         // Add item and pop item
                         new SendActivity("Please add an item to todos."),
                         new WaitForInput("user.todo"),
-                        new ChangeList(ChangeList.ChangeListType.push, "user.todos", "user.todo"),
+                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "user.todo"),
                         new SendActivity("Please add an item to todos."),
                         new WaitForInput("user.todo"),
-                        new ChangeList(ChangeList.ChangeListType.push, "user.todos", "user.todo"),
+                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "user.todo"),
                         new SendList("user.todos"),
-                        new ChangeList(ChangeList.ChangeListType.pop, "user.todos"),
+                        new ChangeList(ChangeList.ChangeListType.Pop, "user.todos"),
                         new SendList("user.todos"),
 
                         // Take item
-                        new ChangeList(ChangeList.ChangeListType.take, "user.todos"),
+                        new ChangeList(ChangeList.ChangeListType.Take, "user.todos"),
                         new SendList("user.todos"),
 
                         // Clear list
-                        new ChangeList(ChangeList.ChangeListType.clear, "user.todos"),
+                        new ChangeList(ChangeList.ChangeListType.Clear, "user.todos"),
                         new SendList("user.todos")
                     })
             });
@@ -410,11 +410,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             .StartTestAsync();
         }
 
-        //[TestMethod]
-        //public async Task Planning_NestedInlineSequences()
-        //{
-        //    var convoState = new ConversationState(new MemoryStorage());
-        //    var userState = new UserState(new MemoryStorage());
+        [TestMethod]
+        public async Task Planning_NestedInlineSequences()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
 
             var ruleDialog = new RuleDialog("planningTest");
 
@@ -486,11 +486,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             .StartTestAsync();
         }
 
-        //[TestMethod]
-        //public async Task Planning_CallDialog()
-        //{
-        //    var convoState = new ConversationState(new MemoryStorage());
-        //    var userState = new UserState(new MemoryStorage());
+        [TestMethod]
+        public async Task Planning_CallDialog()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
 
             var ruleDialog = new RuleDialog("planningTest");
 
