@@ -18,6 +18,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
     [TestClass]
     public class JsonLoadTests
     {
+        private readonly string samplesDirectory = @"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Samples\";
+
         [TestInitialize]
         public void TestInitialize()
         {
@@ -29,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_Fallback()
         {
-            string json = File.ReadAllText("Samples/Planning 1 - Fallback/main.dialog");
+            string json = File.ReadAllText(samplesDirectory + @"Planning 1 - Fallback\Fallback.main.dialog");
 
             Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
@@ -42,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_WaitForInput()
         {
-            string json = File.ReadAllText("Samples/Planning 2 - WaitForInput/main.dialog");
+            string json = File.ReadAllText(samplesDirectory + @"Planning 2 - WaitForInput\WaitForInput.main.dialog");
 
             Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
@@ -57,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_IfProperty()
         {
-            string json = File.ReadAllText("Samples/Planning 3 - IfProperty/main.dialog");
+            string json = File.ReadAllText(samplesDirectory + @"Planning 3 - IfProperty\IfProperty.main.dialog");
 
             Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
@@ -72,7 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_TextPrompt()
         {
-            string json = File.ReadAllText("Samples/Planning 4 - TextPrompt/main.dialog");
+            string json = File.ReadAllText(samplesDirectory + @"Planning 4 - TextPrompt\TextPrompt.main.dialog");
 
             Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
@@ -87,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_WelcomePrompt()
         {
-            string json = File.ReadAllText("Samples/Planning 5 - WelcomeRule/main.dialog");
+            string json = File.ReadAllText(samplesDirectory + @"Planning 5 - WelcomeRule\WelcomeRule.main.dialog");
 
             Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
@@ -104,7 +106,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_DoSteps()
         {
-            string json = File.ReadAllText("Samples/Planning 6 - DoSteps/main.dialog");
+            string json = File.ReadAllText(samplesDirectory + @"Planning 6 - DoSteps\DoSteps.main.dialog");
 
             Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
@@ -129,7 +131,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_CallDialog()
         {
-            string json = File.ReadAllText("Samples/Planning 7 - CallDialog/main.dialog");
+            string json = File.ReadAllText(samplesDirectory + @"Planning 7 - CallDialog\CallDialog.main.dialog");
 
             Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
@@ -145,6 +147,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             .Send("Why?")
             .AssertReply("To get to the other side")
             .Send("What happened in the future?")
+            .AssertReply("Seeing into the future...")
             .AssertReply("I see great things in your future...")
             .AssertReply("Potentially a successful demo")
             .StartTestAsync();
@@ -153,7 +156,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_ExternalLanguage()
         {
-            string json = File.ReadAllText("Samples/Planning 8 - ExternalLanguage/main.dialog");
+            string json = File.ReadAllText(samplesDirectory + @"Planning 8 - ExternalLanguage\ExternalLanguage.main.dialog");
 
             Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
@@ -192,7 +195,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
         private TestFlow BuildTestFlow(string json)
         {
-            string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, $@"..\..\..\Microsoft.Bot.Builder.Dialogs.Declarative.Tests.csproj"));
+            string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, $@"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj"));
             var botResourceManager = new BotResourceManager()
                // add current folder, it's project file, packages, projects, etc.
                .AddProjectResources(projPath);

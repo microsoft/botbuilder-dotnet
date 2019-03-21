@@ -19,48 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Samples\Planning 1 - Fallback\main.dialog">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\Planning 2 - WaitForInput\main.dialog">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\Planning 3 - IfProperty\main.dialog">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\Planning 4 - TextPrompt\main.dialog">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\Planning 5 - WelcomeRule\main.dialog">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\Planning 6 - DoSteps\main.dialog">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\Planning 7 - CallDialog\FortuneTellerDialog.dialog">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\Planning 7 - CallDialog\main.dialog">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\Planning 7 - CallDialog\TellJokeDialog.dialog">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\Planning 8 - ExternalLanguage\FortuneTellerDialog.dialog">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\Planning 8 - ExternalLanguage\Greeting.dialog">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\Planning 8 - ExternalLanguage\main.dialog">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\Planning 8 - ExternalLanguage\main.lg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\Planning 8 - ExternalLanguage\TellJokeDialog.dialog">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="TestFlows\Planning 1 - Fallback\main.dialog">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

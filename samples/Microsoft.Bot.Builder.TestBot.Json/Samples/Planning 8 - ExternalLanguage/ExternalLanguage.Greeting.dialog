@@ -1,7 +1,6 @@
 ﻿{
   "$schema": "../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
-  "$id": "Greeting",
   "rules": [
     {
       "$type": "Microsoft.DefaultRule",
