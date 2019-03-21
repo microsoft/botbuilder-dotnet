@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
 
         [TestMethod]
-        public async Task Planning_WaitForInput()
+        public async Task Step_WaitForInput()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         }
 
         [TestMethod]
-        public async Task Planning_IfProperty()
+        public async Task Step_IfProperty()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         }
 
         [TestMethod]
-        public async Task Planning_TextPrompt()
+        public async Task Step_TextPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -143,7 +143,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         }
 
         [TestMethod]
-        public async Task Planning_DoSteps()
+        public async Task Step_DoSteps()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -195,7 +195,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
 
         [TestMethod]
-        public async Task Planning_CallDialog()
+        public async Task Step_CallDialog()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -274,7 +274,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         }
 
         [TestMethod]
-        public async Task Planning_GotoDialog()
+        public async Task Step_GotoDialog()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -359,7 +359,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         }
 
         [TestMethod]
-        public async Task Planning_EndDialog()
+        public async Task Step_EndDialog()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
