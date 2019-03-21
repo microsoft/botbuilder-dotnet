@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             {
                 AppId = Guid.NewGuid().ToString(),
                 SubscriptionKey = Guid.NewGuid().ToString(),
-                Region = "westus"
+                Region = "westus",
             };
 
             // Act

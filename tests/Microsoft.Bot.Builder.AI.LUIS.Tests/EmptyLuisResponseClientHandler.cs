@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             return Task.FromResult(new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
-                Content = new StringContent("{ \"query\": null, \"intents\": [], \"entities\": [] }")
+                Content = new StringContent("{ \"query\": null, \"intents\": [], \"entities\": [] }"),
             });
         }
     }
