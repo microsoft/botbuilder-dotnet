@@ -14,6 +14,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     public class ChoicesChannelTests
     {
         [TestMethod]
+        public void ShouldReturnTrueForSupportsSuggestedActionsWithLineAnd13()
+        {
+            var supports = Channel.SupportsSuggestedActions(Channels.Line, 13);
+            Assert.IsTrue(supports);
+        }
+
+        [TestMethod]
+        public void ShouldReturnFalseForSupportsSuggestedActionsWithLineAnd14()
+        {
+            var supports = Channel.SupportsSuggestedActions(Channels.Line, 14);
+            Assert.IsFalse(supports);
+        }
+
+        [TestMethod]
         public void ShouldReturnTrueForSupportsSuggestedActionsWithSkypeAnd10()
         {
             var supports = Channel.SupportsSuggestedActions(Channels.Skype, 10);
@@ -52,6 +66,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public void ShouldReturnFalseForSupportsSuggestedActionsWithEmulatorAnd101()
         {
             var supports = Channel.SupportsSuggestedActions(Channels.Emulator, 101);
+            Assert.IsFalse(supports);
+        }
+
+        [TestMethod]
+        public void ShouldReturnTrueForSupportsCardActionsWithLineAnd99()
+        {
+            var supports = Channel.SupportsCardActions(Channels.Line, 99);
+            Assert.IsTrue(supports);
+        }
+
+        [TestMethod]
+        public void ShouldReturnFalseForSupportsCardActionsWithLineAnd100()
+        {
+            var supports = Channel.SupportsCardActions(Channels.Line, 100);
             Assert.IsFalse(supports);
         }
 
