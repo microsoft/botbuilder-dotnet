@@ -1,7 +1,8 @@
 ﻿grammar Expression;
 
 expression
-    : <assoc=right> expression '^' expression   #binaryOpExp
+    : '!' expression                            #unaryOpExp
+    | <assoc=right> expression '^' expression   #binaryOpExp 
     | expression ('*'|'/') expression           #binaryOpExp
     | expression ('+'|'-') expression           #binaryOpExp
     | expression ('=='|'!='|'<>') expression    #binaryOpExp

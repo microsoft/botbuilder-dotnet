@@ -38,6 +38,13 @@ namespace Microsoft.Expressions.Tests
             Test("one > 0.5 && two < 2.5", true),
             Test("one > 0.5 || two < 1.5", true),
 
+            Test("!one", false),
+            Test("!!one", true),
+            Test("!one || !!two", true),
+            Test("not(one)", false),
+            Test("not(not(one))", true),
+            Test("not(0)", true),
+
         };
 
         [DataTestMethod]

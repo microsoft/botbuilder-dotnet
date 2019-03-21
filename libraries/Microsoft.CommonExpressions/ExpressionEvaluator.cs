@@ -11,7 +11,7 @@ namespace Microsoft.Expressions
         private readonly GetMethodDelegate GetMethod;
         private object Scope;
 
-        public static readonly Dictionary<string, string> OperatorFunctionNames = new Dictionary<string, string>
+        public static readonly Dictionary<string, string> BinaryOperatorFunctions= new Dictionary<string, string>
         {
             {"^", "pow"},
             {"/", "div"},
@@ -27,6 +27,12 @@ namespace Microsoft.Expressions
             {"&&", "and"},
             {"||", "or"}
         };
+
+        public static readonly Dictionary<string, string> UnaryOperatorFunctions = new Dictionary<string, string>
+        {
+            {"!", "not"},
+        };
+
 
         public ExpressionEvaluator(GetValueDelegate getValue = null, GetMethodDelegate getMethod = null)
         {
@@ -51,10 +57,19 @@ namespace Microsoft.Expressions
             return parameters;
         }
 
+        public override object VisitUnaryOpExp([NotNull] ExpressionParser.UnaryOpExpContext context)
+        {
+            var unaryOperationName = context.GetChild(0).GetText();
+            var methodName = UnaryOperatorFunctions[unaryOperationName];
+            var method = GetMethod(methodName);
+            var value = Visit(context.expression());
+            return method(new List<object> { value });
+        }
+
         public override object VisitBinaryOpExp([NotNull] ExpressionParser.BinaryOpExpContext context)
         {
             var binaryOperationName = context.GetChild(1).GetText();
-            var methodName = OperatorFunctionNames[binaryOperationName];
+            var methodName = BinaryOperatorFunctions[binaryOperationName];
             var method = GetMethod(methodName);
 
             var left = Visit(context.expression(0));

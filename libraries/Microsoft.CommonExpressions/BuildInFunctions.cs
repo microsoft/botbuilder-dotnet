@@ -70,5 +70,9 @@ namespace Microsoft.Expressions
 
         public static EvaluationDelegate Or = operands =>
                         operands[0] is bool bool0 && operands[1] is bool bool1 ? bool0 || bool1 : throw new Exception();
+
+        public static EvaluationDelegate Not = operands =>
+                        operands[0] is bool bool0 ? !bool0 :
+                        operands[0] is int int0 ? int0 == 0 : operands[0] == null;
     }
 }
