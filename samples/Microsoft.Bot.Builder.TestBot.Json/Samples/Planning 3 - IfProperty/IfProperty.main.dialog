@@ -11,7 +11,7 @@
                     "ifTrue": [
                         {
                             "$type": "Microsoft.TextPrompt",
-                            "intialPrompt": "Hello, I'm Zoidberg. What is your name?",
+                            "initialPrompt": "Hello, I'm Zoidberg. What is your name?",
                             "property": "user.name"
                         }
                     ]

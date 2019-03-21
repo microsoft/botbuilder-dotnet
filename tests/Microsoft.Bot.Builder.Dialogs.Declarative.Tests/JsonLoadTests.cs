@@ -50,9 +50,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
             await BuildTestFlow(json)
             .Send("hello")
-            .AssertReply("Hello, I'm Zoidberg. What is your name?")
-            .Send("Carlos")
-            .AssertReply("Hello Carlos, nice to meet you!")
+            .AssertReply("What's up?")
+            .Send("Nothing")
+            .AssertReply("Oh I see!")
             .StartTestAsync();
         }
 

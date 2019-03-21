@@ -6,13 +6,15 @@
             "$type": "Microsoft.DefaultRule",
             "steps": [
                 {
-                    "$type": "Microsoft.TextPrompt",
-                    "InitalPrompt": "Hello, I'm Zoidberg. What is your name?",
-                    "property": "user.name"
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "What's up?"
+                },
+                {
+                    "$type": "Microsoft.WaitForInput"
                 },
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "Hello {user.name}, nice to meet you!"
+                    "activity": "Oh I see!"
                 }
             ]
         }
