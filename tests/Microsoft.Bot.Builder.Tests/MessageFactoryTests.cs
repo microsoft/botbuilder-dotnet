@@ -239,7 +239,6 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-
         public void CarouselTwoAttachments()
         {
             string text = Guid.NewGuid().ToString();
