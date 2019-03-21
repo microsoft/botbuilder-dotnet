@@ -13,10 +13,9 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("Middleware")]
     public class BotAdapterBracketingTest
     {
-
         /// <summary>
         /// Developer authored Middleware that looks like this:
-        /// public async Task ReceiveActivityAsync(ITurnContext turnContext, 
+        /// public async Task ReceiveActivityAsync(ITurnContext turnContext,
         ///    MiddlewareSet.NextDelegate next)
         /// {
         ///    context.Reply("BEFORE");
@@ -24,10 +23,11 @@ namespace Microsoft.Bot.Builder.Tests
         ///    context.Reply("AFTER");
         ///  }
         ///  Should result in an output that looks like:
-        ///    BEFORE
-        ///    ECHO:Hello
-        ///    AFTER        
-        /// </summary>       
+        ///  BEFORE
+        ///  ECHO:Hello
+        ///  AFTER.
+        ///  </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [TestMethod]
         public async Task Middlware_BracketingValidation()
         {
@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Tests
             async Task Echo(ITurnContext ctx, CancellationToken cancellationToken)
             {
                 string toEcho = "ECHO:" + ctx.Activity.AsMessageActivity().Text;
-                await ctx.SendActivityAsync(ctx.Activity.CreateReply(toEcho), cancellationToken); 
+                await ctx.SendActivityAsync(ctx.Activity.CreateReply(toEcho), cancellationToken);
             }
 
             await new TestFlow(adapter, Echo)
@@ -50,10 +50,11 @@ namespace Microsoft.Bot.Builder.Tests
 
         /// <summary>
         /// Exceptions thrown during the processing of an Activity should
-        /// be catchable by Middleware that has wrapped the next() method. 
+        /// be catchable by Middleware that has wrapped the next() method.
         /// This tests verifies that, and makes sure the order of messages
-        /// coming back is correct. 
-        /// </summary>       
+        /// coming back is correct.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [TestMethod]
         public async Task Middlware_ThrowException()
         {
@@ -89,12 +90,11 @@ namespace Microsoft.Bot.Builder.Tests
                 }
                 catch (Exception ex)
                 {
-                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("CAUGHT:" + ex.Message));                    
+                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("CAUGHT:" + ex.Message));
                 }
 
                 await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("AFTER"));
             }
-
         }
 
         public class BeforeAFterMiddlware : IMiddleware
@@ -105,7 +105,6 @@ namespace Microsoft.Bot.Builder.Tests
                 await next(cancellationToken);
                 await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("AFTER"));
             }
-
         }
     }
 }
