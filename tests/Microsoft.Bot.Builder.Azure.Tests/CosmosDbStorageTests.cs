@@ -27,6 +27,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private const string CosmosAuthKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
         private const string CosmosDatabaseName = "test-db";
         private const string CosmosCollectionName = "bot-storage";
+        private const string CosmosDBPartitionKey = "UtteranceLog";
 
         private const string _noEmulatorMessage = "This test requires CosmosDB Emulator! go to https://aka.ms/documentdb-emulator-docs to download and install.";
         private static string _emulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe");
@@ -392,19 +393,27 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             var storage = new CosmosDbStorage(new CosmosDbStorageOptions()
             {
-                PartitionKey = string.Empty,
+                PartitionKey = CosmosDBPartitionKey,
                 AuthKey = CosmosAuthKey,
                 CollectionId = CosmosCollectionName,
                 CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
                 DatabaseId = CosmosDatabaseName,
             });
 
-            await storage.DeleteAsync(new string[] { "foo" }, CancellationToken.None);
+            await storage.WriteAsync(new Dictionary<string, object>()
+            {
+                { CosmosDBPartitionKey, new object() }
+            }, CancellationToken.None);
+
+            string[] utteranceList = { "UtteranceLog" };
+
+            await storage.DeleteAsync(utteranceList, CancellationToken.None);
         }
 
         [TestMethod]
         public async Task DeleteFromCosmosStorageWithoutPartitionKey()
         {
+            // No PartitionKey
             var storage = new CosmosDbStorage(new CosmosDbStorageOptions()
             {
                 PartitionKey = string.Empty,
@@ -414,10 +423,14 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 DatabaseId = CosmosDatabaseName,
             });
 
-            string extStr = "PartitionKey value must be supplied for this operation";
-            Assert.ThrowsException<InvalidOperationException>(() => extStr);
+            string[] utteranceList = { "UtteranceLog" };
+            await storage.WriteAsync(new Dictionary<string, object>()
+            {
+                { CosmosDBPartitionKey, utteranceList }
+            }, CancellationToken.None);
 
-            await storage.DeleteAsync(new string[] { "foo" }, CancellationToken.None);
+            // Should throw
+            await Assert.ThrowsExceptionAsync<DocumentClientException>(async () => await storage.DeleteAsync(utteranceList, CancellationToken.None));
         }
 
         public bool CheckEmulator()
