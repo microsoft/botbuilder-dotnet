@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs.Expressions
 {
-    public interface IExpressionEval
+    public interface IExpression
     {
-        Task<object> Evaluate(DialogContextState state);
+        Task<object> GetParseTree();
 
         Task<object> Evaluate(IDictionary<string, object> vars);
-
-        Task<object> Evaluate(string expression, IDictionary<string, object> vars);
     }
 
 }

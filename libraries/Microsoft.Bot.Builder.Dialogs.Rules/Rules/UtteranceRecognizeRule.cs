@@ -4,56 +4,56 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Expressions;
+using Microsoft.Bot.Builder.Dialogs.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 {
     public class UtteranceRecognizeRule : EventRule
     {
-        public string Intent { get; set; }
-
-        public List<string> Entities { get; set; }
-
-        public UtteranceRecognizeRule(string intent = null, List<string> entities = null, List<IDialog> steps = null, PlanChangeTypes changeType = PlanChangeTypes.DoSteps)
-            : base(new List<string>()
+        public UtteranceRecognizeRule(string intent = null, List<string> entities = null, List<IDialog> steps = null, PlanChangeTypes changeType = PlanChangeTypes.DoSteps, string constraint = null)
+            : base(events: new List<string>()
             {
                 PlanningEvents.UtteranceRecognized.ToString()
-            }, 
-            steps, 
-            changeType)
+            },
+            steps: steps,
+            changeType: changeType,
+            constraint: constraint)
         {
             Intent = intent ?? null;
             Entities = entities ?? new List<string>();
-        }        
-
-        protected override async Task<bool> OnIsTriggeredAsync(PlanningContext planning, DialogEvent dialogEvent)
-        {
-            if (dialogEvent.Value is RecognizerResult recognizerResult)
-            {
-                // Ensure all intents recognized
-                if (recognizerResult.Intents == null)
-                {
-                    return false;
-                }
-
-                if(recognizerResult.GetTopScoringIntent().score < 0.5)
-                {
-                    return false;
-                }
-
-                if (recognizerResult.GetTopScoringIntent().intent != Intent)
-                //if (!recognizerResult.Intents.Any(r => r.Key == Intent))
-                {
-                    return false;
-                }
-
-                // TODO: Ensure all entities recognized
-            }
-
-            return true;
         }
 
-        protected override PlanChangeList OnCreateChangeList(PlanningContext planning, DialogEvent dialogEvent, object dialogOptions = null)
+
+        /// <summary>
+        /// Intent to match on
+        /// </summary>
+        public string Intent { get; set; }
+
+        /// <summary>
+        /// Entities which must be recognized for this rule to trigger
+        /// </summary>
+        public List<string> Entities { get; set; }
+
+        protected override void GatherConstraints(List<string> constraints)
         {
+            base.GatherConstraints(constraints);
+
+            // add constraints for the intents property
+            if (!String.IsNullOrEmpty(this.Intent))
+            {
+                constraints.Add($"turn.DialogEvent.Value.Intents.{this.Intent}.Score > 0.5");
+            }
+
+            //foreach (var entity in this.Entities)
+            //{
+            //    constraints.Add($"CONTAINS(DialogEvent.Entities, '{entity}')");
+            //}
+        }
+
+        protected override PlanChangeList OnCreateChangeList(PlanningContext planning, object dialogOptions = null)
+        {
+            var dialogEvent = planning.State.Turn["DialogEvent"] as DialogEvent;
             if (dialogEvent.Value is RecognizerResult recognizerResult)
             {
                 Dictionary<string, object> entitiesRecognized = new Dictionary<string, object>();

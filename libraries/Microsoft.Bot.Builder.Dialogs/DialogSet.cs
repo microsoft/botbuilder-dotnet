@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return CreateContextAsync(turnContext, null, null, cancellationToken);
         }
 
-        public async Task<DialogContext> CreateContextAsync(ITurnContext turnContext, StateMap conversationState, StateMap userState, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<DialogContext> CreateContextAsync(ITurnContext turnContext, Dictionary<string, object> conversationState, Dictionary<string, object> userState, CancellationToken cancellationToken = default(CancellationToken))
         {
             BotAssert.ContextNotNull(turnContext);
 

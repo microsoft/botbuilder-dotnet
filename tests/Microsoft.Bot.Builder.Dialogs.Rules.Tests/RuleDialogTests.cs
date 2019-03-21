@@ -12,6 +12,7 @@ using Microsoft.Bot.Builder.AI.LanguageGeneration;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Expressions;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Rules.Expressions;
 using Microsoft.Bot.Builder.Dialogs.Rules.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Rules.Rules;
 using Microsoft.Bot.Builder.Dialogs.Rules.Steps;
@@ -33,6 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
+                .Use(new RegisterClassMiddleware<IExpressionFactory>(new CommonExpressionFactory()))
                 .Use(new RegisterClassMiddleware<IBotResourceProvider>(botResourceManager))
                 .Use(new RegisterClassMiddleware<ILanguageGenerator>(lg))
                 .Use(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)))
@@ -44,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
             ruleDialog.BotState = convoState.CreateProperty<BotState>("bot");
-            ruleDialog.UserState = userState.CreateProperty<StateMap>("user"); ;
+            ruleDialog.UserState = userState.CreateProperty<Dictionary<string, object>>("user"); ;
 
             var dialogs = new DialogSet(dialogState);
 
@@ -128,7 +130,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             var planningDialog = new RuleDialog("planningTest");
 
-            planningDialog.AddRule(new List<IRule>()
+            planningDialog.AddRules(new List<IRule>()
             {
                 new FallbackRule(
                     new List<IDialog>()
@@ -136,36 +138,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                         // Add item
                         new SendActivity("Please add an item to todos."),
                         new WaitForInput("user.todo"),
-                        new ChangeList(ChangeList.ChangeListType.push, "user.todos", "user.todo"),
+                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "user.todo"),
                         new SendList("user.todos"),
                         new SendActivity("Please add an item to todos."),
                         new WaitForInput("user.todo"),
-                        new ChangeList(ChangeList.ChangeListType.push, "user.todos", "user.todo"),
+                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "user.todo"),
                         new SendList("user.todos"),
 
                         // Remove item
                         new SendActivity("Enter a item to remove."),
                         new WaitForInput("user.todo"),
-                        new ChangeList(ChangeList.ChangeListType.remove, "user.todos", "user.todo"),
+                        new ChangeList(ChangeList.ChangeListType.Remove, "user.todos", "user.todo"),
                         new SendList("user.todos"),
 
                         // Add item and pop item
                         new SendActivity("Please add an item to todos."),
                         new WaitForInput("user.todo"),
-                        new ChangeList(ChangeList.ChangeListType.push, "user.todos", "user.todo"),
+                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "user.todo"),
                         new SendActivity("Please add an item to todos."),
                         new WaitForInput("user.todo"),
-                        new ChangeList(ChangeList.ChangeListType.push, "user.todos", "user.todo"),
+                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "user.todo"),
                         new SendList("user.todos"),
-                        new ChangeList(ChangeList.ChangeListType.pop, "user.todos"),
+                        new ChangeList(ChangeList.ChangeListType.Pop, "user.todos"),
                         new SendList("user.todos"),
 
                         // Take item
-                        new ChangeList(ChangeList.ChangeListType.take, "user.todos"),
+                        new ChangeList(ChangeList.ChangeListType.Take, "user.todos"),
                         new SendList("user.todos"),
 
                         // Clear list
-                        new ChangeList(ChangeList.ChangeListType.clear, "user.todos"),
+                        new ChangeList(ChangeList.ChangeListType.Clear, "user.todos"),
                         new SendList("user.todos")
                     })
             });
@@ -291,7 +293,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     })});
 
             await CreateFlow(ruleDialog, convoState, userState)
-            .Send(new Activity() { Type = ActivityTypes.ConversationUpdate, MembersAdded = new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") } })
+            .Send(new Activity() { Type = ActivityTypes.ConversationUpdate, MembersAdded = new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") , new ChannelAccount("user", "User") } })
             .Send("hi")
                 .AssertReply("Welcome my friend!")
                 .AssertReply("Hello, what is your name?")
@@ -408,11 +410,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             .StartTestAsync();
         }
 
-        //[TestMethod]
-        //public async Task Planning_NestedInlineSequences()
-        //{
-        //    var convoState = new ConversationState(new MemoryStorage());
-        //    var userState = new UserState(new MemoryStorage());
+        [TestMethod]
+        public async Task Planning_NestedInlineSequences()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
 
             var ruleDialog = new RuleDialog("planningTest");
 
@@ -484,11 +486,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             .StartTestAsync();
         }
 
-        //[TestMethod]
-        //public async Task Planning_CallDialog()
-        //{
-        //    var convoState = new ConversationState(new MemoryStorage());
-        //    var userState = new UserState(new MemoryStorage());
+        [TestMethod]
+        public async Task Planning_CallDialog()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
 
             var ruleDialog = new RuleDialog("planningTest");
 

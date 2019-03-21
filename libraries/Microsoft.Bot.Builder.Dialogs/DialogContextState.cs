@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,31 +14,42 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class DialogContextVisibleState
     {
         [JsonProperty(PropertyName = "user")]
-        public StateMap User { get; set; }
+        public Dictionary<string, object> User { get; set; }
 
         [JsonProperty(PropertyName = "conversation")]
-        public StateMap Conversation { get; set; }
+        public Dictionary<string, object> Conversation { get; set; }
 
         [JsonProperty(PropertyName = "dialog")]
-        public StateMap Dialog { get; set; }
+        public Dictionary<string, object> Dialog { get; set; }
 
         [JsonProperty(PropertyName = "entities")]
-        public StateMap Entities { get; set; }
+        public Dictionary<string, object> Entities { get; set; }
+
+        [JsonProperty(PropertyName = "turn")]
+        public Dictionary<string, object> Turn { get; set; }
     }
 
-    public class DialogContextState
+    public class DialogContextState : IDictionary<string, object>
     {
         private const string TurnEntities = "turn_entities";
         private readonly DialogContext dialogContext;
 
+        public DialogContextState(DialogContext dc, Dictionary<string, object> userState, Dictionary<string, object> conversationState, Dictionary<string, object> turnState)
+        {
+            this.dialogContext = dc ?? throw new ArgumentNullException(nameof(dc));
+            this.User = userState;
+            this.Conversation = conversationState;
+            this.Turn = turnState;
+        }
+
         [JsonProperty(PropertyName = "user")]
-        public StateMap User { get; set; }
+        public Dictionary<string, object> User { get; set; }
 
         [JsonProperty(PropertyName = "conversation")]
-        public StateMap Conversation { get; set; }
+        public Dictionary<string, object> Conversation { get; set; }
 
         [JsonProperty(PropertyName = "dialog")]
-        public StateMap Dialog
+        public Dictionary<string, object> Dialog
         {
             get
             {
@@ -55,7 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
                 }
 
-                return (StateMap)instance.State;
+                return (Dictionary<string, object>)instance.State;
             }
 
             set
@@ -80,26 +92,48 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         [JsonProperty(PropertyName = "entities")]
-        public StateMap Entities
+        public Dictionary<string, object> Entities
         {
             get
             {
                 var entities = dialogContext.Context.TurnState.Get<object>(TurnEntities);
                 if (entities == null)
                 {
-                    entities = new StateMap();
+                    entities = new Dictionary<string, object>();
                     dialogContext.Context.TurnState.Add(TurnEntities, entities);
                 }
 
-                return entities as StateMap;
+                return entities as Dictionary<string, object>;
             }
         }
 
-        public DialogContextState(DialogContext dc, StateMap userState, StateMap conversationState)
+        [JsonProperty(PropertyName = "turn")]
+        public Dictionary<string, object> Turn { get; set; }
+
+        public ICollection<string> Keys => new[] { "user", "conversation", "dialog", "turn", "entities" };
+
+        public ICollection<object> Values => new[] { User, Conversation, Dialog, Turn, Entities };
+
+        public int Count => 3;
+
+        public bool IsReadOnly => true;
+
+        public object this[string key]
         {
-            this.dialogContext = dc ?? throw new ArgumentNullException(nameof(dc));
-            this.User = userState;
-            this.Conversation = conversationState;
+            get
+            {
+                if (TryGetValue(key, out object result))
+                {
+                    return result;
+                }
+
+                return null;
+            }
+
+            set
+            {
+                System.Diagnostics.Trace.TraceError("DialogContextState doesn't support adding/changinge the base properties");
+            }
         }
 
         public DialogContextVisibleState ToJson()
@@ -118,7 +152,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 Conversation = this.Conversation,
                 User = this.User,
-                Dialog = (StateMap)instance?.State,
+                Dialog = (Dictionary<string, object>)instance?.State,
             };
         }
 
@@ -150,102 +184,104 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public void SetValue(string pathExpression, object value)
         {
-            // Obtain JToken from the current state
-            var thisJToken = JToken.Parse(JsonConvert.SerializeObject(this));
-
-            // JsonPath replace
-            var resultToken = thisJToken.ReplacePath(pathExpression, value);
-
-            // Rehydrate and copy state properties to currentobject
-            var resultContextState = resultToken.ToObject<DialogContextVisibleState>();
-            foreach (var kv in resultContextState.User)
-            {
-                this.User[kv.Key] = kv.Value;
-            }
-
-            foreach (var kv in resultContextState.Conversation)
-            {
-                if (!this.Conversation.ContainsKey(kv.Key))
-                {
-                    this.Conversation.Add(kv.Key, kv.Value);
-                }
-            }
-
-            foreach (var kv in resultContextState.Dialog)
-            {
-                if (!this.Dialog.ContainsKey(kv.Key))
-                {
-                    this.Dialog.Add(kv.Key, kv.Value);
-                }
-            }
-
-            // this.User = resultContextState.User;
-            // this.Conversation = resultContextState.Conversation;
-            // this.Dialog = resultContextState.Dialog;
-        }
-    }
-
-    public static class JsonExtensions
-    {
-        public static JToken ReplacePath(this JToken root, string path, object newValue)
-        {
-            if (root == null || path == null)
-            {
-                throw new ArgumentNullException();
-            }
-
-            var tokens = root.SelectTokens(path).ToList();
-
             // If the json path does not exist
-            if (tokens?.Count == 0)
+            string[] segments = pathExpression.Split('.');
+            dynamic current = this;
+
+            for (int i = 0; i < segments.Length - 1; i++)
             {
-                string[] segments = path.Split('.');
-                var current = root;
-
-                for (int i = 0; i < segments.Length; i++)
+                var segment = segments[i];
+                if (current is IDictionary<string, object> curDict)
                 {
-                    var segment = segments[i];
-                    if (current.Type == JTokenType.Object)
+                    if (!curDict.ContainsKey(segment))
                     {
-                        var currentObject = current as JObject;
-
-                        if (!currentObject.Children().Any(c => c.Type == JTokenType.Property && (c as JProperty).Name == segment))
-                        {
-                            currentObject.Add(segment, i == segments.Length - 1 ? JToken.FromObject(newValue) : new JObject());
-                        }
-
-                        current = currentObject[segment];
+                        curDict[segment] = new Dictionary<string, object>();
                     }
-                }
-            }
-            else
-            {
-                foreach (var value in tokens)
-                {
-                    if (value == root)
-                    {
-                        root = JToken.FromObject(newValue);
-                    }
-                    else
-                    {
-                        if (newValue == null)
-                        {
-                            value.Parent.Remove();
-                        }
-                        else
-                        {
-                            value.Replace(JToken.FromObject(newValue));
-                        }
-                    }
+                    current = curDict[segment];
                 }
             }
 
-            return root;
+            current[segments.Last()] = value;
         }
 
-        public static string ReplacePath(string jsonString, string path, object newValue)
+        public void Add(string key, object value)
         {
-            return JToken.Parse(jsonString).ReplacePath(path, newValue).ToString();
+            throw new NotImplementedException();
         }
+
+        public bool ContainsKey(string key)
+        {
+            return this.Keys.Contains(key.ToLower());
+        }
+
+        public bool Remove(string key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool TryGetValue(string key, out object value)
+        {
+            value = null;
+            switch (key.ToLower())
+            {
+                case "user":
+                    value = this.User;
+                    return true;
+                case "conversation":
+                    value = this.Conversation;
+                    return true;
+                case "dialog":
+                    value = this.Dialog;
+                    return true;
+                case "turn":
+                    value = this.Turn;
+                    return true;
+                case "entities":
+                    value = this.Entities;
+                    return true;
+            }
+
+            return false;
+        }
+
+        public void Add(KeyValuePair<string, object> item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Contains(KeyValuePair<string, object> item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Remove(KeyValuePair<string, object> item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+        {
+            yield return new KeyValuePair<string, object>("user", this.User);
+            yield return new KeyValuePair<string, object>("conversation", this.Conversation);
+            yield return new KeyValuePair<string, object>("dialog", this.Dialog);
+            yield return new KeyValuePair<string, object>("turn", this.Turn);
+            yield break;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

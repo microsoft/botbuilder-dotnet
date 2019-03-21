@@ -1,82 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Expressions;
+using Microsoft.Bot.Builder.Dialogs.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 {
-    public class EventRule : IRule
+    public class EventRule : Rule
     {
-        public List<string> Events { get; set; }
-
-        public List<IDialog> Steps { get; set; }
-
-        public PlanChangeTypes ChangeType { get; set; }
-
-        public EventRule(List<string> events = null, List<IDialog> steps = null, PlanChangeTypes changeType = PlanChangeTypes.DoSteps)
+        public EventRule(List<string> events = null, List<IDialog> steps = null, PlanChangeTypes changeType = PlanChangeTypes.DoSteps, string constraint = null)
+            : base(constraint: constraint, steps: steps, changeType: changeType)
         {
             this.Events = events ?? new List<string>();
             this.Steps = steps ?? new List<IDialog>();
             this.ChangeType = changeType;
         }
 
-        public async Task<List<PlanChangeList>> EvaluateAsync(PlanningContext planning, DialogEvent dialogEvent)
+        public List<string> Events { get; set; }
+
+        protected override void GatherConstraints(List<string> constraints)
         {
-            // Limit evaluation to only supported events
-            if (Events.Contains(dialogEvent.Name))
+            base.GatherConstraints(constraints);
+
+            // add in the constraints for Events property
+            StringBuilder sb = new StringBuilder();
+            string append = string.Empty;
+            foreach (var evt in Events)
             {
-                return await OnEvaluateAsync(planning, dialogEvent).ConfigureAwait(false);
+                sb.Append($"{append} (turn.DialogEvent.Name == '{evt}') ");
+                append = "||";
             }
-            else
-            {
-                return null;
-            }
+            constraints.Add(sb.ToString());
         }
 
-        protected virtual async Task<List<PlanChangeList>> OnEvaluateAsync(PlanningContext planning, DialogEvent dialogEvent)
-        {
-            if (await this.OnIsTriggeredAsync(planning, dialogEvent).ConfigureAwait(false))
-            {
-                return new List<PlanChangeList>()
-                {
-                    this.OnCreateChangeList(planning, dialogEvent)
-                };
-            }
-
-            return new List<PlanChangeList>();
-        }
-
-        protected virtual async Task<bool> OnIsTriggeredAsync(PlanningContext planning, DialogEvent dialogEvent)
-        {
-            return true;
-        }
-
-        protected virtual PlanChangeList OnCreateChangeList(PlanningContext planning, DialogEvent dialogEvent, object dialogOptions = null)
-        {
-            var changeList = new PlanChangeList()
-            {
-                ChangeType = this.ChangeType,
-                Steps = new List<PlanStepState>()
-            };
-
-            Steps.ForEach(s =>
-            {
-                var stepState = new PlanStepState()
-                {
-                    DialogStack = new List<DialogInstance>(),
-                    DialogId = s.Id
-                };
-
-                if (dialogOptions != null)
-                {
-                    stepState.Options = dialogOptions;
-                }
-
-                changeList.Steps.Add(stepState);
-            });
-
-            return changeList;
-        }
     }
 }
