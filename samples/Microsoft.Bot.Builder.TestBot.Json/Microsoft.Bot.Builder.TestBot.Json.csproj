@@ -19,6 +19,11 @@
     <None Remove="Samples\Planning 8 - ExternalLanguage\ExternalLanguage - Copy.main.lg" />
     <None Remove="Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.dialog" />
     <None Remove="Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.lg" />
+	<None Remove="Samples\Planning - ToDoBot\AddToDo.dialog" />
+    <None Remove="Samples\Planning - ToDoBot\ClearToDos.dialog" />
+    <None Remove="Samples\Planning - ToDoBot\DeleteToDo.dialog" />
+    <None Remove="Samples\Planning - ToDoBot\main.dialog" />
+    <None Remove="Samples\Planning - ToDoBot\ShowToDos.dialog" />
     <None Remove="Samples\Planning 8 - ExternalLanguage\FortuneTellerDialog.dialog" />
     <None Remove="Samples\Planning 8 - ExternalLanguage\TellJokeDialog.dialog" />
     <None Remove="Samples\Planning 9 - CancelDialog\CancelDialog.main.dialog" />
@@ -63,6 +68,18 @@
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Samples\Planning - ToDoBot\DeleteToDo.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Samples\Planning - ToDoBot\ClearToDos.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Samples\Planning - ToDoBot\ShowToDos.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

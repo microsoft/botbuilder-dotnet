@@ -50,15 +50,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Recognizers
                     result.Intents.Add(intent, new IntentScore() { Score = 1.0 });
 
                     // Check for named capture groups
-                    // TODO: Implement
-                    //if (match.Groups?.Count > 0)
-                    //{
-                    //    result.Entities = JObject.FromObject(match.Groups.Cast<Group>().SelectMany(g => g.Captures.Cast<Capture>().Select(c => new KeyValuePair<int, string>(c.Index, c.Value))));
-                    //}
-                    //else
-                    //{
-                    //    result.Entities = JObject.FromObject(match.Groups.Cast<Match>().Select(m => new KeyValuePair<int, string>(m.Index, m.Value)));
-                    //}
+                    var entities = new Dictionary<string, string>();
+                    foreach (var name in regex.GetGroupNames())
+                    {
+                        if (!string.IsNullOrEmpty(match.Groups[name].Value))
+                        {
+                            entities.Add(name, match.Groups[name].Value);
+                        }
+                    }
+                    result.Entities = JObject.FromObject(entities);
                 }
             }
 

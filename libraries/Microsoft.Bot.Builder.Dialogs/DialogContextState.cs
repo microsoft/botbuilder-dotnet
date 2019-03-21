@@ -22,12 +22,16 @@ namespace Microsoft.Bot.Builder.Dialogs
         [JsonProperty(PropertyName = "dialog")]
         public Dictionary<string, object> Dialog { get; set; }
 
+        [JsonProperty(PropertyName = "entities")]
+        public Dictionary<string, object> Entities { get; set; }
+
         [JsonProperty(PropertyName = "turn")]
         public Dictionary<string, object> Turn { get; set; }
     }
 
     public class DialogContextState : IDictionary<string, object>
     {
+        private const string TurnEntities = "turn_entities";
         private readonly DialogContext dialogContext;
 
         public DialogContextState(DialogContext dc, Dictionary<string, object> userState, Dictionary<string, object> conversationState, Dictionary<string, object> turnState)
@@ -87,12 +91,28 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
+        [JsonProperty(PropertyName = "entities")]
+        public Dictionary<string, object> Entities
+        {
+            get
+            {
+                var entities = dialogContext.Context.TurnState.Get<object>(TurnEntities);
+                if (entities == null)
+                {
+                    entities = new Dictionary<string, object>();
+                    dialogContext.Context.TurnState.Add(TurnEntities, entities);
+                }
+
+                return entities as StateMap;
+            }
+        }
+
         [JsonProperty(PropertyName = "turn")]
         public Dictionary<string, object> Turn { get; set; }
 
-        public ICollection<string> Keys => new[] { "user", "conversation", "dialog", "turn" };
+        public ICollection<string> Keys => new[] { "user", "conversation", "dialog", "turn", "entities" };
 
-        public ICollection<object> Values => new[] { User, Conversation, Dialog, Turn };
+        public ICollection<object> Values => new[] { User, Conversation, Dialog, Turn, Entities };
 
         public int Count => 3;
 
@@ -216,6 +236,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 case "turn":
                     value = this.Turn;
                     return true;
+                case "entities":
+                    value = this.Entities;
+                    return true;
             }
 
             return false;
@@ -236,29 +259,38 @@ namespace Microsoft.Bot.Builder.Dialogs
             throw new NotImplementedException();
         }
 
-        public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Remove(KeyValuePair<string, object> item)
-        {
-            throw new NotImplementedException();
-        }
+        current = currentObject[segment];
+                    }
+}
+            }
+            else
+            {
+                foreach (var value in tokens)
+                {
+                    if (value == root)
+                    {
+                        root = JToken.FromObject(newValue);
+                    }
+                    else
+                    {
+                        value.Replace(JToken.FromObject(newValue));
+                    }
+                }
+            }
 
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
-        {
-            yield return new KeyValuePair<string, object>("user", this.User);
-            yield return new KeyValuePair<string, object>("conversation", this.Conversation);
-            yield return new KeyValuePair<string, object>("dialog", this.Dialog);
-            yield return new KeyValuePair<string, object>("turn", this.Turn);
-            yield break;
-        }
+{
+    yield return new KeyValuePair<string, object>("user", this.User);
+    yield return new KeyValuePair<string, object>("conversation", this.Conversation);
+    yield return new KeyValuePair<string, object>("dialog", this.Dialog);
+    yield return new KeyValuePair<string, object>("turn", this.Turn);
+    yield break;
+}
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
+IEnumerator IEnumerable.GetEnumerator()
+{
+    throw new NotImplementedException();
+}
 
     }
 }

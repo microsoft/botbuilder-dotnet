@@ -52,8 +52,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
         }
 
 
-        protected override PlanChangeList OnCreateChangeList(PlanningContext planning, object dialogOptions = null)
+        protected override PlanChangeList OnCreateChangeList(PlanningContext planning, DialogEvent dialogEvent, object dialogOptions = null)
         {
+            if (dialogEvent.Value is RecognizerResult recognizerResult)
+            {
+                Dictionary<string, object> entitiesRecognized = new Dictionary<string, object>();
+                entitiesRecognized = recognizerResult.Entities.ToObject<Dictionary<string, object>>();
+
+                return new PlanChangeList()
+                {
+                    ChangeType = this.ChangeType,
+                    IntentsMatched = new List<string> {
+                        this.Intent,
+                    },
+                    EntitiesMatched = this.Entities,
+                    EntitiesRecognized = entitiesRecognized,
+                    Steps = Steps.Select(s => new PlanStepState()
+                    {
+                        DialogStack = new List<DialogInstance>(),
+                        DialogId = s.Id,
+                        Options = dialogOptions
+                    }).ToList()
+                };
+            }
+
             return new PlanChangeList()
             {
                 ChangeType = this.ChangeType,
