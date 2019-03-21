@@ -20,10 +20,14 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         [JsonProperty(PropertyName = "dialog")]
         public StateMap Dialog { get; set; }
+
+        [JsonProperty(PropertyName = "entities")]
+        public StateMap Entities { get; set; }
     }
 
     public class DialogContextState
     {
+        private const string TurnEntities = "turn_entities";
         private readonly DialogContext dialogContext;
 
         [JsonProperty(PropertyName = "user")]
@@ -72,6 +76,22 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 instance.State = value;
 
+            }
+        }
+
+        [JsonProperty(PropertyName = "entities")]
+        public StateMap Entities
+        {
+            get
+            {
+                var entities = dialogContext.Context.TurnState.Get<object>(TurnEntities);
+                if (entities == null)
+                {
+                    entities = new StateMap();
+                    dialogContext.Context.TurnState.Add(TurnEntities, entities);
+                }
+
+                return entities as StateMap;
             }
         }
 
@@ -140,10 +160,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var resultContextState = resultToken.ToObject<DialogContextVisibleState>();
             foreach (var kv in resultContextState.User)
             {
-                if (!this.User.ContainsKey(kv.Key))
-                {
-                    this.User.Add(kv.Key, kv.Value);
-                }
+                this.User[kv.Key] = kv.Value;
             }
 
             foreach (var kv in resultContextState.Conversation)
@@ -211,7 +228,14 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
                     else
                     {
-                        value.Replace(JToken.FromObject(newValue));
+                        if (newValue == null)
+                        {
+                            value.Parent.Remove();
+                        }
+                        else
+                        {
+                            value.Replace(JToken.FromObject(newValue));
+                        }
                     }
                 }
             }
