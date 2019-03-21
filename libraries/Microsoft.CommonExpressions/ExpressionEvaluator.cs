@@ -13,17 +13,17 @@ namespace Microsoft.Expressions
 
         public static readonly Dictionary<string, string> BinaryOperatorFunctions= new Dictionary<string, string>
         {
-            {"^", "pow"},
+            {"^", "exp"},
             {"/", "div"},
             {"*", "mul"},
             {"+", "add"},
             {"-", "sub"},
-            {"==", "equal"},
-            {"!=", "notEqual"},
-            {"<", "lessThan"},
-            {"<=", "lessThanOrEqual"},
-            {">", "greaterThan"},
-            {">=", "greaterThanorEqual"},
+            {"==", "equals"},
+            {"!=", "notEquals"},
+            {"<", "less"},
+            {"<=", "lessOrEquals"},
+            {">", "greater"},
+            {">=", "greaterOrEquals"},
             {"&&", "and"},
             {"||", "or"}
         };

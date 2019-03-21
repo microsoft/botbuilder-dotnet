@@ -30,10 +30,28 @@ namespace Microsoft.Expressions.Tests
             Test("add(1, 2)", 3),
             Test("add(1.0, 2.0)", 3.0),
             Test("add(mul(1, 2), 3)", 5),
+            Test("sub(2, 1)", 1),
+            Test("sub(2.0, 0.5)", 1.5),
+            Test("mul(2, 5)", 10),
+            Test("div(mul(2, 5), 2)", 5),
+            Test("div(5, 2)", 2),
+            Test("greater(5, 2)", true),
+            Test("greater(2, 2)", false),
+            Test("greater(one, two)", false),
+            Test("greaterOrEquals(one, one)", true),
+            Test("greaterOrEquals(one, two)", false),
+            Test("less(5, 2)", false),
+            Test("less(2, 2)", false),
+            Test("less(one, two)", true),
+            Test("lessOrEquals(one, one)", true),
+            Test("lessOrEquals(one, two)", true),
+
+
+
 
             Test("2^2", 4),
             Test("3^2^2", 81),
-            Test("pow(2,2)", 4),
+            Test("exp(2,2)", 4),
 
             Test("one > 0.5 && two < 2.5", true),
             Test("one > 0.5 || two < 1.5", true),
