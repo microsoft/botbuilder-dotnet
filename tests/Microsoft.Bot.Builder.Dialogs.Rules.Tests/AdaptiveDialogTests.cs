@@ -109,8 +109,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new DefaultRule(
                     new List<IDialog>()
                     {
-                        new SendActivity("Hello, what is your name?"),
-                        new WaitForInput("user.name"),
+                        new TextPrompt()
+                        {
+                            InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
+                            OutputBinding = "user.name"
+                        },
                         new SendActivity("Hello {user.name}, nice to meet you!"),
                     }));
 
@@ -136,27 +139,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     new List<IDialog>()
                     {
                         // Add item
-                        new SendActivity("Please add an item to todos."),
-                        new WaitForInput("user.todo"),
+                        new TextPrompt() {
+                            InitialPrompt = new ActivityTemplate("Please add an item to todos."),
+                            OutputBinding = "user.todo"
+                        },
                         new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "user.todo"),
                         new SendList("user.todos"),
-                        new SendActivity("Please add an item to todos."),
-                        new WaitForInput("user.todo"),
+                        new TextPrompt()
+                        {
+                            InitialPrompt = new ActivityTemplate("Please add an item to todos."),
+                            OutputBinding = "user.todo"
+                        },
                         new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "user.todo"),
                         new SendList("user.todos"),
 
                         // Remove item
-                        new SendActivity("Enter a item to remove."),
-                        new WaitForInput("user.todo"),
+                        new TextPrompt() {
+                            InitialPrompt = new ActivityTemplate("Enter a item to remove."),
+                            OutputBinding = "user.todo"
+                        },
                         new ChangeList(ChangeList.ChangeListType.Remove, "user.todos", "user.todo"),
                         new SendList("user.todos"),
 
                         // Add item and pop item
-                        new SendActivity("Please add an item to todos."),
-                        new WaitForInput("user.todo"),
+                        new TextPrompt() {
+                            InitialPrompt = new ActivityTemplate("Please add an item to todos."),
+                            OutputBinding = "user.todo"
+                        },
                         new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "user.todo"),
-                        new SendActivity("Please add an item to todos."),
-                        new WaitForInput("user.todo"),
+                        new TextPrompt()
+                        {
+                            InitialPrompt = new ActivityTemplate("Please add an item to todos."),
+                            OutputBinding = "user.todo"
+                        },
                         new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "user.todo"),
                         new SendList("user.todos"),
                         new ChangeList(ChangeList.ChangeListType.Pop, "user.todos"),
@@ -209,8 +224,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             Expression = new CommonExpression("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
-                                new SendActivity("Hello, what is your name?"),
-                                new WaitForInput("user.name"),
+                                new TextPrompt() {
+                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
+                                    OutputBinding = "user.name"
+                                },
                             }
                         },
                         new SendActivity("Hello {user.name}, nice to meet you!")
@@ -293,7 +310,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     })});
 
             await CreateFlow(ruleDialog, convoState, userState)
-            .Send(new Activity() { Type = ActivityTypes.ConversationUpdate, MembersAdded = new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") , new ChannelAccount("user", "User") } })
+            .Send(new Activity() { Type = ActivityTypes.ConversationUpdate, MembersAdded = new List<ChannelAccount>() { new ChannelAccount("bot", "Bot"), new ChannelAccount("user", "User") } })
             .Send("hi")
                 .AssertReply("Welcome my friend!")
                 .AssertReply("Hello, what is your name?")

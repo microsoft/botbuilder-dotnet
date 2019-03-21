@@ -60,8 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new DefaultRule(
                     new List<IDialog>()
                     {
-                        new SendActivity("Hello, what is your name?"),
-                        new WaitForInput("user.name"),
+                        new TextPrompt() { InitialPrompt = new ActivityTemplate("Hello, what is your name?"),  OutputBinding = "user.name" },
                         new SendActivity("Hello {user.name}, nice to meet you!"),
                     })});
 
@@ -91,8 +90,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             Expression = new CommonExpression("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
-                                new SendActivity("Hello, what is your name?"),
-                                new WaitForInput("user.name"),
+                                new TextPrompt() {
+                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
+                                    OutputBinding = "user.name"
+                                },
                             }
                         },
                         new SendActivity("Hello {user.name}, nice to meet you!")

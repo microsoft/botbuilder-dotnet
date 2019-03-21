@@ -1,48 +1,45 @@
 {
-  "$schema": "../../Schemas/app.schema",
-  "$type": "Microsoft.AdaptiveDialog",
-  "$id":  "DeleteToDoDialog",
-  "storage": {
-    "$type": "Microsoft.MemoryStorage"
-  },
-  "rules": [
-    {
-      "$type": "Microsoft.DefaultRule",
-      "steps": [
+    "$schema": "../../Schemas/app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "$id": "DeleteToDoDialog",
+    "storage": {
+        "$type": "Microsoft.MemoryStorage"
+    },
+    "rules": [
         {
-          "$type": "Microsoft.SaveEntity",
-          "entityName": "title",
-          "property": "user.todo"
-        },
-        {
-          "$type": "Microsoft.IfProperty",
-          "expression": "user.todo == null",
-          "ifTrue": [
-            {
-              "$type": "Microsoft.SendActivity",
-              "activity": "OK, please enter the title of the todo you want to remove."
-            },
-            {
-              "$type": "Microsoft.WaitForInput",
-              "property": "user.todo"
-            }
-          ]
-        },
-        {
-          "$type": "Microsoft.ChangeList",
-          "changeType": "3",
-          "listProperty": "user.todos",
-          "itemProperty": "user.todo"
-        },
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "Successfully removed a todo named \"{user.todo}\""
-        },
-        {
-          "$type": "Microsoft.ClearProperty",
-          "property": "user.todo"
+            "$type": "Microsoft.DefaultRule",
+            "steps": [
+                {
+                    "$type": "Microsoft.SaveEntity",
+                    "entityName": "title",
+                    "property": "user.todo"
+                },
+                {
+                    "$type": "Microsoft.IfProperty",
+                    "expression": "user.todo == null",
+                    "ifTrue": [
+                        {
+                            "$type": "Microsoft.TextPrompt",
+                            "initalPrompt": "OK, please enter the title of the todo you want to remove.",
+                            "property": "user.todo"
+                        }
+                    ]
+                },
+                {
+                    "$type": "Microsoft.ChangeList",
+                    "changeType": "3",
+                    "listProperty": "user.todos",
+                    "itemProperty": "user.todo"
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Successfully removed a todo named \"{user.todo}\""
+                },
+                {
+                    "$type": "Microsoft.ClearProperty",
+                    "property": "user.todo"
+                }
+            ]
         }
-      ]
-    }
-  ]   
+    ]
 }

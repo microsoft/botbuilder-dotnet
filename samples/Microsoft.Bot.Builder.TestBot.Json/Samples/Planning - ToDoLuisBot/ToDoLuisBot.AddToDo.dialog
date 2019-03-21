@@ -1,48 +1,45 @@
 {
-  "$schema": "../../Schemas/app.schema",
-  "$type": "Microsoft.AdaptiveDialog",
-  "$id":  "AddToDoDialog",
-  "storage": {
-    "$type": "Microsoft.MemoryStorage"
-  },
-  "rules": [
-    {
-      "$type": "Microsoft.DefaultRule",
-      "steps": [
+    "$schema": "../../Schemas/app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "$id": "AddToDoDialog",
+    "storage": {
+        "$type": "Microsoft.MemoryStorage"
+    },
+    "rules": [
         {
-          "$type": "Microsoft.SaveEntity",
-          "entityName": "TaskContentML",
-          "property": "user.todo"
-        },
-        {
-          "$type": "Microsoft.IfProperty",
-          "expression": "user.todo == null",
-          "ifTrue": [
-            {
-              "$type": "Microsoft.SendActivity",
-              "activity": "OK, please enter the title of your todo."
-            },
-            {
-              "$type": "Microsoft.WaitForInput",
-              "property": "user.todo"
-            }
-          ]
-        },
-        {
-          "$type": "Microsoft.ChangeList",
-          "ChangeType": "0",
-          "ListProperty": "user.todos",
-          "ItemProperty": "user.todo"
-        },
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "Successfully added a todo named \"{user.todo}\""
-        },
-        {
-          "$type": "Microsoft.ClearProperty",
-          "property": "user.todo" 
+            "$type": "Microsoft.DefaultRule",
+            "steps": [
+                {
+                    "$type": "Microsoft.SaveEntity",
+                    "entityName": "TaskContentML",
+                    "property": "user.todo"
+                },
+                {
+                    "$type": "Microsoft.IfProperty",
+                    "expression": "user.todo == null",
+                    "ifTrue": [
+                        {
+                            "$type": "Microsoft.TextPrompt",
+                            "initalPrompt": "OK, please enter the title of your todo.",
+                            "property": "user.todo"
+                        }
+                    ]
+                },
+                {
+                    "$type": "Microsoft.ChangeList",
+                    "ChangeType": "0",
+                    "ListProperty": "user.todos",
+                    "ItemProperty": "user.todo"
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Successfully added a todo named \"{user.todo}\""
+                },
+                {
+                    "$type": "Microsoft.ClearProperty",
+                    "property": "user.todo"
+                }
+            ]
         }
-      ]
-    }
-  ]   
+    ]
 }
