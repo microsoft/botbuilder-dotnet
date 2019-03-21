@@ -17,6 +17,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         public static IEnumerable<object[]> Data => new[]
         {
+            
             Test("NoTemplateRefInExpression.lg"),
             Test("ConditionFormatError.lg"),
             Test("ContainsInvalidEscape.lg"),
@@ -26,6 +27,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Test("NoNormalTemplateBodyInCondition.lg"),
             Test("NoNormalTemplateBodyInDefault.lg"),
             Test("NoTemplateRef.lg"),
+            Test("TemplateParamsNotMatchArgsNum.lg")
         };
 
 
