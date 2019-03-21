@@ -17,10 +17,6 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
     {
         public ServiceResolutionTests()
         {
-            // Arrange
-            // _server = new TestServer(new WebHostBuilder()
-                                     // .UseStartup<Startup>());
-            // _client = _server.CreateClient();
         }
 
 
