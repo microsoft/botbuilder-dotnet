@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 Context.TurnState["TurnStateMap"] = turnState;
             }
 
-            State = new DialogContextState(this, userState, conversationState, turnState as Dictionary<string, object>);
+            State = new DialogContextState(this, userState: userState, conversationState: conversationState, turnState: turnState as Dictionary<string, object>);
         }
 
         public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state, Dictionary<string, object> conversationState = null, Dictionary<string, object> userState = null)
@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 Context.TurnState["TurnStateMap"] = turnState;
             }
 
-            State = new DialogContextState(this, userState, conversationState, turnState as Dictionary<string, object>);
+            State = new DialogContextState(this, userState: userState, conversationState: conversationState, turnState: turnState as Dictionary<string, object>);
         }
 
         public DialogContext Parent { get; protected set; }

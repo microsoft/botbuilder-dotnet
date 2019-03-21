@@ -133,7 +133,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 if (Property != null)
                 {
-                    dc.State.User[Property] = recognized.Value;
+                    dc.State.SetValue(Property, recognized.Value);
                 }
 
                 return await dc.EndDialogAsync(recognized.Value).ConfigureAwait(false);

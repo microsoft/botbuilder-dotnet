@@ -21,11 +21,22 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         [JsonProperty(PropertyName = "dialog")]
         public Dictionary<string, object> Dialog { get; set; }
+
+        [JsonProperty(PropertyName = "turn")]
+        public Dictionary<string, object> Turn { get; set; }
     }
 
     public class DialogContextState : IDictionary<string, object>
     {
         private readonly DialogContext dialogContext;
+
+        public DialogContextState(DialogContext dc, Dictionary<string, object> userState, Dictionary<string, object> conversationState, Dictionary<string, object> turnState)
+        {
+            this.dialogContext = dc ?? throw new ArgumentNullException(nameof(dc));
+            this.User = userState;
+            this.Conversation = conversationState;
+            this.Turn = turnState;
+        }
 
         [JsonProperty(PropertyName = "user")]
         public Dictionary<string, object> User { get; set; }
@@ -76,7 +87,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        [JsonProperty(PropertyName ="turn")]
+        [JsonProperty(PropertyName = "turn")]
         public Dictionary<string, object> Turn { get; set; }
 
         public ICollection<string> Keys => new[] { "user", "conversation", "dialog", "turn" };
@@ -103,14 +114,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 throw new NotImplementedException();
             }
-        }
-
-        public DialogContextState(DialogContext dc, Dictionary<string, object> userState, Dictionary<string, object> conversationState, Dictionary<string, object> turnState)
-        {
-            this.dialogContext = dc ?? throw new ArgumentNullException(nameof(dc));
-            this.User = userState;
-            this.Conversation = conversationState;
-            this.Turn = turnState;
         }
 
         public DialogContextVisibleState ToJson()
@@ -161,41 +164,24 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public void SetValue(string pathExpression, object value)
         {
-            // Obtain JToken from the current state
-            var thisJToken = JToken.Parse(JsonConvert.SerializeObject(this));
+            // If the json path does not exist
+            string[] segments = pathExpression.Split('.');
+            dynamic current = this;
 
-            // JsonPath replace
-            var resultToken = thisJToken.ReplacePath(pathExpression, value);
-
-            // Rehydrate and copy state properties to currentobject
-            var resultContextState = resultToken.ToObject<DialogContextVisibleState>();
-            foreach (var kv in resultContextState.User)
+            for (int i = 0; i < segments.Length - 1; i++)
             {
-                if (!this.User.ContainsKey(kv.Key))
+                var segment = segments[i];
+                if (current is IDictionary<string, object> curDict)
                 {
-                    this.User.Add(kv.Key, kv.Value);
+                    if (!curDict.ContainsKey(segment))
+                    {
+                        curDict[segment] = new Dictionary<string, object>();
+                    }
+                    current = curDict[segment];
                 }
             }
 
-            foreach (var kv in resultContextState.Conversation)
-            {
-                if (!this.Conversation.ContainsKey(kv.Key))
-                {
-                    this.Conversation.Add(kv.Key, kv.Value);
-                }
-            }
-
-            foreach (var kv in resultContextState.Dialog)
-            {
-                if (!this.Dialog.ContainsKey(kv.Key))
-                {
-                    this.Dialog.Add(kv.Key, kv.Value);
-                }
-            }
-
-            // this.User = resultContextState.User;
-            // this.Conversation = resultContextState.Conversation;
-            // this.Dialog = resultContextState.Dialog;
+            current[segments.Last()] = value;
         }
 
         public void Add(string key, object value)
@@ -205,7 +191,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public bool ContainsKey(string key)
         {
-            throw new NotImplementedException();
+            return this.Keys.Contains(key.ToLower());
         }
 
         public bool Remove(string key)
@@ -273,62 +259,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             throw new NotImplementedException();
         }
-    }
 
-    public static class JsonExtensions
-    {
-        public static JToken ReplacePath(this JToken root, string path, object newValue)
-        {
-            if (root == null || path == null)
-            {
-                throw new ArgumentNullException();
-            }
-
-            var tokens = root.SelectTokens(path).ToList();
-
-            // If the json path does not exist
-            if (tokens?.Count == 0)
-            {
-                string[] segments = path.Split('.');
-                var current = root;
-
-                for (int i = 0; i < segments.Length; i++)
-                {
-                    var segment = segments[i];
-                    if (current.Type == JTokenType.Object)
-                    {
-                        var currentObject = current as JObject;
-
-                        if (!currentObject.Children().Any(c => c.Type == JTokenType.Property && (c as JProperty).Name == segment))
-                        {
-                            currentObject.Add(segment, i == segments.Length - 1 ? JToken.FromObject(newValue) : new JObject());
-                        }
-
-                        current = currentObject[segment];
-                    }
-                }
-            }
-            else
-            {
-                foreach (var value in tokens)
-                {
-                    if (value == root)
-                    {
-                        root = JToken.FromObject(newValue);
-                    }
-                    else
-                    {
-                        value.Replace(JToken.FromObject(newValue));
-                    }
-                }
-            }
-
-            return root;
-        }
-
-        public static string ReplacePath(string jsonString, string path, object newValue)
-        {
-            return JToken.Parse(jsonString).ReplacePath(path, newValue).ToString();
-        }
     }
 }

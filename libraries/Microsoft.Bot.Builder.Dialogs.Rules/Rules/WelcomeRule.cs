@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 {
     public class WelcomeRule : EventRule
     {
-        private const string welcomeProperty = "conversation.welcomed";
+        private const string welcomeProperty = "welcomed";
 
         public string WelcomeProperty { get; set; }
 
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
                 new FunctionExpression(async (vars) =>
                    {
                        // Have we already welcomed the user?
-                       if (planningContext.State.GetValue<bool>(welcomeProperty))
+                       if (planningContext.State.Conversation.TryGetValue(welcomeProperty, out object result))
                        {
                            // don't trigger
                            return false;
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
             //         This should be changed to a step that sets the property as part of the plan
             //         change made.  Just insert the new step at the begining of the steps for the plan 
             //         change returned.
-            planning.State.SetValue(welcomeProperty, true);
+            planning.State.Conversation[welcomeProperty] = true;
 
             // add steps for the rule to the plan
             return base.OnExecuteAsync(planning);
