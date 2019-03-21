@@ -74,7 +74,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
             {
                 foreach (var unit in header)
                 {
-                    client.DefaultRequestHeaders.Add(unit.Key, unit.Value);
+                    client.DefaultRequestHeaders.Add(
+                        await new TextTemplate(unit.Key).BindToData(dc.Context, dc.State, (property, data) => dc.State.GetValue<object>(data, property)),
+                        await new TextTemplate(unit.Value).BindToData(dc.Context, dc.State, (property, data) => dc.State.GetValue<object>(data, property)));
                 }
             }
             HttpResponseMessage response = null;
