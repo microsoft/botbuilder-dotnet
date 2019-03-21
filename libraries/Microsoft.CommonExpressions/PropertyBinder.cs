@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Expressions
 {
@@ -34,6 +35,11 @@ namespace Microsoft.Expressions
             else if (instance.GetType().IsArray)
             {
                 return ((Array)instance).GetValue((int)property);
+            }
+            else if (instance is JObject)
+            {
+                var jObj = instance as JObject;
+                return jObj[property] ?? null;
             }
             return Reflection(instance, property);
         };
