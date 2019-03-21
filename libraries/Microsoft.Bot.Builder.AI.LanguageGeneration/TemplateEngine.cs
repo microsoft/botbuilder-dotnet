@@ -6,6 +6,8 @@ using System.IO;
 using System.Diagnostics;
 using System.Linq;
 using Antlr4.Runtime.Misc;
+using Microsoft.Bot.Builder.AI.LanguageGeneration.Analyzer;
+using Microsoft.Bot.Builder.AI.LanguageGeneration.Checker;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
@@ -74,6 +76,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             {
                 // Extact name
                 var templateName = template.templateNameLine().templateName().GetText();
+
+                if (template.templateBody() == null)
+                {
+                    throw new LGParserException($"There is no template body in template {templateName}");
+                }
+
                 if (!templateContexts.ContainsKey(templateName))
                 {
                     templateContexts[templateName] = template;
@@ -88,23 +96,36 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 var parameters = template.templateNameLine().parameters();
                 if (parameters != null)
                 {
+                    if (parameters.CLOSE_PARENTHESIS() == null
+                        || parameters.OPEN_PARENTHESIS() == null)
+                    {
+                        throw new LGParserException($"parameters: {parameters.GetText()} format error");
+                    }
                     templateParameters[templateName] = parameters.IDENTIFIER().Select(x => x.GetText()).ToList();
                 }
             }
             evaluationContext = new EvaluationContext(templateContexts, templateParameters);
+            
+            //static check LG file
+            CheckLgFile();
         }
         
         public string EvaluateTemplate(string templateName, object scope, IGetValue valueBinder = null, IGetMethod methodBinder = null)
         {
-
             var evaluator = new Evaluator(evaluationContext, methodBinder, valueBinder);
             return evaluator.EvaluateTemplate(templateName, scope);
         }
 
         public List<string> AnalyzeTemplate(string templateName)
         {
-            var analyzer = new Analyzer(evaluationContext);
+            var analyzer = new AnalyzerEngine(evaluationContext);
             return analyzer.AnalyzeTemplate(templateName);
+        }
+
+        public void CheckLgFile()
+        {
+            var checker = new LGFileChecker(evaluationContext);
+            checker.Check();
         }
 
 
@@ -147,11 +168,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             }
             catch (Exception e)
             {
-                throw e;
+                throw new LGParserException(e.Message);
             }
             
         }
-
 
         /// <summary>
         /// Make this a signleton ? or give a better name
@@ -191,7 +211,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             }
             catch (Exception e)
             {
-                throw e;
+                throw new LGParserException(e.Message);
             }
         }
     }

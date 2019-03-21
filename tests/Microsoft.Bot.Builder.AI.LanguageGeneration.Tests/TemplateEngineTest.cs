@@ -208,17 +208,17 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var engine = TemplateEngine.FromFile(GetExampleFilePath("MultilineTextForAdaptiveCard.lg"));
             var evaled1 = engine.EvaluateTemplate("wPhrase", "");
-            var options1 = new List<string> { "\r\ncardContent\r\n", "hello" };
+            var options1 = new List<string> { "\r\ncardContent\r\n", "hello", "\ncardContent\n" };
             Assert.IsTrue(options1.Contains(evaled1), $"Evaled is {evaled1}");
 
             var evaled2 = engine.EvaluateTemplate("nameTemplate", new { name = "N" });
-            var options2 = new List<string> { "\r\nN\r\n", "N" };
+            var options2 = new List<string> { "\r\nN\r\n", "N" , "\nN\n" };
             Assert.IsTrue(options2.Contains(evaled2), $"Evaled is {evaled2}");
 
             var evaled3 = engine.EvaluateTemplate("adaptivecardsTemplate", "");
 
             var evaled4 = engine.EvaluateTemplate("refTemplate", "");
-            var options4 = new List<string> { "\r\nhi\r\n" };
+            var options4 = new List<string> { "\r\nhi\r\n" , "\nhi\n" };
             Assert.IsTrue(options4.Contains(evaled4), $"Evaled is {evaled4}");
         }
 
@@ -245,9 +245,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var engine = TemplateEngine.FromFile(GetExampleFilePath("EscapeCharacter.lg"));
             var evaled1 = engine.EvaluateTemplate("wPhrase", null);
             Assert.AreEqual(evaled1, "Hi \r\n\t[]{}\\");
-
-            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("wPhrase2", null));
-            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("wPhrase3", null));
         }
 
 
@@ -269,35 +266,19 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var evaled3 = engine.AnalyzeTemplate("template1");
             var evaled3Options = new List<string> { "alarms", "tasks", "age","other" };
             Assert.IsTrue(evaled3.All(evaled3Options.Contains) && evaled3.Count == evaled3Options.Count);
-
         }
 
+        
         [TestMethod]
         public void TestExceptionCatch()
         {
             var engine = TemplateEngine.FromFile(GetExampleFilePath("ExceptionCatch.lg"));
 
-            //There is no template body in template EmptyTemplate
-            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("EmptyTemplate", null));
-
-            //parameters: (errorparams format error
-            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("templateRef", null));
-
             //instance  does not have property Name
-            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("template2", null));
+            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("NoVariableMatch", null));
 
             //instance objecta does not have property property1
-            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("template3", new { a = "objecta"}));
-
-            //Case condition -CASE:hi should have expression body
-            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("template4", null));
-
-            //Case -CASE:{number == 1} should have template body
-            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("template5", new { number = 1}));
-
-            //Default rule -DEFAULT: should have template body
-            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("template6", new { number = 1 }));
+            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("NoPropertyMatch", new { a = "objecta"}));
         }
-
     }
 }

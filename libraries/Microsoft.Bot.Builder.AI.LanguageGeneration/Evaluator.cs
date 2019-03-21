@@ -22,10 +22,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         public string TemplateName { get; set; }
         public object Scope { get; set; }
     }
+
     class Evaluator: LGFileParserBaseVisitor<string>
     { 
         public readonly EvaluationContext Context;
-
         private readonly IGetMethod GetMethodX;
         private readonly IGetValue GetValueX;
 
@@ -42,11 +42,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
         public string EvaluateTemplate(string templateName, object scope)
         {
-            if (!Context.TemplateContexts.ContainsKey(templateName))
-            {
-                throw new Exception($"No such template: {templateName}");
-            }
-
             if (evalutationTargetStack.Any(e => e.TemplateName == templateName))
             { 
                 throw new Exception($"Loop detected: {String.Join(" => ", evalutationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
@@ -54,7 +49,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
             // Using a stack to track the evalution trace
             evalutationTargetStack.Push(new EvaluationTarget(templateName, scope)); 
-            string result = Visit(Context.TemplateContexts[templateName]);
+            var result = Visit(Context.TemplateContexts[templateName]);
             evalutationTargetStack.Pop();
 
             return result;
@@ -62,31 +57,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
         public override string VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
         {
-            var parameters = context.templateNameLine().parameters();
-            if (parameters != null)
-            {
-                if (parameters.CLOSE_PARENTHESIS() == null
-                    || parameters.OPEN_PARENTHESIS() == null)
-                {
-                    throw new Exception($"parameters: {parameters.GetText()} format error");
-                }
-            }
-
             var templateNameContext = context.templateNameLine();
             if (templateNameContext.templateName().GetText().Equals(CurrentTarget().TemplateName))
             {
-                if(context.templateBody() == null)
-                {
-                    throw new Exception($"There is no template body in template {CurrentTarget().TemplateName}");
-                }
                 return Visit(context.templateBody());
             }
             return null;
-        }
-
-        public override string VisitNormalBody([NotNull] LGFileParser.NormalBodyContext context)
-        {
-            return Visit(context.normalTemplateBody());
         }
 
         public override string VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
@@ -101,19 +77,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var caseRules = context.conditionalTemplateBody().caseRule();
             foreach (var caseRule in caseRules)
             {
-                
-                if (caseRule.caseCondition().EXPRESSION() == null
-                    || caseRule.caseCondition().EXPRESSION().Length == 0)
-                {
-                    throw new Exception($"Case condition {caseRule.caseCondition().GetText()} should have expression body");
-                }
                 var conditionExpression = caseRule.caseCondition().EXPRESSION(0).GetText();
                 if (EvalCondition(conditionExpression))
                 {
-                    if (caseRule.normalTemplateBody() == null)
-                    {
-                        throw new Exception($"Case {caseRule.GetText()} should have template body");
-                    }
                     return Visit(caseRule.normalTemplateBody());
                 }
             }
@@ -121,11 +87,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var defaultRule = context?.conditionalTemplateBody()?.defaultRule();
             if (defaultRule == null)
                 return null;
-
-            if (defaultRule.normalTemplateBody() == null)
-            {
-                throw new Exception($"Default rule {defaultRule.GetText()} should have template body");
-            }
 
             return Visit(defaultRule.normalTemplateBody());
         }
@@ -143,8 +104,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     case LGFileParser.ESCAPE_CHARACTER:
                         builder.Append(EvalEscapeCharacter(node.GetText()));
                         break;
-                    case LGFileParser.INVALID_ESCAPE:
-                        throw new Exception($"escape character {node.GetText()} is invalid");
                     case LGFileParser.EXPRESSION:
                         builder.Append(EvalExpression(node.GetText()));
                         break;
@@ -177,11 +136,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 { @"\}","}"},
             };
 
-            if (validCharactersDict.ContainsKey(exp))
-                return validCharactersDict[exp];
-
-            throw new Exception($"escape character {exp} is invalid");
-
+            return validCharactersDict[exp];
         }
 
         private bool EvalCondition(string exp)
@@ -223,10 +178,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             {
                 // EvaluateTemplate all arguments using ExpressoinEngine
                 var argsEndPos = exp.LastIndexOf(')');
-                if (argsEndPos < 0 || argsEndPos < argsStartPos+1)
-                {
-                    throw new Exception($"Not a valid template ref: {exp}");
-                }
+               
                 var argExpressions = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(',');
                 var args = argExpressions.Select(x => EvalByExpressionEngine(x, CurrentTarget().Scope)).ToList();
 
@@ -287,11 +239,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             }
 
             var paramters = ExtractParameters(templateName);
-
-            if (paramters.Count != args.Count)
-            {
-                throw new Exception($"Arguments count mismatch for template ref {templateName}, expected {paramters.Count}, actual {args.Count}");
-            }
 
             var newScope = paramters.Zip(args, (k, v) => new { k, v })
                                     .ToDictionary(x => x.k, x => x.v);

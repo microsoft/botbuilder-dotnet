@@ -1,0 +1,4 @@
+﻿> Condition format error, should throw exception
+# template
+- CASE: hi
+    - hello

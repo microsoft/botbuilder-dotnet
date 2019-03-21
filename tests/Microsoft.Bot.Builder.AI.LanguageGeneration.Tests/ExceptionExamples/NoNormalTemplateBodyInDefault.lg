@@ -1,0 +1,6 @@
+﻿
+> Should throw exception when there is no normal template body in default block
+# template
+- CASE: {number == 2}
+    - hello
+- DEFAULT: 

@@ -1,38 +1,11 @@
-﻿> This demo is used to catch exceptions throw by runtime
-
-> Error template
-# EmptyTemplate
-
-> Error template parameters
-# templateRef
-- [template1('hi')]
-
-# template1(errorparams
-- hello
-
+﻿
 > Should throw exception when Name is undefinied
-# template2
+# NoVariableMatch
 - {Name}
 
 > Should throw exception when variable has no such property
-# template3
+# NoPropertyMatch
 - {a.property1}
-
-> Condition format error, should throw exception
-# template4
-- CASE: hi
-    - hello
-
-> Should throw exception when there is no normal template body in condition block
-# template5
-- CASE: {number == 1}
-
-> Should throw exception when there is no normal template body in default block
-# template6
-- CASE: {number == 2}
-    - hello
-- DEFAULT: 
-
 
 
 

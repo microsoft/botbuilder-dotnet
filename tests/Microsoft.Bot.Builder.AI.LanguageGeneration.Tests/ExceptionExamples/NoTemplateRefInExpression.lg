@@ -1,0 +1,5 @@
+﻿# template
+- {humanize(alarms, ShowAlarm, ',', 'and')}
+
+# template2
+- hi

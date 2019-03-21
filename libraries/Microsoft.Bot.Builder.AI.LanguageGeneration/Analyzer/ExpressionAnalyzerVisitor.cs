@@ -3,7 +3,7 @@ using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Microsoft.Expressions;
 
-namespace Microsoft.Bot.Builder.AI.LanguageGeneration
+namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Analyzer
 {
     public class ExpressionAnalyzerVisitor : ExpressionBaseVisitor<List<string>>
     {
@@ -48,13 +48,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 }
                 else
                 {
-                    if (functionName == "foreach" //foreach(var,templateRef)
-                        || functionName == "map"//map(var,templateRef)
+                    if (functionName == "foreach" //foreach(var,template)
+                        || functionName == "map"//map(var,template)
                         || functionName == "mapjoin" //mapjoin(var,template,',')
                         || functionName == "humanize") //humanize(var,template,',')
                     {
                         result.AddRange(Visit(args.expression(0)));
-                        var analyzer = new Analyzer(EvaluationContext);
+                        var analyzer = new AnalyzerEngine(EvaluationContext);
                         result.AddRange(analyzer.AnalyzeTemplate(args.expression(1).GetText()));
                         if(args.expression().Length > 2)
                         {
@@ -75,12 +75,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
                 var functionName = memberAccessExp.IDENTIFIER().GetText();
 
-                if (functionName == "foreach" //var.foreach(templateRef)
-                    || functionName == "map"  //var.map(templateRef)
+                if (functionName == "foreach" //var.foreach(template)
+                    || functionName == "map"  //var.map(template)
                     || functionName == "mapjoin" //var.mapjoin(template,',')
                     || functionName == "humanize") //var.humanize(template,',')
                 {
-                    var analyzer = new Analyzer(EvaluationContext);
+                    var analyzer = new AnalyzerEngine(EvaluationContext);
                     result.AddRange(analyzer.AnalyzeTemplate(args.expression(0).GetText()));
                     if (args.expression().Length > 1)
                     {

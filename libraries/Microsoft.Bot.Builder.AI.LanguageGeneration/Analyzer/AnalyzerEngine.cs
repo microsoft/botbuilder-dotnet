@@ -6,9 +6,9 @@ using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Microsoft.Expressions;
 
-namespace Microsoft.Bot.Builder.AI.LanguageGeneration
+namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Analyzer
 {
-    public class Analyzer : LGFileParserBaseVisitor<List<string>>
+    public class AnalyzerEngine : LGFileParserBaseVisitor<List<string>>
     {
         public readonly EvaluationContext Context;
 
@@ -19,18 +19,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return evalutationTargetStack.Peek();
         }
                  
-        public Analyzer(EvaluationContext context)
+        public AnalyzerEngine(EvaluationContext context)
         {
             Context = context;
         }
 
         public List<string> AnalyzeTemplate(string templateName)
         {
-            if (!Context.TemplateContexts.ContainsKey(templateName))
-            {
-                throw new Exception($"No such template: {templateName}");
-            }
-
             if (evalutationTargetStack.Any(e => e.TemplateName == templateName))
             {
                 throw new Exception($"Loop detected: {String.Join(" => ", evalutationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
@@ -55,18 +50,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var templateNameContext = context.templateNameLine();
             if (templateNameContext.templateName().GetText().Equals(CurrentTarget().TemplateName))
             {
-                if (context.templateBody() == null)
+                if (context.templateBody() != null)
                 {
-                    throw new Exception($"There is no template body in template {CurrentTarget().TemplateName}");
+                    return Visit(context.templateBody());
                 }
-                return Visit(context.templateBody());
             }
             throw new Exception("template name match failed");
-        }
-
-        public override List<string> VisitNormalBody([NotNull] LGFileParser.NormalBodyContext context)
-        {
-            return Visit(context.normalTemplateBody());
         }
 
         public override List<string> VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
@@ -163,11 +152,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             {
                 // EvaluateTemplate all arguments using ExpressoinEngine
                 var argsEndPos = exp.LastIndexOf(')');
-                if (argsEndPos < 0 || argsEndPos < argsStartPos + 1)
-                {
-                    throw new Exception($"Not a valid template ref: {exp}");
-                }
-
                 var templateName = exp.Substring(0, argsStartPos);
 
                 return AnalyzeTemplate(templateName);
