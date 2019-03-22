@@ -16,14 +16,14 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Connector.Authentication
 {
     /// <summary>
-    /// MicrosoftAppCredentials auth implementation and cache
+    /// MicrosoftAppCredentials auth implementation and cache.
     /// </summary>
     public class MicrosoftAppCredentials : ServiceClientCredentials
     {
         /// <summary>
-        /// An empty set of credentials.
+        /// The configuration property for the Microsoft app Password.
         /// </summary>
-        public static readonly MicrosoftAppCredentials Empty = new MicrosoftAppCredentials(null, null);
+        public const string MicrosoftAppPasswordKey = "MicrosoftAppPassword";
 
         /// <summary>
         /// The configuration property for the Microsoft app ID.
@@ -31,33 +31,36 @@ namespace Microsoft.Bot.Connector.Authentication
         public const string MicrosoftAppIdKey = "MicrosoftAppId";
 
         /// <summary>
-        /// The configuration property for the Microsoft app Password.
+        /// An empty set of credentials.
         /// </summary>
-        public const string MicrosoftAppPasswordKey = "MicrosoftAppPassword";
+        public static readonly MicrosoftAppCredentials Empty = new MicrosoftAppCredentials(null, null);
 
         private static readonly IDictionary<string, DateTime> TrustedHostNames = new Dictionary<string, DateTime>()
         {
             // { "state.botframework.com", DateTime.MaxValue }, // deprecated state api
-            { "api.botframework.com", DateTime.MaxValue},       // bot connector API
+            { "api.botframework.com", DateTime.MaxValue },       // bot connector API
             { "token.botframework.com", DateTime.MaxValue },    // oauth token endpoint
-            { "api.botframework.us", DateTime.MaxValue},        // bot connector API in US Government DataCenters
-            { "token.botframework.us", DateTime.MaxValue }      // oauth token endpoint in US Government DataCenters
+            { "api.botframework.us", DateTime.MaxValue },        // bot connector API in US Government DataCenters
+            { "token.botframework.us", DateTime.MaxValue },      // oauth token endpoint in US Government DataCenters
         };
 
         /// <summary>
-        /// Authenticator abstraction used to obtain tokens through the Client Credentials OAuth 2.0 flow
+        /// Authenticator abstraction used to obtain tokens through the Client Credentials OAuth 2.0 flow.
         /// </summary>
         private readonly Lazy<AdalAuthenticator> authenticator;
 
         /// <summary>
-        /// Creates a new instance of the <see cref="MicrosoftAppCredentials"/> class.
+        /// Initializes a new instance of the <see cref="MicrosoftAppCredentials"/> class.
         /// </summary>
         /// <param name="appId">The Microsoft app ID.</param>
         /// <param name="password">The Microsoft app password.</param>
-        public MicrosoftAppCredentials(string appId, string password) : this(appId, password, null) { }
+        public MicrosoftAppCredentials(string appId, string password)
+            : this(appId, password, null)
+        {
+        }
 
         /// <summary>
-        /// Creates a new instance of the <see cref="MicrosoftAppCredentials"/> class.
+        /// Initializes a new instance of the <see cref="MicrosoftAppCredentials"/> class.
         /// </summary>
         /// <param name="appId">The Microsoft app ID.</param>
         /// <param name="password">The Microsoft app password.</param>
@@ -67,7 +70,8 @@ namespace Microsoft.Bot.Connector.Authentication
             this.MicrosoftAppId = appId;
             this.MicrosoftAppPassword = password;
 
-            authenticator = new Lazy<AdalAuthenticator>(() =>
+            authenticator = new Lazy<AdalAuthenticator>(
+                () =>
                 new AdalAuthenticator(
                     new ClientCredential(MicrosoftAppId, MicrosoftAppPassword),
                     new OAuthConfiguration() { Authority = OAuthEndpoint, Scope = OAuthScope },
@@ -78,22 +82,40 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// Gets or sets the Microsoft app ID for this credential.
         /// </summary>
+        /// <value>
+        /// The Microsoft app ID for this credential.
+        /// </value>
         public string MicrosoftAppId { get; set; }
 
         /// <summary>
         /// Gets or sets the Microsoft app password for this credential.
         /// </summary>
+        /// <value>
+        /// The Microsoft app password for this credential.
+        /// </value>
         public string MicrosoftAppPassword { get; set; }
 
         /// <summary>
         /// Gets the OAuth endpoint to use.
         /// </summary>
-        public virtual string OAuthEndpoint { get { return AuthenticationConstants.ToChannelFromBotLoginUrl; } }
+        /// <value>
+        /// The OAuth endpoint to use.
+        /// </value>
+        public virtual string OAuthEndpoint
+        {
+            get { return AuthenticationConstants.ToChannelFromBotLoginUrl; }
+        }
 
         /// <summary>
         /// Gets the OAuth scope to use.
         /// </summary>
-        public virtual string OAuthScope { get { return AuthenticationConstants.ToChannelFromBotOAuthScope; } }
+        /// <value>
+        /// The OAuth scope to use.
+        /// </value>
+        public virtual string OAuthScope
+        {
+            get { return AuthenticationConstants.ToChannelFromBotOAuthScope; }
+        }
 
         /// <summary>
         /// Adds the host of service url to <see cref="MicrosoftAppCredentials"/> trusted hosts.
@@ -121,7 +143,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// Checks if the service url is for a trusted host or not.
         /// </summary>
-        /// <param name="serviceUrl">The service url</param>
+        /// <param name="serviceUrl">The service url.</param>
         /// <returns>True if the host of the service url is trusted; False otherwise.</returns>
         public static bool IsTrustedServiceUrl(string serviceUrl)
         {
@@ -129,6 +151,7 @@ namespace Microsoft.Bot.Connector.Authentication
             {
                 return IsTrustedUrl(uri);
             }
+
             return false;
         }
 
@@ -136,6 +159,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// Apply the credentials to the HTTP request.
         /// </summary>
         /// <param name="request">The HTTP request.</param><param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task ProcessHttpRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             if (ShouldSetToken(request))
@@ -143,6 +167,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 string token = await this.GetTokenAsync().ConfigureAwait(false);
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
+
             await base.ProcessHttpRequestAsync(request, cancellationToken).ConfigureAwait(false);
         }
 
@@ -159,17 +184,6 @@ namespace Microsoft.Bot.Connector.Authentication
             return token.AccessToken;
         }
 
-        private bool ShouldSetToken(HttpRequestMessage request)
-        {
-            if (IsTrustedUrl(request.RequestUri))
-            {
-                return true;
-            }
-
-            System.Diagnostics.Debug.WriteLine($"Service url {request.RequestUri.Authority} is not trusted and JwtToken cannot be sent to it.");
-            return false;
-        }
-
         private static bool IsTrustedUrl(Uri uri)
         {
             lock (TrustedHostNames)
@@ -182,8 +196,20 @@ namespace Microsoft.Bot.Connector.Authentication
                         return true;
                     }
                 }
+
                 return false;
             }
+        }
+
+        private bool ShouldSetToken(HttpRequestMessage request)
+        {
+            if (IsTrustedUrl(request.RequestUri))
+            {
+                return true;
+            }
+
+            System.Diagnostics.Debug.WriteLine($"Service url {request.RequestUri.Authority} is not trusted and JwtToken cannot be sent to it.");
+            return false;
         }
     }
 }

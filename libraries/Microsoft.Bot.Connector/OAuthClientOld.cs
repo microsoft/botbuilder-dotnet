@@ -25,28 +25,36 @@ namespace Microsoft.Bot.Connector
         private readonly string _uri;
 
         /// <summary>
-        /// The default endpoint that is used for API requests.
-        /// </summary>
-        public static string OAuthEndpoint { get; set; } = AuthenticationConstants.OAuthUrl;
-
-
-        /// <summary>
-        /// When using the Emulator, whether to emulate the OAuthCard behavior or use connected flows
-        /// </summary>
-        public static bool EmulateOAuthCards { get; set; } = false;
-
-        /// <summary>
-        /// Initializes an new instance of the <see cref="OAuthClient"/> class.
+        /// Initializes a new instance of the <see cref="OAuthClientOld"/> class.
         /// </summary>
         /// <param name="client">The Bot Connector REST client to use.</param>
         /// <param name="uri">The URL to use to get a token.</param>
         public OAuthClientOld(ConnectorClient client, string uri)
         {
-            if (!(Uri.TryCreate(uri, UriKind.Absolute, out var uriResult)))
+            if (!Uri.TryCreate(uri, UriKind.Absolute, out var uriResult))
+            {
                 throw new ArgumentException("Please supply a valid https uri");
+            }
+
             _client = client ?? throw new ArgumentNullException(nameof(client));
             _uri = uri;
         }
+
+        /// <summary>
+        /// Gets or sets the default endpoint that is used for API requests.
+        /// </summary>
+        /// <value>
+        /// The default endpoint that is used for API requests.
+        /// </value>
+        public static string OAuthEndpoint { get; set; } = AuthenticationConstants.OAuthUrl;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether when using the Emulator, whether to emulate the OAuthCard behavior or use connected flows.
+        /// </summary>
+        /// <value>
+        /// When using the Emulator, whether to emulate the OAuthCard behavior or use connected flows.
+        /// </value>
+        public static bool EmulateOAuthCards { get; set; } = false;
 
         /// <summary>
         /// Gets a user token for a given user and connection.
@@ -54,7 +62,7 @@ namespace Microsoft.Bot.Connector
         /// <param name="userId">The user's ID.</param>
         /// <param name="connectionName">Name of the auth connection to use.</param>
         /// <param name="magicCode">The user entered code to validate.</param>
-        /// <param name="customHeaders"></param>
+        /// <param name="customHeaders">customHeaders.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
@@ -65,6 +73,7 @@ namespace Microsoft.Bot.Connector
             {
                 throw new ArgumentNullException(nameof(userId));
             }
+
             if (string.IsNullOrWhiteSpace(connectionName))
             {
                 throw new ArgumentNullException(nameof(connectionName));
@@ -83,8 +92,9 @@ namespace Microsoft.Bot.Connector
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 ServiceClientTracing.Enter(invocationId, this, "GetUserTokenAsync", tracingParameters);
             }
+
             // Construct URL
-            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/") ? "" : "/")), "api/usertoken/GetToken?userId={userId}&connectionName={connectionName}{magicCodeParam}").ToString();
+            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/") ? string.Empty : "/")), "api/usertoken/GetToken?userId={userId}&connectionName={connectionName}{magicCodeParam}").ToString();
             tokenUrl = tokenUrl.Replace("{connectionName}", Uri.EscapeDataString(connectionName));
             tokenUrl = tokenUrl.Replace("{userId}", Uri.EscapeDataString(userId));
             if (!string.IsNullOrEmpty(magicCode))
@@ -93,7 +103,7 @@ namespace Microsoft.Bot.Connector
             }
             else
             {
-                tokenUrl = tokenUrl.Replace("{magicCodeParam}", String.Empty);
+                tokenUrl = tokenUrl.Replace("{magicCodeParam}", string.Empty);
             }
 
             // Create HTTP transport objects
@@ -108,17 +118,20 @@ namespace Microsoft.Bot.Connector
                 cancellationToken.ThrowIfCancellationRequested();
                 await _client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             }
+
             cancellationToken.ThrowIfCancellationRequested();
 
             if (shouldTrace)
             {
                 ServiceClientTracing.SendRequest(invocationId, httpRequest);
             }
+
             httpResponse = await _client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             if (shouldTrace)
             {
                 ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
             }
+
             HttpStatusCode statusCode = httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
             if (statusCode == HttpStatusCode.OK)
@@ -137,6 +150,7 @@ namespace Microsoft.Bot.Connector
                     {
                         httpResponse.Dispose();
                     }
+
                     return null;
                 }
             }
@@ -180,12 +194,13 @@ namespace Microsoft.Bot.Connector
             }
 
             // Construct URL
-            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/") ? "" : "/")), "api/usertoken/SignOut?&userId={userId}{connectionNameParam}").ToString();
-            tokenUrl = tokenUrl.Replace("{connectionNameParam}", string.IsNullOrEmpty(connectionName) ? 
-                String.Empty : 
-                $"&connectionName={Uri.EscapeDataString(connectionName)}");
+            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/") ? string.Empty : "/")), "api/usertoken/SignOut?&userId={userId}{connectionNameParam}").ToString();
+            var connectionNameUri = $"&connectionName={Uri.EscapeDataString(connectionName)}";
+            tokenUrl = tokenUrl.Replace(
+                "{connectionNameParam}",
+                string.IsNullOrEmpty(connectionName) ? string.Empty : connectionNameUri);
             tokenUrl = tokenUrl.Replace("{userId}", Uri.EscapeDataString(userId));
-            
+
             // Create HTTP transport objects
             var httpRequest = new HttpRequestMessage();
             HttpResponseMessage httpResponse = null;
@@ -198,21 +213,23 @@ namespace Microsoft.Bot.Connector
                 cancellationToken.ThrowIfCancellationRequested();
                 await _client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             }
+
             cancellationToken.ThrowIfCancellationRequested();
 
             if (shouldTrace)
             {
                 ServiceClientTracing.SendRequest(invocationId, httpRequest);
             }
+
             httpResponse = await _client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             if (shouldTrace)
             {
                 ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
             }
 
-            HttpStatusCode _statusCode = httpResponse.StatusCode;
+            HttpStatusCode statusCode = httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
-            if (_statusCode == HttpStatusCode.OK)
+            if (statusCode == HttpStatusCode.OK)
             {
                 return true;
             }
@@ -252,12 +269,12 @@ namespace Microsoft.Bot.Connector
             }
 
             // Construct URL
-            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/") ? "" : "/")), "api/botsignin/getsigninurl?&state={state}{finalRedirectParam}").ToString();
+            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/") ? string.Empty : "/")), "api/botsignin/getsigninurl?&state={state}{finalRedirectParam}").ToString();
             tokenUrl = tokenUrl.Replace("{state}", state);
-            tokenUrl = tokenUrl.Replace("{finalRedirectParam}", string.IsNullOrEmpty(finalRedirect) ?
-                String.Empty :
-                $"&finalRedirect={Uri.EscapeDataString(finalRedirect)}");
-            
+            tokenUrl = tokenUrl.Replace(
+                "{finalRedirectParam}",
+                string.IsNullOrEmpty(finalRedirect) ? string.Empty : $"&finalRedirect={Uri.EscapeDataString(finalRedirect)}");
+
             // Create HTTP transport objects
             var httpRequest = new HttpRequestMessage();
             HttpResponseMessage httpResponse = null;
@@ -270,12 +287,14 @@ namespace Microsoft.Bot.Connector
                 cancellationToken.ThrowIfCancellationRequested();
                 await _client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             }
+
             cancellationToken.ThrowIfCancellationRequested();
 
             if (shouldTrace)
             {
                 ServiceClientTracing.SendRequest(invocationId, httpRequest);
             }
+
             httpResponse = await _client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             if (shouldTrace)
             {
@@ -289,16 +308,17 @@ namespace Microsoft.Bot.Connector
                 var link = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 return link;
             }
-            return String.Empty;
+
+            return string.Empty;
         }
 
         /// <summary>
-        /// Get the status of tokens for connections for this bot for a particular user
+        /// Get the status of tokens for connections for this bot for a particular user.
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="includeFilter">A comma seperated list of connections to include. If null, then all connections are returned</param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="userId">User id.</param>
+        /// <param name="includeFilter">A comma seperated list of connections to include. If null, then all connections are returned.</param>
+        /// <param name="cancellationToken">Cancellation Token.</param>
+        /// <returns>TokenStatus.</returns>
         public async Task<TokenStatus[]> GetTokenStatusAsync(string userId, string includeFilter = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(userId))
@@ -320,7 +340,7 @@ namespace Microsoft.Bot.Connector
             }
 
             // Construct URL
-            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/") ? "" : "/")), "api/usertoken/gettokenstatus?userId={userId}{includeFilterParam}").ToString();
+            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/") ? string.Empty : "/")), "api/usertoken/gettokenstatus?userId={userId}{includeFilterParam}").ToString();
             tokenUrl = tokenUrl.Replace("{userId}", Uri.EscapeDataString(userId));
             if (!string.IsNullOrEmpty(includeFilter))
             {
@@ -328,21 +348,22 @@ namespace Microsoft.Bot.Connector
             }
             else
             {
-                tokenUrl = tokenUrl.Replace("{includeFilterParam}", String.Empty);
+                tokenUrl = tokenUrl.Replace("{includeFilterParam}", string.Empty);
             }
-            
+
             // Create HTTP transport objects
             var httpRequest = new HttpRequestMessage();
             HttpResponseMessage httpResponse = null;
             httpRequest.Method = new HttpMethod("GET");
             httpRequest.RequestUri = new Uri(tokenUrl);
-            
+
             // Set Credentials
             if (_client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 await _client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             }
+
             cancellationToken.ThrowIfCancellationRequested();
 
             if (shouldTrace)
@@ -375,6 +396,7 @@ namespace Microsoft.Bot.Connector
                     {
                         httpResponse.Dispose();
                     }
+
                     return null;
                 }
             }
@@ -393,7 +415,7 @@ namespace Microsoft.Bot.Connector
         /// </summary>
         /// <param name="userId">The user's ID.</param>
         /// <param name="connectionName">Name of the auth connection to use for AAD token exchange.</param>
-        /// <param name="resourceUrls">The collection of resource URLs for which to get tokens</param>
+        /// <param name="resourceUrls">The collection of resource URLs for which to get tokens.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
@@ -405,7 +427,7 @@ namespace Microsoft.Bot.Connector
             {
                 throw new ArgumentNullException(nameof(userId));
             }
-            
+
             if (string.IsNullOrEmpty(connectionName))
             {
                 throw new ArgumentNullException(nameof(connectionName));
@@ -415,7 +437,7 @@ namespace Microsoft.Bot.Connector
             {
                 throw new ArgumentNullException(nameof(resourceUrls));
             }
-            
+
             if (resourceUrls.Length == 0)
             {
                 throw new ArgumentException("Collection cannot be empty", nameof(resourceUrls));
@@ -440,7 +462,7 @@ namespace Microsoft.Bot.Connector
             }
 
             // Construct URL
-            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/") ? "" : "/")), "api/usertoken/GetAadTokens?userId={userId}&connectionName={connectionName}").ToString();
+            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/") ? string.Empty : "/")), "api/usertoken/GetAadTokens?userId={userId}&connectionName={connectionName}").ToString();
             tokenUrl = tokenUrl.Replace("{userId}", Uri.EscapeDataString(userId));
             tokenUrl = tokenUrl.Replace("{connectionName}", Uri.EscapeDataString(connectionName));
 
@@ -454,19 +476,21 @@ namespace Microsoft.Bot.Connector
             string requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(new AadResourceUrls() { ResourceUrls = resourceUrls }, _client.SerializationSettings);
             httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
             httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
-           
+
             // Set Credentials
             if (_client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 await _client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             }
+
             cancellationToken.ThrowIfCancellationRequested();
 
             if (shouldTrace)
             {
                 ServiceClientTracing.SendRequest(invocationId, httpRequest);
             }
+
             httpResponse = await _client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             if (shouldTrace)
             {
@@ -512,12 +536,14 @@ namespace Microsoft.Bot.Connector
                     {
                         // Ignore the exception
                     }
+
                     ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
                     ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
                     if (shouldTrace)
                     {
                         ServiceClientTracing.Error(invocationId, ex);
                     }
+
                     throw ex;
                 }
             }
@@ -549,8 +575,9 @@ namespace Microsoft.Bot.Connector
             }
 
             var cancellationToken = default(CancellationToken);
+
             // Construct URL
-            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/") ? "" : "/")), "api/usertoken/emulateOAuthCards?emulate={emulate}").ToString();
+            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/") ? string.Empty : "/")), "api/usertoken/emulateOAuthCards?emulate={emulate}").ToString();
             tokenUrl = tokenUrl.Replace("{emulate}", emulateOAuthCards.ToString());
 
             // Create HTTP transport objects
@@ -558,7 +585,7 @@ namespace Microsoft.Bot.Connector
             HttpResponseMessage httpResponse = null;
             httpRequest.Method = new HttpMethod("POST");
             httpRequest.RequestUri = new Uri(tokenUrl);
-            
+
             // Set Credentials
             if (_client.Credentials != null)
             {
@@ -569,6 +596,7 @@ namespace Microsoft.Bot.Connector
             {
                 ServiceClientTracing.SendRequest(invocationId, httpRequest);
             }
+
             httpResponse = await _client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             if (shouldTrace)
             {

@@ -9,16 +9,13 @@ namespace Microsoft.Bot.Connector.Authentication
 {
     public class RetryParams
     {
-        private const int maxRetries = 10;
+        private const int MaxRetries = 10;
         private static readonly TimeSpan MaxDelay = TimeSpan.FromSeconds(10);
         private static readonly TimeSpan DefaultBackOffTime = TimeSpan.FromMilliseconds(50);
 
-        public static RetryParams StopRetrying { get; } = new RetryParams() { ShouldRetry = false };
-
-        public bool ShouldRetry { get; set; }
-        public TimeSpan RetryAfter { get; set; }
-
-        public RetryParams() { }
+        public RetryParams()
+        {
+        }
 
         public RetryParams(TimeSpan retryAfter, bool shouldRetry = true)
         {
@@ -29,14 +26,20 @@ namespace Microsoft.Bot.Connector.Authentication
             if (RetryAfter > MaxDelay)
             {
                 // We don't want to throw here though - if the server asks for more delay
-                // than we are willing to, just enforce the upper bound for the delay 
+                // than we are willing to, just enforce the upper bound for the delay
                 RetryAfter = MaxDelay;
             }
         }
 
+        public static RetryParams StopRetrying { get; } = new RetryParams() { ShouldRetry = false };
+
+        public bool ShouldRetry { get; set; }
+
+        public TimeSpan RetryAfter { get; set; }
+
         public static RetryParams DefaultBackOff(int retryCount)
         {
-            if (retryCount < maxRetries)
+            if (retryCount < MaxRetries)
             {
                 return new RetryParams(DefaultBackOffTime);
             }

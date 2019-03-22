@@ -11,71 +11,65 @@ namespace Microsoft.Bot.Connector.Authentication
     public static class AuthenticationConstants
     {
         /// <summary>
-        /// TO CHANNEL FROM BOT: Login URL
+        /// TO CHANNEL FROM BOT: Login URL.
         /// </summary>
         public const string ToChannelFromBotLoginUrl = "https://login.microsoftonline.com/botframework.com";
 
         /// <summary>
-        /// TO CHANNEL FROM BOT: OAuth scope to request
+        /// TO CHANNEL FROM BOT: OAuth scope to request.
         /// </summary>
         public const string ToChannelFromBotOAuthScope = "https://api.botframework.com";
-        
+
         /// <summary>
-        /// TO BOT FROM CHANNEL: Token issuer
+        /// TO BOT FROM CHANNEL: Token issuer.
         /// </summary>
         public const string ToBotFromChannelTokenIssuer = "https://api.botframework.com";
-        
+
         /// <summary>
-        /// OAuth Url used to get a token from OAuthApiClient
+        /// OAuth Url used to get a token from OAuthApiClient.
         /// </summary>
         public const string OAuthUrl = "https://api.botframework.com";
-        
+
         /// <summary>
-        /// Application Setting Key for the OpenIdMetadataUrl value
+        /// Application Setting Key for the OpenIdMetadataUrl value.
         /// </summary>
         public const string BotOpenIdMetadataKey = "BotOpenIdMetadata";
-        
+
         /// <summary>
-        /// Application Setting Key for the OAuthUrl value
+        /// Application Setting Key for the OAuthUrl value.
         /// </summary>
         public const string OAuthUrlKey = "OAuthApiEndpoint";
-        
+
         /// <summary>
-        /// Application Settings Key for whether to emulate OAuthCards when using the emulator
+        /// Application Settings Key for whether to emulate OAuthCards when using the emulator.
         /// </summary>
         public const string EmulateOAuthCardsKey = "EmulateOAuthCards";
 
         /// <summary>
-        /// TO BOT FROM CHANNEL: OpenID metadata document for tokens coming from MSA
+        /// TO BOT FROM CHANNEL: OpenID metadata document for tokens coming from MSA.
         /// </summary>
         public const string ToBotFromChannelOpenIdMetadataUrl = "https://login.botframework.com/v1/.well-known/openidconfiguration";
-        
+
         /// <summary>
-        /// TO BOT FROM EMULATOR: OpenID metadata document for tokens coming from MSA
+        /// TO BOT FROM EMULATOR: OpenID metadata document for tokens coming from MSA.
         /// </summary>
         public const string ToBotFromEmulatorOpenIdMetadataUrl = "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration";
 
         /// <summary>
-        /// TO BOT FROM ENTERPRISE CHANNEL: OpenID metadata document for tokens coming from MSA
+        /// TO BOT FROM ENTERPRISE CHANNEL: OpenID metadata document for tokens coming from MSA.
         /// </summary>
         public const string ToBotFromEnterpriseChannelOpenIdMetadataUrlFormat = "https://{0}.enterprisechannel.botframework.com/v1/.well-known/openidconfiguration";
 
         /// <summary>
-        /// Allowed token signing algorithms. Tokens come from channels to the bot. The code
-        /// that uses this also supports tokens coming from the emulator.
-        /// </summary>
-        public static readonly HashSet<string> AllowedSigningAlgorithms = new HashSet<string>(new [] { "RS256", "RS384", "RS512" });
-
-        /// <summary>
-        /// "azp" Claim. 
-        /// Authorized party - the party to which the ID Token was issued. 
-        /// This claim follows the general format set forth in the OpenID Spec.         
-        ///     http://openid.net/specs/openid-connect-core-1_0.html#IDToken      
+        /// "azp" Claim.
+        /// Authorized party - the party to which the ID Token was issued.
+        /// This claim follows the general format set forth in the OpenID Spec.
+        ///     http://openid.net/specs/openid-connect-core-1_0.html#IDToken.
         /// </summary>
         public const string AuthorizedParty = "azp";
 
         /// <summary>
-        /// Audience Claim. From RFC 7519. 
+        /// Audience Claim. From RFC 7519.
         ///     https://tools.ietf.org/html/rfc7519#section-4.1.3
         /// The "aud" (audience) claim identifies the recipients that the JWT is
         /// intended for. Each principal intended to process the JWT MUST
@@ -118,5 +112,11 @@ namespace Microsoft.Bot.Connector.Authentication
         /// Service URL claim name. As used in Microsoft Bot Framework v3.1 auth.
         /// </summary>
         public const string ServiceUrlClaim = "serviceurl";
+
+        /// <summary>
+        /// Allowed token signing algorithms. Tokens come from channels to the bot. The code
+        /// that uses this also supports tokens coming from the emulator.
+        /// </summary>
+        public static readonly HashSet<string> AllowedSigningAlgorithms = new HashSet<string>(new[] { "RS256", "RS384", "RS512" });
     }
 }
