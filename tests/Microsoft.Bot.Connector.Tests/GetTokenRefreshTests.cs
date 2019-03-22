@@ -1,15 +1,15 @@
-﻿using System;
-using System.Text;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using System.Collections.Generic;
-using Microsoft.Bot.Connector;
 using System.Threading.Tasks;
-using Xunit;
 using Microsoft.Bot.Connector.Authentication;
+using Xunit;
 
 namespace Microsoft.Bot.Connector.Tests
 {
     /// <summary>
-    /// Summary description for UnitTest1
+    /// Description for UnitTest1.
     /// </summary>
     public class GetTokenRefreshTests
     {
@@ -24,7 +24,6 @@ namespace Microsoft.Bot.Connector.Tests
             var result = await credentials.GetTokenAsync();
             Assert.NotNull(result);
         }
-
 
         //[Fact]
         public async Task TokenTests_RefreshTokenWorks()
@@ -55,7 +54,10 @@ namespace Microsoft.Bot.Connector.Tests
                 string result = await item;
                 Assert.NotNull(result);
                 if (prevResult != null)
+                {
                     Assert.Equal(prevResult, result);
+                }
+
                 prevResult = result;
             }
 
@@ -63,17 +65,24 @@ namespace Microsoft.Bot.Connector.Tests
             for (int i = 0; i < 1000; i++)
             {
                 if (i % 100 == 50)
+                {
                     tasks.Add(credentials.GetTokenAsync(true));
+                }
                 else
+                {
                     tasks.Add(credentials.GetTokenAsync());
+                }
             }
 
             HashSet<string> results = new HashSet<string>();
-            for(int i=0; i < 1000; i++)
+            for (int i = 0; i < 1000; i++)
             {
                 string result = await tasks[i];
                 if (i == 0)
+                {
                     results.Add(result);
+                }
+
                 Assert.NotNull(result);
                 if (prevResult != null)
                 {
@@ -83,10 +92,11 @@ namespace Microsoft.Bot.Connector.Tests
                         results.Add(result);
                     }
                     else
+                    {
                         Assert.Contains(result, results);
+                    }
                 }
             }
-
         }
     }
 }

@@ -1,6 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
 using Xunit;
@@ -14,7 +15,7 @@ namespace Microsoft.Bot.Connector.Tests
         {
             FaultyClass faultyClass = new FaultyClass()
             {
-                ExceptionToThrow = null
+                ExceptionToThrow = null,
             };
 
             var result = await Retry.Run(
@@ -31,7 +32,7 @@ namespace Microsoft.Bot.Connector.Tests
             FaultyClass faultyClass = new FaultyClass()
             {
                 ExceptionToThrow = new ArgumentNullException(),
-                TriesUntilSuccess = 3
+                TriesUntilSuccess = 3,
             };
 
             var result = await Retry.Run(
@@ -48,43 +49,13 @@ namespace Microsoft.Bot.Connector.Tests
             FaultyClass faultyClass = new FaultyClass()
             {
                 ExceptionToThrow = new ArgumentNullException(),
-                TriesUntilSuccess = 12
+                TriesUntilSuccess = 12,
             };
 
-            await Assert.ThrowsAsync<AggregateException>(async () => 
+            await Assert.ThrowsAsync<AggregateException>(async () =>
                 await Retry.Run(
                     task: () => faultyClass.FaultyTask(),
                     retryExceptionHandler: (ex, ct) => faultyClass.ExceptionHandler(ex, ct)));
-        }
-    }
-
-    public class FaultyClass
-    {
-        public Exception ExceptionToThrow { get; set; }
-        public Exception ExceptionReceived { get; set; } = null;
-        public int LatestRetryCount { get; set; }
-        public int CallCount { get; set; } = 0;
-        public int TriesUntilSuccess { get; set; } = 0;
-
-
-        public async Task<string> FaultyTask()
-        {
-            CallCount++;
-
-            if (CallCount < TriesUntilSuccess && ExceptionToThrow != null)
-            {
-                throw ExceptionToThrow;
-            }
-
-            return string.Empty;
-        }
-
-        public RetryParams ExceptionHandler(Exception ex, int currentRetryCount)
-        {
-            ExceptionReceived = ex;
-            LatestRetryCount = currentRetryCount;
-
-            return RetryParams.DefaultBackOff(currentRetryCount);
         }
     }
 }
