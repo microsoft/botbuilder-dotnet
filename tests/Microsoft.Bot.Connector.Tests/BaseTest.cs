@@ -12,6 +12,7 @@ namespace Connector.Tests
     using Microsoft.Azure.Test.HttpRecorder;
     using Microsoft.Bot.Connector;
     using Microsoft.Bot.Connector.Authentication;
+    using Microsoft.Bot.Connector.Tests;
     using Microsoft.Bot.Schema;
     using Microsoft.Rest;
     using Microsoft.Rest.ClientRuntime.Azure.TestFramework;

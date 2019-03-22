@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Rest;
 
-namespace Connector.Tests
+namespace Microsoft.Bot.Connector.Tests
 {
 #pragma warning restore 162
 
