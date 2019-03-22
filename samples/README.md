@@ -4,7 +4,7 @@ of scoped memory which you can use. All memory properties are property bags, mea
 can store arbitrary information on them.
 
 ## User Memory
-User memory is persistent data scoped to the id of the user you con are conversing with.  
+User memory is persistent data scoped to the id of the user you are conversing with.  
     
 Example user memory expressions
 
