@@ -79,11 +79,12 @@ namespace Microsoft.Bot.Builder.Tests
                     Role = "bot",
                 },
             };
-            Task ContinueCallback(ITurnContext turnContext, CancellationToken cancellationToken)
+            Task continueCallback(ITurnContext turnContext, CancellationToken cancellationToken)
             {
                 callbackInvoked = true;
                 return Task.CompletedTask;
             }
+
             await adapter.ContinueConversationAsync("MyBot", cr, continueCallback, default(CancellationToken));
             Assert.IsTrue(callbackInvoked);
         }
@@ -106,7 +107,7 @@ namespace Microsoft.Bot.Builder.Tests
                 ServiceUrl = "https://test.com",
                 Conversation = new ConversationAccount
                 {
-                    ConversationType = "",
+                    ConversationType = string.Empty,
                     Id = "testConversationId",
                     IsGroup = false,
                     Name = "testConversationName",
@@ -124,6 +125,7 @@ namespace Microsoft.Bot.Builder.Tests
                 callbackInvoked = true;
                 return Task.CompletedTask;
             }
+
             await adapter.ContinueConversationAsync(null, cr, continueCallback, default(CancellationToken));
             Assert.IsTrue(callbackInvoked);
         }
@@ -146,7 +148,7 @@ namespace Microsoft.Bot.Builder.Tests
                 ServiceUrl = "https://test.com",
                 Conversation = new ConversationAccount
                 {
-                    ConversationType = "",
+                    ConversationType = string.Empty,
                     Id = "testConversationId",
                     IsGroup = false,
                     Name = "testConversationName",
@@ -164,12 +166,14 @@ namespace Microsoft.Bot.Builder.Tests
                 callbackInvoked = true;
                 return Task.CompletedTask;
             }
+
             await adapter.ContinueConversationAsync("AppId", cr, continueCallback, default(CancellationToken));
             Assert.IsTrue(callbackInvoked);
         }
 
     [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException),
+        [ExpectedException(
+            typeof(ArgumentNullException),
             "An AppId of null was inappropriately allowed.")]
         public async Task ContinueConversation_AppIdNullAsync()
         {
@@ -188,7 +192,7 @@ namespace Microsoft.Bot.Builder.Tests
                 ServiceUrl = "https://test.com",
                 Conversation = new ConversationAccount
                 {
-                    ConversationType = "",
+                    ConversationType = string.Empty,
                     Id = "testConversationId",
                     IsGroup = false,
                     Name = "testConversationName",
@@ -206,6 +210,7 @@ namespace Microsoft.Bot.Builder.Tests
                 callbackInvoked = true;
                 return Task.CompletedTask;
             }
+
             await adapter.ContinueConversationAsync(null, cr, continueCallback, default(CancellationToken));
             Assert.IsTrue(callbackInvoked);
         }
