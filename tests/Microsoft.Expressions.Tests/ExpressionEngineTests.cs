@@ -2,6 +2,7 @@
 using System.Linq;
 using Antlr4.Runtime;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 
 namespace Microsoft.Expressions.Tests
 {
@@ -62,6 +63,9 @@ namespace Microsoft.Expressions.Tests
             Test("not(one)", false),
             Test("not(not(one))", true),
             Test("not(0)", true),
+            Test("exist(one)", true),
+            Test("exist(xxx)", false),
+            Test("exist(one.xxx)", false),
 
         };
 
@@ -100,5 +104,6 @@ namespace Microsoft.Expressions.Tests
             var actual = ExpressionEngine.Evaluate(parsed, scope);
             Assert.AreEqual(expected, actual);
         }
+
     }
 }

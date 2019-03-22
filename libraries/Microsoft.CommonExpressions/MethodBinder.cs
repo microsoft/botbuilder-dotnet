@@ -39,6 +39,7 @@ namespace Microsoft.Expressions
             {"and", BuildinFunctions.And},
             {"or", BuildinFunctions.Or},
             {"not", BuildinFunctions.Not},
+            {"exist", BuildinFunctions.Exist},
         };
 
         /// <summary>

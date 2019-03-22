@@ -59,6 +59,7 @@ namespace Microsoft.Expressions.Tests
             Test("func()"), // no such func
             Test("add(five, six)"), // no such variables
             Test("a.b.c"), // eval error
+            Test("one.x.y"),// one.x is null, one.x.y is exception
         };
 
         [DataTestMethod]

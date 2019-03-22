@@ -77,6 +77,6 @@ namespace Microsoft.Expressions
                         operands[0] is int int0 ? int0 == 0 : operands[0] == null;
 
         public static EvaluationDelegate Exist = operands =>
-                        operands[0] == null;
+                        operands[0] != null;
     }
 }
