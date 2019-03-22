@@ -15,7 +15,7 @@
               "property": "user.name",
               "initialPrompt": "[Greeting.Name.initialPrompt]",
               "retryPrompt": "[Greeting.Name.retryPrompt]",
-              "notMatched": "[Greeting.Name.notMatched]"
+              "noMatchResponse": "[Greeting.Name.notMatched]"
             }
           ]
         },
