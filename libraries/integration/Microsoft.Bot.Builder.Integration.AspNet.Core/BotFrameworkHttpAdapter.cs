@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -43,11 +44,19 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             // grab the auth header from the inbound http request
             var authHeader = httpRequest.Headers["Authorization"];
 
-            // process the inbound activity with the bot
-            var invokeResponse = await ProcessActivityAsync(authHeader, activity, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
+            try
+            {
+                // process the inbound activity with the bot
+                var invokeResponse = await ProcessActivityAsync(authHeader, activity, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
-            // write the response, potentially serializing the InvokeResponse
-            HttpHelper.WriteResponse(httpResponse, invokeResponse);
+                // write the response, potentially serializing the InvokeResponse
+                HttpHelper.WriteResponse(httpResponse, invokeResponse);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // handle unauthorized here as this layer creates the http response
+                httpResponse.StatusCode = (int)HttpStatusCode.Unauthorized;
+            }
         }
     }
 }
