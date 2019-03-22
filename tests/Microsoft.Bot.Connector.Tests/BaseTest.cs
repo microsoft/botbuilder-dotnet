@@ -5,12 +5,9 @@ namespace Connector.Tests
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Net.Http;
-    using System.Net.Http.Headers;
     using System.Runtime.CompilerServices;
-    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Test.HttpRecorder;
     using Microsoft.Bot.Connector;
