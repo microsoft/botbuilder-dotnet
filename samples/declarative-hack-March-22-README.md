@@ -30,7 +30,7 @@ Currently, we are light on documentation. However, there are few samples to help
 ## What bot should I build?
 Feel free to explorer and follow any scenario you want. Form filling and task completion are the good candidate like Ice cream (or Pizza) ordering, managing lists of Todo, Alarm Bot; booking a table; etc.  In the process of creating your bot’s dialog, try to include new elements and combine different parts like LG, Memory and Decelerative. 
 
-## Hot to use AdaptiveDialog in Json
+## How to use AdaptiveDialog in Json
 
 - Enlist in botbuilder-dotnet
 - Checkout the ComposableDialog branch
@@ -43,8 +43,8 @@ Feel free to explorer and follow any scenario you want. Form filling and task co
 rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 11 - HttpRequest\HttpRequest.main.dialog"), resourceProvider);
 ```
 - Run the project and open in the emulator!
-- Editor hint: Visual Studio does not support our json schemas. Use Visual Studio Code to edit json files!
-- Troubleshooting: If your bot does not respond, double check that the port in which your bot is running matches the bot file in the project.
+- *Editor hint:* Visual Studio does not support our json schemas. Use Visual Studio Code to edit json files!
+- *Troubleshooting:* If your bot does not respond, double check that the port in which your bot is running matches the bot file in the project.
 
 ## How to use AdaptiveDialog in code
 
