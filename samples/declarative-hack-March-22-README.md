@@ -19,7 +19,7 @@ Currently, we are light on documentation. However, there are few samples to help
 -	The main [samples](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog/samples) folder include basic documentation for Memory, Input prompts and dialogs, and Rule base dialog system. 
 -	The [Microsoft.Bot.Bbuilder.Testbot.Json](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog/samples/Microsoft.Bot.Builder.TestBot.Json) folder include samples for LG and declarative dialogs.
 -   See [here](./LG-file-format.md) for an overivew of the LG file format. 
--	In Microsoft.Bot.Bbuilder.Testbot.Json , the [samples](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog/samples/Microsoft.Bot.Builder.TestBot.Json/Samples) folder includes a series of bots defined declaratively, showing the different dialog/ prompts and available steps. You can read more here.
+-	In Microsoft.Bot.Bbuilder.Testbot.Json , the [samples](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog/samples/Microsoft.Bot.Builder.TestBot.Json/Samples) folder includes a series of bots defined declaratively, showing the different dialog/ prompts and available steps. 
 -	The [LG](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog/samples/Microsoft.Bot.Builder.TestBot.Json/LG) folder includes list of .lg files explaining various features and functionality  of the new local LG library
 -	Checkout the [Supported types Cheat sheet](https://github.com/Microsoft/botbuilder-dotnet/blob/ComposableDialog/samples/README.md)
 
@@ -36,7 +36,13 @@ Feel free to explorer and follow any scenario you want. Form filling and task co
 - Enlist in botbuilder-js
 - Checkout stevenic/4.4-planning branch
 - AdaptiveDialog samples can be found [here](https://github.com/Microsoft/botbuilder-js/tree/stevenic/4.4-planning/samples)
-- Choose your favorite sample and start from there
+- From the root of the entire repo, make sure lerna is installed globally by using ```npm install -g lerna```
+- From the root of the entire repo, run ```lerna bootstrap --hoist``` to setup dependencies
+- From the root of the entire repo, run ```npm run build``` to setup dependencies
+- Choose your favorite sample under the samples directory
+- Navigate to the selected sample in a command line
+- On the sample directory ```npm run build```
+- On the sample directory ```npm run start``` to start the bot
 
 ## How to use AdaptiveDialog in Json
 
@@ -158,4 +164,42 @@ var convoState = new ConversationState(new MemoryStorage());
                         }
                     }
                 });
+```
+
+# Trying the LG sample
+
+The [Microsoft.Bot.Bbuilder.Testbot.Json](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog/samples/Microsoft.Bot.Builder.TestBot.Json) folder include samples for LG, see [here](./LG-file-format.md) for an overivew of the LG file format. 
+
+The code include a TestBotLG.cs that you can use to run and experiment with LG.  As this test botproject  is also used for running declarative dialogs, you will need to change Startup.cs and switch between which bot is used.  To do so, comment the line that return a new TestBot, and uncomment the line that returns TestBotLG. 
+
+```
+            services.AddBot<IBot>(
+                (IServiceProvider sp) =>
+                {
+                    // declarative Adaptive dialogs bot sample
+                    return new TestBot(accessors, botResourceManager);
+
+                    // LG bot sample
+                    // return new TestBotLG(accessors);
+                },
+
+```
+
+
+## Building the SDK tools locally
+To use DialogLint, DialogSchema, and DialogTracker tools, you will need to build the Botbuilder-tools SDK locally. 
+
+- Enlist in [botbuilder-tools](https://github.com/Microsoft/botbuilder-tools/tree/SchemaGen)
+- Checkout the SchemaGen branch
+- from root, run *npm run build*
+- from the tool folder, install the tool. For example: *npm i -g .* 
+
+```
+cd botbuilder-tools
+
+npm run build 
+
+cd .\packages\DialogLint\
+
+npm i -g .
 ```
