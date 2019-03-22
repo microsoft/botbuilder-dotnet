@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.Versioning;
@@ -63,7 +64,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 var packages = Path.GetFullPath("packages");
                 while (!Directory.Exists(packages) && Path.GetDirectoryName(packages) != Path.GetPathRoot(packages))
                 {
-                    packages = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(packages), @"..\packages"));
+                    var relativePackagesPath = @"..\packages";
+                    if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                        relativePackagesPath = @"../packages";
+                    }
+                    packages = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(packages), relativePackagesPath));
                     if (packages == null)
                     {
                         throw new ArgumentNullException("Can't find packages folder");
