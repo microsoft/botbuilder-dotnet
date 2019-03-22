@@ -171,7 +171,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public T GetValue<T>(object o, string pathExpression, T defaultValue = default(T))
         {
             JToken result = null;
-            if (o.GetType() == typeof(JArray))
+            if (o != null && o.GetType() == typeof(JArray))
             {
                 int index = 0;
                 if (int.TryParse(pathExpression, out index) && index < JArray.FromObject(o).Count)
