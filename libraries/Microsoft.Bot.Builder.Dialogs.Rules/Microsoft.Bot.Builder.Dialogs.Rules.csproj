@@ -68,6 +68,7 @@
     <None Remove="Schemas\Steps\Microsoft.ChangeList.schema" />
     <None Remove="Schemas\Steps\Microsoft.EndDialog.schema" />
     <None Remove="Schemas\Steps\Microsoft.GotoDialog.schema" />
+    <None Remove="Schemas\Steps\Microsoft.HttpRequest.schema" />
     <None Remove="Schemas\Steps\Microsoft.IfProperty.schema" />
     <None Remove="Schemas\Steps\Microsoft.SaveEntity.schema" />
     <None Remove="Schemas\Steps\Microsoft.SendActivity.schema" />
@@ -87,6 +88,7 @@
     <Content Include="Schemas\Rules\Microsoft.IntentRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.ReplacePlanRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.WelcomeRule.schema" />
+    <Content Include="Schemas\Steps\Microsoft.HttpRequest.schema" />
     <Content Include="Schemas\Steps\Microsoft.SendList.schema" />
     <Content Include="Schemas\Steps\Microsoft.SaveEntity.schema" />
     <Content Include="Schemas\Steps\Microsoft.ChangeList.schema" />

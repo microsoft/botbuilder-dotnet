@@ -66,6 +66,11 @@
             "$ref": "#/definitions/Microsoft.GotoDialog"
         },
         {
+            "title": "Microsoft.HttpRequest",
+            "description": "This is a step which replaces the current dialog with the target dialog",
+            "$ref": "#/definitions/Microsoft.HttpRequest"
+        },
+        {
             "title": "Microsoft.IfProperty",
             "description": "Step which conditionally decides which step to execute next.",
             "$ref": "#/definitions/Microsoft.IfProperty"
@@ -983,6 +988,98 @@
                 "$type"
             ]
         },
+        "Microsoft.HttpRequest": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "type": "object",
+            "title": "Goto Dialog",
+            "description": "This is a step which replaces the current dialog with the target dialog",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.HttpRequest"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "method": {
+                    "type": "string",
+                    "title": "Method",
+                    "description": "The HTTP method to use",
+                    "enum": [
+                        "GET",
+                        "POST"
+                    ],
+                    "examples": [
+                        "GET",
+                        "POST"
+                    ]
+                },
+                "url": {
+                    "type": "string",
+                    "title": "Url",
+                    "description": "The url to call (supports data binding)",
+                    "examples": [
+                        "https://contoso.com"
+                    ]
+                },
+                "body": {
+                    "type": "object",
+                    "title": "Body",
+                    "description": "The body to send in the HTTP call  (supports data binding)",
+                    "additionalProperties": true
+                },
+                "property": {
+                    "type": "string",
+                    "title": "Property",
+                    "description": "The property to store the result of the HTTP call in (as object or string)",
+                    "examples": [
+                        "dialog.contosodata"
+                    ]
+                },
+                "header": {
+                    "type": "object",
+                    "additionProperties": true,
+                    "title": "Http headers",
+                    "description": "Http headers to include with the HTTP request (supports data binding)"
+                }
+            },
+            "required": [
+                "$type"
+            ],
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "url",
+                        "entity"
+                    ]
+                }
+            ]
+        },
         "Microsoft.IActivityTemplate": {
             "title": "Microsoft ActivityTemplate",
             "description": "Union of components which implement the IActivityTemplate interface",
@@ -1043,6 +1140,11 @@
                     "title": "Microsoft.GotoDialog",
                     "description": "This is a step which replaces the current dialog with the target dialog",
                     "$ref": "#/definitions/Microsoft.GotoDialog"
+                },
+                {
+                    "title": "Microsoft.HttpRequest",
+                    "description": "This is a step which replaces the current dialog with the target dialog",
+                    "$ref": "#/definitions/Microsoft.HttpRequest"
                 },
                 {
                     "title": "Microsoft.IfProperty",

@@ -1,0 +1,55 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "type": "object",
+    "title": "Goto Dialog",
+    "description": "This is a step which replaces the current dialog with the target dialog",
+    "additionalProperties": false,
+    "properties": {
+        "method": {
+            "type": "string",
+            "title": "Method",
+            "description": "The HTTP method to use",
+            "enum": [
+                "GET",
+                "POST"
+            ],
+            "examples": [
+                "GET",
+                "POST"
+            ]
+        },
+        "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "The url to call (supports data binding)",
+            "examples": [
+                "https://contoso.com"
+            ]
+        },
+        "body": {
+            "type": "object",
+            "title": "Body",
+            "description": "The body to send in the HTTP call  (supports data binding)",
+            "additionalProperties": true
+        },
+        "property": {
+            "type": "string",
+            "title": "Property",
+            "description": "The property to store the result of the HTTP call in (as object or string)",
+            "examples": [
+                "dialog.contosodata"
+            ]
+        },
+        "header": {
+            "type": "object",
+            "additionProperties": true,
+            "title": "Http headers",
+            "description": "Http headers to include with the HTTP request (supports data binding)"
+        }
+    },
+    "required": [
+        "url",
+        "entity"
+    ]
+}

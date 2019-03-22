@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
@@ -27,23 +29,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
             return $"HttpRequest[{Method} {Url}]";
         }
 
+        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonProperty("method")]
         public HttpMethod Method { get; set; }
 
+        [JsonProperty("url")]
         public string Url { get; set; }
 
-        public string ResponseProperty { get; set; }
-
+        [JsonProperty("header")]
         public Dictionary<string, string> Header { get; set; }
 
+        [JsonProperty("body")]
         public JObject Body { get; set; }
 
         private static readonly HttpClient client = new HttpClient();
 
-        public HttpRequest(HttpMethod method, string url, string responseProperty, Dictionary<string, string> header = null, JObject body = null)
+        public HttpRequest(HttpMethod method, string url, string property, Dictionary<string, string> header = null, JObject body = null)
         {
             this.Method = method;
             this.Url = url ?? throw new ArgumentNullException(nameof(url));
-            this.ResponseProperty = responseProperty;
+            this.Property = property;
             this.Header = header;
             this.Body = body;
         }
@@ -102,19 +107,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
                 response = await client.GetAsync(instanceUrl);
             }
 
-            var res = response.Content.ReadAsStringAsync();
-
+            object result = (object)await response.Content.ReadAsStringAsync();
             // Try set with JOjbect for further retreiving
             try
             {
-                dc.State.SetValue(ResponseProperty, JObject.Parse(res.Result));
+                result = JObject.Parse((string)result);
             }
             catch
             {
-                dc.State.SetValue(ResponseProperty, res.Result);
             }
 
-            return await dc.EndDialogAsync();
+            return await dc.EndDialogAsync(result);
 
         }
 
