@@ -221,6 +221,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             .StartTestAsync();
         }
 
+        [TestMethod]
         public async Task JsonDialogLoad_HttpRequest()
         {
             string json = File.ReadAllText(samplesDirectory + @"Planning 11 - HttpRequest\HttpRequest.main.dialog");
