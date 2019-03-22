@@ -21,7 +21,8 @@ Currently, we are light on documentation. However, there are few samples to help
 -   See [here](./LG-file-format.md) for an overivew of the LG file format. 
 -	In Microsoft.Bot.Bbuilder.Testbot.Json , the [samples](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog/samples/Microsoft.Bot.Builder.TestBot.Json/Samples) folder includes a series of bots defined declaratively, showing the different dialog/ prompts and available steps. You can read more here.
 -	The [LG](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog/samples/Microsoft.Bot.Builder.TestBot.Json/LG) folder includes list of .lg files explaining various features and functionality  of the new local LG library
--       [Supported types Cheat sheet](https://github.com/Microsoft/botbuilder-dotnet/blob/ComposableDialog/samples/README.md)
+-	Checkout the [Supported types Cheat sheet](https://github.com/Microsoft/botbuilder-dotnet/blob/ComposableDialog/samples/README.md)
+
 ## Reporting Bugs 
 -	Simply create a new issue on the botbuilder-dotnet repo. Use this [link](https://github.com/Microsoft/botbuilder-dotnet/issues/new?template=-net-sdk-bug.md) 
 -	Make sure you add **[declarative-hack]** a prefix to both the issue title and main content 
