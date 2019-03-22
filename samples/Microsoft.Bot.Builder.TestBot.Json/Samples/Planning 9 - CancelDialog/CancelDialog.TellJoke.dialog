@@ -1,40 +1,40 @@
 {
-  "$schema": "../../Schemas/app.schema",
-  "$type": "Microsoft.AdaptiveDialog",
-  "storage": {
-    "$type": "Microsoft.MemoryStorage"
-  },
-  "recognizer": {
-    "$type": "Microsoft.RegexRecognizer",
-    "rules": {
-      "CancelIntent": "cancel|never mind"
-    }
-  },
-  "rules": [
-    {
-      "$type": "Microsoft.DefaultRule",
-      "steps": [
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "Why did the chicken cross the road?"
-        },
-        {
-          "$type": "Microsoft.WaitForInput"
-        },
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "To get to the other side"
-        }
-      ]
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "storage": {
+        "$type": "Microsoft.MemoryStorage"
     },
-    {
-      "$type": "Microsoft.IntentRule",
-      "intent": "CancelIntent",
-      "steps": [
-        {
-          "$type": "Microsoft.CancelDialog"
+    "recognizer": {
+        "$type": "Microsoft.RegexRecognizer",
+        "rules": {
+            "CancelIntent": "(?i)cancel|never mind"
         }
-      ]
-    }
-  ]
+    },
+    "rules": [
+        {
+            "$type": "Microsoft.DefaultRule",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Why did the chicken cross the road?"
+                },
+                {
+                    "$type": "Microsoft.WaitForInput"
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "To get to the other side"
+                }
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "CancelIntent",
+            "steps": [
+                {
+                    "$type": "Microsoft.CancelDialog"
+                }
+            ]
+        }
+    ]
 }

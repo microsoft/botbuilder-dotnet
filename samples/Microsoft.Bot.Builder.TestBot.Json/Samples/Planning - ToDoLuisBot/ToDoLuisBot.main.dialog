@@ -1,5 +1,5 @@
 {
-  "$schema": "../../Schemas/app.schema",
+  "$schema": "../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
   "$id": "root",
   "recognizer": {
@@ -22,40 +22,28 @@
       "$type": "Microsoft.IntentRule",
       "intent": "AddToDo",
       "steps": [
-        {
-          "$type": "Microsoft.CallDialog",
-          "dialog": "ToDoLuisBot.AddToDo"
-        }
+        "ToDoLuisBot.AddToDo"
       ]
     },
     {
       "$type": "Microsoft.IntentRule",
       "intent": "DeleteToDo",
       "steps": [
-        {
-          "$type": "Microsoft.CallDialog",
-          "dialog": "ToDoLuisBot.DeleteToDo"
-        }
+        "ToDoLuisBot.DeleteToDo"
       ]
     },
     {
       "$type": "Microsoft.IntentRule",
       "intent": "ShowToDo",
       "steps": [
-        {
-          "$type": "Microsoft.CallDialog",
-          "dialog": "ToDoLuisBot.ShowToDos"
-        }
+        "ToDoLuisBot.ShowToDos"
       ]
     },
     {
       "$type": "Microsoft.IntentRule",
       "intent": "ClearToDo",
       "steps": [
-        {
-          "$type": "Microsoft.CallDialog",
-          "dialog": "ToDoLuisBot.ClearToDos"
-        }
+        "ToDoLuisBot.ClearToDos"
       ]
     }
   ]

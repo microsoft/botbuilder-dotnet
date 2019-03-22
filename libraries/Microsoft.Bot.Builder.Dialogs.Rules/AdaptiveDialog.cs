@@ -121,7 +121,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             // First consult plan
             var consultation = await ConsultPlanAsync(planning).ConfigureAwait(false);
 
-            if (consultation == null || consultation.Desire != DialogConsultationDesires.ShouldPrcess)
+            if (consultation == null || consultation.Desire != DialogConsultationDesires.ShouldProcess)
             {
                 // Next evaluate rules
                 var changesQueued = await EvaluateRulesAsync(planning, new DialogEvent() { Name = PlanningEvents.ConsultDialog.ToString(), Value = null, Bubble = false }).ConfigureAwait(false);
@@ -130,7 +130,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                 {
                     consultation = new DialogConsultation()
                     {
-                        Desire = DialogConsultationDesires.ShouldPrcess,
+                        Desire = DialogConsultationDesires.ShouldProcess,
                         Processor = (ctx) => this.ContinuePlanAsync(planning)
                     };
                 }

@@ -1,0 +1,24 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "SaveEntity Step",
+    "description": "This is a step which allows you to save a memory property as an entity",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "entity": {
+            "type": "string",
+            "title": "Entity",
+            "description": "name of the entity to save"
+        },
+        "property": {
+            "type": "string",
+            "title": "Property",
+            "description": "Memory expression of the property to save as an entity."
+        }
+    },
+    "required": [
+        "property",
+        "entity"
+    ]
+}

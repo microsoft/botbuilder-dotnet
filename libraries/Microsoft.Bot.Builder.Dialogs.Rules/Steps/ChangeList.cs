@@ -3,17 +3,41 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 {
+    /// <summary>
+    /// Lets you modify a collection in memory
+    /// </summary>
     public class ChangeList : DialogCommand
     {
         public enum ChangeListType
         {
+            /// <summary>
+            /// Push item onto the list
+            /// </summary>
             Push,
+
+            /// <summary>
+            /// Pop the item off the list
+            /// </summary>
             Pop,
+
+            /// <summary>
+            /// Take an item from the front of the list
+            /// </summary>
             Take,
+
+            /// <summary>
+            /// Remove the item from the list, regardless of it's location
+            /// </summary>
             Remove,
+
+            /// <summary>
+            /// Clear the contents of the list
+            /// </summary>
             Clear
         }
 
@@ -28,10 +52,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
             return $"list[{ChangeType + ": " + ListProperty}]";
         }
 
+        /// <summary>
+        /// type of change being applied
+        /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonProperty("changeType")]
         public ChangeListType ChangeType { get; set; }
 
+        /// <summary>
+        /// Memory expression of the list to manipulate
+        /// </summary>
+        [JsonProperty("listProperty")]
         public string ListProperty { get; set; }
 
+        /// <summary>
+        /// Memory of the item to put onto the list
+        /// </summary>
+        [JsonProperty("itemProperty")]
         public string ItemProperty { get; set; }
 
         public ChangeList(ChangeListType changeType, string listProperty = null, string itemProperty = null)

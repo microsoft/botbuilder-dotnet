@@ -29,9 +29,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         public TestContext TestContext { get; set; }
 
         [TestMethod]
-        public async Task JsonDialogLoad_Fallback()
+        public async Task JsonDialogLoad_DefaultRule()
         {
-            string json = File.ReadAllText(samplesDirectory + @"Planning 1 - Fallback\Fallback.main.dialog");
+            string json = File.ReadAllText(samplesDirectory + @"Planning 1 - DefaultRule\DefaultRule.main.dialog");
 
             Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 

@@ -1,43 +1,39 @@
 {
-    "$schema": "../../Schemas/app.schema",
+    "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
-    "$id": "DeleteToDoDialog",
-    "storage": {
-        "$type": "Microsoft.MemoryStorage"
-    },
     "rules": [
         {
-            "$type": "Microsoft.DefaultRule",
+            "$type": "Microsoft.BeginDialogRule",
             "steps": [
                 {
                     "$type": "Microsoft.SaveEntity",
-                    "entityName": "title",
-                    "property": "user.todo"
+                    "entity": "title",
+                    "property": "dialog.todo"
                 },
                 {
                     "$type": "Microsoft.IfProperty",
-                    "expression": "user.todo == null",
+                    "expression": "dialog.todo == null",
                     "ifTrue": [
                         {
                             "$type": "Microsoft.TextPrompt",
-                            "initalPrompt": "OK, please enter the title of the todo you want to remove.",
-                            "property": "user.todo"
+                            "initialPrompt": "OK, please enter the title of the todo you want to remove.",
+                            "property": "dialog.todo"
                         }
                     ]
                 },
                 {
                     "$type": "Microsoft.ChangeList",
-                    "changeType": "3",
+                    "changeType": "Remove",
                     "listProperty": "user.todos",
-                    "itemProperty": "user.todo"
+                    "itemProperty": "dialog.todo"
                 },
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "Successfully removed a todo named \"{user.todo}\""
+                    "activity": "Successfully removed a todo named \"{dialog.todo}\""
                 },
                 {
                     "$type": "Microsoft.ClearProperty",
-                    "property": "user.todo"
+                    "property": "dialog.todo"
                 }
             ]
         }

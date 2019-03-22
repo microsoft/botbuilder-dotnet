@@ -1,35 +1,31 @@
 {
-    "$schema": "../../Schemas/app.schema",
+    "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
-    "$id": "AddToDoDialog",
-    "storage": {
-        "$type": "Microsoft.MemoryStorage"
-    },
     "rules": [
         {
-            "$type": "Microsoft.DefaultRule",
+            "$type": "Microsoft.BeginDialogRule",
             "steps": [
                 {
                     "$type": "Microsoft.SaveEntity",
-                    "entityName": "TaskContentML",
-                    "property": "user.todo"
+                    "entity": "TaskContentML",
+                    "property": "dialog.todo"
                 },
                 {
                     "$type": "Microsoft.IfProperty",
-                    "expression": "user.todo == null",
+                    "expression": "dialog.todo == null",
                     "ifTrue": [
                         {
                             "$type": "Microsoft.TextPrompt",
-                            "initalPrompt": "OK, please enter the title of your todo.",
-                            "property": "user.todo"
+                            "initialPrompt": "OK, please enter the title of your todo.",
+                            "property": "dialog.todo"
                         }
                     ]
                 },
                 {
                     "$type": "Microsoft.ChangeList",
-                    "ChangeType": "0",
-                    "ListProperty": "user.todos",
-                    "ItemProperty": "user.todo"
+                    "changeType": "Push",
+                    "listProperty": "user.todos",
+                    "itemProperty": "user.todo"
                 },
                 {
                     "$type": "Microsoft.SendActivity",
@@ -37,7 +33,7 @@
                 },
                 {
                     "$type": "Microsoft.ClearProperty",
-                    "property": "user.todo"
+                    "property": "dialog.todo"
                 }
             ]
         }

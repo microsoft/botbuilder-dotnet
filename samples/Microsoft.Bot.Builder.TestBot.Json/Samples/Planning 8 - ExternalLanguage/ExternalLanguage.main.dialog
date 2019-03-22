@@ -4,10 +4,10 @@
     "recognizer": {
         "$type": "Microsoft.RegexRecognizer",
         "intents": {
-            "HelpIntent": "help",
-            "GreetingIntent": "hi|hello|hiya|greetings",
-            "JokeIntent": "joke",
-            "FortuneTellerIntent": "fortune|future"
+            "HelpIntent": "(?i)help",
+            "GreetingIntent": "(?i)hi|hello|hiya|greetings",
+            "JokeIntent": "(?i)joke",
+            "FortuneTellerIntent": "(?i)fortune|future"
         }
     },
     "rules": [
