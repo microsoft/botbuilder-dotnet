@@ -1,10 +1,10 @@
 {
   "$schema": "../../Schemas/app.schema",
-  "$type": "Microsoft.RuleDialog",
-  "$id":  "root",
+  "$type": "Microsoft.AdaptiveDialog",
+  "$id": "root",
   "rules": [
     {
-      "$type": "Microsoft.WelcomeRule",
+      "$type": "Microsoft.DefaultRule",
       "steps": [
         {
           "$type": "Microsoft.SendActivity",
@@ -58,5 +58,5 @@
 
       ]
     }
-  ]   
+  ]
 }
