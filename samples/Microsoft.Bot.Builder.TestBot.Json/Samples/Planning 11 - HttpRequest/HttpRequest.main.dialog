@@ -25,7 +25,7 @@
         {
           "$type": "Microsoft.HttpRequest",
           "url": "http://petstore.swagger.io/v2/pet",
-          "method": "Post",
+          "method": "POST",
           "header": {
             "test": "test",
             "test2": "test2"
@@ -47,7 +47,7 @@
             ],
             "status": "available"
           },
-          "responseProperty": "dialog.postResponse"
+          "property": "dialog.postResponse"
         },
         {
           "$type": "Microsoft.SendActivity",
@@ -64,8 +64,8 @@
         {
           "$type": "Microsoft.HttpRequest",
           "url": "http://petstore.swagger.io/v2/pet/{dialog.id}",
-          "method": "Get",
-          "responseProperty": "dialog.getResponse"
+          "method": "GET",
+          "property": "dialog.getResponse"
         },
         {
           "$type": "Microsoft.SendActivity",
