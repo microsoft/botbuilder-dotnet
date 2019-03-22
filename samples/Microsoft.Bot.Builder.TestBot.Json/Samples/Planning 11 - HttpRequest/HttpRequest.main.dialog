@@ -28,26 +28,9 @@
           "method": "Post",
           "header": {
             "test": "test",
-            "test2":  "test2"
+            "test2": "test2"
           },
-          "body": {
-            "id": "{dialog.petid}",
-            "category": {
-              "id": 0,
-              "name": "string"
-            },
-            "name": "{dialog.petname}",
-            "photoUrls": [
-              "string"
-            ],
-            "tags": [
-              {
-                "id": 0,
-                "name": "string"
-              }
-            ],
-            "status": "available"
-          },
+          "body": "{\"id\": \"{dialog.petid}\", \"category\": {\"id\": 0, \"name\": \"string\"}, \"name\": \"{dialog.petname}\", \"photoUrls\": [\"string\"], \"tags\": [{\"id\": 0, \"name\": \"string\"}], \"status\": \"available\"}",
           "responseProperty": "dialog.postResponse"
         },
         {
