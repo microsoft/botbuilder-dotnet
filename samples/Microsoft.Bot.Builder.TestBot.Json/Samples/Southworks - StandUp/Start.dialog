@@ -6,8 +6,26 @@
             "$type": "Microsoft.DefaultRule",
             "steps": [
                 {
-                    "$type": "Microsoft.SendActivity",
-                    "activity": "Start Stand up intent\n"
+                    "$type": "Microsoft.IfProperty",
+                    "expression": "turn.member == 'exit'",
+                    "ifTrue": [
+                        {
+                            "$type": "Microsoft.TextPrompt",
+                            "initialPrompt": "OK, please enter the name of the person.",
+                            "property": "turn.member"
+                        }
+                    ]
+                },
+                {
+                    "$type": "Microsoft.ChangeList",
+                    "changeType": "Push",
+                    "listProperty": "conversation.members",
+                    "itemProperty": "turn.member"
+                },
+                {
+                    "$type": "Microsoft.SendList",
+                    "listProperty": "conversation.members",
+                    "messageTemplate": "Here are the members of the meeting: "
                 }
             ]
         }
