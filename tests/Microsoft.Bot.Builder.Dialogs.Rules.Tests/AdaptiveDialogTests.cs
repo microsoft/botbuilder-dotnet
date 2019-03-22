@@ -141,39 +141,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                         // Add item
                         new TextPrompt() {
                             InitialPrompt = new ActivityTemplate("Please add an item to todos."),
-                            OutputBinding = "user.todo"
+                            OutputBinding = "dialog.todo"
                         },
-                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "user.todo"),
+                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "dialog.todo"),
                         new SendList("user.todos"),
                         new TextPrompt()
                         {
                             InitialPrompt = new ActivityTemplate("Please add an item to todos."),
-                            OutputBinding = "user.todo"
+                            OutputBinding = "dialog.todo"
                         },
-                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "user.todo"),
+                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "dialog.todo"),
                         new SendList("user.todos"),
 
                         // Remove item
                         new TextPrompt() {
                             InitialPrompt = new ActivityTemplate("Enter a item to remove."),
-                            OutputBinding = "user.todo"
+                            OutputBinding = "dialog.todo"
                         },
-                        new ChangeList(ChangeList.ChangeListType.Remove, "user.todos", "user.todo"),
+                        new ChangeList(ChangeList.ChangeListType.Remove, "user.todos", "dialog.todo"),
                         new SendList("user.todos"),
 
                         // Add item and pop item
                         new TextPrompt() {
                             InitialPrompt = new ActivityTemplate("Please add an item to todos."),
-                            OutputBinding = "user.todo"
+                            OutputBinding = "dialog.todo"
                         },
-                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "user.todo"),
+                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "dialog.todo"),
                         new TextPrompt()
                         {
                             InitialPrompt = new ActivityTemplate("Please add an item to todos."),
-                            OutputBinding = "user.todo"
+                            OutputBinding = "dialog.todo"
                         },
-                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "user.todo"),
+                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "dialog.todo"),
                         new SendList("user.todos"),
+
                         new ChangeList(ChangeList.ChangeListType.Pop, "user.todos"),
                         new SendList("user.todos"),
 
