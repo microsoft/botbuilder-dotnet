@@ -24,7 +24,8 @@ namespace Microsoft.BotBuilderSamples
                 var luisApplication = new LuisApplication(
                     configuration["LuisAppId"],
                     configuration["LuisAPIKey"],
-                    "https://" + configuration["LuisAPIHostName"]);
+                    "https://" + configuration["LuisAPIHostName"]
+                );
 
                 // TODO: fix the ambiguity introduced in 4.4.n
                 var recognizer = new LuisRecognizer(luisApplication, null, false, null, null, false);
