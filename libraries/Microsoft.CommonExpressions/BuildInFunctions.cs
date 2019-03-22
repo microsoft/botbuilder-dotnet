@@ -2,13 +2,6 @@
 
 namespace Microsoft.Expressions
 {
-    public class ExpressionPropertyMissingException : Exception
-    {
-        public ExpressionPropertyMissingException(string message = null)
-            : base(message)
-        {
-        }
-    }
 
     public static class BuildinFunctions
     {
@@ -82,5 +75,8 @@ namespace Microsoft.Expressions
         public static EvaluationDelegate Not = operands =>
                         operands[0] is bool bool0 ? !bool0 :
                         operands[0] is int int0 ? int0 == 0 : operands[0] == null;
+
+        public static EvaluationDelegate Exist = operands =>
+                        operands[0] == null;
     }
 }

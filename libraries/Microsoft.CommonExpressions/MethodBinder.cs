@@ -15,7 +15,6 @@ namespace Microsoft.Expressions
     /// <returns></returns>
     public delegate EvaluationDelegate GetMethodDelegate(string name);
 
-
     /// <summary>
     /// Implementations of <see cref="GetMethodDelegate"/>.
     /// </summary>
@@ -42,7 +41,6 @@ namespace Microsoft.Expressions
             {"not", BuildinFunctions.Not},
         };
 
-
         /// <summary>
         /// Default list of methods.
         /// </summary>
@@ -53,5 +51,31 @@ namespace Microsoft.Expressions
 
              throw new Exception($"Operation {name} is invalid.");
          };
+    }
+
+    /// <summary>
+    /// Wrap a GetMethodDelegate, returns a new delegate that throw the right exceptions
+    /// a 3rd party GetMethodDelegate needs to be wrapped into this, to work best with the rest
+    /// </summary>
+    class GetMethodDelegateWrapper
+    {
+        // this is a wrapper to help throw proper exceptions
+        private readonly GetMethodDelegate _getMethod = null;
+        public GetMethodDelegateWrapper(GetMethodDelegate getMethod)
+        {
+            _getMethod = getMethod;
+        }
+
+        public EvaluationDelegate GetMethod(string name)
+        {
+            try
+            {
+                return _getMethod(name);
+            }
+            catch (Exception e)
+            {
+                throw new NoSuchFuntionException($"No such function {name}, error: {e.Message}");
+            }
+        }
     }
 }

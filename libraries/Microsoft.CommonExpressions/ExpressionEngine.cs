@@ -4,7 +4,6 @@ using Antlr4.Runtime.Tree;
 
 namespace Microsoft.Expressions
 {
-
     public static class ExpressionEngine
     {
         /// <summary>
@@ -16,15 +15,8 @@ namespace Microsoft.Expressions
         /// <returns></returns>
         public static object Evaluate(string expression, object scope, GetValueDelegate getValue = null, GetMethodDelegate getMethod = null)
         {
-            try
-            {
-                var parser = Parse(expression);
-                return Evaluate(parser, scope, getValue, getMethod);
-            }
-            catch (Exception)
-            {
-                throw new Exception("some thing is wrong in expression");
-            }
+            var parser = Parse(expression);
+            return Evaluate(parser, scope, getValue, getMethod);   
         }
 
         /// <summary>
@@ -34,16 +26,24 @@ namespace Microsoft.Expressions
         /// <returns></returns>
         public static IParseTree Parse(string expression)
         {
-            var inputStream = new AntlrInputStream(expression);
-            var lexer = new ExpressionLexer(inputStream);
-            var tokenStream = new CommonTokenStream(lexer);
-            var parser = new ExpressionParser(tokenStream);
-            parser.RemoveErrorListeners();
-            parser.AddErrorListener(ExpressionErrorListener.Instance);
-            parser.BuildParseTree = true;
-            parser.ErrorHandler = new BailErrorStrategy();
+            try
+            {
+                var inputStream = new AntlrInputStream(expression);
+                var lexer = new ExpressionLexer(inputStream);
+                var tokenStream = new CommonTokenStream(lexer);
+                var parser = new ExpressionParser(tokenStream);
+                parser.RemoveErrorListeners();
+                parser.AddErrorListener(ExpressionErrorListener.Instance);
+                parser.BuildParseTree = true;
 
-            return parser.expression();
+                return parser.expression();
+            }
+            catch (Exception e)
+            {
+                string msg = $"Not a valid expression: {expression}, Error: ${e.Message}";
+                throw new ExpressionParsingException(msg);
+            }
+
         }
 
         /// <summary>
@@ -55,11 +55,21 @@ namespace Microsoft.Expressions
         /// <returns></returns>
         public static object Evaluate(IParseTree parseTree, object scope, GetValueDelegate getValue = null, GetMethodDelegate getMethod = null)
         {
-            getValue = getValue ?? PropertyBinder.Auto;
-            getMethod = getMethod ?? MethodBinder.All;
-            var evaluator = new ExpressionEvaluator(getValue, getMethod);
+            try
+            {
+                getValue = getValue ?? PropertyBinder.Auto;
+                getMethod = getMethod ?? MethodBinder.All;
 
-            return evaluator.Evaluate(parseTree, scope);
+                var wrappedGetMethod = new GetMethodDelegateWrapper(getMethod);
+                var evaluator = new ExpressionEvaluator(getValue, wrappedGetMethod.GetMethod);
+
+                return evaluator.Evaluate(parseTree, scope);
+            }
+            catch (Exception e)
+            {
+                string msg = $"Error occurs when evaluating: {parseTree.GetText()}, Error: ${e.Message}";
+                throw new ExpressionEvaluationException(msg);
+            }
         }
     
     }
