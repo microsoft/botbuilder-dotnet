@@ -13,7 +13,7 @@
     },
     "rules": [
         {
-            "$type": "Microsoft.WelcomeRule",
+            "$type": "Microsoft.DefaultRule",
             "steps": [
                 {
                     "$type": "Microsoft.SendActivity",
@@ -59,6 +59,5 @@
                 }
            ]
         }
-
     ]
 }

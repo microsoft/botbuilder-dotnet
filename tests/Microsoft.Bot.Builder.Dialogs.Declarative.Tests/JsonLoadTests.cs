@@ -193,6 +193,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task JsonDialogLoad_ToDoBot()
+        {
+            string json = File.ReadAllText(samplesDirectory + @"Planning - ToDoBot\TodoBot.main.dialog");
+
+            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
+
+            await BuildTestFlow(json)
+            .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
+            .Send("hello")
+            .AssertReply("Hi! I'm a ToDo bot. Say \"add a todo named first\" to get started.")
+            .Send("add a todo named first")
+            .AssertReply("Successfully added a todo named \"first\"")
+            .Send("add a todo named second")
+            .AssertReply("Successfully added a todo named \"second\"")
+            .Send("add a todo")
+            .AssertReply("OK, please enter the title of your todo.")
+            .Send("third")
+            .AssertReply("Successfully added a todo named \"third\"")
+            .Send("show todos")
+            .AssertReply("Here are your todos: \n\n- first\n- second\n- third\n")
+            .Send("delete todo named second")
+            .AssertReply("Successfully removed a todo named \"second\"")
+            .Send("show todos")
+            .AssertReply("Here are your todos: \n\n- first\n- third\n")
+            .StartTestAsync();
+        }
+
         private TestFlow BuildTestFlow(string json)
         {
             string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, $@"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj"));
