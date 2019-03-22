@@ -122,6 +122,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.ChangeList", typeof(ChangeList));
             Register("Microsoft.SendList", typeof(SendList));
             Register("Microsoft.ClearProperty", typeof(ClearProperty));
+            Register("Microsoft.HttpRequest", typeof(HttpRequest));
 
             // Dialogs
             Register("Microsoft.ComponentDialog", typeof(ComponentDialog), new ComponentDialogLoader());
