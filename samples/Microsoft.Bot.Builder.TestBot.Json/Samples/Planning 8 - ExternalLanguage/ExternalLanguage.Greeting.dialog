@@ -1,9 +1,9 @@
 ﻿{
   "$schema": "../../app.schema",
-  "$type": "Microsoft.RuleDialog",
+  "$type": "Microsoft.AdaptiveDialog",
   "rules": [
     {
-      "$type": "Microsoft.FallbackRule",
+      "$type": "Microsoft.DefaultRule",
       "steps": [
         {
           "$type": "Microsoft.IfProperty",

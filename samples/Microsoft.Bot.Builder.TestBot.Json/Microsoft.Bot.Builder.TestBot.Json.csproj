@@ -7,7 +7,7 @@
   <ItemGroup>
     <None Remove="en-us.lg" />
     <None Remove="main.dialog" />
-    <None Remove="Samples\Planning 1 - Fallback\Fallback.main.dialog" />
+    <None Remove="Samples\Planning 1 - DefaultRule\DefaultRule.main.dialog" />
     <None Remove="Samples\Planning 2 - WaitForInput\WaitforInput.main.dialog" />
     <None Remove="Samples\Planning 3 - IfProperty\IfProperty.main.dialog" />
     <None Remove="Samples\Planning 4 - TextPrompt\TextPrompt.main.dialog" />
@@ -19,11 +19,6 @@
     <None Remove="Samples\Planning 8 - ExternalLanguage\ExternalLanguage - Copy.main.lg" />
     <None Remove="Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.dialog" />
     <None Remove="Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.lg" />
-	<None Remove="Samples\Planning - ToDoBot\AddToDo.dialog" />
-    <None Remove="Samples\Planning - ToDoBot\ClearToDos.dialog" />
-    <None Remove="Samples\Planning - ToDoBot\DeleteToDo.dialog" />
-    <None Remove="Samples\Planning - ToDoBot\main.dialog" />
-    <None Remove="Samples\Planning - ToDoBot\ShowToDos.dialog" />
     <None Remove="Samples\Planning 8 - ExternalLanguage\FortuneTellerDialog.dialog" />
     <None Remove="Samples\Planning 8 - ExternalLanguage\TellJokeDialog.dialog" />
     <None Remove="Samples\Planning 9 - CancelDialog\CancelDialog.main.dialog" />
@@ -31,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Samples\Planning 1 - Fallback\Fallback.main.dialog" />
+    <Content Include="Samples\Planning 1 - DefaultRule\DefaultRule.main.dialog" />
     <Content Include="Samples\RootDialog\RootDialog.lg" />
     <Content Include="Samples\RootDialog\RootDialog.main.dialog" />
     <Content Include="Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.lg" />

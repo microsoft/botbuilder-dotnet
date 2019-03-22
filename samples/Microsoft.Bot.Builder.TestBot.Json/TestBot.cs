@@ -24,7 +24,17 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         
         public TestBot(TestBotAccessors accessors, IBotResourceProvider resourceProvider)
         {
-            rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\RootDialog\RootDialog.main.dialog"), resourceProvider);
+            rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning - ToDoBot\ToDoBot.main.dialog"), resourceProvider);
+            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning - ToDoLuisBot\ToDoLuisBot.main.dialog"), resourceProvider);
+            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\RootDialog\RootDialog.main.dialog"), resourceProvider);
+            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 1 - DefaultRule\DefaultRule.main.dialog"), resourceProvider);
+            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 2 - WaitForInput\WaitForInput.main.dialog"), resourceProvider);
+            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 3 - IfProperty\IfProperty.main.dialog"), resourceProvider);
+            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 4 - TextPrompt\TextPrompt.main.dialog"), resourceProvider);
+            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 5 - WelcomeRule\WelcomeRule.main.dialog"), resourceProvider);
+            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 6 - DoSteps\DoSteps.main.dialog"), resourceProvider);
+            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 7 - CallDialog\CallDialog.main.dialog"), resourceProvider);
+            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.dialog"), resourceProvider);
 
             _dialogs = new DialogSet(accessors.ConversationDialogState);
             _dialogs.Add(rootDialog);
@@ -32,7 +42,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (rootDialog is RuleDialog planningDialog)
+            if (rootDialog is AdaptiveDialog planningDialog)
             {
                 await planningDialog.OnTurnAsync(turnContext, null, cancellationToken).ConfigureAwait(false);
             }

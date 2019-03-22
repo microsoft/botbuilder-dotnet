@@ -1,24 +1,20 @@
 {
-  "$schema": "../../Schemas/app.schema",
-  "$type": "Microsoft.RuleDialog",
-  "$id":  "ClearToDoDialog",
-  "storage": {
-    "$type": "Microsoft.MemoryStorage"
-  },
-  "rules": [
-    {
-      "$type": "Microsoft.FallbackRule",
-      "steps": [
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "rules": [
         {
-          "$type": "Microsoft.ChangeList",
-          "changeType": "4",
-          "listProperty": "user.todos"
-        },
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "Successfully clear the todo list."
+            "$type": "Microsoft.BeginDialogRule",
+            "steps": [
+                {
+                    "$type": "Microsoft.ChangeList",
+                    "changeType": "Clear",
+                    "listProperty": "user.todos"
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Successfully clear the todo list."
+                }
+            ]
         }
-      ]
-    }
-  ]   
+    ]
 }

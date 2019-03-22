@@ -1,102 +1,102 @@
 {
     "$schema": "../../app.schema",
-    "$type": "Microsoft.RuleDialog",
+    "$type": "Microsoft.AdaptiveDialog",
     "recognizer": {
         "$type": "Microsoft.RegexRecognizer",
         "intents": {
-            "FallbackIntent": "fallback",
-            "WaitForInputIntent": "wait|input",
-            "IfPropertyIntent": "property|ifproperty",
-            "TextPromptIntent": "text|textprompt",
-            "WelcomeRuleIntent": "welcome",
-            "DoStepsIntent": "steps|intent",
-            "CallDialogIntent": "call",
-            "ExternalLanguageIntent": "external|lg",
-            "CancelDialogIntent": "cancel"
+            "DefaultIntent": "(?i)default|defaultrule",
+            "WaitForInputIntent": "(?i)wait|input",
+            "IfPropertyIntent": "(?i)property|ifproperty",
+            "TextPromptIntent": "(?i)text|textprompt",
+            "WelcomeRuleIntent": "(?i)welcome",
+            "DoStepsIntent": "(?i)steps|intent",
+            "CallDialogIntent": "(?i)call",
+            "ExternalLanguageIntent": "(?i)external|lg",
+            "CancelDialogIntent": "(?i)cancel"
         }
     },
-  "rules": [
-    {
-      "$type": "Microsoft.IntentRule",
-      "intent": "FallbackIntent",
-      "steps": [
-        "Fallback.main"
-      ]
-    },
-    {
-      "$type": "Microsoft.IntentRule",
-      "intent": "WaitForInputIntent",
-      "steps": [
-        "WaitforInput.main"
-      ]
-    },
-    {
-      "$type": "Microsoft.IntentRule",
-      "intent": "IfPropertyIntent",
-      "steps": [
-        "IfProperty.main"
-      ]
-    },
-    {
-      "$type": "Microsoft.IntentRule",
-      "intent": "TextPromptIntent",
-      "steps": [
-        "TextPrompt.main"
-      ]
-    },
-    {
-      "$type": "Microsoft.IntentRule",
-      "intent": "WelcomeRuleIntent",
-      "steps": [
-        "WelcomeRule.main"
-      ]
-    },
-    {
-      "$type": "Microsoft.IntentRule",
-      "intent": "DoStepsIntent",
-      "steps": [
-        "DoSteps.main"
-      ]
-    },
-    {
-      "$type": "Microsoft.IntentRule",
-      "intent": "CallDialogIntent",
-      "steps": [
-        "CallDialog.main"
-      ]
-    },
-    {
-      "$type": "Microsoft.IntentRule",
-      "intent": "ExternalLanguageIntent",
-      "steps": [
-        "ExternalLanguage.main"
-      ]
-    },
-    {
-      "$type": "Microsoft.IntentRule",
-      "intent": "CancelDialogIntent",
-      "steps": [
-        "CancelDialog.main"
-      ]
-    },
-    {
-      "$type": "Microsoft.IntentRule",
-      "intent": "HelpIntent",
-      "steps": [
+    "rules": [
         {
-          "$type": "Microsoft.SendActivity",
-          "activity": "[help]"
-        }
-      ]
-    },
-    {
-      "$type": "Microsoft.FallbackRule",
-      "steps": [
+            "$type": "Microsoft.IntentRule",
+            "intent": "DefaultIntent",
+            "steps": [
+                "DefaultRule.main"
+            ]
+        },
         {
-          "$type": "Microsoft.SendActivity",
-          "activity": "[RootDialog.help]"
+            "$type": "Microsoft.IntentRule",
+            "intent": "WaitForInputIntent",
+            "steps": [
+                "WaitforInput.main"
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "IfPropertyIntent",
+            "steps": [
+                "IfProperty.main"
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "TextPromptIntent",
+            "steps": [
+                "TextPrompt.main"
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "WelcomeRuleIntent",
+            "steps": [
+                "WelcomeRule.main"
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "DoStepsIntent",
+            "steps": [
+                "DoSteps.main"
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "CallDialogIntent",
+            "steps": [
+                "CallDialog.main"
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "ExternalLanguageIntent",
+            "steps": [
+                "ExternalLanguage.main"
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "CancelDialogIntent",
+            "steps": [
+                "CancelDialog.main"
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "HelpIntent",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "[help]"
+                }
+            ]
+        },
+        {
+            "$type": "Microsoft.DefaultRule",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "[RootDialog.help]"
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }

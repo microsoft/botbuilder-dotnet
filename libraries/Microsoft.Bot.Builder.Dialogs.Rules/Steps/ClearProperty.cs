@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 {
@@ -13,16 +14,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
         {
             if (!string.IsNullOrEmpty(property))
             {
-                this.property = property;
+                this.Property = property;
             }
         }
 
-        public string property { get; set; }
-
-
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            dc.State.SetValue(property, null);
+            dc.State.SetValue(Property, null);
             return await dc.EndDialogAsync();
         }
     }

@@ -197,6 +197,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     {
                         curDict[segment] = new Dictionary<string, object>();
                     }
+
                     current = curDict[segment];
                 }
             }

@@ -18,7 +18,7 @@
             "description": "Options to pass to the dialog."
         },
         "property": {
-            "$type": "Microsoft.IExpression",
+            "type": "string",
             "title": "Property",
             "description": "The property to bind to the dialog and store the result in",
             "examples": [

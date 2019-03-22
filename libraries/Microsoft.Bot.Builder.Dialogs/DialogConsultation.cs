@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// The dialog should process the utterance.
         /// </summary>
-        ShouldPrcess
+        ShouldProcess
     }
 
     public class DialogConsultation

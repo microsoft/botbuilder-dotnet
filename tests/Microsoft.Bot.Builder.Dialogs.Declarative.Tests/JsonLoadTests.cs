@@ -29,9 +29,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         public TestContext TestContext { get; set; }
 
         [TestMethod]
-        public async Task JsonDialogLoad_Fallback()
+        public async Task JsonDialogLoad_DefaultRule()
         {
-            string json = File.ReadAllText(samplesDirectory + @"Planning 1 - Fallback\Fallback.main.dialog");
+            string json = File.ReadAllText(samplesDirectory + @"Planning 1 - DefaultRule\DefaultRule.main.dialog");
 
             Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
@@ -50,9 +50,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
             await BuildTestFlow(json)
             .Send("hello")
-            .AssertReply("Hello, I'm Zoidberg. What is your name?")
-            .Send("Carlos")
-            .AssertReply("Hello Carlos, nice to meet you!")
+            .AssertReply("What's up?")
+            .Send("Nothing")
+            .AssertReply("Oh I see!")
             .StartTestAsync();
         }
 
@@ -223,7 +223,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                if (dialog is RuleDialog planningDialog)
+                if (dialog is AdaptiveDialog planningDialog)
                 {
                     await planningDialog.OnTurnAsync(turnContext, null, cancellationToken).ConfigureAwait(false);
                 }

@@ -316,15 +316,15 @@ Example with LG template inline
 }
 ```
 
-# Microsoft.RuleDialog
-The **Microsoft.RuleDialog** is a new dialog which ties everything together. 
+# Microsoft.AdaptiveDialog
+The **Microsoft.AdaptiveDialog** is a new dialog which ties everything together into an adaptive package
 * It was designed to be declarative from the start
 * It allows you to think in sequences but allow for rules to dynamically adjust to context.
 * It supports rich eventing, interruption, cancelation and execution planning semantics
 * It supports extensibility points for recognition, rules and machine learning
 
 ## Event Model
-The RuleDialog models input as Events called DialogEvents.  This gives us a clean model for
+The AdaptiveDialog models input as Events called DialogEvents.  This gives us a clean model for
 capturing and bubbling information such as cancellatio, requests for help, etc.
 
 ### Events
@@ -351,6 +351,25 @@ on the result and the policies active.  Every rule is made up of
 * Steps to execute (technically, steps to add to the *plan* to execute.)
 
 There are a number of built in rules and you can easily create new rules.
+
+### Microsoft.BeginDialogRule
+The **Microsoft.BeginDialogRule** rule is used to trigger based on a dialog starting
+
+| Property   | Description                                                                 |
+|------------|-----------------------------------------------------------------------------|
+| steps      | collection of dialogs/dialog steps to add to the plan if conditions are met |
+| expression | additional expression as a constraint expressed against memory (OPTIONAL)   |
+| changeType | policy which specifies where the steps should be inserted into the plan     |
+
+Example
+```json
+{
+    "$type":"Microsoft.BeginDialogRule",
+    "steps": [
+        ...
+    ]
+}
+```
 
 ### Microsoft.EventRule rule
 The **Microsoft.EventRule** rule is used to trigger based on events.
@@ -412,8 +431,8 @@ Example
 }
 ```
 
-### Microsoft.FallbackRule
-The **Microsoft.FallbackRule** rule is triggered only if nothing else handles an event.
+### Microsoft.DefaultRule
+The **Microsoft.DefaultRule** rule is triggered only if nothing else handles an event.
 
 | Property   | Description                                                                 |
 |------------|-----------------------------------------------------------------------------|
@@ -424,7 +443,7 @@ The **Microsoft.FallbackRule** rule is triggered only if nothing else handles an
 Example
 ```json
 {
-    "$type":"Microsoft.FallbackRule",
+    "$type":"Microsoft.DefaultRule",
     "steps": [
         ...chitchat or whatever...
     ]
@@ -440,19 +459,17 @@ and entities.
 
 | Property                  | Description        |
 |---------------------------|--------------------|
-| application.applicationId | Application ID     |
-| application.endpoint      | Endpoint to use    |
-| application.endpointKey   | endpointKey to use |
+| applicationId | Application ID     |
+| endpoint      | Endpoint to use    |
+| endpointKey   | endpointKey to use |
 
 Example:
 ```json
 {
     "$type":"Microsoft.LuisRecognizer",
-    "application": {
-            "applicationId":"12312313123",
-            "endpoint":"http://../",
-            "endpointKey":"123123123123",
-      }
+    "applicationId":"12312313123",
+    "endpoint":"http://../",
+    "endpointKey":"123123123123"
 }
 ```
 
