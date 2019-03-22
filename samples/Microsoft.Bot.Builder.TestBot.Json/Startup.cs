@@ -60,7 +60,11 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             services.AddBot<IBot>(
                 (IServiceProvider sp) =>
                 {
+                    // declarative Adaptive dialogs bot sample
                     return new TestBot(accessors, botResourceManager);
+
+                    // LG bot sample
+                    // return new TestBotLG(accessors);
                 },
                 (BotFrameworkOptions options) =>
                 {
