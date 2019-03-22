@@ -36,7 +36,13 @@ Feel free to explorer and follow any scenario you want. Form filling and task co
 - Enlist in botbuilder-js
 - Checkout stevenic/4.4-planning branch
 - AdaptiveDialog samples can be found [here](https://github.com/Microsoft/botbuilder-js/tree/stevenic/4.4-planning/samples)
-- Choose your favorite sample and start from there
+- From the root of the entire repo, make sure lerna is installed globally by using ```npm install -g lerna```
+- From the root of the entire repo, run ```lerna bootstrap --hoist``` to setup dependencies
+- From the root of the entire repo, run ```npm run build``` to setup dependencies
+- Choose your favorite sample under the samples directory
+- Navigate to the selected sample in a command line
+- On the sample directory ```npm run build```
+- On the sample directory ```npm run start``` to start the bot
 
 ## How to use AdaptiveDialog in Json
 
