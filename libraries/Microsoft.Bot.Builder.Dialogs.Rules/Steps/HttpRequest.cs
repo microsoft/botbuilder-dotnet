@@ -35,25 +35,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 
         public Dictionary<string, string> Header { get; set; }
 
-        public string Body { get; set; }
+        public JObject Body { get; set; }
 
         private static readonly HttpClient client = new HttpClient();
 
-        public HttpRequest(HttpMethod method, string url, string responseProperty, Dictionary<string, string> header = null, string body = null)
+        public HttpRequest(HttpMethod method, string url, string responseProperty, Dictionary<string, string> header = null, JObject body = null)
         {
-
             this.Method = method;
-            this.Url = url;
+            this.Url = url ?? throw new ArgumentNullException(nameof(url));
             this.ResponseProperty = responseProperty;
-            if (header != null)
-            {
-                this.Header = header;
-            }
-            
-            if (body != null)
-            {
-                this.Body = body;
-            }
+            this.Header = header;
+            this.Body = body;
         }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -62,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
             JObject instanceBody = null;
             try
             {
-                instanceBody = this.Body != null ? JObject.Parse(this.Body) : null;
+                instanceBody = this.Body;
             }
             catch
             {
