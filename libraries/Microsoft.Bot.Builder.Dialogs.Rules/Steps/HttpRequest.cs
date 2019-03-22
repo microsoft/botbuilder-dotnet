@@ -35,11 +35,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 
         public Dictionary<string, string> Header { get; set; }
 
-        public JObject Body { get; set; }
+        public string Body { get; set; }
 
         private static readonly HttpClient client = new HttpClient();
 
-        public HttpRequest(HttpMethod method, string url, string responseProperty, Dictionary<string, string> header = null, JObject body = null)
+        public HttpRequest(HttpMethod method, string url, string responseProperty, Dictionary<string, string> header = null, string body = null)
         {
 
             this.Method = method;
@@ -59,7 +59,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Single command running with a copy of the original data
-            var instanceBody = (JObject)this.Body?.DeepClone();
+            JObject instanceBody = null;
+            try
+            {
+                instanceBody = this.Body != null ? JObject.Parse(this.Body) : null;
+            }
+            catch
+            {
+                return await dc.EndDialogAsync();
+            }
+
             var instanceHeader = Header == null ? null: new Dictionary<string, string>(Header);
             var instanceUrl = this.Url;
 
