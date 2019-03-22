@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         public TestBotLG(TestBotAccessors accessors)
         {
             // load LG file into engine
-            engine = TemplateEngine.FromFile(GetLGResourceFile("7.LG"));
+            engine = TemplateEngine.FromFile(GetLGResourceFile("8.LG"));
         }
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
@@ -49,6 +49,18 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                     reply.Attachments = new List<Attachment>();
                     reply.Attachments.Add(card.ToAttachment());
                     await turnContext.SendActivityAsync(reply);
+                }
+                else if (turnContext.Activity.Text.ToLower().Contains("weather")) 
+                {
+                    var temp = new
+                    {
+                        partOfDay = "morning",
+                        isAGoodDay = "true",
+                        high = "75",
+                        low = "33"
+                    };
+
+                    await turnContext.SendActivityAsync(engine.EvaluateTemplate("WeatherForecast", temp));
                 }
                 else
                 {
