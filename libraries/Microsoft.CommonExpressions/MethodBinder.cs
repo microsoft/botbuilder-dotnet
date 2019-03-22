@@ -24,18 +24,22 @@ namespace Microsoft.Expressions
 
         private static readonly Dictionary<string, EvaluationDelegate> FunctionMap = new Dictionary<string, EvaluationDelegate>
         {
-            {"/", BuildinFunctions.Div},
-            {"*", BuildinFunctions.Mul},
-            {"+", BuildinFunctions.Add},
-            {"-", BuildinFunctions.Sub},
-            {"==", BuildinFunctions.Equal},
-            {"!=", BuildinFunctions.NotEqual},
+            {"div", BuildinFunctions.Div},
+            {"mul", BuildinFunctions.Mul},
+            {"add", BuildinFunctions.Add},
+            {"sub", BuildinFunctions.Sub},
+            {"equals", BuildinFunctions.Equal},
+            {"notEquals", BuildinFunctions.NotEqual},
             {"max", BuildinFunctions.Max},
             {"min", BuildinFunctions.Min},
-            {"<", BuildinFunctions.LessThan},
-            {"<=", BuildinFunctions.LessThanOrEqual},
-            {">", BuildinFunctions.GreaterThan},
-            {">=", BuildinFunctions.GreaterThanOrEqual},
+            {"less", BuildinFunctions.LessThan},
+            {"lessOrEquals", BuildinFunctions.LessThanOrEqual},
+            {"greater", BuildinFunctions.GreaterThan},
+            {"greaterOrEquals", BuildinFunctions.GreaterThanOrEqual},
+            {"exp", BuildinFunctions.Pow},
+            {"and", BuildinFunctions.And},
+            {"or", BuildinFunctions.Or},
+            {"not", BuildinFunctions.Not},
         };
 
 

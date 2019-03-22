@@ -11,6 +11,29 @@ namespace Microsoft.Expressions
         private readonly GetMethodDelegate GetMethod;
         private object Scope;
 
+        public static readonly Dictionary<string, string> BinaryOperatorFunctions= new Dictionary<string, string>
+        {
+            {"^", "exp"},
+            {"/", "div"},
+            {"*", "mul"},
+            {"+", "add"},
+            {"-", "sub"},
+            {"==", "equals"},
+            {"!=", "notEquals"},
+            {"<", "less"},
+            {"<=", "lessOrEquals"},
+            {">", "greater"},
+            {">=", "greaterOrEquals"},
+            {"&&", "and"},
+            {"||", "or"}
+        };
+
+        public static readonly Dictionary<string, string> UnaryOperatorFunctions = new Dictionary<string, string>
+        {
+            {"!", "not"},
+        };
+
+
         public ExpressionEvaluator(GetValueDelegate getValue = null, GetMethodDelegate getMethod = null)
         {
             GetValue = getValue;
@@ -34,10 +57,20 @@ namespace Microsoft.Expressions
             return parameters;
         }
 
+        public override object VisitUnaryOpExp([NotNull] ExpressionParser.UnaryOpExpContext context)
+        {
+            var unaryOperationName = context.GetChild(0).GetText();
+            var methodName = UnaryOperatorFunctions[unaryOperationName];
+            var method = GetMethod(methodName);
+            var value = Visit(context.expression());
+            return method(new List<object> { value });
+        }
+
         public override object VisitBinaryOpExp([NotNull] ExpressionParser.BinaryOpExpContext context)
         {
             var binaryOperationName = context.GetChild(1).GetText();
-            var method = MethodBinder.All(binaryOperationName);
+            var methodName = BinaryOperatorFunctions[binaryOperationName];
+            var method = GetMethod(methodName);
 
             var left = Visit(context.expression(0));
             var right = Visit(context.expression(1));
@@ -93,8 +126,8 @@ namespace Microsoft.Expressions
             if (int.TryParse(context.GetText(), out var intValue))
                 return intValue;
 
-            if (float.TryParse(context.GetText(), out var floatValue))
-                return floatValue;
+            if (double.TryParse(context.GetText(), out var doubleValue))
+                return doubleValue;
 
             throw new Exception($"{context.GetText()} is not a number.");
         }

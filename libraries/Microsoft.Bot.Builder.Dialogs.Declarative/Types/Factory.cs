@@ -104,9 +104,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.IntentRule", typeof(IntentRule));
             Register("Microsoft.EventRule", typeof(EventRule));
             Register("Microsoft.FallbackRule", typeof(FallbackRule));
-            Register("Microsoft.IfPropertyRule", typeof(IfPropertyRule));
+            //Register("Microsoft.IfPropertyRule", typeof(IfPropertyRule));
             Register("Microsoft.ReplacePlanRule", typeof(ReplacePlanRule));
-            Register("Microsoft.UtteranceRecognizeRule", typeof(UtteranceRecognizeRule));
+            //Register("Microsoft.UtteranceRecognizeRule", typeof(UtteranceRecognizeRule));
             Register("Microsoft.WelcomeRule", typeof(WelcomeRule));
 
             // Steps
@@ -117,6 +117,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.IfProperty", typeof(IfProperty));
             Register("Microsoft.SendActivity", typeof(SendActivity));
             Register("Microsoft.WaitForInput", typeof(WaitForInput));
+            Register("Microsoft.SaveEntity", typeof(SaveEntity));
+            Register("Microsoft.ChangeList", typeof(ChangeList));
+            Register("Microsoft.SendList", typeof(SendList));
+            Register("Microsoft.ClearProperty", typeof(ClearProperty));
 
             // Dialogs
             Register("Microsoft.ComponentDialog", typeof(ComponentDialog), new ComponentDialogLoader());

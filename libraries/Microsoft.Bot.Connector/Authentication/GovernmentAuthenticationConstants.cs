@@ -18,12 +18,12 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// TO GOVERNMENT CHANNEL FROM BOT: Login URL
         /// </summary>
-        public const string ToChannelFromBotLoginUrl = "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/oauth2/v2.0/token";
+        public const string ToChannelFromBotLoginUrl = "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e";
 
         /// <summary>
         /// TO GOVERNMENT CHANNEL FROM BOT: OAuth scope to request
         /// </summary>
-        public const string ToChannelFromBotOAuthScope = "https://api.botframework.us/.default";
+        public const string ToChannelFromBotOAuthScope = "https://api.botframework.us";
 
         /// <summary>
         /// TO BOT FROM GOVERNMENT CHANNEL: Token issuer

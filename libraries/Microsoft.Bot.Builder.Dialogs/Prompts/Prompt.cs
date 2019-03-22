@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Dynamic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -132,7 +133,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 if (Property != null)
                 {
-                    dc.State.User[Property] = recognized.Value;
+                    dc.State.SetValue(Property, recognized.Value);
                 }
 
                 return await dc.EndDialogAsync(recognized.Value).ConfigureAwait(false);
@@ -162,8 +163,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var state = (IDictionary<string, object>)((StateMap)instance.State)[PersistedState];
-            var options = (TPromptOptions)((StateMap)instance.State)[PersistedOptions];
+            var state = (IDictionary<string, object>)((Dictionary<string, object>)instance.State)[PersistedState];
+            var options = (TPromptOptions)((Dictionary<string, object>)instance.State)[PersistedOptions];
             await OnPromptAsync(turnContext, state, options, false).ConfigureAwait(false);
         }
 
@@ -196,6 +197,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                     msg = ChoiceFactory.SuggestedAction(choices, text);
                     break;
 
+                case ListStyle.HeroCard:
+                    msg = ChoiceFactory.HeroCard(choices, text);
+                    break;
+
                 case ListStyle.None:
                     msg = Activity.CreateMessageActivity();
                     msg.Text = text;
@@ -206,16 +211,22 @@ namespace Microsoft.Bot.Builder.Dialogs
                     break;
             }
 
-            // Update prompt with text and actions
+            // Update prompt with text, actions and attachments
             if (prompt != null)
             {
                 // clone the prompt the set in the options (note ActivityEx has Properties so this is the safest mechanism)
                 prompt = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(prompt));
 
                 prompt.Text = msg.Text;
+
                 if (msg.SuggestedActions != null && msg.SuggestedActions.Actions != null && msg.SuggestedActions.Actions.Count > 0)
                 {
                     prompt.SuggestedActions = msg.SuggestedActions;
+                }
+
+                if (msg.Attachments != null && msg.Attachments.Any())
+                {
+                    prompt.Attachments = msg.Attachments;
                 }
 
                 return prompt;

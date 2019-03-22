@@ -24,13 +24,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             PopCommands(dc);
 
-            if (dc.Stack.Count > 0 || dc.ParentContext == null)
+            if (dc.Stack.Count > 1 || dc.Parent == null)
             {
                 return await dc.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                var turnResult = await dc.ParentContext.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
+                var turnResult = await dc.Parent.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
                 turnResult.ParentEnded = true;
                 return turnResult;
             }
@@ -40,13 +40,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             PopCommands(dc);
 
-            if (dc.Stack.Count > 0 || dc.ParentContext == null)
+            if (dc.Stack.Count > 0 || dc.Parent == null)
             {
                 return await dc.ReplaceDialogAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                var turnResult = await dc.ParentContext.ReplaceDialogAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
+                var turnResult = await dc.Parent.ReplaceDialogAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
                 turnResult.ParentEnded = true;
                 return turnResult;
             }
@@ -56,13 +56,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             PopCommands(dc);
 
-            if (dc.Stack.Count > 0 || dc.ParentContext == null)
+            if (dc.Stack.Count > 0 || dc.Parent == null)
             {
                 return await dc.ReplaceDialogAsync(dc.ActiveDialog.Id, options, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                var turnResult = await dc.ParentContext.ReplaceDialogAsync(dc.ParentContext.ActiveDialog.Id, options, cancellationToken).ConfigureAwait(false);
+                var turnResult = await dc.Parent.ReplaceDialogAsync(dc.Parent.ActiveDialog.Id, options, cancellationToken).ConfigureAwait(false);
                 turnResult.ParentEnded = true;
                 return turnResult;
             }
@@ -72,13 +72,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             PopCommands(dc);
 
-            if (dc.Stack.Count > 0 || dc.ParentContext == null)
+            if (dc.Stack.Count > 0 || dc.Parent == null)
             {
                 return await dc.CancelAllDialogsAsync(cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                var turnResult = await dc.ParentContext.CancelAllDialogsAsync(cancellationToken).ConfigureAwait(false);
+                var turnResult = await dc.Parent.CancelAllDialogsAsync(cancellationToken).ConfigureAwait(false);
                 turnResult.ParentEnded = true;
                 return turnResult;
             }

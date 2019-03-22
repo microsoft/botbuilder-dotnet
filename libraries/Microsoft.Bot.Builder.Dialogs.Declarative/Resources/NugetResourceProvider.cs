@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             if (this.folderResourceSource == null)
             {
                 var packages = Path.GetFullPath("packages");
-                while (!Directory.Exists(packages))
+                while (!Directory.Exists(packages) && Path.GetDirectoryName(packages) != Path.GetPathRoot(packages))
                 {
                     packages = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(packages), @"..\packages"));
                     if (packages == null)

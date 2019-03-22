@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Expressions;
 using Microsoft.Bot.Builder.Dialogs.Expressions;
+using Microsoft.Bot.Builder.Dialogs.Rules.Expressions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(IExpressionEval);
+            return objectType == typeof(IExpression);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
