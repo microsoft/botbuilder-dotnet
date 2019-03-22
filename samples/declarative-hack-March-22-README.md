@@ -43,6 +43,7 @@ Feel free to explorer and follow any scenario you want. Form filling and task co
 rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 11 - HttpRequest\HttpRequest.main.dialog"), resourceProvider);
 ```
 - Run the project and open in the emulator!
+- Editor hint: Visual Studio does not support our json schemas. Use Visual Studio Code to edit json files!
 - Troubleshooting: If your bot does not respond, double check that the port in which your bot is running matches the bot file in the project.
 
 ## How to use AdaptiveDialog in code
