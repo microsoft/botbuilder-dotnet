@@ -1,0 +1,15 @@
+{
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "rules": [
+        {
+            "$type": "Microsoft.DefaultRule",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Start Stand up intent\n"
+                }
+            ]
+        }
+    ]
+}

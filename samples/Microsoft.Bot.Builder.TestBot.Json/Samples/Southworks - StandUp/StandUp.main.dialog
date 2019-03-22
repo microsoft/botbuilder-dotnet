@@ -1,0 +1,63 @@
+{
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "recognizer": {
+        "$type": "Microsoft.RegexRecognizer",
+        "intents": {
+            "Start": "(?i)(?:start|init) .*(?:sup|standup|stand-up|meeting)",
+            "ShowMembers": "(?i)(?:show|see) .*(?:members|team)",
+            "ViewStandUp": "(?i)(?:view|show|see) .*(?:data|stand-up)",
+            "ClearAll": "(?i)(?:delete|remove|clear) (?:all)",
+            "HelpIntent": "(?i)help"
+        }
+    },
+    "rules": [
+        {
+            "$type": "Microsoft.DefaultRule",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Hi! I'm a Stand-Up bot. Say \"start meeting\" to get started."
+                }
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "Start",
+            "steps": [
+                "Start"
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "ShowMembers",
+            "steps": [
+                "ShowMembers"
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "ViewStandUp",
+            "steps": [
+                "ViewStandUp"
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "ClearAll",
+            "steps": [
+                "ClearAll"
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "HelpIntent",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "I can add a stand up meeting, show team's commitments, and clear all commitments\n"
+                }
+           ]
+        }
+    ]
+}
