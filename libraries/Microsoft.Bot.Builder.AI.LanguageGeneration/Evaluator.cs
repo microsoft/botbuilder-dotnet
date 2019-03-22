@@ -166,7 +166,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 var result = EvalByExpressionEngine(exp, CurrentTarget().Scope); 
 
                 if ((result is Boolean r1 && r1 == false) ||
-                    (result is int r2 && r2 == 0))
+                    (result is int r2 && r2 == 0) ||
+                    result == null)
                 {
                     return false;
                 }

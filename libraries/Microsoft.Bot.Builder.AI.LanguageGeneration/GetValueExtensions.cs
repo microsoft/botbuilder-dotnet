@@ -36,17 +36,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
         public object GetValueX(object instance, object property)
         {
-            try
+            // EvaluateTemplate with the auto property binder first
+            var result = PropertyBinder.Auto(instance, property);
+
+            if (result == null)
             {
-                // EvaluateTemplate with the auto property binder first
-              
-                var result = PropertyBinder.Auto(instance, property);
-                return result;
-            }
-            catch (Exception ex)
-            {
-                // If sth wrong, we chech this indentifier is a templateName or not
-                // Which means, normal property has high priority here
+                // check if it's a template function
                 if (property is string s)
                 {
                     if (_evaluator.Context.TemplateContexts.ContainsKey(s))
@@ -54,10 +49,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                         return s;
                     }
                 }
-                return ((dynamic)instance)[property];
             }
 
-            
+            return result;
         }
     }
 }
