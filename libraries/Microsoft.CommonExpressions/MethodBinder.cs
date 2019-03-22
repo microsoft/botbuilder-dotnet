@@ -55,7 +55,7 @@ namespace Microsoft.Expressions
 
     /// <summary>
     /// Wrap a GetMethodDelegate, returns a new delegate that throw the right exceptions
-    /// a 3rd party GetMethodDelegate needs to be wrapped into this, to work best with the rest
+    /// 1st and 3rd party GetMethodDelegate needs to be wrapped into this, to work best with the rest
     /// </summary>
     class GetMethodDelegateWrapper
     {

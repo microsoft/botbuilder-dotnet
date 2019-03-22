@@ -61,13 +61,15 @@ namespace Microsoft.Expressions
                 getMethod = getMethod ?? MethodBinder.All;
 
                 var wrappedGetMethod = new GetMethodDelegateWrapper(getMethod);
-                var evaluator = new ExpressionEvaluator(getValue, wrappedGetMethod.GetMethod);
+                var wrappedGetValue = new GetValueDelegateWrapper(getValue);
+
+                var evaluator = new ExpressionEvaluator(wrappedGetValue.GetValue, wrappedGetMethod.GetMethod);
 
                 return evaluator.Evaluate(parseTree, scope);
             }
             catch (Exception e)
             {
-                string msg = $"Error occurs when evaluating: {parseTree.GetText()}, Error: ${e.Message}";
+                string msg = $"Error occurs when evaluating: {parseTree.GetText()}, Error: {e.Message}";
                 throw new ExpressionEvaluationException(msg);
             }
         }

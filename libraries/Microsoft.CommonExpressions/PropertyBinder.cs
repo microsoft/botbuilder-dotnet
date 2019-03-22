@@ -25,7 +25,7 @@ namespace Microsoft.Expressions
         {
             if (instance == null)
             {
-                return null;
+                throw new GetPropertyValueFailException($"getting property {property.ToString()} on null");
             }
 
             if (instance is IDictionary<string, object> || instance is IDictionary)
@@ -78,5 +78,29 @@ namespace Microsoft.Expressions
         };
     }
 
+    /// <summary>
+    /// Wrap a GetMethodDelegate, returns a new delegate that throw the right exceptions
+    /// 1st and 3rd party GetMethodDelegate needs to be wrapped into this, to work best with the rest
+    /// </summary>
+    class GetValueDelegateWrapper
+    {
+        // this is a wrapper to help throw proper exceptions
+        private readonly GetValueDelegate _getValue = null;
+        public GetValueDelegateWrapper(GetValueDelegate getValue)
+        {
+            _getValue = getValue;
+        }
 
+        public object GetValue(object instance, object property)
+        {
+            try
+            {
+                return _getValue(instance, property);
+            }
+            catch (Exception e)
+            {
+                throw new GetPropertyValueFailException($"Can't not get property {property.ToString()} on {instance}, error: {e.Message}");
+            }
+        }
+    }
 }

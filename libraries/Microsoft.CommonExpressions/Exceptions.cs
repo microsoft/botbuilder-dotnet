@@ -29,8 +29,17 @@ namespace Microsoft.Expressions
         {
         }
     }
+    
+    public class GetPropertyValueFailException: ExpressionEvaluationException
+    {
+        public GetPropertyValueFailException(string message)
+            :base(message)
+        {
 
-    public class ExpressionPropertyMissingException : Exception
+        }
+    }
+
+    public class ExpressionPropertyMissingException : ExpressionEvaluationException
     {
         public ExpressionPropertyMissingException(string message = null)
             : base(message)

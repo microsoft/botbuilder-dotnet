@@ -58,6 +58,7 @@ namespace Microsoft.Expressions.Tests
             Test("add()"), // arg count doesn't match
             Test("func()"), // no such func
             Test("add(five, six)"), // no such variables
+            Test("a.b.c"), // eval error
         };
 
         [DataTestMethod]
@@ -86,6 +87,8 @@ namespace Microsoft.Expressions.Tests
             try
             {
                 ExpressionEngine.Evaluate(exp, scope);
+                Assert.Fail($"{exp} should not evaluate sucesss");
+
             }
             catch (Exception e)
             {
