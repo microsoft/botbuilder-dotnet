@@ -21,6 +21,7 @@ Currently, we are light on documentation. However, there are few samples to help
 -   See [here](./LG-file-format.md) for an overivew of the LG file format. 
 -	In Microsoft.Bot.Bbuilder.Testbot.Json , the [samples](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog/samples/Microsoft.Bot.Builder.TestBot.Json/Samples) folder includes a series of bots defined declaratively, showing the different dialog/ prompts and available steps. 
 -	The [LG](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog/samples/Microsoft.Bot.Builder.TestBot.Json/LG) folder includes list of .lg files explaining various features and functionality  of the new local LG library
+-	Checkout the [Supported types Cheat sheet](https://github.com/Microsoft/botbuilder-dotnet/blob/ComposableDialog/samples/README.md)
 
 ## Reporting Bugs 
 -	Simply create a new issue on the botbuilder-dotnet repo. Use this [link](https://github.com/Microsoft/botbuilder-dotnet/issues/new?template=-net-sdk-bug.md) 
@@ -29,6 +30,13 @@ Currently, we are light on documentation. However, there are few samples to help
 
 ## What bot should I build?
 Feel free to explorer and follow any scenario you want. Form filling and task completion are the good candidate like Ice cream (or Pizza) ordering, managing lists of Todo, Alarm Bot; booking a table; etc.  In the process of creating your bot’s dialog, try to include new elements and combine different parts like LG, Memory and Decelerative. 
+
+## How to use AdaptiveDialog in NodeJs
+
+- Enlist in botbuilder-js
+- Checkout stevenic/4.4-planning branch
+- AdaptiveDialog samples can be found [here](https://github.com/Microsoft/botbuilder-js/tree/stevenic/4.4-planning/samples)
+- Choose your favorite sample and start from there
 
 ## How to use AdaptiveDialog in Json
 
@@ -46,7 +54,7 @@ rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Plan
 - *Editor hint:* Visual Studio does not support our json schemas. Use Visual Studio Code to edit json files!
 - *Troubleshooting:* If your bot does not respond, double check that the port in which your bot is running matches the bot file in the project.
 
-## How to use AdaptiveDialog in code
+## How to use AdaptiveDialog in C#
 
 - Enlist in botbuilder-dotnet
 - Checkout the ComposableDialog branch
