@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Dialogs.Expressions
+namespace Microsoft.Expressions
 {
     public class Binary : Expression
     {
@@ -11,11 +12,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Expressions
         {
             Left = left;
             Right = right;
+            GetBinaryEvaluator();
         }
 
         public Expression Left { get; }
 
         public Expression Right { get; }
+
+        protected virtual ExpressionEvaluator GetBinaryEvaluator()
+        {
+            return BuiltInFunctions.GetBinaryEvaluator(Type);
+        }
+
+        public override async Task<object> Evaluate(IDictionary<string, object> state)
+        {
+            return await GetBinaryEvaluator()(new List<object> { await Left.Evaluate(state), await Right.Evaluate(state) });
+        }
 
         public override string ToString()
         {

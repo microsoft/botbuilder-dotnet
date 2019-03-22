@@ -5,20 +5,20 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Expressions;
+using Microsoft.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 {
     public class IfPropertyCondition
     {
-        public IExpressionEval Expression { get; set; }
+        public IExpression Expression { get; set; }
 
         public List<IDialog> Steps { get; set; }
     }
 
     public class IfProperty : DialogCommand, IDialogDependencies
     {
-        public IExpressionEval Expression { get; set; }
+        public IExpression Expression { get; set; }
 
         public List<IDialog> IfTrue { get; set; } = new List<IDialog>();
 
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
             // Ensure planning context
             if (dc is PlanningContext planning)
             {
-                var conditionResult = (bool)await Expression.Evaluate(dc.State);
+                var conditionResult = (bool)await Expression.Parse.Evaluate(dc.State);
 
                 var stepsToRun = conditionResult ? IfTrue : IfFalse;
 

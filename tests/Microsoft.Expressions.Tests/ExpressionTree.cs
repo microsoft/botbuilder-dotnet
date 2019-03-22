@@ -9,7 +9,7 @@ namespace Microsoft.Expressions.Tests
         [TestMethod]
         public void ExprTree()
         {
-            var t1 = ExpressionEngine.Parse("{a} > 3");
+            var t1 = new ExpressionEngine().Parse("{a} > 3");
             Console.WriteLine(t1);
         } 
     }

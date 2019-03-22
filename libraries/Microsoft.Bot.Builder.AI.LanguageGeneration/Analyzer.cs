@@ -131,7 +131,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         private List<string> AnalyzeExpression(string exp)
         {
             exp = exp.TrimStart('{').TrimEnd('}');
-            var parseTree = ExpressionEngine.Parse(exp);
+            // TODO: How do I bind to the function lookup here?
+            var parseTree = new ExpressionEngine().Parse(exp);
             return AnalyzeParserTree(parseTree);
         }
 

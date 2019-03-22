@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Dialogs.Expressions
+namespace Microsoft.Expressions
 {
     public class NAry : Expression
     {
@@ -14,6 +15,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Expressions
         }
 
         public Expression[] Children { get; }
+
+        protected virtual ExpressionEvaluator GetNAryEvaluator()
+        {
+            return BuiltInFunctions.GetNAryEvaluator(Type);
+        }
+
+        public override async Task<object> Evaluate(IDictionary<string, object> state)
+        {
+            var args = new List<object>();
+            foreach(var child in Children)
+            {
+                args.Add(child.Evaluate(state));
+            }
+            return await GetNAryEvaluator()(args);
+        }
 
         public override string ToString()
         {

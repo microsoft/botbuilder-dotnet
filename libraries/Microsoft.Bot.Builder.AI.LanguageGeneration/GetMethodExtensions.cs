@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Expressions;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
     public interface IGetMethod
     {
-        EvaluationDelegate GetMethodX(string name);
+        ExpressionEvaluator GetMethodX(string name);
     }
 
     class GetMethodExtensions : IGetMethod
@@ -18,14 +19,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         // This ensentially make all functions as closure
         // This is perticularly used for using templateName as lambda
         // Such as {foreach(alarms, ShowAlarm)}
-        private readonly Evaluator _evaluator;
-        public GetMethodExtensions(Evaluator evaluator)
+        private readonly TemplateEvaluator _evaluator;
+        public GetMethodExtensions(TemplateEvaluator evaluator)
         {
             _evaluator = evaluator;
         }
 
         // 
-        public EvaluationDelegate GetMethodX(string name)
+        public ExpressionEvaluator GetMethodX(string name)
         {
             switch (name)
             {
@@ -39,30 +40,29 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 case "mapjoin":
                 case "humanize":
                     return this.ForeachThenJoin;
-                default:
-                    return MethodBinder.All(name);
             }
+            throw new ArgumentException($"Unknown function {name} in expression.");
         }
 
-        public object Count(IReadOnlyList<object> parameters)
+        public Task<object> Count(IReadOnlyList<object> parameters)
         {
             if (parameters[0] is IList li)
             {
-                return li.Count;
+                return Task.FromResult<object>(li.Count);
             }
             throw new NotImplementedException();
         }
 
-        public object Join(IReadOnlyList<object> parameters)
+        public Task<object> Join(IReadOnlyList<object> parameters)
         {
+            object result = null;
             if (parameters.Count == 2 &&
                 parameters[0] is IList p0 &&
                 parameters[1] is String sep)
             {
-                return String.Join(sep + " ", p0.OfType<object>().Select(x => x.ToString())); // "," => ", " 
+                result = String.Join(sep + " ", p0.OfType<object>().Select(x => x.ToString())); // "," => ", " 
             }
-
-            if (parameters.Count == 3 &&
+            else if (parameters.Count == 3 &&
                 parameters[0] is IList li &&
                 parameters[1] is String sep1 &&
                 parameters[2] is String sep2)
@@ -72,18 +72,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
                 if (li.Count < 3)
                 {
-                    return String.Join(sep2, li.OfType<object>().Select(x => x.ToString()));
+                    result = String.Join(sep2, li.OfType<object>().Select(x => x.ToString()));
                 }
                 else
                 {
                     var firstPart = String.Join(sep1, li.OfType<object>().TakeWhile(o => o != null && o != li.OfType<object>().LastOrDefault()));
-                    return firstPart + sep2 + li.OfType<object>().Last().ToString();
+                    result = firstPart + sep2 + li.OfType<object>().Last().ToString();
                 }
             }
-            throw new NotImplementedException();
+            return Task.FromResult(result);
         }
 
-        public object Foreach(IReadOnlyList<object> parameters)
+        public Task<object> Foreach(IReadOnlyList<object> parameters)
         {
             if (parameters.Count == 2 && 
                 parameters[0] is IList li && 
@@ -101,13 +101,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     return evaled;
                 }).ToList();
 
-                return result;
+                return Task.FromResult<object>(result);
             }
 
             throw new NotImplementedException();
         }
 
-        public object ForeachThenJoin(IReadOnlyList<object> parameters)
+        public Task<object> ForeachThenJoin(IReadOnlyList<object> parameters)
         {
             if (parameters.Count >= 2 &&
                 parameters[0] is IList li &&
@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
                 var newParameter = parameters.Skip(2).ToList();
                 newParameter.Insert(0, result);
-                return this.Join(newParameter);
+                return Task.FromResult<object>(this.Join(newParameter));
                 
             }
 

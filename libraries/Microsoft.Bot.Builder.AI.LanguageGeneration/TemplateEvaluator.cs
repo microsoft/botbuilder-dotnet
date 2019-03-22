@@ -22,23 +22,22 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         public string TemplateName { get; set; }
         public object Scope { get; set; }
     }
-    class Evaluator: LGFileParserBaseVisitor<string>
+
+    class TemplateEvaluator: LGFileParserBaseVisitor<string>
     { 
         public readonly EvaluationContext Context;
 
         private readonly IGetMethod GetMethodX;
         private readonly IGetValue GetValueX;
-
         
-        private Stack<EvaluationTarget> evalutationTargetStack = new Stack<EvaluationTarget>();
+        private Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
-        public Evaluator(EvaluationContext context, IGetMethod getMethod, IGetValue getValue)
+        public TemplateEvaluator(EvaluationContext context, IGetMethod getMethod, IGetValue getValue)
         {
             Context = context;
             GetMethodX = getMethod ?? new GetMethodExtensions(this);
             GetValueX = getValue ?? new GetValueExtensions(this);
         }
-
 
         public string EvaluateTemplate(string templateName, object scope)
         {
@@ -47,15 +46,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 throw new Exception($"No such template: {templateName}");
             }
 
-            if (evalutationTargetStack.Any(e => e.TemplateName == templateName))
+            if (evaluationTargetStack.Any(e => e.TemplateName == templateName))
             { 
-                throw new Exception($"Loop deteced: {String.Join(" => ", evalutationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                throw new Exception($"Loop deteced: {String.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
             // Using a stack to track the evalution trace
-            evalutationTargetStack.Push(new EvaluationTarget(templateName, scope)); 
+            evaluationTargetStack.Push(new EvaluationTarget(templateName, scope)); 
             string result = Visit(Context.TemplateContexts[templateName]);
-            evalutationTargetStack.Pop();
+            evaluationTargetStack.Pop();
 
             return result;
         }
@@ -218,7 +217,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         private EvaluationTarget CurrentTarget()
         {
             // just don't want to write evaluationTargetStack.Peek() everywhere
-            return evalutationTargetStack.Peek();
+            return evaluationTargetStack.Peek();
         }
 
         private string EvalMultiLineText(string exp)

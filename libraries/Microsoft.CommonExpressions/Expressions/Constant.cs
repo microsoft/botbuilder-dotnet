@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Dialogs.Expressions
+namespace Microsoft.Expressions
 {
     public class Constant: Expression
     {
@@ -13,5 +14,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Expressions
         }
 
         public object Value { get; }
+
+        public override Task<object> Evaluate(IDictionary<string, object> state)
+        {
+            return Task.FromResult(Value);
+        }
     }
 }

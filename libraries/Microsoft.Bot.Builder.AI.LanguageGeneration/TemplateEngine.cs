@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Antlr4.Runtime;
 using System.IO;
 using System.Diagnostics;
 using System.Linq;
+using Antlr4.Runtime;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         public string EvaluateTemplate(string templateName, object scope, IGetValue valueBinder = null, IGetMethod methodBinder = null)
         {
 
-            var evaluator = new Evaluator(evaluationContext, methodBinder, valueBinder);
+            var evaluator = new TemplateEvaluator(evaluationContext, methodBinder, valueBinder);
             return evaluator.EvaluateTemplate(templateName, scope);
         }
 
@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 // Step 2: constuct a new evalution context on top of the current one
                 var evaluationContext = new EvaluationContext(this.evaluationContext);
                 evaluationContext.TemplateContexts[fakeTemplateId] = context;
-                var evaluator = new Evaluator(evaluationContext, methodBinder, valueBinder);
+                var evaluator = new TemplateEvaluator(evaluationContext, methodBinder, valueBinder);
 
                 // Step 3: evaluate
                 return evaluator.EvaluateTemplate(fakeTemplateId, scope);

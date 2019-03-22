@@ -28,8 +28,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
     class GetValueExtensions : IGetValue
     {
-        private readonly Evaluator _evaluator;
-        public GetValueExtensions(Evaluator evaluator)
+        private readonly TemplateEvaluator _evaluator;
+        public GetValueExtensions(TemplateEvaluator evaluator)
         {
             _evaluator = evaluator;
         }
