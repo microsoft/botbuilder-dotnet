@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
@@ -11,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
     public class HttpRequest : DialogCommand
     {
 
-        public enum Method {
+        public enum HttpMethod {
             GET,
             POST
         }
@@ -23,44 +24,51 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 
         protected override string OnComputeId()
         {
-            return $"HttpRequest[{method}]";
+            return $"HttpRequest[{Method} {Url}]";
         }
 
-        public Method method;
+        public HttpMethod Method { get; set; }
 
-        public string url;
+        public string Url { get; set; }
 
-        public string responseProperty;
+        public string ResponseProperty { get; set; }
 
-        public Dictionary<string, string> header;
+        public Dictionary<string, string> Header { get; set; }
 
-        public JObject body;
+        public JObject Body { get; set; }
 
-        public HttpRequest(Method method, string url, string responseProperty, Dictionary<string, string> header = null, JObject body = null)
+        private static readonly HttpClient client = new HttpClient();
+
+        public HttpRequest(HttpMethod method, string url, string responseProperty, Dictionary<string, string> header = null, JObject body = null)
         {
 
-            this.method = method;
-            this.url = url;
-            this.responseProperty = responseProperty;
+            this.Method = method;
+            this.Url = url;
+            this.ResponseProperty = responseProperty;
             if (header != null)
             {
-                this.header = header;
+                this.Header = header;
             }
             
             if (body != null)
             {
-                this.body = body;
+                this.Body = body;
             }
         }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            this.url = await new TextTemplate(this.url).BindToData(dc.Context, dc.State, (property, data) => dc.State.GetValue<object>(data, property)).ConfigureAwait(false);
+            // Single command running with a copy of the original data
+            var instanceBody = (JObject)this.Body?.DeepClone();
+            var instanceHeader = Header == null ? null: new Dictionary<string, string>(Header);
+            var instanceUrl = this.Url;
+
+            instanceUrl = await new TextTemplate(this.Url).BindToData(dc.Context, dc.State, (property, data) => dc.State.GetValue<object>(data, property)).ConfigureAwait(false);
 
             // Bind each string token to the data in state
-            if (body != null)
+            if (instanceBody != null)
             {
-                foreach (var unit in this.body)
+                foreach (var unit in instanceBody)
                 {
                     if (unit.Value.Type == JTokenType.String)
                     {
@@ -69,31 +77,41 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
                 }
             }
 
-            var client = new HttpClient();
-            if (header != null)
+            // Set header
+            if (instanceHeader != null)
             {
-                foreach (var unit in header)
+                foreach (var unit in instanceHeader)
                 {
                     client.DefaultRequestHeaders.Add(
                         await new TextTemplate(unit.Key).BindToData(dc.Context, dc.State, (property, data) => dc.State.GetValue<object>(data, property)),
                         await new TextTemplate(unit.Value).BindToData(dc.Context, dc.State, (property, data) => dc.State.GetValue<object>(data, property)));
                 }
             }
+
+            
             HttpResponseMessage response = null;
 
-            if (body != null && this.method == Method.POST)
+            if (instanceBody != null && this.Method == HttpMethod.POST)
             {
-                response = await client.PostAsync(this.url, new StringContent(body.ToString(), Encoding.UTF8, "application/json"));
+                response = await client.PostAsync(instanceUrl, new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json"));
             }
 
-            if (this.method == Method.GET)
+            if (this.Method == HttpMethod.GET)
             {
-                response = await client.GetAsync(this.url);
+                response = await client.GetAsync(instanceUrl);
             }
 
             var res = response.Content.ReadAsStringAsync();
 
-            dc.State.SetValue(responseProperty, JObject.Parse(res.Result));
+            // Try set with JOjbect for further retreiving
+            try
+            {
+                dc.State.SetValue(ResponseProperty, JObject.Parse(res.Result));
+            }
+            catch
+            {
+                dc.State.SetValue(ResponseProperty, res.Result);
+            }
 
             return await dc.EndDialogAsync();
 
