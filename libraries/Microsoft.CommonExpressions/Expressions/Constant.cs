@@ -11,13 +11,24 @@ namespace Microsoft.Expressions
             : base(ExpressionType.Constant)
         {
             Value = value;
+            Children = new List<Expression>();
         }
 
         public object Value { get; }
 
-        public override Task<object> Evaluate(IDictionary<string, object> state)
+        public override (object value, string error) TryEvaluate(IReadOnlyDictionary<string, object> state)
         {
-            return Task.FromResult(Value);
+            return (Value, null);
+        }
+
+        public override void Accept(IExpressionVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
+
+        public override string ToString()
+        {
+            return Value.ToString();
         }
     }
 }

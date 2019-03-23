@@ -5,11 +5,14 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Expressions
 {
+    /// <summary>
     /// Delegate which evaluates operators operands (aka the paramters) to the result
     /// </summary>
-    public delegate Task<object> ExpressionEvaluator(IReadOnlyList<object> parameters);
+    public delegate (object value, string error) ExpressionEvaluator(
+        IReadOnlyList<Expression> parameters, 
+        IReadOnlyDictionary<string, object> state);
 
-    public abstract class Expression
+    public abstract class Expression : IExpression
     {
         public Expression(string type)
         {
@@ -18,6 +21,14 @@ namespace Microsoft.Expressions
 
         public string Type { get; }
 
-        public abstract Task<object> Evaluate(IDictionary<string, object> state);
+        public IReadOnlyList<Expression> Children { get; protected set; }
+
+        public abstract (object value, string error) TryEvaluate(IReadOnlyDictionary<string, object> vars);
+
+        public virtual void Accept(IExpressionVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
+
     }
 }

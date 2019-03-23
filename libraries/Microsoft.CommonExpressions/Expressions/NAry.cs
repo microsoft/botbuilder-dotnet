@@ -11,24 +11,22 @@ namespace Microsoft.Expressions
         public NAry(string type, IEnumerable<Expression> children)
             : base(type)
         {
-            Children = children.ToArray();
+            Children = children.ToList();
         }
-
-        public Expression[] Children { get; }
 
         protected virtual ExpressionEvaluator GetNAryEvaluator()
         {
             return BuiltInFunctions.GetNAryEvaluator(Type);
         }
 
-        public override async Task<object> Evaluate(IDictionary<string, object> state)
+        public override (object value, string error) TryEvaluate(IReadOnlyDictionary<string, object> state)
         {
-            var args = new List<object>();
-            foreach(var child in Children)
-            {
-                args.Add(child.Evaluate(state));
-            }
-            return await GetNAryEvaluator()(args);
+            return GetNAryEvaluator()(Children, state);
+        }
+
+        public override void Accept(IExpressionVisitor visitor)
+        {
+            visitor.Visit(this);
         }
 
         public override string ToString()

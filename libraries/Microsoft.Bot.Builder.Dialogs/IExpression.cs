@@ -8,9 +8,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Expressions
 {
     public interface IExpression
     {
-        Task<object> GetParseTree();
-
         Task<object> Evaluate(IDictionary<string, object> vars);
     }
-
 }

@@ -12,6 +12,7 @@ namespace Microsoft.Expressions
         {
             Left = left;
             Right = right;
+            Children = new List<Expression>() { left, right };
             GetBinaryEvaluator();
         }
 
@@ -24,9 +25,14 @@ namespace Microsoft.Expressions
             return BuiltInFunctions.GetBinaryEvaluator(Type);
         }
 
-        public override async Task<object> Evaluate(IDictionary<string, object> state)
+        public override (object value, string error) TryEvaluate(IReadOnlyDictionary<string, object> state)
         {
-            return await GetBinaryEvaluator()(new List<object> { await Left.Evaluate(state), await Right.Evaluate(state) });
+            return GetBinaryEvaluator()(Children, state);
+        }
+
+        public override void Accept(IExpressionVisitor visitor)
+        {
+            visitor.Visit(this);
         }
 
         public override string ToString()

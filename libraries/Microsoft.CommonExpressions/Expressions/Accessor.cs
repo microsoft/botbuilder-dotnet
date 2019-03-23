@@ -18,18 +18,41 @@ namespace Microsoft.Expressions
 
         public string Property { get; }
 
-        public override Task<object> Evaluate(IDictionary<string, object> state)
+        public override (object value, string error) TryEvaluate(IReadOnlyDictionary<string, object> state)
         {
-            object result = null;
+            object value;
+            string error = null;
             if (Instance == null)
             {
-                result = state[Property];
+                if (!state.TryGetValue(Property, out value))
+                {
+                    error = $"State did not have {Property}.";
+                }
             }
             else
             {
-                result = (Instance.Evaluate(state) as IDictionary<string, object>)[Property];
+                (value, error) = Instance.TryEvaluate(state);
+                if (error == null)
+                {
+                    if (value is IReadOnlyDictionary<string, object> dict)
+                    {
+                        if (!dict.TryGetValue(Property, out value))
+                        {
+                            error = $"{Instance} does not have {Property}.";
+                        }
+                    }
+                    else
+                    {
+                        error = $"{Instance} is not a dictionary.";
+                    }
+                }
             }
-            return Task.FromResult(result);
+            return (value, error);
+        }
+
+        public override void Accept(IExpressionVisitor visitor)
+        {
+            visitor.Visit(this);
         }
 
         public override string ToString()

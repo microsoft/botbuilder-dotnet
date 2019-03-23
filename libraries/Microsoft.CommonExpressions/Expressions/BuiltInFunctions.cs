@@ -8,18 +8,78 @@ namespace Microsoft.Expressions
 
     public static class BuiltInFunctions
     {
-        public static ExpressionEvaluator Add = operands =>
-                Task.FromResult(
-                    operands[0] is double double0 && operands[1] is double double1 ? double0 + double1 :
-                    operands[0] is int int0 && operands[1] is int int1 ? (object)(int0 + int1) :
-                    operands[0] is string string0 && operands[1] is string string1 ? string0 + string1 :
-                    throw new ExpressionException(ExpressionType.Add, operands));
+        public static (object value, string error) Apply(
+            Func<IReadOnlyList<dynamic>, object> function,
+            IReadOnlyList<Expression> parameters,
+            Func<object, Expression, string> valid,
+            IReadOnlyDictionary<string, object> state)
+        {
+            object value = null;
+            string error = null;
+            var args = new List<dynamic>();
+            foreach (var child in parameters)
+            {
+                (value, error) = child.TryEvaluate(state);
+                if (error != null)
+                {
+                    break;
+                }
+                error = valid(value, child);
+                if (error != null)
+                {
+                    break;
+                }
+                args.Add(value);
+            }
+            if (error == null)
+            {
+                value = function(args);
+            }
+            return (value, error);
+        }
 
-        public static ExpressionEvaluator Sub = operands =>
-                Task.FromResult(
-                    operands[0] is double double0 && operands[1] is double double1 ? double0 - double1 :
-                    operands[0] is int int0 && operands[1] is int int1 ? (object)(int0 - int1) :
-                    throw new ExpressionException(ExpressionType.Subtract, operands));
+        public static string VerifyNumber(object value, Expression expression)
+        {
+            string error = null;
+            if (!value.IsNumber())
+            {
+                error = $"{expression} is not a number.";
+            }
+            return error;
+        }
+
+        public static string VerifyPlus(object value, Expression expression)
+        {
+            string error = null;
+            if (!value.IsNumber() && !(value is string))
+            {
+                error = $"{expression} is not string or number.";
+            }
+            return error;
+        }
+
+        public static bool IsNumber(this object value)
+        {
+            return value is sbyte
+                    || value is byte
+                    || value is short
+                    || value is ushort
+                    || value is int
+                    || value is uint
+                    || value is long
+                    || value is ulong
+                    || value is float
+                    || value is double
+                    || value is decimal;
+        }
+
+        public static ExpressionEvaluator Add =
+            (parameters, state) => Apply((args) => args[0] + args[1], parameters, VerifyPlus, state);
+
+        /*
+        public static ExpressionEvaluator Sub =
+            operands =>
+                Task.FromResult<dynamic>(operands[0] - operands[1]);
 
         public static ExpressionEvaluator Mul = operands =>
                 Task.FromResult(
@@ -80,14 +140,15 @@ namespace Microsoft.Expressions
                         operands[0] is IComparable operand0 && operands[1] is IComparable operand1 ?
                         operand0.CompareTo(operand1) >= 0 :
                         throw new ExpressionException(ExpressionType.GreaterThanOrEqual, operands));
-
+*/
         // TODO: Logical expressions
 
         private static readonly Dictionary<string, ExpressionEvaluator> BinaryFunctions = new Dictionary<string, ExpressionEvaluator>
         {
+            {"+", BuiltInFunctions.Add}
+            /* ,
             {"/", BuiltInFunctions.Div},
             {"*", BuiltInFunctions.Mul},
-            {"+", BuiltInFunctions.Add},
             {"-", BuiltInFunctions.Sub},
             {"==", BuiltInFunctions.Equal},
             {"!=", BuiltInFunctions.NotEqual},
@@ -96,7 +157,7 @@ namespace Microsoft.Expressions
             {"<", BuiltInFunctions.LessThan},
             {"<=", BuiltInFunctions.LessThanOrEqual},
             {">", BuiltInFunctions.GreaterThan},
-            {">=", BuiltInFunctions.GreaterThanOrEqual},
+            {">=", BuiltInFunctions.GreaterThanOrEqual}, */
         };
 
         private static readonly Dictionary<string, ExpressionEvaluator> UnaryFunctions = new Dictionary<string, ExpressionEvaluator>

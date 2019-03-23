@@ -11,7 +11,7 @@ namespace Microsoft.Expressions
             : base(type)
         {
             Child = child;
-            GetUnaryEvaluator();
+            Children = new List<Expression>() { child };
         }
 
         public Expression Child { get; }
@@ -21,9 +21,14 @@ namespace Microsoft.Expressions
             return BuiltInFunctions.GetUnaryEvaluator(Type);
         }
 
-        public override async Task<object> Evaluate(IDictionary<string, object> state)
+        public override (object value, string error) TryEvaluate(IReadOnlyDictionary<string, object> state)
         {
-            return await GetUnaryEvaluator()(new List<object> { await Child.Evaluate(state) });
+            return GetUnaryEvaluator()(Children, state);
+        }
+
+        public override void Accept(IExpressionVisitor visitor)
+        {
+            visitor.Visit(this);
         }
 
         public override string ToString()

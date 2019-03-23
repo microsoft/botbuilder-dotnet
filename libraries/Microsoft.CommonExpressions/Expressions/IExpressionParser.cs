@@ -1,9 +1,9 @@
 ﻿using Microsoft.Expressions;
 
-namespace Microsoft.Bot.Builder.Dialogs.Expressions
+namespace Microsoft.Expressions
 {
     public interface IExpressionParser
     {
-        IExpression Parse();
+        Expression Parse();
     }
 }
