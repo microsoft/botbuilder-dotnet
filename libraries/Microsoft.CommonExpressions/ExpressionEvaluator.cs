@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 
@@ -134,6 +135,11 @@ namespace Microsoft.Expressions
 
         public override object VisitParenthesisExp([NotNull] ExpressionParser.ParenthesisExpContext context) => Visit(context.expression());
 
-        public override object VisitStringAtom([NotNull] ExpressionParser.StringAtomContext context) => context.GetText().Trim('\'');
+        public override object VisitStringAtom([NotNull] ExpressionParser.StringAtomContext context)
+        {
+            // remove '' then unescape
+            return Regex.Unescape(context.GetText().Trim('\''));
+        }
+            
     }
 }
