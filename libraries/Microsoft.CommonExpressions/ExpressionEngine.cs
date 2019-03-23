@@ -19,6 +19,35 @@ namespace Microsoft.Expressions
             return Evaluate(parser, scope, getValue, getMethod);   
         }
 
+
+        public static bool TryEvaluate(string expression,
+                               object scope,
+                               out object result,
+                               GetValueDelegate getValue = null,
+                               GetMethodDelegate getMethod = null)
+        {
+            return ExpressionEngine.TryEvaluate(expression, scope, out result, out string _);
+        }
+
+        public static bool TryEvaluate(string expression, 
+                                       object scope, 
+                                       out object result, 
+                                       out string errorMessage,
+                                       GetValueDelegate getValue = null,
+                                       GetMethodDelegate getMethod = null)
+        {
+            try
+            {
+                result = ExpressionEngine.Evaluate(expression, scope, getValue, getMethod);
+                errorMessage = null;
+                return true;
+            } catch (Exception e) {
+                errorMessage = e.Message;
+                result = null;
+                return false;
+            }
+        }
+
         /// <summary>
         /// Parse the input into ParserTree
         /// </summary>

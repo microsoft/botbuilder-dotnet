@@ -105,5 +105,33 @@ namespace Microsoft.Expressions.Tests
             Assert.AreEqual(expected, actual);
         }
 
+        [DataTestMethod]
+        [DynamicData(nameof(Data))]
+        public void TryEvaluate(string input, object expected)
+        {
+            var scope = new
+            {
+                one = 1.0,
+                two = 2.0,
+                hello = "hello",
+                world = "world",
+                bag = new
+                {
+                    three = 3.0,
+                    set = new
+                    {
+                        four = 4.0,
+                    },
+                    index = 3,
+                    list = new[] { "red", "blue" }
+                },
+                items = new string[] { "zero", "one", "two" }
+            };
+
+            object actual = null;
+            var success = ExpressionEngine.TryEvaluate(input, scope, out actual);
+            Assert.IsTrue(success);
+            Assert.AreEqual(expected, actual);
+        }
     }
 }

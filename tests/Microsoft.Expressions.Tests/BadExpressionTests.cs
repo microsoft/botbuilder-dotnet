@@ -98,5 +98,34 @@ namespace Microsoft.Expressions.Tests
             }
         }
 
+
+        [DataTestMethod]
+        [DynamicData(nameof(BadExpressions))]
+        public void TryEvaluate(string exp)
+        {
+            var scope = new
+            {
+                one = 1.0,
+                two = 2.0,
+                hello = "hello",
+                world = "world",
+                bag = new
+                {
+                    three = 3.0,
+                    set = new
+                    {
+                        four = 4.0,
+                    },
+                    index = 3,
+                    list = new[] { "red", "blue" }
+                },
+                items = new string[] { "zero", "one", "two" }
+            };
+
+            Assert.IsFalse(ExpressionEngine.TryEvaluate(exp, scope, out object result, out string msg));
+            TestContext.WriteLine(msg);
+            Assert.IsFalse(ExpressionEngine.TryEvaluate(exp, scope, out result));
+
+        }
     }
 }
