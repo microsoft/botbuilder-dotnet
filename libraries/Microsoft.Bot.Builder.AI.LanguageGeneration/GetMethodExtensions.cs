@@ -89,6 +89,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 parameters[0] is IList li && 
                 parameters[1] is string func)
             {
+                func = func.TrimStart('#');
+
                 if (!_evaluator.Context.TemplateContexts.ContainsKey(func))
                 {
                     throw new Exception($"No such template defined: {func}");
@@ -113,6 +115,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 parameters[0] is IList li &&
                 parameters[1] is string func)
             {
+                func = func.TrimStart('#');
+
                 if (!_evaluator.Context.TemplateContexts.ContainsKey(func))
                 {
                     throw new Exception($"No such template defined: {func}");
