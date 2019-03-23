@@ -162,7 +162,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("application/vnd.microsoft.card.adaptive", activity.Attachments[0].ContentType);
             Assert.AreEqual("test", (string)((dynamic)activity.Attachments[0].Content).body[0].text);
         }
-        
+
 
         [TestMethod]
         public async Task TestMultipleAttachments()
