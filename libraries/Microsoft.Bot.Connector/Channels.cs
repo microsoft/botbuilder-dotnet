@@ -13,6 +13,7 @@ namespace Microsoft.Bot.Connector
         public const string Facebook = "facebook";
         public const string Groupme = "groupme";
         public const string Kik = "kik";
+        public const string Line = "line";
         public const string Msteams = "msteams";
         public const string Skype = "skype";
         public const string Skypeforbusiness = "skypeforbusiness";
