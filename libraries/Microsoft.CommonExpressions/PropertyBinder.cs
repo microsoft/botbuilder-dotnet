@@ -32,14 +32,16 @@ namespace Microsoft.Expressions
             {
                 return Dictionary(instance, property);
             }
-            else if (instance.GetType().IsArray)
-            {
-                return ((Array)instance).GetValue((int)property);
-            }
             else if (instance is JObject)
             {
                 var jObj = instance as JObject;
                 return jObj[property] ?? null;
+            }
+            else if (instance is IList list) 
+            {
+                // this also covers JArray
+                // this must be after JObject, because JObject is also IList<JToken>
+                return list[(int)property];
             }
             return Reflection(instance, property);
         };

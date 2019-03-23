@@ -133,5 +133,29 @@ namespace Microsoft.Expressions.Tests
             Assert.IsTrue(success);
             Assert.AreEqual(expected, actual);
         }
+
+        public static IEnumerable<object[]> JsonData => new[]
+        {
+            //Test("exist(one)", true),
+            Test("items[0] == 'item1'", true),
+            // Test("'item1' == items[0]", false), // false because string.CompareTo(JValue) will get exception
+        };
+
+        [DataTestMethod]
+        [DynamicData(nameof(JsonData))]
+        public void EvaluateJSON(string input, object expected)
+        {
+            var scope = JsonConvert.DeserializeObject(@"{
+                            'one': 1,
+                            'two': 2,
+                            'hello': 'hello',
+            
+                            'items': ['item1', 'item2', 'item3']
+                        }");
+
+            var parsed = ExpressionEngine.Parse(input);
+            var actual = ExpressionEngine.Evaluate(parsed, scope);
+            Assert.AreEqual(expected, actual);
+        }
     }
 }
