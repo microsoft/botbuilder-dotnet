@@ -1,0 +1,35 @@
+{
+  "$schema": "../../app.schema",
+  "$type": "Microsoft.RuleDialog",
+  "rules": [
+    {
+      "$type": "Microsoft.WelcomeRule",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "Welcome!"
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.FallbackRule",
+      "steps": [
+        {
+          "$type": "Microsoft.IfProperty",
+          "expression": "user.name == null",
+          "ifTrue": [
+            {
+              "$type": "Microsoft.TextPrompt",
+              "property": "user.name",
+              "initialPrompt": "Hello, I'm Zoidberg. What is your name?"
+            }
+          ]
+        },
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "Hello {user.name}, nice to talk to you!"
+        }
+      ]
+    }
+  ]   
+}

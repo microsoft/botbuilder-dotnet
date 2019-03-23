@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         public PlanningContext(DialogContext dc, DialogContext parentDc, DialogSet dialogs, DialogState state, PlanningState plans)
             : base(dialogs, dc.Context, state, dc.State.Conversation, dc.State.User)
         {
-            this.ParentContext = parentDc;
+            this.Parent = parentDc;
             this.Plans = plans ?? throw new ArgumentNullException(nameof(plans));
         }
 
@@ -67,6 +67,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                 // Apply each queued set of changes
                 foreach (var change in changes)
                 {
+                    if (change.EntitiesRecognized != null && change.EntitiesRecognized.Count > 0)
+                    {
+                        var entities = this.State.Entities;
+                        foreach(var name in change.EntitiesRecognized.Keys)
+                        {
+                            if (!entities.ContainsKey(name))
+                            {
+                                entities.Add(name, change.EntitiesRecognized[name]);
+                            }
+                            else
+                            {
+                                entities[name] = change.EntitiesRecognized[name];
+                            }
+                        }
+                    }
+
                     switch (change.ChangeType)
                     {
                         case PlanChangeTypes.NewPlan:
@@ -319,7 +335,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
 
         public static PlanningContext Create(DialogContext dc, PlanningState plans)
         {
-            return new PlanningContext(dc, dc.ParentContext, dc.Dialogs, new DialogState() { DialogStack = dc.Stack }, plans);
+            return new PlanningContext(dc, dc.Parent, dc.Dialogs, new DialogState() { DialogStack = dc.Stack }, plans);
         }
 
         public static PlanningContext CreateForStep(PlanningContext planning, DialogSet dialogs)
@@ -389,5 +405,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         public List<string> Tags { get; set; }
         public List<string> EntitiesMatched { get; set; }
         public List<string> IntentsMatched { get; set; }
+        public Dictionary<string, object> EntitiesRecognized { get; set; }
     }
 }

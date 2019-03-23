@@ -294,7 +294,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                 await context.SendActivityAsync(templateActivity);
             })
                 .Send("welcome")
-                    .AssertReplyOneOf(new string[] { "Hello", "Hi" })
+                    .AssertReplyOneOf(new string[] { "Hello", "Hi", "Hi :)", "Hello :)" })
                 .StartTestAsync();
         }
 

@@ -184,7 +184,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         {
             exp = exp.TrimStart('{').TrimEnd('}');
             var result = EvalByExpressionEngine(exp, CurrentTarget().Scope);
-            return result.ToString();
+            return result?.ToString();
         }
 
         private string EvalTemplateRef(string exp)

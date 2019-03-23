@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Configuration
         public string InstrumentationKey { get; set; }
 
         /// <summary>
-        /// Gets or sets applicationId for programatic access to appInsights
+        /// Gets or sets applicationId for programatic access to appInsights.
         /// </summary>
         [JsonProperty("applicationId")]
         public string ApplicationId { get; set; }

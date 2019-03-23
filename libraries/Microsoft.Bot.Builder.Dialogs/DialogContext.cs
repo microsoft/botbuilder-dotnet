@@ -20,31 +20,41 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialogs">Parent dialog set.</param>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
         /// <param name="state">Current dialog state.</param>
-        public DialogContext(DialogSet dialogs, DialogContext parentDialogContext, DialogState state, StateMap conversationState = null, StateMap userState = null)
+        public DialogContext(DialogSet dialogs, DialogContext parentDialogContext, DialogState state, Dictionary<string, object> conversationState = null, Dictionary<string, object> userState = null)
         {
             Dialogs = dialogs;
-            ParentContext = parentDialogContext ?? throw new ArgumentNullException(nameof(parentDialogContext));
-            Context = ParentContext.Context;
+            Parent = parentDialogContext ?? throw new ArgumentNullException(nameof(parentDialogContext));
+            Context = Parent.Context;
             Stack = state.DialogStack;
-            conversationState = conversationState ?? state?.ConversationState ?? new StateMap();
-            userState = userState ?? state?.UserState ?? new StateMap();
+            conversationState = conversationState ?? state?.ConversationState ?? new Dictionary<string, object>();
+            userState = userState ?? state?.UserState ?? new Dictionary<string, object>();
+            if (!Context.TurnState.TryGetValue("TurnStateMap", out object turnState))
+            {
+                turnState = new Dictionary<string, object>();
+                Context.TurnState["TurnStateMap"] = turnState;
+            }
 
-            State = new DialogContextState(this, userState, conversationState);
+            State = new DialogContextState(this, userState: userState, conversationState: conversationState, turnState: turnState as Dictionary<string, object>);
         }
 
-        public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state, StateMap conversationState = null, StateMap userState = null)
+        public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state, Dictionary<string, object> conversationState = null, Dictionary<string, object> userState = null)
         {
-            ParentContext = null;
+            Parent = null;
             Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
             Context = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
             Stack = state.DialogStack;
-            conversationState = conversationState ?? state?.ConversationState ?? new StateMap();
-            userState = userState ?? state?.UserState ?? new StateMap();
+            conversationState = conversationState ?? state?.ConversationState ?? new Dictionary<string, object>();
+            userState = userState ?? state?.UserState ?? new Dictionary<string, object>();
+            if (!Context.TurnState.TryGetValue("TurnStateMap", out object turnState))
+            {
+                turnState = new Dictionary<string, object>();
+                Context.TurnState["TurnStateMap"] = turnState;
+            }
 
-            State = new DialogContextState(this, userState, conversationState);
+            State = new DialogContextState(this, userState: userState, conversationState: conversationState, turnState: turnState as Dictionary<string, object>);
         }
 
-        public DialogContext ParentContext { get; protected set; }
+        public DialogContext Parent { get; protected set; }
 
         public DialogSet Dialogs { get; private set; }
 
@@ -98,9 +108,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 if (activeTags == null)
                 {
                     // Get parent tags that are active
-                    if (ParentContext != null)
+                    if (Parent != null)
                     {
-                        activeTags = ParentContext.ActiveTags;
+                        activeTags = Parent.ActiveTags;
                     }
                     else
                     {
@@ -122,11 +132,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        public StateMap DialogState
+        public Dictionary<string, object> DialogState
         {
             get
             {
-                return ActiveDialog?.State as StateMap;
+                return ActiveDialog?.State as Dictionary<string, object>;
             }
         }
 
@@ -184,10 +194,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     state = Stack.Count - 1;
                 }
-                else if (ParentContext != null)
+                else if (Parent != null)
                 {
                     // We can't use -0 so index 0 in the parent's stack is encoded as -1
-                    state = 0 - ParentContext.Stack.Count;
+                    state = 0 - Parent.Stack.Count;
                 }
 
                 // Find stack entry to inherit
@@ -203,7 +213,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (state == null)
             {
-                state = new StateMap();
+                state = new Dictionary<string, object>();
             }
 
             // Push new instance onto stack.
@@ -312,14 +322,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>The dialog context.</returns>
         public Task<DialogTurnResult> CancelAllDialogsAsync(CancellationToken cancellationToken)
         {
-            return CancelAllDialogsAsync(null, null, cancellationToken);
+            return CancelAllDialogsAsync("cancelDialog", null, cancellationToken);
         }
 
         public async Task<DialogTurnResult> CancelAllDialogsAsync(string eventName = "cancelDialog", object eventValue = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             activeTags = null;
 
-            if (Stack.Any() || ParentContext != null)
+            if (Stack.Any() || Parent != null)
             {
                 // Cancel all local and parent dialogs while checking for interception
                 var notify = false;
@@ -345,7 +355,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
                     else
                     {
-                        dialogContext = dialogContext.ParentContext;
+                        dialogContext = dialogContext.Parent;
                     }
                     notify = true;
                 }
@@ -423,9 +433,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
             }
 
-            if (this.ParentContext != null)
+            if (this.Parent != null)
             {
-                return this.ParentContext.FindDialog(dialogId);
+                return this.Parent.FindDialog(dialogId);
             }
 
             return null;
@@ -468,9 +478,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
 
                 // Break out if not bubbling or no parent
-                if (!handled && dialogEvent.Bubble && ParentContext != null)
+                if (!handled && dialogEvent.Bubble && Parent != null)
                 {
-                    dc = ParentContext;
+                    dc = Parent;
                 }
                 else
                 {
@@ -560,9 +570,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                         throw new Exception("DialogContext.ActiveDialog: Can't find inherited state. Index out of range.");
                     }
                 }
-                else if (dialogContext.ParentContext != null)
+                else if (dialogContext.Parent != null)
                 {
-                    return this.GetActiveDialogState(dialogContext.ParentContext, -stateIndex - 1);
+                    return this.GetActiveDialogState(dialogContext.Parent, -stateIndex - 1);
                 }
                 else
                 {

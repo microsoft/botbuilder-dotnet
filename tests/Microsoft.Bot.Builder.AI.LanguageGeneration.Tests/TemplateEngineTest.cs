@@ -139,6 +139,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(Exception))]
         public void TestBasicLoopRef()
         {
             var engine = TemplateEngine.FromFile(GetExampleFilePath("7.lg"));

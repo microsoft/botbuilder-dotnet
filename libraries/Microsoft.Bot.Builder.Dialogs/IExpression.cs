@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Microsoft.Expressions;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Dialogs
+namespace Microsoft.Bot.Builder.Dialogs.Expressions
 {
     public interface IExpression
     {
-        string Expression { get; }
+        Task<object> GetParseTree();
 
-        Expression Parse { get; }
+        Task<object> Evaluate(IDictionary<string, object> vars);
     }
+
 }

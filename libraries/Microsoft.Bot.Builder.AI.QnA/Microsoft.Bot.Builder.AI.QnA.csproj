@@ -15,8 +15,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
-		<PackageId>Microsoft.Bot.Builder.AI.QnA</PackageId>
+		<TargetFramework>netstandard2.0</TargetFramework>		
 		<Description>Classes for using QnA Maker Cognitive Service on the Microsoft Bot Builder SDK</Description>
 		<Summary>This library implements C# classes for building bots using Microsoft Cognitive services.</Summary>
     <ContentTargetFolders>content</ContentTargetFolders>
@@ -64,7 +63,7 @@
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
     <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
-    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.1" />
+    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008" PrivateAssets="all" />
 	</ItemGroup>
 

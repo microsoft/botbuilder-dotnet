@@ -19,13 +19,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
 
         public int? ExpireAfter { get; set; }
 
-        public StateMap UserState { get; set; }
+        public Dictionary<string, object> UserState { get; set; }
     }
 
     public class StoredBotState
     {
-        public StateMap UserState { get; set; }
-        public StateMap ConversationState { get; set; }
+        public Dictionary<string, object> UserState { get; set; }
+        public Dictionary<string, object> ConversationState { get; set; }
         public List<DialogInstance> DialogStack { get; set; }
     }
 
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
 
         public IStatePropertyAccessor<BotState> BotState { get; set; }
 
-        public IStatePropertyAccessor<StateMap> UserState { get; set; }
+        public IStatePropertyAccessor<Dictionary<string, object>> UserState { get; set; }
 
         public IRecognizer Recognizer { get; set; }
 
@@ -87,15 +87,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                 Rules.ForEach(r => AddDialog(r.Steps.ToArray()));
             }
 
-            var activeDialogState = dc.ActiveDialog.State as StateMap;
+            var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
             activeDialogState["planningState"] = new PlanningState();
             var state = activeDialogState["planningState"] as PlanningState;
 
             // Persist options to dialog state
-            state.Options = options ?? new StateMap();
+            state.Options = options ?? new Dictionary<string, object>();
 
             // Initialize 'result' with any initial value
-            if (state.Options.GetType() == typeof(StateMap) && (state.Options as StateMap).ContainsKey("value"))
+            if (state.Options.GetType() == typeof(Dictionary<string, object>) && (state.Options as Dictionary<string, object>).ContainsKey("value"))
             {
                 state.Result = state.Options["value"];
             }
@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         public override async Task<DialogConsultation> ConsultDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Create a new planning context
-            var activeStateMap = (dc.ActiveDialog.State as StateMap);
+            var activeStateMap = (dc.ActiveDialog.State as Dictionary<string, object>);
             var state = activeStateMap["planningState"] as PlanningState;
 
             var planning = PlanningContext.Create(dc, state);
@@ -155,8 +155,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
 
             return new StoredBotState()
             {
-                UserState = data.ContainsKey(keys.UserState) ? data[keys.UserState] as StateMap : new StateMap(),
-                ConversationState = data.ContainsKey(keys.ConversationState) ? data[keys.ConversationState] as StateMap : new StateMap(),
+                UserState = data.ContainsKey(keys.UserState) ? data[keys.UserState] as Dictionary<string, object> : new Dictionary<string, object>(),
+                ConversationState = data.ContainsKey(keys.ConversationState) ? data[keys.ConversationState] as Dictionary<string, object> : new Dictionary<string, object>(),
                 DialogStack = data.ContainsKey(keys.DialogState) ? data[keys.DialogState] as List<DialogInstance> : new List<DialogInstance>(),
             };
         }
@@ -214,7 +214,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         public override async Task<bool> OnDialogEventAsync(DialogContext dc, DialogEvent e)
         {
             // Create a new planning context
-            var state = (dc.ActiveDialog.State as StateMap)["planningState"] as PlanningState;
+            var state = (dc.ActiveDialog.State as Dictionary<string, object>)["planningState"] as PlanningState;
             var planning = PlanningContext.Create(dc, state);
 
             // Evaluate rules and queue up any potential changes
@@ -236,14 +236,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Forward to current sequence step
-            var state = instance.State as PlanningState;
+            var state = (instance.State as Dictionary<string, object>)["planningState"] as PlanningState;
             var plan = state.Plan;
 
             if (plan?.Steps.Count > 0)
             {
                 // We need to mockup a DialogContext so that we can call RepromptDialog
                 // for the active step
-                var stepDc = new DialogContext(dialogs, turnContext, plan.Steps[0], new StateMap(), new StateMap());
+                var stepDc = new DialogContext(dialogs, turnContext, plan.Steps[0], new Dictionary<string, object>(), new Dictionary<string, object>());
                 await stepDc.RepromptDialogAsync().ConfigureAwait(false);
             }
         }
@@ -253,7 +253,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             // Forwards cancellation to sequences
             if (reason == DialogReason.CancelCalled)
             {
-                var state = instance.State as PlanningState;
+                var state = (instance.State as Dictionary<string, object>)["planningState"] as PlanningState;
 
                 if (state.Plan != null)
                 {
@@ -279,7 +279,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             for (int i = 0; i < plan.Steps.Count; i++)
             {
                 // We need to mock up a dialog context so that EndDialogAsync() can be called on any active steps
-                var stepDc = new DialogContext(dialogs, context, plan.Steps[i], new StateMap(), new StateMap());
+                var stepDc = new DialogContext(dialogs, context, plan.Steps[i], new Dictionary<string, object>(), new Dictionary<string, object>());
                 await stepDc.CancelAllDialogsAsync(cancellationToken).ConfigureAwait(false);
             }
         }
@@ -392,12 +392,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
 
                 if (botState.ConversationState == null)
                 {
-                    botState.ConversationState = new StateMap();
+                    botState.ConversationState = new Dictionary<string, object>();
                 }
             }
             else if (this.BotState != null)
             {
-                botState = await this.BotState.GetAsync(context, () => new BotState { ConversationState = new StateMap(), DialogStack = new List<DialogInstance>() }).ConfigureAwait(false);
+                botState = await this.BotState.GetAsync(context, () => new BotState { ConversationState = new Dictionary<string, object>(), DialogStack = new List<DialogInstance>() }).ConfigureAwait(false);
             }
             else
             {
@@ -411,11 +411,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             {
                 if (this.UserState != null)
                 {
-                    userState = await this.UserState.GetAsync(context, () => new StateMap()).ConfigureAwait(false);
+                    userState = await this.UserState.GetAsync(context, () => new Dictionary<string, object>()).ConfigureAwait(false);
                 }
                 else if (botState.UserState == null)
                 {
-                    botState.UserState = new StateMap();
+                    botState.UserState = new Dictionary<string, object>();
                     userState = botState.UserState;
                 }
             }
@@ -431,7 +431,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                 {
                     // Clear stack and conversation state
                     botState.DialogStack = new List<DialogInstance>();
-                    botState.ConversationState = new StateMap();
+                    botState.ConversationState = new Dictionary<string, object>();
                 }
             }
             botState.LastAccess = now.ToString();
@@ -521,8 +521,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                     else
                     {
                         // End dialog and return default result
-                        var state = planning.ActiveDialog.State as PlanningState;
-                        return await planning.EndDialogAsync(state?.Result).ConfigureAwait(false);
+                        if (planning.ActiveDialog != null)
+                        {
+                            var state = (planning.ActiveDialog.State as Dictionary<string, object>)["planningState"] as PlanningState;
+                            return await planning.EndDialogAsync(state?.Result).ConfigureAwait(false);
+                        }
+
+                        return await planning.EndDialogAsync().ConfigureAwait(false);
                     }
                 }
             };
@@ -623,12 +628,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         {
             for (int i = 0; i < Rules.Count; i++)
             {
-                var changes = await Rules[i].EvaluateAsync(planning, dialogEvent).ConfigureAwait(false);
-
-                if (changes != null && changes.Count > 0)
+                var result = (bool)await Rules[i].GetExpression(planning, dialogEvent).Evaluate(planning.State);
+                if (result == true)
                 {
-                    planning.QueueChanges(changes[0]);
-                    return true;
+                    var changes = await Rules[i].ExecuteAsync(planning).ConfigureAwait(false);
+
+                    if (changes != null && changes.Count > 0)
+                    {
+                        planning.QueueChanges(changes[0]);
+                        return true;
+                    }
                 }
             }
 
@@ -642,11 +651,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
 
             for (int i = 0; i < Rules.Count; i++)
             {
-                var changes = await Rules[i].EvaluateAsync(planning, dialogEvent).ConfigureAwait(false);
-
-                if (changes != null)
+                var result = (bool)await Rules[i].GetExpression(planning, dialogEvent).Evaluate(planning.State);
+                if (result == true)
                 {
-                    changes.ForEach(c => allChanges.Add(c));
+                    var changes = await Rules[i].ExecuteAsync(planning).ConfigureAwait(false);
+
+                    if (changes != null)
+                    {
+                        changes.ForEach(c => allChanges.Add(c));
+                    }
                 }
             }
 

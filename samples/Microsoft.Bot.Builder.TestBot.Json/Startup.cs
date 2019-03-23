@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
@@ -43,7 +44,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             IStorage dataStore = new MemoryStorage();
             var conversationState = new ConversationState(dataStore);
             var userState = new UserState(dataStore);
-            var userStateMap = userState.CreateProperty<StateMap>("user");
+            var userStateMap = userState.CreateProperty<Dictionary<string, object>>("user");
             var accessors = new TestBotAccessors
             {
                 ConversationDialogState = conversationState.CreateProperty<DialogState>("DialogState"),
@@ -51,11 +52,15 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 UserState = userState
             };
 
+            // manage all bot resources
+            var botResourceManager = new BotResourceManager()
+                // add current folder, it's project file, packages, projects, etc.
+                .AddProjectResources(HostingEnvironment.ContentRootPath);
+
             services.AddBot<IBot>(
                 (IServiceProvider sp) =>
                 {
-                    return new TestBot(accessors);
-                    //return new TestBotLG(accessors);
+                    return new TestBot(accessors, botResourceManager);
                 },
                 (BotFrameworkOptions options) =>
                 {
@@ -65,10 +70,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                         await conversationState.SaveChangesAsync(turnContext);
                     };
 
-                    // manage all bot resources
-                    var botResourceManager = new BotResourceManager()
-                        // add current folder, it's project file, packages, projects, etc.
-                        .AddProjectResources(HostingEnvironment.ContentRootPath);
+                    
 
                     // create LG 
                     var lg = new LGLanguageGenerator(botResourceManager);

@@ -10,6 +10,10 @@ namespace Microsoft.Bot.Builder.Azure
 {
     public static class CosmosDbKeyEscape
     {
+        // Per the CosmosDB Docs, there is a max key length of 255.
+        // https://docs.microsoft.com/en-us/azure/cosmos-db/faq#table
+        public const int MaxKeyLength = 255;
+
         // The list of illegal characters for Cosmos DB Keys comes from this list on
         // the CosmostDB docs: https://docs.microsoft.com/dotnet/api/microsoft.azure.documents.resource.id?view=azure-dotnet#remarks
         // Note: We are also escapting the "*" character, as that what we're using
@@ -37,10 +41,11 @@ namespace Microsoft.Bot.Builder.Azure
 
             var firstIllegalCharIndex = key.IndexOfAny(_illegalKeys);
 
-            // If there are no illegal characters return immediately and avoid any further processing/allocations
+            // If there are no illegal characters, and tkey is within length costraints,
+            // return immediately and avoid any further processing/allocations
             if (firstIllegalCharIndex == -1)
             {
-                return key;
+                return TruncateKeyIfNeeded(key);
             }
 
             // Allocate a builder that assumes that all remaining characters might be replaced to avoid any extra allocations
@@ -70,7 +75,19 @@ namespace Microsoft.Bot.Builder.Azure
                 }
             }
 
-            return sanitizedKeyBuilder.ToString();
+            var sanitizedKey = sanitizedKeyBuilder.ToString();
+            return TruncateKeyIfNeeded(sanitizedKey);
+        }
+
+        private static string TruncateKeyIfNeeded(string key)
+        {
+            if (key.Length > MaxKeyLength)
+            {
+                var hash = key.GetHashCode().ToString("x");
+                key = key.Substring(0, MaxKeyLength - hash.Length) + hash;
+            }
+
+            return key;
         }
     }
 }
