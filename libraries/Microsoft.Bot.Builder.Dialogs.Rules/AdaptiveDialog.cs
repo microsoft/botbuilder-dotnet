@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Rules.Rules;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
@@ -628,9 +629,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         {
             for (int i = 0; i < Rules.Count; i++)
             {
-                var result = (bool)await Rules[i].GetExpression(planning, dialogEvent).Evaluate(planning.State);
+                var expression = Rules[i].GetExpression(planning, dialogEvent);
+                var result = (bool)await expression.Evaluate(planning.State);
                 if (result == true)
                 {
+                    System.Diagnostics.Trace.TraceInformation($"Executing Dialog: {this.Id} Rule[{i}]: {Rules[i].GetType().Name}: {expression}");
                     var changes = await Rules[i].ExecuteAsync(planning).ConfigureAwait(false);
 
                     if (changes != null && changes.Count > 0)
@@ -651,9 +654,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
 
             for (int i = 0; i < Rules.Count; i++)
             {
-                var result = (bool)await Rules[i].GetExpression(planning, dialogEvent).Evaluate(planning.State);
+                var expression = Rules[i].GetExpression(planning, dialogEvent);
+                var result = (bool)await expression.Evaluate(planning.State);
                 if (result == true)
                 {
+                    System.Diagnostics.Trace.TraceInformation($"Executing Dialog: {this.Id} Rule[{i}]: {Rules[i].GetType().Name}: {expression}");
                     var changes = await Rules[i].ExecuteAsync(planning).ConfigureAwait(false);
 
                     if (changes != null)

@@ -69,8 +69,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
                     {
                         return await this.expression.Evaluate(vars);
                     }
-                    catch (Exception)
+                    catch (Exception err)
                     {
+                        System.Diagnostics.Trace.TraceWarning(err.Message);
                         return false;
                     }
                 }
