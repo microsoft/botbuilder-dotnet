@@ -18,7 +18,7 @@ namespace Microsoft.Expressions
         // Comparisons
         public const string LessThan = "<";
         public const string LessThanOrEqual = "<=";
-        public new const string Equal = "==";
+        public const string Equal = "==";
         public const string NotEqual = "!=";
         public const string GreaterThan = ">";
         public const string GreaterThanOrEqual = ">=";
@@ -33,7 +33,6 @@ namespace Microsoft.Expressions
         public const string Element = "Element";
 
         // Misc
-        public const string Call = "Call";
         public const string Constant = "Constant";
     }
 }

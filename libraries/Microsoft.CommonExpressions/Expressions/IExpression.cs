@@ -11,8 +11,8 @@ namespace Microsoft.Expressions
         /// <summary>
         /// Evaluate and return the value or an error message.
         /// </summary>
-        /// <param name="vars">State for evaluation.</param>
+        /// <param name="state">State for evaluation can be object or IDictionary.</param>
         /// <returns>Computed value and error message or null if none.</returns>
-        (object value, string error) TryEvaluate(IReadOnlyDictionary<string, object> vars);
+        (object value, string error) TryEvaluate(object state);
     }
 }

@@ -1,43 +1,82 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.Expressions
 {
-
     public static class BuiltInFunctions
     {
-        public static (object value, string error) Apply(
-            Func<IReadOnlyList<dynamic>, object> function,
-            IReadOnlyList<Expression> parameters,
-            Func<object, Expression, string> valid,
-            IReadOnlyDictionary<string, object> state)
+        // Validators
+        public static void ValidateArityAndType(Expression expression, int arity, params ExpressionReturnType[] types)
         {
-            object value = null;
-            string error = null;
-            var args = new List<dynamic>();
-            foreach (var child in parameters)
+            if (!(expression is ExpressionTree tree) || tree.Children.Count != arity)
             {
-                (value, error) = child.TryEvaluate(state);
-                if (error != null)
-                {
-                    break;
-                }
-                error = valid(value, child);
-                if (error != null)
-                {
-                    break;
-                }
-                args.Add(value);
+                throw new ExpressionException($"Expected {arity} children", expression);
             }
-            if (error == null)
+            foreach (var child in tree.Children)
             {
-                value = function(args);
+                if (child.ReturnType != ExpressionReturnType.Object && !types.Contains(child.ReturnType))
+                {
+                    if (types.Count() == 1)
+                    {
+                        throw new ExpressionException($"Is not a {types[0]} expression", child);
+                    }
+                    else
+                    {
+                        var builder = new StringBuilder();
+                        builder.Append("Is not any of [");
+                        var first = true;
+                        foreach (var type in types)
+                        {
+                            if (first)
+                            {
+                                first = false;
+                            }
+                            else
+                            {
+                                builder.Append(", ");
+                            }
+                            builder.Append(type);
+                        }
+                        throw new ExpressionException(builder.ToString(), expression);
+                    }
+                }
             }
-            return (value, error);
         }
 
+        public static void ValidateOrder(Expression expression, params ExpressionReturnType[] types)
+        {
+            if (!(expression is ExpressionTree tree) || tree.Children.Count != types.Count())
+            {
+                throw new ExpressionException($"Expected {types.Count()} children", expression);
+            }
+            for (var i = 0; i < tree.Children.Count; ++i)
+            {
+                var child = tree.Children[i];
+                var type = types[i];
+                if (child.ReturnType != type)
+                {
+                    throw new ExpressionException($"Is not a {type}", child);
+                }
+            }
+        }
+
+        public static void ValidateBinaryNumber(Expression expression)
+            => ValidateArityAndType(expression, 2, ExpressionReturnType.Number);
+
+        public static void ValidateBinaryNumberOrString(Expression expression)
+            => ValidateArityAndType(expression, 2, ExpressionReturnType.Number, ExpressionReturnType.String);
+
+        public static void ValidateUnary(Expression expression)
+            => ValidateArityAndType(expression, 1, ExpressionReturnType.Object);
+
+        public static void ValidateBinaryBoolean(Expression expression)
+            => ValidateArityAndType(expression, 2, ExpressionReturnType.Boolean);
+
+        // Verifiers
         public static string VerifyNumber(object value, Expression expression)
         {
             string error = null;
@@ -48,7 +87,7 @@ namespace Microsoft.Expressions
             return error;
         }
 
-        public static string VerifyPlus(object value, Expression expression)
+        public static string VerifyNumberOrString(object value, Expression expression)
         {
             string error = null;
             if (!value.IsNumber() && !(value is string))
@@ -58,143 +97,255 @@ namespace Microsoft.Expressions
             return error;
         }
 
-        public static bool IsNumber(this object value)
+        public static string VerifyBoolean(object value, Expression expression)
         {
-            return value is sbyte
-                    || value is byte
-                    || value is short
-                    || value is ushort
-                    || value is int
-                    || value is uint
-                    || value is long
-                    || value is ulong
-                    || value is float
-                    || value is double
-                    || value is decimal;
+            string error = null;
+            if (!(value is Boolean))
+            {
+                error = $"{expression} is not a boolean.";
+            }
+            return error;
         }
 
-        public static ExpressionEvaluator Add =
-            (parameters, state) => Apply((args) => args[0] + args[1], parameters, VerifyPlus, state);
-
-        /*
-        public static ExpressionEvaluator Sub =
-            operands =>
-                Task.FromResult<dynamic>(operands[0] - operands[1]);
-
-        public static ExpressionEvaluator Mul = operands =>
-                Task.FromResult(
-                    operands[0] is double double0 && operands[1] is double double1 ? double0 * double1 :
-                    operands[0] is int int0 && operands[1] is int int1 ? (object)(int0 * int1) :
-                    throw new ExpressionException(ExpressionType.Multiply, operands));
-
-        public static ExpressionEvaluator Div = operands =>
-                Task.FromResult(
-                    operands[0] is double double0 && operands[1] is double double1 ? double0 / double1 :
-                    operands[0] is int int0 && operands[1] is int int1 ? (object)(int0 / int1) :
-                    throw new ExpressionException(ExpressionType.Divide, operands));
-
-        public static ExpressionEvaluator Equal = operands =>
-                Task.FromResult<object>(
-                    operands[0] is IComparable operand0 && operands[1] is IComparable operand1 ?
-                    operand0.CompareTo(operand1) == 0 : operands[0] == null && operands[1] == null ?
-                    true : (operands[0] == null || operands[1] == null) ?
-                        false :
-                        throw new ExpressionException(ExpressionType.Equal, operands));
-
-        public static ExpressionEvaluator NotEqual = operands =>
-                Task.FromResult<object>(
-                    operands[0] is IComparable operand0 && operands[1] is IComparable operand1 ?
-                    operand0.CompareTo(operand1) != 0 :
-                    throw new ExpressionException(ExpressionType.NotEqual, operands));
-
-        public static ExpressionEvaluator Min = operands =>
-                Task.FromResult<object>(
-                    operands[0] is IComparable c0 && operands[1] is IComparable c1 ? (c0.CompareTo(c1) < 0 ? c0 : c1) :
-                    throw new ExpressionException(ExpressionType.Min, operands));
-
-        public static ExpressionEvaluator Max = operands =>
-                Task.FromResult<object>(
-                    operands[0] is IComparable c0 && operands[1] is IComparable c1 ? (c0.CompareTo(c1) > 0 ? c0 : c1) :
-                    throw new ExpressionException(ExpressionType.Max, operands));
-
-        public static ExpressionEvaluator LessThan = operands =>
-                Task.FromResult<object>(
-                    operands[0] is IComparable operand0 && operands[1] is IComparable operand1 ?
-                    operand0.CompareTo(operand1) < 0 :
-                    throw new ExpressionException(ExpressionType.LessThan, operands));
-
-        public static ExpressionEvaluator LessThanOrEqual = operands =>
-                Task.FromResult<object>(
-                    operands[0] is IComparable operand0 && operands[1] is IComparable operand1 ?
-                    operand0.CompareTo(operand1) <= 0 :
-                    throw new ExpressionException(ExpressionType.LessThanOrEqual, operands));
-
-        public static ExpressionEvaluator GreaterThan = operands =>
-                Task.FromResult<object>(
-                    operands[0] is IComparable operand0 && operands[1] is IComparable operand1 ?
-                    operand0.CompareTo(operand1) > 0 :
-                    throw new ExpressionException(ExpressionType.GreaterThan, operands));
-
-        public static ExpressionEvaluator GreaterThanOrEqual = operands =>
-                    Task.FromResult<object>(
-                        operands[0] is IComparable operand0 && operands[1] is IComparable operand1 ?
-                        operand0.CompareTo(operand1) >= 0 :
-                        throw new ExpressionException(ExpressionType.GreaterThanOrEqual, operands));
-*/
-        // TODO: Logical expressions
-
-        private static readonly Dictionary<string, ExpressionEvaluator> BinaryFunctions = new Dictionary<string, ExpressionEvaluator>
+        // Apply
+        public static (object value, string error) Apply(
+            Func<IReadOnlyList<dynamic>, object> function,
+            Expression expression,
+            Func<object, Expression, string> valid,
+            object state)
         {
-            {"+", BuiltInFunctions.Add}
-            /* ,
-            {"/", BuiltInFunctions.Div},
-            {"*", BuiltInFunctions.Mul},
-            {"-", BuiltInFunctions.Sub},
-            {"==", BuiltInFunctions.Equal},
-            {"!=", BuiltInFunctions.NotEqual},
-            {"max", BuiltInFunctions.Max},
-            {"min", BuiltInFunctions.Min},
-            {"<", BuiltInFunctions.LessThan},
-            {"<=", BuiltInFunctions.LessThanOrEqual},
-            {">", BuiltInFunctions.GreaterThan},
-            {">=", BuiltInFunctions.GreaterThanOrEqual}, */
-        };
-
-        private static readonly Dictionary<string, ExpressionEvaluator> UnaryFunctions = new Dictionary<string, ExpressionEvaluator>
-        {
-            // TODO: Unary functions
-        };
-
-        private static readonly Dictionary<string, ExpressionEvaluator> NAryFunctions = new Dictionary<string, ExpressionEvaluator>
-        {
-            // TODO: NAry functions if any
-        };
-
-        public static ExpressionEvaluator GetUnaryEvaluator(string type)
-        {
-            if (!UnaryFunctions.TryGetValue(type, out ExpressionEvaluator eval))
+            object value = null;
+            string error = null;
+            var args = new List<dynamic>();
+            if (expression is ExpressionTree tree)
             {
-                throw new Exception($"{type} does not have a built-in unary evaluator.");
+                foreach (var child in tree.Children)
+                {
+                    (value, error) = child.TryEvaluate(state);
+                    if (error != null)
+                    {
+                        break;
+                    }
+                    error = valid(value, child);
+                    if (error != null)
+                    {
+                        break;
+                    }
+                    args.Add(value);
+                }
+            }
+            if (error == null)
+            {
+                value = function(args);
+            }
+            return (value, error);
+        }
+
+        public static IExpressionEvaluator Lookup(string type)
+        {
+            if (!_functions.TryGetValue(type, out IExpressionEvaluator eval))
+            {
+                throw new ExpressionException($"{type} does not have a built-in evaluator.");
             }
             return eval;
         }
 
-        public static ExpressionEvaluator GetBinaryEvaluator(string type)
+        private static (object value, string error) ExtractElement(Expression expression, object state)
         {
-            if (!BinaryFunctions.TryGetValue(type, out ExpressionEvaluator eval))
+            var tree = expression as ExpressionTree;
+            var instance = tree.Children[0];
+            var index = tree.Children[1];
+            object value;
+            string error = null;
+            (value, error) = instance.TryEvaluate(state);
+            if (error == null)
             {
-                throw new Exception($"{type} does not have a built-in binary evaluator.");
+                var inst = value;
+                (value, error) = index.TryEvaluate(state);
+                if (error == null)
+                {
+                    if (value is int idx)
+                    {
+                        int count = -1;
+                        if (inst is Array arr)
+                        {
+                            count = arr.Length;
+                        }
+                        else if (inst is ICollection collection)
+                        {
+                            count = collection.Count;
+                        }
+                        var itype = inst.GetType();
+                        var indexer = itype.GetProperties().Except(itype.GetDefaultMembers().OfType<PropertyInfo>());
+                        if (count != -1 && indexer != null)
+                        {
+                            if (idx >= 0 && count > idx)
+                            {
+                                dynamic idyn = inst;
+                                value = idyn[idx];
+                            }
+                            else
+                            {
+                                error = $"{index}={idx} is out of range for ${instance}";
+                            }
+                        }
+                        else
+                        {
+                            error = $"{instance} is not a collection.";
+                        }
+                    }
+                    else
+                    {
+                        error = $"Could not coerce {index} to an int.";
+                    }
+                }
             }
-            return eval;
+            return (value, error);
         }
 
-        public static ExpressionEvaluator GetNAryEvaluator(string type)
+        private static (object value, string error) And(Expression expression, object state)
         {
-            if (!NAryFunctions.TryGetValue(type, out ExpressionEvaluator eval))
+            object result = true;
+            string error = null;
+            var tree = expression as ExpressionTree;
+            foreach (var child in tree.Children)
             {
-                throw new Exception($"{type} does not have a built-in nary evaluator.");
+                (result, error) = child.TryEvaluate(state);
+                if (error == null)
+                {
+                    if (!(result is Boolean bresult))
+                    {
+                        error = $"{child} is not boolean";
+                        break;
+                    }
+                    else if (!bresult)
+                    {
+                        // Hit a false so stop
+                        break;
+                    }
+                }
+                else
+                {
+                    break;
+                }
             }
-            return eval;
+            return (result, error);
         }
+
+        private static (object value, string error) Or(Expression expression, object state)
+        {
+            object result = true;
+            string error = null;
+            var tree = expression as ExpressionTree;
+            foreach (var child in tree.Children)
+            {
+                (result, error) = child.TryEvaluate(state);
+                if (error == null)
+                {
+                    if (!(result is Boolean bresult))
+                    {
+                        error = $"{child} is not boolean";
+                        break;
+                    }
+                    else if (bresult)
+                    {
+                        // Hit a true so stop
+                        break;
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return (result, error);
+        }
+
+        private static Dictionary<string, IExpressionEvaluator> BuildFunctionLookup()
+        {
+            var functions = new Dictionary<string, IExpressionEvaluator>{
+                // Math
+                { ExpressionType.Element, new ExpressionEvaluator(ExtractElement, ExpressionReturnType.Object,
+                    (expr) => ValidateOrder(expr, ExpressionReturnType.Object, ExpressionReturnType.Number)) }
+                , { ExpressionType.Add,
+                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] + args[1], expression, VerifyNumberOrString, state),
+                        ExpressionReturnType.Object, ValidateBinaryNumberOrString) }
+                , {ExpressionType.Subtract,
+                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] - args[1], expression, VerifyNumber, state),
+                        ExpressionReturnType.Number, ValidateBinaryNumber) }
+                , {ExpressionType.Multiply,
+                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] * args[1], expression, VerifyNumber, state),
+                        ExpressionReturnType.Number, ValidateBinaryNumber) }
+                , {ExpressionType.Divide,
+                    // TODO: Check for 0
+                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] / args[1], expression, VerifyNumber, state),
+                        ExpressionReturnType.Number, ValidateBinaryNumber) }
+                , {ExpressionType.Min,
+                    new ExpressionEvaluator((expression, state) => Apply((args) => Math.Min(args[0], args[1]), expression, VerifyNumber, state),
+                        ExpressionReturnType.Number, ValidateBinaryNumber) }
+                , {ExpressionType.Max,
+                    new ExpressionEvaluator((expression, state) => Apply((args) => Math.Max(args[0], args[1]), expression, VerifyNumber, state),
+                        ExpressionReturnType.Number, ValidateBinaryNumber) }
+
+                // Comparisons
+                , {ExpressionType.LessThan,
+                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] < args[1], expression, VerifyNumber, state),
+                        ExpressionReturnType.Boolean, ValidateBinaryNumberOrString) }
+                , {ExpressionType.LessThanOrEqual,
+                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] <= args[1], expression, VerifyNumber, state),
+                        ExpressionReturnType.Boolean, ValidateBinaryNumberOrString) }
+                , {ExpressionType.Equal,
+                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] == args[1], expression, VerifyNumber, state),
+                        ExpressionReturnType.Boolean, ValidateBinaryNumberOrString) }
+                , {ExpressionType.NotEqual,
+                     new ExpressionEvaluator((expression, state) => Apply((args) => args[0] != args[1], expression, VerifyNumber, state),
+                        ExpressionReturnType.Boolean, ValidateBinaryNumberOrString) }
+                , {ExpressionType.GreaterThan,
+                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] > args[1], expression, VerifyNumber, state),
+                        ExpressionReturnType.Boolean, ValidateBinaryNumberOrString) }
+                , {ExpressionType.GreaterThanOrEqual,
+                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] >= args[1], expression, VerifyNumber, state),
+                        ExpressionReturnType.Boolean, ValidateBinaryNumberOrString) }
+
+                // Logical
+                , {ExpressionType.And,
+                    new ExpressionEvaluator((expression, state) => And(expression, state),
+                        ExpressionReturnType.Boolean, ValidateBinaryBoolean) }
+                , {ExpressionType.Or,
+                    new ExpressionEvaluator((expression, state) => Or(expression, state),
+                        ExpressionReturnType.Boolean, ValidateBinaryBoolean) }
+                , {ExpressionType.Not,
+                    new ExpressionEvaluator((expression, state) => Apply((args) => !args[0], expression, VerifyBoolean, state),
+                        ExpressionReturnType.Boolean, (expression) => ValidateOrder(expression, ExpressionReturnType.Boolean)) }
+            };
+            // Add aliases from WDL https://docs.microsoft.com/en-us/azure/logic-apps/workflow-definition-language-functions-reference
+
+            // Math if not already found
+            // TODO: mod, rand, range 
+            functions.Add("add", functions[ExpressionType.Add]);
+            functions.Add("div", functions[ExpressionType.Divide]);
+            functions.Add("mul", functions[ExpressionType.Multiply]);
+            functions.Add("sub", functions[ExpressionType.Subtract]);
+
+            // Comparisons
+            // TODO: if
+            functions.Add("and", functions[ExpressionType.And]);
+            functions.Add("equals", functions[ExpressionType.Equal]);
+            functions.Add("greater", functions[ExpressionType.GreaterThan]);
+            functions.Add("greaterOrEquals", functions[ExpressionType.GreaterThanOrEqual]);
+            functions.Add("less", functions[ExpressionType.LessThan]);
+            functions.Add("lessOrEquals", functions[ExpressionType.LessThanOrEqual]);
+            functions.Add("not", functions[ExpressionType.Not]);
+            functions.Add("or", functions[ExpressionType.Or]);
+
+            // TODO: Conversion functions
+            // TODO: Date and time functions
+            // TODO: Collection functions
+            // TODO: String functions (Keep + overload for concat?)
+            // TODO: Workflow functions???
+            return functions;
+        }
+
+        public static Dictionary<string, IExpressionEvaluator> _functions = BuildFunctionLookup();
     }
 }

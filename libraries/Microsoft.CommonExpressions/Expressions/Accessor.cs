@@ -5,45 +5,51 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Expressions
 {
-    public class Accessor : Unary
+    public class Accessor : ExpressionTree
     {
-        public Accessor(Expression instance, string property)
-            : base(ExpressionType.Accessor, instance)
+        protected Accessor(Expression instance, string property)
+            : base(ExpressionType.Accessor, instance != null ? new List<Expression> { instance } : new List<Expression>(), _accessor)
         {
-            Instance = instance;
             Property = property;
         }
 
-        public Expression Instance { get; }
+        private static IExpressionEvaluator _accessor = new ExpressionEvaluator(
+             (expression, state) => (expression as Accessor).Evaluate(state),
+             ExpressionReturnType.Object,
+            (expression) => { });
 
         public string Property { get; }
 
-        public override (object value, string error) TryEvaluate(IReadOnlyDictionary<string, object> state)
+        private (object value, string error) Evaluate(object state)
         {
-            object value;
+            object value = null;
             string error = null;
-            if (Instance == null)
+            object instance = state;
+            if (Children.Count == 1)
             {
-                if (!state.TryGetValue(Property, out value))
-                {
-                    error = $"State did not have {Property}.";
-                }
+                (instance, error) = Children[0].TryEvaluate(state);
             }
-            else
+            if (error == null)
             {
-                (value, error) = Instance.TryEvaluate(state);
-                if (error == null)
+                if (instance is IReadOnlyDictionary<string, object> dict)
                 {
-                    if (value is IReadOnlyDictionary<string, object> dict)
+                    if (!dict.TryGetValue(Property, out value))
                     {
-                        if (!dict.TryGetValue(Property, out value))
-                        {
-                            error = $"{Instance} does not have {Property}.";
-                        }
+                        error = $"{instance} does not have {Property}.";
+                    }
+                }
+                else
+                {
+                    // Use reflection
+                    var type = instance.GetType();
+                    var prop = type.GetProperty(Property);
+                    if (prop != null)
+                    {
+                        value = prop.GetValue(instance);
                     }
                     else
                     {
-                        error = $"{Instance} is not a dictionary.";
+                        error = $"{instance} does not have {Property}.";
                     }
                 }
             }
@@ -57,8 +63,15 @@ namespace Microsoft.Expressions
 
         public override string ToString()
         {
-            var instance = Instance == null ? "<state>" : Instance.ToString();
+            var instance = Children.Count == 0 ? "<state>" : Children[0].ToString();
             return $"{instance}.{Property}";
+        }
+
+        public static Accessor MakeAccessor(Expression instance, string property)
+        {
+            var expr = new Accessor(instance, property);
+            expr.Validate();
+            return expr;
         }
     }
 }

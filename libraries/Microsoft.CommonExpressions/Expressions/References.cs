@@ -14,28 +14,48 @@ namespace Microsoft.Expressions
         /// but you might get paths from the computed part as well.
         /// </remarks>
         /// <param name="expression">Expresion to get references from.</param>
-        /// <returns>List of the static reference paths.</returns>
-        public static IReadOnlyList<string> References(this Expression expression)
+        /// <returns>Hash set of the static reference paths.</returns>
+        public static HashSet<string> References(this Expression expression)
         {
             var walker = new ReferenceVisitor();
             expression.Accept(walker);
+            walker.TerminalPath();
             return walker.References;
         }
 
         private class ReferenceVisitor : IExpressionVisitor
         {
-            public List<string> References = new List<string>();
+            public HashSet<string> References = new HashSet<string>();
             private string _path = null;
+
+            public void TerminalPath()
+            {
+                if (_path != null)
+                {
+                    References.Add(_path);
+                    _path = null;
+                }
+            }
+
+            protected void TreePath(Expression expression)
+            {
+                var tree = expression as ExpressionTree;
+                foreach(var child in tree.Children)
+                {
+                    child.Accept(this);
+                    TerminalPath();
+                }
+            }
 
             public void Visit(Accessor expression)
             {
-                if (expression.Instance == null)
+                if (expression.Children.Count == 0)
                 {
                     _path = expression.Property;
                 }
                 else
                 {
-                    expression.Instance.Accept(this);
+                    expression.Children[0].Accept(this);
                     if (_path != null)
                     {
                         _path += $".{expression.Property}";
@@ -43,73 +63,46 @@ namespace Microsoft.Expressions
                 }
             }
 
-            protected void NonPath(Expression expression)
-            {
-                foreach (var child in expression.Children)
-                {
-                    child.Accept(this);
-                    if (_path != null)
-                    {
-                        References.Add(_path);
-                    }
-                }
-            }
-
-            public void Visit(Binary expression)
-            {
-                NonPath(expression);
-            }
-
-            public void Visit(Call expression)
-            {
-                NonPath(expression);
-            }
 
             public void Visit(Constant expression)
             {
-                NonPath(expression);
-            }
-
-            public void Visit(Element expression)
-            {
-                expression.Instance.Accept(this);
-                if (_path != null)
-                {
-                    if (expression.Index is Constant constant)
-                    {
-                        _path += $"[{constant.Value}]";
-                    }
-                    else
-                    {
-                        References.Add(_path);
-                        _path = null;
-                        expression.Index.Accept(this);
-                    }
-                } 
-                else
-                {
-                    expression.Index.Accept(this);
-                }
+                TerminalPath();
             }
 
             public void Visit(Expression expression)
             {
-                NonPath(expression);
+                TerminalPath();
             }
 
-            public void Visit(NAry expression)
+            public void Visit(ExpressionTree expression)
             {
-                NonPath(expression);
-            }
-
-            public void Visit(Unary expression)
-            {
-                NonPath(expression);
-            }
-
-            public void Vist(Unary expression)
-            {
-                NonPath(expression);
+                if (expression.Type == ExpressionType.Element)
+                {
+                    var instance = expression.Children[0];
+                    var index = expression.Children[1];
+                    instance.Accept(this);
+                    if (_path != null)
+                    {
+                        if (index is Constant constant)
+                        {
+                            _path += $"[{constant.Value}]";
+                        }
+                        else
+                        {
+                            References.Add(_path);
+                            _path = null;
+                            index.Accept(this);
+                        }
+                    }
+                    else
+                    {
+                        index.Accept(this);
+                    }
+                }
+                else
+                {
+                    TreePath(expression);
+                }
             }
         }
     }

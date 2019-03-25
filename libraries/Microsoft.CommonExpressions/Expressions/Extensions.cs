@@ -7,9 +7,19 @@ namespace Microsoft.Expressions
 {
     public static partial class Extensions
     {
-        public static (object value, string error) TryEvaluate(this Expression expression, object state)
+        public static bool IsNumber(this object value)
         {
-            return expression.TryEvaluate(new ReflectionDictionary(state));
+            return value is sbyte
+                    || value is byte
+                    || value is short
+                    || value is ushort
+                    || value is int
+                    || value is uint
+                    || value is long
+                    || value is ulong
+                    || value is float
+                    || value is double
+                    || value is decimal;
         }
-     }
+    }
 }

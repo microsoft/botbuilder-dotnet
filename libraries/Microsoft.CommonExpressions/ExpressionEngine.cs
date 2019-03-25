@@ -65,12 +65,19 @@ namespace Microsoft.Expressions
                 }
             }
 
+            public override Expression VisitUnaryOpExp([NotNull] ExpressionParser.UnaryOpExpContext context)
+            {
+                var unaryOperationName = context.GetChild(0).GetText();
+                var operand = Visit(context.expression());
+                return ExpressionTree.MakeExpressionTree(unaryOperationName, new List<Expression> { operand });
+            }
+
             public override Expression VisitBinaryOpExp([NotNull] ExpressionParser.BinaryOpExpContext context)
             {
                 var binaryOperationName = context.GetChild(1).GetText();
                 var left = Visit(context.expression(0));
                 var right = Visit(context.expression(1));
-                return new Binary(binaryOperationName, left, right);
+                return ExpressionTree.MakeExpressionTree(binaryOperationName, new List<Expression> { left, right });
             }
 
             public override Expression VisitFuncInvokeExp([NotNull] ExpressionParser.FuncInvokeExpContext context)
@@ -81,7 +88,7 @@ namespace Microsoft.Expressions
                 if (context.primaryExpression() is ExpressionParser.IdAtomContext idAtom)
                 {
                     var functionName = idAtom.GetText();
-                    return new Call(_lookup(functionName), parameters, functionName);
+                    return ExpressionTree.MakeExpressionTree(functionName, parameters);
                 }
 
                 //if context.primaryExpression() is memberaccessExp --> accessor
@@ -89,41 +96,58 @@ namespace Microsoft.Expressions
                 {
                     var instance = Visit(memberAccessExp.primaryExpression());
                     var functionName = memberAccessExp.IDENTIFIER().GetText();
-                    return new Accessor(instance, functionName);
+                    return Accessor.MakeAccessor(instance, functionName);
                 }
 
                 throw new Exception("This format is wrong.");
             }
 
-            public override Expression VisitIdAtom([NotNull] ExpressionParser.IdAtomContext context) => new Accessor(null, context.GetText());
+            public override Expression VisitIdAtom([NotNull] ExpressionParser.IdAtomContext context)
+            {
+                Expression result;
+                var symbol = context.GetText();
+                if (symbol == "false")
+                {
+                    result = Constant.MakeConstant(false);
+                }
+                else if (symbol == "true")
+                {
+                    result = Constant.MakeConstant(true);
+                }
+                else
+                {
+                    result = Accessor.MakeAccessor(null, symbol);
+                }
+                return result;
+            }
 
             public override Expression VisitIndexAccessExp([NotNull] ExpressionParser.IndexAccessExpContext context)
             {
                 var instance = Visit(context.primaryExpression());
                 var index = Visit(context.expression());
-                return new Element(instance, index);
+                return ExpressionTree.MakeExpressionTree(ExpressionType.Element, new List<Expression> { instance, index });
             }
 
             public override Expression VisitMemberAccessExp([NotNull] ExpressionParser.MemberAccessExpContext context)
             {
                 var instance = Visit(context.primaryExpression());
-                return new Accessor(instance, context.IDENTIFIER().GetText());
+                return Accessor.MakeAccessor(instance, context.IDENTIFIER().GetText());
             }
 
             public override Expression VisitNumericAtom([NotNull] ExpressionParser.NumericAtomContext context)
             {
                 if (int.TryParse(context.GetText(), out var intValue))
-                    return new Constant(intValue);
+                    return Constant.MakeConstant(intValue);
 
-                if (float.TryParse(context.GetText(), out var floatValue))
-                    return new Constant(floatValue);
+                if (double.TryParse(context.GetText(), out var doubleValue))
+                    return Constant.MakeConstant(doubleValue);
 
                 throw new Exception($"{context.GetText()} is not a number.");
             }
 
             public override Expression VisitParenthesisExp([NotNull] ExpressionParser.ParenthesisExpContext context) => Visit(context.expression());
 
-            public override Expression VisitStringAtom([NotNull] ExpressionParser.StringAtomContext context) => new Constant(context.GetText().Trim('\''));
+            public override Expression VisitStringAtom([NotNull] ExpressionParser.StringAtomContext context) => Constant.MakeConstant(context.GetText().Trim('\''));
         }
 
     }

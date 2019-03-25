@@ -6,23 +6,15 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Expressions
 {
-    public class NAry : Expression
+    public class ExpressionTree : Expression
     {
-        public NAry(string type, IEnumerable<Expression> children)
-            : base(type)
+        protected ExpressionTree(string type, IEnumerable<Expression> children, IExpressionEvaluator evaluator = null)
+            : base(type, evaluator)
         {
             Children = children.ToList();
         }
 
-        protected virtual ExpressionEvaluator GetNAryEvaluator()
-        {
-            return BuiltInFunctions.GetNAryEvaluator(Type);
-        }
-
-        public override (object value, string error) TryEvaluate(IReadOnlyDictionary<string, object> state)
-        {
-            return GetNAryEvaluator()(Children, state);
-        }
+        public IReadOnlyList<Expression> Children { get; }
 
         public override void Accept(IExpressionVisitor visitor)
         {
@@ -53,8 +45,15 @@ namespace Microsoft.Expressions
 
                 builder.Append(child.ToString());
             }
-
+            builder.Append(')');
             return builder.ToString();
+        }
+
+        public static ExpressionTree MakeExpressionTree(string type, IEnumerable<Expression> children, IExpressionEvaluator evaluator = null)
+        {
+            var expr = new ExpressionTree(type, children, evaluator);
+            expr.Validate();
+            return expr;
         }
     }
 }

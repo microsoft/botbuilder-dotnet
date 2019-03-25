@@ -5,30 +5,46 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Expressions
 {
-    /// <summary>
-    /// Delegate which evaluates operators operands (aka the paramters) to the result
-    /// </summary>
-    public delegate (object value, string error) ExpressionEvaluator(
-        IReadOnlyList<Expression> parameters, 
-        IReadOnlyDictionary<string, object> state);
-
-    public abstract class Expression : IExpression
+    public enum ExpressionReturnType
     {
-        public Expression(string type)
+        Boolean
+        , Number
+        , Object
+        , String
+    }
+
+    public class Expression : IExpression
+    {
+        protected Expression(string type, IExpressionEvaluator evaluator = null)
         {
             Type = type;
+            _evaluator = evaluator ?? BuiltInFunctions.Lookup(type);
         }
 
         public string Type { get; }
 
-        public IReadOnlyList<Expression> Children { get; protected set; }
+        public ExpressionReturnType ReturnType { get { return _evaluator.ReturnType; } }
 
-        public abstract (object value, string error) TryEvaluate(IReadOnlyDictionary<string, object> vars);
+        protected IExpressionEvaluator _evaluator { get; }
+
+        public void Validate()
+        {
+            _evaluator.ValidateExpression(this);
+        }
+
+        public (object value, string error) TryEvaluate(object state)
+            => _evaluator.TryEvaluate(this, state);
 
         public virtual void Accept(IExpressionVisitor visitor)
         {
             visitor.Visit(this);
         }
 
+        public static Expression MakeExpression(string type, IExpressionEvaluator evaluator = null)
+        {
+            var expr = new Expression(type, evaluator);
+            expr.Validate();
+            return expr;
+        }
     }
 }

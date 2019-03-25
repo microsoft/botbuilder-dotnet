@@ -5,21 +5,21 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Expressions
 {
-    public class Constant: Expression
+    public class Constant : Expression
     {
-        public Constant(object value)
-            : base(ExpressionType.Constant)
+        protected Constant(object value)
+            : base(ExpressionType.Constant,
+                  new ExpressionEvaluator((expression, state) => ((expression as Constant).Value, null),
+                      (value is string ? ExpressionReturnType.String
+                      : value.IsNumber() ? ExpressionReturnType.Number
+                      : value is Boolean ? ExpressionReturnType.Boolean
+                      : ExpressionReturnType.Object),
+                      (expression) => { }))
         {
             Value = value;
-            Children = new List<Expression>();
         }
 
         public object Value { get; }
-
-        public override (object value, string error) TryEvaluate(IReadOnlyDictionary<string, object> state)
-        {
-            return (Value, null);
-        }
 
         public override void Accept(IExpressionVisitor visitor)
         {
@@ -30,5 +30,9 @@ namespace Microsoft.Expressions
         {
             return Value.ToString();
         }
+
+        public static Constant MakeConstant(object value)
+            => new Constant(value);
+
     }
 }
