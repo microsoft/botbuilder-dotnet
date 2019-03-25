@@ -131,6 +131,8 @@ namespace Microsoft.Bot.Builder.Azure
         /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
         public async Task DeleteAsync(string[] keys, CancellationToken cancellationToken)
         {
+            RequestOptions options = null;
+
             if (keys == null)
             {
                 throw new ArgumentNullException(nameof(keys));
@@ -143,12 +145,19 @@ namespace Microsoft.Bot.Builder.Azure
 
             // Ensure Initialization has been run
             await InitializeAsync().ConfigureAwait(false);
-            var options = new RequestOptions() { PartitionKey = new PartitionKey(this._partitionKey) };
+
+            if (!string.IsNullOrEmpty(this._partitionKey))
+            {
+                options = new RequestOptions() { PartitionKey = new PartitionKey(this._partitionKey) };
+            }
 
             // Parallelize deletion
             var tasks = keys.Select(key =>
                 _client.DeleteDocumentAsync(
-                    UriFactory.CreateDocumentUri(_databaseId, _collectionId, CosmosDbKeyEscape.EscapeKey(key)),
+                    UriFactory.CreateDocumentUri(
+                        _databaseId,
+                        _collectionId,
+                        CosmosDbKeyEscape.EscapeKey(key)),
                     options,
                     cancellationToken: cancellationToken));
 
