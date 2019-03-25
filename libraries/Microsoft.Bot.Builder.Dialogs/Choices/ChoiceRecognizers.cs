@@ -30,23 +30,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             var matched = Find.FindChoices(utterance, list, options);
             if (matched.Count == 0)
             {
-                // Next try finding by ordinal
-                var matches = RecognizeOrdinal(utterance, locale);
-                if (matches.Any())
+                var opt = options ?? new FindChoicesOptions();
+                if (!opt.NoIndex)
                 {
-                    foreach (var match in matches)
+                    // Next try finding by ordinal
+                    var matches = RecognizeOrdinal(utterance, locale);
+                    if (matches.Any())
                     {
-                        MatchChoiceByIndex(list, matched, match);
+                        foreach (var match in matches)
+                        {
+                            MatchChoiceByIndex(list, matched, match);
+                        }
                     }
-                }
-                else
-                {
-                    // Finally try by numerical index
-                    matches = RecognizeNumber(utterance, locale);
-
-                    foreach (var match in matches)
+                    else
                     {
-                        MatchChoiceByIndex(list, matched, match);
+                        // Finally try by numerical index
+                        matches = RecognizeNumber(utterance, locale);
+
+                        foreach (var match in matches)
+                        {
+                            MatchChoiceByIndex(list, matched, match);
+                        }
                     }
                 }
 
@@ -58,6 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 
             return matched;
         }
+
 
         private static void MatchChoiceByIndex(IList<Choice> list, List<ModelResult<FoundChoice>> matched, ModelResult<FoundChoice> match)
         {

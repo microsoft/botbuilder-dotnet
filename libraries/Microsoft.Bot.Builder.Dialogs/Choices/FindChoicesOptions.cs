@@ -22,5 +22,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// A <c>true</c> if the title of the choices action will NOT be searched over; otherwise <c>false</c>.
         /// </value>
         public bool NoAction { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the choices will NOT be recognized by their index.
+        /// The default is <c>false</c>. This is optional.
+        /// </summary>
+        /// <value>
+        /// A <c>true</c> if the choices will NOT be recognized by their index; otherwise <c>false</c>.
+        /// </value>
+        public bool NoIndex { get; set; }
     }
 }
