@@ -53,6 +53,41 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return result;
         }
 
+        public override List<string> VisitConditionalBody([NotNull] LGFileParser.ConditionalBodyContext context)
+        {
+            var result = new List<string>();
+
+            var caseRules = context.conditionalTemplateBody().caseRule();
+            foreach (var caseRule in caseRules)
+            {
+                if (caseRule.normalTemplateBody() == null)
+                {
+                    result.Add($"Case {caseRule.GetText()} should have template body");
+                }
+                else
+                {
+                    result.AddRange(Visit(caseRule.normalTemplateBody()));
+                }
+            }
+
+            var defaultRule = context?.conditionalTemplateBody()?.defaultRule();
+
+            if (defaultRule != null)
+            {
+                if (defaultRule.normalTemplateBody() == null)
+                    result.Add($"Default rule {defaultRule.GetText()} should have template body");
+                else
+                {
+                    result.AddRange(Visit(defaultRule.normalTemplateBody()));
+                }
+            }
+            else
+            {
+                //throw WARN
+            }
+
+            return result;
+        }
 
         protected override List<string> DefaultResult => new List<string>();
     }

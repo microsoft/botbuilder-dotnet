@@ -23,7 +23,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public static IEnumerable<object[]> Data => new[]
        {
             Test("EmptyTemplate.lg"),
-            Test("ErrorTemplateParameters.lg")
+            Test("ErrorTemplateParameters.lg"),
+            Test("NoNormalTemplateBody.lg")
         };
 
 

@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             if(errorMessages.Count != 0)
             {
                 // - message1 - message2 - message3
-                var mergedMessage = "- " + string.Join("\r\n- ", errorMessages);
+                var mergedMessage = "> " + string.Join("\r\n> ", errorMessages);
                 throw new LGParsingException(mergedMessage);
             }
         }
