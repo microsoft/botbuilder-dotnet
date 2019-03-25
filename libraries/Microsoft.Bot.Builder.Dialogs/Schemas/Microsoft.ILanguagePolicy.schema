@@ -1,0 +1,12 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "title": "Microsoft Language Policy",
+    "description": "Union of components which implement the ILanguagePolicy interface",
+    "$role": "unionType",
+    "oneOf": [
+        {
+            "type": "string",
+            "title": "The id of a language policy definition"
+        }
+    ]
+}

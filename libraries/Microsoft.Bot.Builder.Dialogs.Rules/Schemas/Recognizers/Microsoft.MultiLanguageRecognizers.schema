@@ -1,0 +1,26 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IRecognizer)",
+    "title": "Multi Language Recognizer",
+    "description": "Recognizer which allows you to configure the recognizer per language, and to define the policy for using them",
+    "type": "object",
+    "properties": {
+        "languagePolicy": {
+            "$type": "Microsoft.ILanguagePolicy",
+            "type": "object",
+            "title": "Language Policy",
+            "description": "Defines languages to try per language."
+        },
+        "recognizers": {
+            "type": "object",
+            "title": "Recognizers",
+            "description": "Map of language -> IRecognizer",
+            "additionalProperties": {
+                "$type": "Microsoft.IRecognizer"
+            }
+        }
+    },
+    "required": [
+        "recognizers"
+    ]
+}

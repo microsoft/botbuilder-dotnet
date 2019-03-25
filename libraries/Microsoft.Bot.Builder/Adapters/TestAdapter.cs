@@ -53,6 +53,8 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
+        public string Locale { get; set; } = "en-us";
+
         private class TokenMagicCode
         {
             public UserTokenKey Key { get; set; }
@@ -375,6 +377,7 @@ namespace Microsoft.Bot.Builder.Adapters
             Activity activity = new Activity
             {
                 Type = ActivityTypes.Message,
+                Locale = this.Locale,
                 From = Conversation.User,
                 Recipient = Conversation.Bot,
                 Conversation = Conversation.Conversation,
