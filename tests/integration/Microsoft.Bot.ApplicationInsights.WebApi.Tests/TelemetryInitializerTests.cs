@@ -2,18 +2,18 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Web;
 using Microsoft.ApplicationInsights;
-using System.Collections.Generic;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.Channel;
-using Moq;
 using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Bot.Schema;
-using Newtonsoft.Json.Linq;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi;
-using System.IO;
+using Microsoft.Bot.Schema;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 {
@@ -24,7 +24,6 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
         [TestMethod]
         public void VerifyAllTelemtryPropoerties()
         {
-
             var configuration = new TelemetryConfiguration();
             var sentItems = new List<ITelemetry>();
             var mockTelemetryChannel = new Mock<ITelemetryChannel>();
@@ -36,9 +35,8 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 
             // Mock http context
             var httpContext = new HttpContext(
-                    new HttpRequest("", "http://google.com", ""),
-                    new HttpResponse(new StringWriter())
-                );
+                    new HttpRequest(string.Empty, "http://google.com", string.Empty),
+                    new HttpResponse(new StringWriter()));
             HttpContext.Current = httpContext;
 
             // Simulate what Middleware does to read body
@@ -73,7 +71,6 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
         [TestMethod]
         public void VerifyTracePropoerties()
         {
-
             var configuration = new TelemetryConfiguration();
             var sentItems = new List<ITelemetry>();
             var mockTelemetryChannel = new Mock<ITelemetryChannel>();
@@ -85,9 +82,8 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 
             // Mock http context
             var httpContext = new HttpContext(
-                    new HttpRequest("", "http://google.com", ""),
-                    new HttpResponse(new StringWriter())
-                );
+                    new HttpRequest(string.Empty, "http://google.com", string.Empty),
+                    new HttpResponse(new StringWriter()));
             HttpContext.Current = httpContext;
 
             // Simulate what Middleware does to read body
@@ -120,7 +116,6 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
         [TestMethod]
         public void VerifyRequestPropoerties()
         {
-
             var configuration = new TelemetryConfiguration();
             var sentItems = new List<ITelemetry>();
             var mockTelemetryChannel = new Mock<ITelemetryChannel>();
@@ -132,9 +127,8 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 
             // Mock http context
             var httpContext = new HttpContext(
-                    new HttpRequest("", "http://google.com", ""),
-                    new HttpResponse(new StringWriter())
-                );
+                    new HttpRequest(string.Empty, "http://google.com", string.Empty),
+                    new HttpResponse(new StringWriter()));
             HttpContext.Current = httpContext;
 
             // Simulate what Middleware does to read body
@@ -167,7 +161,6 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
         [TestMethod]
         public void InvalidMessage_NoConversation()
         {
-
             var configuration = new TelemetryConfiguration();
             var sentItems = new List<ITelemetry>();
             var mockTelemetryChannel = new Mock<ITelemetryChannel>();
@@ -179,9 +172,8 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 
             //// Mock http context
             var httpContext = new HttpContext(
-                    new HttpRequest("", "http://google.com", ""),
-                    new HttpResponse(new StringWriter())
-                );
+                    new HttpRequest(string.Empty, "http://google.com", string.Empty),
+                    new HttpResponse(new StringWriter()));
             HttpContext.Current = httpContext;
 
             // Simulate what Middleware does to read body
@@ -210,6 +202,5 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             Assert.IsTrue(properties.Properties["hello"] == "value");
             Assert.IsTrue(telem.Metrics["metric"] == 0.6);
         }
-
     }
 }
