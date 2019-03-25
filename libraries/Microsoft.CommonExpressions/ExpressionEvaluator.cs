@@ -104,7 +104,7 @@ namespace Microsoft.Expressions
                 return method(parameters.ToArray());
             }
 
-            throw new Exception("This format is wrong.");
+            throw new Exception($"Format: {context.GetText()} is invalid.");
         }
 
         public override object VisitIdAtom([NotNull] ExpressionParser.IdAtomContext context) => GetValue(Scope, context.GetText());
