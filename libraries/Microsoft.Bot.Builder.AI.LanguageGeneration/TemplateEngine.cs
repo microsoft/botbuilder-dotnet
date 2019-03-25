@@ -95,7 +95,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         public void RunStaticCheck(EvaluationContext evaluationContext)
         {
             var checker = new StaticChecker(evaluationContext);
-            checker.Check();
+            var errorMessages = checker.Check();
+            if(errorMessages.Count != 0)
+            {
+                // - message1 - message2 - message3
+                var mergedMessage = "- " + string.Join("\r\n- ", errorMessages);
+                throw new LGParsingException(mergedMessage);
+            }
         }
         
         public string EvaluateTemplate(string templateName, object scope, IGetValue valueBinder = null, IGetMethod methodBinder = null)

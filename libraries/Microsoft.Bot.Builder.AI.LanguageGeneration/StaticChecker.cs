@@ -1,8 +1,9 @@
-﻿using Antlr4.Runtime.Misc;
+﻿using System.Collections.Generic;
+using Antlr4.Runtime.Misc;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
-    public class StaticChecker : LGFileParserBaseVisitor<int>
+    public class StaticChecker : LGFileParserBaseVisitor<List<string>>
     {
         public readonly EvaluationContext Context;
 
@@ -11,38 +12,36 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             Context = context;
         }
 
-        public void Check()
+        /// <summary>
+        /// Return error messaages list
+        /// </summary>
+        /// <returns></returns>
+        public List<string> Check()
         {
+            var result = new List<string>();
             foreach (var template in Context.TemplateContexts)
             {
-                Visit(template.Value);
+                result.AddRange(Visit(template.Value));
             }
+
+            return result;
         }
 
-        public override int VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
+        public override List<string> VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
         {
+            var result = new List<string>();
             var templateName = context.templateNameLine().templateName().GetText();
 
             if (context.templateBody() == null)
             {
-                throw new LGParsingException($"There is no template body in template {templateName}");
+                result.Add($"There is no template body in template {templateName}");
+            }
+            else
+            {
+                result.AddRange(Visit(context.templateBody()));
             }
 
-            Visit(context.templateBody());
-            return 0;
+            return result;
         }
-
-        public override int VisitConditionalBody([NotNull] LGFileParser.ConditionalBodyContext context)
-        {
-            return 0;
-        }
-
-
-        public override int VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
-        {
-            
-            return 0; ;
-        }
-
     }
 }
