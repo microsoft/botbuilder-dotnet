@@ -70,7 +70,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             {
                 // Extact name
                 var templateName = template.templateNameLine().templateName().GetText();
-
                 if (!templateContexts.ContainsKey(templateName))
                 {
                     templateContexts[templateName] = template;
@@ -99,7 +98,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             checker.Check();
         }
         
-
         public string EvaluateTemplate(string templateName, object scope, IGetValue valueBinder = null, IGetMethod methodBinder = null)
         {
 
