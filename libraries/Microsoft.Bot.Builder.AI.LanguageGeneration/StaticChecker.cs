@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Microsoft.Expressions;
@@ -136,6 +137,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     case LGFileParser.EXPRESSION:
                         result.AddRange(CheckExpression(node.GetText()));
                         break;
+                    case LGFileLexer.MULTI_LINE_TEXT:
+                        result.AddRange(CheckMultiLineText(node.GetText()));
+                        break;
                     default:
                         break;
                 }
@@ -177,6 +181,25 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 if (!Context.TemplateContexts.ContainsKey(exp))
                 {
                     result.Add($"No such template: {exp}");
+                }
+            }
+            return result;
+        }
+
+        private List<string> CheckMultiLineText(string exp)
+        {
+            var result = new List<string>();
+
+            exp = exp.Substring(3, exp.Length - 6); //remove ``` ```
+            var reg = @"@\{[^{}]+\}";
+            var mc = Regex.Matches(exp, reg);
+
+            foreach (Match match in mc)
+            {
+                var newExp = match.Value.Substring(1); // remove @
+                if (newExp.StartsWith("{[") && newExp.EndsWith("]}"))
+                {
+                    result.AddRange(CheckTemplateRef(newExp.Substring(2, newExp.Length - 4)));//[ ]
                 }
             }
             return result;
