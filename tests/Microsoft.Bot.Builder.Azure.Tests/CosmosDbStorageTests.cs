@@ -390,7 +390,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [TestMethod]
-        public async Task DeleteDocumentFromSingleCollection()
+        public async Task DeleteAsyncFromSingleCollection()
         {
             string DocumentId = "UtteranceLog-001";
             string[] keys = { DocumentId };
@@ -414,7 +414,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [TestMethod]
-        public async Task DeleteDocumentFromPartitionedCollection()
+        public async Task DeleteAsyncFromPartitionedCollection()
         {
             /// The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
             /// The partitionKeyPath must have the "document" value to properly route the values as partitionKey
@@ -445,8 +445,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             Assert.IsTrue(result.IsCompletedSuccessfully);
         }
       
-        [TestMethod]
-        public async Task DeleteFromCosmosStorageWithoutPartitionKey()
+        [TestMethod] 
+        public async Task DeleteAsyncFromPartitionedCollectionWithoutPartitionKey()
         {
             /// The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
             /// The partitionKeyPath must have the "document" value to properly route the values as partitionKey
