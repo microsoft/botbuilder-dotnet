@@ -24,11 +24,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         public async Task Test_EnUsFallback()
         {
             await CreateFlow("en-us")
-                .Send("howdy")
+                .Send("howdy") 
                     .AssertReply("greeting intent")
-                .Send("cheerio")
+                .Send("cheerio") // should not recognize as this is in the en-gb recognizer
                     .AssertReply("default rule")
-                .Send("bye")
+                .Send("bye") 
                     .AssertReply("goodbye intent")
                 .StartTestAsync();
         }
@@ -37,9 +37,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         public async Task Test_EnGbFallback()
         {
             await CreateFlow("en-gb")
-                .Send("hiya")
+                .Send("hiya") 
                     .AssertReply("greeting intent")
-                .Send("howdy")
+                .Send("howdy") // should not recognize as this is in the en-us recognizer, not en-gb
                     .AssertReply("default rule")
                 .Send("cheerio")
                     .AssertReply("goodbye intent")
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             await CreateFlow("en")
                 .Send("hello")
                     .AssertReply("greeting intent")
-                .Send("howdy")
+                .Send("howdy") // should not recognize as this is in the en-us recognizer, not en
                     .AssertReply("default rule")
                 .Send("goodbye")
                     .AssertReply("goodbye intent")
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             await CreateFlow("")
                 .Send("salve")
                     .AssertReply("greeting intent")
-                .Send("howdy")
+                .Send("hello") // should not recognize as this is in the en recognizer
                     .AssertReply("default rule")
                 .Send("vale dicere")
                     .AssertReply("goodbye intent")
