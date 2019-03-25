@@ -16,13 +16,20 @@
                     ],
                     "ifFalse": [
                         {
-                            "$type": "Microsoft.SendList",
-                            "listProperty": "user.todos",
-                            "messageTemplate": "Here are your todos: "
+                            "$type": "Microsoft.SendActivity",
+                            "activity": "[ShowTodo]"
                         }
                     ]
                 }
-
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "CancelIntent",
+            "steps": [
+                {
+                    "$type": "Microsoft.CancelDialog"
+                }
             ]
         }
     ]

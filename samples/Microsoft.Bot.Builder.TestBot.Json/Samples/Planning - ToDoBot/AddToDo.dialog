@@ -36,6 +36,15 @@
                     "property": "dialog.todo"
                 }
             ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "CancelIntent",
+            "steps": [
+                {
+                    "$type": "Microsoft.CancelDialog"
+                }
+            ]
         }
     ]
 }
