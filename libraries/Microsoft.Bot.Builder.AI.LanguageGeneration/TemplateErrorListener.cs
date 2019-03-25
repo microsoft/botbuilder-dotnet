@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
         public override void SyntaxError([NotNull] Antlr4.Runtime.IRecognizer recognizer, [Nullable] IToken offendingSymbol, int line, int charPositionInLine, [NotNull] string msg, [Nullable] RecognitionException e)
         {
-            throw new Exception($"line {line}:{charPositionInLine} {msg}");
+            throw new LGParsingException($"line {line}:{charPositionInLine} {msg}");
         }
     }
 }
