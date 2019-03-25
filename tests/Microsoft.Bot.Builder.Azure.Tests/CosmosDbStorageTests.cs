@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
@@ -14,6 +15,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
@@ -27,7 +29,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private const string CosmosAuthKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
         private const string CosmosDatabaseName = "test-db";
         private const string CosmosCollectionName = "bot-storage";
-        private const string CosmosDBPartitionKey = "UtteranceLog";
 
         private const string _noEmulatorMessage = "This test requires CosmosDB Emulator! go to https://aka.ms/documentdb-emulator-docs to download and install.";
         private static string _emulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe");
@@ -389,31 +390,74 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [TestMethod]
-        public async Task DeleteFromCosmosStorageWithPartitionKey()
+        public async Task DeleteDocumentFromSingleCollection()
         {
+            string DocumentId = "UtteranceLog-001";
+            string[] keys = { DocumentId };
             var storage = new CosmosDbStorage(new CosmosDbStorageOptions()
             {
-                PartitionKey = CosmosDBPartitionKey,
                 AuthKey = CosmosAuthKey,
                 CollectionId = CosmosCollectionName,
                 CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
                 DatabaseId = CosmosDatabaseName,
             });
-
-            await storage.WriteAsync(new Dictionary<string, object>()
+            var item = new StoreItem { MessageList = new string[] { "hi", "how are u" }, City = "Contoso" };
+            var changes = new Dictionary<string, object>();
             {
-                { CosmosDBPartitionKey, new object() }
-            }, CancellationToken.None);
+                changes.Add(DocumentId, item);
+            };
 
-            string[] utteranceList = { "UtteranceLog" };
+            await storage.WriteAsync(changes, CancellationToken.None);
 
-            await storage.DeleteAsync(utteranceList, CancellationToken.None);
+            var result = await Task.WhenAny(storage.DeleteAsync(keys, CancellationToken.None)).ConfigureAwait(false);
+            Assert.IsTrue(result.IsCompletedSuccessfully);
         }
 
         [TestMethod]
+        public async Task DeleteDocumentFromPartitionedCollection()
+        {
+            /// The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
+            /// The partitionKeyPath must have the "document" value to properly route the values as partitionKey
+            /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
+            string partitionKeyPath = "document/city";
+            string DocumentId = "UtteranceLog-001";
+            string[] keys = { DocumentId };
+
+            await CreateCosmosDbWithPartitionedCollection(partitionKeyPath); 
+
+            // Connect to the comosDb created before
+            var storage = new CosmosDbStorage(new CosmosDbStorageOptions()
+            {
+                PartitionKey = "Contoso",
+                AuthKey = CosmosAuthKey,
+                CollectionId = CosmosCollectionName,
+                CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
+                DatabaseId = CosmosDatabaseName,
+            });
+            var item = new StoreItem { MessageList = new string[]{ "hi", "how are u" } , City = "Contoso" };
+            var changes = new Dictionary<string, object>();
+            {
+                changes.Add(DocumentId, item);
+            };
+            await storage.WriteAsync(changes, CancellationToken.None);
+
+            var result = await Task.WhenAny(storage.DeleteAsync(keys, CancellationToken.None)).ConfigureAwait(false);
+            Assert.IsTrue(result.IsCompletedSuccessfully);
+        }
+      
+        [TestMethod]
         public async Task DeleteFromCosmosStorageWithoutPartitionKey()
         {
-            // No PartitionKey
+            /// The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
+            /// The partitionKeyPath must have the "document" value to properly route the values as partitionKey
+            /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
+            string partitionKeyPath = "document/city";
+            string DocumentId = "UtteranceLog-001";
+            string[] keys = { DocumentId };
+
+            await CreateCosmosDbWithPartitionedCollection(partitionKeyPath);
+
+            // Connect to the comosDb created before
             var storage = new CosmosDbStorage(new CosmosDbStorageOptions()
             {
                 PartitionKey = string.Empty,
@@ -422,15 +466,27 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
                 DatabaseId = CosmosDatabaseName,
             });
-
-            string[] utteranceList = { "UtteranceLog" };
-            await storage.WriteAsync(new Dictionary<string, object>()
+            var item = new StoreItem { MessageList = new string[] { "hi", "how are u" }, City = "Contoso" };
+            var changes = new Dictionary<string, object>();
             {
-                { CosmosDBPartitionKey, utteranceList }
-            }, CancellationToken.None);
+                changes.Add(DocumentId, item);
+            };
+            await storage.WriteAsync(changes, CancellationToken.None);
 
-            // Should throw
-            await Assert.ThrowsExceptionAsync<DocumentClientException>(async () => await storage.DeleteAsync(utteranceList, CancellationToken.None));
+            // Should throw InvalidOperationException: PartitionKey value must be supplied for this operation.
+            await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await storage.DeleteAsync(keys, CancellationToken.None));
+        }
+
+        private static async Task CreateCosmosDbWithPartitionedCollection(string partitionKey)
+        {
+            using (var client = new DocumentClient(new Uri(CosmosServiceEndpoint), CosmosAuthKey))
+            {
+                Database _database = await client.CreateDatabaseIfNotExistsAsync(new Database { Id = CosmosDatabaseName });
+                var partitionKeyDefinition = new PartitionKeyDefinition { Paths = new Collection<string> { $"/{partitionKey}" } };
+                var collectionDefinition = new DocumentCollection { Id = CosmosCollectionName, PartitionKey = partitionKeyDefinition };
+
+                await client.CreateDocumentCollectionIfNotExistsAsync(_database.SelfLink, collectionDefinition);
+            }
         }
 
         public bool CheckEmulator()
@@ -472,5 +528,16 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
             return mock;
         }
+    }
+
+    internal class StoreItem : IStoreItem
+    {
+        [JsonProperty(PropertyName = "messageList")]
+        public string[] MessageList { get; set; }
+
+        [JsonProperty(PropertyName = "city")]
+        public string City { get; set; }
+
+        public string ETag { get; set; }
     }
 }
