@@ -41,7 +41,19 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 result.AddRange(Visit(context.templateBody()));
             }
 
+            var parameters = context.templateNameLine().parameters();
+            if (parameters != null)
+            {
+                if (parameters.CLOSE_PARENTHESIS() == null
+                       || parameters.OPEN_PARENTHESIS() == null)
+                {
+                    result.Add($"parameters: {parameters.GetText()} format error");
+                }
+            }
             return result;
         }
+
+
+        protected override List<string> DefaultResult => new List<string>();
     }
 }
