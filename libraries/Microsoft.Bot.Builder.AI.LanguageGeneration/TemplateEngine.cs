@@ -5,6 +5,7 @@ using Antlr4.Runtime;
 using System.IO;
 using System.Diagnostics;
 using System.Linq;
+using Microsoft.Bot.Builder.AI.LanguageGeneration.Checker;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
@@ -73,6 +74,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             {
                 // Extact name
                 var templateName = template.templateNameLine().templateName().GetText();
+
+                if (template.templateBody() == null)
+                {
+                    throw new LGParsingException($"There is no template body in template {templateName}");
+                }
+
                 if (!templateContexts.ContainsKey(templateName))
                 {
                     templateContexts[templateName] = template;
@@ -91,8 +98,16 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 }
             }
             evaluationContext = new EvaluationContext(templateContexts, templateParameters);
+
+            CheckLgFile();
         }
-        
+
+        public void CheckLgFile()
+        {
+            var checker = new LGFileChecker(evaluationContext);
+            checker.Check();
+        }
+
         public string EvaluateTemplate(string templateName, object scope, IGetValue valueBinder = null, IGetMethod methodBinder = null)
         {
 
@@ -146,7 +161,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             catch (Exception e)
             {
                 Debug.WriteLine(e.Message);
-                throw e;
+                throw new LGParsingException(e.Message);
             }
             
         }
@@ -191,7 +206,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             catch (Exception e)
             {
                 Debug.WriteLine(e.Message);
-                throw e;
+                throw new LGParsingException(e.Message);
             }
         }
     }
