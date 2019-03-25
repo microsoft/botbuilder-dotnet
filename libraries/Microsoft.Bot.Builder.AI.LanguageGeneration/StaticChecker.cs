@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Antlr4.Runtime.Misc;
+using Antlr4.Runtime.Tree;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
@@ -53,6 +54,19 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return result;
         }
 
+        public override List<string> VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
+        {
+            var result = new List<string>();
+
+            foreach (var templateStr in context.normalTemplateString())
+            {
+                var item = Visit(templateStr);
+                result.AddRange(item);
+            }
+
+            return result;
+        }
+
         public override List<string> VisitConditionalBody([NotNull] LGFileParser.ConditionalBodyContext context)
         {
             var result = new List<string>();
@@ -95,6 +109,39 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return result;
         }
 
-        protected override List<string> DefaultResult => new List<string>();
+        public override List<string> VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
+        {
+            var result = new List<string>();
+
+            foreach (ITerminalNode node in context.children)
+            {
+                switch (node.Symbol.Type)
+                {
+                    case LGFileParser.ESCAPE_CHARACTER:
+                        result.AddRange(CheckEscapeCharacter(node.GetText()));
+                        break;
+                    case LGFileParser.INVALID_ESCAPE:
+                        result.Add($"escape character {node.GetText()} is invalid");
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return result;
+        }
+
+
+        private List<string> CheckEscapeCharacter(string exp)
+        {
+            var result = new List<string>();
+            var ValidEscapeCharacters = new List<string> {
+                @"\r", @"\n", @"\t", @"\\", @"\[", @"\]", @"\{", @"\}"
+            };
+
+            if (!ValidEscapeCharacters.Contains(exp))
+                result.Add($"escape character {exp} is invalid");
+
+            return result;
+        }
     }
 }

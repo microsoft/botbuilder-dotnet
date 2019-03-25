@@ -117,8 +117,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     case LGFileParser.ESCAPE_CHARACTER:
                         builder.Append(EvalEscapeCharacter(node.GetText()));
                         break;
-                    case LGFileParser.INVALID_ESCAPE:
-                        throw new Exception($"escape character {node.GetText()} is invalid");
                     case LGFileParser.EXPRESSION:
                         builder.Append(EvalExpression(node.GetText()));
                         break;
@@ -151,11 +149,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 { @"\}","}"},
             };
 
-            if (validCharactersDict.ContainsKey(exp))
-                return validCharactersDict[exp];
-
-            throw new Exception($"escape character {exp} is invalid");
-
+            return validCharactersDict[exp];
         }
 
         private bool EvalCondition(string exp)
