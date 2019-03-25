@@ -192,10 +192,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             {
                 // EvaluateTemplate all arguments using ExpressoinEngine
                 var argsEndPos = exp.LastIndexOf(')');
-                if (argsEndPos < 0 || argsEndPos < argsStartPos+1)
-                {
-                    throw new Exception($"Not a valid template ref: {exp}");
-                }
+                
                 var argExpressions = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(',');
                 var args = argExpressions.Select(x => EvalByExpressionEngine(x, CurrentTarget().Scope)).ToList();
 
@@ -256,11 +253,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             }
 
             var paramters = ExtractParameters(templateName);
-
-            if (paramters.Count != args.Count)
-            {
-                throw new Exception($"Arguments count mismatch for template ref {templateName}, expected {paramters.Count}, actual {args.Count}");
-            }
 
             var newScope = paramters.Zip(args, (k, v) => new { k, v })
                                     .ToDictionary(x => x.k, x => x.v);

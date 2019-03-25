@@ -27,6 +27,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Test("NoNormalTemplateBody.lg"),
             Test("ConditionFormatError.lg"),
             Test("ErrorEscapeCharacter.lg"),
+            Test("NoTemplateRef.lg"),
+            Test("TemplateParamsNotMatchArgsNum.lg"),
         };
 
 
