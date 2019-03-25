@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Antlr4.Runtime;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Diagnostics;
 using System.Linq;
-using Microsoft.Bot.Builder.AI.LanguageGeneration.Checker;
+using Antlr4.Runtime;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
@@ -75,11 +71,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 // Extact name
                 var templateName = template.templateNameLine().templateName().GetText();
 
-                if (template.templateBody() == null)
-                {
-                    throw new LGParsingException($"There is no template body in template {templateName}");
-                }
-
                 if (!templateContexts.ContainsKey(templateName))
                 {
                     templateContexts[templateName] = template;
@@ -99,14 +90,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             }
             evaluationContext = new EvaluationContext(templateContexts, templateParameters);
 
-            CheckLgFile();
+            RunStaticCheck(evaluationContext);
         }
 
-        public void CheckLgFile()
+        public void RunStaticCheck(EvaluationContext evaluationContext)
         {
-            var checker = new LGFileChecker(evaluationContext);
+            var checker = new StaticChecker(evaluationContext);
             checker.Check();
         }
+        
 
         public string EvaluateTemplate(string templateName, object scope, IGetValue valueBinder = null, IGetMethod methodBinder = null)
         {
@@ -137,33 +129,27 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             // wrap inline string with "# name and -" to align the evaluation process
             var wrappedStr = $"# {fakeTemplateId} \r\n - {inlineStr}";
 
-            try
-            {
-                // Step 1: parse input, construct parse tree
-                var input = new AntlrInputStream(wrappedStr);
-                var lexer = new LGFileLexer(input);
-                var tokens = new CommonTokenStream(lexer);
-                var parser = new LGFileParser(tokens);
-                parser.RemoveErrorListeners();
-                parser.AddErrorListener(TemplateErrorListener.Instance);
-                parser.BuildParseTree = true;
-                // the only difference here is that we parse as templateBody, not as the whole file
-                var context = parser.templateDefinition();
+            // Step 1: parse input, construct parse tree
+            var input = new AntlrInputStream(wrappedStr);
+            var lexer = new LGFileLexer(input);
+            var tokens = new CommonTokenStream(lexer);
+            var parser = new LGFileParser(tokens);
+            parser.RemoveErrorListeners();
+            parser.AddErrorListener(TemplateErrorListener.Instance);
+            parser.BuildParseTree = true;
+            // the only difference here is that we parse as templateBody, not as the whole file
+            var context = parser.templateDefinition();
 
-                // Step 2: constuct a new evalution context on top of the current one
-                var evaluationContext = new EvaluationContext(this.evaluationContext);
-                evaluationContext.TemplateContexts[fakeTemplateId] = context;
-                var evaluator = new Evaluator(evaluationContext, methodBinder, valueBinder);
+            // Step 2: constuct a new evalution context on top of the current one
+            var evaluationContext = new EvaluationContext(this.evaluationContext);
+            evaluationContext.TemplateContexts[fakeTemplateId] = context;
+            var evaluator = new Evaluator(evaluationContext, methodBinder, valueBinder);
 
-                // Step 3: evaluate
-                return evaluator.EvaluateTemplate(fakeTemplateId, scope);
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
-                throw new LGParsingException(e.Message);
-            }
-            
+            RunStaticCheck(evaluationContext);
+
+            // Step 3: evaluate
+            return evaluator.EvaluateTemplate(fakeTemplateId, scope);
+
         }
 
 
@@ -189,25 +175,17 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 return new TemplateEngine();
             }
 
-            try
-            {
-                var input = new AntlrInputStream(lgFileContent);
-                var lexer = new LGFileLexer(input);
-                var tokens = new CommonTokenStream(lexer);
-                var parser = new LGFileParser(tokens);
-                parser.RemoveErrorListeners();
-                parser.AddErrorListener(TemplateErrorListener.Instance);
-                parser.BuildParseTree = true;
+            var input = new AntlrInputStream(lgFileContent);
+            var lexer = new LGFileLexer(input);
+            var tokens = new CommonTokenStream(lexer);
+            var parser = new LGFileParser(tokens);
+            parser.RemoveErrorListeners();
+            parser.AddErrorListener(TemplateErrorListener.Instance);
+            parser.BuildParseTree = true;
 
-                var context = parser.file();
+            var context = parser.file();
 
-                return new TemplateEngine(context);
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
-                throw new LGParsingException(e.Message);
-            }
+            return new TemplateEngine(context);
         }
     }
 }

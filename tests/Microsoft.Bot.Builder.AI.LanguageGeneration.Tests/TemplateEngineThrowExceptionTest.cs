@@ -8,6 +8,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
     [TestClass]
     public class TemplateEngineThrowExceptionTest
     {
+        /// <summary>
+        ///  Gets or sets the test context which provides
+        ///  information about and functionality for the current test run.
+        ///</summary>
+        public TestContext TestContext { get; set; }
+
         private string GetExampleFilePath(string fileName)
         {
             return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "ExceptionExamples\\" + fileName;
@@ -25,7 +31,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [DynamicData(nameof(Data))]
         public void ThrowExceptionTest(string input)
         {
-            Assert.ThrowsException<LGParsingException>(() => TemplateEngine.FromFile(GetExampleFilePath(input)));
+            try
+            {
+                TemplateEngine.FromFile(GetExampleFilePath(input));
+            }
+            catch (Exception e)
+            {
+                Assert.IsInstanceOfType(e, typeof(LGParsingException));
+                TestContext.WriteLine(e.Message);
+            }
         }
     }
 }

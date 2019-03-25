@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using Antlr4.Runtime.Misc;
-using Antlr4.Runtime.Tree;
-using Microsoft.Expressions;
+﻿using Antlr4.Runtime.Misc;
 
-namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Checker
+namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
-    public class LGFileChecker : LGFileParserBaseVisitor<int>
+    public class StaticChecker : LGFileParserBaseVisitor<int>
     {
         public readonly EvaluationContext Context;
 
-        public LGFileChecker(EvaluationContext context)
+        public StaticChecker(EvaluationContext context)
         {
             Context = context;
         }
@@ -27,6 +21,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Checker
 
         public override int VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
         {
+            var templateName = context.templateNameLine().templateName().GetText();
+
+            if (context.templateBody() == null)
+            {
+                throw new LGParsingException($"There is no template body in template {templateName}");
+            }
+
             Visit(context.templateBody());
             return 0;
         }
