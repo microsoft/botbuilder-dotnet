@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
+using Microsoft.Expressions;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
@@ -80,6 +82,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     result.Add($"Condition {caseRule.caseCondition().GetText()} MUST be enclosed in curly brackets.");
                 }
 
+                result.AddRange(CheckExpression(caseRule.caseCondition().EXPRESSION(0).GetText()));
+
                 if (caseRule.normalTemplateBody() == null)
                 {
                     result.Add($"Case {caseRule.GetText()} should have template body");
@@ -123,6 +127,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     case LGFileParser.INVALID_ESCAPE:
                         result.Add($"escape character {node.GetText()} is invalid");
                         break;
+                    case LGFileParser.EXPRESSION:
+                        result.AddRange(CheckExpression(node.GetText()));
+                        break;
                     default:
                         break;
                 }
@@ -130,6 +137,23 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return result;
         }
 
+        private List<string> CheckExpression(string exp)
+        {
+            var result = new List<string>();
+            exp = exp.TrimStart('{').TrimEnd('}');
+            try
+            {
+                ExpressionEngine.Parse(exp);
+            }
+            catch(Exception e)
+            {
+                result.Add(e.Message);
+                return result;
+            }
+
+            return result;
+            
+        }
 
         private List<string> CheckEscapeCharacter(string exp)
         {
