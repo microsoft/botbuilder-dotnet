@@ -60,6 +60,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var caseRules = context.conditionalTemplateBody().caseRule();
             foreach (var caseRule in caseRules)
             {
+                if (caseRule.caseCondition().EXPRESSION() == null
+                    || caseRule.caseCondition().EXPRESSION().Length == 0)
+                {
+                    result.Add($"Condition {caseRule.caseCondition().GetText()} MUST be enclosed in curly brackets.");
+                }
+
                 if (caseRule.normalTemplateBody() == null)
                 {
                     result.Add($"Case {caseRule.GetText()} should have template body");

@@ -24,7 +24,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
        {
             Test("EmptyTemplate.lg"),
             Test("ErrorTemplateParameters.lg"),
-            Test("NoNormalTemplateBody.lg")
+            Test("NoNormalTemplateBody.lg"),
+            Test("ConditionFormatError.lg"),
         };
 
 

@@ -61,7 +61,7 @@ defaultRule
     ;
 
 caseCondition
-	: DASH CASE EXPRESSION
+	: DASH CASE (WS|TEXT|EXPRESSION)*
 	;
 defaultCondition
     : DASH DEFAULT

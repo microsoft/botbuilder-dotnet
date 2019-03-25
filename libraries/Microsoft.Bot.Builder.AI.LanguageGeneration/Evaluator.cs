@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var caseRules = context.conditionalTemplateBody().caseRule();
             foreach (var caseRule in caseRules)
             {
-                var conditionExpression = caseRule.caseCondition().EXPRESSION().GetText();
+                var conditionExpression = caseRule.caseCondition().EXPRESSION(0).GetText();
                 if (EvalCondition(conditionExpression))
                 {
                     return Visit(caseRule.normalTemplateBody());
