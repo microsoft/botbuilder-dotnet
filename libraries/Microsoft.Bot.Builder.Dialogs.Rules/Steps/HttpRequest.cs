@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
         public Dictionary<string, string> Header { get; set; }
 
         [JsonProperty("body")]
-        public JObject Body { get; set; }
+        public JToken Body { get; set; }
 
         private static readonly HttpClient client = new HttpClient();
 
