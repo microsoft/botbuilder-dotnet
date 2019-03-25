@@ -132,7 +132,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 parser.RemoveErrorListeners();
                 parser.AddErrorListener(TemplateErrorListener.Instance);
                 parser.BuildParseTree = true;
-                parser.ErrorHandler = new BailErrorStrategy();
                 // the only difference here is that we parse as templateBody, not as the whole file
                 var context = parser.templateDefinition();
 
@@ -184,7 +183,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 parser.RemoveErrorListeners();
                 parser.AddErrorListener(TemplateErrorListener.Instance);
                 parser.BuildParseTree = true;
-                parser.ErrorHandler = new BailErrorStrategy();
 
                 var context = parser.file();
 
