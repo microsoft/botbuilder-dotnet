@@ -2,7 +2,7 @@
 - Hi {userName}
  
 #pizzaOrderConfirmation
-- Your pizza order of  {base} with toppings {join(topping, ',', 'and')} is confirmed.
+- Your pizza order of {base} with toppings {join(topping, ',', 'and')} is confirmed.
  
 #sandwichOrderConfirmation
 - Your {bread} sandwich with {meat} is on its way. Thanks.
@@ -13,12 +13,11 @@
 - CASE: {orderType == 'sandwich'}
 - [sandwichOrderConfirmation] 
 
-
 # template1
 - [template2] {age}
 
 # template2
-- {alarms.humanize(template3, ',', 'and')} {tasks[0]}
+- {alarms.humanize('[template3]', ',', 'and')} {tasks[0]}
 
 #template3(input)
 - {input.property} {other}

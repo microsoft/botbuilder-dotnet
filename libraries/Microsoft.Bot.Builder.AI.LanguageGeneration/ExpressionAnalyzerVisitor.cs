@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     {
                         // Template reference
                         var analyzer = new Analyzer(EvaluationContext);
-                        foreach (var reference in analyzer.AnalyzeTemplate(str.Substring(1, str.Length - 1)))
+                        foreach (var reference in analyzer.AnalyzeTemplate(str.Substring(1, str.Length - 2)))
                         {
                             References.Add(reference);
                         }
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     else if (str.StartsWith("{") && str.EndsWith("}"))
                     {
                         // Expression
-                        var expr = str.Substring(1, str.Length - 1);
+                        var expr = str.Substring(1, str.Length - 2);
                         var parse = new ExpressionEngine(new GetMethodExtensions(null).GetMethodX).Parse(expr);
                         parse.Accept(this);
                     }

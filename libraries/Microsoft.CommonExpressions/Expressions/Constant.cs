@@ -25,7 +25,14 @@ namespace Microsoft.Expressions
 
         public override string ToString()
         {
-            return Value.ToString();
+            if (Value is string str)
+            {
+                return $"'{Value}'";
+            }
+            else
+            {
+                return Value.ToString();
+            }
         }
 
         public static Constant MakeExpression(object value)

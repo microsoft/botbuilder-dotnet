@@ -12,7 +12,7 @@ namespace Microsoft.Expressions
         {
             _evaluator = evaluator;
             ReturnType = returnType;
-            _validator = validator;
+            _validator = validator ?? new ValidateExpressionDelegate((expr) => { });
         }
 
         private ValidateExpressionDelegate _validator;

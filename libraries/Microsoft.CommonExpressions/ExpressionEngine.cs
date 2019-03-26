@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
@@ -83,7 +84,7 @@ namespace Microsoft.Expressions
 
             public override Expression VisitFuncInvokeExp([NotNull] ExpressionParser.FuncInvokeExpContext context)
             {
-                var parameters = ProcessArgsList(context.argsList());
+                var parameters = ProcessArgsList(context.argsList()).ToList();
 
                 //if context.primaryExpression() is idAtom --> normal function
                 if (context.primaryExpression() is ExpressionParser.IdAtomContext idAtom)
@@ -97,7 +98,8 @@ namespace Microsoft.Expressions
                 {
                     var instance = Visit(memberAccessExp.primaryExpression());
                     var functionName = memberAccessExp.IDENTIFIER().GetText();
-                    return Accessor.MakeExpression(instance, functionName);
+                    parameters.Insert(0, instance);
+                    return ExpressionWithChildren.MakeExpression(functionName, parameters, _lookup(functionName));
                 }
 
                 throw new Exception("This format is wrong.");

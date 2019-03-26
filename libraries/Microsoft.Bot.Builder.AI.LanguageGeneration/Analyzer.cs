@@ -14,11 +14,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
         private IExpressionParser _expressionParser;
 
-        private Stack<EvaluationTarget> evalutationTargetStack = new Stack<EvaluationTarget>();
+        private Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
         private EvaluationTarget CurrentTarget()
         {
             // just don't want to write evaluationTargetStack.Peek() everywhere
-            return evalutationTargetStack.Peek();
+            return evaluationTargetStack.Peek();
         }
                  
         public Analyzer(EvaluationContext context)
@@ -34,13 +34,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 throw new Exception($"No such template: {templateName}");
             }
 
-            if (evalutationTargetStack.Any(e => e.TemplateName == templateName))
+            if (evaluationTargetStack.Any(e => e.TemplateName == templateName))
             {
-                throw new Exception($"Loop detected: {String.Join(" => ", evalutationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                throw new Exception($"Loop detected: {String.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
             // Using a stack to track the evalution trace
-            evalutationTargetStack.Push(new EvaluationTarget(templateName, null));
+            evaluationTargetStack.Push(new EvaluationTarget(templateName, null));
             var rawDependencies = Visit(Context.TemplateContexts[templateName]);
 
             var parameters = ExtractParameters(templateName);
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             // we need to exclude parameters from raw dependencies
             var dependencies = rawDependencies.Except(parameters).Distinct().ToList();
 
-            evalutationTargetStack.Pop();
+            evaluationTargetStack.Pop();
 
             return dependencies;
         }
@@ -137,6 +137,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var expression = _expressionParser.Parse(exp);
             var visitor = new ExpressionAnalyzerVisitor(Context);
             expression.Accept(visitor);
+            visitor.TerminatePath();
             return visitor.References.ToList();
         }
 
