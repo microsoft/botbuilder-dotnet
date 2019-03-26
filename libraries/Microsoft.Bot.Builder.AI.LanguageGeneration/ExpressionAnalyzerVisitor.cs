@@ -55,6 +55,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     {
                         result.AddRange(Visit(args.expression(0)));
                         var analyzer = new Analyzer(EvaluationContext);
+
+                        var templateRef = args.expression(1).GetText().Trim('\'');
+                        if (templateRef.StartsWith("[") && templateRef.EndsWith("]"))
+                        {
+                            var templateName = templateRef.Substring(1, templateRef.Length - 2);
+                            result.AddRange(analyzer.AnalyzeTemplate(templateName));
+                        }
+
                         result.AddRange(analyzer.AnalyzeTemplate(args.expression(1).GetText()));
                         if(args.expression().Length > 2)
                         {
@@ -81,7 +89,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     || functionName == "humanize") //var.humanize(template,',')
                 {
                     var analyzer = new Analyzer(EvaluationContext);
-                    result.AddRange(analyzer.AnalyzeTemplate(args.expression(0).GetText()));
+
+                    var templateRef = args.expression(0).GetText().Trim('\'');
+                    if (templateRef.StartsWith("[") && templateRef.EndsWith("]"))
+                    {
+                        var templateName = templateRef.Substring(1, templateRef.Length - 2);
+                        result.AddRange(analyzer.AnalyzeTemplate(templateName));
+                    }
+
                     if (args.expression().Length > 1)
                     {
                         for (var i = 1; i < args.expression().Length; i++)

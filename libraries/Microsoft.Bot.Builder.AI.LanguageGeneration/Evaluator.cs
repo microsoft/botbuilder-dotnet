@@ -226,7 +226,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 }
                 else
                 {
-                    return EvalExpression(newExp).ToString();//{ }
+                    return EvalExpression(newExp)?.ToString().Replace("\"","\'");//{ }
                 }
             });
 
