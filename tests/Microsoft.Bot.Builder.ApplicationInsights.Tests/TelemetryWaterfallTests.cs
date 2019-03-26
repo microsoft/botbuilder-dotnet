@@ -26,8 +26,8 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
             var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new WaterfallDialog("test", NewWaterfall()));
 
+            dialogs.Add(new WaterfallDialog("test", NewWaterfall()));
             dialogs.TelemetryClient = telemetryClient.Object;
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
