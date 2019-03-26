@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,6 +79,12 @@ namespace Microsoft.Expressions
             => ValidateArityAndType(expression, -1, ExpressionReturnType.Boolean);
 
         // Verifiers
+
+        public static string NoVerify(object value, Expression expression)
+        {
+            return null;
+        }
+
         public static string VerifyNumber(object value, Expression expression)
         {
             string error = null;
@@ -112,7 +120,7 @@ namespace Microsoft.Expressions
             Func<IReadOnlyList<dynamic>, object> function,
             Expression expression,
             object state,
-            Func<object, Expression, string> valid = null)
+            Func<object, Expression, string> verify = null)
         {
             object value = null;
             string error = null;
@@ -126,9 +134,9 @@ namespace Microsoft.Expressions
                     {
                         break;
                     }
-                    if (valid != null)
+                    if (verify != null)
                     {
-                        error = valid(value, child);
+                        error = verify(value, child);
                     }
                     if (error != null)
                     {
@@ -144,9 +152,9 @@ namespace Microsoft.Expressions
             return (value, error);
         }
 
-        public static IExpressionEvaluator Lookup(string type)
+        public static ExpressionEvaluator Lookup(string type)
         {
-            if (!_functions.TryGetValue(type, out IExpressionEvaluator eval))
+            if (!_functions.TryGetValue(type, out ExpressionEvaluator eval))
             {
                 throw new ExpressionException($"{type} does not have a built-in evaluator.");
             }
@@ -264,9 +272,9 @@ namespace Microsoft.Expressions
             return (result, error);
         }
 
-        private static Dictionary<string, IExpressionEvaluator> BuildFunctionLookup()
+        private static Dictionary<string, ExpressionEvaluator> BuildFunctionLookup()
         {
-            var functions = new Dictionary<string, IExpressionEvaluator>{
+            var functions = new Dictionary<string, ExpressionEvaluator>{
                 // Math
                 { ExpressionType.Element, new ExpressionEvaluator(ExtractElement, ExpressionReturnType.Object,
                     (expr) => ValidateOrder(expr, ExpressionReturnType.Object, ExpressionReturnType.Number)) }
@@ -292,22 +300,22 @@ namespace Microsoft.Expressions
 
                 // Comparisons
                 , {ExpressionType.LessThan,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] < args[1], expression, state, VerifyNumber),
+                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] < args[1], expression, state, NoVerify),
                         ExpressionReturnType.Boolean, ValidateBinaryNumberOrString) }
                 , {ExpressionType.LessThanOrEqual,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] <= args[1], expression, state, VerifyNumber),
+                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] <= args[1], expression, state, NoVerify),
                         ExpressionReturnType.Boolean, ValidateBinaryNumberOrString) }
                 , {ExpressionType.Equal,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] == args[1], expression, state, VerifyNumber),
+                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] == args[1], expression, state, NoVerify),
                         ExpressionReturnType.Boolean, ValidateBinaryNumberOrString) }
                 , {ExpressionType.NotEqual,
-                     new ExpressionEvaluator((expression, state) => Apply((args) => args[0] != args[1], expression, state, VerifyNumber),
+                     new ExpressionEvaluator((expression, state) => Apply((args) => args[0] != args[1], expression, state, NoVerify),
                         ExpressionReturnType.Boolean, ValidateBinaryNumberOrString) }
                 , {ExpressionType.GreaterThan,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] > args[1], expression, state, VerifyNumber),
+                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] > args[1], expression, state, NoVerify),
                         ExpressionReturnType.Boolean, ValidateBinaryNumberOrString) }
                 , {ExpressionType.GreaterThanOrEqual,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] >= args[1], expression, state, VerifyNumber),
+                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] >= args[1], expression, state, NoVerify),
                         ExpressionReturnType.Boolean, ValidateBinaryNumberOrString) }
 
                 // Logical
@@ -349,6 +357,6 @@ namespace Microsoft.Expressions
             return functions;
         }
 
-        public static Dictionary<string, IExpressionEvaluator> _functions = BuildFunctionLookup();
+        public static Dictionary<string, ExpressionEvaluator> _functions = BuildFunctionLookup();
     }
 }

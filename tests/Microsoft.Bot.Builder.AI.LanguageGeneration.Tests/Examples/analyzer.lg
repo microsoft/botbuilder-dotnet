@@ -17,7 +17,7 @@
 - [template2] {age}
 
 # template2
-- {alarms.humanize('[template3]', ',', 'and')} {tasks[0]}
+- {humanize(alarms, '[template3(customer)]', ',', 'and')} {tasks[0]}
 
 #template3(input)
-- {input.property} {other}
+- {input.property}

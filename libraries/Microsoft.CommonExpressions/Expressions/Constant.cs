@@ -1,10 +1,12 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+using System;
 
 namespace Microsoft.Expressions
 {
     public class Constant : Expression
     {
-        protected Constant(object value)
+        public Constant(object value)
             : base(ExpressionType.Constant,
                   new ExpressionEvaluator((expression, state) => ((expression as Constant).Value, null),
                       (value is string ? ExpressionReturnType.String

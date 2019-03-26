@@ -1,5 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+using System;
 
 namespace Microsoft.Expressions
 {
@@ -11,9 +12,9 @@ namespace Microsoft.Expressions
         , String
     }
 
-    public class Expression : IExpression
+    public class Expression 
     {
-        protected Expression(string type, IExpressionEvaluator evaluator = null)
+        public Expression(string type, ExpressionEvaluator evaluator = null)
         {
             Type = type;
             _evaluator = evaluator ?? BuiltInFunctions.Lookup(type);
@@ -23,7 +24,7 @@ namespace Microsoft.Expressions
 
         public ExpressionReturnType ReturnType { get { return _evaluator.ReturnType; } }
 
-        protected IExpressionEvaluator _evaluator { get; }
+        protected ExpressionEvaluator _evaluator { get; }
 
         public void Validate()
         {
@@ -38,7 +39,7 @@ namespace Microsoft.Expressions
             visitor.Visit(this);
         }
 
-        public static Expression MakeExpression(string type, IExpressionEvaluator evaluator = null)
+        public static Expression MakeExpression(string type, ExpressionEvaluator evaluator = null)
         {
             var expr = new Expression(type, evaluator);
             expr.Validate();

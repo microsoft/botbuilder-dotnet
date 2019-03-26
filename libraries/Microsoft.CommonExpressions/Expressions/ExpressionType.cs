@@ -1,4 +1,7 @@
-﻿namespace Microsoft.Expressions
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace Microsoft.Expressions
 {
     // NOTE: If you add a built-in type here, you also need to make sure it can be evaluated as well.
     public class ExpressionType

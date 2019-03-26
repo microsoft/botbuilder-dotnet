@@ -25,7 +25,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     {
                         // Template reference
                         var analyzer = new Analyzer(EvaluationContext);
-                        foreach (var reference in analyzer.AnalyzeTemplate(str.Substring(1, str.Length - 2)))
+                        var end = str.IndexOf('(');
+                        if (end == -1)
+                        {
+                            end = str.Length - 1;
+                        }
+                        foreach (var reference in analyzer.AnalyzeTemplate(str.Substring(1, end - 1)))
                         {
                             References.Add(reference);
                         }

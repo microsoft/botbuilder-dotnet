@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
     public interface IGetMethod
     {
-        IExpressionEvaluator GetMethodX(string name);
+        ExpressionEvaluator GetMethodX(string name);
     }
 
     class GetMethodExtensions : IGetMethod
@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         }
 
         // 
-        public IExpressionEvaluator GetMethodX(string name)
+        public ExpressionEvaluator GetMethodX(string name)
         {
             // TODO: Should add verifiers and validators
             switch (name)
@@ -113,17 +113,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         {
             if (parameters.Count >= 2 &&
                 parameters[0] is IList li &&
-                parameters[1] is string func)
+                parameters[1] is string template)
             {
-                if (!_evaluator.Context.TemplateContexts.ContainsKey(func))
+                template = template.TrimStart('[').TrimEnd(']');
+                if (!_evaluator.Context.TemplateContexts.ContainsKey(template))
                 {
-                    throw new Exception($"No such template defined: {func}");
+                    throw new Exception($"No such template defined: {template}");
                 }
 
                 var result = li.OfType<object>().Select(x =>
                 {
-                    var newScope = _evaluator.ConstructScope(func, new List<object>() { x });
-                    var evaled = _evaluator.EvaluateTemplate(func, newScope);
+                    var newScope = _evaluator.ConstructScope(template, new List<object>() { x });
+                    var evaled = _evaluator.EvaluateTemplate(template, newScope);
                     return evaled;
                 }).ToList();
 

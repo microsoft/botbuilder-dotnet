@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -6,7 +9,7 @@ namespace Microsoft.Expressions
 {
     public class ExpressionWithChildren : Expression
     {
-        protected ExpressionWithChildren(string type, IEnumerable<Expression> children = null, IExpressionEvaluator evaluator = null)
+        public ExpressionWithChildren(string type, IEnumerable<Expression> children = null, ExpressionEvaluator evaluator = null)
             : base(type, evaluator)
         {
             if (children == null)
@@ -56,7 +59,7 @@ namespace Microsoft.Expressions
             return builder.ToString();
         }
 
-        public static ExpressionWithChildren MakeExpression(string type, IEnumerable<Expression> children, IExpressionEvaluator evaluator = null)
+        public static ExpressionWithChildren MakeExpression(string type, IEnumerable<Expression> children = null, ExpressionEvaluator evaluator = null)
         {
             var expr = new ExpressionWithChildren(type, children, evaluator);
             expr.Validate();

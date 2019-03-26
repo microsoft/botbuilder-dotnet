@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Antlr4.Runtime;
@@ -7,7 +10,7 @@ using Antlr4.Runtime.Tree;
 
 namespace Microsoft.Expressions
 {
-    public delegate IExpressionEvaluator EvaluatorLookup(string name);
+    public delegate ExpressionEvaluator EvaluatorLookup(string name);
 
     public class ExpressionEngine : IExpressionParser
     {
@@ -93,6 +96,7 @@ namespace Microsoft.Expressions
                     return ExpressionWithChildren.MakeExpression(functionName, parameters, _lookup(functionName));
                 }
 
+                // TODO: We really should interpret this as a function with a namespace and not an accessor with a function.  Should also loop over them.
                 //if context.primaryExpression() is memberaccessExp --> accessor
                 if (context.primaryExpression() is ExpressionParser.MemberAccessExpContext memberAccessExp)
                 {
@@ -119,7 +123,7 @@ namespace Microsoft.Expressions
                 }
                 else
                 {
-                    result = Accessor.MakeExpression(null, symbol);
+                    result = Accessor.MakeExpression(symbol);
                 }
                 return result;
             }
@@ -134,7 +138,7 @@ namespace Microsoft.Expressions
             public override Expression VisitMemberAccessExp([NotNull] ExpressionParser.MemberAccessExpContext context)
             {
                 var instance = Visit(context.primaryExpression());
-                return Accessor.MakeExpression(instance, context.IDENTIFIER().GetText());
+                return Accessor.MakeExpression(context.IDENTIFIER().GetText(), instance);
             }
 
             public override Expression VisitNumericAtom([NotNull] ExpressionParser.NumericAtomContext context)

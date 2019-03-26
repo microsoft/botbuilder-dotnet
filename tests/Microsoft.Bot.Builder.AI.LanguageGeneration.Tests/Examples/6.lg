@@ -34,7 +34,7 @@
 - CASE: {count(alarms) == 1}
    - You have one alarm [ShowAlarm(alarms[0])]
 - CASE: {count(alarms) == 2}
-  - You have {count(alarms)} alarms, {join(foreach(alarms, ShowAlarm), ',', 'and')}
+  - You have {count(alarms)} alarms, {join(foreach(alarms, '[ShowAlarm]'), ',', 'and')}
 - DEFAULT:
   - You don't have any alarms
 
@@ -42,7 +42,7 @@
 - CASE: {count(alarms) == 1}
    - You have one alarm [ShowAlarm(alarms[0])]
 - CASE: {count(alarms) == 2}
-  - You have {count(alarms)} alarms, {join(alarms.foreach(ShowAlarm), ',', 'and')}
+  - You have {count(alarms)} alarms, {join(foreach(alarms, '[ShowAlarm]'), ',', 'and')}
 - DEFAULT:
   - You don't have any alarms
 
@@ -51,7 +51,7 @@
 - CASE: {count(alarms) == 1}
    - You have one alarm [ShowAlarm(alarms[0])]
 - CASE: {count(alarms) == 2}
-  - You have {count(alarms)} alarms, {humanize(alarms, ShowAlarm, ',', 'and')}
+  - You have {count(alarms)} alarms, {humanize(alarms, '[ShowAlarm]' ',', 'and')}
 - DEFAULT:
   - You don't have any alarms
 
@@ -60,6 +60,6 @@
 - CASE: {count(alarms) == 1}
    - You have one alarm [ShowAlarm(alarms[0])]
 - CASE: {count(alarms) == 2}
-  - You have {count(alarms)} alarms, {alarms.humanize(ShowAlarm, ',', 'and')}
+  - You have {count(alarms)} alarms, {humanize(alarms, '[ShowAlarm]', ',', 'and')}
 - DEFAULT:
   - You don't have any alarms

@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 
 namespace Microsoft.Expressions
 {
@@ -40,6 +40,8 @@ namespace Microsoft.Expressions
             return walker.References;
         }
 
+        private static Type[] _string = new Type[] { typeof(string) };
+
         public static (object value, string error) AccessProperty(this object instance, string property, Expression Instance = null)
         {
             object value = null;
@@ -62,7 +64,19 @@ namespace Microsoft.Expressions
                 }
                 else
                 {
-                    error = $"{Instance} does not have {property}.";
+                    var indexer = type.GetProperty("Item", _string);
+                    if (indexer != null)
+                    {
+                        value = indexer.GetValue(instance, new object[] { property });
+                        if (value == null)
+                        {
+                            error = $"{Instance} does not have {property}.";
+                        }
+                    }
+                    else
+                    {
+                        error = $"{Instance} does not have {property}.";
+                    }
                 }
             }
             return (value, error);

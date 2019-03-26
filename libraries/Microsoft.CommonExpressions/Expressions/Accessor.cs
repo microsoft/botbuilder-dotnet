@@ -1,16 +1,18 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+using System.Collections.Generic;
 
 namespace Microsoft.Expressions
 {
     public class Accessor : ExpressionWithChildren
     {
-        protected Accessor(Expression instance, string property)
+        public Accessor(string property, Expression instance = null)
             : base(ExpressionType.Accessor, instance != null ? new List<Expression> { instance } : new List<Expression>(), _accessor)
         {
             Property = property;
         }
 
-        private static IExpressionEvaluator _accessor = new ExpressionEvaluator(
+        private static ExpressionEvaluator _accessor = new ExpressionEvaluator(
              (expression, state) => (expression as Accessor).Evaluate(state),
              ExpressionReturnType.Object,
             (expression) => { });
@@ -44,9 +46,9 @@ namespace Microsoft.Expressions
             return $"{instance}.{Property}";
         }
 
-        public static Accessor MakeExpression(Expression instance, string property)
+        public static Accessor MakeExpression(string property, Expression instance = null)
         {
-            var expr = new Accessor(instance, property);
+            var expr = new Accessor(property, instance);
             expr.Validate();
             return expr;
         }

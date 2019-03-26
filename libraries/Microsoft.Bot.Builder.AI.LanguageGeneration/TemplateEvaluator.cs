@@ -23,13 +23,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         public object Scope { get; set; }
     }
 
-    class TemplateEvaluator: LGFileParserBaseVisitor<string>
-    { 
+    class TemplateEvaluator : LGFileParserBaseVisitor<string>
+    {
         public readonly EvaluationContext Context;
 
         private readonly IGetMethod GetMethodX;
         private readonly IGetValue GetValueX;
-        
+
         private Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
         public TemplateEvaluator(EvaluationContext context, IGetMethod getMethod, IGetValue getValue)
@@ -47,12 +47,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             }
 
             if (evaluationTargetStack.Any(e => e.TemplateName == templateName))
-            { 
-                throw new Exception($"Loop deteced: {String.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+            {
+                throw new Exception($"Loop detected: {String.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
             // Using a stack to track the evalution trace
-            evaluationTargetStack.Push(new EvaluationTarget(templateName, scope)); 
+            evaluationTargetStack.Push(new EvaluationTarget(templateName, scope));
             string result = Visit(Context.TemplateContexts[templateName]);
             evaluationTargetStack.Pop();
 
@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 return null;
             }
         }
-        
+
 
         public override string VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
         {
@@ -162,10 +162,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             try
             {
                 exp = exp.TrimStart('{').TrimEnd('}');
-                var result = EvalByExpressionEngine(exp, CurrentTarget().Scope); 
+                var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
 
-                if ((result is Boolean r1 && r1 == false) ||
-                    (result is int r2 && r2 == 0))
+                if (error != null
+                    || (result is Boolean r1 && r1 == false) 
+                    || (result is int r2 && r2 == 0))
                 {
                     return false;
                 }
@@ -183,7 +184,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         private string EvalExpression(string exp)
         {
             exp = exp.TrimStart('{').TrimEnd('}');
-            var result = EvalByExpressionEngine(exp, CurrentTarget().Scope);
+            var result = EvalByExpressionEngine(exp, CurrentTarget().Scope).value;
             return result?.ToString();
         }
 
@@ -196,12 +197,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             {
                 // EvaluateTemplate all arguments using ExpressoinEngine
                 var argsEndPos = exp.LastIndexOf(')');
-                if (argsEndPos < 0 || argsEndPos < argsStartPos+1)
+                if (argsEndPos < 0 || argsEndPos < argsStartPos + 1)
                 {
                     throw new Exception($"Not a valid template ref: {exp}");
                 }
                 var argExpressions = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(',');
-                var args = argExpressions.Select(x => EvalByExpressionEngine(x, CurrentTarget().Scope)).ToList();
+                var args = argExpressions.Select(x => EvalByExpressionEngine(x, CurrentTarget().Scope).value).ToList();
 
                 // Construct a new Scope for this template reference
                 // Bind all arguments to parameters
@@ -209,7 +210,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 var newScope = ConstructScope(templateName, args);
 
                 return EvaluateTemplate(templateName, newScope);
-                
+
             }
             return EvaluateTemplate(exp, CurrentTarget().Scope);
         }
@@ -245,8 +246,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return hasParameters ? parameters : new List<string>();
         }
 
-        // TODO: This does not properly handle evaluation errors
-        private object EvalByExpressionEngine(string exp, object scope)
+        private (object value, string error) EvalByExpressionEngine(string exp, object scope)
         {
             var parse = new ExpressionEngine(GetMethodX.GetMethodX).Parse(exp);
             return parse.TryEvaluate(scope);
@@ -254,7 +254,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
         public object ConstructScope(string templateName, List<object> args)
         {
-            if (args.Count == 1 && 
+            if (args.Count == 1 &&
                 !Context.TemplateParameters.ContainsKey(templateName))
             {
                 // Special case, if no parameters defined, and only one arg, don't wrap
