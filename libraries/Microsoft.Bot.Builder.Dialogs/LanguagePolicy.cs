@@ -12,6 +12,12 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class LanguagePolicy : Dictionary<string, string[]>, ILanguagePolicy
     {
+        // walk through all of the cultures and create a dictionary map with most specific to least specific
+        // Example output "en-us" will generate fallback rule like this:
+        //   "en-us" -> "en" -> "" 
+        //   "en" -> ""
+        // So that when we get a locale such as en-gb, we can try to resolve to "en-gb" then "en" then ""
+        // See commented section for full sample of output of this function
         private static Lazy<IDictionary<string, string[]>> defaultPolicy = new Lazy<IDictionary<string, string[]>>(() =>
         {
             var cultureCodes = CultureInfo.GetCultures(CultureTypes.AllCultures).Select(c => c.IetfLanguageTag.ToLower()).ToList();
@@ -49,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     }
 }
 
-/*
+/* Example output:
  {
   "": [
     ""
