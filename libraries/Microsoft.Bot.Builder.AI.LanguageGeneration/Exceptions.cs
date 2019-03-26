@@ -13,4 +13,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         }
 
     }
+
+    public class LGEvaluatingException : Exception
+    {
+        public LGEvaluatingException(string message)
+            : base(message)
+        {
+
+        }
+
+    }
 }
