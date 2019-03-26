@@ -28,6 +28,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
 
         public static void Register(string name, Type type, ICustomDeserializer loader = null)
         {
+            EnsureConfig();
+
             // Default loader if none specified
             if (loader == null)
             {
@@ -47,6 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
 
         public static T Build<T>(string name, JToken obj, JsonSerializer serializer) where T : class
         {
+            EnsureConfig();
             ICustomDeserializer builder;
             var type = TypeFromName(name);
 
@@ -87,6 +90,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
 
         public static void Reset()
         {
+            EnsureConfig();
             types.Clear();
             names.Clear();
             builders.Clear();
@@ -95,6 +99,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
 
         public static void RegisterAdaptiveTypes()
         {
+            EnsureConfig();
+
             //TODO: we don't want this static initialization, leaving it here for convenience now
             // while things are changing rapidly still
 
@@ -135,6 +141,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
 
             // Storage
             Register("Microsoft.MemoryStorage", typeof(MemoryStorage));
+        }
+
+        private static void EnsureConfig()
+        {
+            if (TypeFactory.Configuration == null)
+            {
+                throw new ArgumentNullException($"TypeFactory.Configuration is not set to IConfiguration instance");
+            }
         }
     }
 }

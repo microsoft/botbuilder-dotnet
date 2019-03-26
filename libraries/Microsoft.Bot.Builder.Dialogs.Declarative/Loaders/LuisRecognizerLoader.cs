@@ -27,26 +27,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Loaders
             if (obj["applicationId"]?.Type == JTokenType.String)
             {
                 var luisService = obj.ToObject<LuisApplication>();
-                luisService.ApplicationId = loadSetting(luisService.ApplicationId);
-                luisService.Endpoint = loadSetting(luisService.Endpoint);
-                luisService.EndpointKey = loadSetting(luisService.EndpointKey);
+                luisService.ApplicationId = configuration.LoadSetting(luisService.ApplicationId);
+                luisService.Endpoint = configuration.LoadSetting(luisService.Endpoint);
+                luisService.EndpointKey = configuration.LoadSetting(luisService.EndpointKey);
 
                 return new LuisRecognizer(luisService);
             }
 
             // Else, just assume it is the verbose structure with LuisService as inner object
             return obj.ToObject<LuisRecognizer>(serializer);
-        }
-
-        private string loadSetting(string value)
-        {
-            if (value.StartsWith("{") && value.EndsWith("}"))
-            {
-                var path = value.Trim('{', '}').Replace(".", ":");
-                // just use configurations ability to query for x:y:z
-                value = configuration.GetValue<string>(path);
-            }
-            return value;
         }
     }
 }

@@ -4,9 +4,9 @@
     "$id": "root",
     "recognizer": {
         "$type": "Microsoft.LuisRecognizer",
-        "applicationId": "{ToDoLuisBot.LuisRecognizer.applicationId}",
-        "endpointKey": "{ToDoLuisBot.LuisRecognizer.endpointKey}",
-        "endpoint": "{ToDoLuisBot.LuisRecognizer.endpoint}"
+        "applicationId": "{settings.ToDoLuisBot.LuisRecognizer.applicationId}",
+        "endpointKey": "{settings.ToDoLuisBot.LuisRecognizer.endpointKey}",
+        "endpoint": "{settings.ToDoLuisBot.LuisRecognizer.endpoint}"
     },
     "rules": [
         {

@@ -7,6 +7,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Dialogs.Rules;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -44,6 +45,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                     }
                 });
             return cog;
+        }
+
+        /// <summary>
+        /// Load a settings style path settings.x.y.z -> x:y:z 
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string LoadSetting(this IConfiguration configuration, string value)
+        {
+            if (value.StartsWith("{") && value.EndsWith("}"))
+            {
+                var path = value.Trim('{', '}').Replace(".", ":");
+                if (path.StartsWith("settings:"))
+                {
+                    path = path.Substring(9);
+                }
+                // just use configurations ability to query for x:y:z
+                value = configuration.GetValue<string>(path);
+            }
+            return value;
         }
     }
 }
