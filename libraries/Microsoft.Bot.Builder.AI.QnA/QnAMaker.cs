@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// If null, a default client is used for this instance.</param>
         /// <param name="telemetryClient">The IBotTelemetryClient used for logging telemetry events.</param>
         /// <param name="logPersonalInformation">Set to true to include personally indentifiable information in telemetry events.</param>
-        public QnAMaker(QnAMakerService service, QnAMakerOptions options = null, HttpClient httpClient = null, IBotTelemetryClient telemetryClient = null, bool logPersonalInformation = false)
+        public QnAMaker(QnAMakerService service, QnAMakerOptions options, HttpClient httpClient, IBotTelemetryClient telemetryClient, bool logPersonalInformation = false)
             : this(new QnAMakerEndpoint(service), options, httpClient, telemetryClient, logPersonalInformation)
         {
         }
