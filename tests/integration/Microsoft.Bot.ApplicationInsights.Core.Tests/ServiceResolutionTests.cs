@@ -2,12 +2,12 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.AspNetCore.TestHost;
 using System.IO;
 using Microsoft.ApplicationInsights;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Bot.Builder.ApplicationInsights;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 {
@@ -110,6 +110,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 
             var server = new TestServer(new WebHostBuilder()
                 .UseStartup<Startup>());
+
             // Telemetry Client should be active, just not configured.
             // This is not an error condition so samples can degrade.
             var telemetryClient = new TelemetryClient();
@@ -161,7 +162,6 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             Assert.IsTrue(true);
         }
 
-
         [TestMethod]
         public void ServiceResolution_VerifyTelemetryClient()
         {
@@ -171,7 +171,6 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
                 .UseApplicationInsights()
                 .UseStartup<StartupVerifyTelemetryClient>());
         }
-
 
         [TestMethod]
         public void ServiceResolution_OverrideTelemetry()
@@ -203,38 +202,47 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
         }
 
         /// <summary>
-        /// Prepare appsettings.json for test
+        /// Prepare appsettings.json for test.
         /// </summary>
         /// <remarks>Ensures appsettings.json file is set up (copy based on different sample files,
-        /// post-pended with a version.)  ie, appsettings.json.no_app_insights </remarks>
+        /// post-pended with a version.)  ie, appsettings.json.no_app_insights. </remarks>
         /// <param name="version">Post-pended onto the file name to copy (ie, "no_app_insights"). If null, put no file.</param>
         public void ArrangeAppSettings(string version = "default")
         {
-            try { File.Delete("appsettings.json"); }
-            catch { }
-            
+            try
+            {
+                File.Delete("appsettings.json");
+            }
+            catch
+            {
+            }
+
             if (!string.IsNullOrWhiteSpace(version))
             {
                 File.Copy($"appsettings.json.{version}", "appsettings.json");
             }
         }
+
         /// <summary>
-        /// Prepare testbot.bot for test
+        /// Prepare testbot.bot for test.
         /// </summary>
         /// <remarks>Ensures testbot.bot file is set up (copy based on different sample files,
-        /// post-pended with a version.)  ie, testbot.bot.no_app_insights </remarks>
+        /// post-pended with a version.)  ie, testbot.bot.no_app_insights. </remarks>
         /// <param name="version">Post-pended onto the file name to copy (ie, "no_app_insights"). If null, put no file.</param>
-
         public void ArrangeBotFile(string version = "default")
         {
-            try { File.Delete("testbot.bot"); }
-            catch { }
-            
+            try
+            {
+                File.Delete("testbot.bot");
+            }
+            catch
+            {
+            }
+
             if (!string.IsNullOrWhiteSpace(version))
             {
                 File.Copy($"testbot.bot.{version}", "testbot.bot");
             }
         }
-
     }
 }
