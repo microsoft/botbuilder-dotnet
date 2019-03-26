@@ -7,7 +7,7 @@ using Microsoft.Expressions;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
-    public class StaticChecker : LGFileParserBaseVisitor<List<string>>
+    public class StaticChecker : LGFileParserBaseVisitor<List<LGReportMessage>>
     {
         public readonly EvaluationContext Context;
 
@@ -20,9 +20,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         /// Return error messaages list
         /// </summary>
         /// <returns></returns>
-        public List<string> Check()
+        public List<LGReportMessage> Check()
         {
-            var result = new List<string>();
+            var result = new List<LGReportMessage>();
+
             foreach (var template in Context.TemplateContexts)
             {
                 result.AddRange(Visit(template.Value));
@@ -31,14 +32,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return result;
         }
 
-        public override List<string> VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
+        public override List<LGReportMessage> VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
         {
-            var result = new List<string>();
+            var result = new List<LGReportMessage>();
             var templateName = context.templateNameLine().templateName().GetText();
 
             if (context.templateBody() == null)
             {
-                result.Add($"There is no template body in template {templateName}");
+                result.Add(new LGReportMessage($"There is no template body in template {templateName}"));
             }
             else
             {
@@ -51,15 +52,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 if (parameters.CLOSE_PARENTHESIS() == null
                        || parameters.OPEN_PARENTHESIS() == null)
                 {
-                    result.Add($"parameters: {parameters.GetText()} format error");
+                    result.Add(new LGReportMessage($"parameters: {parameters.GetText()} format error"));
                 }
             }
             return result;
         }
 
-        public override List<string> VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
+        public override List<LGReportMessage> VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
         {
-            var result = new List<string>();
+            var result = new List<LGReportMessage>();
 
             foreach (var templateStr in context.normalTemplateString())
             {
@@ -70,9 +71,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return result;
         }
 
-        public override List<string> VisitConditionalBody([NotNull] LGFileParser.ConditionalBodyContext context)
+        public override List<LGReportMessage> VisitConditionalBody([NotNull] LGFileParser.ConditionalBodyContext context)
         {
-            var result = new List<string>();
+            var result = new List<LGReportMessage>();
 
             var caseRules = context.conditionalTemplateBody().caseRule();
             foreach (var caseRule in caseRules)
@@ -80,7 +81,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 if (caseRule.caseCondition().EXPRESSION() == null
                     || caseRule.caseCondition().EXPRESSION().Length == 0)
                 {
-                    result.Add($"Condition {caseRule.caseCondition().GetText()} MUST be enclosed in curly brackets.");
+                    result.Add(new LGReportMessage($"Condition {caseRule.caseCondition().GetText()} MUST be enclosed in curly brackets."));
                 }
                 else
                 {
@@ -90,7 +91,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
                 if (caseRule.normalTemplateBody() == null)
                 {
-                    result.Add($"Case {caseRule.GetText()} should have template body");
+                    result.Add(new LGReportMessage($"Case {caseRule.GetText()} should have template body"));
                 }
                 else
                 {
@@ -103,7 +104,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             if (defaultRule != null)
             {
                 if (defaultRule.normalTemplateBody() == null)
-                    result.Add($"Default rule {defaultRule.GetText()} should have template body");
+                    result.Add(new LGReportMessage($"Default rule {defaultRule.GetText()} should have template body"));
                 else
                 {
                     result.AddRange(Visit(defaultRule.normalTemplateBody()));
@@ -117,9 +118,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return result;
         }
 
-        public override List<string> VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
+        public override List<LGReportMessage> VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
         {
-            var result = new List<string>();
+            var result = new List<LGReportMessage>();
 
             foreach (ITerminalNode node in context.children)
             {
@@ -129,7 +130,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                         result.AddRange(CheckEscapeCharacter(node.GetText()));
                         break;
                     case LGFileParser.INVALID_ESCAPE:
-                        result.Add($"escape character {node.GetText()} is invalid");
+                        result.Add(new LGReportMessage($"escape character {node.GetText()} is invalid"));
                         break;
                     case LGFileParser.TEMPLATE_REF:
                         result.AddRange(CheckTemplateRef(node.GetText()));
@@ -147,9 +148,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return result;
         }
 
-        public List<string> CheckTemplateRef(string exp)
+        public List<LGReportMessage> CheckTemplateRef(string exp)
         {
-            var result = new List<string>();
+            var result = new List<LGReportMessage>();
 
             exp = exp.TrimStart('[').TrimEnd(']').Trim();
 
@@ -160,14 +161,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 var argsEndPos = exp.LastIndexOf(')');
                 if (argsEndPos < 0 || argsEndPos < argsStartPos + 1)
                 {
-                    result.Add($"Not a valid template ref: {exp}");
+                    result.Add(new LGReportMessage($"Not a valid template ref: {exp}"));
                 }
                 else
                 {
                     var templateName = exp.Substring(0, argsStartPos);
                     if (!Context.TemplateContexts.ContainsKey(templateName))
                     {
-                        result.Add($"No such template: {templateName}");
+                        result.Add(new LGReportMessage($"No such template: {templateName}"));
                     }
                     else
                     {
@@ -180,15 +181,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             {
                 if (!Context.TemplateContexts.ContainsKey(exp))
                 {
-                    result.Add($"No such template: {exp}");
+                    result.Add(new LGReportMessage($"No such template: {exp}"));
                 }
             }
             return result;
         }
 
-        private List<string> CheckMultiLineText(string exp)
+        private List<LGReportMessage> CheckMultiLineText(string exp)
         {
-            var result = new List<string>();
+            var result = new List<LGReportMessage>();
 
             exp = exp.Substring(3, exp.Length - 6); //remove ``` ```
             var reg = @"@\{[^{}]+\}";
@@ -205,23 +206,23 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return result;
         }
 
-        private List<string> CheckTemplateParameters(string templateName, int argsNumber)
+        private List<LGReportMessage> CheckTemplateParameters(string templateName, int argsNumber)
         {
-            var result = new List<string>();
+            var result = new List<LGReportMessage>();
             var parametersNumber = Context.TemplateParameters.TryGetValue(templateName, out var parameters) ?
                 parameters.Count : 0;
 
             if (argsNumber != parametersNumber)
             {
-                result.Add($"Arguments count mismatch for template ref {templateName}, expected {parametersNumber}, actual {argsNumber}");
+                result.Add(new LGReportMessage($"Arguments count mismatch for template ref {templateName}, expected {parametersNumber}, actual {argsNumber}"));
             }
 
             return result;
         }
 
-        private List<string> CheckExpression(string exp)
+        private List<LGReportMessage> CheckExpression(string exp)
         {
-            var result = new List<string>();
+            var result = new List<LGReportMessage>();
             exp = exp.TrimStart('{').TrimEnd('}');
             try
             {
@@ -229,7 +230,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             }
             catch(Exception e)
             {
-                result.Add(e.Message);
+                result.Add(new LGReportMessage(e.Message));
                 return result;
             }
 
@@ -237,15 +238,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             
         }
 
-        private List<string> CheckEscapeCharacter(string exp)
+        private List<LGReportMessage> CheckEscapeCharacter(string exp)
         {
-            var result = new List<string>();
+            var result = new List<LGReportMessage>();
             var ValidEscapeCharacters = new List<string> {
                 @"\r", @"\n", @"\t", @"\\", @"\[", @"\]", @"\{", @"\}"
             };
 
             if (!ValidEscapeCharacters.Contains(exp))
-                result.Add($"escape character {exp} is invalid");
+                result.Add(new LGReportMessage($"escape character {exp} is invalid"));
 
             return result;
         }

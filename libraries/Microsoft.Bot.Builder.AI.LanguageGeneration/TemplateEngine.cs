@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using Antlr4.Runtime;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
@@ -98,9 +99,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var errorMessages = checker.Check();
             if(errorMessages.Count != 0)
             {
-                // - message1 - message2 - message3
-                var mergedMessage = "> " + string.Join("\r\n> ", errorMessages);
-                throw new LGParsingException(mergedMessage);
+                throw new LGParsingException(JsonConvert.SerializeObject(errorMessages));
             }
         }
         
