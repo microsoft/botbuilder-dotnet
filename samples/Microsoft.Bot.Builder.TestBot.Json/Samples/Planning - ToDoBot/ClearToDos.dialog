@@ -15,6 +15,15 @@
                     "activity": "Successfully clear the todo list."
                 }
             ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "CancelIntent",
+            "steps": [
+                {
+                    "$type": "Microsoft.CancelDialog"
+                }
+            ]
         }
     ]
 }

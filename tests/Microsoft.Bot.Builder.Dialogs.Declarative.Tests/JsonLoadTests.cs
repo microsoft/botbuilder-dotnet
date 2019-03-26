@@ -213,11 +213,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             .Send("third")
             .AssertReply("Successfully added a todo named \"third\"")
             .Send("show todos")
-            .AssertReply("Here are your todos: \n\n- first\n- second\n- third\n")
+            .AssertReply("Your most recent 3 tasks are\n* first\n* second\n* third\n")
             .Send("delete todo named second")
             .AssertReply("Successfully removed a todo named \"second\"")
             .Send("show todos")
-            .AssertReply("Here are your todos: \n\n- first\n- third\n")
+            .AssertReply("Your most recent 2 tasks are\n* first\n* third\n")
+            .Send("add a todo")
+            .AssertReply("OK, please enter the title of your todo.")
+            .Send("cancel")
+            .AssertReply("ok.")
             .StartTestAsync();
         }
 
