@@ -158,6 +158,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     case LGFileLexer.MULTI_LINE_TEXT:
                         result.AddRange(CheckMultiLineText(node.GetText()));
                         break;
+                    case LGFileLexer.TEXT:
+                        result.AddRange(CheckText(node.GetText()));
+                        break;
                     default:
                         break;
                 }
@@ -220,6 +223,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     result.AddRange(CheckTemplateRef(newExp.Substring(2, newExp.Length - 4)));//[ ]
                 }
             }
+            return result;
+        }
+
+        private List<LGReportMessage> CheckText(string exp)
+        {
+            var result = new List<LGReportMessage>();
+
+            if (exp.StartsWith("```"))
+                result.Add(new LGReportMessage("Multi line variation must be enclosed in ```"));
             return result;
         }
 
