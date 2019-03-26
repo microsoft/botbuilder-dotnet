@@ -12,21 +12,19 @@ using Microsoft.Bot.Builder.Dialogs.Rules;
 using Microsoft.Bot.Builder.Dialogs.Rules.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Rules.Rules;
 using Microsoft.Bot.Builder.Dialogs.Rules.Steps;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
 {
-    public static class Factory
+    public static class TypeFactory
     {
         private static Dictionary<Type, ICustomDeserializer> builders = new Dictionary<Type, ICustomDeserializer>();
         private static Dictionary<string, Type> types = new Dictionary<string, Type>();
         private static Dictionary<Type, string> names = new Dictionary<Type, string>();
 
-        static Factory()
-        {
-            RegisterDefaults();   
-        }
+        public static IConfiguration Configuration { get; set; }
 
         public static void Register(string name, Type type, ICustomDeserializer loader = null)
         {
@@ -92,10 +90,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             types.Clear();
             names.Clear();
             builders.Clear();
-            RegisterDefaults();
+            RegisterAdaptiveTypes();
         }
 
-        private static void RegisterDefaults()
+        public static void RegisterAdaptiveTypes()
         {
             //TODO: we don't want this static initialization, leaving it here for convenience now
             // while things are changing rapidly still
@@ -132,7 +130,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.FloatPrompt", typeof(FloatPrompt));
 
             // Recognizers
-            Register("Microsoft.LuisRecognizer", typeof(LuisRecognizer), new LuisRecognizerLoader());
+            Register("Microsoft.LuisRecognizer", typeof(LuisRecognizer), new LuisRecognizerLoader(TypeFactory.Configuration));
             Register("Microsoft.RegexRecognizer", typeof(RegexRecognizer));
 
             // Storage

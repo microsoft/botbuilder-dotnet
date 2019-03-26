@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestInitialize]
         public void TestInitialize()
         {
-            Factory.Reset();
+            TypeFactory.Reset();
         }
 
         public TestContext TestContext { get; set; }
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         {
             string json = File.ReadAllText(samplesDirectory + @"Planning 1 - DefaultRule\DefaultRule.main.dialog");
 
-            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
+            TypeFactory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
             .Send("hello")
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         {
             string json = File.ReadAllText(samplesDirectory + @"Planning 2 - WaitForInput\WaitForInput.main.dialog");
 
-            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
+            TypeFactory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
             .Send("hello")
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         {
             string json = File.ReadAllText(samplesDirectory + @"Planning 3 - IfProperty\IfProperty.main.dialog");
 
-            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
+            TypeFactory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
             .Send("hello")
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         {
             string json = File.ReadAllText(samplesDirectory + @"Planning 4 - TextPrompt\TextPrompt.main.dialog");
 
-            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
+            TypeFactory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
             .Send("hello")
@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         {
             string json = File.ReadAllText(samplesDirectory + @"Planning 5 - WelcomeRule\WelcomeRule.main.dialog");
 
-            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
+            TypeFactory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
@@ -108,7 +108,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         {
             string json = File.ReadAllText(samplesDirectory + @"Planning 6 - DoSteps\DoSteps.main.dialog");
 
-            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
+            TypeFactory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
@@ -133,7 +133,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         {
             string json = File.ReadAllText(samplesDirectory + @"Planning 7 - CallDialog\CallDialog.main.dialog");
 
-            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
+            TypeFactory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
@@ -158,7 +158,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         {
             string json = File.ReadAllText(samplesDirectory + @"Planning 8 - ExternalLanguage\ExternalLanguage.main.dialog");
 
-            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
+            TypeFactory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
@@ -198,7 +198,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         {
             string json = File.ReadAllText(samplesDirectory + @"Planning - ToDoBot\TodoBot.main.dialog");
 
-            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
+            TypeFactory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
@@ -226,7 +226,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         {
             string json = File.ReadAllText(samplesDirectory + @"Planning 11 - HttpRequest\HttpRequest.main.dialog");
 
-            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
+            TypeFactory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))

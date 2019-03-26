@@ -7,12 +7,12 @@
             "steps": [
                 {
                     "$type": "Microsoft.SaveEntity",
-                    "entity": "title",
+                    "entity": "TaskContentML",
                     "property": "dialog.todo"
                 },
                 {
                     "$type": "Microsoft.IfProperty",
-                    "expression": "dialog.todo == null",
+                    "expression": "!exists(dialog.todo)",
                     "ifTrue": [
                         {
                             "$type": "Microsoft.TextPrompt",
