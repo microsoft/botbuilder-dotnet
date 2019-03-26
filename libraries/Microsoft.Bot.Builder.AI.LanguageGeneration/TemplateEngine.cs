@@ -59,7 +59,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         {
             evaluationContext = new EvaluationContext();
         }
-        private TemplateEngine(LGFileParser.FileContext context)
+
+
+        private TemplateEngine(LGFileParser.FileContext context, List<LGReportMessage> initParseExceptions = null)
         {
             // Pre-compute some information to help the evalution process later
             var templateContexts = new Dictionary<string, LGFileParser.TemplateDefinitionContext>();
@@ -90,13 +92,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             }
             evaluationContext = new EvaluationContext(templateContexts, templateParameters);
 
-            RunStaticCheck(evaluationContext);
+            RunStaticCheck(evaluationContext, initParseExceptions);
         }
 
-        public void RunStaticCheck(EvaluationContext evaluationContext)
+        public void RunStaticCheck(EvaluationContext evaluationContext, List<LGReportMessage> initExceptions = null)
         {
+            if (initExceptions == null)
+                initExceptions = new List<LGReportMessage>();
+
             var checker = new StaticChecker(evaluationContext);
             var reportMessages = checker.Check();
+            reportMessages.AddRange(initExceptions);
+
             var errorMessages = reportMessages.Where(u => u.ReportType == LGReportMessageType.Error).ToList();
             if (errorMessages.Count != 0)
             {
@@ -139,7 +146,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var tokens = new CommonTokenStream(lexer);
             var parser = new LGFileParser(tokens);
             parser.RemoveErrorListeners();
-            parser.AddErrorListener(TemplateErrorListener.Instance);
+            var listener = new TemplateErrorListener();
+
+            parser.AddErrorListener(listener);
             parser.BuildParseTree = true;
             // the only difference here is that we parse as templateBody, not as the whole file
             var context = parser.templateDefinition();
@@ -149,7 +158,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             evaluationContext.TemplateContexts[fakeTemplateId] = context;
             var evaluator = new Evaluator(evaluationContext, methodBinder, valueBinder);
 
-            RunStaticCheck(evaluationContext);
+            RunStaticCheck(evaluationContext, listener.GetExceptions());
 
             // Step 3: evaluate
             return evaluator.EvaluateTemplate(fakeTemplateId, scope);
@@ -184,12 +193,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var tokens = new CommonTokenStream(lexer);
             var parser = new LGFileParser(tokens);
             parser.RemoveErrorListeners();
-            parser.AddErrorListener(TemplateErrorListener.Instance);
+            var listener = new TemplateErrorListener();
+
+            parser.AddErrorListener(listener);
             parser.BuildParseTree = true;
 
             var context = parser.file();
 
-            return new TemplateEngine(context);
+            return new TemplateEngine(context, listener.GetExceptions());
         }
     }
 }
