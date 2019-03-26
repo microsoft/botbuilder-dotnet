@@ -43,6 +43,50 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        public async Task ChoicePromptWithCardActionAndNoValueShouldNotFail()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English));
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    var choice = new Choice()
+                    {
+                        Action = new CardAction()
+                        {
+                            Type = "imBack",
+                            Value = "value",
+                            Title = "title"
+                        }
+                    };
+
+                    var options = new PromptOptions()
+                    {
+                        Choices = new List<Choice> { choice }
+                    };
+                    await dc.PromptAsync("ChoicePrompt",
+                        options,
+                        cancellationToken);
+                }
+            })
+            .Send("hello")
+            .AssertReply(StartsWithValidator(" (1) title"))
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task ShouldSendPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());
