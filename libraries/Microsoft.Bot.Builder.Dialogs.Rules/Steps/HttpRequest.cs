@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
         public Dictionary<string, string> Header { get; set; }
 
         [JsonProperty("body")]
-        public JObject Body { get; set; }
+        public JToken Body { get; set; }
 
         private static readonly HttpClient client = new HttpClient();
 
@@ -53,17 +53,46 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
             this.Body = body;
         }
 
+        private async Task ReplaceJTokenRecursively(DialogContext dc, JToken token)
+        {
+            switch (token.Type)
+            {
+                case JTokenType.Object:
+                    foreach (var child in token.Children<JProperty>())
+                    {
+                        await ReplaceJTokenRecursively(dc, child);
+                    }
+                    break;
+
+                case JTokenType.Array:
+                    foreach (var child in token.Children())
+                    {
+                        await ReplaceJTokenRecursively(dc, child);
+                    }
+                    break;
+
+                case JTokenType.Property:
+                    await ReplaceJTokenRecursively(dc, ((JProperty) token).Value);
+                    break;
+
+                default:
+                    if (token.Type == JTokenType.String)
+                    {
+                        token.Replace(await new TextTemplate(token.ToString()).BindToData(dc.Context, dc.State, (property, data) => dc.State.GetValue<object>(data, property)));
+                    }
+                    break;
+            }
+        }
+
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Single command running with a copy of the original data
-            JObject instanceBody = null;
-            try
+            client.DefaultRequestHeaders.Clear();
+
+            JToken instanceBody = null;
+            if (this.Body != null)
             {
-                instanceBody = this.Body;
-            }
-            catch
-            {
-                return await dc.EndDialogAsync();
+                instanceBody = (JToken)this.Body.DeepClone();
             }
 
             var instanceHeader = Header == null ? null: new Dictionary<string, string>(Header);
@@ -74,13 +103,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
             // Bind each string token to the data in state
             if (instanceBody != null)
             {
-                foreach (var unit in instanceBody)
-                {
-                    if (unit.Value.Type == JTokenType.String)
-                    {
-                        unit.Value.Replace(await new TextTemplate(unit.Value.ToString()).BindToData(dc.Context, dc.State, (property, data) => dc.State.GetValue<object>(data, property)));
-                    }
-                }
+                await ReplaceJTokenRecursively(dc, instanceBody);
             }
 
             // Set header
@@ -111,10 +134,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
             // Try set with JOjbect for further retreiving
             try
             {
-                result = JObject.Parse((string)result);
+                result = JToken.Parse((string)result);
             }
             catch
             {
+                result = result.ToString();
             }
 
             return await dc.EndDialogAsync(result);
