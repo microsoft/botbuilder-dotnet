@@ -1,9 +1,7 @@
-﻿using Microsoft.Expressions;
-
-namespace Microsoft.Expressions
+﻿namespace Microsoft.Expressions
 {
     public interface IExpressionParser
     {
-        Expression Parse();
+        Expression Parse(string expression);
     }
 }

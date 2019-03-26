@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Microsoft.Expressions
 {
-    public class Accessor : ExpressionTree
+    public class Accessor : ExpressionWithChildren
     {
         protected Accessor(Expression instance, string property)
             : base(ExpressionType.Accessor, instance != null ? new List<Expression> { instance } : new List<Expression>(), _accessor)
@@ -31,27 +28,7 @@ namespace Microsoft.Expressions
             }
             if (error == null)
             {
-                if (instance is IReadOnlyDictionary<string, object> dict)
-                {
-                    if (!dict.TryGetValue(Property, out value))
-                    {
-                        error = $"{instance} does not have {Property}.";
-                    }
-                }
-                else
-                {
-                    // Use reflection
-                    var type = instance.GetType();
-                    var prop = type.GetProperty(Property);
-                    if (prop != null)
-                    {
-                        value = prop.GetValue(instance);
-                    }
-                    else
-                    {
-                        error = $"{instance} does not have {Property}.";
-                    }
-                }
+                (value, error) = instance.AccessProperty(Property, this);
             }
             return (value, error);
         }
@@ -67,7 +44,7 @@ namespace Microsoft.Expressions
             return $"{instance}.{Property}";
         }
 
-        public static Accessor MakeAccessor(Expression instance, string property)
+        public static Accessor MakeExpression(Expression instance, string property)
         {
             var expr = new Accessor(instance, property);
             expr.Validate();

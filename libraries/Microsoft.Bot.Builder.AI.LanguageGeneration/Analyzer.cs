@@ -12,6 +12,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
     {
         public readonly EvaluationContext Context;
 
+        private IExpressionParser _expressionParser;
+
         private Stack<EvaluationTarget> evalutationTargetStack = new Stack<EvaluationTarget>();
         private EvaluationTarget CurrentTarget()
         {
@@ -22,6 +24,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         public Analyzer(EvaluationContext context)
         {
             Context = context;
+            _expressionParser = new ExpressionEngine(new GetMethodExtensions(null).GetMethodX);
         }
 
         public List<string> AnalyzeTemplate(string templateName)
@@ -131,18 +134,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         private List<string> AnalyzeExpression(string exp)
         {
             exp = exp.TrimStart('{').TrimEnd('}');
-            // TODO: How do I bind to the function lookup here?
-            var parseTree = new ExpressionEngine().Parse(exp);
-            return AnalyzeParserTree(parseTree);
-        }
-
-        private List<string> AnalyzeParserTree(IParseTree parserTree)
-        {
-            var result = new List<string>();
-            
+            var expression = _expressionParser.Parse(exp);
             var visitor = new ExpressionAnalyzerVisitor(Context);
-
-            return visitor.Analyzer(parserTree);
+            expression.Accept(visitor);
+            return visitor.References.ToList();
         }
 
         private List<string> AnalyzeTemplateRef(string exp)

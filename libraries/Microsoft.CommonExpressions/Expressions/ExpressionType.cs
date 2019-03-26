@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.Expressions
+﻿namespace Microsoft.Expressions
 {
     // NOTE: If you add a built-in type here, you also need to make sure it can be evaluated as well.
     public class ExpressionType
@@ -34,5 +30,6 @@ namespace Microsoft.Expressions
 
         // Misc
         public const string Constant = "Constant";
+        public const string Lambda = "Lambda";
     }
 }

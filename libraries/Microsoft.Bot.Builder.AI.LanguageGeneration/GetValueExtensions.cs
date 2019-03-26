@@ -39,11 +39,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             try
             {
                 // EvaluateTemplate with the auto property binder first
-              
                 var result = PropertyBinder.Auto(instance, property);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // If sth wrong, we chech this indentifier is a templateName or not
                 // Which means, normal property has high priority here
@@ -56,8 +55,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 }
                 return ((dynamic)instance)[property];
             }
-
-            
         }
     }
 }

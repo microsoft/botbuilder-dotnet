@@ -34,7 +34,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
             // Ensure planning context
             if (dc is PlanningContext planning)
             {
-                var conditionResult = (bool)await Expression.Parse.Evaluate(dc.State);
+                // TODO: Handle errors from expression evaluation
+                var (result, error) = Expression.TryEvaluate(dc.State);
+                var conditionResult = (bool)result;
 
                 var stepsToRun = conditionResult ? IfTrue : IfFalse;
 

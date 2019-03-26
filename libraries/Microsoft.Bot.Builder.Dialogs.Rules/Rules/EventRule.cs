@@ -4,8 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Expressions;
-using Microsoft.Bot.Builder.Dialogs.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 {

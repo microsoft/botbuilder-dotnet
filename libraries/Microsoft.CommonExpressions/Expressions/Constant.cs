@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.Expressions
 {
@@ -31,8 +28,7 @@ namespace Microsoft.Expressions
             return Value.ToString();
         }
 
-        public static Constant MakeConstant(object value)
+        public static Constant MakeExpression(object value)
             => new Constant(value);
-
     }
 }

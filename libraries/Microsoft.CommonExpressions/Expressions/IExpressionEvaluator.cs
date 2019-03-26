@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.Expressions
+﻿namespace Microsoft.Expressions
 {
-
+    // TODO: Do we need this level of indirection or just use ExpressionEvaluator?
     public interface IExpressionEvaluator
     {
         ExpressionReturnType ReturnType { get; }

@@ -6,16 +6,27 @@ using Antlr4.Runtime.Tree;
 
 namespace Microsoft.Expressions
 {
-    public delegate ExpressionEvaluator EvaluatorLookup(string name);
+    public delegate IExpressionEvaluator EvaluatorLookup(string name);
 
-    public class ExpressionEngine
+    public class ExpressionEngine : IExpressionParser
     {
         public ExpressionEngine(EvaluatorLookup lookup = null)
         {
-            _lookup = lookup;
+            _lookup = lookup ?? BuiltInFunctions.Lookup;
         }
 
         private EvaluatorLookup _lookup;
+
+
+        /// <summary>
+        /// Parse the input into an expression.
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns>Expresion tree.</returns>
+        public Expression Parse(string expression)
+        {
+            return new ExpressionTransformer(_lookup).Transform(AntlrParse(expression));
+        }
 
         private IParseTree AntlrParse(string expression)
         {
@@ -28,16 +39,6 @@ namespace Microsoft.Expressions
             parser.BuildParseTree = true;
             parser.ErrorHandler = new BailErrorStrategy();
             return parser.expression();
-        }
-
-        /// <summary>
-        /// Parse the input into an expression.
-        /// </summary>
-        /// <param name="expression"></param>
-        /// <returns>Expresion tree.</returns>
-        public Expression Parse(string expression)
-        {
-            return new ExpressionTransformer(_lookup).Transform(AntlrParse(expression));
         }
 
         private class ExpressionTransformer : ExpressionBaseVisitor<Expression>
@@ -69,7 +70,7 @@ namespace Microsoft.Expressions
             {
                 var unaryOperationName = context.GetChild(0).GetText();
                 var operand = Visit(context.expression());
-                return ExpressionTree.MakeExpressionTree(unaryOperationName, new List<Expression> { operand });
+                return ExpressionWithChildren.MakeExpression(unaryOperationName, new List<Expression> { operand }, _lookup(unaryOperationName));
             }
 
             public override Expression VisitBinaryOpExp([NotNull] ExpressionParser.BinaryOpExpContext context)
@@ -77,7 +78,7 @@ namespace Microsoft.Expressions
                 var binaryOperationName = context.GetChild(1).GetText();
                 var left = Visit(context.expression(0));
                 var right = Visit(context.expression(1));
-                return ExpressionTree.MakeExpressionTree(binaryOperationName, new List<Expression> { left, right });
+                return ExpressionWithChildren.MakeExpression(binaryOperationName, new List<Expression> { left, right }, _lookup(binaryOperationName));
             }
 
             public override Expression VisitFuncInvokeExp([NotNull] ExpressionParser.FuncInvokeExpContext context)
@@ -88,7 +89,7 @@ namespace Microsoft.Expressions
                 if (context.primaryExpression() is ExpressionParser.IdAtomContext idAtom)
                 {
                     var functionName = idAtom.GetText();
-                    return ExpressionTree.MakeExpressionTree(functionName, parameters);
+                    return ExpressionWithChildren.MakeExpression(functionName, parameters, _lookup(functionName));
                 }
 
                 //if context.primaryExpression() is memberaccessExp --> accessor
@@ -96,7 +97,7 @@ namespace Microsoft.Expressions
                 {
                     var instance = Visit(memberAccessExp.primaryExpression());
                     var functionName = memberAccessExp.IDENTIFIER().GetText();
-                    return Accessor.MakeAccessor(instance, functionName);
+                    return Accessor.MakeExpression(instance, functionName);
                 }
 
                 throw new Exception("This format is wrong.");
@@ -108,15 +109,15 @@ namespace Microsoft.Expressions
                 var symbol = context.GetText();
                 if (symbol == "false")
                 {
-                    result = Constant.MakeConstant(false);
+                    result = Constant.MakeExpression(false);
                 }
                 else if (symbol == "true")
                 {
-                    result = Constant.MakeConstant(true);
+                    result = Constant.MakeExpression(true);
                 }
                 else
                 {
-                    result = Accessor.MakeAccessor(null, symbol);
+                    result = Accessor.MakeExpression(null, symbol);
                 }
                 return result;
             }
@@ -125,29 +126,29 @@ namespace Microsoft.Expressions
             {
                 var instance = Visit(context.primaryExpression());
                 var index = Visit(context.expression());
-                return ExpressionTree.MakeExpressionTree(ExpressionType.Element, new List<Expression> { instance, index });
+                return ExpressionWithChildren.MakeExpression(ExpressionType.Element, new List<Expression> { instance, index });
             }
 
             public override Expression VisitMemberAccessExp([NotNull] ExpressionParser.MemberAccessExpContext context)
             {
                 var instance = Visit(context.primaryExpression());
-                return Accessor.MakeAccessor(instance, context.IDENTIFIER().GetText());
+                return Accessor.MakeExpression(instance, context.IDENTIFIER().GetText());
             }
 
             public override Expression VisitNumericAtom([NotNull] ExpressionParser.NumericAtomContext context)
             {
                 if (int.TryParse(context.GetText(), out var intValue))
-                    return Constant.MakeConstant(intValue);
+                    return Constant.MakeExpression(intValue);
 
                 if (double.TryParse(context.GetText(), out var doubleValue))
-                    return Constant.MakeConstant(doubleValue);
+                    return Constant.MakeExpression(doubleValue);
 
                 throw new Exception($"{context.GetText()} is not a number.");
             }
 
             public override Expression VisitParenthesisExp([NotNull] ExpressionParser.ParenthesisExpContext context) => Visit(context.expression());
 
-            public override Expression VisitStringAtom([NotNull] ExpressionParser.StringAtomContext context) => Constant.MakeConstant(context.GetText().Trim('\''));
+            public override Expression VisitStringAtom([NotNull] ExpressionParser.StringAtomContext context) => Constant.MakeExpression(context.GetText().Trim('\''));
         }
 
     }

@@ -12,7 +12,7 @@ namespace Microsoft.Expressions
         // Validators
         public static void ValidateArityAndType(Expression expression, int arity, params ExpressionReturnType[] types)
         {
-            if (!(expression is ExpressionTree tree) || tree.Children.Count != arity)
+            if (!(expression is ExpressionWithChildren tree) || (arity != -1 && tree.Children.Count != arity))
             {
                 throw new ExpressionException($"Expected {arity} children", expression);
             }
@@ -49,7 +49,7 @@ namespace Microsoft.Expressions
 
         public static void ValidateOrder(Expression expression, params ExpressionReturnType[] types)
         {
-            if (!(expression is ExpressionTree tree) || tree.Children.Count != types.Count())
+            if (!(expression is ExpressionWithChildren tree) || tree.Children.Count != types.Count())
             {
                 throw new ExpressionException($"Expected {types.Count()} children", expression);
             }
@@ -73,8 +73,8 @@ namespace Microsoft.Expressions
         public static void ValidateUnary(Expression expression)
             => ValidateArityAndType(expression, 1, ExpressionReturnType.Object);
 
-        public static void ValidateBinaryBoolean(Expression expression)
-            => ValidateArityAndType(expression, 2, ExpressionReturnType.Boolean);
+        public static void ValidateBoolean(Expression expression)
+            => ValidateArityAndType(expression, -1, ExpressionReturnType.Boolean);
 
         // Verifiers
         public static string VerifyNumber(object value, Expression expression)
@@ -111,13 +111,13 @@ namespace Microsoft.Expressions
         public static (object value, string error) Apply(
             Func<IReadOnlyList<dynamic>, object> function,
             Expression expression,
-            Func<object, Expression, string> valid,
-            object state)
+            object state,
+            Func<object, Expression, string> valid = null)
         {
             object value = null;
             string error = null;
             var args = new List<dynamic>();
-            if (expression is ExpressionTree tree)
+            if (expression is ExpressionWithChildren tree)
             {
                 foreach (var child in tree.Children)
                 {
@@ -126,7 +126,10 @@ namespace Microsoft.Expressions
                     {
                         break;
                     }
-                    error = valid(value, child);
+                    if (valid != null)
+                    {
+                        error = valid(value, child);
+                    }
                     if (error != null)
                     {
                         break;
@@ -152,7 +155,7 @@ namespace Microsoft.Expressions
 
         private static (object value, string error) ExtractElement(Expression expression, object state)
         {
-            var tree = expression as ExpressionTree;
+            var tree = expression as ExpressionWithChildren;
             var instance = tree.Children[0];
             var index = tree.Children[1];
             object value;
@@ -207,7 +210,7 @@ namespace Microsoft.Expressions
         {
             object result = true;
             string error = null;
-            var tree = expression as ExpressionTree;
+            var tree = expression as ExpressionWithChildren;
             foreach (var child in tree.Children)
             {
                 (result, error) = child.TryEvaluate(state);
@@ -236,7 +239,7 @@ namespace Microsoft.Expressions
         {
             object result = true;
             string error = null;
-            var tree = expression as ExpressionTree;
+            var tree = expression as ExpressionWithChildren;
             foreach (var child in tree.Children)
             {
                 (result, error) = child.TryEvaluate(state);
@@ -268,54 +271,54 @@ namespace Microsoft.Expressions
                 { ExpressionType.Element, new ExpressionEvaluator(ExtractElement, ExpressionReturnType.Object,
                     (expr) => ValidateOrder(expr, ExpressionReturnType.Object, ExpressionReturnType.Number)) }
                 , { ExpressionType.Add,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] + args[1], expression, VerifyNumberOrString, state),
+                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] + args[1], expression, state, VerifyNumberOrString),
                         ExpressionReturnType.Object, ValidateBinaryNumberOrString) }
                 , {ExpressionType.Subtract,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] - args[1], expression, VerifyNumber, state),
+                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] - args[1], expression, state, VerifyNumber),
                         ExpressionReturnType.Number, ValidateBinaryNumber) }
                 , {ExpressionType.Multiply,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] * args[1], expression, VerifyNumber, state),
+                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] * args[1], expression, state, VerifyNumber),
                         ExpressionReturnType.Number, ValidateBinaryNumber) }
                 , {ExpressionType.Divide,
                     // TODO: Check for 0
-                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] / args[1], expression, VerifyNumber, state),
+                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] / args[1], expression, state, VerifyNumber),
                         ExpressionReturnType.Number, ValidateBinaryNumber) }
                 , {ExpressionType.Min,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => Math.Min(args[0], args[1]), expression, VerifyNumber, state),
+                    new ExpressionEvaluator((expression, state) => Apply((args) => Math.Min(args[0], args[1]), expression, state, VerifyNumber),
                         ExpressionReturnType.Number, ValidateBinaryNumber) }
                 , {ExpressionType.Max,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => Math.Max(args[0], args[1]), expression, VerifyNumber, state),
+                    new ExpressionEvaluator((expression, state) => Apply((args) => Math.Max(args[0], args[1]), expression, state, VerifyNumber),
                         ExpressionReturnType.Number, ValidateBinaryNumber) }
 
                 // Comparisons
                 , {ExpressionType.LessThan,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] < args[1], expression, VerifyNumber, state),
+                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] < args[1], expression, state, VerifyNumber),
                         ExpressionReturnType.Boolean, ValidateBinaryNumberOrString) }
                 , {ExpressionType.LessThanOrEqual,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] <= args[1], expression, VerifyNumber, state),
+                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] <= args[1], expression, state, VerifyNumber),
                         ExpressionReturnType.Boolean, ValidateBinaryNumberOrString) }
                 , {ExpressionType.Equal,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] == args[1], expression, VerifyNumber, state),
+                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] == args[1], expression, state, VerifyNumber),
                         ExpressionReturnType.Boolean, ValidateBinaryNumberOrString) }
                 , {ExpressionType.NotEqual,
-                     new ExpressionEvaluator((expression, state) => Apply((args) => args[0] != args[1], expression, VerifyNumber, state),
+                     new ExpressionEvaluator((expression, state) => Apply((args) => args[0] != args[1], expression, state, VerifyNumber),
                         ExpressionReturnType.Boolean, ValidateBinaryNumberOrString) }
                 , {ExpressionType.GreaterThan,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] > args[1], expression, VerifyNumber, state),
+                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] > args[1], expression, state, VerifyNumber),
                         ExpressionReturnType.Boolean, ValidateBinaryNumberOrString) }
                 , {ExpressionType.GreaterThanOrEqual,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] >= args[1], expression, VerifyNumber, state),
+                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] >= args[1], expression, state, VerifyNumber),
                         ExpressionReturnType.Boolean, ValidateBinaryNumberOrString) }
 
                 // Logical
                 , {ExpressionType.And,
                     new ExpressionEvaluator((expression, state) => And(expression, state),
-                        ExpressionReturnType.Boolean, ValidateBinaryBoolean) }
+                        ExpressionReturnType.Boolean, ValidateBoolean) }
                 , {ExpressionType.Or,
                     new ExpressionEvaluator((expression, state) => Or(expression, state),
-                        ExpressionReturnType.Boolean, ValidateBinaryBoolean) }
+                        ExpressionReturnType.Boolean, ValidateBoolean) }
                 , {ExpressionType.Not,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => !args[0], expression, VerifyBoolean, state),
+                    new ExpressionEvaluator((expression, state) => Apply((args) => !args[0], expression, state, VerifyBoolean),
                         ExpressionReturnType.Boolean, (expression) => ValidateOrder(expression, ExpressionReturnType.Boolean)) }
             };
             // Add aliases from WDL https://docs.microsoft.com/en-us/azure/logic-apps/workflow-definition-language-functions-reference

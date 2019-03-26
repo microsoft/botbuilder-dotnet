@@ -2,8 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.Bot.Builder.Dialogs.Expressions;
-using Microsoft.Bot.Builder.Dialogs.Rules.Expressions;
+using Microsoft.Expressions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
@@ -21,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
         {
             if (reader.ValueType == typeof(string))
             {
-                return new CommonExpression((string)reader.Value);
+                return new ExpressionEngine().Parse((string)reader.Value);
             }
             throw new JsonSerializationException("Expected string expression.");
         }

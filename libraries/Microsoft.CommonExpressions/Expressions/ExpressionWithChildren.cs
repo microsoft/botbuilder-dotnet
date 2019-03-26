@@ -1,20 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.Expressions
 {
-    public class ExpressionTree : Expression
+    public class ExpressionWithChildren : Expression
     {
-        protected ExpressionTree(string type, IEnumerable<Expression> children, IExpressionEvaluator evaluator = null)
+        protected ExpressionWithChildren(string type, IEnumerable<Expression> children = null, IExpressionEvaluator evaluator = null)
             : base(type, evaluator)
         {
-            Children = children.ToList();
+            if (children == null)
+            {
+                _children = new List<Expression>();
+            }
+            else
+            {
+                _children = children.ToList();
+            }
         }
 
-        public IReadOnlyList<Expression> Children { get; }
+        public IReadOnlyList<Expression> Children { get => _children; }
+
+        protected List<Expression> _children;
 
         public override void Accept(IExpressionVisitor visitor)
         {
@@ -49,9 +56,9 @@ namespace Microsoft.Expressions
             return builder.ToString();
         }
 
-        public static ExpressionTree MakeExpressionTree(string type, IEnumerable<Expression> children, IExpressionEvaluator evaluator = null)
+        public static ExpressionWithChildren MakeExpression(string type, IEnumerable<Expression> children, IExpressionEvaluator evaluator = null)
         {
-            var expr = new ExpressionTree(type, children, evaluator);
+            var expr = new ExpressionWithChildren(type, children, evaluator);
             expr.Validate();
             return expr;
         }

@@ -245,9 +245,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return hasParameters ? parameters : new List<string>();
         }
 
+        // TODO: This does not properly handle evaluation errors
         private object EvalByExpressionEngine(string exp, object scope)
         {
-            return ExpressionEngine.Evaluate(exp, scope, GetValueX.GetValueX, GetMethodX.GetMethodX);
+            var parse = new ExpressionEngine(GetMethodX.GetMethodX).Parse(exp);
+            return parse.TryEvaluate(scope);
         }
 
         public object ConstructScope(string templateName, List<object> args)

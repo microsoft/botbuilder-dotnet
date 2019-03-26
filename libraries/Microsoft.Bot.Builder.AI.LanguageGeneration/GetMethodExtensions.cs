@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
     public interface IGetMethod
     {
-        ExpressionEvaluator GetMethodX(string name);
+        IExpressionEvaluator GetMethodX(string name);
     }
 
     class GetMethodExtensions : IGetMethod
@@ -20,40 +20,42 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         // This is perticularly used for using templateName as lambda
         // Such as {foreach(alarms, ShowAlarm)}
         private readonly TemplateEvaluator _evaluator;
+
         public GetMethodExtensions(TemplateEvaluator evaluator)
         {
             _evaluator = evaluator;
         }
 
         // 
-        public ExpressionEvaluator GetMethodX(string name)
+        public IExpressionEvaluator GetMethodX(string name)
         {
+            // TODO: Should add verifiers and validators
             switch (name)
             {
                 case "count":
-                    return this.Count;
+                    return new ExpressionEvaluator((expression, state) => BuiltInFunctions.Apply(this.Count, expression, state));
                 case "join":
-                    return this.Join;
+                    return new ExpressionEvaluator((expression, state) => BuiltInFunctions.Apply(this.Join, expression, state));
                 case "foreach":
                 case "map":
-                    return this.Foreach;
+                    return new ExpressionEvaluator((expression, state) => BuiltInFunctions.Apply(this.Foreach, expression, state));
                 case "mapjoin":
                 case "humanize":
-                    return this.ForeachThenJoin;
+                    return new ExpressionEvaluator((expression, state) => BuiltInFunctions.Apply(this.ForeachThenJoin, expression, state));
             }
-            throw new ArgumentException($"Unknown function {name} in expression.");
+            return BuiltInFunctions.Lookup(name);
         }
 
-        public Task<object> Count(IReadOnlyList<object> parameters)
+        public object Count(IReadOnlyList<object> parameters)
         {
             if (parameters[0] is IList li)
             {
-                return Task.FromResult<object>(li.Count);
+                return li.Count;
             }
             throw new NotImplementedException();
         }
 
-        public Task<object> Join(IReadOnlyList<object> parameters)
+        public object Join(IReadOnlyList<object> parameters)
         {
             object result = null;
             if (parameters.Count == 2 &&
@@ -80,10 +82,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     result = firstPart + sep2 + li.OfType<object>().Last().ToString();
                 }
             }
-            return Task.FromResult(result);
+            return result;
         }
 
-        public Task<object> Foreach(IReadOnlyList<object> parameters)
+        public object Foreach(IReadOnlyList<object> parameters)
         {
             if (parameters.Count == 2 && 
                 parameters[0] is IList li && 
@@ -101,13 +103,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     return evaled;
                 }).ToList();
 
-                return Task.FromResult<object>(result);
+                return result;
             }
 
             throw new NotImplementedException();
         }
 
-        public Task<object> ForeachThenJoin(IReadOnlyList<object> parameters)
+        public object ForeachThenJoin(IReadOnlyList<object> parameters)
         {
             if (parameters.Count >= 2 &&
                 parameters[0] is IList li &&
@@ -127,13 +129,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
                 var newParameter = parameters.Skip(2).ToList();
                 newParameter.Insert(0, result);
-                return Task.FromResult<object>(this.Join(newParameter));
+                return this.Join(newParameter);
                 
             }
 
             throw new NotImplementedException();
         }
-
     }
-
 }

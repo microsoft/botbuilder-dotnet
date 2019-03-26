@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.Expressions
 {
@@ -46,5 +44,37 @@ namespace Microsoft.Expressions
             expr.Validate();
             return expr;
         }
+
+        public static Expression LambaExpression(EvaluateExpressionDelegate function)
+            => new Expression(ExpressionType.Lambda, new ExpressionEvaluator(function));
+
+        public static Expression Lambda(Func<object, object> function)
+            => new Expression(ExpressionType.Lambda,
+                new ExpressionEvaluator((expression, state) =>
+                {
+                    object value = null;
+                    string error = null;
+                    try
+                    {
+                        value = function(state);
+                    }
+                    catch (Exception e)
+                    {
+                        error = e.Message;
+                    }
+                    return (value, error);
+                }));
+
+        public static Expression AndExpression(params Expression[] children)
+            => ExpressionWithChildren.MakeExpression(ExpressionType.And, children);
+
+        public static Expression OrExpression(params Expression[] children)
+            => ExpressionWithChildren.MakeExpression(ExpressionType.Or, children);
+
+        public static Expression NotExpression(Expression child)
+            => ExpressionWithChildren.MakeExpression(ExpressionType.Not, new Expression[] { child });
+
+        public static Expression ConstantExpression(object value)
+            => Constant.MakeExpression(value);
     }
 }
