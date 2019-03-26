@@ -7,81 +7,117 @@ using System.Collections.Generic;
 namespace Microsoft.Bot.Schema
 {
     /// <summary>
-    /// Shared properties for all activities
+    /// Shared properties for all activities.
     /// </summary>
     public interface IActivity
     {
         /// <summary>
-        /// Activity type
+        /// Gets or sets activity type.
         /// </summary>
+        /// <value>
+        /// Activity type.
+        /// </value>
         string Type { get; set; }
 
         /// <summary>
-        /// ID for the activity
+        /// Gets or sets iD for the activity.
         /// </summary>
+        /// <value>
+        /// ID for the activity.
+        /// </value>
         string Id { get; set; }
 
         /// <summary>
-        /// Service URL where responses to this activity should be sent
+        /// Gets or sets service URL where responses to this activity should be sent.
         /// </summary>
+        /// <value>
+        /// Service URL where responses to this activity should be sent.
+        /// </value>
         string ServiceUrl { get; set; }
 
         /// <summary>
-        /// Timestamp when this message was sent (UTC)
+        /// Gets or sets timestamp when this message was sent (UTC).
         /// </summary>
+        /// <value>
+        /// Timestamp when this message was sent (UTC).
+        /// </value>
         DateTimeOffset? Timestamp { get; set; }
 
         /// <summary>
-        /// Client time when message was sent (local time or UTC)
+        /// Gets or sets client time when message was sent (local time or UTC).
         /// </summary>
+        /// <value>
+        /// Client time when message was sent (local time or UTC).
+        /// </value>
         DateTimeOffset? LocalTimestamp { get; set; }
 
         /// <summary>
-        /// Channel this activity is associated with
+        /// Gets or sets Channel this activity is associated with.
         /// </summary>
+        /// <value>
+        /// Channel this activity is associated with.
+        /// </value>
         string ChannelId { get; set; }
 
         /// <summary>
-        /// Sender address
+        /// Gets or sets Sender address.
         /// </summary>
+        /// <value>
+        /// Sender address.
+        /// </value>
         ChannelAccount From { get; set; }
 
         /// <summary>
-        /// Address for the conversation that this activity is associated with
+        /// Gets or sets Address for the conversation that this activity is associated with.
         /// </summary>
+        /// <value>
+        /// Address for the conversation that this activity is associated with.
+        /// </value>
         ConversationAccount Conversation { get; set; }
-        
+
         /// <summary>
-        /// Address that received the message
+        /// Gets or sets address that received the message.
         /// </summary>
+        /// <value>
+        /// Address that received the message.
+        /// </value>
         ChannelAccount Recipient { get; set; }
 
         /// <summary>
-        /// The original ID this activity is a response to
+        /// Gets or sets the original ID this activity is a response to.
         /// </summary>
+        /// <value>
+        /// The original ID this activity is a response to.
+        /// </value>
         string ReplyToId { get; set; }
 
         /// <summary>
-        /// Collection of Entity objects, each of which contains metadata about this activity. Each Entity object is typed.
+        /// Gets or sets collection of Entity objects, each of which contains metadata about this activity. Each Entity object is typed.
         /// </summary>
+        /// <value>
+        /// Collection of Entity objects, each of which contains metadata about this activity. Each Entity object is typed.
+        /// </value>
         IList<Entity> Entities { get; set; }
 
         /// <summary>
-        /// Channel-specific payload
+        /// Gets or sets channel-specific payload.
         /// </summary>
         /// <remarks>
         /// Some channels will provide channel specific data.
-        /// 
-        /// For a message originating in the channel it might provide the original native schema object for the channel. 
-        /// 
+        ///
+        /// For a message originating in the channel it might provide the original native schema object for the channel.
+        ///
         /// For a message coming into the channel it might accept a payload allowing you to create a "native" response for the channel.
-        /// 
+        ///
         /// Example:
         /// * Email - The Email Channel will put the original Email metadata into the ChannelData object for outgoing messages, and will accept
-        /// on incoming message a Subject property, and a HtmlBody which can contain Html.  
-        /// 
+        /// on incoming message a Subject property, and a HtmlBody which can contain Html.
+        ///
         /// The channel data essentially allows a bot to have access to native functionality on a per channel basis.
         /// </remarks>
+        /// <value>
+        /// Channel-specific payload.
+        /// </value>
         dynamic ChannelData { get; set; }
 
         /// <summary>
@@ -92,71 +128,83 @@ namespace Microsoft.Bot.Schema
         TypeT GetChannelData<TypeT>();
 
         /// <summary>
-        /// Try to get the channeldata as a strongly typed object 
+        /// Try to get the channeldata as a strongly typed object.
         /// </summary>
-        /// <typeparam name="TypeT"></typeparam>
-        /// <param name="instance"></param>
-        /// <returns>false if there is no valid channeldata available</returns>
+        /// <typeparam name="TypeT">Type T.</typeparam>
+        /// <param name="instance">instance.</param>
+        /// <returns>false if there is no valid channeldata available.</returns>
         bool TryGetChannelData<TypeT>(out TypeT instance);
 
         /// <summary>
-        /// Return IMessageActivity if this is a message activity, null otherwise
+        /// Return IMessageActivity if this is a message activity, null otherwise.
         /// </summary>
+        /// <returns>IMessageActivity.</returns>
         IMessageActivity AsMessageActivity();
 
         /// <summary>
-        /// Return IContactRelationUpdateActivity if this is a contactRelationUpdate activity, null otherwise
+        /// Return IContactRelationUpdateActivity if this is a contactRelationUpdate activity, null otherwise.
         /// </summary>
+        /// <returns>IContactRelationUpdateActivity.</returns>
         IContactRelationUpdateActivity AsContactRelationUpdateActivity();
 
         /// <summary>
-        /// Return IInstallationUpdateActivity if this is a installationUpdate activity, null otherwise
+        /// Return IInstallationUpdateActivity if this is a installationUpdate activity, null otherwise.
         /// </summary>
+        /// <returns>IInstallationUpdateActivity.</returns>
         IInstallationUpdateActivity AsInstallationUpdateActivity();
 
         /// <summary>
-        /// Return IConversationUpdateActivity if this is a conversationUpdate activity, null otherwise
+        /// Return IConversationUpdateActivity if this is a conversationUpdate activity, null otherwise.
         /// </summary>
+        /// <returns>IConversationUpdateActivity.</returns>
         IConversationUpdateActivity AsConversationUpdateActivity();
 
         /// <summary>
-        /// Return ITypingActivity if this is a typing activity, null otherwise
+        /// Return ITypingActivity if this is a typing activity, null otherwise.
         /// </summary>
+        /// <returns>ITypingActivity.</returns>
         ITypingActivity AsTypingActivity();
 
         /// <summary>
-        /// Return IEndOfConversationActivity if this is an end-of-conversation activity, null otherwise
+        /// Return IEndOfConversationActivity if this is an end-of-conversation activity, null otherwise.
         /// </summary>
+        /// <returns>IEndOfConversationActivity.</returns>
         IEndOfConversationActivity AsEndOfConversationActivity();
 
         /// <summary>
-        /// Returns IEventActivity if this is an event activity, null otherwise
+        /// Returns IEventActivity if this is an event activity, null otherwise.
         /// </summary>
+        /// <returns>IEventActivity.</returns>
         IEventActivity AsEventActivity();
 
         /// <summary>
-        /// Returns IInvokeActivity if this is an invoke activity, null otherwise
+        /// Returns IInvokeActivity if this is an invoke activity, null otherwise.
         /// </summary>
+        /// <returns>IInvokeActivity.</returns>
         IInvokeActivity AsInvokeActivity();
 
         /// <summary>
-        /// Returns IMessageUpdateActivity if this is a message update activity, null otherwise
+        /// Returns IMessageUpdateActivity if this is a message update activity, null otherwise.
         /// </summary>
+        /// <returns>IMessageUpdateActivity.</returns>
         IMessageUpdateActivity AsMessageUpdateActivity();
 
         /// <summary>
-        /// Returns IMessageDeleteActivity if this is a message delete activity, null otherwise
+        /// Returns IMessageDeleteActivity if this is a message delete activity, null otherwise.
         /// </summary>
+        /// <returns>IMessageDeleteActivity.</returns>
         IMessageDeleteActivity AsMessageDeleteActivity();
 
         /// <summary>
-        /// Returns IMessageDeleteActivity if this is a message delete activity, null otherwise
+        /// Returns IMessageDeleteActivity if this is a message reaction activity, null otherwise.
         /// </summary>
+        /// <returns>IMessageReactionActivity.</returns>
         IMessageReactionActivity AsMessageReactionActivity();
 
         /// <summary>
-        /// Returns IMessageDeleteActivity if this is a message delete activity, null otherwise
+        /// Returns IMessageDeleteActivity if this is a suggestion activity, null otherwise.
         /// </summary>
+        /// <returns>ISuggestionActivity.</returns>
         ISuggestionActivity AsSuggestionActivity();
 
         /// <summary>
@@ -166,11 +214,11 @@ namespace Microsoft.Bot.Schema
         ConversationReference GetConversationReference();
 
         /// <summary>
-        /// Updates an activity with the delivery information from an existing 
+        /// Updates an activity with the delivery information from an existing
         /// conversation reference.
         /// </summary>
         /// <param name="reference">The conversation reference.</param>
-        /// <param name="isIncoming">(Optional) <c>true</c> to treat the activity as an 
+        /// <param name="isIncoming">(Optional) <c>true</c> to treat the activity as an
         /// incoming activity, where the bot is the recipient; otherwaire <c>false</c>.
         /// Default is <c>false</c>, and the activity will show the bot as the sender.</param>
         /// <exception cref="ArgumentNullException"><paramref name="reference"/> is null.</exception>
@@ -178,6 +226,7 @@ namespace Microsoft.Bot.Schema
         /// activity to get a conversation reference that you can then use to update an
         /// outgoing activity with the correct delivery information.
         /// </remarks>
+        /// <returns>Activity.</returns>
         Activity ApplyConversationReference(ConversationReference reference, bool isIncoming = false);
     }
 }
