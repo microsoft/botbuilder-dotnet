@@ -4,12 +4,15 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
 using System.Linq;
+using Microsoft.Expressions;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 {
     [TestClass]
     public class TemplateEngineTest
     {
+        public TestContext TestContext { get; set; }
+
         private string GetExampleFilePath(string fileName)
         {
             return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "Examples\\" + fileName;
@@ -139,12 +142,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(Exception))]
+        [ExpectedException(typeof(LGEvaluatingException))]
         public void TestBasicLoopRef()
         {
             var engine = TemplateEngine.FromFile(GetExampleFilePath("7.lg"));
-            var evaled = engine.EvaluateTemplate("wPhrase", "");
-            Assert.AreEqual(evaled, "你好");
+            engine.EvaluateTemplate("wPhrase", "");
         }
 
         [TestMethod]
@@ -208,17 +210,17 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var engine = TemplateEngine.FromFile(GetExampleFilePath("MultilineTextForAdaptiveCard.lg"));
             var evaled1 = engine.EvaluateTemplate("wPhrase", "");
-            var options1 = new List<string> { "\r\ncardContent\r\n", "hello" };
+            var options1 = new List<string> { "\r\ncardContent\r\n", "\ncardContent\n", "hello" };
             Assert.IsTrue(options1.Contains(evaled1), $"Evaled is {evaled1}");
 
             var evaled2 = engine.EvaluateTemplate("nameTemplate", new { name = "N" });
-            var options2 = new List<string> { "\r\nN\r\n", "N" };
+            var options2 = new List<string> { "\r\nN\r\n", "\nN\n","N" };
             Assert.IsTrue(options2.Contains(evaled2), $"Evaled is {evaled2}");
 
             var evaled3 = engine.EvaluateTemplate("adaptivecardsTemplate", "");
 
             var evaled4 = engine.EvaluateTemplate("refTemplate", "");
-            var options4 = new List<string> { "\r\nhi\r\n" };
+            var options4 = new List<string> { "\r\nhi\r\n" , "\nhi\n" };
             Assert.IsTrue(options4.Contains(evaled4), $"Evaled is {evaled4}");
         }
 
@@ -245,9 +247,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var engine = TemplateEngine.FromFile(GetExampleFilePath("EscapeCharacter.lg"));
             var evaled1 = engine.EvaluateTemplate("wPhrase", null);
             Assert.AreEqual(evaled1, "Hi \r\n\t[]{}\\");
-
-            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("wPhrase2", null));
-            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("wPhrase3", null));
         }
 
 
@@ -272,5 +271,19 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         }
 
+        [TestMethod]
+        public void TestExceptionCatch()
+        {
+            var engine = TemplateEngine.FromFile(GetExampleFilePath("ExceptionCatch.lg"));
+            try
+            {
+                engine.EvaluateTemplate("NoVariableMatch", null);
+            }
+            catch (Exception e)
+            {
+                Assert.IsInstanceOfType(e, typeof(ExpressionEvaluationException));
+                TestContext.WriteLine(e.Message);
+            }
+        }
     }
 }

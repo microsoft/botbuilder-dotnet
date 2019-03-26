@@ -2,6 +2,7 @@
 using System.Linq;
 using Antlr4.Runtime;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 
 namespace Microsoft.Expressions.Tests
 {
@@ -62,6 +63,9 @@ namespace Microsoft.Expressions.Tests
             Test("not(one)", false),
             Test("not(not(one))", true),
             Test("not(0)", true),
+            Test("exist(one)", true),
+            Test("exist(xxx)", false),
+            Test("exist(one.xxx)", false),
 
         };
 
@@ -95,6 +99,59 @@ namespace Microsoft.Expressions.Tests
                 },
                 items = new string[] { "zero", "one", "two" }
             };
+
+            var parsed = ExpressionEngine.Parse(input);
+            var actual = ExpressionEngine.Evaluate(parsed, scope);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(Data))]
+        public void TryEvaluate(string input, object expected)
+        {
+            var scope = new
+            {
+                one = 1.0,
+                two = 2.0,
+                hello = "hello",
+                world = "world",
+                bag = new
+                {
+                    three = 3.0,
+                    set = new
+                    {
+                        four = 4.0,
+                    },
+                    index = 3,
+                    list = new[] { "red", "blue" }
+                },
+                items = new string[] { "zero", "one", "two" }
+            };
+
+            object actual = null;
+            var success = ExpressionEngine.TryEvaluate(input, scope, out actual);
+            Assert.IsTrue(success);
+            Assert.AreEqual(expected, actual);
+        }
+
+        public static IEnumerable<object[]> JsonData => new[]
+        {
+            //Test("exist(one)", true),
+            Test("items[0] == 'item1'", true),
+            // Test("'item1' == items[0]", false), // false because string.CompareTo(JValue) will get exception
+        };
+
+        [DataTestMethod]
+        [DynamicData(nameof(JsonData))]
+        public void EvaluateJSON(string input, object expected)
+        {
+            var scope = JsonConvert.DeserializeObject(@"{
+                            'one': 1,
+                            'two': 2,
+                            'hello': 'hello',
+            
+                            'items': ['item1', 'item2', 'item3']
+                        }");
 
             var parsed = ExpressionEngine.Parse(input);
             var actual = ExpressionEngine.Evaluate(parsed, scope);

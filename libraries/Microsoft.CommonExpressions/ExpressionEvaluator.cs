@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 
@@ -103,7 +104,7 @@ namespace Microsoft.Expressions
                 return method(parameters.ToArray());
             }
 
-            throw new Exception("This format is wrong.");
+            throw new Exception($"Format: {context.GetText()} is invalid.");
         }
 
         public override object VisitIdAtom([NotNull] ExpressionParser.IdAtomContext context) => GetValue(Scope, context.GetText());
@@ -134,6 +135,11 @@ namespace Microsoft.Expressions
 
         public override object VisitParenthesisExp([NotNull] ExpressionParser.ParenthesisExpContext context) => Visit(context.expression());
 
-        public override object VisitStringAtom([NotNull] ExpressionParser.StringAtomContext context) => context.GetText().Trim('\'');
+        public override object VisitStringAtom([NotNull] ExpressionParser.StringAtomContext context)
+        {
+            // remove '' then unescape
+            return Regex.Unescape(context.GetText().Trim('\''));
+        }
+            
     }
 }

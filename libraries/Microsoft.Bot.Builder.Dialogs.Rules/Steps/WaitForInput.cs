@@ -10,25 +10,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 {
     public class WaitForInput : Dialog
     {
-        public string Property
-        {
-            get { return OutputBinding; }
-            set { OutputBinding = value; }
-        }
-
-        public WaitForInput(string binding) : base()
-        {
-            this.OutputBinding = binding;
-            this.Id = OnComputeId();
-        }
-
         public WaitForInput() : base()
         {
+            this.Id = OnComputeId();
         }
 
         protected override string OnComputeId()
         {
-            return $"WaitForInput[{OutputBinding ?? string.Empty}]";
+            return $"WaitForInput[]";
         }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))

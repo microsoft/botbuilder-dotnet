@@ -6,9 +6,9 @@ using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 {
-    public class FallbackRule : EventRule
+    public class DefaultRule : EventRule
     {
-        public FallbackRule(List<IDialog> steps = null, PlanChangeTypes changeType = PlanChangeTypes.DoSteps)
+        public DefaultRule(List<IDialog> steps = null, PlanChangeTypes changeType = PlanChangeTypes.DoSteps)
             : base(new List<string>() { PlanningEvents.Fallback.ToString() }, steps, changeType)
         {
         }

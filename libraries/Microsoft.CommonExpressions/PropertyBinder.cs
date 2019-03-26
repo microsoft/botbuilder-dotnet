@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Expressions
 {
@@ -24,16 +25,23 @@ namespace Microsoft.Expressions
         {
             if (instance == null)
             {
-                return null;
+                throw new GetPropertyValueFailException($"getting property {property.ToString()} on null");
             }
 
             if (instance is IDictionary<string, object> || instance is IDictionary)
             {
                 return Dictionary(instance, property);
             }
-            else if (instance.GetType().IsArray)
+            else if (instance is JObject)
             {
-                return ((Array)instance).GetValue((int)property);
+                var jObj = instance as JObject;
+                return jObj[property] ?? null;
+            }
+            else if (instance is IList list) 
+            {
+                // this also covers JArray
+                // this must be after JObject, because JObject is also IList<JToken>
+                return list[(int)property];
             }
             return Reflection(instance, property);
         };
@@ -70,5 +78,31 @@ namespace Microsoft.Expressions
             ((IDictionary<string, object>)instance).TryGetValue((string)property, out result);
             return result;
         };
+    }
+
+    /// <summary>
+    /// Wrap a GetMethodDelegate, returns a new delegate that throw the right exceptions
+    /// 1st and 3rd party GetMethodDelegate needs to be wrapped into this, to work best with the rest
+    /// </summary>
+    class GetValueDelegateWrapper
+    {
+        // this is a wrapper to help throw proper exceptions
+        private readonly GetValueDelegate _getValue = null;
+        public GetValueDelegateWrapper(GetValueDelegate getValue)
+        {
+            _getValue = getValue;
+        }
+
+        public object GetValue(object instance, object property)
+        {
+            try
+            {
+                return _getValue(instance, property);
+            }
+            catch (Exception e)
+            {
+                throw new GetPropertyValueFailException($"Can't not get property {property.ToString()} on {instance}, error: {e.Message}");
+            }
+        }
     }
 }

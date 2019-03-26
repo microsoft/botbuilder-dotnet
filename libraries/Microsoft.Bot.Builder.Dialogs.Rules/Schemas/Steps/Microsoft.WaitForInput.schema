@@ -4,17 +4,5 @@
     "title": "Wait for input from the user",
     "description": "Dialog command to wait for input from the user.",
     "type": "object",
-    "additionalProperties": false,
-    "properties": {
-        "property": {
-            "$type": "Microsoft.IExpression",
-            "title": "Property",
-            "description": "Expression which is the property to set."
-        },
-        "value": {
-            "$type": "Microsoft.IExpression",
-            "title": "Value",
-            "description": "Expression which is the value to use."
-        }
-    }
+    "additionalProperties": false
 }

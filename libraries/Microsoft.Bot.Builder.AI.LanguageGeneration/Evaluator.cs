@@ -44,12 +44,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         {
             if (!Context.TemplateContexts.ContainsKey(templateName))
             {
-                throw new Exception($"No such template: {templateName}");
+                throw new LGEvaluatingException($"No such template: {templateName}");
             }
 
             if (evalutationTargetStack.Any(e => e.TemplateName == templateName))
             { 
-                throw new Exception($"Loop detected: {String.Join(" => ", evalutationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                throw new LGEvaluatingException($"Loop detected: {String.Join(" => ", evalutationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
             // Using a stack to track the evalution trace
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var caseRules = context.conditionalTemplateBody().caseRule();
             foreach (var caseRule in caseRules)
             {
-                var conditionExpression = caseRule.caseCondition().EXPRESSION().GetText();
+                var conditionExpression = caseRule.caseCondition().EXPRESSION(0).GetText();
                 if (EvalCondition(conditionExpression))
                 {
                     return Visit(caseRule.normalTemplateBody());
@@ -117,8 +117,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     case LGFileParser.ESCAPE_CHARACTER:
                         builder.Append(EvalEscapeCharacter(node.GetText()));
                         break;
-                    case LGFileParser.INVALID_ESCAPE:
-                        throw new Exception($"escape character {node.GetText()} is invalid");
                     case LGFileParser.EXPRESSION:
                         builder.Append(EvalExpression(node.GetText()));
                         break;
@@ -151,11 +149,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 { @"\}","}"},
             };
 
-            if (validCharactersDict.ContainsKey(exp))
-                return validCharactersDict[exp];
-
-            throw new Exception($"escape character {exp} is invalid");
-
+            return validCharactersDict[exp];
         }
 
         private bool EvalCondition(string exp)
@@ -166,7 +160,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 var result = EvalByExpressionEngine(exp, CurrentTarget().Scope); 
 
                 if ((result is Boolean r1 && r1 == false) ||
-                    (result is int r2 && r2 == 0))
+                    (result is int r2 && r2 == 0) ||
+                    result == null)
                 {
                     return false;
                 }
@@ -197,10 +192,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             {
                 // EvaluateTemplate all arguments using ExpressoinEngine
                 var argsEndPos = exp.LastIndexOf(')');
-                if (argsEndPos < 0 || argsEndPos < argsStartPos+1)
-                {
-                    throw new Exception($"Not a valid template ref: {exp}");
-                }
+                
                 var argExpressions = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(',');
                 var args = argExpressions.Select(x => EvalByExpressionEngine(x, CurrentTarget().Scope)).ToList();
 
@@ -230,11 +222,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 var newExp = m.Value.Substring(1); // remove @
                 if (newExp.StartsWith("{[") && newExp.EndsWith("]}"))
                 {
-                    return EvalTemplateRef(newExp.Substring(2, newExp.Length - 4));//[ ]
+                    return EvalTemplateRef(newExp.Substring(2, newExp.Length - 4))?
+                            .Replace("\"", "\'"); ;//[ ]
                 }
                 else
                 {
-                    return EvalExpression(newExp).ToString();//{ }
+                    return EvalExpression(newExp)?.Replace("\"","\'");//{ }
                 }
             });
 
@@ -261,11 +254,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             }
 
             var paramters = ExtractParameters(templateName);
-
-            if (paramters.Count != args.Count)
-            {
-                throw new Exception($"Arguments count mismatch for template ref {templateName}, expected {paramters.Count}, actual {args.Count}");
-            }
 
             var newScope = paramters.Zip(args, (k, v) => new { k, v })
                                     .ToDictionary(x => x.k, x => x.v);

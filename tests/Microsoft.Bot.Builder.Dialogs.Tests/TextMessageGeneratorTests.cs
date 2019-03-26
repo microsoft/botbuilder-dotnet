@@ -162,7 +162,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("application/vnd.microsoft.card.adaptive", activity.Attachments[0].ContentType);
             Assert.AreEqual("test", (string)((dynamic)activity.Attachments[0].Content).body[0].text);
         }
-        
+
 
         [TestMethod]
         public async Task TestMultipleAttachments()
@@ -209,6 +209,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("test", (string)((dynamic)activity.Attachments[1].Content).body[0].text);
         }
 
+
+        [TestMethod]
+        public async Task TestAttachmentContentType()
+        {
+            var mg = GetGenerator();
+            dynamic data = new JObject();
+            data.url = "https://avatars0.githubusercontent.com/u/17789481?v";
+            IMessageActivity activity = await mg.Generate("", "```[Attachment=@{url} image/png]```", id: null, data: data, types: null, tags: null);
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Text));
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Speak));
+            Assert.AreEqual(1, activity.Attachments.Count);
+            Assert.AreEqual("image/png", activity.Attachments[0].ContentType);
+            Assert.AreEqual(data.url.ToString(), activity.Attachments[0].ContentUrl.ToString());
+        }
 
     }
 }

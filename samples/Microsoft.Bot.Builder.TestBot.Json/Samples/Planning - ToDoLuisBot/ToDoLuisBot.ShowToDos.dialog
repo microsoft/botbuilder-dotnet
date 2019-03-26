@@ -1,33 +1,29 @@
 {
-  "$schema": "../../Schemas/app.schema",
-  "$type": "Microsoft.RuleDialog",
-  "$id":  "ShowToDoDialog",
-  "storage": {
-    "$type": "Microsoft.MemoryStorage"
-  },
-  "rules": [
-    {
-      "$type": "Microsoft.FallbackRule",
-      "steps": [
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "rules": [
         {
-          "$type": "Microsoft.IfProperty",
-          "expression": "user.todos == null",
-          "ifTrue": [
-            {
-              "$type": "Microsoft.SendActivity",
-              "activity": "You have no todos."
-            }
-          ],
-          "ifFalse": [
-            {
-              "$type": "Microsoft.SendList",
-              "listProperty": "user.todos",
-              "messageTemplate": "Here are your todos: "
-            }
-          ]
+            "$type": "Microsoft.BeginDialogRule",
+            "steps": [
+                {
+                    "$type": "Microsoft.IfProperty",
+                    "expression": "user.todos == null",
+                    "ifTrue": [
+                        {
+                            "$type": "Microsoft.SendActivity",
+                            "activity": "You have no todos."
+                        }
+                    ],
+                    "ifFalse": [
+                        {
+                            "$type": "Microsoft.SendList",
+                            "listProperty": "user.todos",
+                            "messageTemplate": "Here are your todos: "
+                        }
+                    ]
+                }
+
+            ]
         }
-       
-      ]
-    }
-  ]   
+    ]
 }

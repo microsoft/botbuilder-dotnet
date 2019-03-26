@@ -9,12 +9,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
         public SaveEntity() : base()
         { }
 
-        public SaveEntity(string entityName, string property)
+        public SaveEntity(string entity, string property)
             : base()
         {
-            if (!string.IsNullOrEmpty(entityName))
+            if (!string.IsNullOrEmpty(entity))
             {
-                this.EntityName = entityName;
+                this.Entity = entity;
             }
 
             if (!string.IsNullOrEmpty(property))
@@ -23,13 +23,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
             }
         }
 
-        public string EntityName { get; set; }
+        public string Entity { get; set; }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (dc.State.Entities.ContainsKey(EntityName))
+            if (dc.State.Entities.ContainsKey(Entity))
             {
-                var values = dc.State.Entities[EntityName];
+                var values = dc.State.Entities[Entity];
                 if (values.GetType() == typeof(JArray))
                 {
                     dc.State.SetValue(Property, ((JArray)values)[0]);

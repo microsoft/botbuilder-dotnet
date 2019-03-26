@@ -1,0 +1,11 @@
+﻿﻿# template
+- [templateRef]
+
+# multiLineTemplate
+- ```
+@{[templateRefInMultiLine]}
+```
+
+# otherTemplate
+- hi 
+

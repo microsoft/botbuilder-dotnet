@@ -6,12 +6,11 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
-        "resultProperty": {
-            "$type": "Microsoft.IExpression",
-            "title": "Result Property",
-            "description": "Specifies an in-memory state property that should be returned to the calling dialog.",
+        "property": {
+            "title": "Property",
+            "description": "Specifies a path to memory should be returned as the result to the calling dialog.",
             "examples": [
-                "user.name"
+                "dialog.name"
             ]
         }
     }

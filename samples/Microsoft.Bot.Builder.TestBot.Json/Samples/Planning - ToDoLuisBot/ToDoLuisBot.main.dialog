@@ -1,0 +1,50 @@
+{
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "$id": "root",
+    "recognizer": {
+        "$type": "Microsoft.LuisRecognizer",
+        "applicationId": "{settings.ToDoLuisBot.LuisRecognizer.applicationId}",
+        "endpointKey": "{settings.ToDoLuisBot.LuisRecognizer.endpointKey}",
+        "endpoint": "{settings.ToDoLuisBot.LuisRecognizer.endpoint}"
+    },
+    "rules": [
+        {
+            "$type": "Microsoft.WelcomeRule",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Hi! I'm a ToDo bot. Say \"add a todo called first one\" to get started."
+                }
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "AddToDo",
+            "steps": [
+                "ToDoLuisBot.AddToDo"
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "DeleteToDo",
+            "steps": [
+                "ToDoLuisBot.DeleteToDo"
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "ShowToDo",
+            "steps": [
+                "ToDoLuisBot.ShowToDos"
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "ClearToDo",
+            "steps": [
+                "ToDoLuisBot.ClearToDos"
+            ]
+        }
+    ]
+}

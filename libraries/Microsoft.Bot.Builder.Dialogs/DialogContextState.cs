@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -21,12 +22,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         [JsonProperty(PropertyName = "dialog")]
         public Dictionary<string, object> Dialog { get; set; }
-
-        [JsonProperty(PropertyName = "entities")]
-        public Dictionary<string, object> Entities { get; set; }
-
-        [JsonProperty(PropertyName = "turn")]
-        public Dictionary<string, object> Turn { get; set; }
     }
 
     public class DialogContextState : IDictionary<string, object>
@@ -34,20 +29,36 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string TurnEntities = "turn_entities";
         private readonly DialogContext dialogContext;
 
-        public DialogContextState(DialogContext dc, Dictionary<string, object> userState, Dictionary<string, object> conversationState, Dictionary<string, object> turnState)
+        public DialogContextState(DialogContext dc, Dictionary<string, object> settings, Dictionary<string, object> userState, Dictionary<string, object> conversationState, Dictionary<string, object> turnState)
         {
             this.dialogContext = dc ?? throw new ArgumentNullException(nameof(dc));
+            this.Settings = settings;
             this.User = userState;
             this.Conversation = conversationState;
             this.Turn = turnState;
         }
 
+        /// <summary>
+        /// Gets or sets settings for the application.
+        /// </summary>
+        [JsonProperty(PropertyName ="settings")]
+        public Dictionary<string, object> Settings { get; set; }
+
+        /// <summary>
+        /// Gets or sets state associated with the active user in the turn.
+        /// </summary>
         [JsonProperty(PropertyName = "user")]
         public Dictionary<string, object> User { get; set; }
 
+        /// <summary>
+        /// Gets or sets state assocaited with the active conversation for the turn.
+        /// </summary>
         [JsonProperty(PropertyName = "conversation")]
         public Dictionary<string, object> Conversation { get; set; }
 
+        /// <summary>
+        /// Gets or sets state associated with the active dialog for the turn.
+        /// </summary>
         [JsonProperty(PropertyName = "dialog")]
         public Dictionary<string, object> Dialog
         {
@@ -91,6 +102,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
+        /// <summary>
+        /// Gets or sets state associated with the current turn only (this is non-persisted).
+        /// </summary>
+        [JsonProperty(PropertyName = "turn")]
+        public Dictionary<string, object> Turn { get; set; }
+
         [JsonProperty(PropertyName = "entities")]
         public Dictionary<string, object> Entities
         {
@@ -107,10 +124,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        [JsonProperty(PropertyName = "turn")]
-        public Dictionary<string, object> Turn { get; set; }
 
-        public ICollection<string> Keys => new[] { "user", "conversation", "dialog", "turn", "entities" };
+        public ICollection<string> Keys => new[] { "user", "conversation", "dialog", "turn", "settings", "entities" };
 
         public ICollection<object> Values => new[] { User, Conversation, Dialog, Turn, Entities };
 
@@ -170,7 +185,19 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public T GetValue<T>(object o, string pathExpression, T defaultValue = default(T))
         {
-            var result = JToken.FromObject(o).SelectToken(pathExpression);
+            JToken result = null;
+            if (o != null && o.GetType() == typeof(JArray))
+            {
+                int index = 0;
+                if (int.TryParse(pathExpression, out index) && index < JArray.FromObject(o).Count)
+                {
+                    result = JArray.FromObject(o)[index];
+                }
+            }
+            else
+            {
+                result = JToken.FromObject(o).SelectToken(pathExpression);
+            }
 
             if (result != null)
             {
@@ -197,6 +224,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     {
                         curDict[segment] = new Dictionary<string, object>();
                     }
+
                     current = curDict[segment];
                 }
             }
@@ -232,6 +260,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                     return true;
                 case "dialog":
                     value = this.Dialog;
+                    return true;
+                case "settings":
+                    value = this.Settings;
                     return true;
                 case "turn":
                     value = this.Turn;
@@ -274,6 +305,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             yield return new KeyValuePair<string, object>("user", this.User);
             yield return new KeyValuePair<string, object>("conversation", this.Conversation);
             yield return new KeyValuePair<string, object>("dialog", this.Dialog);
+            yield return new KeyValuePair<string, object>("settings", this.Settings);
             yield return new KeyValuePair<string, object>("turn", this.Turn);
             yield break;
         }

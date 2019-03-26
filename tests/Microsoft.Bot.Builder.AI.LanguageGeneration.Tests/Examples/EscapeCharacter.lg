@@ -2,9 +2,3 @@
 > LG runtime will pick a text value from the one-of collection list at random.
 # wPhrase
 - Hi \r\n\t\[\]\{\}\\
-
-# wPhrase2
-- Hi \
-
-# wPhrase3
-- Hi abc\y

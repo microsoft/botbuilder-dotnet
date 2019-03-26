@@ -12,24 +12,24 @@ using Microsoft.Bot.Builder.Dialogs.Rules;
 using Microsoft.Bot.Builder.Dialogs.Rules.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Rules.Rules;
 using Microsoft.Bot.Builder.Dialogs.Rules.Steps;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
 {
-    public static class Factory
+    public static class TypeFactory
     {
         private static Dictionary<Type, ICustomDeserializer> builders = new Dictionary<Type, ICustomDeserializer>();
         private static Dictionary<string, Type> types = new Dictionary<string, Type>();
         private static Dictionary<Type, string> names = new Dictionary<Type, string>();
 
-        static Factory()
-        {
-            RegisterDefaults();   
-        }
+        public static IConfiguration Configuration { get; set; }
 
         public static void Register(string name, Type type, ICustomDeserializer loader = null)
         {
+            EnsureConfig();
+
             // Default loader if none specified
             if (loader == null)
             {
@@ -49,6 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
 
         public static T Build<T>(string name, JToken obj, JsonSerializer serializer) where T : class
         {
+            EnsureConfig();
             ICustomDeserializer builder;
             var type = TypeFromName(name);
 
@@ -89,21 +90,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
 
         public static void Reset()
         {
+            EnsureConfig();
             types.Clear();
             names.Clear();
             builders.Clear();
-            RegisterDefaults();
+            RegisterAdaptiveTypes();
         }
 
-        private static void RegisterDefaults()
+        public static void RegisterAdaptiveTypes()
         {
+            EnsureConfig();
+
             //TODO: we don't want this static initialization, leaving it here for convenience now
             // while things are changing rapidly still
 
             // Rules
+            Register("Microsoft.BeginDialogRule", typeof(BeginDialogRule));
             Register("Microsoft.IntentRule", typeof(IntentRule));
             Register("Microsoft.EventRule", typeof(EventRule));
-            Register("Microsoft.FallbackRule", typeof(FallbackRule));
+            Register("Microsoft.DefaultRule", typeof(DefaultRule));
             //Register("Microsoft.IfPropertyRule", typeof(IfPropertyRule));
             Register("Microsoft.ReplacePlanRule", typeof(ReplacePlanRule));
             //Register("Microsoft.UtteranceRecognizeRule", typeof(UtteranceRecognizeRule));
@@ -121,20 +126,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.ChangeList", typeof(ChangeList));
             Register("Microsoft.SendList", typeof(SendList));
             Register("Microsoft.ClearProperty", typeof(ClearProperty));
+            Register("Microsoft.HttpRequest", typeof(HttpRequest));
 
             // Dialogs
             Register("Microsoft.ComponentDialog", typeof(ComponentDialog), new ComponentDialogLoader());
-            Register("Microsoft.RuleDialog", typeof(RuleDialog));
+            Register("Microsoft.AdaptiveDialog", typeof(AdaptiveDialog));
             Register("Microsoft.TextPrompt", typeof(TextPrompt));
             Register("Microsoft.IntegerPrompt", typeof(IntegerPrompt));
             Register("Microsoft.FloatPrompt", typeof(FloatPrompt));
 
             // Recognizers
-            Register("Microsoft.LuisRecognizer", typeof(LuisRecognizer), new LuisRecognizerLoader());
+            Register("Microsoft.LuisRecognizer", typeof(LuisRecognizer), new LuisRecognizerLoader(TypeFactory.Configuration));
             Register("Microsoft.RegexRecognizer", typeof(RegexRecognizer));
 
             // Storage
             Register("Microsoft.MemoryStorage", typeof(MemoryStorage));
+        }
+
+        private static void EnsureConfig()
+        {
+            if (TypeFactory.Configuration == null)
+            {
+                throw new ArgumentNullException($"TypeFactory.Configuration is not set to IConfiguration instance");
+            }
         }
     }
 }

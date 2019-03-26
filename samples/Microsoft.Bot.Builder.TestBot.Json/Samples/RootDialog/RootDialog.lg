@@ -1,5 +1,5 @@
 # RootDialog.help
 - ```
     I demonstrate different declarative sample scenarios.
-    [Suggestions=Fallback|WaitForInput|TextPrompt|WelcomeRule|IntentRule|CallDialog|ExternalLanguage|Cancel]
+    [Suggestions=DefaultRule|WaitForInput|TextPrompt|WelcomeRule|IntentRule|CallDialog|ExternalLanguage|Cancel]
     ```

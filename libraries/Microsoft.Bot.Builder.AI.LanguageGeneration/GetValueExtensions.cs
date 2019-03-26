@@ -36,28 +36,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
         public object GetValueX(object instance, object property)
         {
-            try
-            {
-                // EvaluateTemplate with the auto property binder first
-              
-                var result = PropertyBinder.Auto(instance, property);
-                return result;
-            }
-            catch (Exception ex)
-            {
-                // If sth wrong, we chech this indentifier is a templateName or not
-                // Which means, normal property has high priority here
-                if (property is string s)
-                {
-                    if (_evaluator.Context.TemplateContexts.ContainsKey(s))
-                    {
-                        return s;
-                    }
-                }
-                return ((dynamic)instance)[property];
-            }
-
-            
+            // LG engine will not do nothing special on GetValue anymore
+            return  PropertyBinder.Auto(instance, property);
         }
     }
 }

@@ -130,22 +130,30 @@ namespace Microsoft.Bot.Builder.Dialogs
                             }
                         }
 
-                        if (!String.IsNullOrEmpty(line) && string.IsNullOrEmpty(activity.Text))
+                        if (!String.IsNullOrEmpty(line))
                         {
                             var i = line.IndexOf("||");
                             if (i > 0)
                             {
-                                activity.Text = line.Substring(0, i).Trim();
-                                activity.Speak = line.Substring(i + 2).Trim();
+                                activity.Text += line.Substring(0, i).Trim();
+                                activity.Speak += line.Substring(i + 2).Trim();
                             }
                             else
                             {
-                                activity.Text = activity.Speak = line.Trim();
+                                activity.Text += line.Trim();
+                                activity.Speak += line.Trim();
+                            }
+
+                            if (iLine != (lines.Length - 1))
+                            {
+                                activity.Text += "\n";
+                                activity.Speak += "\n";
                             }
                         }
                         break;
                 }
             }
+
             return activity;
         }
 
