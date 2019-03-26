@@ -258,11 +258,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<DialogTurnResult> ReplaceDialogAsync(string dialogId, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            // Pop stack
-            if (Stack.Any())
-            {
-                Stack.RemoveAt(0);
-            }
+            // End the current dialog and giving the reason.
+            await EndActiveDialogAsync(DialogReason.ReplaceCalled, cancellationToken).ConfigureAwait(false);
 
             // Start replacement dialog
             return await BeginDialogAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
