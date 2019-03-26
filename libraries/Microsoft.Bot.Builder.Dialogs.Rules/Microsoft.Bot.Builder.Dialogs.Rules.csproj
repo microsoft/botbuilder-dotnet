@@ -54,6 +54,7 @@
 
   <ItemGroup>
     <None Remove="Schemas\Dialogs\Microsoft.AdaptiveDialog.schema" />
+    <None Remove="Schemas\Recognizers\Microsoft.MultiLanguageRecognizers.schema" />
     <None Remove="Schemas\Recognizers\Microsoft.RegexRecognizer.schema" />
     <None Remove="Schemas\Rules\Microsoft.BeginDialogRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.DefaultRule.schema" />
@@ -79,6 +80,7 @@
   <ItemGroup>
     <Content Include="Schemas\Dialogs\Microsoft.AdaptiveDialog.schema" />
     <Content Include="Schemas\Microsoft.IRule.schema" />
+    <Content Include="Schemas\Recognizers\Microsoft.MultiLanguageRecognizers.schema" />
     <Content Include="Schemas\Recognizers\Microsoft.RegexRecognizer.schema" />
     <Content Include="Schemas\Rules\Microsoft.Rule.schema" />
     <Content Include="Schemas\Rules\Microsoft.BeginDialogRule.schema" />
