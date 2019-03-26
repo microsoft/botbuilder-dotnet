@@ -22,6 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public List<DialogInstance> DialogStack { get; set; }
 
         public Dictionary<string, object> ConversationState { get; set; }
+
         public Dictionary<string, object> UserState { get; set; }
     }
 }
