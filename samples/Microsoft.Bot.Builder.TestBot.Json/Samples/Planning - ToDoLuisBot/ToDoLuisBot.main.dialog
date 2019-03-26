@@ -1,50 +1,50 @@
 {
-  "$schema": "../../app.schema",
-  "$type": "Microsoft.AdaptiveDialog",
-  "$id": "root",
-  "recognizer": {
-    "$type": "Microsoft.LuisRecognizer",
-    "applicationId": "e4b3cf81-d69c-4323-9374-707655ba9703",
-    "endpointKey": "95140545afd44a1997e2eaf47007fa7b",
-    "endpoint": "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/e4b3cf81-d69c-4323-9374-707655ba9703?verbose=true&timezoneOffset=-360&subscription-key=95140545afd44a1997e2eaf47007fa7b&q="
-  },
-  "rules": [
-    {
-      "$type": "Microsoft.WelcomeRule",
-      "steps": [
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "$id": "root",
+    "recognizer": {
+        "$type": "Microsoft.LuisRecognizer",
+        "applicationId": "{settings.ToDoLuisBot.LuisRecognizer.applicationId}",
+        "endpointKey": "{settings.ToDoLuisBot.LuisRecognizer.endpointKey}",
+        "endpoint": "{settings.ToDoLuisBot.LuisRecognizer.endpoint}"
+    },
+    "rules": [
         {
-          "$type": "Microsoft.SendActivity",
-          "activity": "Hi! I'm a ToDo bot. Say \"add a todo called first one\" to get started."
+            "$type": "Microsoft.WelcomeRule",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Hi! I'm a ToDo bot. Say \"add a todo called first one\" to get started."
+                }
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "AddToDo",
+            "steps": [
+                "ToDoLuisBot.AddToDo"
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "DeleteToDo",
+            "steps": [
+                "ToDoLuisBot.DeleteToDo"
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "ShowToDo",
+            "steps": [
+                "ToDoLuisBot.ShowToDos"
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "ClearToDo",
+            "steps": [
+                "ToDoLuisBot.ClearToDos"
+            ]
         }
-      ]
-    },
-    {
-      "$type": "Microsoft.IntentRule",
-      "intent": "AddToDo",
-      "steps": [
-        "ToDoLuisBot.AddToDo"
-      ]
-    },
-    {
-      "$type": "Microsoft.IntentRule",
-      "intent": "DeleteToDo",
-      "steps": [
-        "ToDoLuisBot.DeleteToDo"
-      ]
-    },
-    {
-      "$type": "Microsoft.IntentRule",
-      "intent": "ShowToDo",
-      "steps": [
-        "ToDoLuisBot.ShowToDos"
-      ]
-    },
-    {
-      "$type": "Microsoft.IntentRule",
-      "intent": "ClearToDo",
-      "steps": [
-        "ToDoLuisBot.ClearToDos"
-      ]
-    }
-  ]
+    ]
 }

@@ -348,8 +348,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                     UserState = storedState.UserState,
                     DialogStack = storedState.DialogStack
                 },
-                storedState.ConversationState,
-                storedState.UserState);
+                conversationState: storedState.ConversationState,
+                userState: storedState.UserState);
 
             // Execute component
             var result = await dc.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);

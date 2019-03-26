@@ -46,8 +46,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return result;
             }
 
-            return null;
+            throw new Exception("There is no global ILanguageGenerator registered with the application! are you missing a .Use(new RegisterClasMiddleware(new LanguageGenerator())); in your middleware?");
         }
-
+        
     }
 }

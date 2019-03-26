@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
             {
                 throw new ArgumentNullException(JsonConvert.SerializeObject(jsonObject));
             }
-            T result = Factory.Build<T>(typeName, jsonObject, serializer);
+            T result = TypeFactory.Build<T>(typeName, jsonObject, serializer);
 
             return result;
         }

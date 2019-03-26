@@ -24,8 +24,8 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         
         public TestBot(TestBotAccessors accessors, IBotResourceProvider resourceProvider)
         {
-            rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning - ToDoBot\ToDoBot.main.dialog"), resourceProvider);
-            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning - ToDoLuisBot\ToDoLuisBot.main.dialog"), resourceProvider);
+            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning - ToDoBot\ToDoBot.main.dialog"), resourceProvider);
+            rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning - ToDoLuisBot\ToDoLuisBot.main.dialog"), resourceProvider);
             //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\RootDialog\RootDialog.main.dialog"), resourceProvider);
             //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 1 - DefaultRule\DefaultRule.main.dialog"), resourceProvider);
             //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 2 - WaitForInput\WaitForInput.main.dialog"), resourceProvider);
