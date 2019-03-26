@@ -222,11 +222,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 var newExp = m.Value.Substring(1); // remove @
                 if (newExp.StartsWith("{[") && newExp.EndsWith("]}"))
                 {
-                    return EvalTemplateRef(newExp.Substring(2, newExp.Length - 4));//[ ]
+                    return EvalTemplateRef(newExp.Substring(2, newExp.Length - 4))?
+                            .Replace("\"", "\'"); ;//[ ]
                 }
                 else
                 {
-                    return EvalExpression(newExp)?.ToString().Replace("\"","\'");//{ }
+                    return EvalExpression(newExp)?.Replace("\"","\'");//{ }
                 }
             });
 

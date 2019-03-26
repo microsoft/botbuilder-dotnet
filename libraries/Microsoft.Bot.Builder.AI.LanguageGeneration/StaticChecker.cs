@@ -24,10 +24,20 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         {
             var result = new List<LGReportMessage>();
 
-            foreach (var template in Context.TemplateContexts)
+            if(Context.TemplateContexts == null 
+                || Context.TemplateContexts.Count == 0)
             {
-                result.AddRange(Visit(template.Value));
+                result.Add(new LGReportMessage("File must have at least one template definition ",
+                                                LGReportMessageType.WARN));
             }
+            else
+            {
+                foreach (var template in Context.TemplateContexts)
+                {
+                    result.AddRange(Visit(template.Value));
+                }
+            }
+            
 
             return result;
         }
