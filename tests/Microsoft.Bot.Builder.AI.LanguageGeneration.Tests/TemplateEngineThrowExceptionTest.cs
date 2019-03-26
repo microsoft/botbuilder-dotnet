@@ -32,7 +32,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Test("EmptyLGFile.lg"),
             Test("ErrorSeperateChar.lg"),
             Test("MultilineVariation.lg"),
-            Test("OnlyDefaultRule.lg")
+            Test("OnlyDefaultRule.lg"),
+            Test("NoDefaultRule.lg")
 
         };
 

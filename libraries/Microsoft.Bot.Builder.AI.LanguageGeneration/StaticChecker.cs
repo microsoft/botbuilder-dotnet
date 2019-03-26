@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             }
             else
             {
-                //throw WARN
+                result.Add(new LGReportMessage($"It is best to use the DEFAULT field", LGReportMessageType.WARN));
             }
 
             return result;
