@@ -177,18 +177,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<DialogTurnResult> EndDialogAsync(object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            // Pop active dialog off the stack
-            if (Stack.Any())
-            {
-                var dialogId = Stack[0].Id;
-                var dialog = FindDialog(dialogId);
-                if (dialog != null)
-                {
-                    await dialog.EndDialogAsync(this.Context, Stack[0], DialogReason.EndCalled).ConfigureAwait(false);
-                }
-
-                Stack.RemoveAt(0);
-            }
+            await EndActiveDialogAsync(DialogReason.EndCalled, cancellationToken).ConfigureAwait(false);
 
             // Resume previous dialog
             if (ActiveDialog != null)
