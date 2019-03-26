@@ -25,11 +25,11 @@
                     "$type": "Microsoft.ChangeList",
                     "changeType": "Push",
                     "listProperty": "user.todos",
-                    "itemProperty": "user.todo"
+                    "itemProperty": "dialog.todo"
                 },
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "Successfully added a todo named \"{user.todo}\""
+                    "activity": "Successfully added a todo named \"{dialog.todo}\""
                 },
                 {
                     "$type": "Microsoft.ClearProperty",

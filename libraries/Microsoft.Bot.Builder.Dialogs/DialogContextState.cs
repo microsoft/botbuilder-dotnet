@@ -22,16 +22,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         [JsonProperty(PropertyName = "dialog")]
         public Dictionary<string, object> Dialog { get; set; }
 
-        [JsonProperty(PropertyName = "entities")]
-        public Dictionary<string, object> Entities { get; set; }
-
         [JsonProperty(PropertyName = "turn")]
         public Dictionary<string, object> Turn { get; set; }
     }
 
     public class DialogContextState : IDictionary<string, object>
     {
-        private const string TurnEntities = "turn_entities";
         private readonly DialogContext dialogContext;
 
         public DialogContextState(DialogContext dc, Dictionary<string, object> userState, Dictionary<string, object> conversationState, Dictionary<string, object> turnState)
@@ -91,28 +87,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        [JsonProperty(PropertyName = "entities")]
-        public Dictionary<string, object> Entities
-        {
-            get
-            {
-                var entities = dialogContext.Context.TurnState.Get<object>(TurnEntities);
-                if (entities == null)
-                {
-                    entities = new Dictionary<string, object>();
-                    dialogContext.Context.TurnState.Add(TurnEntities, entities);
-                }
-
-                return entities as Dictionary<string, object>;
-            }
-        }
-
         [JsonProperty(PropertyName = "turn")]
         public Dictionary<string, object> Turn { get; set; }
 
-        public ICollection<string> Keys => new[] { "user", "conversation", "dialog", "turn", "entities" };
+        public ICollection<string> Keys => new[] { "user", "conversation", "dialog", "turn" };
 
-        public ICollection<object> Values => new[] { User, Conversation, Dialog, Turn, Entities };
+        public ICollection<object> Values => new[] { User, Conversation, Dialog, Turn };
 
         public int Count => 3;
 
@@ -248,9 +228,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                     return true;
                 case "turn":
                     value = this.Turn;
-                    return true;
-                case "entities":
-                    value = this.Entities;
                     return true;
             }
 

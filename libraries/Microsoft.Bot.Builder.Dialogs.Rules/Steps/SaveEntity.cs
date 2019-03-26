@@ -27,9 +27,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (dc.State.Entities.ContainsKey(Entity))
+            if (dc.State.Turn.ContainsKey(Entity))
             {
-                var values = dc.State.Entities[Entity];
+                var values = dc.State.Turn[Entity];
                 if (values.GetType() == typeof(JArray))
                 {
                     dc.State.SetValue(Property, ((JArray)values)[0]);
