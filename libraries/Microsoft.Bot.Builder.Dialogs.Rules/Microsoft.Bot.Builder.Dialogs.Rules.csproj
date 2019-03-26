@@ -73,7 +73,6 @@
     <None Remove="Schemas\Steps\Microsoft.IfProperty.schema" />
     <None Remove="Schemas\Steps\Microsoft.SaveEntity.schema" />
     <None Remove="Schemas\Steps\Microsoft.SendActivity.schema" />
-    <None Remove="Schemas\Steps\Microsoft.SendList.schema" />
     <None Remove="Schemas\Steps\Microsoft.WaitForInput.schema" />
   </ItemGroup>
   
@@ -91,7 +90,6 @@
     <Content Include="Schemas\Rules\Microsoft.ReplacePlanRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.WelcomeRule.schema" />
     <Content Include="Schemas\Steps\Microsoft.HttpRequest.schema" />
-    <Content Include="Schemas\Steps\Microsoft.SendList.schema" />
     <Content Include="Schemas\Steps\Microsoft.SaveEntity.schema" />
     <Content Include="Schemas\Steps\Microsoft.ChangeList.schema" />
     <Content Include="Schemas\Steps\Microsoft.CallDialog.schema" />

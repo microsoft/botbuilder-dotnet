@@ -29,7 +29,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
         private TestFlow CreateFlow(AdaptiveDialog ruleDialog, ConversationState convoState, UserState userState)
         {
-            var botResourceManager = new BotResourceManager();
+            string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, $@"..\..\..\"));
+            var botResourceManager = new BotResourceManager()
+                                     .AddFolderResources(projPath);
             var lg = new LGLanguageGenerator(botResourceManager);
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
@@ -144,14 +146,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             OutputBinding = "dialog.todo"
                         },
                         new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "dialog.todo"),
-                        new SendList("user.todos"),
+                        new SendActivity("[ShowTodo]"),
                         new TextPrompt()
                         {
                             InitialPrompt = new ActivityTemplate("Please add an item to todos."),
                             OutputBinding = "dialog.todo"
                         },
                         new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "dialog.todo"),
-                        new SendList("user.todos"),
+                        new SendActivity("[ShowTodo]"),
 
                         // Remove item
                         new TextPrompt() {
@@ -159,7 +161,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             OutputBinding = "dialog.todo"
                         },
                         new ChangeList(ChangeList.ChangeListType.Remove, "user.todos", "dialog.todo"),
-                        new SendList("user.todos"),
+                        new SendActivity("[ShowTodo]"),
 
                         // Add item and pop item
                         new TextPrompt() {
@@ -173,18 +175,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             OutputBinding = "dialog.todo"
                         },
                         new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "dialog.todo"),
-                        new SendList("user.todos"),
+                        new SendActivity("[ShowTodo]"),
 
                         new ChangeList(ChangeList.ChangeListType.Pop, "user.todos"),
-                        new SendList("user.todos"),
+                        new SendActivity("[ShowTodo]"),
 
                         // Take item
                         new ChangeList(ChangeList.ChangeListType.Take, "user.todos"),
-                        new SendList("user.todos"),
+                        new SendActivity("[ShowTodo]"),
 
                         // Clear list
                         new ChangeList(ChangeList.ChangeListType.Clear, "user.todos"),
-                        new SendList("user.todos")
+                        new SendActivity("[ShowTodo]"),
                     })
             });
 
@@ -192,20 +194,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             .Send("hi")
                 .AssertReply("Please add an item to todos.")
             .Send("todo1")
-                .AssertReply("- todo1\n")
+                .AssertReply("Your most recent 1 tasks are\n* todo1\n")
                 .AssertReply("Please add an item to todos.")
             .Send("todo2")
-                .AssertReply("- todo1\n- todo2\n")
+                .AssertReply("Your most recent 2 tasks are\n* todo1\n* todo2\n")
                 .AssertReply("Enter a item to remove.")
             .Send("todo2")
-                .AssertReply("- todo1\n")
+                .AssertReply("Your most recent 1 tasks are\n* todo1\n")
                 .AssertReply("Please add an item to todos.")
             .Send("todo3")
                 .AssertReply("Please add an item to todos.")
             .Send("todo4")
-                .AssertReply("- todo1\n- todo3\n- todo4\n")
-                .AssertReply("- todo1\n- todo3\n")
-                .AssertReply("- todo3\n")
+                .AssertReply("Your most recent 3 tasks are\n* todo1\n* todo3\n* todo4\n")
+                .AssertReply("Your most recent 2 tasks are\n* todo1\n* todo3\n")
+                .AssertReply("Your most recent 1 tasks are\n* todo3\n")
             .StartTestAsync();
         }
 
