@@ -55,7 +55,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var templateNameContext = context.templateNameLine();
             if (templateNameContext.templateName().GetText().Equals(CurrentTarget().TemplateName))
             {
-                return Visit(context.templateBody());
+                if (context.templateBody() != null)
+                {
+                    return Visit(context.templateBody());
+                }
             }
             throw new Exception("template name match failed");
         }
@@ -85,12 +88,19 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var caseRules = context.conditionalTemplateBody().caseRule();
             foreach (var caseRule in caseRules)
             {
-                var conditionExpression = caseRule.caseCondition().EXPRESSION().GetText();
-                var childConditionResult = AnalyzeExpression(conditionExpression);
-                result.AddRange(childConditionResult);
+                if (caseRule.caseCondition().EXPRESSION() != null
+                    && caseRule.caseCondition().EXPRESSION().Length >= 0)
+                {
+                    var conditionExpression = caseRule.caseCondition().EXPRESSION(0).GetText();
+                    var childConditionResult = AnalyzeExpression(conditionExpression);
+                    result.AddRange(childConditionResult);
+                }
 
-                var childTemplateBodyResult = Visit(caseRule.normalTemplateBody());
-                result.AddRange(childTemplateBodyResult);
+                if (caseRule.normalTemplateBody() != null)
+                {
+                    var childTemplateBodyResult = Visit(caseRule.normalTemplateBody());
+                    result.AddRange(childTemplateBodyResult);
+                }
             }
 
             if (context?.conditionalTemplateBody()?.defaultRule() != null)
@@ -153,11 +163,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             {
                 // EvaluateTemplate all arguments using ExpressoinEngine
                 var argsEndPos = exp.LastIndexOf(')');
-                if (argsEndPos < 0 || argsEndPos < argsStartPos + 1)
-                {
-                    throw new Exception($"Not a valid template ref: {exp}");
-                }
-
+              
                 var templateName = exp.Substring(0, argsStartPos);
 
                 return AnalyzeTemplate(templateName);

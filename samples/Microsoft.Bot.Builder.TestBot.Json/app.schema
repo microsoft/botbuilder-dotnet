@@ -91,9 +91,19 @@
             "$ref": "#/definitions/Microsoft.IntentRule"
         },
         {
+            "title": "Microsoft.LanguagePolicy",
+            "description": "This represents a dialog which gathers a DateTime in a specified range",
+            "$ref": "#/definitions/Microsoft.LanguagePolicy"
+        },
+        {
             "title": "Microsoft.LuisRecognizer",
             "description": "LUIS recognizer.",
             "$ref": "#/definitions/Microsoft.LuisRecognizer"
+        },
+        {
+            "title": "Microsoft.MultiLanguageRecognizers",
+            "description": "Recognizer which allows you to configure the recognizer per language, and to define the policy for using them",
+            "$ref": "#/definitions/Microsoft.MultiLanguageRecognizers"
         },
         {
             "title": "Microsoft.QnaMakerRecognizer",
@@ -1198,6 +1208,22 @@
                 }
             ]
         },
+        "Microsoft.ILanguagePolicy": {
+            "title": "Microsoft Language Policy",
+            "description": "Union of components which implement the ILanguagePolicy interface",
+            "$role": "unionType",
+            "oneOf": [
+                {
+                    "title": "Microsoft.LanguagePolicy",
+                    "description": "This represents a dialog which gathers a DateTime in a specified range",
+                    "$ref": "#/definitions/Microsoft.LanguagePolicy"
+                },
+                {
+                    "type": "string",
+                    "title": "string"
+                }
+            ]
+        },
         "Microsoft.IRecognizer": {
             "title": "Microsoft IRecognizer",
             "description": "Union of components which implement the IRecognizer interface",
@@ -1207,6 +1233,11 @@
                     "title": "Microsoft.LuisRecognizer",
                     "description": "LUIS recognizer.",
                     "$ref": "#/definitions/Microsoft.LuisRecognizer"
+                },
+                {
+                    "title": "Microsoft.MultiLanguageRecognizers",
+                    "description": "Recognizer which allows you to configure the recognizer per language, and to define the policy for using them",
+                    "$ref": "#/definitions/Microsoft.MultiLanguageRecognizers"
                 },
                 {
                     "title": "Microsoft.QnaMakerRecognizer",
@@ -1647,6 +1678,42 @@
                 }
             ]
         },
+        "Microsoft.LanguagePolicy": {
+            "$role": "unionType(Microsoft.ILanguagePolicy)",
+            "title": "Language Policy",
+            "description": "This represents a dialog which gathers a DateTime in a specified range",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.LanguagePolicy"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "$type"
+            ]
+        },
         "Microsoft.LuisRecognizer": {
             "$role": "unionType(Microsoft.IRecognizer)",
             "title": "LUIS Recognizer",
@@ -1707,6 +1774,72 @@
                         "applicationId",
                         "endpoint",
                         "endpointKey"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.MultiLanguageRecognizers": {
+            "$role": "unionType(Microsoft.IRecognizer)",
+            "title": "Multi Language Recognizer",
+            "description": "Recognizer which allows you to configure the recognizer per language, and to define the policy for using them",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.MultiLanguageRecognizers"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "languagePolicy": {
+                    "$type": "Microsoft.ILanguagePolicy",
+                    "type": "object",
+                    "title": "Language Policy",
+                    "description": "Defines languages to try per language.",
+                    "$ref": "#/definitions/Microsoft.ILanguagePolicy"
+                },
+                "recognizers": {
+                    "type": "object",
+                    "title": "Recognizers",
+                    "description": "Map of language -> IRecognizer",
+                    "additionalProperties": {
+                        "$type": "Microsoft.IRecognizer",
+                        "$ref": "#/definitions/Microsoft.IRecognizer"
+                    }
+                }
+            },
+            "required": [
+                "$type"
+            ],
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "recognizers"
                     ]
                 }
             ]

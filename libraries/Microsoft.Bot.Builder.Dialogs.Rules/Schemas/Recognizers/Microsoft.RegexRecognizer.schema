@@ -9,7 +9,9 @@
             "type": "object",
             "title": "RegEx patterns to intents",
             "description": "Pattern->Intents mappings",
-            "additionalProperties": { "type": "string" }
+            "additionalProperties": {
+                "type": "string"
+            }
         }
     },
     "required": [

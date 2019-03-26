@@ -8,7 +8,8 @@
             "DeleteIntent": "(?i)(?:delete|remove|clear) .*(?:to-do|todo|task)(?: )?(?:named (?<title>.*))?",
             "ShowIntent": "(?i)(?:show|see|view) .*(?:to-do|todo|task)|(?i)(?:show|see|view)",
             "ClearIntent": "(?i)(?:delete|remove|clear) (?:all|every) (?:to-dos|todos|tasks)",
-            "HelpIntent": "(?i)help"
+            "HelpIntent": "(?i)help",
+            "CancelIntent": "(?i)cancel|never mind"
         }
     },
     "rules": [
@@ -18,6 +19,16 @@
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "Hi! I'm a ToDo bot. Say \"add a todo named first\" to get started."
+                }
+            ]
+        },
+        {
+            "$type": "Microsoft.EventRule",
+            "events": [ "cancelDialog" ],
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "ok."
                 }
             ]
         },
@@ -57,7 +68,16 @@
                     "$type": "Microsoft.SendActivity",
                     "activity": "I can add a todo, show todos, remove a todo, and clear all todos\n"
                 }
-           ]
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "CancelIntent",
+            "steps": [
+                {
+                    "$type": "Microsoft.CancelDialog"
+                }
+            ]
         }
     ]
 }
