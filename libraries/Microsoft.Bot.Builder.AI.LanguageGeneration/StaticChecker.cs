@@ -93,28 +93,36 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var result = new List<LGReportMessage>();
 
             var caseRules = context.conditionalTemplateBody().caseRule();
-            foreach (var caseRule in caseRules)
+            if(caseRules == null || caseRules.Length == 0)
             {
-                if (caseRule.caseCondition().EXPRESSION() == null
-                    || caseRule.caseCondition().EXPRESSION().Length == 0)
+                result.Add(new LGReportMessage($"Only default condition will result in a warning.", LGReportMessageType.WARN));
+            }
+            else
+            {
+                foreach (var caseRule in caseRules)
                 {
-                    result.Add(new LGReportMessage($"Condition {caseRule.caseCondition().GetText()} MUST be enclosed in curly brackets."));
-                }
-                else
-                {
-                    result.AddRange(CheckExpression(caseRule.caseCondition().EXPRESSION(0).GetText()));
-                }
-                
+                    if (caseRule.caseCondition().EXPRESSION() == null
+                        || caseRule.caseCondition().EXPRESSION().Length == 0)
+                    {
+                        result.Add(new LGReportMessage($"Condition {caseRule.caseCondition().GetText()} MUST be enclosed in curly brackets."));
+                    }
+                    else
+                    {
+                        result.AddRange(CheckExpression(caseRule.caseCondition().EXPRESSION(0).GetText()));
+                    }
 
-                if (caseRule.normalTemplateBody() == null)
-                {
-                    result.Add(new LGReportMessage($"Case {caseRule.GetText()} should have template body"));
-                }
-                else
-                {
-                    result.AddRange(Visit(caseRule.normalTemplateBody()));
+
+                    if (caseRule.normalTemplateBody() == null)
+                    {
+                        result.Add(new LGReportMessage($"Case {caseRule.GetText()} should have template body"));
+                    }
+                    else
+                    {
+                        result.AddRange(Visit(caseRule.normalTemplateBody()));
+                    }
                 }
             }
+            
 
             var defaultRule = context?.conditionalTemplateBody()?.defaultRule();
 

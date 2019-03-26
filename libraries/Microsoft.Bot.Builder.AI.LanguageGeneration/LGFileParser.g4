@@ -50,6 +50,7 @@ normalTemplateString
 
 conditionalTemplateBody
     : caseRule+ defaultRule?
+    | defaultRule
     ;
 
 caseRule
