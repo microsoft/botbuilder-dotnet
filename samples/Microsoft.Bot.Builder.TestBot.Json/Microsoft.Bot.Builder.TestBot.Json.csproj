@@ -7,7 +7,7 @@
   <ItemGroup>
     <None Remove="en-us.lg" />
     <None Remove="main.dialog" />
-    <None Remove="Samples\Planning - 12 GithubIssueBot\GithubIssueBot.main.dialog" />
+    <None Remove="Samples\Planning 12 - GithubIssueBot\GithubIssueBot.main.dialog" />
     <None Remove="Samples\Planning 1 - DefaultRule\DefaultRule.main.dialog" />
     <None Remove="Samples\Planning 2 - WaitForInput\WaitforInput.main.dialog" />
     <None Remove="Samples\Planning 3 - IfProperty\IfProperty.main.dialog" />
@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Samples\Planning - 12 GithubIssueBot\GithubIssueBot.main.dialog" />
+    <Content Include="Samples\Planning 12 - GithubIssueBot\GithubIssueBot.main.dialog" />
     <Content Include="Samples\Planning 1 - DefaultRule\DefaultRule.main.dialog" />
     <Content Include="Samples\RootDialog\RootDialog.lg" />
     <Content Include="Samples\RootDialog\RootDialog.main.dialog" />
