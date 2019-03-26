@@ -68,6 +68,10 @@ COMMA
   : ','
   ;
 
+INVALID_SEPERATE_CHAR
+  : [;]
+  ;
+
 mode TEMPLATE_BODY_MODE;
 
 // a little tedious on the rules, a big improvement on portability

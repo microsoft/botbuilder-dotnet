@@ -30,6 +30,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Test("NoTemplateRef.lg"),
             Test("TemplateParamsNotMatchArgsNum.lg"),
             Test("EmptyLGFile.lg"),
+            Test("ErrorSeperateChar.lg")
         };
 
 

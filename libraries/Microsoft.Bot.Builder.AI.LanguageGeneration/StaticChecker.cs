@@ -64,6 +64,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 {
                     result.Add(new LGReportMessage($"parameters: {parameters.GetText()} format error"));
                 }
+
+                var invalidSeperateCharacters = parameters.INVALID_SEPERATE_CHAR();
+                if(invalidSeperateCharacters != null 
+                    && invalidSeperateCharacters.Length > 0)
+                {
+                    result.Add(new LGReportMessage("Parameters for templates must be separated by comma."));
+                }
             }
             return result;
         }
