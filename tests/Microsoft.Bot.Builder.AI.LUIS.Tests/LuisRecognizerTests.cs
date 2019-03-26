@@ -568,17 +568,23 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             var luisApp = new LuisApplication(endpoint);
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var adapter = new NullAdapter();
+            var options = new LuisPredictionOptions
+            {
+                TelemetryClient = telemetryClient.Object,
+                LogPersonalInformation = false,
+            };
+
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
                 Text = "please book from May 5 to June 6",
                 Recipient = new ChannelAccount(),           // to no where
                 From = new ChannelAccount(),                // from no one
-                Conversation = new ConversationAccount()    // on no conversation
+                Conversation = new ConversationAccount(),   // on no conversation
             };
 
             var turnContext = new TurnContext(adapter, activity);
-            var recognizer = new LuisRecognizer(luisApp, null, false, clientHandler, telemetryClient.Object);
+            var recognizer = new LuisRecognizer(luisApp, options, false, clientHandler);
 
             // Act
             var additionalProperties = new Dictionary<string, string>
@@ -605,6 +611,98 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
         [TestMethod]
         [TestCategory("Telemetry")]
+        public async Task Telemetry_PiiLoggedAsync()
+        {
+            // Arrange
+            // Note this is NOT a real LUIS application ID nor a real LUIS subscription-key
+            // theses are GUIDs edited to look right to the parsing and validation code.
+            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
+            var clientHandler = new EmptyLuisResponseClientHandler();
+            var luisApp = new LuisApplication(endpoint);
+            var telemetryClient = new Mock<IBotTelemetryClient>();
+            var adapter = new NullAdapter();
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Message,
+                Text = "please book from May 5 to June 6",
+                Recipient = new ChannelAccount(),           // to no where
+                From = new ChannelAccount(),                // from no one
+                Conversation = new ConversationAccount(),   // on no conversation
+            };
+
+            var turnContext = new TurnContext(adapter, activity);
+            var options = new LuisPredictionOptions
+            {
+                TelemetryClient = telemetryClient.Object,
+                LogPersonalInformation = true,
+            };
+            var recognizer = new LuisRecognizer(luisApp, options, false, clientHandler);
+
+            // Act
+            var result = await recognizer.RecognizeAsync(turnContext, null).ConfigureAwait(false);
+
+            // Assert
+            Assert.AreEqual(telemetryClient.Invocations.Count, 1);
+            Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0].ToString(), "LuisResult");
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).Count == 8);
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("applicationId"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("intent"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("intentScore"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("intent2"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("intentScore2"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("fromId"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("entities"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("question"));
+        }
+
+        [TestMethod]
+        [TestCategory("Telemetry")]
+        public async Task Telemetry_NoPiiLoggedAsync()
+        {
+            // Arrange
+            // Note this is NOT a real LUIS application ID nor a real LUIS subscription-key
+            // theses are GUIDs edited to look right to the parsing and validation code.
+            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
+            var clientHandler = new EmptyLuisResponseClientHandler();
+            var luisApp = new LuisApplication(endpoint);
+            var telemetryClient = new Mock<IBotTelemetryClient>();
+            var adapter = new NullAdapter();
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Message,
+                Text = "please book from May 5 to June 6",
+                Recipient = new ChannelAccount(),           // to no where
+                From = new ChannelAccount(),                // from no one
+                Conversation = new ConversationAccount(),   // on no conversation
+            };
+
+            var turnContext = new TurnContext(adapter, activity);
+            var options = new LuisPredictionOptions
+            {
+                TelemetryClient = telemetryClient.Object,
+                LogPersonalInformation = false,
+            };
+            var recognizer = new LuisRecognizer(luisApp, options, false, clientHandler);
+
+            // Act
+            var result = await recognizer.RecognizeAsync(turnContext, null).ConfigureAwait(false);
+
+            // Assert
+            Assert.AreEqual(telemetryClient.Invocations.Count, 1);
+            Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0].ToString(), "LuisResult");
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).Count == 7);
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("applicationId"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("intent"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("intentScore"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("intent2"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("intentScore2"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("fromId"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("entities"));
+            Assert.IsFalse(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("question"));
+        }
+
+        [TestMethod]
+        [TestCategory("Telemetry")]
         public async Task Telemetry_OverrideOnDeriveAsync()
         {
             // Arrange
@@ -625,7 +723,13 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             };
 
             var turnContext = new TurnContext(adapter, activity);
-            var recognizer = new TelemetryOverrideRecognizer(telemetryClient.Object, luisApp, null, false, false, clientHandler);
+
+            var options = new LuisPredictionOptions
+            {
+                TelemetryClient = telemetryClient.Object,
+                LogPersonalInformation = false,
+            };
+            var recognizer = new TelemetryOverrideRecognizer(telemetryClient.Object, luisApp, options, false, false, clientHandler);
 
             var additionalProperties = new Dictionary<string, string>
             {
@@ -670,7 +774,13 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             };
 
             var turnContext = new TurnContext(adapter, activity);
-            var recognizer = new OverrideFillRecognizer(telemetryClient.Object, luisApp, null, false, false, clientHandler);
+
+            var options = new LuisPredictionOptions
+            {
+                TelemetryClient = telemetryClient.Object,
+                LogPersonalInformation = false,
+            };
+            var recognizer = new OverrideFillRecognizer(telemetryClient.Object, luisApp, options, false, false, clientHandler);
 
             var additionalProperties = new Dictionary<string, string>
             {
@@ -726,7 +836,13 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             };
 
             var turnContext = new TurnContext(adapter, activity);
-            var recognizer = new LuisRecognizer(luisApp, null, false, clientHandler, telemetryClient.Object);
+            var options = new LuisPredictionOptions
+            {
+                TelemetryClient = telemetryClient.Object,
+                LogPersonalInformation = false,
+            };
+
+            var recognizer = new LuisRecognizer(luisApp, options, false, clientHandler);
 
             // Act
             var result = await recognizer.RecognizeAsync(turnContext, CancellationToken.None).ConfigureAwait(false);
@@ -763,7 +879,12 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             };
 
             var turnContext = new TurnContext(adapter, activity);
-            var recognizer = new LuisRecognizer(luisApp, null, false, clientHandler, telemetryClient.Object);
+            var options = new LuisPredictionOptions
+            {
+                TelemetryClient = telemetryClient.Object,
+                LogPersonalInformation = false,
+            };
+            var recognizer = new LuisRecognizer(luisApp, options, false, clientHandler);
 
             // Act
             // Use a class the converts the Recognizer Result..
@@ -778,8 +899,6 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("fromId"));
             Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("entities"));
         }
-
-
 
         [TestMethod]
         [TestCategory("Telemetry")]
@@ -803,7 +922,13 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             };
 
             var turnContext = new TurnContext(adapter, activity);
-            var recognizer = new LuisRecognizer(luisApp, null, false, clientHandler, telemetryClient.Object);
+
+            var options = new LuisPredictionOptions
+            {
+                TelemetryClient = telemetryClient.Object,
+                LogPersonalInformation = false,
+            };
+            var recognizer = new LuisRecognizer(luisApp, options, false, clientHandler);
 
             // Act
             var additionalProperties = new Dictionary<string, string>
@@ -961,7 +1086,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
     public class TelemetryOverrideRecognizer : LuisRecognizer
     {
         public TelemetryOverrideRecognizer(IBotTelemetryClient telemetryClient, LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, bool logPersonalInformation = false, HttpClientHandler clientHandler = null)
-           : base(application, predictionOptions, includeApiResults, clientHandler, telemetryClient)
+           : base(application, predictionOptions, includeApiResults, clientHandler)
         {
             LogPersonalInformation = logPersonalInformation;
         }
@@ -988,7 +1113,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
     public class OverrideFillRecognizer : LuisRecognizer
     {
         public OverrideFillRecognizer(IBotTelemetryClient telemetryClient, LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, bool logPersonalInformation = false, HttpClientHandler clientHandler = null)
-           : base(application, predictionOptions, includeApiResults, clientHandler, telemetryClient)
+           : base(application, predictionOptions, includeApiResults, clientHandler)
         {
             LogPersonalInformation = logPersonalInformation;
         }

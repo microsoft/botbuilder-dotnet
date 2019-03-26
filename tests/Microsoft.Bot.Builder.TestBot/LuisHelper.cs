@@ -27,7 +27,7 @@ namespace Microsoft.BotBuilderSamples
                     "https://" + configuration["LuisAPIHostName"]);
 
                 // TODO: fix the ambiguity introduced in 4.4.n
-                var recognizer = new LuisRecognizer(luisApplication, null, false, null, null, false);
+                var recognizer = new LuisRecognizer(luisApplication, null, false, null);
 
                 // The actual call to LUIS
                 var recognizerResult = await recognizer.RecognizeAsync(turnContext, cancellationToken);
