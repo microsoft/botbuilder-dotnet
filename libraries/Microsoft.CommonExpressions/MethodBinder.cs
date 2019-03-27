@@ -46,6 +46,25 @@ namespace Microsoft.Expressions
             {"replace", BuildinFunctions.Replace},
             {"replaceIgnoreCase", BuildinFunctions.ReplaceIgnoreCase},
             {"split", BuildinFunctions.Split},
+            {"substring", BuildinFunctions.SubString},
+            {"toLower", BuildinFunctions.ToLower},
+            {"toUpper", BuildinFunctions.ToUpper},
+            {"trim", BuildinFunctions.Trim},
+            {"if", BuildinFunctions.If},//Similar to a ? b:c;
+            {"rand", BuildinFunctions.Rand},
+            {"sum", BuildinFunctions.Sum},
+            {"average", BuildinFunctions.Average},
+            {"addDays", BuildinFunctions.AddDays},
+            {"addHours", BuildinFunctions.AddHours},
+            {"addMinutes", BuildinFunctions.AddMinutes},
+            {"addSeconds", BuildinFunctions.AddSeconds},
+            {"dayOfWeek", BuildinFunctions.DayOfWeek},// sunday is 0
+            {"dayOfMonth", BuildinFunctions.DayOfMonth},
+            {"dayOfYear", BuildinFunctions.DayOfYear},
+            {"month", BuildinFunctions.Month},
+            {"date", BuildinFunctions.Date},
+            {"year", BuildinFunctions.Year},
+            {"utcNow", BuildinFunctions.UtcNow},
         };
 
         /// <summary>

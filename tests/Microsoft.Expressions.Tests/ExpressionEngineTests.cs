@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Antlr4.Runtime;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -58,6 +59,7 @@ namespace Microsoft.Expressions.Tests
             Test("one > 0.5 || two < 1.5", true),
 
             Test("5%2", 1),
+            Test("mod(5,2)", 1),
 
             Test("'string'&'builder'","stringbuilder"),
             Test("hello&world","helloworld"),
@@ -71,6 +73,50 @@ namespace Microsoft.Expressions.Tests
             Test("replaceIgnoreCase(hello, 'L', 'k')","hekko"),
 
             Test("split(hello,'e')",new string[]{ "h","llo"}),
+
+            Test("substring(hello, 0, 10)", "hello"),
+            Test("substring(hello, 0, 3)", "hel"),
+
+            Test("toLower('UpCase')", "upcase"),
+
+            Test("toUpper('lowercase')", "LOWERCASE"),
+
+            Test("trim(' hello ')", "hello"),
+
+            Test("and(!one, !!one)", false),//false && true
+
+            Test("and(!!one, !!one)", true),//true && true
+
+            Test("equals(hello, 'hello')", true),
+            Test("equals(bag.index, 3)", true),
+            Test("equals(bag.index, 2)", false),
+
+            Test("if(!one, 'r1', 'r2')", "r2"),//false
+            Test("if(!!one, 'r1', 'r2')", "r1"),//true
+
+            Test("or(!one, !!one)", true),//false && true
+            Test("or(!one, !one)", false),//false && false
+
+            Test("rand(1, 2)", 1),
+
+            Test("sum(1, 2)", 3),
+            Test("sum(one, two, 3)", 6.0),
+
+            Test("average(1, 2)", 1.5),
+            Test("average(one, two, 3)", 2.0),
+
+            //Date and time function test
+            //init dateTime: new DateTime(2000,1,1,8,0,0)
+            Test("addDays(dateTime, 1)", new DateTime(2000,1,2,8,0,0)),
+            Test("addHours(dateTime, 1)", new DateTime(2000,1,1,9,0,0)),
+            Test("addMinutes(dateTime, 1)", new DateTime(2000,1,1,8,1,0)),
+            Test("addSeconds(dateTime, 1)", new DateTime(2000,1,1,8,0,1)),
+            Test("dayOfMonth(dateTime)", 1),
+            Test("dayOfWeek(dateTime)", 6),//Saturday
+            Test("dayOfYear(dateTime)", 1),
+            Test("month(dateTime)", 1),
+            Test("date(dateTime)", new DateTime(2000,1,1)),
+            Test("year(dateTime)", 2000),
 
             Test("!one", false),
             Test("!!one", true),
@@ -112,7 +158,8 @@ namespace Microsoft.Expressions.Tests
                     index = 3,
                     list = new[] { "red", "blue" }
                 },
-                items = new string[] { "zero", "one", "two" }
+                items = new string[] { "zero", "one", "two" },
+                dateTime = new DateTime(2000, 1, 1, 8, 0, 0)
             };
 
             var parsed = ExpressionEngine.Parse(input);
@@ -141,7 +188,8 @@ namespace Microsoft.Expressions.Tests
                     index = 3,
                     list = new[] { "red", "blue" }
                 },
-                items = new string[] { "zero", "one", "two" }
+                items = new string[] { "zero", "one", "two" },
+                dateTime = new DateTime(2000,1,1,8,0,0)
             };
 
             object actual = null;
