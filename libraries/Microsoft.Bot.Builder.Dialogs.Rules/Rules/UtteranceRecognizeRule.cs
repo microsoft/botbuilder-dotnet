@@ -56,8 +56,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
             var dialogEvent = planning.State.Turn["DialogEvent"] as DialogEvent;
             if (dialogEvent.Value is RecognizerResult recognizerResult)
             {
-                Dictionary<string, object> recognizedEntities = new Dictionary<string, object>();
-                recognizedEntities = recognizerResult.Entities.ToObject<Dictionary<string, object>>();
+                Dictionary<string, object> entitiesRecognized = new Dictionary<string, object>();
+                entitiesRecognized = recognizerResult.Entities.ToObject<Dictionary<string, object>>();
 
                 return new PlanChangeList()
                 {
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
                         this.Intent,
                     },
                     EntitiesMatched = this.Entities,
-                    TurnState = recognizedEntities,
+                    EntitiesRecognized = entitiesRecognized,
                     Steps = Steps.Select(s => new PlanStepState()
                     {
                         DialogStack = new List<DialogInstance>(),

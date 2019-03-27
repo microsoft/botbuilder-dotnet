@@ -67,18 +67,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                 // Apply each queued set of changes
                 foreach (var change in changes)
                 {
-                    if (change.TurnState != null && change.TurnState.Count > 0)
+                    // Save any matched entities for the turn
+                    if (change.EntitiesRecognized != null && change.EntitiesRecognized.Count > 0)
                     {
                         var turnState = this.State.Turn;
-                        foreach(var key in change.TurnState.Keys)
+                        foreach(var entity in change.EntitiesRecognized.Keys)
                         {
-                            if (!turnState.ContainsKey(key))
+                            if (!turnState.ContainsKey(entity))
                             {
-                                turnState.Add(key, change.TurnState[key]);
+                                turnState.Add(entity, change.EntitiesRecognized[entity]);
                             }
                             else
                             {
-                                turnState[key] = change.TurnState[key];
+                                turnState[entity] = change.EntitiesRecognized[entity];
                             }
                         }
                     }
@@ -405,6 +406,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         public List<string> Tags { get; set; }
         public List<string> EntitiesMatched { get; set; }
         public List<string> IntentsMatched { get; set; }
-        public Dictionary<string, object> TurnState { get; set; }
+        public Dictionary<string, object> EntitiesRecognized { get; set; }
     }
 }
