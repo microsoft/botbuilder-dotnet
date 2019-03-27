@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 
@@ -55,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         /// apply.
         /// </remarks>
         /// <returns>True if there were any changes to apply. </returns>
-        public async Task<bool> ApplyChangesAsync()
+        public async Task<bool> ApplyChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             var changes = Plans.Changes;
 
@@ -120,7 +121,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         /// </summary>
         /// <param name="steps">Steps to insert at the beginning of the plan.</param>
         /// <returns>True if a new plan had to be started.</returns>
-        public async Task<bool> DoStepsAsync(List<PlanStepState> steps)
+        public async Task<bool> DoStepsAsync(List<PlanStepState> steps, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Initialize new plan if needed
             bool isNewPlan = Plans.Plan == null;
@@ -137,13 +138,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             // Emit new plan event
             if (isNewPlan)
             {
-                await this.EmitEventAsync(PlanningEvents.PlanStarted.ToString(), null, false);
+                await this.EmitEventAsync(PlanningEvents.PlanStarted.ToString(), null, false, cancellationToken);
             }
 
             return isNewPlan;
         }
 
-        public async Task<bool> DoStepsBeforeTagsAsync(List<string> tags, List<PlanStepState> steps)
+        public async Task<bool> DoStepsBeforeTagsAsync(List<string> tags, List<PlanStepState> steps, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Initialize new plan if needed
             bool isNewPlan = Plans.Plan == null;
@@ -192,13 +193,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             // Emit new plan event
             if (isNewPlan)
             {
-                await this.EmitEventAsync(PlanningEvents.PlanStarted.ToString(), null, false);
+                await this.EmitEventAsync(PlanningEvents.PlanStarted.ToString(), null, false, cancellationToken);
             }
 
             return isNewPlan;
         }
 
-        public async Task<bool> DoStepsLaterAsync(List<PlanStepState> steps)
+        public async Task<bool> DoStepsLaterAsync(List<PlanStepState> steps, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Initialize new plan if needed
             bool isNewPlan = Plans.Plan == null;
@@ -215,13 +216,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             // Emit new plan event
             if (isNewPlan)
             {
-                await this.EmitEventAsync(PlanningEvents.PlanStarted.ToString(), null, false);
+                await this.EmitEventAsync(PlanningEvents.PlanStarted.ToString(), null, false, cancellationToken);
             }
 
             return isNewPlan;
         }
 
-        public async Task<bool> EndPlanAsync(List<PlanStepState> steps = null)
+        public async Task<bool> EndPlanAsync(List<PlanStepState> steps = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var resumePlan = Plans.SavedPlans != null && Plans.SavedPlans.Count > 0;
 
@@ -244,26 +245,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                 }
 
                 // Emit resumption event
-                await this.EmitEventAsync(PlanningEvents.PlanResumed.ToString(), null, true).ConfigureAwait(false);
+                await this.EmitEventAsync(PlanningEvents.PlanResumed.ToString(), null, true, cancellationToken).ConfigureAwait(false);
             }
             else if (Plans.Plan != null)
             {
                 this.Plans.Plan = null;
 
                 // Emit planning ended event
-                await this.EmitEventAsync(PlanningEvents.PlanEnded.ToString(), null, false).ConfigureAwait(false);
+                await this.EmitEventAsync(PlanningEvents.PlanEnded.ToString(), null, false, cancellationToken).ConfigureAwait(false);
             }
 
             return resumePlan;
         }
 
-        public async Task<bool> EndStepAsync()
+        public async Task<bool> EndStepAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             if (Plans.Plan != null && Plans.Plan.Steps.Count > 0)
             {
                 if (Plans.Plan.Steps.Count == 1)
                 {
-                    return await this.EndPlanAsync().ConfigureAwait(false);
+                    return await this.EndPlanAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
@@ -274,7 +275,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             return false;
         }
 
-        public async Task<bool> NewPlanAsync(List<PlanStepState> steps)
+        public async Task<bool> NewPlanAsync(List<PlanStepState> steps, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Save existing plan
             var savePlan = Plans.Plan != null && Plans.Plan.Steps.Count > 0;
@@ -299,15 +300,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
 
             if (savePlan)
             {
-                await this.EmitEventAsync(PlanningEvents.PlanSaved.ToString(), null, false).ConfigureAwait(false);
+                await this.EmitEventAsync(PlanningEvents.PlanSaved.ToString(), null, false, cancellationToken).ConfigureAwait(false);
             }
 
-            await this.EmitEventAsync(PlanningEvents.PlanStarted.ToString(), null, false).ConfigureAwait(false);
+            await this.EmitEventAsync(PlanningEvents.PlanStarted.ToString(), null, false, cancellationToken).ConfigureAwait(false);
 
             return savePlan;
         }
 
-        public async Task<bool> ReplacePlanAsync(List<PlanStepState> steps)
+        public async Task<bool> ReplacePlanAsync(List<PlanStepState> steps, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Update plan
             var planReplaced = Plans.Plan != null && Plans.Plan.Steps.Count > 0;
@@ -318,7 +319,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             };
 
             // Emit plan started event
-            await this.EmitEventAsync(PlanningEvents.PlanStarted.ToString(), null, false);
+            await this.EmitEventAsync(PlanningEvents.PlanStarted.ToString(), null, false, cancellationToken);
 
             return planReplaced;
         }

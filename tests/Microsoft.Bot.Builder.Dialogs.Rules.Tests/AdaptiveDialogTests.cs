@@ -321,6 +321,54 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         }
 
         [TestMethod]
+        public async Task Planning_StringLiteralInExpression()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var ruleDialog = new AdaptiveDialog("planningTest");
+
+            ruleDialog.AddRules(new List<IRule>()
+            {
+                new DefaultRule(
+                    new List<IDialog>()
+                    {
+                        new IfProperty()
+                        {
+                            Expression = new CommonExpression("user.name == null"),
+                            IfTrue = new List<IDialog>()
+                            {
+                                new TextPrompt()
+                                {
+                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
+                                    OutputBinding = "user.name"
+                                }
+                            }
+                        },
+                        new IfProperty()
+                        {
+                            // Check comparison with string literal
+                            Expression = new CommonExpression("user.name == 'Carlos'"),
+                            IfTrue = new List<IDialog>()
+                            {
+                                new SendActivity("Hello carlin")
+                            }
+                        },
+                        new SendActivity("Hello {user.name}, nice to meet you!")
+                    })});
+
+            await CreateFlow(ruleDialog, convoState, userState)
+            .Send(new Activity() { Type = ActivityTypes.ConversationUpdate, MembersAdded = new List<ChannelAccount>() { new ChannelAccount("bot", "Bot"), new ChannelAccount("user", "User") } })
+            .Send("hi")
+                .AssertReply("Hello, what is your name?")
+            .Send("Carlos")
+                .AssertReply("Hello carlin")
+                .AssertReply("Hello Carlos, nice to meet you!")
+            .StartTestAsync();
+        }
+
+
+        [TestMethod]
         public async Task Planning_DoSteps()
         {
             var convoState = new ConversationState(new MemoryStorage());

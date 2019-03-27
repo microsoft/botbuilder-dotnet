@@ -452,7 +452,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="value">(Optional) value to send along with the event.</param>
         /// <param name="bubble">(Optional) flag to control whether the event should be bubbled to its parent if not handled locally. Defaults to a value of `true`.</param>
         /// <returns>True if the event was handled.</returns>
-        public async Task<bool> EmitEventAsync(string name, object value = null, bool bubble = true)
+        public async Task<bool> EmitEventAsync(string name, object value = null, bool bubble = true, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Initialize event
             var dialogEvent = new DialogEvent()

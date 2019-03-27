@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
 
                 refResources.ForEach(r => builder.AppendLine($"Name: {r.Name}. Path: .{r.Id}"));
 
-                throw new Exception();
+                throw new Exception(builder.ToString());
             }
 
             var text = await refResources.First().GetTextAsync().ConfigureAwait(false);
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
 
             foreach (JProperty prop in refToken.Children<JProperty>())
                 {
-                    if (prop.Name != "$ref")
+                    if (prop.Name != "$copy")
                     {
                         // JToken is an object, so we merge objects
                         if (json[prop.Name] != null && json[prop.Name].Type == JTokenType.Object)
