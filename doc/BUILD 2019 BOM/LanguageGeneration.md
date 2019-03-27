@@ -14,6 +14,8 @@
 - - [ ] Final API shape review
 - - [ ] Final packaging, naming review
 - - [ ] On board to build and release DevOps pipeline
+- - [ ] [Documentation](#Documentation)
+- - [ ] [Samples](#Samples)
 
 ### Functional parity across C# and TS
 
@@ -50,7 +52,6 @@
 
 |C#|TS| Sample bot	| Scenarios	 | LG capabilities to demo	| Notes	| Bot/LG Template |
 |--|--|---------------|------------|--------------------------|-------|-----------------|
-|<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| Simple Prompt	|A simple welcome message	|Basic template reference |		|Template, bot|
 |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| MultiTurn Prompt	| Welcome, ask for name, confirm name, ask for age, confirm age, Summary	|1. Pass variables to template Template 2. Template reference - Summary template can reference to name/age confirmation | | template |
 |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| Card bot	| Send 8 different card types	| Define cards in a template |	|	Template |
 |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| Adaptive card bot	| Send adaptive card	| Define adaptive card in a template	|	|Template|
