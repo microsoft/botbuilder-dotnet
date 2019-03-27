@@ -87,28 +87,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                     switch (change.ChangeType)
                     {
                         case PlanChangeTypes.NewPlan:
-                            await NewPlanAsync(change.Steps).ConfigureAwait(false);
+                            await NewPlanAsync(change.Steps, cancellationToken).ConfigureAwait(false);
                             break;
                         case PlanChangeTypes.DoSteps:
-                            await DoStepsAsync(change.Steps).ConfigureAwait(false);
+                            await DoStepsAsync(change.Steps, cancellationToken).ConfigureAwait(false);
                             break;
                         case PlanChangeTypes.DoStepsBeforeTags:
-                            await DoStepsBeforeTagsAsync(change.Tags, change.Steps).ConfigureAwait(false);
+                            await DoStepsBeforeTagsAsync(change.Tags, change.Steps, cancellationToken).ConfigureAwait(false);
                             break;
                         case PlanChangeTypes.DoStepsLater:
-                            await DoStepsLaterAsync(change.Steps).ConfigureAwait(false);
+                            await DoStepsLaterAsync(change.Steps, cancellationToken).ConfigureAwait(false);
                             break;
                         case PlanChangeTypes.EndPlan:
-                            await EndPlanAsync(change.Steps).ConfigureAwait(false);
+                            await EndPlanAsync(change.Steps, cancellationToken).ConfigureAwait(false);
                             break;
                         case PlanChangeTypes.ReplacePlan:
-                            await ReplacePlanAsync(change.Steps).ConfigureAwait(false);
+                            await ReplacePlanAsync(change.Steps, cancellationToken).ConfigureAwait(false);
                             break;
                     }
                 }
 
                 // Apply any queued up changes
-                await ApplyChangesAsync().ConfigureAwait(false);
+                await ApplyChangesAsync(cancellationToken).ConfigureAwait(false);
                 return true;
             }
 
@@ -138,7 +138,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             // Emit new plan event
             if (isNewPlan)
             {
-                await this.EmitEventAsync(PlanningEvents.PlanStarted.ToString(), null, false, cancellationToken);
+                await this.EmitEventAsync(PlanningEvents.PlanStarted.ToString(), null, false, cancellationToken).ConfigureAwait(false);
             }
 
             return isNewPlan;
@@ -193,7 +193,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             // Emit new plan event
             if (isNewPlan)
             {
-                await this.EmitEventAsync(PlanningEvents.PlanStarted.ToString(), null, false, cancellationToken);
+                await this.EmitEventAsync(PlanningEvents.PlanStarted.ToString(), null, false, cancellationToken).ConfigureAwait(false);
             }
 
             return isNewPlan;

@@ -161,8 +161,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of conversation.</param>
         /// <param name="e">The event being raised.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>True if the event is handled by the current dialog and bubbling should stop.</returns>
-        public virtual async Task<bool> OnDialogEventAsync(DialogContext dc, DialogEvent e)
+        public virtual async Task<bool> OnDialogEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
             return false;
         }

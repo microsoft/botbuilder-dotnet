@@ -2,15 +2,18 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Debugger;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Rules;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -19,22 +22,23 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         private DialogSet _dialogs;
 
         private readonly IDialog rootDialog;
-
-        private readonly IBotResourceProvider resourceProvider;
         
-        public TestBot(TestBotAccessors accessors, IBotResourceProvider resourceProvider)
+        public TestBot(TestBotAccessors accessors, IBotResourceProvider resourceProvider, Source.IRegistry registry)
         {
-            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning - ToDoBot\ToDoBot.main.dialog"), resourceProvider);
-            rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning - ToDoLuisBot\ToDoLuisBot.main.dialog"), resourceProvider);
-            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\RootDialog\RootDialog.main.dialog"), resourceProvider);
-            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 1 - DefaultRule\DefaultRule.main.dialog"), resourceProvider);
-            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 2 - WaitForInput\WaitForInput.main.dialog"), resourceProvider);
-            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 3 - IfProperty\IfProperty.main.dialog"), resourceProvider);
-            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 4 - TextPrompt\TextPrompt.main.dialog"), resourceProvider);
-            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 5 - WelcomeRule\WelcomeRule.main.dialog"), resourceProvider);
-            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 6 - DoSteps\DoSteps.main.dialog"), resourceProvider);
-            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 7 - CallDialog\CallDialog.main.dialog"), resourceProvider);
-            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.dialog"), resourceProvider);
+            const string path =
+            @"Samples\Planning - ToDoBot\ToDoBot.main.dialog";
+            //@"Samples\Planning - ToDoLuisBot\ToDoLuisBot.main.dialog";
+            //@"Samples\RootDialog\RootDialog.main.dialog";
+            //@"Samples\Planning 1 - DefaultRule\DefaultRule.main.dialog";
+            //@"Samples\Planning 2 - WaitForInput\WaitForInput.main.dialog";
+            //@"Samples\Planning 3 - IfProperty\IfProperty.main.dialog";
+            //@"Samples\Planning 4 - TextPrompt\TextPrompt.main.dialog";
+            //@"Samples\Planning 5 - WelcomeRule\WelcomeRule.main.dialog";
+            //@"Samples\Planning 6 - DoSteps\DoSteps.main.dialog";
+            //@"Samples\Planning 7 - CallDialog\CallDialog.main.dialog";
+            //@"Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.dialog";
+
+            rootDialog = DeclarativeTypeLoader.Load<IDialog>(Path.GetFullPath(path), resourceProvider, registry);
 
             _dialogs = new DialogSet(accessors.ConversationDialogState);
             _dialogs.Add(rootDialog);

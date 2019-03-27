@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Debugger;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Json.Pointer;
 using Newtonsoft.Json.Linq;
@@ -16,10 +17,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
 
         private readonly JToken rootDocument;
         private readonly IBotResourceProvider resourceProvider;
+        private readonly Source.IRegistry registry;
 
-        public IdRefResolver(IBotResourceProvider resourceProvider, JToken rootDocument = null)
+        public IdRefResolver(IBotResourceProvider resourceProvider, Source.IRegistry registry, JToken rootDocument = null)
         {
             this.resourceProvider = resourceProvider ?? throw new ArgumentNullException(nameof(resourceProvider));
+            this.registry = registry;
             this.rootDocument = rootDocument;
         }
 
@@ -38,9 +41,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
             }
 
             var targetFragments = refTarget.Split('#');
-
-            string jsonFile;
-            string jsonPointer = null;
 
             var dialogResources = await resourceProvider.GetResources("dialog").ConfigureAwait(false);
             var refResources = dialogResources?.Where(r => r.Name == targetFragments[0]).ToList();
@@ -62,7 +62,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
                 throw new Exception(builder.ToString());
             }
 
-            var text = await refResources.First().GetTextAsync().ConfigureAwait(false);
+            var refResource = refResources.Single();
+            var text = await refResource.GetTextAsync().ConfigureAwait(false);
             var json = JToken.Parse(text);
 
             foreach (JProperty prop in refToken.Children<JProperty>())
@@ -88,6 +89,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
                         }
                     }
                 }
+
+            // if we have a source path for the resource, then make it available to InterfaceConverter
+            if (refResource is FileResource file)
+            {
+                registry.Add(json, new Source.Range() { Path = file.Path });
+            }
 
             return json;
         }
