@@ -629,7 +629,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         {
             for (int i = 0; i < Rules.Count; i++)
             {
-                var (value, error) = Rules[i].GetExpression(planning, dialogEvent).TryEvaluate(planning.State);
+                var expression = Rules[i].GetExpression(planning, dialogEvent);
+                var (value, error) = expression.TryEvaluate(planning.State);
                 var result = error == null && (bool)value;
                 if (result == true)
                 {
@@ -654,7 +655,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
 
             for (int i = 0; i < Rules.Count; i++)
             {
-                var (value, error) = Rules[i].GetExpression(planning, dialogEvent).TryEvaluate(planning.State);
+                var expression = Rules[i].GetExpression(planning, dialogEvent);
+                var (value, error) = expression.TryEvaluate(planning.State);
                 var result = error == null && (bool)value;
                 if (result == true)
                 {

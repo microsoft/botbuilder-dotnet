@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
-using Microsoft.Expressions;
+using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
@@ -263,7 +264,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             exp = exp.TrimStart('{').TrimEnd('}');
             try
             {
-                ExpressionEngine.Parse(exp);
+                new ExpressionEngine().Parse(exp);
             }
             catch(Exception e)
             {

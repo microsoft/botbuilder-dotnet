@@ -7,8 +7,9 @@ using System.Linq;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
+using Microsoft.Bot.Builder.Expressions;
 
-namespace Microsoft.Bot.Builder.Expressions
+namespace Microsoft.Bot.Builder.Expressions.Parser
 {
     public delegate ExpressionEvaluator EvaluatorLookup(string name);
 

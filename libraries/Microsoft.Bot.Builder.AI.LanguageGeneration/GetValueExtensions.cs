@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.Expressions;
+using Microsoft.Bot.Builder.Expressions;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {

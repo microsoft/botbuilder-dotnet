@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Microsoft.Expressions
+namespace Microsoft.Bot.Builder.Expressions
 {
 
     public static class BuildinFunctions

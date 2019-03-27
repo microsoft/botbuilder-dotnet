@@ -2,7 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.Expressions;
+using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters

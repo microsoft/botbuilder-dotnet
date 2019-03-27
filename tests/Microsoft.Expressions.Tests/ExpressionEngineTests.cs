@@ -5,7 +5,7 @@ using Antlr4.Runtime;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
-namespace Microsoft.Expressions.Tests
+namespace Microsoft.Bot.Builder.Expressions.Tests
 {
     [TestClass]
     public class ExpressionEngineTests

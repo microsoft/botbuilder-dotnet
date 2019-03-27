@@ -6,8 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Expressions;
-using Antlr4.Runtime.Tree;
+using Microsoft.Bot.Builder.Expressions;
 
 namespace Microsoft.Bot.Builder.AI.TriggerTrees
 {
@@ -45,7 +44,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// <param name="quantifiers">Quantifiers to dynamically expand the expression.</param>
         internal Trigger(TriggerTree tree, string expression, object action, params Quantifier[] quantifiers)
         {
-            _parse = ExpressionEngine.Parse(expression);
+            _parse = new ExpressionEngine().Parse(expression);
             _tree = tree;
             Action = action;
             OriginalExpression = expression;

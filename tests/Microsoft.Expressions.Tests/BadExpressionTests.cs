@@ -4,7 +4,7 @@ using System.Linq;
 using Antlr4.Runtime;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Expressions.Tests
+namespace Microsoft.Bot.Builder.Expressions.Tests
 {
     [TestClass]
     public class BadExpressionTests

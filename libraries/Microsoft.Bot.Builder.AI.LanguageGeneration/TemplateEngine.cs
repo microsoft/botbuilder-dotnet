@@ -3,6 +3,7 @@ using System.Text;
 using System.IO;
 using System.Linq;
 using Antlr4.Runtime;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
@@ -156,7 +157,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             // Step 2: constuct a new evalution context on top of the current one
             var evaluationContext = new EvaluationContext(this.evaluationContext);
             evaluationContext.TemplateContexts[fakeTemplateId] = context;
-            var evaluator = new Evaluator(evaluationContext, methodBinder, valueBinder);
+            var evaluator = new TemplateEvaluator(evaluationContext, methodBinder, valueBinder);
 
             RunStaticCheck(evaluationContext, listener.GetExceptions());
 
