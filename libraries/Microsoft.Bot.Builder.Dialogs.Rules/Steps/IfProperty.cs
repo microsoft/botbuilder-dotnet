@@ -28,15 +28,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
             : base()
         {
         }
-        
+
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Ensure planning context
             if (dc is PlanningContext planning)
             {
-                // TODO: Handle errors from expression evaluation
-                var (result, error) = Expression.TryEvaluate(dc.State);
-                var conditionResult = (bool)result;
+                var (value, error) = Expression.TryEvaluate(dc.State);
+                var conditionResult = error == null && (bool)value;
 
                 var stepsToRun = conditionResult ? IfTrue : IfFalse;
 

@@ -28,6 +28,10 @@ namespace Microsoft.Bot.Builder.Expressions
             {
                 (instance, error) = Children[0].TryEvaluate(state);
             }
+            else
+            {
+                instance = state;
+            }
             if (error == null)
             {
                 (value, error) = instance.AccessProperty(Property, this);

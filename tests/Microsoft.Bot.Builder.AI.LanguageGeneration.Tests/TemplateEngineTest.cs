@@ -285,7 +285,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var engine = TemplateEngine.FromFile(GetExampleFilePath("ExceptionCatch.lg"));
             try
             {
-                engine.EvaluateTemplate("NoVariableMatch", null);
+                engine.EvaluateTemplate("NoVariableMatch", null );
             }
             catch (Exception e)
             {

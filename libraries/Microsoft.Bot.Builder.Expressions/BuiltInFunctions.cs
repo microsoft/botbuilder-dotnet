@@ -279,8 +279,8 @@ namespace Microsoft.Bot.Builder.Expressions
                 { ExpressionType.Element, new ExpressionEvaluator(ExtractElement, ExpressionReturnType.Object,
                     (expr) => ValidateOrder(expr, ExpressionReturnType.Object, ExpressionReturnType.Number)) }
                 , { ExpressionType.Add,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] + args[1], expression, state, VerifyNumberOrString),
-                        ExpressionReturnType.Object, ValidateBinaryNumberOrString) }
+                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] + args[1], expression, state, VerifyNumber),
+                        ExpressionReturnType.Object, ValidateBinaryNumber) }
                 , {ExpressionType.Subtract,
                     new ExpressionEvaluator((expression, state) => Apply((args) => args[0] - args[1], expression, state, VerifyNumber),
                         ExpressionReturnType.Number, ValidateBinaryNumber) }

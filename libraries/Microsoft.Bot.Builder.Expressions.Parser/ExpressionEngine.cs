@@ -42,7 +42,6 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             parser.RemoveErrorListeners();
             parser.AddErrorListener(ExpressionErrorListener.Instance);
             parser.BuildParseTree = true;
-            parser.ErrorHandler = new BailErrorStrategy();
             return parser.expression();
         }
 

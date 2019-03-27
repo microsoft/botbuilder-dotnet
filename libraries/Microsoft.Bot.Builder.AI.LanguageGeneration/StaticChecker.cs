@@ -264,7 +264,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             exp = exp.TrimStart('{').TrimEnd('}');
             try
             {
-                new ExpressionEngine().Parse(exp);
+                new ExpressionEngine(new GetMethodExtensions(null).GetMethodX).Parse(exp);
             }
             catch(Exception e)
             {

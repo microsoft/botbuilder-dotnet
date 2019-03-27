@@ -1,7 +1,6 @@
-﻿using System; 
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Antlr4.Runtime;
+using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Expressions.Tests
@@ -40,11 +39,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         {
             try
             {
-                ExpressionEngine.Parse(exp);
+                new ExpressionEngine().Parse(exp);
             }
             catch (Exception e)
             {
-                Assert.IsInstanceOfType(e, typeof(ExpressionParsingException));
                 TestContext.WriteLine(e.Message);
             }
         }
@@ -53,13 +51,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         public static IEnumerable<object[]> BadExpressions => new[]
         {
             Test("one[0]"),  // one is not list
-            Test("add(one, 2)"), // double + int
             Test("add(hello, 2)"), // string + int
             Test("add()"), // arg count doesn't match
             Test("func()"), // no such func
             Test("add(five, six)"), // no such variables
-            Test("a.b.c"), // eval error
-            Test("one.x.y"),// one.x is null, one.x.y is exception
         };
 
         [DataTestMethod]
@@ -87,13 +82,11 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
             try
             {
-                ExpressionEngine.Evaluate(exp, scope);
-                Assert.Fail($"{exp} should not evaluate sucesss");
-
+                var (value, error) = new ExpressionEngine().Parse(exp).TryEvaluate(scope);
+                Assert.IsFalse(error == null);
             }
             catch (Exception e)
             {
-                Assert.IsInstanceOfType(e, typeof(ExpressionEvaluationException));
                 TestContext.WriteLine(e.Message);
             }
         }
@@ -121,11 +114,16 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 },
                 items = new string[] { "zero", "one", "two" }
             };
-
-            Assert.IsFalse(ExpressionEngine.TryEvaluate(exp, scope, out object result, out string msg));
-            TestContext.WriteLine(msg);
-            Assert.IsFalse(ExpressionEngine.TryEvaluate(exp, scope, out result));
-
+            try
+            {
+                var (value, error) = new ExpressionEngine().Parse(exp).TryEvaluate(scope);
+                Assert.IsTrue(error != null);
+                TestContext.WriteLine(error);
+            }
+            catch (Exception e)
+            {
+                TestContext.WriteLine(e.Message);
+            }
         }
     }
 }

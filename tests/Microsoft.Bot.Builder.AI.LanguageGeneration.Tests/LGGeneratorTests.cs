@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         private string GetFallbackFolder()
         {
-            return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "Default";
+            return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "Fallback";
         }
 
         public TestContext TestContext { get; set; }

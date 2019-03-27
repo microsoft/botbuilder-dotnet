@@ -42,40 +42,41 @@ namespace Microsoft.Bot.Builder.Expressions
 
         private static Type[] _string = new Type[] { typeof(string) };
 
-        public static (object value, string error) AccessProperty(this object instance, string property, Expression Instance = null)
+        public static (object value, string error) AccessProperty(this object instance, string property, Expression expression = null)
         {
+            // NOTE: This returns null rather than an error if property is not present
             object value = null;
             string error = null;
-            if (instance is IReadOnlyDictionary<string, object> dict)
+            if (instance != null)
             {
-                if (!dict.TryGetValue(property, out value))
+                if (instance is IDictionary<string, object> idict)
                 {
-                    error = $"{Instance} does not have {property}.";
+                    idict.TryGetValue(property, out value);
                 }
-            }
-            else
-            {
-                // Use reflection
-                var type = instance.GetType();
-                var prop = type.GetProperty(property);
-                if (prop != null)
+                else if (instance is System.Collections.IDictionary dict)
                 {
-                    value = prop.GetValue(instance);
+                    if (dict.Contains(property))
+                    {
+                        value = dict[property];
+                    }
                 }
                 else
                 {
-                    var indexer = type.GetProperty("Item", _string);
-                    if (indexer != null)
+                    // Use reflection
+                    var type = instance.GetType();
+                    var prop = type.GetProperty(property);
+                    if (prop != null)
                     {
-                        value = indexer.GetValue(instance, new object[] { property });
-                        if (value == null)
-                        {
-                            error = $"{Instance} does not have {property}.";
-                        }
+                        value = prop.GetValue(instance);
                     }
                     else
                     {
-                        error = $"{Instance} does not have {property}.";
+                        // This will work on JSON objects
+                        var indexer = type.GetProperty("Item", _string);
+                        if (indexer != null)
+                        {
+                            value = indexer.GetValue(instance, new object[] { property });
+                        }
                     }
                 }
             }
