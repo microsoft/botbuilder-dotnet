@@ -14,22 +14,22 @@ namespace Microsoft.Bot.Builder.Expressions
         // Validators
         public static void ValidateArityAndType(Expression expression, int arity, params ExpressionReturnType[] types)
         {
-            if (!(expression is ExpressionWithChildren tree) || (arity != -1 && tree.Children.Count != arity))
+            if (arity != -1 && expression.Children.Length != arity)
             {
-                throw new ExpressionException($"Expected {arity} children", expression);
+                throw new ArgumentException($"{expression} should have {arity} children.");
             }
-            foreach (var child in tree.Children)
+            foreach (var child in expression.Children)
             {
                 if (child.ReturnType != ExpressionReturnType.Object && !types.Contains(child.ReturnType))
                 {
                     if (types.Count() == 1)
                     {
-                        throw new ExpressionException($"Is not a {types[0]} expression", child);
+                        throw new ArgumentException($"{child} is not a {types[0]} expression in {expression}.");
                     }
                     else
                     {
                         var builder = new StringBuilder();
-                        builder.Append("Is not any of [");
+                        builder.Append($"{child} in {expression} is not any of [");
                         var first = true;
                         foreach (var type in types)
                         {
@@ -43,7 +43,8 @@ namespace Microsoft.Bot.Builder.Expressions
                             }
                             builder.Append(type);
                         }
-                        throw new ExpressionException(builder.ToString(), expression);
+                        builder.Append("].");
+                        throw new ArgumentException(builder.ToString());
                     }
                 }
             }
@@ -51,17 +52,17 @@ namespace Microsoft.Bot.Builder.Expressions
 
         public static void ValidateOrder(Expression expression, params ExpressionReturnType[] types)
         {
-            if (!(expression is ExpressionWithChildren tree) || tree.Children.Count != types.Count())
+            if (expression.Children.Length != types.Count())
             {
-                throw new ExpressionException($"Expected {types.Count()} children", expression);
+                throw new ArgumentException($"{expression} should have {types.Count()} children");
             }
-            for (var i = 0; i < tree.Children.Count; ++i)
+            for (var i = 0; i < expression.Children.Length; ++i)
             {
-                var child = tree.Children[i];
+                var child = expression.Children[i];
                 var type = types[i];
                 if (child.ReturnType != type)
                 {
-                    throw new ExpressionException($"Is not a {type}", child);
+                    throw new ArgumentException($"{child} in {expression} is not a {type}.");
                 }
             }
         }
@@ -125,25 +126,22 @@ namespace Microsoft.Bot.Builder.Expressions
             object value = null;
             string error = null;
             var args = new List<dynamic>();
-            if (expression is ExpressionWithChildren tree)
+            foreach (var child in expression.Children)
             {
-                foreach (var child in tree.Children)
+                (value, error) = child.TryEvaluate(state);
+                if (error != null)
                 {
-                    (value, error) = child.TryEvaluate(state);
-                    if (error != null)
-                    {
-                        break;
-                    }
-                    if (verify != null)
-                    {
-                        error = verify(value, child);
-                    }
-                    if (error != null)
-                    {
-                        break;
-                    }
-                    args.Add(value);
+                    break;
                 }
+                if (verify != null)
+                {
+                    error = verify(value, child);
+                }
+                if (error != null)
+                {
+                    break;
+                }
+                args.Add(value);
             }
             if (error == null)
             {
@@ -156,16 +154,55 @@ namespace Microsoft.Bot.Builder.Expressions
         {
             if (!_functions.TryGetValue(type, out ExpressionEvaluator eval))
             {
-                throw new ExpressionException($"{type} does not have a built-in evaluator.");
+                throw new ArgumentException($"{type} does not have a built-in expression evaluator.");
             }
             return eval;
         }
 
+        private static void ValidateAccessor(Expression expression)
+        {
+            var children = expression.Children;
+            if (children.Length == 0
+                || !(children[0] is Constant cnst)
+                || cnst.ReturnType != ExpressionReturnType.String)
+            {
+                throw new Exception($"{expression} must have a string as first argument.");
+            }
+            if (children.Length > 2)
+            {
+                throw new Exception($"{expression} has more than 2 children.");
+            }
+            if (children.Length == 2 && children[1].ReturnType != ExpressionReturnType.Object)
+            {
+                throw new Exception($"{expression} must have an object as its second argument.");
+            }
+        }
+
+        private static (object value, string error) Accessor(Expression expression, object state)
+        {
+            object value = null;
+            string error = null;
+            object instance = state;
+            var children = expression.Children;
+            if (children.Length == 2)
+            {
+                (instance, error) = children[1].TryEvaluate(state);
+            }
+            else
+            {
+                instance = state;
+            }
+            if (error == null && children[0] is Constant cnst && cnst.ReturnType == ExpressionReturnType.String)
+            {
+                (value, error) = instance.AccessProperty((string)cnst.Value, expression);
+            }
+            return (value, error);
+        }
+
         private static (object value, string error) ExtractElement(Expression expression, object state)
         {
-            var tree = expression as ExpressionWithChildren;
-            var instance = tree.Children[0];
-            var index = tree.Children[1];
+            var instance = expression.Children[0];
+            var index = expression.Children[1];
             object value;
             string error = null;
             (value, error) = instance.TryEvaluate(state);
@@ -218,8 +255,7 @@ namespace Microsoft.Bot.Builder.Expressions
         {
             object result = true;
             string error = null;
-            var tree = expression as ExpressionWithChildren;
-            foreach (var child in tree.Children)
+            foreach (var child in expression.Children)
             {
                 (result, error) = child.TryEvaluate(state);
                 if (error == null)
@@ -247,8 +283,7 @@ namespace Microsoft.Bot.Builder.Expressions
         {
             object result = true;
             string error = null;
-            var tree = expression as ExpressionWithChildren;
-            foreach (var child in tree.Children)
+            foreach (var child in expression.Children)
             {
                 (result, error) = child.TryEvaluate(state);
                 if (error == null)
@@ -328,7 +363,12 @@ namespace Microsoft.Bot.Builder.Expressions
                 , {ExpressionType.Not,
                     new ExpressionEvaluator((expression, state) => Apply((args) => !args[0], expression, state, VerifyBoolean),
                         ExpressionReturnType.Boolean, (expression) => ValidateOrder(expression, ExpressionReturnType.Boolean)) }
+
+                // Misc
+                , {ExpressionType.Accessor,
+                    new ExpressionEvaluator(Accessor, ExpressionReturnType.Object, ValidateAccessor) }
             };
+
             // Add aliases from WDL https://docs.microsoft.com/en-us/azure/logic-apps/workflow-definition-language-functions-reference
 
             // Math if not already found

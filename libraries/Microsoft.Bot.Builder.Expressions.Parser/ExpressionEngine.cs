@@ -54,6 +54,11 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
 
             private readonly EvaluatorLookup _lookup;
 
+            private Expression MakeExpression(string type, params Expression[] children)
+            {
+                return Expression.MakeExpression(type, _lookup(type), children);
+            }
+
             public Expression Transform(IParseTree context)
             {
                 return Visit(context);
@@ -74,7 +79,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             {
                 var unaryOperationName = context.GetChild(0).GetText();
                 var operand = Visit(context.expression());
-                return ExpressionWithChildren.MakeExpression(unaryOperationName, new List<Expression> { operand }, _lookup(unaryOperationName));
+                return MakeExpression(unaryOperationName, operand);
             }
 
             public override Expression VisitBinaryOpExp([NotNull] ExpressionParser.BinaryOpExpContext context)
@@ -82,7 +87,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                 var binaryOperationName = context.GetChild(1).GetText();
                 var left = Visit(context.expression(0));
                 var right = Visit(context.expression(1));
-                return ExpressionWithChildren.MakeExpression(binaryOperationName, new List<Expression> { left, right }, _lookup(binaryOperationName));
+                return MakeExpression(binaryOperationName, left, right);
             }
 
             public override Expression VisitFuncInvokeExp([NotNull] ExpressionParser.FuncInvokeExpContext context)
@@ -93,7 +98,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                 if (context.primaryExpression() is ExpressionParser.IdAtomContext idAtom)
                 {
                     var functionName = idAtom.GetText();
-                    return ExpressionWithChildren.MakeExpression(functionName, parameters, _lookup(functionName));
+                    return MakeExpression(functionName, parameters.ToArray());
                 }
 
                 // TODO: We really should interpret this as a function with a namespace and not an accessor with a function.  Should also loop over them.
@@ -103,7 +108,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                     var instance = Visit(memberAccessExp.primaryExpression());
                     var functionName = memberAccessExp.IDENTIFIER().GetText();
                     parameters.Insert(0, instance);
-                    return ExpressionWithChildren.MakeExpression(functionName, parameters, _lookup(functionName));
+                    return MakeExpression(functionName, parameters.ToArray());
                 }
 
                 throw new Exception("This format is wrong.");
@@ -123,7 +128,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                 }
                 else
                 {
-                    result = Accessor.MakeExpression(symbol);
+                    result = MakeExpression(ExpressionType.Accessor, Constant.MakeExpression(symbol));
                 }
                 return result;
             }
@@ -132,13 +137,13 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             {
                 var instance = Visit(context.primaryExpression());
                 var index = Visit(context.expression());
-                return ExpressionWithChildren.MakeExpression(ExpressionType.Element, new List<Expression> { instance, index });
+                return MakeExpression(ExpressionType.Element, instance, index );
             }
 
             public override Expression VisitMemberAccessExp([NotNull] ExpressionParser.MemberAccessExpContext context)
             {
                 var instance = Visit(context.primaryExpression());
-                return Accessor.MakeExpression(context.IDENTIFIER().GetText(), instance);
+                return MakeExpression(ExpressionType.Accessor, Constant.MakeExpression(context.IDENTIFIER().GetText()), instance);
             }
 
             public override Expression VisitNumericAtom([NotNull] ExpressionParser.NumericAtomContext context)

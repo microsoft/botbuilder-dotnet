@@ -20,11 +20,6 @@ namespace Microsoft.Bot.Builder.Expressions
 
         public object Value { get; }
 
-        public override void Accept(IExpressionVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
-
         public override string ToString()
         {
             if (Value is string str)

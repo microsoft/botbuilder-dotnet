@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             // just don't want to write evaluationTargetStack.Peek() everywhere
             return evaluationTargetStack.Peek();
         }
-                 
+
         public Analyzer(EvaluationContext context)
         {
             Context = context;
@@ -145,11 +145,45 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         private List<string> AnalyzeExpression(string exp)
         {
             exp = exp.TrimStart('{').TrimEnd('}');
-            var expression = _expressionParser.Parse(exp);
-            var visitor = new ExpressionAnalyzerVisitor(Context);
-            expression.Accept(visitor);
-            visitor.TerminatePath();
-            return visitor.References.ToList();
+            var parse = _expressionParser.Parse(exp);
+            var references = new HashSet<string>();
+            var path = Microsoft.Bot.Builder.Expressions.Extensions.ReferenceWalk(parse, references,
+                (expression) =>
+                {
+                    var found = false;
+                    if (expression is Constant cnst && cnst.Value is string str)
+                    {
+                        if (str.StartsWith("[") && str.EndsWith("]"))
+                        {
+                            found = true;
+                            var end = str.IndexOf('(');
+                            if (end == -1)
+                            {
+                                end = str.Length - 1;
+                            }
+                            var template = str.Substring(1, end - 1);
+                            var analyzer = new Analyzer(Context);
+                            foreach (var reference in analyzer.AnalyzeTemplate(template))
+                            {
+                                references.Add(reference);
+                            }
+                        }
+                        else if (str.StartsWith("{") && str.EndsWith("}"))
+                        {
+                            found = true;
+                            foreach (var childRef in AnalyzeExpression(str))
+                            {
+                                references.Add(childRef);
+                            }
+                        }
+                    }
+                    return found;
+                });
+            if (path != null)
+            {
+                references.Add(path);
+            }
+            return references.ToList();
         }
 
         private List<string> AnalyzeTemplateRef(string exp)
@@ -161,7 +195,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             {
                 // EvaluateTemplate all arguments using ExpressoinEngine
                 var argsEndPos = exp.LastIndexOf(')');
-              
+
                 var templateName = exp.Substring(0, argsStartPos);
 
                 return AnalyzeTemplate(templateName);

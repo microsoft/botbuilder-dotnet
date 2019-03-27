@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.Bot.Builder.Expressions
 {
@@ -32,12 +33,65 @@ namespace Microsoft.Bot.Builder.Expressions
         /// </remarks>
         /// <param name="expression">Expresion to get references from.</param>
         /// <returns>Hash set of the static reference paths.</returns>
-        public static HashSet<string> References(this Expression expression)
+        public static IReadOnlyList<string> References(this Expression expression)
         {
-            var walker = new ReferenceVisitor();
-            expression.Accept(walker);
-            walker.TerminatePath();
-            return walker.References;
+            var references = new HashSet<string>();
+            var path = ReferenceWalk(expression, references);
+            if (path != null)
+            {
+                references.Add(path);
+            }
+            return references.ToList();
+        }
+
+        public static string ReferenceWalk(Expression expression, HashSet<string> references, Func<Expression, bool> extension = null)
+        {
+            string path = null;
+            if (extension == null || !extension(expression))
+            {
+                var children = expression.Children;
+                if (expression.Type == ExpressionType.Accessor)
+                {
+                    if (children.Length == 2)
+                    {
+                        path = ReferenceWalk(children[1], references, extension);
+                    }
+                    var prop = (string)((Constant)children[0]).Value;
+                    path = (path == null ? prop : path + "." + prop);
+                }
+                else if (expression.Type == ExpressionType.Element)
+                {
+                    path = ReferenceWalk(children[0], references, extension);
+                    if (path != null)
+                    {
+                        if (children[1] is Constant cnst)
+                        {
+                            path += $"[{cnst.Value}]";
+                        }
+                        else
+                        {
+                            references.Add(path);
+                        }
+                    }
+                    var idxPath = ReferenceWalk(children[1], references, extension);
+                    if (idxPath != null)
+                    {
+                        references.Add(idxPath);
+                    }
+                }
+                else
+                {
+                    foreach (var child in expression.Children)
+                    {
+                        var childPath = ReferenceWalk(child, references, extension);
+                        if (childPath != null)
+                        {
+                            references.Add(childPath);
+                        }
+                    }
+                }
+            }
+            return path;
         }
 
         private static Type[] _string = new Type[] { typeof(string) };

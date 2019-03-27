@@ -1,6 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace Microsoft.Bot.Builder.Expressions
 {
@@ -14,13 +17,16 @@ namespace Microsoft.Bot.Builder.Expressions
 
     public class Expression 
     {
-        public Expression(string type, ExpressionEvaluator evaluator = null)
+        public Expression(string type, ExpressionEvaluator evaluator = null, params Expression[] children)
         {
             Type = type;
             _evaluator = evaluator ?? BuiltInFunctions.Lookup(type);
+            Children = children;
         }
 
         public string Type { get; }
+
+        public Expression[] Children { get; set;}
 
         public ExpressionReturnType ReturnType { get { return _evaluator.ReturnType; } }
 
@@ -31,17 +37,49 @@ namespace Microsoft.Bot.Builder.Expressions
             _evaluator.ValidateExpression(this);
         }
 
+        public void ValidateAll()
+        {
+            Validate();
+            foreach(var child in Children)
+            {
+                child.ValidateAll();
+            }
+        }
+
         public (object value, string error) TryEvaluate(object state)
             => _evaluator.TryEvaluate(this, state);
 
-        public virtual void Accept(IExpressionVisitor visitor)
+        public override string ToString()
         {
-            visitor.Visit(this);
+            return ToString(Type);
         }
 
-        public static Expression MakeExpression(string type, ExpressionEvaluator evaluator = null)
+        protected string ToString(string name)
         {
-            var expr = new Expression(type, evaluator);
+            var builder = new StringBuilder();
+            builder.Append(Type);
+            builder.Append('(');
+            var first = true;
+            foreach (var child in Children)
+            {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    builder.Append(", ");
+                }
+
+                builder.Append(child.ToString());
+            }
+            builder.Append(')');
+            return builder.ToString();
+        }
+
+        public static Expression MakeExpression(string type, ExpressionEvaluator evaluator = null, params Expression[] children)
+        {
+            var expr = new Expression(type, evaluator, children);
             expr.Validate();
             return expr;
         }
@@ -67,15 +105,20 @@ namespace Microsoft.Bot.Builder.Expressions
                 }));
 
         public static Expression AndExpression(params Expression[] children)
-            => ExpressionWithChildren.MakeExpression(ExpressionType.And, children);
+            => Expression.MakeExpression(ExpressionType.And, null, children);
 
         public static Expression OrExpression(params Expression[] children)
-            => ExpressionWithChildren.MakeExpression(ExpressionType.Or, children);
+            => Expression.MakeExpression(ExpressionType.Or, null, children);
 
         public static Expression NotExpression(Expression child)
-            => ExpressionWithChildren.MakeExpression(ExpressionType.Not, new Expression[] { child });
+            => Expression.MakeExpression(ExpressionType.Not, null, child);
 
         public static Expression ConstantExpression(object value)
             => Constant.MakeExpression(value);
+
+        public static Expression Accessor(string property, Expression instance = null)
+            => instance == null
+            ? MakeExpression(ExpressionType.Accessor, null, ConstantExpression(property))
+            : MakeExpression(ExpressionType.Accessor, null, ConstantExpression(property), instance);
     }
 }
