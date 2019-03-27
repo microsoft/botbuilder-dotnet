@@ -119,11 +119,11 @@ We will add new \<entityType\>Input class that does the follwing -
 
 |        Sample bot	            |         C#             |          TS            |
 |-------------------------------|------------------------|------------------------|
-| Core bot                      |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|
-| To-do bot with regex          |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|
-| To-do bot with LUIS           |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|
-| To-do bot with interruptions  |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|
-| To-do bot with QnA            |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|
-| Cafe Bot                      |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|
-| VA template                   |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|
+| Core bot                      |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
+| To-do bot with regex          |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
+| To-do bot with LUIS           |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
+| To-do bot with interruptions  |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
+| To-do bot with QnA            |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
+| Cafe Bot                      |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
+| VA template                   |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
 
