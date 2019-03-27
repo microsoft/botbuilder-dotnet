@@ -45,6 +45,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfirmPrompt"/> class.
         /// </summary>
+        public ConfirmPrompt()
+            : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfirmPrompt"/> class.
+        /// </summary>
         /// <param name="dialogId">Dialog identifier.</param>
         /// <param name="validator">Validator that will be called each time the user responds to the prompt.
         /// If the validator replies with a message no additional retry prompt will be sent.</param>

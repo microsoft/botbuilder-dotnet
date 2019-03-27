@@ -8,6 +8,7 @@ using Microsoft.Bot.Builder.AI.LanguageGeneration;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Expressions;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Rules.Expressions;
+using Microsoft.Bot.Builder.Dialogs.Rules.Input;
 using Microsoft.Bot.Builder.Dialogs.Rules.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Rules.Rules;
 using Microsoft.Bot.Builder.Dialogs.Rules.Steps;
@@ -107,6 +108,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             .StartTestAsync();
         }
 
+
         [TestMethod]
         public async Task Step_TextPrompt()
         {
@@ -125,10 +127,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             Expression = new CommonExpression("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
-                                new TextPrompt()
+                                new TextInput()
                                 {
-                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
-                                    Property = "user.name"
+                                    Prompt = new ActivityTemplate("Hello, what is your name?"),
+                                    RetryPrompt = new ActivityTemplate("How should I call you?"),
+                                    Property = "user.name",
+                                    Pattern = @"(\s*(\S)\s*){3,}"
                                 }
                             }
                         },
@@ -138,6 +142,49 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             await CreateFlow(planningDialog, convoState, userState)
             .Send("hi")
                 .AssertReply("Hello, what is your name?")
+            .Send("c")
+                .AssertReply("How should I call you?")
+            .Send("Carlos")
+                .AssertReply("Hello Carlos, nice to meet you!")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task Step_TextPromptWithInvalidPrompt()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var planningDialog = new AdaptiveDialog("planningTest");
+
+            planningDialog.AddRules(new List<IRule>()
+            {
+                new DefaultRule(
+                    new List<IDialog>()
+                    {
+                        new IfProperty()
+                        {
+                            Expression = new CommonExpression("user.name == null"),
+                            IfTrue = new List<IDialog>()
+                            {
+                                new TextInput()
+                                {
+                                    Prompt = new ActivityTemplate("Hello, what is your name?"),
+                                    RetryPrompt = new ActivityTemplate("How should I call you?"),
+                                    InvalidPrompt  = new ActivityTemplate("That does not soud like a name"),
+                                    Property = "user.name",
+                                    Pattern = @"(\s*(\S)\s*){3,}"
+                                }
+                            }
+                        },
+                        new SendActivity("Hello {user.name}, nice to meet you!")
+                    })});
+
+            await CreateFlow(planningDialog, convoState, userState)
+            .Send("hi")
+                .AssertReply("Hello, what is your name?")
+            .Send("c")
+                .AssertReply("That does not soud like a name")
             .Send("Carlos")
                 .AssertReply("Hello Carlos, nice to meet you!")
             .StartTestAsync();
@@ -308,10 +355,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             Expression = new CommonExpression("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
-                                new TextPrompt()
+                                new TextInput()
                                 {
-                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
-                                    OutputBinding = "user.name"
+                                    Prompt = new ActivityTemplate("Hello, what is your name?"),
+                                    RetryPrompt = new ActivityTemplate("How should I call you?"),
+                                    InvalidPrompt  = new ActivityTemplate("That does not soud like a name"),
+                                    Property = "user.name",
+                                    Pattern = @"(\s*(\S)\s*){3,}"
                                 }
                             }
                         },

@@ -17,6 +17,11 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class FloatPrompt : NumberPrompt<float>
     {
+        public FloatPrompt()
+           : base()
+        {
+        }
+
         public FloatPrompt(string dialogId = null, PromptValidator<float> validator = null, string defaultLocale = null)
             : base(dialogId, validator, defaultLocale)
         {

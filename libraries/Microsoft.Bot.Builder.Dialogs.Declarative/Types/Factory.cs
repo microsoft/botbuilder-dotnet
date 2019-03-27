@@ -9,6 +9,7 @@ using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Plugins;
 using Microsoft.Bot.Builder.Dialogs.Rules;
+using Microsoft.Bot.Builder.Dialogs.Rules.Input;
 using Microsoft.Bot.Builder.Dialogs.Rules.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Rules.Rules;
 using Microsoft.Bot.Builder.Dialogs.Rules.Steps;
@@ -109,9 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.IntentRule", typeof(IntentRule));
             Register("Microsoft.EventRule", typeof(EventRule));
             Register("Microsoft.DefaultRule", typeof(DefaultRule));
-            //Register("Microsoft.IfPropertyRule", typeof(IfPropertyRule));
             Register("Microsoft.ReplacePlanRule", typeof(ReplacePlanRule));
-            //Register("Microsoft.UtteranceRecognizeRule", typeof(UtteranceRecognizeRule));
             Register("Microsoft.WelcomeRule", typeof(WelcomeRule));
 
             // Steps
@@ -129,11 +128,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.HttpRequest", typeof(HttpRequest));
 
             // Dialogs
-            Register("Microsoft.ComponentDialog", typeof(ComponentDialog), new ComponentDialogLoader());
             Register("Microsoft.AdaptiveDialog", typeof(AdaptiveDialog));
-            Register("Microsoft.TextPrompt", typeof(TextPrompt));
-            Register("Microsoft.IntegerPrompt", typeof(IntegerPrompt));
-            Register("Microsoft.FloatPrompt", typeof(FloatPrompt));
+
+            // Inputs
+            Register("Microsoft.TextInput", typeof(TextInput));
+            Register("Microsoft.IntegerInput", typeof(IntegerInput));
+            Register("Microsoft.FloatInput", typeof(FloatInput));
+            Register("Microsoft.BoolInput", typeof(BoolInput));
 
             // Recognizers
             Register("Microsoft.LuisRecognizer", typeof(LuisRecognizer), new LuisRecognizerLoader(TypeFactory.Configuration));
