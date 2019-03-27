@@ -247,6 +247,16 @@ namespace Microsoft.Bot.Builder.Dialogs
                 if (!prompt.Attachments.Any(a => a.Content is SigninCard))
                 {
                     var link = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
+                    
+                    if (turnContext.Activity.ChannelId == "msteams")
+                    {
+                        // The fallbackUrl specifies the page to be opened on mobile, until they support automatically passing the
+                        // verification code via notifySuccess().
+                        // This flow gracefully falls back to asking the user to enter the verification code manually, so we use the same
+                        // signin URL as the fallback URL.
+                        link += $"&fallbackUrl={Uri.EscapeDataString(link)}";
+                    }
+                    
                     prompt.Attachments.Add(new Attachment
                     {
                         ContentType = SigninCard.ContentType,
@@ -259,7 +269,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                                 {
                                     Title = _settings.Title,
                                     Value = link,
-                                    Type = turnContext.Activity.ChannelId == "msteams" ? ActionTypes.OpenUrl : ActionTypes.Signin,
+                                    Type = ActionTypes.Signin,
                                 },
                             },
                         },
