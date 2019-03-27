@@ -62,10 +62,20 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="appId">The Microsoft app ID.</param>
         /// <param name="password">The Microsoft app password.</param>
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
-        public MicrosoftAppCredentials(string appId, string password, HttpClient customHttpClient)
+        public MicrosoftAppCredentials(string appId, string password, HttpClient customHttpClient) : this(appId, password, null, null) { }
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="MicrosoftAppCredentials"/> class.
+        /// </summary>
+        /// <param name="appId">The Microsoft app ID.</param>
+        /// <param name="password">The Microsoft app password.</param>
+        /// <param name="channelAuthTenant">Optional. The oauth token tenant.</param>
+        /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
+        public MicrosoftAppCredentials(string appId, string password, string channelAuthTenant, HttpClient customHttpClient)
         {
             this.MicrosoftAppId = appId;
             this.MicrosoftAppPassword = password;
+            this.ChannelAuthTenant = channelAuthTenant;
 
             authenticator = new Lazy<AdalAuthenticator>(() =>
                 new AdalAuthenticator(
@@ -86,9 +96,32 @@ namespace Microsoft.Bot.Connector.Authentication
         public string MicrosoftAppPassword { get; set; }
 
         /// <summary>
+        /// Gets or sets the channel auth token tenant for this credential.
+        /// </summary>
+        private string _channelAuthTenant;
+        public string ChannelAuthTenant
+        {
+            get { return string.IsNullOrEmpty(_channelAuthTenant) ? "botframework.com" : _channelAuthTenant; }
+            private set { _channelAuthTenant = value; }
+        }
+
+        /// <summary>
         /// Gets the OAuth endpoint to use.
         /// </summary>
-        public virtual string OAuthEndpoint { get { return AuthenticationConstants.ToChannelFromBotLoginUrl; } }
+        public virtual string OAuthEndpoint
+        {
+            get
+            {
+                // Advanced user only, see https://aka.ms/bots/tenant-restriction
+                var endpointUrl = string.Format(AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, ChannelAuthTenant);
+
+                if (Uri.TryCreate(endpointUrl, UriKind.Absolute, out var result))
+                    return endpointUrl;
+
+                throw new Exception($"Invalid token endpoint: {endpointUrl}");
+            }
+        }
+
 
         /// <summary>
         /// Gets the OAuth scope to use.

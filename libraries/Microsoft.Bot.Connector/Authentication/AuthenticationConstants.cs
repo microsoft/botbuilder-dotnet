@@ -11,9 +11,11 @@ namespace Microsoft.Bot.Connector.Authentication
     public static class AuthenticationConstants
     {
         /// <summary>
-        /// TO CHANNEL FROM BOT: Login URL
+        /// TO CHANNEL FROM BOT: Login URL template string. Bot developer may specify
+        /// which tenant to obtain an access token from. By default, the channels only
+        /// accept tokens from "botframework.com". For more details see https://aka.ms/bots/tenant-restriction
         /// </summary>
-        public const string ToChannelFromBotLoginUrl = "https://login.microsoftonline.com/botframework.com";
+        public const string ToChannelFromBotLoginUrlTemplate = "https://login.microsoftonline.com/{0}";
 
         /// <summary>
         /// TO CHANNEL FROM BOT: OAuth scope to request
@@ -44,6 +46,11 @@ namespace Microsoft.Bot.Connector.Authentication
         /// Application Settings Key for whether to emulate OAuthCards when using the emulator
         /// </summary>
         public const string EmulateOAuthCardsKey = "EmulateOAuthCards";
+
+        /// <summary>
+        /// Application Setting Key for which tenant to obtain an access token from for bot to channel communication
+        /// </summary>
+        public const string ChannelAuthTenantKey = "ChannelAuthTenant";
 
         /// <summary>
         /// TO BOT FROM CHANNEL: OpenID metadata document for tokens coming from MSA

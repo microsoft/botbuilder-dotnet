@@ -25,6 +25,13 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.NotNull(result);
         }
 
+        [Fact]
+        public async Task TokenTests_GetCredentialsFromTenantWorks()
+        {
+            MicrosoftAppCredentials credentials = new MicrosoftAppCredentials("645cd89f-a83e-4af9-abb5-a454e917cbc4", "jvoMWRBA67:zjgePZ359_-_", "microsoft.com", null);
+            var result = await credentials.GetTokenAsync();
+            Assert.NotNull(result);
+        }
 
         [Fact]
         public async Task TokenTests_RefreshTokenWorks()
