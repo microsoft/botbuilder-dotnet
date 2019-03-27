@@ -127,9 +127,7 @@ namespace Microsoft.Bot.Builder
         {
             if (string.IsNullOrWhiteSpace(botAppId))
             {
-                var credentials = (SimpleCredentialProvider)this._credentialProvider;
-
-                botAppId = credentials.AppId;
+                botAppId = this._credentialProvider.AppId;
 
                 if (string.IsNullOrWhiteSpace(botAppId))
                 {

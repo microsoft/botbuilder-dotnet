@@ -18,6 +18,22 @@ namespace Microsoft.Bot.Connector.Authentication
     public interface ICredentialProvider
     {
         /// <summary>
+        /// Gets or sets the app ID for this credential.
+        /// </summary>
+        /// <value>
+        /// The app ID for this credential.
+        /// </value>
+        string AppId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the app password for this credential.
+        /// </summary>
+        /// <value>
+        /// The app password for this credential.
+        /// </value>
+        string Password { get; set; }
+
+        /// <summary>
         /// Validates an app ID.
         /// </summary>
         /// <param name="appId">The app ID to validate.</param>

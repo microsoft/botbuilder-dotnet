@@ -171,7 +171,7 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.IsTrue(callbackInvoked);
         }
 
-    [TestMethod]
+        [TestMethod]
         [ExpectedException(
             typeof(ArgumentNullException),
             "An AppId of null was inappropriately allowed.")]
