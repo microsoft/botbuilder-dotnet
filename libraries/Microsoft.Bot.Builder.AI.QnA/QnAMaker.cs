@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// If null, a default client is used for this instance.</param>
         /// <param name="telemetryClient">The IBotTelemetryClient used for logging telemetry events.</param>
         /// <param name="logPersonalInformation">Set to true to include personally indentifiable information in telemetry events.</param>
-        public QnAMaker(QnAMakerEndpoint endpoint, QnAMakerOptions options = null, HttpClient httpClient = null, IBotTelemetryClient telemetryClient = null, bool logPersonalInformation = false)
+        public QnAMaker(QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient, IBotTelemetryClient telemetryClient, bool logPersonalInformation = false)
         {
             _httpClient = httpClient ?? DefaultHttpClient;
 
@@ -78,14 +78,39 @@ namespace Microsoft.Bot.Builder.AI.QnA
             LogPersonalInformation = logPersonalInformation;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QnAMaker"/> class.
+        /// </summary>
+        /// <param name="endpoint">The endpoint of the knowledge base to query.</param>
+        /// <param name="options">The options for the QnA Maker knowledge base.</param>
+        /// <param name="httpClient">An alternate client with which to talk to QnAMaker.
+        /// If null, a default client is used for this instance.</param>
+        public QnAMaker(QnAMakerEndpoint endpoint, QnAMakerOptions options = null, HttpClient httpClient = null)
+            : this(endpoint, options, httpClient, null)
+        {
+        }
+
         /// Initializes a new instance of the <see cref="QnAMaker"/> class.
         /// </summary>
         /// <param name="service">QnA service details from configuration.</param>
         /// <param name="options">The options for the QnA Maker knowledge base.</param>
         /// <param name="httpClient">An alternate client with which to talk to QnAMaker.
         /// If null, a default client is used for this instance.</param>
-        public QnAMaker(QnAMakerService service, QnAMakerOptions options = null, HttpClient httpClient = null, IBotTelemetryClient telemetryClient = null, bool logPersonalInformation = false)
+        /// <param name="telemetryClient">The IBotTelemetryClient used for logging telemetry events.</param>
+        /// <param name="logPersonalInformation">Set to true to include personally indentifiable information in telemetry events.</param>
+        public QnAMaker(QnAMakerService service, QnAMakerOptions options, HttpClient httpClient, IBotTelemetryClient telemetryClient, bool logPersonalInformation = false)
             : this(new QnAMakerEndpoint(service), options, httpClient, telemetryClient, logPersonalInformation)
+        {
+        }
+
+        /// Initializes a new instance of the <see cref="QnAMaker"/> class.
+        /// </summary>
+        /// <param name="service">QnA service details from configuration.</param>
+        /// <param name="options">The options for the QnA Maker knowledge base.</param>
+        /// <param name="httpClient">An alternate client with which to talk to QnAMaker.
+        /// If null, a default client is used for this instance.</param>
+        public QnAMaker(QnAMakerService service, QnAMakerOptions options = null, HttpClient httpClient = null)
+            : this(new QnAMakerEndpoint(service), options, httpClient, null)
         {
         }
 
@@ -106,13 +131,24 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </summary>
         /// <param name="turnContext">The Turn Context that contains the user question to be queried against your knowledge base.</param>
         /// <param name="options">The options for the QnA Maker knowledge base. If null, constructor option is used for this instance.</param>
+        /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
+        public Task<QueryResult[]> GetAnswersAsync(ITurnContext turnContext, QnAMakerOptions options = null)
+        {
+            return GetAnswersAsync(turnContext, options, null);
+        }
+
+        /// <summary>
+        /// Generates an answer from the knowledge base.
+        /// </summary>
+        /// <param name="turnContext">The Turn Context that contains the user question to be queried against your knowledge base.</param>
+        /// <param name="options">The options for the QnA Maker knowledge base. If null, constructor option is used for this instance.</param>
         /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the QnaMessage event.</param>
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the QnaMessage event.</param>
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
         public async Task<QueryResult[]> GetAnswersAsync(
                                         ITurnContext turnContext,
-                                        QnAMakerOptions options = null,
-                                        Dictionary<string, string> telemetryProperties = null,
+                                        QnAMakerOptions options,
+                                        Dictionary<string, string> telemetryProperties,
                                         Dictionary<string, double> telemetryMetrics = null)
         {
             if (turnContext == null)

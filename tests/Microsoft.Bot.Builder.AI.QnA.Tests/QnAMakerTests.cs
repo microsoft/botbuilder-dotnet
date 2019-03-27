@@ -646,20 +646,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
         }
 
-        private static TurnContext GetContext(string utterance)
-        {
-            var b = new TestAdapter();
-            var a = new Activity
-            {
-                Type = ActivityTypes.Message,
-                Text = utterance,
-                Conversation = new ConversationAccount(),
-                Recipient = new ChannelAccount(),
-                From = new ChannelAccount(),
-            };
-            return new TurnContext(b, a);
-        }
-
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
@@ -677,17 +663,15 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             {
                 KnowledgeBaseId = _knowlegeBaseId,
                 EndpointKey = _endpointKey,
-                Host = _hostname
+                Host = _hostname,
             };
             var options = new QnAMakerOptions
             {
-                Top = 1
+                Top = 1,
             };
 
             // Act (Null Telemetry client)
-            //
             //    This will default to the NullTelemetryClient which no-ops all calls.
-            //
             var qna = new QnAMaker(endpoint, options, client, null, true);
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
 
@@ -715,11 +699,11 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             {
                 KnowledgeBaseId = _knowlegeBaseId,
                 EndpointKey = _endpointKey,
-                Host = _hostname
+                Host = _hostname,
             };
             var options = new QnAMakerOptions
             {
-                Top = 1
+                Top = 1,
             };
             var telemetryClient = new Mock<IBotTelemetryClient>();
 
@@ -740,6 +724,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("articleFound"));
             Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).Count, 1);
             Assert.IsTrue(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).ContainsKey("score"));
+
             // Assert - Validate we didn't break QnA functionality.
             Assert.IsNotNull(results);
             Assert.AreEqual(results.Length, 1, "should get one result");
@@ -764,11 +749,11 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             {
                 KnowledgeBaseId = _knowlegeBaseId,
                 EndpointKey = _endpointKey,
-                Host = _hostname
+                Host = _hostname,
             };
             var options = new QnAMakerOptions
             {
-                Top = 1
+                Top = 1,
             };
             var telemetryClient = new Mock<IBotTelemetryClient>();
 
@@ -789,6 +774,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("articleFound"));
             Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).Count, 1);
             Assert.IsTrue(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).ContainsKey("score"));
+
             // Assert - Validate we didn't break QnA functionality.
             Assert.IsNotNull(results);
             Assert.AreEqual(results.Length, 1, "should get one result");
@@ -813,11 +799,11 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             {
                 KnowledgeBaseId = _knowlegeBaseId,
                 EndpointKey = _endpointKey,
-                Host = _hostname
+                Host = _hostname,
             };
             var options = new QnAMakerOptions
             {
-                Top = 1
+                Top = 1,
             };
             var telemetryClient = new Mock<IBotTelemetryClient>();
 
@@ -867,11 +853,11 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             {
                 KnowledgeBaseId = _knowlegeBaseId,
                 EndpointKey = _endpointKey,
-                Host = _hostname
+                Host = _hostname,
             };
             var options = new QnAMakerOptions
             {
-                Top = 1
+                Top = 1,
             };
             var telemetryClient = new Mock<IBotTelemetryClient>();
 
@@ -930,18 +916,16 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             {
                 KnowledgeBaseId = _knowlegeBaseId,
                 EndpointKey = _endpointKey,
-                Host = _hostname
+                Host = _hostname,
             };
             var options = new QnAMakerOptions
             {
-                Top = 1
+                Top = 1,
             };
             var telemetryClient = new Mock<IBotTelemetryClient>();
 
             // Act - Pass in properties during QnA invocation that override default properties
-            //
             //  NOTE: We are invoking this with PII turned OFF, and passing a PII property (originalQuestion).
-            //
             var qna = new QnAMaker(endpoint, options, client, telemetryClient.Object, false);
             var telemetryProperties = new Dictionary<string, string>
             {
@@ -991,11 +975,11 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             {
                 KnowledgeBaseId = _knowlegeBaseId,
                 EndpointKey = _endpointKey,
-                Host = _hostname
+                Host = _hostname,
             };
             var options = new QnAMakerOptions
             {
-                Top = 1
+                Top = 1,
             };
             var telemetryClient = new Mock<IBotTelemetryClient>();
 
@@ -1007,7 +991,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             //           - Set in GetAnswersAsync
             //       Logically, the GetAnswersAync should win.  But ultimately OnQnaResultsAsync decides since it is the last
             //       code to touch the properties before logging (since it actually logs the event).
-            //
             var qna = new OverrideFillTelemetry(endpoint, options, client, telemetryClient.Object, false);
             var telemetryProperties = new Dictionary<string, string>
             {
@@ -1042,9 +1025,19 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2])["score"], 3.14159);
         }
 
-
-
-
+        private static TurnContext GetContext(string utterance)
+        {
+            var b = new TestAdapter();
+            var a = new Activity
+            {
+                Type = ActivityTypes.Message,
+                Text = utterance,
+                Conversation = new ConversationAccount(),
+                Recipient = new ChannelAccount(),
+                From = new ChannelAccount(),
+            };
+            return new TurnContext(b, a);
+        }
 
         private string GetV2LegacyRequestUrl() => $"{_hostname}/v2.0/knowledgebases/{_knowlegeBaseId}/generateanswer";
 
@@ -1092,75 +1085,72 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             return new QnAMaker(endpoint, options, client);
         }
 
-    public class OverrideTelemetry : QnAMaker
-    {
-        public OverrideTelemetry(QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient, IBotTelemetryClient telemetryClient, bool logPersonalInformation)
-            : base(endpoint, options, httpClient, telemetryClient, logPersonalInformation)
+        public class OverrideTelemetry : QnAMaker
         {
+            public OverrideTelemetry(QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient, IBotTelemetryClient telemetryClient, bool logPersonalInformation)
+                : base(endpoint, options, httpClient, telemetryClient, logPersonalInformation)
+            {
+            }
+
+            protected override Task OnQnaResultsAsync(
+                                        QueryResult[] queryResults,
+                                        ITurnContext turnContext,
+                                        Dictionary<string, string> telemetryProperties = null,
+                                        Dictionary<string, double> telemetryMetrics = null,
+                                        CancellationToken cancellationToken = default(CancellationToken))
+            {
+                var properties = telemetryProperties ?? new Dictionary<string, string>();
+
+                // GetAnswerAsync overrides derived class.
+                properties.TryAdd("MyImportantProperty", "myImportantValue");
+
+                // Log event
+                TelemetryClient.TrackEvent(
+                                QnATelemetryConstants.QnaMsgEvent,
+                                properties);
+
+                // Create second event.
+                var secondEventProperties = new Dictionary<string, string>();
+                secondEventProperties.Add("MyImportantProperty2", "myImportantValue2");
+                TelemetryClient.TrackEvent(
+                                "MySecondEvent",
+                                secondEventProperties);
+                return Task.CompletedTask;
+            }
         }
 
-        protected override Task OnQnaResultsAsync(
-                                    QueryResult[] queryResults, 
-                                    ITurnContext turnContext, 
-                                    Dictionary<string, string> telemetryProperties = null, 
-                                    Dictionary<string, double> telemetryMetrics = null, 
-                                    CancellationToken cancellationToken = default(CancellationToken))
+        public class OverrideFillTelemetry : QnAMaker
         {
-            var properties = telemetryProperties ?? new Dictionary<string, string>();
-            // GetAnswerAsync overrides derived class.
-            properties.TryAdd("MyImportantProperty", "myImportantValue");
+            public OverrideFillTelemetry(QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient, IBotTelemetryClient telemetryClient, bool logPersonalInformation)
+                : base(endpoint, options, httpClient, telemetryClient, logPersonalInformation)
+            {
+            }
 
-            // Log event
-            TelemetryClient.TrackEvent(
-                            QnATelemetryConstants.QnaMsgEvent,
-                            properties);
+            protected override async Task OnQnaResultsAsync(
+                                        QueryResult[] queryResults,
+                                        ITurnContext turnContext,
+                                        Dictionary<string, string> telemetryProperties = null,
+                                        Dictionary<string, double> telemetryMetrics = null,
+                                        CancellationToken cancellationToken = default(CancellationToken))
+            {
+                var eventData = await FillQnAEventAsync(queryResults, turnContext, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
 
-            // Create second event.
-            var secondEventProperties = new Dictionary<string, string>();
-            secondEventProperties.Add("MyImportantProperty2",
-                                       "myImportantValue2");
-            TelemetryClient.TrackEvent(
-                            "MySecondEvent",
-                            secondEventProperties);
-            return Task.CompletedTask;
+                // Add my property
+                eventData.Properties.Add("MyImportantProperty", "myImportantValue");
+
+                // Log QnaMessage event
+                TelemetryClient.TrackEvent(
+                                QnATelemetryConstants.QnaMsgEvent,
+                                eventData.Properties,
+                                eventData.Metrics);
+
+                // Create second event.
+                var secondEventProperties = new Dictionary<string, string>();
+                secondEventProperties.Add("MyImportantProperty2", "myImportantValue2");
+                TelemetryClient.TrackEvent(
+                                "MySecondEvent",
+                                secondEventProperties);
+            }
         }
-    }
-
-    public class OverrideFillTelemetry : QnAMaker
-    {
-        public OverrideFillTelemetry(QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient, IBotTelemetryClient telemetryClient, bool logPersonalInformation)
-            : base(endpoint, options, httpClient, telemetryClient, logPersonalInformation)
-        {
-        }
-
-        protected override async Task OnQnaResultsAsync(
-                                    QueryResult[] queryResults,
-                                    ITurnContext turnContext,
-                                    Dictionary<string, string> telemetryProperties = null,
-                                    Dictionary<string, double> telemetryMetrics = null,
-                                    CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var eventData = await FillQnAEventAsync(queryResults, turnContext, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
-
-            // Add my property
-            eventData.Properties.Add("MyImportantProperty", "myImportantValue");
-
-            // Log QnaMessage event
-            TelemetryClient.TrackEvent(
-                            QnATelemetryConstants.QnaMsgEvent,
-                            eventData.Properties,
-                            eventData.Metrics
-                            );
-
-            // Create second event.
-            var secondEventProperties = new Dictionary<string, string>();
-            secondEventProperties.Add("MyImportantProperty2",
-                                       "myImportantValue2");
-            TelemetryClient.TrackEvent(
-                            "MySecondEvent",
-                            secondEventProperties);
-        }
-    }
-
     }
 }
