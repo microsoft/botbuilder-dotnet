@@ -14,6 +14,7 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.TestBot.Json.Recognizers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Debugger;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -31,7 +32,14 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
             Configuration = builder.Build();
 
-            RegisterTypes();
+            // set the configuration for types
+            TypeFactory.Configuration = this.Configuration;
+
+            // register adaptive library types
+            TypeFactory.RegisterAdaptiveTypes();
+
+            // register custom types
+            TypeFactory.Register("Testbot.RuleRecognizer", typeof(RuleRecognizer));
         }
 
         public IHostingEnvironment HostingEnvironment { get; }
@@ -41,6 +49,8 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IConfiguration>(this.Configuration);
+
             IStorage dataStore = new MemoryStorage();
             var conversationState = new ConversationState(dataStore);
             var userState = new UserState(dataStore);
@@ -61,7 +71,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 (IServiceProvider sp) =>
                 {
                     // declarative Adaptive dialogs bot sample
-                    return new TestBot(accessors, botResourceManager);
+                    return new TestBot(accessors, botResourceManager, Source.NullRegistry.Instance);
 
                     // LG bot sample
                     // return new TestBotLG(accessors);
@@ -74,14 +84,13 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                         await conversationState.SaveChangesAsync(turnContext);
                     };
 
-                    
-
-                    // create LG 
-                    var lg = new LGLanguageGenerator(botResourceManager);
                     options.Middleware.Add(new RegisterClassMiddleware<IStorage>(dataStore));
                     options.Middleware.Add(new RegisterClassMiddleware<IBotResourceProvider>(botResourceManager));
+
+                    var lg = new LGLanguageGenerator(botResourceManager);
                     options.Middleware.Add(new RegisterClassMiddleware<ILanguageGenerator>(lg));
                     options.Middleware.Add(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)));
+
                     options.Middleware.Add(new AutoSaveStateMiddleware(conversationState));
                 });
         }
@@ -98,11 +107,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 .UseStaticFiles()
                 .UseBotFramework();
             app.UseExceptionHandler();
-        }
-
-        private void RegisterTypes()
-        {
-            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
         }
     }
 }

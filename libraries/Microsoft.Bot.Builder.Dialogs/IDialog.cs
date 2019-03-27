@@ -91,8 +91,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of conversation.</param>
         /// <param name="e">The event being raised.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>True if the event is handled by the current dialog and bubbling should stop.</returns>
-        Task<bool> OnDialogEventAsync(DialogContext dc, DialogEvent e);
+        Task<bool> OnDialogEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken);
 
         /// <summary>
         /// Should be overridden by dialogs that support multi-turn conversations. A function for 

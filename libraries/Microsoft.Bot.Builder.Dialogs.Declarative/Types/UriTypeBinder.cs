@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
         public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
         {
             assemblyName = null;
-            typeName = Factory.NameFromType(serializedType).ToString();
+            typeName = TypeFactory.NameFromType(serializedType).ToString();
 
             if (string.IsNullOrEmpty(typeName))
             {
@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
 
         public override Type BindToType(string assemblyName, string typeName)
         {
-            var type = Factory.TypeFromName(typeName);
+            var type = TypeFactory.TypeFromName(typeName);
 
             if (type != default(Type))
             {
