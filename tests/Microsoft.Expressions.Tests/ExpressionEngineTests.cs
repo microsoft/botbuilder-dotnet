@@ -118,20 +118,7 @@ namespace Microsoft.Expressions.Tests
             var parsed = ExpressionEngine.Parse(input);
             var actual = ExpressionEngine.Evaluate(parsed, scope);
 
-            // Compare two arrays
-            if (expected is object[] expectedArray
-                && actual is object[] actualArray)
-            {
-                Assert.AreEqual(expectedArray.Length, actualArray.Length);
-                for(var i=0; i < expectedArray.Length; i++)
-                {
-                    Assert.AreEqual(expectedArray[i], actualArray[i]);
-                }
-            }
-            else
-            {
-                Assert.AreEqual(expected, actual);
-            }
+            AssertObjectEquals(expected, actual);
         }
 
         [DataTestMethod]
@@ -160,7 +147,8 @@ namespace Microsoft.Expressions.Tests
             object actual = null;
             var success = ExpressionEngine.TryEvaluate(input, scope, out actual);
             Assert.IsTrue(success);
-            Assert.AreEqual(expected, actual);
+
+            AssertObjectEquals(expected, actual);
         }
 
         public static IEnumerable<object[]> JsonData => new[]
@@ -184,7 +172,25 @@ namespace Microsoft.Expressions.Tests
 
             var parsed = ExpressionEngine.Parse(input);
             var actual = ExpressionEngine.Evaluate(parsed, scope);
-            Assert.AreEqual(expected, actual);
+            AssertObjectEquals(expected, actual);
+        }
+
+        private void AssertObjectEquals(object expected, object actual)
+        {
+            // Compare two arrays
+            if (expected is object[] expectedArray
+                && actual is object[] actualArray)
+            {
+                Assert.AreEqual(expectedArray.Length, actualArray.Length);
+                for (var i = 0; i < expectedArray.Length; i++)
+                {
+                    Assert.AreEqual(expectedArray[i], actualArray[i]);
+                }
+            }
+            else
+            {
+                Assert.AreEqual(expected, actual);
+            }
         }
     }
 }
