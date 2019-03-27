@@ -1,0 +1,3 @@
+﻿# template
+- CASE: {foo == 'bar'}
+   - ok

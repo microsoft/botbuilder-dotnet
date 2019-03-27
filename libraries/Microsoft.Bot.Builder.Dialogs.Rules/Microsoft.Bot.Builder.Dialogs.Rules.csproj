@@ -53,33 +53,47 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Schemas\Dialogs\Microsoft.RuleDialog.schema" />
+    <None Remove="Schemas\Dialogs\Microsoft.AdaptiveDialog.schema" />
+    <None Remove="Schemas\Recognizers\Microsoft.MultiLanguageRecognizers.schema" />
     <None Remove="Schemas\Recognizers\Microsoft.RegexRecognizer.schema" />
+    <None Remove="Schemas\Rules\Microsoft.BeginDialogRule.schema" />
+    <None Remove="Schemas\Rules\Microsoft.DefaultRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.EventRule.schema" />
-    <None Remove="Schemas\Rules\Microsoft.FallbackRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.IfPropertyRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.IntentRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.ReplacePlanRule.schema" />
+    <None Remove="Schemas\Rules\Microsoft.Rule.schema" />
     <None Remove="Schemas\Rules\Microsoft.WelcomeRule.schema" />
     <None Remove="Schemas\Steps\Microsoft.CallDialog.schema" />
     <None Remove="Schemas\Steps\Microsoft.CancelDialog.schema" />
+    <None Remove="Schemas\Steps\Microsoft.ChangeList.schema" />
     <None Remove="Schemas\Steps\Microsoft.EndDialog.schema" />
     <None Remove="Schemas\Steps\Microsoft.GotoDialog.schema" />
+    <None Remove="Schemas\Steps\Microsoft.HttpRequest.schema" />
     <None Remove="Schemas\Steps\Microsoft.IfProperty.schema" />
+    <None Remove="Schemas\Steps\Microsoft.SaveEntity.schema" />
     <None Remove="Schemas\Steps\Microsoft.SendActivity.schema" />
+    <None Remove="Schemas\Steps\Microsoft.SendList.schema" />
     <None Remove="Schemas\Steps\Microsoft.WaitForInput.schema" />
   </ItemGroup>
   
   <ItemGroup>
-    <Content Include="Schemas\Dialogs\Microsoft.RuleDialog.schema" />
+    <Content Include="Schemas\Dialogs\Microsoft.AdaptiveDialog.schema" />
     <Content Include="Schemas\Microsoft.IRule.schema" />
+    <Content Include="Schemas\Recognizers\Microsoft.MultiLanguageRecognizers.schema" />
     <Content Include="Schemas\Recognizers\Microsoft.RegexRecognizer.schema" />
+    <Content Include="Schemas\Rules\Microsoft.Rule.schema" />
+    <Content Include="Schemas\Rules\Microsoft.BeginDialogRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.EventRule.schema" />
-    <Content Include="Schemas\Rules\Microsoft.FallbackRule.schema" />
+    <Content Include="Schemas\Rules\Microsoft.DefaultRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.IfPropertyRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.IntentRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.ReplacePlanRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.WelcomeRule.schema" />
+    <Content Include="Schemas\Steps\Microsoft.HttpRequest.schema" />
+    <Content Include="Schemas\Steps\Microsoft.SendList.schema" />
+    <Content Include="Schemas\Steps\Microsoft.SaveEntity.schema" />
+    <Content Include="Schemas\Steps\Microsoft.ChangeList.schema" />
     <Content Include="Schemas\Steps\Microsoft.CallDialog.schema" />
     <Content Include="Schemas\Steps\Microsoft.CancelDialog.schema" />
     <Content Include="Schemas\Steps\Microsoft.EndDialog.schema" />

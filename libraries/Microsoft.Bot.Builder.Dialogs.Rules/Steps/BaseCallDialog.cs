@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
         /// <summary>
         /// The property from memory to pass to the calling dialog and to set the return value to.
         /// </summary>
-        public string Property
+        public override string Property
         {
             get
             {

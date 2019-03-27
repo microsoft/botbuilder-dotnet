@@ -1,48 +1,50 @@
 {
-  "$schema": "../../Schemas/app.schema",
-  "$type": "Microsoft.RuleDialog",
-  "$id":  "AddToDoDialog",
-  "storage": {
-    "$type": "Microsoft.MemoryStorage"
-  },
-  "rules": [
-    {
-      "$type": "Microsoft.FallbackRule",
-      "steps": [
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "rules": [
         {
-          "$type": "Microsoft.SaveEntity",
-          "entityName": "title",
-          "property": "user.todo"
+            "$type": "Microsoft.DefaultRule",
+            "steps": [
+                {
+                    "$type": "Microsoft.SaveEntity",
+                    "entity": "title",
+                    "property": "dialog.todo"
+                },
+                {
+                    "$type": "Microsoft.IfProperty",
+                    "expression": "dialog.todo == null",
+                    "ifTrue": [
+                        {
+                            "$type": "Microsoft.TextPrompt",
+                            "initialPrompt": "OK, please enter the title of your todo.",
+                            "property": "dialog.todo"
+                        }
+                    ]
+                },
+                {
+                    "$type": "Microsoft.ChangeList",
+                    "changeType": "Push",
+                    "listProperty": "user.todos",
+                    "itemProperty": "dialog.todo"
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Successfully added a todo named \"{dialog.todo}\""
+                },
+                {
+                    "$type": "Microsoft.ClearProperty",
+                    "property": "dialog.todo"
+                }
+            ]
         },
         {
-          "$type": "Microsoft.IfProperty",
-          "expression": "user.todo == null",
-          "ifTrue": [
-            {
-              "$type": "Microsoft.SendActivity",
-              "activity": "OK, please enter the title of your todo."
-            },
-            {
-              "$type": "Microsoft.WaitForInput",
-              "property": "user.todo"
-            }
-          ]
-        },
-        {
-          "$type": "Microsoft.ChangeList",
-          "changeType": "0",
-          "listProperty": "user.todos",
-          "itemProperty": "user.todo"
-        },
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "Successfully added a todo named \"{user.todo}\""
-        },
-        {
-          "$type": "Microsoft.ClearProperty",
-          "property": "user.todo" 
+            "$type": "Microsoft.IntentRule",
+            "intent": "CancelIntent",
+            "steps": [
+                {
+                    "$type": "Microsoft.CancelDialog"
+                }
+            ]
         }
-      ]
-    }
-  ]   
+    ]
 }

@@ -1,11 +1,11 @@
 {
   "$schema": "../../app.schema",
-  "$type": "Microsoft.RuleDialog",
+  "$type": "Microsoft.AdaptiveDialog",
   "recognizer": {
     "$type": "Microsoft.RegexRecognizer",
     "intents": {
-      "JokeIntent": "joke",
-      "FortuneTellerIntent":  "fortune|future"
+        "JokeIntent": "(?i)joke",
+        "FortuneTellerIntent": "(?i)fortune|future"
     }
   },
   "rules": [
@@ -54,7 +54,7 @@
       ]
     },
     {
-      "$type": "Microsoft.FallbackRule",
+      "$type": "Microsoft.DefaultRule",
       "steps": [
         {
           "$type": "Microsoft.IfProperty",

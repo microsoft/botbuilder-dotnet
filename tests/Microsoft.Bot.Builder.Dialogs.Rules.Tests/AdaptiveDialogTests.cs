@@ -22,11 +22,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 {
     [TestClass]
-    public class RuleDialogTests
+    public class AdaptiveDialogTests
     {
         public TestContext TestContext { get; set; }
 
-        private TestFlow CreateFlow(RuleDialog ruleDialog, ConversationState convoState, UserState userState)
+        private TestFlow CreateFlow(AdaptiveDialog ruleDialog, ConversationState convoState, UserState userState)
         {
             var botResourceManager = new BotResourceManager();
             var lg = new LGLanguageGenerator(botResourceManager);
@@ -61,9 +61,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var ruleDialog = new RuleDialog("planningTest");
+            var ruleDialog = new AdaptiveDialog("planningTest");
 
-            ruleDialog.AddRule(new FallbackRule(
+            ruleDialog.AddRule(new DefaultRule(
                     new List<IDialog>()
                     {
                         new SendActivity("Hello Planning!")
@@ -81,9 +81,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var ruleDialog = new RuleDialog("planningTest");
+            var ruleDialog = new AdaptiveDialog("planningTest");
 
-            ruleDialog.AddRule(new FallbackRule(new List<IDialog>()
+            ruleDialog.AddRule(new DefaultRule(new List<IDialog>()
                     {
                         new SendActivity("Hello Planning!"),
                         new SendActivity("Howdy awain")
@@ -102,14 +102,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var ruleDialog = new RuleDialog("planningTest");
+            var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.AddRule(
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
-                        new SendActivity("Hello, what is your name?"),
-                        new WaitForInput("user.name"),
+                        new TextPrompt()
+                        {
+                            InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
+                            OutputBinding = "user.name"
+                        },
                         new SendActivity("Hello {user.name}, nice to meet you!"),
                     }));
 
@@ -127,37 +130,50 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var planningDialog = new RuleDialog("planningTest");
+            var planningDialog = new AdaptiveDialog("planningTest");
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         // Add item
-                        new SendActivity("Please add an item to todos."),
-                        new WaitForInput("user.todo"),
-                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "user.todo"),
+                        new TextPrompt() {
+                            InitialPrompt = new ActivityTemplate("Please add an item to todos."),
+                            OutputBinding = "dialog.todo"
+                        },
+                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "dialog.todo"),
                         new SendList("user.todos"),
-                        new SendActivity("Please add an item to todos."),
-                        new WaitForInput("user.todo"),
-                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "user.todo"),
+                        new TextPrompt()
+                        {
+                            InitialPrompt = new ActivityTemplate("Please add an item to todos."),
+                            OutputBinding = "dialog.todo"
+                        },
+                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "dialog.todo"),
                         new SendList("user.todos"),
 
                         // Remove item
-                        new SendActivity("Enter a item to remove."),
-                        new WaitForInput("user.todo"),
-                        new ChangeList(ChangeList.ChangeListType.Remove, "user.todos", "user.todo"),
+                        new TextPrompt() {
+                            InitialPrompt = new ActivityTemplate("Enter a item to remove."),
+                            OutputBinding = "dialog.todo"
+                        },
+                        new ChangeList(ChangeList.ChangeListType.Remove, "user.todos", "dialog.todo"),
                         new SendList("user.todos"),
 
                         // Add item and pop item
-                        new SendActivity("Please add an item to todos."),
-                        new WaitForInput("user.todo"),
-                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "user.todo"),
-                        new SendActivity("Please add an item to todos."),
-                        new WaitForInput("user.todo"),
-                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "user.todo"),
+                        new TextPrompt() {
+                            InitialPrompt = new ActivityTemplate("Please add an item to todos."),
+                            OutputBinding = "dialog.todo"
+                        },
+                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "dialog.todo"),
+                        new TextPrompt()
+                        {
+                            InitialPrompt = new ActivityTemplate("Please add an item to todos."),
+                            OutputBinding = "dialog.todo"
+                        },
+                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "dialog.todo"),
                         new SendList("user.todos"),
+
                         new ChangeList(ChangeList.ChangeListType.Pop, "user.todos"),
                         new SendList("user.todos"),
 
@@ -198,9 +214,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var ruleDialog = new RuleDialog("planningTest");
+            var ruleDialog = new AdaptiveDialog("planningTest");
 
-            ruleDialog.AddRule(new FallbackRule(
+            ruleDialog.AddRule(new DefaultRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -208,8 +224,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             Expression = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
-                                new SendActivity("Hello, what is your name?"),
-                                new WaitForInput("user.name"),
+                                new TextPrompt() {
+                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
+                                    OutputBinding = "user.name"
+                                },
                             }
                         },
                         new SendActivity("Hello {user.name}, nice to meet you!")
@@ -229,10 +247,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var ruleDialog = new RuleDialog("planningTest");
+            var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.AddRule(
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -264,7 +282,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var ruleDialog = new RuleDialog("planningTest");
+            var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.AddRules(new List<IRule>()
             {
@@ -273,7 +291,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new SendActivity("Welcome my friend!")
                     }),
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -292,7 +310,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     })});
 
             await CreateFlow(ruleDialog, convoState, userState)
-            .Send(new Activity() { Type = ActivityTypes.ConversationUpdate, MembersAdded = new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") , new ChannelAccount("user", "User") } })
+            .Send(new Activity() { Type = ActivityTypes.ConversationUpdate, MembersAdded = new List<ChannelAccount>() { new ChannelAccount("bot", "Bot"), new ChannelAccount("user", "User") } })
             .Send("hi")
                 .AssertReply("Welcome my friend!")
                 .AssertReply("Hello, what is your name?")
@@ -307,7 +325,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var ruleDialog = new RuleDialog("planningTest");
+            var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 
@@ -320,7 +338,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                         new WaitForInput(),
                         new SendActivity("To get to the other side")
                     }),
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -358,7 +376,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var ruleDialog = new RuleDialog("planningTest");
+            var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 
@@ -376,7 +394,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                     }),
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -415,7 +433,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var ruleDialog = new RuleDialog("planningTest");
+            var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 
@@ -424,10 +442,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new ReplacePlanRule("JokeIntent",
                     steps: new List<IDialog>()
                     {
-                        new RuleDialog("TellJokeDialog")
+                        new AdaptiveDialog("TellJokeDialog")
                         {
                             Rules = new List<IRule>() {
-                                new FallbackRule(new List<IDialog>()
+                                new DefaultRule(new List<IDialog>()
                                 {
                                     new SendActivity("Why did the chicken cross the road?"),
                                     new WaitForInput(),
@@ -441,14 +459,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                     }),
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
-                        new RuleDialog("AskNameDialog")
+                        new AdaptiveDialog("AskNameDialog")
                         {
                             Rules = new List<IRule>()
                             {
-                                new FallbackRule(new List<IDialog>()
+                                new DefaultRule(new List<IDialog>()
                                     {
                                         new IfProperty()
                                         {
@@ -491,7 +509,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var ruleDialog = new RuleDialog("planningTest");
+            var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 
@@ -507,18 +525,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                     }),
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new CallDialog("AskNameDialog")
                     })});
 
             ruleDialog.AddDialog(new[] {
-                new RuleDialog("AskNameDialog")
+                new AdaptiveDialog("AskNameDialog")
                 {
                     Rules = new List<IRule>()
                     {
-                        new FallbackRule(new List<IDialog>()
+                        new DefaultRule(new List<IDialog>()
                         {
                             new IfProperty()
                             {
@@ -540,10 +558,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 });
 
             ruleDialog.AddDialog(new[] {
-                new RuleDialog("TellJokeDialog")
+                new AdaptiveDialog("TellJokeDialog")
                     {
                         Rules = new List<IRule>() {
-                            new FallbackRule(new List<IDialog>()
+                            new DefaultRule(new List<IDialog>()
                             {
                                 new SendActivity("Why did the chicken cross the road?"),
                                 new WaitForInput(),
@@ -574,7 +592,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var planningDialog = new RuleDialog("planningTest");
+            var planningDialog = new AdaptiveDialog("planningTest");
 
             planningDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 

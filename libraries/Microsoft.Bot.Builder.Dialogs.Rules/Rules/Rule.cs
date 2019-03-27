@@ -68,6 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
                     (value, error) = this.expression.TryEvaluate(vars);
                     if (error != null)
                     {
+                        System.Diagnostics.Trace.TraceWarning(error);
                         value = false;
                     }
                 }

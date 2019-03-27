@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Rules.Rules;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
@@ -43,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         public StoredBotState NewState { get; set; }
     }
 
-    public class RuleDialog : Dialog
+    public class AdaptiveDialog : Dialog
     {
         private bool installedDependencies = false;
         protected readonly DialogSet dialogs = new DialogSet();
@@ -73,7 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             }
         }
 
-        public RuleDialog(string dialogId = null)
+        public AdaptiveDialog(string dialogId = null)
             : base(dialogId)
         {
         }
@@ -121,7 +122,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             // First consult plan
             var consultation = await ConsultPlanAsync(planning).ConfigureAwait(false);
 
-            if (consultation == null || consultation.Desire != DialogConsultationDesires.ShouldPrcess)
+            if (consultation == null || consultation.Desire != DialogConsultationDesires.ShouldProcess)
             {
                 // Next evaluate rules
                 var changesQueued = await EvaluateRulesAsync(planning, new DialogEvent() { Name = PlanningEvents.ConsultDialog.ToString(), Value = null, Bubble = false }).ConfigureAwait(false);
@@ -130,7 +131,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                 {
                     consultation = new DialogConsultation()
                     {
-                        Desire = DialogConsultationDesires.ShouldPrcess,
+                        Desire = DialogConsultationDesires.ShouldProcess,
                         Processor = (ctx) => this.ContinuePlanAsync(planning)
                     };
                 }
@@ -347,8 +348,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                     UserState = storedState.UserState,
                     DialogStack = storedState.DialogStack
                 },
-                storedState.ConversationState,
-                storedState.UserState);
+                conversationState: storedState.ConversationState,
+                userState: storedState.UserState);
 
             // Execute component
             var result = await dc.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
@@ -632,6 +633,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                 var result = error == null && (bool)value;
                 if (result == true)
                 {
+                    System.Diagnostics.Trace.TraceInformation($"Executing Dialog: {this.Id} Rule[{i}]: {Rules[i].GetType().Name}: {expression}");
                     var changes = await Rules[i].ExecuteAsync(planning).ConfigureAwait(false);
 
                     if (changes != null && changes.Count > 0)
@@ -656,6 +658,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                 var result = error == null && (bool)value;
                 if (result == true)
                 {
+                    System.Diagnostics.Trace.TraceInformation($"Executing Dialog: {this.Id} Rule[{i}]: {Rules[i].GetType().Name}: {expression}");
                     var changes = await Rules[i].ExecuteAsync(planning).ConfigureAwait(false);
 
                     if (changes != null)

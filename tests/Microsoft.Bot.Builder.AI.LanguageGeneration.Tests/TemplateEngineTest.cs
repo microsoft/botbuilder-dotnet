@@ -4,12 +4,15 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
 using System.Linq;
+using Microsoft.Expressions;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 {
     [TestClass]
     public class TemplateEngineTest
     {
+        public TestContext TestContext { get; set; }
+
         private string GetExampleFilePath(string fileName)
         {
             return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "Examples\\" + fileName;
@@ -255,9 +258,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var engine = TemplateEngine.FromFile(GetExampleFilePath("EscapeCharacter.lg"));
             var evaled1 = engine.EvaluateTemplate("wPhrase", null);
             Assert.AreEqual(evaled1, "Hi \r\n\t[]{}\\");
-
-            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("wPhrase2", null));
-            Assert.ThrowsException<Exception>(() => engine.EvaluateTemplate("wPhrase3", null));
         }
 
 
@@ -279,5 +279,19 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsTrue(evaled3.All(evaled3Options.Contains) && evaled3.Count == evaled3Options.Count);
         }
 
+        [TestMethod]
+        public void TestExceptionCatch()
+        {
+            var engine = TemplateEngine.FromFile(GetExampleFilePath("ExceptionCatch.lg"));
+            try
+            {
+                engine.EvaluateTemplate("NoVariableMatch", null);
+            }
+            catch (Exception e)
+            {
+                Assert.IsInstanceOfType(e, typeof(ExpressionEvaluationException));
+                TestContext.WriteLine(e.Message);
+            }
+        }
     }
 }

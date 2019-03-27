@@ -54,13 +54,19 @@
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Schemas\Microsoft.ILanguagePolicy.schema" />
+    <None Remove="Schemas\Policies\Microsoft.LanguagePolicy.schema" />
+  </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Schemas\Microsoft.ILanguagePolicy.schema" />
     <Content Include="Schemas\Microsoft.ITextTemplate.schema" />
     <Content Include="Schemas\Microsoft.IActivityTemplate.schema" />
     <Content Include="Schemas\Microsoft.IDialog.schema" />
     <Content Include="Schemas\Microsoft.IExpression.schema" />
     <Content Include="Schemas\Microsoft.IRecognizer.schema" />
+    <Content Include="Schemas\Policies\Microsoft.LanguagePolicy.schema" />
   </ItemGroup>
 
   <ItemGroup>

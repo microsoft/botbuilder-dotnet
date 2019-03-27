@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 parameters[0] is IList li && 
                 parameters[1] is string func)
             {
-                if (!_evaluator.Context.TemplateContexts.ContainsKey(func))
+                if (!IsTemplateRef(ref func) || !_evaluator.Context.TemplateContexts.ContainsKey(func))
                 {
                     throw new Exception($"No such template defined: {func}");
                 }
@@ -135,6 +135,21 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             }
 
             throw new NotImplementedException();
+        }
+
+
+        private bool IsTemplateRef(ref string templateName)
+        {
+            if (string.IsNullOrWhiteSpace(templateName))
+                return false;
+
+            if(templateName.StartsWith("[") && templateName.EndsWith("]"))
+            {
+                templateName = templateName.Substring(1, templateName.Length - 2);
+                return true;
+            }
+
+            return false;
         }
     }
 }

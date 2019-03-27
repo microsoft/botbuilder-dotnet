@@ -92,6 +92,28 @@ namespace Microsoft.Bot.Builder.Dialogs
             state[PersistedOptions] = promptOptions;
             state[PersistedState] = new ExpandoObject();
 
+            if (!String.IsNullOrEmpty(Property))
+            {
+                var tokens = dc.State.Query(Property);
+                if (tokens.Any())
+                {
+                    var value = dc.State.GetValue<TValue>(Property);
+                    if (_validator != null)
+                    {
+                        var promptContext = new PromptValidatorContext<TValue>(dc.Context, new PromptRecognizerResult<TValue>() { Succeeded = true, Value = value }, state, promptOptions);
+                        var isValid = await _validator(promptContext, cancellationToken).ConfigureAwait(false);
+                        if (isValid)
+                        {
+                            return await dc.EndDialogAsync(value).ConfigureAwait(false);
+                        }
+                    }
+                    else if (value != null)
+                    {
+                        return await dc.EndDialogAsync(value).ConfigureAwait(false);
+                    }
+                }
+            }
+
             // Send initial prompt
             await OnBeforePromptAsync(dc, false, cancellationToken).ConfigureAwait(false);
             await OnPromptAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (TPromptOptions)state[PersistedOptions], false, cancellationToken).ConfigureAwait(false);

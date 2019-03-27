@@ -1,0 +1,36 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "Change List Step",
+    "description": "This is a step which allows you to modify a collection in memory",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "changeType": {
+            "type": "string",
+            "title": "Change Type",
+            "description": "The list operation to perform",
+            "enum": [
+                "Push",
+                "Pop",
+                "Take",
+                "Remove",
+                "Clear"
+            ]
+        },
+        "listProperty": {
+            "type": "string",
+            "title": "List Property",
+            "description": "Memory expression of the list to manipulate."
+        },
+        "itemProperty": {
+            "type": "string",
+            "title": "List Property",
+            "description": "Memory expression for the item"
+        }
+    },
+    "required": [
+        "changeType",
+        "listProperty"
+    ]
+}

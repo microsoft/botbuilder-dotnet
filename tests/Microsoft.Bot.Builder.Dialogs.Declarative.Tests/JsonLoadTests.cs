@@ -12,6 +12,7 @@ using Microsoft.Bot.Schema;
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Rules;
 using System;
+using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 {
@@ -20,20 +21,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
     {
         private readonly string samplesDirectory = @"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Samples\";
 
-        [TestInitialize]
-        public void TestInitialize()
+        [ClassInitialize]
+        public static void ClassInitilize(TestContext context)
         {
-            Factory.Reset();
+            TypeFactory.Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
+            TypeFactory.RegisterAdaptiveTypes();
+            TypeFactory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
         }
 
         public TestContext TestContext { get; set; }
 
         [TestMethod]
-        public async Task JsonDialogLoad_Fallback()
+        public async Task JsonDialogLoad_DefaultRule()
         {
-            string json = File.ReadAllText(samplesDirectory + @"Planning 1 - Fallback\Fallback.main.dialog");
-
-            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
+            string json = File.ReadAllText(samplesDirectory + @"Planning 1 - DefaultRule\DefaultRule.main.dialog");
 
             await BuildTestFlow(json)
             .Send("hello")
@@ -46,13 +47,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         {
             string json = File.ReadAllText(samplesDirectory + @"Planning 2 - WaitForInput\WaitForInput.main.dialog");
 
-            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
-
             await BuildTestFlow(json)
             .Send("hello")
-            .AssertReply("Hello, I'm Zoidberg. What is your name?")
-            .Send("Carlos")
-            .AssertReply("Hello Carlos, nice to meet you!")
+            .AssertReply("What's up?")
+            .Send("Nothing")
+            .AssertReply("Oh I see!")
             .StartTestAsync();
         }
 
@@ -60,8 +59,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         public async Task JsonDialogLoad_IfProperty()
         {
             string json = File.ReadAllText(samplesDirectory + @"Planning 3 - IfProperty\IfProperty.main.dialog");
-
-            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
             .Send("hello")
@@ -76,8 +73,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         {
             string json = File.ReadAllText(samplesDirectory + @"Planning 4 - TextPrompt\TextPrompt.main.dialog");
 
-            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
-
             await BuildTestFlow(json)
             .Send("hello")
             .AssertReply("Hello, I'm Zoidberg. What is your name?")
@@ -90,8 +85,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         public async Task JsonDialogLoad_WelcomePrompt()
         {
             string json = File.ReadAllText(samplesDirectory + @"Planning 5 - WelcomeRule\WelcomeRule.main.dialog");
-
-            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
@@ -107,8 +100,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         public async Task JsonDialogLoad_DoSteps()
         {
             string json = File.ReadAllText(samplesDirectory + @"Planning 6 - DoSteps\DoSteps.main.dialog");
-
-            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
@@ -133,8 +124,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         {
             string json = File.ReadAllText(samplesDirectory + @"Planning 7 - CallDialog\CallDialog.main.dialog");
 
-            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
-
             await BuildTestFlow(json)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
             .Send("hello")
@@ -157,8 +146,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         public async Task JsonDialogLoad_ExternalLanguage()
         {
             string json = File.ReadAllText(samplesDirectory + @"Planning 8 - ExternalLanguage\ExternalLanguage.main.dialog");
-
-            Factory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
 
             await BuildTestFlow(json)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
@@ -193,6 +180,55 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task JsonDialogLoad_ToDoBot()
+        {
+            string json = File.ReadAllText(samplesDirectory + @"Planning - ToDoBot\TodoBot.main.dialog");
+
+            await BuildTestFlow(json)
+            .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
+            .Send("hello")
+            .AssertReply("Hi! I'm a ToDo bot. Say \"add a todo named first\" to get started.")
+            .Send("add a todo named first")
+            .AssertReply("Successfully added a todo named \"first\"")
+            .Send("add a todo named second")
+            .AssertReply("Successfully added a todo named \"second\"")
+            .Send("add a todo")
+            .AssertReply("OK, please enter the title of your todo.")
+            .Send("third")
+            .AssertReply("Successfully added a todo named \"third\"")
+            .Send("show todos")
+            .AssertReply("Your most recent 3 tasks are\n* first\n* second\n* third\n")
+            .Send("delete todo named second")
+            .AssertReply("Successfully removed a todo named \"second\"")
+            .Send("show todos")
+            .AssertReply("Your most recent 2 tasks are\n* first\n* third\n")
+            .Send("add a todo")
+            .AssertReply("OK, please enter the title of your todo.")
+            .Send("cancel")
+            .AssertReply("ok.")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task JsonDialogLoad_HttpRequest()
+        {
+            string json = File.ReadAllText(samplesDirectory + @"Planning 11 - HttpRequest\HttpRequest.main.dialog");
+
+            await BuildTestFlow(json)
+            .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
+            .Send("Hello")
+            .AssertReply("Welcome! Here is a http request sample, please enter a name for you visual pet.")
+            .Send("TestPetName")
+            .AssertReply("Great! Your pet's name is TestPetName, now please enter the id of your pet, this could help you find your pet later.")
+            .Send("12121")
+            .AssertReply("Done! You have added a pet named \"TestPetName\" with id \"12121\"")
+            .AssertReply("Now try to specify the id of your pet, and I will help your find it out from the store.")
+            .Send("12121")
+            .AssertReply("Great! I found your pet named \"TestPetName\"")
+            .StartTestAsync();
+        }
+
         private TestFlow BuildTestFlow(string json)
         {
             string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, $@"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj"));
@@ -223,7 +259,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                if (dialog is RuleDialog planningDialog)
+                if (dialog is AdaptiveDialog planningDialog)
                 {
                     await planningDialog.OnTurnAsync(turnContext, null, cancellationToken).ConfigureAwait(false);
                 }

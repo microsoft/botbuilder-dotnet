@@ -1,23 +1,22 @@
 {
-  "$schema": "../../app.schema",
-  "$type": "Microsoft.RuleDialog",
-  "rules": [
-    {
-      "$type": "Microsoft.FallbackRule",
-      "steps": [
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "rules": [
         {
-          "$type": "Microsoft.SendActivity",
-          "activity": "Hello, I'm Zoidberg. What is your name?"
-        },
-        {
-          "$type": "Microsoft.WaitForInput",
-          "property": "user.name"
-        },
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "Hello {user.name}, nice to meet you!"
+            "$type": "Microsoft.DefaultRule",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "What's up?"
+                },
+                {
+                    "$type": "Microsoft.WaitForInput"
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Oh I see!"
+                }
+            ]
         }
-      ]
-    }
-  ]   
+    ]
 }

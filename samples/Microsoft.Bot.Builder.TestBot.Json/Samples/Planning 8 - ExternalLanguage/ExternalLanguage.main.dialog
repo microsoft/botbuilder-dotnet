@@ -1,13 +1,13 @@
 {
     "$schema": "../../app.schema",
-    "$type": "Microsoft.RuleDialog",
+    "$type": "Microsoft.AdaptiveDialog",
     "recognizer": {
         "$type": "Microsoft.RegexRecognizer",
         "intents": {
-            "HelpIntent": "help",
-            "GreetingIntent": "hi|hello|hiya|greetings",
-            "JokeIntent": "joke",
-            "FortuneTellerIntent": "fortune|future"
+            "HelpIntent": "(?i)help",
+            "GreetingIntent": "(?i)hi|hello|hiya|greetings",
+            "JokeIntent": "(?i)joke",
+            "FortuneTellerIntent": "(?i)fortune|future"
         }
     },
     "rules": [
@@ -55,7 +55,7 @@
             ]
         },
         {
-            "$type": "Microsoft.FallbackRule",
+            "$type": "Microsoft.DefaultRule",
             "steps": [
                 {
                     "$type": "Microsoft.SendActivity",

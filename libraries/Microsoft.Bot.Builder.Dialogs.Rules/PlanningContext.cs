@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         public bool HasSavedPlans => Plans.SavedPlans?.Count > 0;
 
         public PlanningContext(DialogContext dc, DialogContext parentDc, DialogSet dialogs, DialogState state, PlanningState plans)
-            : base(dialogs, dc.Context, state, dc.State.Conversation, dc.State.User)
+            : base(dialogs, dc.Context, state, conversationState: dc.State.Conversation, userState: dc.State.User, settings: dc.State.Settings)
         {
             this.Parent = parentDc;
             this.Plans = plans ?? throw new ArgumentNullException(nameof(plans));

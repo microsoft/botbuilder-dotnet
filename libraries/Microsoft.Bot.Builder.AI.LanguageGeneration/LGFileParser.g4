@@ -20,7 +20,7 @@ newline
     ;
 
 templateDefinition
-	: templateNameLine newline templateBody
+	: templateNameLine newline templateBody?
 	;
 
 templateNameLine
@@ -32,7 +32,7 @@ templateName
     ;
 
 parameters
-    : OPEN_PARENTHESIS IDENTIFIER (COMMA IDENTIFIER)* CLOSE_PARENTHESIS
+    : OPEN_PARENTHESIS? IDENTIFIER (COMMA|INVALID_SEPERATE_CHAR IDENTIFIER)* CLOSE_PARENTHESIS?
     ;
 
 templateBody
@@ -50,18 +50,19 @@ normalTemplateString
 
 conditionalTemplateBody
     : caseRule+ defaultRule?
+    | defaultRule
     ;
 
 caseRule
-    : caseCondition newline normalTemplateBody 
+    : caseCondition newline normalTemplateBody?
     ;
 
 defaultRule
-    : defaultCondition newline normalTemplateBody
+    : defaultCondition newline normalTemplateBody?
     ;
 
 caseCondition
-	: DASH CASE EXPRESSION
+	: DASH CASE (WS|TEXT|EXPRESSION)*
 	;
 defaultCondition
     : DASH DEFAULT

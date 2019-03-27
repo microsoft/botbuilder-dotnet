@@ -38,7 +38,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
             //jsonObject["id"] = jsonObject["id"] ?? jsonObject["$id"];
 
             var typeName = jsonObject["$type"]?.ToString();
-            T result = Factory.Build<T>(typeName, jsonObject, serializer);
+            if (typeName == null)
+            {
+                throw new ArgumentNullException(JsonConvert.SerializeObject(jsonObject));
+            }
+            T result = TypeFactory.Build<T>(typeName, jsonObject, serializer);
 
             return result;
         }

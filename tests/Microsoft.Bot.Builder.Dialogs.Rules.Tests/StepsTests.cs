@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
     {
         public TestContext TestContext { get; set; }
 
-        private TestFlow CreateFlow(RuleDialog planningDialog, ConversationState convoState, UserState userState)
+        private TestFlow CreateFlow(AdaptiveDialog planningDialog, ConversationState convoState, UserState userState)
         {
             var botResourceManager = new BotResourceManager();
             var lg = new LGLanguageGenerator(botResourceManager);
@@ -52,15 +52,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var planningDialog = new RuleDialog("planningTest");
+            var planningDialog = new AdaptiveDialog("planningTest");
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
-                        new SendActivity("Hello, what is your name?"),
-                        new WaitForInput("user.name"),
+                        new TextPrompt() { InitialPrompt = new ActivityTemplate("Hello, what is your name?"),  OutputBinding = "user.name" },
                         new SendActivity("Hello {user.name}, nice to meet you!"),
                     })});
 
@@ -78,11 +77,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var planningDialog = new RuleDialog("planningTest");
+            var planningDialog = new AdaptiveDialog("planningTest");
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -90,8 +89,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             Expression = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
-                                new SendActivity("Hello, what is your name?"),
-                                new WaitForInput("user.name"),
+                                new TextPrompt() {
+                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
+                                    OutputBinding = "user.name"
+                                },
                             }
                         },
                         new SendActivity("Hello {user.name}, nice to meet you!")
@@ -111,11 +112,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var planningDialog = new RuleDialog("planningTest");
+            var planningDialog = new AdaptiveDialog("planningTest");
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -147,7 +148,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var planningDialog = new RuleDialog("planningTest");
+            var planningDialog = new AdaptiveDialog("planningTest");
 
             planningDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 
@@ -160,7 +161,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                         new WaitForInput(),
                         new SendActivity("To get to the other side")
                     }),
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -199,14 +200,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var planningDialog = new RuleDialog("planningTest");
+            var planningDialog = new AdaptiveDialog("planningTest");
 
             planningDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 
-            var tellJokeDialog = new RuleDialog("TellJokeDialog");
+            var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
             tellJokeDialog.AddRules(new List<IRule>()
             {
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
@@ -216,10 +217,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                  )
             });
 
-            var askNameDialog = new RuleDialog("AskNameDialog");
+            var askNameDialog = new AdaptiveDialog("AskNameDialog");
             askNameDialog.AddRules(new List<IRule>()
             {
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -250,7 +251,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                     }),
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new CallDialog() { Dialog = askNameDialog }
@@ -278,14 +279,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var planningDialog = new RuleDialog("planningTest");
+            var planningDialog = new AdaptiveDialog("planningTest");
 
             planningDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 
-            var tellJokeDialog = new RuleDialog("TellJokeDialog");
+            var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
             tellJokeDialog.AddRules(new List<IRule>()
             {
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
@@ -295,10 +296,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                  )
             });
 
-            var askNameDialog = new RuleDialog("AskNameDialog");
+            var askNameDialog = new AdaptiveDialog("AskNameDialog");
             askNameDialog.AddRules(new List<IRule>()
             {
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -329,7 +330,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                     }),
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new GotoDialog("AskNameDialog")
@@ -363,11 +364,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var planningDialog = new RuleDialog("planningTest");
+            var planningDialog = new AdaptiveDialog("planningTest");
 
             planningDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "EndIntent", "end" } } };
 
-            var tellJokeDialog = new RuleDialog("TellJokeDialog");
+            var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
             tellJokeDialog.AddRules(new List<IRule>()
             {
                 new IntentRule("EndIntent",
@@ -375,7 +376,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new EndDialog()
                     }),
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
@@ -388,7 +389,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new FallbackRule(
+                new DefaultRule(
                     new List<IDialog>()
                     {
                         new CallDialog() { Dialog = tellJokeDialog },

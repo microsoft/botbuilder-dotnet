@@ -6,30 +6,22 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
-        "application": {
-            "type": "object",
-            "properties": {
-                "applicationId": {
-                    "type": "string"
-                },
-                "endpoint": {
-                    "type": "string"
-                },
-                "endpointKey": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "applicationId",
-                "endpoint",
-                "endpointKey"
-            ]
+        "applicationId": {
+            "type": "string"
+        },
+        "endpoint": {
+            "type": "string"
+        },
+        "endpointKey": {
+            "type": "string"
         },
         "priority": {
             "type": "string"
         }
     },
     "required": [
-        "applicationId"
+        "applicationId",
+        "endpoint",
+        "endpointKey"
     ]
 }
