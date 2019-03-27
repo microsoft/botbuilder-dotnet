@@ -20,12 +20,12 @@ namespace Microsoft.Bot.Builder.Azure
     /// </summary>
     public class CosmosDbStorage : IStorage
     {
-        private static readonly JsonSerializer _jsonSerializer = JsonSerializer.CreateDefault(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All, NullValueHandling = NullValueHandling.Include, ContractResolver = new DefaultContractResolver() });
-
         // When setting up the database, calls are made to CosmosDB. If multiple calls are made, we'll end up setting the
         // collectionLink member variable more than once. The semaphore is for making sure the initialization of the
         // database is done only once.
         private static SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+
+        private readonly JsonSerializer _jsonSerializer;
 
         private readonly string _databaseId;
         private readonly string _collectionId;
@@ -39,11 +39,21 @@ namespace Microsoft.Bot.Builder.Azure
         /// using the provided CosmosDB credentials, database ID, and collection ID.
         /// </summary>
         /// <param name="cosmosDbStorageOptions">Cosmos DB storage configuration options.</param>
-        public CosmosDbStorage(CosmosDbStorageOptions cosmosDbStorageOptions)
+        /// <param name="jsonSerializer">Optional JsonSerializer.</param>
+        public CosmosDbStorage(CosmosDbStorageOptions cosmosDbStorageOptions, JsonSerializer jsonSerializer = null)
         {
             if (cosmosDbStorageOptions == null)
             {
                 throw new ArgumentNullException(nameof(cosmosDbStorageOptions));
+            }
+
+            if (jsonSerializer == null)
+            {
+                _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+            }
+            else
+            {
+                _jsonSerializer = jsonSerializer;
             }
 
             if (cosmosDbStorageOptions.CosmosDBEndpoint == null)
