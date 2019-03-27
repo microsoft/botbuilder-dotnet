@@ -413,7 +413,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (!_hasEmulator.Value)
                 Assert.Inconclusive(_noEmulatorMessage);
-            if (Debugger.IsAttached)
+            if (System.Diagnostics.Debugger.IsAttached)
                 Assert.IsTrue(_hasEmulator.Value, _noEmulatorMessage);
 
             return _hasEmulator.Value;
