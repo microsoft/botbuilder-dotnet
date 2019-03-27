@@ -57,6 +57,21 @@ namespace Microsoft.Expressions.Tests
             Test("one > 0.5 && two < 2.5", true),
             Test("one > 0.5 || two < 1.5", true),
 
+            Test("5%2", 1),
+
+            Test("'string'&'builder'","stringbuilder"),
+            Test("hello&world","helloworld"),
+
+            Test("length(hello)",5),
+            Test("length('hello')",5),
+
+            Test("replace(hello, 'l', 'k')","hekko"),
+            Test("replace(hello, 'L', 'k')","hello"),
+
+            Test("replaceIgnoreCase(hello, 'L', 'k')","hekko"),
+
+            Test("split(hello,'e')",new string[]{ "h","llo"}),
+
             Test("!one", false),
             Test("!!one", true),
             Test("!one || !!two", true),
@@ -102,7 +117,21 @@ namespace Microsoft.Expressions.Tests
 
             var parsed = ExpressionEngine.Parse(input);
             var actual = ExpressionEngine.Evaluate(parsed, scope);
-            Assert.AreEqual(expected, actual);
+
+            // Compare two arrays
+            if (expected is object[] expectedArray
+                && actual is object[] actualArray)
+            {
+                Assert.AreEqual(expectedArray.Length, actualArray.Length);
+                for(var i=0; i < expectedArray.Length; i++)
+                {
+                    Assert.AreEqual(expectedArray[i], actualArray[i]);
+                }
+            }
+            else
+            {
+                Assert.AreEqual(expected, actual);
+            }
         }
 
         [DataTestMethod]

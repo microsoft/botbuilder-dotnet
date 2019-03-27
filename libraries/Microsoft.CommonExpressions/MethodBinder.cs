@@ -40,6 +40,12 @@ namespace Microsoft.Expressions
             {"or", BuildinFunctions.Or},
             {"not", BuildinFunctions.Not},
             {"exist", BuildinFunctions.Exist},
+            {"mod", BuildinFunctions.Mod},
+            {"concat", BuildinFunctions.Concat},
+            {"length", BuildinFunctions.Length},
+            {"replace", BuildinFunctions.Replace},
+            {"replaceIgnoreCase", BuildinFunctions.ReplaceIgnoreCase},
+            {"split", BuildinFunctions.Split},
         };
 
         /// <summary>

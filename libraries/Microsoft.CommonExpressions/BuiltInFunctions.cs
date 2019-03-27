@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Microsoft.Expressions
 {
@@ -78,5 +81,40 @@ namespace Microsoft.Expressions
 
         public static EvaluationDelegate Exist = operands =>
                         operands[0] != null;
+
+        public static EvaluationDelegate Mod = operands =>
+                        operands[0] is int int0 && operands[1] is int int1 ? int0%int1:
+                        throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate Concat = (IReadOnlyList<object> operands) =>
+        {
+            var stringBuilder = new StringBuilder();
+            foreach (var item in operands)
+            {
+                if (item is string str)
+                {
+                    stringBuilder.Append(str);
+                }
+                else throw new ExpressionPropertyMissingException();
+            }
+            return stringBuilder.ToString();
+        };
+
+        public static EvaluationDelegate Length = operands =>
+                        operands[0] is string string0 ? string0.Length:
+                        throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate Replace = operands =>
+                       operands[0] is string string0 && operands[1] is string string1 && operands[2] is string string2 ?
+                       string0.Replace(string1, string2) : throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate ReplaceIgnoreCase = operands =>
+                       operands[0] is string string0 && operands[1] is string string1 && operands[2] is string string2 ?
+                       Regex.Replace(string0, string1, string2, RegexOptions.IgnoreCase) : throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate Split = operands =>
+                      operands[0] is string string0 && operands[1] is string string1 && string1.Length == 1 ?
+                      string0.Split(string1.ToCharArray()[0]) : throw new ExpressionPropertyMissingException();
+        
     }
 }
