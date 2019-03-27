@@ -49,8 +49,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                 throw new ArgumentNullException(JsonConvert.SerializeObject(jsonObject));
             }
 
+            // if IdRefResolver made a path available for the JToken, then add it to the path stack
+            // this maintains the stack of paths used as the source of json data
             var found = this.registry.TryGetValue(jsonObject, out var range);
-
             if (found)
             {
                 paths.Push(range.Path);
@@ -58,6 +59,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 
             T result = TypeFactory.Build<T>(typeName, jsonObject, serializer);
 
+            // combine the "path for the most recent JToken from IdRefResolver" or the "top root path"
+            // with the line information for this particular json fragment and add it to the registry
             range = new Source.Range() { Path = paths.Peek(), Start = start, After = after };
             this.registry.Add(result, range);
 
