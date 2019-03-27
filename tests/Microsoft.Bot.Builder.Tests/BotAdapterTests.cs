@@ -79,13 +79,13 @@ namespace Microsoft.Bot.Builder.Tests
                     Role = "bot",
                 },
             };
-            Task continueCallback(ITurnContext turnContext, CancellationToken cancellationToken)
+            Task ContinueCallback(ITurnContext turnContext, CancellationToken cancellationToken)
             {
                 callbackInvoked = true;
                 return Task.CompletedTask;
             }
 
-            await adapter.ContinueConversationAsync("MyBot", cr, continueCallback, default(CancellationToken));
+            await adapter.ContinueConversationAsync("MyBot", cr, ContinueCallback, default(CancellationToken));
             Assert.IsTrue(callbackInvoked);
         }
 
@@ -120,13 +120,13 @@ namespace Microsoft.Bot.Builder.Tests
                     Role = "bot",
                 },
             };
-            Task continueCallback(ITurnContext turnContext, CancellationToken cancellationToken)
+            Task ContinueCallback(ITurnContext turnContext, CancellationToken cancellationToken)
             {
                 callbackInvoked = true;
                 return Task.CompletedTask;
             }
 
-            await adapter.ContinueConversationAsync(null, cr, continueCallback, default(CancellationToken));
+            await adapter.ContinueConversationAsync(null, cr, ContinueCallback, default(CancellationToken));
             Assert.IsTrue(callbackInvoked);
         }
 
@@ -161,13 +161,13 @@ namespace Microsoft.Bot.Builder.Tests
                     Role = "bot",
                 },
             };
-            Task continueCallback(ITurnContext turnContext, CancellationToken cancellationToken)
+            Task ContinueCallback(ITurnContext turnContext, CancellationToken cancellationToken)
             {
                 callbackInvoked = true;
                 return Task.CompletedTask;
             }
 
-            await adapter.ContinueConversationAsync("AppId", cr, continueCallback, default(CancellationToken));
+            await adapter.ContinueConversationAsync("AppId", cr, ContinueCallback, default(CancellationToken));
             Assert.IsTrue(callbackInvoked);
         }
 
@@ -205,13 +205,13 @@ namespace Microsoft.Bot.Builder.Tests
                     Role = "bot",
                 },
             };
-            Task continueCallback(ITurnContext turnContext, CancellationToken cancellationToken)
+            Task ContinueCallback(ITurnContext turnContext, CancellationToken cancellationToken)
             {
                 callbackInvoked = true;
                 return Task.CompletedTask;
             }
 
-            await adapter.ContinueConversationAsync(null, cr, continueCallback, default(CancellationToken));
+            await adapter.ContinueConversationAsync(null, cr, ContinueCallback, default(CancellationToken));
             Assert.IsTrue(callbackInvoked);
         }
     }
