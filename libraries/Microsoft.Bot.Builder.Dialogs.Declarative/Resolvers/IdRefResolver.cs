@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Debugger;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Json.Pointer;
 using Newtonsoft.Json.Linq;
 
@@ -16,12 +16,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
         private const string RefPropertyName = "$copy";
 
         private readonly JToken rootDocument;
-        private readonly IBotResourceProvider resourceProvider;
+        private readonly ResourceExplorer resourceExplorer;
         private readonly Source.IRegistry registry;
 
-        public IdRefResolver(IBotResourceProvider resourceProvider, Source.IRegistry registry, JToken rootDocument = null)
+        public IdRefResolver(ResourceExplorer resourceExplorer, Source.IRegistry registry, JToken rootDocument = null)
         {
-            this.resourceProvider = resourceProvider ?? throw new ArgumentNullException(nameof(resourceProvider));
+            this.resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer));
             this.registry = registry;
             this.rootDocument = rootDocument;
         }
@@ -42,8 +42,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
 
             var targetFragments = refTarget.Split('#');
 
-            var dialogResources = await resourceProvider.GetResources("dialog").ConfigureAwait(false);
-            var refResources = dialogResources?.Where(r => r.Name == targetFragments[0]).ToList();
+            var dialogResources = resourceExplorer.GetResources("dialog").ToArray();
+            var refResources = dialogResources?.Where(r => Path.GetFileNameWithoutExtension(r.Name) == targetFragments[0]).ToList();
 
             // Ref target must exist
             if (refResources == null || refResources.Count == 0)
@@ -57,44 +57,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
                 var builder = new StringBuilder();
                 builder.AppendLine($"Multiple resources found for id {targetFragments[0]}. Please ensure unique names to be able to reference them. Conflicts: ");
 
-                refResources.ForEach(r => builder.AppendLine($"Name: {r.Name}. Path: .{r.Id}"));
+                refResources.ForEach(r => builder.AppendLine($"Name: {r.Name}. Path: .{r.FullName}"));
 
                 throw new Exception(builder.ToString());
             }
-
-            var refResource = refResources.Single();
-            var text = await refResource.GetTextAsync().ConfigureAwait(false);
+            var file = refResources.Single();
+            var text = File.ReadAllText(file.FullName);
             var json = JToken.Parse(text);
 
             foreach (JProperty prop in refToken.Children<JProperty>())
+            {
+                if (prop.Name != "$ref")
                 {
-                    if (prop.Name != "$copy")
+                    // JToken is an object, so we merge objects
+                    if (json[prop.Name] != null && json[prop.Name].Type == JTokenType.Object)
                     {
-                        // JToken is an object, so we merge objects
-                        if (json[prop.Name] != null && json[prop.Name].Type == JTokenType.Object)
-                        {
-                            JObject targetProperty = json[prop.Name] as JObject;
-                            targetProperty.Merge(prop.Value);
-                        }
-                        // JToken is an object, so we merge objects
-                        else if (json[prop.Name] != null && json[prop.Name].Type == JTokenType.Array)
-                        {
-                            JArray targetArray = json[prop.Name] as JArray;
-                            targetArray.Merge(prop.Value);
-                        }
-                        // JToken is a value, simply assign
-                        else
-                        {
-                            json[prop.Name] = prop.Value;
-                        }
+                        JObject targetProperty = json[prop.Name] as JObject;
+                        targetProperty.Merge(prop.Value);
+                    }
+                    // JToken is an object, so we merge objects
+                    else if (json[prop.Name] != null && json[prop.Name].Type == JTokenType.Array)
+                    {
+                        JArray targetArray = json[prop.Name] as JArray;
+                        targetArray.Merge(prop.Value);
+                    }
+                    // JToken is a value, simply assign
+                    else
+                    {
+                        json[prop.Name] = prop.Value;
                     }
                 }
+            }
 
             // if we have a source path for the resource, then make it available to InterfaceConverter
-            if (refResource is FileResource file)
-            {
-                registry.Add(json, new Source.Range() { Path = file.Path });
-            }
+            registry.Add(json, new Source.Range() { Path = file.FullName });
 
             return json;
         }

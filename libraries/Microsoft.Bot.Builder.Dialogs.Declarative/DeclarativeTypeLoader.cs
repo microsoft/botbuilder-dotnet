@@ -7,7 +7,7 @@ using System.IO;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Debugger;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Dialogs.Rules;
 using Microsoft.Extensions.Configuration;
@@ -19,16 +19,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
 {
     public static class DeclarativeTypeLoader
     {
-        public static T Load<T>(string path, IBotResourceProvider resourceProvider, Source.IRegistry registry)
+        public static T Load<T>(string path, ResourceExplorer resourceExplorer, Source.IRegistry registry)
         {
-            IRefResolver refResolver = new IdRefResolver(resourceProvider, registry);
+            IRefResolver refResolver = new IdRefResolver(resourceExplorer, registry);
 
             var paths = new Stack<string>();
             paths.Push(path);
 
             var json = File.ReadAllText(path);
 
-            var cog = JsonConvert.DeserializeObject<T>(
+            var dialog = JsonConvert.DeserializeObject<T>(
                 json, new JsonSerializerSettings()
                 {
                     SerializationBinder = new UriTypeBinder(),
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                         NamingStrategy = new CamelCaseNamingStrategy()
                     }
                 });
-            return cog;
+            return dialog;
         }
 
         /// <summary>

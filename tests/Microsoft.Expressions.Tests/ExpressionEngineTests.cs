@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Antlr4.Runtime;
@@ -106,17 +107,68 @@ namespace Microsoft.Expressions.Tests
             Test("average(one, two, 3)", 2.0),
 
             //Date and time function test
-            //init dateTime: new DateTime(2000,1,1,8,0,0)
-            Test("addDays(dateTime, 1)", new DateTime(2000,1,2,8,0,0)),
-            Test("addHours(dateTime, 1)", new DateTime(2000,1,1,9,0,0)),
-            Test("addMinutes(dateTime, 1)", new DateTime(2000,1,1,8,1,0)),
-            Test("addSeconds(dateTime, 1)", new DateTime(2000,1,1,8,0,1)),
-            Test("dayOfMonth(dateTime)", 1),
-            Test("dayOfWeek(dateTime)", 6),//Saturday
-            Test("dayOfYear(dateTime)", 1),
-            Test("month(dateTime)", 1),
-            Test("date(dateTime)", new DateTime(2000,1,1)),
-            Test("year(dateTime)", 2000),
+            //init dateTime: 2018-03-15T13:00:00Z
+            Test("addDays(timestamp, 1)", "2018-03-16T13:00:00.0000000Z"),
+            Test("addDays(timestamp, 1,'g')", "3/16/2018 1:00 PM"),
+            Test("addDays(timestamp, 1,'MM-dd-yy')", "03-16-18"),
+            Test("addHours(timestamp, 1)", "2018-03-15T14:00:00.0000000Z"),
+            Test("addMinutes(timestamp, 1)", "2018-03-15T13:01:00.0000000Z"),
+            Test("addSeconds(timestamp, 1)", "2018-03-15T13:00:01.0000000Z"),
+            Test("dayOfMonth(timestamp)", 15),
+            Test("dayOfWeek(timestamp)", 4),//Thursday
+            Test("dayOfYear(timestamp)", 74),
+            Test("month(timestamp)", 3),
+            Test("date(timestamp)", "3/15/2018"),
+            Test("year(timestamp)", 2018),
+            Test("formatDateTime(timestamp)", "2018-03-15T13:00:00.0000000Z"),
+            Test("formatDateTime(timestamp, 'g')", "3/15/2018 1:00 PM"),
+            Test("formatDateTime(timestamp, 'MM-dd-yy')", "03-15-18"),
+            Test("subtractFromTime(timestamp, 1, 'Day')", "2018-03-14T13:00:00.0000000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Day','g')", "3/14/2018 1:00 PM"),
+            Test("dateReadBack(timestamp, addDays(timestamp, 1))", "Tomorrow"),
+            Test("dateReadBack(timestamp, addDays(timestamp, 2))", "The day after tomorrow"),
+            Test("dateReadBack(addDays(timestamp, 1),timestamp))", "Yesterday"),
+            Test("dateReadBack(addDays(timestamp, 2),timestamp))", "The day before yesterday"),
+            Test("getTimeOfDay('2018-03-15T00:00:00Z')", "midnight"),
+            Test("getTimeOfDay('2018-03-15T08:00:00Z')", "morning"),
+            Test("getTimeOfDay('2018-03-15T12:00:00Z')", "noon"),
+            Test("getTimeOfDay('2018-03-15T13:00:00Z')", "afternoon"),
+            Test("getTimeOfDay('2018-03-15T18:00:00Z')", "evening"),
+            Test("getTimeOfDay('2018-03-15T22:00:00Z')", "evening"),
+            Test("getTimeOfDay('2018-03-15T23:00:00Z')", "night"),
+
+            //Conversion functions test
+            Test("float('10.333')", 10.333f),
+            Test("int('10')", 10),
+            Test("string('str')", "str"),
+            Test("string(one)", "1.0"),
+            Test("string(bag)", "{\"three\":3.0,\"set\":{\"four\":4.0},\"list\":[\"red\",\"blue\"],\"index\":3}"),
+            Test("bool(1)", true),
+            Test("bool(0)", false),
+            Test("bool('false')", false),
+            Test("bool('true')", true),
+            Test("createArray('h', 'e', 'l', 'l', 'o')", new List<object>{"h", "e", "l", "l", "o" }),
+
+            //Collection functions test
+            Test("contains('hello world', 'hello')", true),
+            Test("contains('hello world', 'hellow')", false),
+            Test("contains(items, 'zero')", true),
+            Test("contains(items, 'hi')", false),
+            Test("contains(bag, 'three')", true),
+            Test("contains(bag, 'xxx')", false),
+            Test("empty('')", true),
+            Test("empty('a')", false),
+            Test("empty(bag)", false),
+            Test("empty(items)", false),
+            Test("first(items)", "zero"),
+            Test("first('hello')", "h"),
+            Test("first(createArray(0, 1, 2))", 0),
+            Test("join(items,',')", "zero,one,two"),
+            Test("join(createArray('a', 'b', 'c'), '.')", "a.b.c"),
+            Test("last(items)", "two"),
+            Test("last('hello')", "o"),
+            Test("last(createArray(0, 1, 2))", 2),
+            Test("parameter(hello)", "hello"),
 
             Test("!one", false),
             Test("!!one", true),
@@ -159,7 +211,7 @@ namespace Microsoft.Expressions.Tests
                     list = new[] { "red", "blue" }
                 },
                 items = new string[] { "zero", "one", "two" },
-                dateTime = new DateTime(2000, 1, 1, 8, 0, 0)
+                timestamp = "2018-03-15T13:00:00Z"
             };
 
             var parsed = ExpressionEngine.Parse(input);
@@ -189,7 +241,7 @@ namespace Microsoft.Expressions.Tests
                     list = new[] { "red", "blue" }
                 },
                 items = new string[] { "zero", "one", "two" },
-                dateTime = new DateTime(2000,1,1,8,0,0)
+                timestamp = "2018-03-15T13:00:00Z"
             };
 
             object actual = null;
@@ -225,14 +277,14 @@ namespace Microsoft.Expressions.Tests
 
         private void AssertObjectEquals(object expected, object actual)
         {
-            // Compare two arrays
-            if (expected is object[] expectedArray
-                && actual is object[] actualArray)
+            // Compare two lists
+            if (expected is IList expectedList
+                && actual is IList actualList)
             {
-                Assert.AreEqual(expectedArray.Length, actualArray.Length);
-                for (var i = 0; i < expectedArray.Length; i++)
+                Assert.AreEqual(expectedList.Count, actualList.Count);
+                for (var i = 0; i < expectedList.Count; i++)
                 {
-                    Assert.AreEqual(expectedArray[i], actualArray[i]);
+                    Assert.AreEqual(expectedList[i], actualList[i]);
                 }
             }
             else

@@ -20,6 +20,9 @@ namespace Microsoft.Expressions
     /// </summary>
     public static class MethodBinder
     {
+        /// <summary>
+        /// reference: https://docs.microsoft.com/en-us/azure/logic-apps/workflow-definition-language-functions-reference
+        /// </summary>
 
         private static readonly Dictionary<string, EvaluationDelegate> FunctionMap = new Dictionary<string, EvaluationDelegate>
         {
@@ -65,6 +68,21 @@ namespace Microsoft.Expressions
             {"date", BuildinFunctions.Date},
             {"year", BuildinFunctions.Year},
             {"utcNow", BuildinFunctions.UtcNow},
+            {"formatDateTime", BuildinFunctions.FormatDateTime},
+            {"subtractFromTime", BuildinFunctions.SubtractFromTime},//Subtract a number of time units from a timestamp
+            {"dateReadBack", BuildinFunctions.DateReadBack},
+            {"getTimeOfDay", BuildinFunctions.GetTimeOfDay},
+            {"float", BuildinFunctions.ConvertToFloat},
+            {"int", BuildinFunctions.ConvertToInt},
+            {"string", BuildinFunctions.ConvertToString},
+            {"bool", BuildinFunctions.ConvertToBool},
+            {"createArray", BuildinFunctions.CreateArray},
+            {"contains", BuildinFunctions.CheckContains},
+            {"empty", BuildinFunctions.CheckEmpty},
+            {"first", BuildinFunctions.First},
+            {"join", BuildinFunctions.Join},
+            {"last", BuildinFunctions.Last},
+            {"parameters", BuildinFunctions.Parameters},
         };
 
         /// <summary>
