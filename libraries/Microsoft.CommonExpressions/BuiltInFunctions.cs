@@ -2,12 +2,21 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Linq;
+using System.Globalization;
+using Newtonsoft.Json;
 
 namespace Microsoft.Expressions
 {
 
     public static class BuildinFunctions
     {
+
+        /// <summary>
+        /// The default date time format string.
+        /// </summary>
+        private static readonly string DefaultDateTimeFormat = "o";
+
         public static EvaluationDelegate Add = operands =>
                 operands[0] is double double0 && operands[1] is double double1 ? double0 + double1 :
                 operands[0] is int int0 && operands[1] is int int1 ? (object)(int0 + int1) :
@@ -86,7 +95,7 @@ namespace Microsoft.Expressions
                         operands[0] is int int0 && operands[1] is int int1 ? int0%int1:
                         throw new ExpressionPropertyMissingException();
 
-        public static EvaluationDelegate Concat = (IReadOnlyList<object> operands) =>
+        public static EvaluationDelegate Concat = operands =>
         {
             var stringBuilder = new StringBuilder();
             foreach (var item in operands)
@@ -115,6 +124,288 @@ namespace Microsoft.Expressions
         public static EvaluationDelegate Split = operands =>
                       operands[0] is string string0 && operands[1] is string string1 && string1.Length == 1 ?
                       string0.Split(string1.ToCharArray()[0]) : throw new ExpressionPropertyMissingException();
-        
+
+        public static EvaluationDelegate SubString = operands =>
+        {
+            if(operands[0] is string string0 && operands[1] is int int0 && operands[2] is int int1)
+            {
+                if(int0 < 0 || int0 >= string0.Length)
+                {
+                    throw new ExpressionPropertyMissingException();
+                }
+                if(int1 >= string0.Length)
+                {
+                    return string0.Substring(int0);
+                }
+                return string0.Substring(int0, int1 - int0);
+            }
+            else throw new ExpressionPropertyMissingException();
+        };
+
+        public static EvaluationDelegate ToLower = operands =>
+                       operands[0] is string string0 ? string0.ToLower() : 
+                       throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate ToUpper = operands =>
+                       operands[0] is string string0 ? string0.ToUpper() :
+                       throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate Trim = operands =>
+                       operands[0] is string string0 ? string0.Trim() :
+                       throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate If = operands =>
+                       operands[0] is bool bool0 ? (bool0 ? operands[1]:operands[2]):
+                       throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate Rand = operands =>
+                        operands[0] is int int0 && operands[1] is int int1 ? new Random().Next(int0,int1) :
+                        throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate Sum = operands =>
+        {
+            if(operands.All(u=>(u is int)))
+            {
+                return operands.Sum(u => (int)u);
+            }
+
+            if(operands.All(u => ((u is int) || (u is double))))
+            {
+                return operands.Sum(u => Convert.ToDouble(u));
+            }
+
+            throw new ExpressionPropertyMissingException();
+        };
+
+        public static EvaluationDelegate Average = operands =>
+                        operands.All(u => ((u is int) || (u is double))) ? operands.Average(u => Convert.ToDouble(u)) :
+                        throw new ExpressionPropertyMissingException();
+
+        //Date and time functions
+
+        public static EvaluationDelegate AddDays = operands =>
+        {
+            if(operands[0] is string string0 && operands[1] is int int0)
+            {
+                var formatString = operands.Count == 3 && operands[2] is string string1 
+                    ? string1 : DefaultDateTimeFormat;
+
+                var timestamp = ParseTimestamp(string0);
+                return timestamp.AddDays(int0).ToString(formatString);
+            }
+
+            throw new ExpressionPropertyMissingException();
+        };
+
+        public static EvaluationDelegate AddHours = operands =>
+        {
+            if (operands[0] is string string0 && operands[1] is int int0)
+            {
+                var formatString = operands.Count == 3 && operands[2] is string string1
+                    ? string1 : DefaultDateTimeFormat;
+
+                var timestamp = ParseTimestamp(string0);
+                return timestamp.AddHours(int0).ToString(formatString);
+            }
+
+            throw new ExpressionPropertyMissingException();
+        };
+
+        public static EvaluationDelegate AddMinutes = operands =>
+        {
+            if (operands[0] is string string0 && operands[1] is int int0)
+            {
+                var formatString = operands.Count == 3 && operands[2] is string string1
+                    ? string1 : DefaultDateTimeFormat;
+
+                var timestamp = ParseTimestamp(string0);
+                return timestamp.AddMinutes(int0).ToString(formatString);
+            }
+
+            throw new ExpressionPropertyMissingException();
+        };
+
+        public static EvaluationDelegate AddSeconds = operands =>
+        {
+            if (operands[0] is string string0 && operands[1] is int int0)
+            {
+                var formatString = operands.Count == 3 && operands[2] is string string1
+                    ? string1 : DefaultDateTimeFormat;
+
+                var timestamp = ParseTimestamp(string0);
+                return timestamp.AddSeconds(int0).ToString(formatString);
+            }
+
+            throw new ExpressionPropertyMissingException();
+        };
+
+        public static EvaluationDelegate DayOfMonth = operands =>
+                      operands[0] is string string0? ParseTimestamp(string0).Day :
+                      throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate DayOfWeek = operands =>
+                     operands[0] is string string0 ? (int)(ParseTimestamp(string0).DayOfWeek) :
+                      throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate DayOfYear = operands =>
+                      operands[0] is string string0 ? ParseTimestamp(string0).DayOfYear :
+                      throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate Month = operands =>
+                      operands[0] is string string0 ? ParseTimestamp(string0).Month:
+                      throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate Date = operands =>
+                      operands[0] is string string0 ? ParseTimestamp(string0).Date.ToString("d"):
+                      throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate Year = operands =>
+                       operands[0] is string string0 ? ParseTimestamp(string0).Year :
+                      throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate UtcNow = operands =>
+        {
+            var formatString = operands.Count == 1 && operands[0] is string string0
+                    ? string0 : DefaultDateTimeFormat;
+
+            return DateTime.UtcNow.ToString(formatString);
+        };
+
+        public static EvaluationDelegate FormatDateTime = operands =>
+        {
+            if (operands[0] is string string0)
+            {
+                var formatString = operands.Count == 2 && operands[1] is string string1
+                    ? string1 : DefaultDateTimeFormat;
+
+                var timestamp = ParseTimestamp(string0);
+                return timestamp.ToString(formatString);
+            }
+
+            throw new ExpressionPropertyMissingException();
+        };
+
+        public static EvaluationDelegate SubtractFromTime = operands =>
+        {
+            if (operands[0] is string string0 &&
+                operands[1] is int int0 &&
+                operands[2] is string string1)
+            {
+                var timeSpan = GetTimeSpan(int0, string1);
+                var formatString = operands.Count == 4 && operands[3] is string string2
+                    ? string2 : DefaultDateTimeFormat;
+
+                var timestamp = ParseTimestamp(string0);
+                return timestamp.Subtract(timeSpan).ToString(formatString);
+            }
+
+            throw new ExpressionPropertyMissingException();
+        };
+
+        public static EvaluationDelegate DateReadBack = operands =>
+        {
+            if (operands[0] is string string0 &&
+                operands[1] is string string1)
+            {
+                var timestamp1 = ParseTimestamp(string0).Date;
+                var timestamp2 = ParseTimestamp(string1).Date;
+                if (IsSameDay(timestamp1, timestamp2))
+                {
+                    return "Today";
+                }
+                if (IsSameDay(timestamp1.AddDays(1), timestamp2))
+                {
+                    return "Tomorrow";
+                }
+                else if (IsSameDay(timestamp1.AddDays(2), timestamp2))
+                {
+                    return "The day after tomorrow";
+                }
+                else if (IsSameDay(timestamp1.AddDays(-1), timestamp2))
+                {
+                    return "Yesterday";
+                }
+                else if (IsSameDay(timestamp1.AddDays(-2), timestamp2))
+                {
+                    return "The day before yesterday";
+                }
+            }
+
+            throw new ExpressionPropertyMissingException();
+        };
+
+        public static EvaluationDelegate GetTimeOfDay = operands =>
+        {
+            if (operands[0] is string string0)
+            {
+                var timestamp = ParseTimestamp(string0);
+                if (timestamp.Hour == 0 && timestamp.Minute == 0)
+                    return "midnight";
+                if (timestamp.Hour >= 0 && timestamp.Hour < 12)
+                    return "morning";
+                if (timestamp.Hour == 12 && timestamp.Minute == 0)
+                    return "noon";
+                if (timestamp.Hour < 18)
+                    return "afternoon";
+                if (timestamp.Hour < 22 || (timestamp.Hour == 22 && timestamp.Minute == 0))
+                    return "evening";
+                return "night";
+            }
+
+            throw new ExpressionPropertyMissingException();
+        };
+
+        public static EvaluationDelegate ConvertToFloat = operands =>
+                       operands[0] is string string0 ? (float)Convert.ToDouble(string0) :
+                      throw new ExpressionPropertyMissingException();
+
+
+
+
+
+
+        private static TimeSpan GetTimeSpan(long interval, string timeUnit)
+        {
+            switch (timeUnit)
+            {
+                //TODO support week and year
+                case "Second":
+                    return TimeSpan.FromSeconds(interval);
+                case "Minute":
+                    return TimeSpan.FromMinutes(interval);
+                case "Hour":
+                    return TimeSpan.FromHours(interval);
+                case "Day":
+                    return TimeSpan.FromDays(interval);
+                case "Week":
+                    return TimeSpan.FromDays(interval * 7);
+                default:
+                    throw new ExpressionPropertyMissingException();
+            }
+        }
+
+        private static DateTime ParseTimestamp(string timeStamp)
+        {
+            if (!DateTime.TryParse(
+              s: timeStamp,
+              provider: CultureInfo.InvariantCulture,
+              styles: DateTimeStyles.RoundtripKind,
+              result: out var parsedTimestamp))
+            {
+                throw new ExpressionPropertyMissingException();
+            }
+
+            return parsedTimestamp;
+        }
+
+        private static bool IsSameDay(DateTime date1, DateTime date2)
+        {
+            return date1.Year == date2.Year && date1.Month == date2.Month && date1.Day == date2.Day;
+        }
+    }
+
+    enum C
+    {
+        ok
     }
 }

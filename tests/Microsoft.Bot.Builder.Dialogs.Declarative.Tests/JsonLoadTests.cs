@@ -6,13 +6,14 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Tests.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Plugins;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Rules;
 using System;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Debugger;
 
 namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 {
@@ -34,9 +35,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_DefaultRule()
         {
-            string json = File.ReadAllText(samplesDirectory + @"Planning 1 - DefaultRule\DefaultRule.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"Planning 1 - DefaultRule\DefaultRule.main.dialog");
 
-            await BuildTestFlow(json)
+            await BuildTestFlow(path)
             .Send("hello")
             .AssertReply("Hello planning!")
             .StartTestAsync();
@@ -45,9 +46,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_WaitForInput()
         {
-            string json = File.ReadAllText(samplesDirectory + @"Planning 2 - WaitForInput\WaitForInput.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"Planning 2 - WaitForInput\WaitForInput.main.dialog");
 
-            await BuildTestFlow(json)
+            await BuildTestFlow(path)
             .Send("hello")
             .AssertReply("What's up?")
             .Send("Nothing")
@@ -58,9 +59,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_IfProperty()
         {
-            string json = File.ReadAllText(samplesDirectory + @"Planning 3 - IfProperty\IfProperty.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"Planning 3 - IfProperty\IfProperty.main.dialog");
 
-            await BuildTestFlow(json)
+            await BuildTestFlow(path)
             .Send("hello")
             .AssertReply("Hello, I'm Zoidberg. What is your name?")
             .Send("Carlos")
@@ -71,9 +72,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_TextPrompt()
         {
-            string json = File.ReadAllText(samplesDirectory + @"Planning 4 - TextPrompt\TextPrompt.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"Planning 4 - TextPrompt\TextPrompt.main.dialog");
 
-            await BuildTestFlow(json)
+            await BuildTestFlow(path)
             .Send("hello")
             .AssertReply("Hello, I'm Zoidberg. What is your name?")
             .Send("Carlos")
@@ -84,9 +85,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_WelcomePrompt()
         {
-            string json = File.ReadAllText(samplesDirectory + @"Planning 5 - WelcomeRule\WelcomeRule.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"Planning 5 - WelcomeRule\WelcomeRule.main.dialog");
 
-            await BuildTestFlow(json)
+            await BuildTestFlow(path)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
             .Send("hello")
             .AssertReply("Welcome!")
@@ -99,9 +100,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_DoSteps()
         {
-            string json = File.ReadAllText(samplesDirectory + @"Planning 6 - DoSteps\DoSteps.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"Planning 6 - DoSteps\DoSteps.main.dialog");
 
-            await BuildTestFlow(json)
+            await BuildTestFlow(path)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
             .Send("hello")
             .AssertReply("Welcome!")
@@ -122,9 +123,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_CallDialog()
         {
-            string json = File.ReadAllText(samplesDirectory + @"Planning 7 - CallDialog\CallDialog.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"Planning 7 - CallDialog\CallDialog.main.dialog");
 
-            await BuildTestFlow(json)
+            await BuildTestFlow(path)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
             .Send("hello")
             .AssertReply("Welcome!")
@@ -145,9 +146,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_ExternalLanguage()
         {
-            string json = File.ReadAllText(samplesDirectory + @"Planning 8 - ExternalLanguage\ExternalLanguage.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"Planning 8 - ExternalLanguage\ExternalLanguage.main.dialog");
 
-            await BuildTestFlow(json)
+            await BuildTestFlow(path)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
             .Send("hello")
             .AssertReplyOneOf(new string[]
@@ -183,9 +184,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_ToDoBot()
         {
-            string json = File.ReadAllText(samplesDirectory + @"Planning - ToDoBot\TodoBot.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"Planning - ToDoBot\TodoBot.main.dialog");
 
-            await BuildTestFlow(json)
+            await BuildTestFlow(path)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
             .Send("hello")
             .AssertReply("Hi! I'm a ToDo bot. Say \"add a todo named first\" to get started.")
@@ -213,9 +214,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_HttpRequest()
         {
-            string json = File.ReadAllText(samplesDirectory + @"Planning 11 - HttpRequest\HttpRequest.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"Planning 11 - HttpRequest\HttpRequest.main.dialog");
 
-            await BuildTestFlow(json)
+            await BuildTestFlow(path)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
             .Send("Hello")
             .AssertReply("Welcome! Here is a http request sample, please enter a name for you visual pet.")
@@ -229,26 +230,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             .StartTestAsync();
         }
 
-        private TestFlow BuildTestFlow(string json)
+        private TestFlow BuildTestFlow(string path)
         {
             string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, $@"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj"));
-            var botResourceManager = new BotResourceManager()
-               // add current folder, it's project file, packages, projects, etc.
-               .AddProjectResources(projPath);
+            var resourceExplorer = ResourceExplorer.LoadProject(projPath);
 
-            var dialog = DeclarativeTypeLoader.Load<IDialog>(json, botResourceManager);
+            var dialog = DeclarativeTypeLoader.Load<IDialog>(path, resourceExplorer, Source.NullRegistry.Instance);
 
             IStorage dataStore = new MemoryStorage();
 
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var lg = new LGLanguageGenerator(botResourceManager);
+            var lg = new LGLanguageGenerator(resourceExplorer);
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()))
                 .Use(new AutoSaveStateMiddleware(convoState))
-                .Use(new RegisterClassMiddleware<IBotResourceProvider>(botResourceManager))
+                .Use(new RegisterClassMiddleware<ResourceExplorer>(resourceExplorer))
                 .Use(new RegisterClassMiddleware<ILanguageGenerator>(lg))
                 .Use(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)))
                 .Use(new RegisterClassMiddleware<IStorage>(dataStore));

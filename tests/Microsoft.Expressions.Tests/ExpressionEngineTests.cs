@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Antlr4.Runtime;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -58,6 +59,7 @@ namespace Microsoft.Expressions.Tests
             Test("one > 0.5 || two < 1.5", true),
 
             Test("5%2", 1),
+            Test("mod(5,2)", 1),
 
             Test("'string'&'builder'","stringbuilder"),
             Test("hello&world","helloworld"),
@@ -71,6 +73,72 @@ namespace Microsoft.Expressions.Tests
             Test("replaceIgnoreCase(hello, 'L', 'k')","hekko"),
 
             Test("split(hello,'e')",new string[]{ "h","llo"}),
+
+            Test("substring(hello, 0, 10)", "hello"),
+            Test("substring(hello, 0, 3)", "hel"),
+
+            Test("toLower('UpCase')", "upcase"),
+
+            Test("toUpper('lowercase')", "LOWERCASE"),
+
+            Test("trim(' hello ')", "hello"),
+
+            Test("and(!one, !!one)", false),//false && true
+
+            Test("and(!!one, !!one)", true),//true && true
+
+            Test("equals(hello, 'hello')", true),
+            Test("equals(bag.index, 3)", true),
+            Test("equals(bag.index, 2)", false),
+
+            Test("if(!one, 'r1', 'r2')", "r2"),//false
+            Test("if(!!one, 'r1', 'r2')", "r1"),//true
+
+            Test("or(!one, !!one)", true),//false && true
+            Test("or(!one, !one)", false),//false && false
+
+            Test("rand(1, 2)", 1),
+
+            Test("sum(1, 2)", 3),
+            Test("sum(one, two, 3)", 6.0),
+
+            Test("average(1, 2)", 1.5),
+            Test("average(one, two, 3)", 2.0),
+
+            //Date and time function test
+            //init dateTime: 2018-03-15T13:00:00Z
+            Test("addDays(timestamp, 1)", "2018-03-16T13:00:00.0000000Z"),
+            Test("addDays(timestamp, 1,'g')", "3/16/2018 1:00 PM"),
+            Test("addDays(timestamp, 1,'MM-dd-yy')", "03-16-18"),
+            Test("addHours(timestamp, 1)", "2018-03-15T14:00:00.0000000Z"),
+            Test("addMinutes(timestamp, 1)", "2018-03-15T13:01:00.0000000Z"),
+            Test("addSeconds(timestamp, 1)", "2018-03-15T13:00:01.0000000Z"),
+            Test("dayOfMonth(timestamp)", 15),
+            Test("dayOfWeek(timestamp)", 4),//Thursday
+            Test("dayOfYear(timestamp)", 74),
+            Test("month(timestamp)", 3),
+            Test("date(timestamp)", "3/15/2018"),
+            Test("year(timestamp)", 2018),
+            Test("formatDateTime(timestamp)", "2018-03-15T13:00:00.0000000Z"),
+            Test("formatDateTime(timestamp, 'g')", "3/15/2018 1:00 PM"),
+            Test("formatDateTime(timestamp, 'MM-dd-yy')", "03-15-18"),
+            Test("subtractFromTime(timestamp, 1, 'Day')", "2018-03-14T13:00:00.0000000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Day','g')", "3/14/2018 1:00 PM"),
+            Test("dateReadBack(timestamp, addDays(timestamp, 1))", "Tomorrow"),
+            Test("dateReadBack(timestamp, addDays(timestamp, 2))", "The day after tomorrow"),
+            Test("dateReadBack(addDays(timestamp, 1),timestamp))", "Yesterday"),
+            Test("dateReadBack(addDays(timestamp, 2),timestamp))", "The day before yesterday"),
+            Test("getTimeOfDay('2018-03-15T00:00:00Z')", "midnight"),
+            Test("getTimeOfDay('2018-03-15T08:00:00Z')", "morning"),
+            Test("getTimeOfDay('2018-03-15T12:00:00Z')", "noon"),
+            Test("getTimeOfDay('2018-03-15T13:00:00Z')", "afternoon"),
+            Test("getTimeOfDay('2018-03-15T18:00:00Z')", "evening"),
+            Test("getTimeOfDay('2018-03-15T22:00:00Z')", "evening"),
+            Test("getTimeOfDay('2018-03-15T23:00:00Z')", "night"),
+
+            //Conversion functions test
+            Test("float('10.333')", 10.333f),
+
 
             Test("!one", false),
             Test("!!one", true),
@@ -112,7 +180,8 @@ namespace Microsoft.Expressions.Tests
                     index = 3,
                     list = new[] { "red", "blue" }
                 },
-                items = new string[] { "zero", "one", "two" }
+                items = new string[] { "zero", "one", "two" },
+                timestamp = "2018-03-15T13:00:00Z"
             };
 
             var parsed = ExpressionEngine.Parse(input);
@@ -141,7 +210,8 @@ namespace Microsoft.Expressions.Tests
                     index = 3,
                     list = new[] { "red", "blue" }
                 },
-                items = new string[] { "zero", "one", "two" }
+                items = new string[] { "zero", "one", "two" },
+                timestamp = "2018-03-15T13:00:00Z"
             };
 
             object actual = null;

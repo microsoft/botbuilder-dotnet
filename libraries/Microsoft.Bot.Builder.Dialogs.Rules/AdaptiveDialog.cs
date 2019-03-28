@@ -105,10 +105,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             var planning = PlanningContext.Create(dc, state);
 
             // Evaluate rules and queue up plan changes
-            await EvaluateRulesAsync(planning, new DialogEvent() { Name = PlanningEvents.BeginDialog.ToString(), Value = options, Bubble = false }).ConfigureAwait(false);
+            await EvaluateRulesAsync(planning, new DialogEvent() { Name = PlanningEvents.BeginDialog.ToString(), Value = options, Bubble = false }, cancellationToken).ConfigureAwait(false);
 
             // Run plan
-            return await ContinuePlanAsync(planning).ConfigureAwait(false);
+            return await ContinuePlanAsync(planning, cancellationToken).ConfigureAwait(false);
         }
 
         public override async Task<DialogConsultation> ConsultDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
@@ -120,19 +120,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             var planning = PlanningContext.Create(dc, state);
 
             // First consult plan
-            var consultation = await ConsultPlanAsync(planning).ConfigureAwait(false);
+            var consultation = await ConsultPlanAsync(planning, cancellationToken).ConfigureAwait(false);
 
             if (consultation == null || consultation.Desire != DialogConsultationDesires.ShouldProcess)
             {
                 // Next evaluate rules
-                var changesQueued = await EvaluateRulesAsync(planning, new DialogEvent() { Name = PlanningEvents.ConsultDialog.ToString(), Value = null, Bubble = false }).ConfigureAwait(false);
+                var changesQueued = await EvaluateRulesAsync(planning, new DialogEvent() { Name = PlanningEvents.ConsultDialog.ToString(), Value = null, Bubble = false }, cancellationToken).ConfigureAwait(false);
 
                 if (changesQueued)
                 {
                     consultation = new DialogConsultation()
                     {
                         Desire = DialogConsultationDesires.ShouldProcess,
-                        Processor = (ctx) => this.ContinuePlanAsync(planning)
+                        Processor = (ctx) => this.ContinuePlanAsync(planning, cancellationToken)
                     };
                 }
 
@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                     consultation = new DialogConsultation()
                     {
                         Desire = DialogConsultationDesires.CanProcess,
-                        Processor = (ctx) => this.ContinuePlanAsync(planning)
+                        Processor = (ctx) => this.ContinuePlanAsync(planning, cancellationToken)
                     };
                 }
             }
@@ -212,14 +212,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             };
         }
 
-        public override async Task<bool> OnDialogEventAsync(DialogContext dc, DialogEvent e)
+        public override async Task<bool> OnDialogEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
             // Create a new planning context
             var state = (dc.ActiveDialog.State as Dictionary<string, object>)["planningState"] as PlanningState;
             var planning = PlanningContext.Create(dc, state);
 
             // Evaluate rules and queue up any potential changes
-            return await EvaluateRulesAsync(planning, e).ConfigureAwait(false);
+            return await EvaluateRulesAsync(planning, e, cancellationToken).ConfigureAwait(false);
         }
 
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -452,10 +452,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             return result;
         }
 
-        protected async Task<DialogConsultation> ConsultPlanAsync(PlanningContext planning)
+        protected async Task<DialogConsultation> ConsultPlanAsync(PlanningContext planning, CancellationToken cancellationToken)
         {
             // Apply any queued up changes
-            await planning.ApplyChangesAsync().ConfigureAwait(false);
+            await planning.ApplyChangesAsync(cancellationToken).ConfigureAwait(false);
 
             // Delegate consultation to any active planning step
             var step = PlanningContext.CreateForStep(planning, dialogs);
@@ -490,12 +490,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                             if (result.Status == DialogTurnStatus.Cancelled)
                             {
                                 // End the current plan
-                                await planning.EndPlanAsync().ConfigureAwait(false);
+                                await planning.EndPlanAsync(null, cancellationToken).ConfigureAwait(false);
                             }
                             else
                             {
                                 // End the current step
-                                await planning.EndStepAsync().ConfigureAwait(false);
+                                await planning.EndStepAsync(cancellationToken).ConfigureAwait(false);
                             }
 
                             // Continue plan execution
@@ -509,7 +509,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                             }
                             else
                             {
-                                return await ContinuePlanAsync(planning).ConfigureAwait(false);
+                                return await ContinuePlanAsync(planning, cancellationToken).ConfigureAwait(false);
                             }
                         }
                         else
@@ -534,15 +534,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             };
         }
 
-        protected async Task<DialogTurnResult> ContinuePlanAsync(PlanningContext planning)
+        protected async Task<DialogTurnResult> ContinuePlanAsync(PlanningContext planning, CancellationToken cancellationToken)
         {
             // Consult plan and execute returned processor
-            var consultation = await this.ConsultPlanAsync(planning).ConfigureAwait(false);
+            var consultation = await this.ConsultPlanAsync(planning, cancellationToken).ConfigureAwait(false);
             return await consultation.Processor(planning).ConfigureAwait(false);
         }
 
-        protected async Task<RecognizerResult> OnRecognize(ITurnContext context, CancellationToken cancellationToken = default(CancellationToken))
+        protected async Task<RecognizerResult> OnRecognize(PlanningContext planning, CancellationToken cancellationToken = default(CancellationToken))
         {
+            var context = planning.Context;
             var noneIntent = new RecognizerResult()
             {
                 Text = context.Activity.Text ?? string.Empty,
@@ -553,10 +554,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                 Entities = JObject.Parse("{}")
             };
 
-            return Recognizer != null ? await Recognizer.RecognizeAsync(context, cancellationToken) : noneIntent;
+            if (Recognizer != null)
+            {
+                await planning.DebuggerStepAsync(Recognizer, cancellationToken).ConfigureAwait(false);
+                return await Recognizer.RecognizeAsync(context, cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                return noneIntent;
+            }
         }
 
-        protected virtual async Task<bool> EvaluateRulesAsync(PlanningContext planning, DialogEvent dialogEvent)
+        protected virtual async Task<bool> EvaluateRulesAsync(PlanningContext planning, DialogEvent dialogEvent, CancellationToken cancellationToken)
         {
             var handled = false;
 
@@ -566,18 +575,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                     dialogEvent.Name == PlanningEvents.ConsultDialog.ToString())
                 {
                     // Emit event
-                    handled = await QueueFirstMatchAsync(planning, dialogEvent).ConfigureAwait(false);
+                    handled = await QueueFirstMatchAsync(planning, dialogEvent, cancellationToken).ConfigureAwait(false);
 
                     if (!handled)
                     {
                         // Process activityReceived event
-                        handled = await EvaluateRulesAsync(planning, new DialogEvent() { Name = PlanningEvents.ActivityReceived.ToString(), Value = null, Bubble = false }).ConfigureAwait(false);
+                        handled = await EvaluateRulesAsync(planning, new DialogEvent() { Name = PlanningEvents.ActivityReceived.ToString(), Value = null, Bubble = false }, cancellationToken).ConfigureAwait(false);
                     }
                 }
                 else if (dialogEvent.Name == PlanningEvents.ActivityReceived.ToString())
                 {
                     // Emit event
-                    handled = await QueueFirstMatchAsync(planning, dialogEvent).ConfigureAwait(false);
+                    handled = await QueueFirstMatchAsync(planning, dialogEvent, cancellationToken).ConfigureAwait(false);
 
                     if (!handled)
                     {
@@ -586,49 +595,50 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                         if (activity.Type == ActivityTypes.Message)
                         {
                             // Recognize utterance
-                            var recognized = await this.OnRecognize(planning.Context).ConfigureAwait(false);
+                            var recognized = await this.OnRecognize(planning).ConfigureAwait(false);
 
                             // Emit UtteranceRecognized evnet
-                            handled = await EvaluateRulesAsync(planning, new DialogEvent() { Name = PlanningEvents.UtteranceRecognized.ToString(), Value = recognized, Bubble = false }).ConfigureAwait(false);
+                            handled = await EvaluateRulesAsync(planning, new DialogEvent() { Name = PlanningEvents.UtteranceRecognized.ToString(), Value = recognized, Bubble = false }, cancellationToken).ConfigureAwait(false);
                         }
                         else if (activity.Type == ActivityTypes.Event)
                         {
                             // Dispatch named event that was received
-                            handled = await EvaluateRulesAsync(planning, new DialogEvent() { Name = activity.Name, Value = activity.Value, Bubble = false }).ConfigureAwait(false);
+                            handled = await EvaluateRulesAsync(planning, new DialogEvent() { Name = activity.Name, Value = activity.Value, Bubble = false }, cancellationToken).ConfigureAwait(false);
                         }
                     }
                     return handled;
                 }
                 else if (dialogEvent.Name == PlanningEvents.UtteranceRecognized.ToString())
                 {
-                    handled = await QueueBestMatches(planning, dialogEvent).ConfigureAwait(false);
+                    handled = await QueueBestMatches(planning, dialogEvent, cancellationToken).ConfigureAwait(false);
 
                     if (!handled)
                     {
                         // Dispatch fallback event
-                        handled = await EvaluateRulesAsync(planning, new DialogEvent() { Name = PlanningEvents.Fallback.ToString(), Value = dialogEvent.Value, Bubble = false }).ConfigureAwait(false);
+                        handled = await EvaluateRulesAsync(planning, new DialogEvent() { Name = PlanningEvents.Fallback.ToString(), Value = dialogEvent.Value, Bubble = false }, cancellationToken).ConfigureAwait(false);
                     }
                 }
                 else if (dialogEvent.Name == PlanningEvents.Fallback.ToString())
                 {
                     if (planning.Plan == null)
                     {
-                        handled = await QueueFirstMatchAsync(planning, dialogEvent).ConfigureAwait(false);
+                        handled = await QueueFirstMatchAsync(planning, dialogEvent, cancellationToken).ConfigureAwait(false);
                     }
                 }
                 else
                 {
-                    handled = await QueueFirstMatchAsync(planning, dialogEvent).ConfigureAwait(false);
+                    handled = await QueueFirstMatchAsync(planning, dialogEvent, cancellationToken).ConfigureAwait(false);
                 }
             }
 
             return handled;
         }
 
-        private async Task<bool> QueueFirstMatchAsync(PlanningContext planning, DialogEvent dialogEvent)
+        private async Task<bool> QueueFirstMatchAsync(PlanningContext planning, DialogEvent dialogEvent, CancellationToken cancellationToken)
         {
             for (int i = 0; i < Rules.Count; i++)
             {
+                await planning.DebuggerStepAsync(Rules[i], dialogEvent, cancellationToken).ConfigureAwait(false);
                 var expression = Rules[i].GetExpression(planning, dialogEvent);
                 var result = (bool)await expression.Evaluate(planning.State);
                 if (result == true)
@@ -647,13 +657,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             return false;
         }
 
-        private async Task<bool> QueueBestMatches(PlanningContext planning, DialogEvent dialogEvent)
+        private async Task<bool> QueueBestMatches(PlanningContext planning, DialogEvent dialogEvent, CancellationToken cancellationToken)
         {
             // Get list of proposed changes
             var allChanges = new List<PlanChangeList>();
 
             for (int i = 0; i < Rules.Count; i++)
             {
+                await planning.DebuggerStepAsync(Rules[i], dialogEvent, cancellationToken).ConfigureAwait(false);
                 var expression = Rules[i].GetExpression(planning, dialogEvent);
                 var result = (bool)await expression.Evaluate(planning.State);
                 if (result == true)

@@ -16,6 +16,8 @@
 - - [ ] Final API shape review
 - - [ ] Final packaging, naming review
 - - [ ] On board to build and release DevOps pipeline
+- - [ ] [Documentation](#Documentation)
+- - [ ] [Samples](#Samples)
 
 ### Functional parity across C# and TS
 
