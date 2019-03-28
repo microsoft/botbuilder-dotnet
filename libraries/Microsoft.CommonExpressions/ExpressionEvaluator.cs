@@ -26,7 +26,9 @@ namespace Microsoft.Expressions
             {">", "greater"},
             {">=", "greaterOrEquals"},
             {"&&", "and"},
-            {"||", "or"}
+            {"||", "or"},
+            {"%", "mod"},
+            {"&", "concat"},
         };
 
         public static readonly Dictionary<string, string> UnaryOperatorFunctions = new Dictionary<string, string>

@@ -9,12 +9,15 @@
 - - [ ] Rewrite parser using ANTLR
 - - [ ] Implement R0 set of pre-built functions for C# and JS
 - - [ ] Implement support for short hand entity resolution - $entityName, #entityName, @entityName
+- - [ ] Close on JSON .vs. native object support in expression language
 - - [ ] Pick up new changes from Chris McConnell on expression evaluate, parse tree walk
 - - [ ] Wire up expression language in LG subsystem
 - - [ ] Wire up expression language support in Adaptive dialog rules and steps
 - - [ ] Final API shape review
 - - [ ] Final packaging, naming review
 - - [ ] On board to build and release DevOps pipeline
+- - [ ] [Documentation](#Documentation)
+- - [ ] [Samples](#Samples)
 
 ### Functional parity across C# and TS
 
