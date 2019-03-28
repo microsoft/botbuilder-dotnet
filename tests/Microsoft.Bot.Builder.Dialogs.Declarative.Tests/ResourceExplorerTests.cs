@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         {
             var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"..\..\.."));
             var explorer = new ResourceExplorer();
-            explorer.AddFolderResource(path);
+            explorer.AddFolder(path);
 
             await AssertResourceType(path, explorer, "dialog");
             var resources = explorer.GetResources("foo").ToArray();
@@ -44,21 +44,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
             var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"..\..\.."));
             var explorer = new ResourceExplorer();
-            explorer.AddFolderResource(path);
+            explorer.AddFolder(path);
 
             explorer.Changed += (src, resource) =>
             {
                 if (Path.GetFileName(resource.Name) == "foo.dialog")
                 {
                     changeFired.SetResult(true);
-                }
-            };
-
-            explorer.Deleted += (src, resource) =>
-            {
-                if (Path.GetFileName(resource.Name) == "foo.dialog")
-                {
-                    deletedFired.SetResult(true);
+                    changeFired = new TaskCompletionSource<bool>();
                 }
             };
 
@@ -67,15 +60,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             Assert.AreEqual(1, resources.Length);
             Assert.AreEqual(".dialog", resources[0].Extension);
 
-            File.WriteAllText(testDialogFile, "{}");
-            await changeFired.Task.ConfigureAwait(false);
-            changeFired = new TaskCompletionSource<bool>();
-
+            // new file
             File.WriteAllText(testDialogFile, "{}");
             await changeFired.Task.ConfigureAwait(false);
 
+            // changed file
+            File.WriteAllText(testDialogFile, "{}");
+            await changeFired.Task.ConfigureAwait(false);
+
+            // delete file
             File.Delete(testDialogFile);
-            await deletedFired.Task.ConfigureAwait(false);
+            await changeFired.Task.ConfigureAwait(false);
         }
 
         private static async Task AssertResourceType(string path, ResourceExplorer explorer, string resourceType)

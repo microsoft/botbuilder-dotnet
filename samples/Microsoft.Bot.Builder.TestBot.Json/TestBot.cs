@@ -27,8 +27,11 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
         private TestBotAccessors accessors;
 
+        private Source.IRegistry registry;
+
         public TestBot(TestBotAccessors accessors, ResourceExplorer resourceExplorer, Source.IRegistry registry)
         {
+            this.registry = registry;
             this.accessors = accessors;
             this.resourceExplorer = resourceExplorer;
             this.resourceExplorer.Changed += ResourceExplorer_Changed;
@@ -58,7 +61,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             //var rootFile = resourceExplorer.GetResource("CallDialog.main.dialog");
             //var rootFile = resourceExplorer.GetResource("ExternalLanguage.main.dialog");
 
-            rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(rootFile.FullName), resourceExplorer, registry);
+            rootDialog = DeclarativeTypeLoader.Load<IDialog>(rootFile.FullName, resourceExplorer, registry);
             _dialogs = new DialogSet(accessors.ConversationDialogState);
             _dialogs.Add(rootDialog);
         }

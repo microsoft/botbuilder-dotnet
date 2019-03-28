@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
 {
     public static class DeclarativeTypeLoader
     {
-        public static T Load<T>(string json, ResourceExplorer resourceExplorer, Source.IRegistry registry)
+        public static T Load<T>(string path, ResourceExplorer resourceExplorer, Source.IRegistry registry)
         {
             IRefResolver refResolver = new IdRefResolver(resourceExplorer, registry);
 

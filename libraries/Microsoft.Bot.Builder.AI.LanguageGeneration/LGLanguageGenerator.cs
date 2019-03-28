@@ -15,9 +15,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         private Dictionary<string, TemplateEngine> engines;
         private ResourceExplorer resourceManager;
 
-        public LGLanguageGenerator(ResourceExplorer resourceManager, ILanguagePolicy languagePolicy = null)
+        public LGLanguageGenerator(ResourceExplorer resourceExplorer, ILanguagePolicy languagePolicy = null)
         {
-            this.resourceManager = resourceManager;
+            this.resourceManager = resourceExplorer;
             this.LanguagePolicy = languagePolicy ?? new LanguagePolicy();
         }
 

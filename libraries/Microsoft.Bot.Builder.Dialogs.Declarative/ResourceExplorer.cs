@@ -36,36 +36,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
         IEnumerable<DirectoryInfo> IResourceExplorer.Folders { get => folderResources.Select(s => s.Directory); set => throw new NotImplementedException(); }
 
         /// <summary>
-        /// Occurs when a file or directory in the specified System.IO.FileSystemWatcher.Path is deleted.
-        /// </summary>
-        public event FileSystemEventHandler Deleted;
-
-        /// <summary>
-        /// Occurs when a file or directory in the specified System.IO.FileSystemWatcher.Path is created.
-        /// </summary>
-        public event FileSystemEventHandler Created;
-
-        /// <summary>
         /// Occurs when a file or directory in the specified System.IO.FileSystemWatcher.Path is changed.
         /// </summary>
         public event FileSystemEventHandler Changed;
 
-        /// <summary>
-        /// Occurs when a file or directory in the specified System.IO.FileSystemWatcher.Path is renamed.
-        /// </summary>
-        public event RenamedEventHandler Renamed;
-
-        public void AddFolderResource(string folder, bool monitorFiles = true)
+        public void AddFolder(string folder, bool monitorFiles = true)
         {
             var folderResource = new FolderResource(folder, monitorFiles);
-
-            //folderResource.Watcher.Created += (sender, e) =>
-            //{
-            //    if (this.Created != null)
-            //    {
-            //        this.Created(sender, e);
-            //    }
-            //};
 
             folderResource.Watcher.Changed += (sender, e) =>
             {
@@ -74,22 +51,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                     this.Changed(sender, e);
                 }
             };
-
-            folderResource.Watcher.Deleted += (sender, e) =>
-            {
-                if (this.Deleted != null)
-                {
-                    this.Deleted(sender, e);
-                }
-            };
-
-            //folderResource.Watcher.Renamed += (sender, e) =>
-            //{
-            //    if (this.Renamed != null)
-            //    {
-            //        this.Renamed(sender, e);
-            //    }
-            //};
 
             this.folderResources.Add(folderResource);
         }
@@ -117,7 +78,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
             xmlDoc.Load(projectFile);
 
             // add folder for the project
-            explorer.AddFolderResource(projectFolder);
+            explorer.AddFolder(projectFolder);
 
             // add project references
             foreach (XmlNode node in xmlDoc.SelectNodes("//ProjectReference"))
@@ -125,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                 var path = Path.Combine(projectFolder, node.Attributes["Include"].Value);
                 path = Path.GetFullPath(path);
                 path = Path.GetDirectoryName(path);
-                explorer.AddFolderResource(path);
+                explorer.AddFolder(path);
             }
 
             var packages = Path.GetFullPath("packages");
@@ -150,7 +111,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                     var folder = Path.Combine(packages, pathResolver.GetPackageDirectoryName(package));
                     if (Directory.Exists(folder))
                     {
-                        explorer.AddFolderResource(folder, monitorFiles: false);
+                        explorer.AddFolder(folder, monitorFiles: false);
                     }
                 }
             }
