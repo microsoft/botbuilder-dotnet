@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
@@ -17,24 +18,44 @@ namespace Microsoft.Bot.Builder.TestBot.Json
     {
         private DialogSet _dialogs;
 
-        private readonly IDialog rootDialog;
+        private IDialog rootDialog;
 
         private readonly ResourceExplorer resourceExplorer;
-        
-        public TestBot(TestBotAccessors accessors, ResourceExplorer resourceProvider)
-        {
-            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning - ToDoBot\ToDoBot.main.dialog"), resourceProvider);
-            rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning - ToDoLuisBot\ToDoLuisBot.main.dialog"), resourceProvider);
-            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\RootDialog\RootDialog.main.dialog"), resourceProvider);
-            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 1 - DefaultRule\DefaultRule.main.dialog"), resourceProvider);
-            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 2 - WaitForInput\WaitForInput.main.dialog"), resourceProvider);
-            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 3 - IfProperty\IfProperty.main.dialog"), resourceProvider);
-            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 4 - TextPrompt\TextPrompt.main.dialog"), resourceProvider);
-            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 5 - WelcomeRule\WelcomeRule.main.dialog"), resourceProvider);
-            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 6 - DoSteps\DoSteps.main.dialog"), resourceProvider);
-            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 7 - CallDialog\CallDialog.main.dialog"), resourceProvider);
-            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.dialog"), resourceProvider);
 
+        private TestBotAccessors accessors;
+
+        public TestBot(TestBotAccessors accessors, ResourceExplorer resourceExplorer)
+        {
+            this.accessors = accessors;
+            this.resourceExplorer = resourceExplorer;
+            this.resourceExplorer.Changed += ResourceExplorer_Changed;
+            this.resourceExplorer.Deleted += ResourceExplorer_Changed;
+
+            LoadRootDialog();
+        }
+
+        private void ResourceExplorer_Changed(object sender, FileSystemEventArgs e)
+        {
+            if (Path.GetExtension(e.FullPath) == ".dialog")
+            {
+                LoadRootDialog();
+            }
+        }
+
+        private void LoadRootDialog()
+        {
+            var rootFile = resourceExplorer.GetResource(@"ToDoBot.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("ToDoLuisBot.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("DefaultRule.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("WaitForInput.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("IfProperty.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("TextPrompt.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("WelcomeRule.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("DoSteps.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("CallDialog.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("ExternalLanguage.main.dialog");
+
+            rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(rootFile.FullName), resourceExplorer);
             _dialogs = new DialogSet(accessors.ConversationDialogState);
             _dialogs.Add(rootDialog);
         }

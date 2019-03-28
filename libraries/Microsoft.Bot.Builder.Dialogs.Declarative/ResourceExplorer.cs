@@ -175,6 +175,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
         }
 
         /// <summary>
+        /// Get resource by filename
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        public FileInfo GetResource(string filename)
+        {
+            return GetResources(Path.GetExtension(filename)).Where(fi => fi.Name == filename).SingleOrDefault();
+        }
+
+        /// <summary>
         /// Folder/FileResources
         /// </summary>
         internal class FolderResource
@@ -202,7 +212,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
             /// </summary>
             public IEnumerable<FileInfo> GetResources(string extension)
             {
-                foreach (var fileInfo in this.Directory.EnumerateFiles($"*.{extension}", SearchOption.AllDirectories))
+                foreach (var fileInfo in this.Directory.EnumerateFiles($"*.{extension.TrimStart('.')}", SearchOption.AllDirectories))
                 {
                     yield return fileInfo;
                 }

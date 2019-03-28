@@ -62,13 +62,13 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             };
 
             // manage all bot resources
-            var botResourceManager = ResourceExplorer.LoadProject(HostingEnvironment.ContentRootPath);
+            var resourceExplorer = ResourceExplorer.LoadProject(HostingEnvironment.ContentRootPath);
 
             services.AddBot<IBot>(
                 (IServiceProvider sp) =>
                 {
                     // declarative Adaptive dialogs bot sample
-                    return new TestBot(accessors, botResourceManager);
+                    return new TestBot(accessors, resourceExplorer);
 
                     // LG bot sample
                     // return new TestBotLG(accessors);
@@ -82,9 +82,9 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                     };
 
                     options.Middleware.Add(new RegisterClassMiddleware<IStorage>(dataStore));
-                    options.Middleware.Add(new RegisterClassMiddleware<ResourceExplorer>(botResourceManager));
+                    options.Middleware.Add(new RegisterClassMiddleware<ResourceExplorer>(resourceExplorer));
 
-                    var lg = new LGLanguageGenerator(botResourceManager);
+                    var lg = new LGLanguageGenerator(resourceExplorer);
                     options.Middleware.Add(new RegisterClassMiddleware<ILanguageGenerator>(lg));
                     options.Middleware.Add(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)));
 
