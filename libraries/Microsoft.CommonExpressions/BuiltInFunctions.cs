@@ -5,6 +5,8 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using System.Globalization;
 using Newtonsoft.Json;
+using System.Collections;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Expressions
 {
@@ -39,10 +41,10 @@ namespace Microsoft.Expressions
                 operands[0] is int int0 && operands[1] is int int1 ? (object)(int0 / int1) :
                 throw new ExpressionPropertyMissingException();
 
-        public static EvaluationDelegate Equal = operands => 
-                operands[0] is IComparable operand0 && operands[1] is IComparable operand1 ? 
-                operand0.CompareTo(operand1) == 0 : operands[0] == null && operands[1] == null ? 
-                true : (operands[0] == null || operands[1] == null) ? 
+        public static EvaluationDelegate Equal = operands =>
+                operands[0] is IComparable operand0 && operands[1] is IComparable operand1 ?
+                operand0.CompareTo(operand1) == 0 : operands[0] == null && operands[1] == null ?
+                true : (operands[0] == null || operands[1] == null) ?
                 false : throw new ExpressionPropertyMissingException();
 
         public static EvaluationDelegate NotEqual = operands =>
@@ -92,7 +94,7 @@ namespace Microsoft.Expressions
                         operands[0] != null;
 
         public static EvaluationDelegate Mod = operands =>
-                        operands[0] is int int0 && operands[1] is int int1 ? int0%int1:
+                        operands[0] is int int0 && operands[1] is int int1 ? int0 % int1 :
                         throw new ExpressionPropertyMissingException();
 
         public static EvaluationDelegate Concat = operands =>
@@ -110,7 +112,7 @@ namespace Microsoft.Expressions
         };
 
         public static EvaluationDelegate Length = operands =>
-                        operands[0] is string string0 ? string0.Length:
+                        operands[0] is string string0 ? string0.Length :
                         throw new ExpressionPropertyMissingException();
 
         public static EvaluationDelegate Replace = operands =>
@@ -127,13 +129,13 @@ namespace Microsoft.Expressions
 
         public static EvaluationDelegate SubString = operands =>
         {
-            if(operands[0] is string string0 && operands[1] is int int0 && operands[2] is int int1)
+            if (operands[0] is string string0 && operands[1] is int int0 && operands[2] is int int1)
             {
-                if(int0 < 0 || int0 >= string0.Length)
+                if (int0 < 0 || int0 >= string0.Length)
                 {
                     throw new ExpressionPropertyMissingException();
                 }
-                if(int1 >= string0.Length)
+                if (int1 >= string0.Length)
                 {
                     return string0.Substring(int0);
                 }
@@ -143,7 +145,7 @@ namespace Microsoft.Expressions
         };
 
         public static EvaluationDelegate ToLower = operands =>
-                       operands[0] is string string0 ? string0.ToLower() : 
+                       operands[0] is string string0 ? string0.ToLower() :
                        throw new ExpressionPropertyMissingException();
 
         public static EvaluationDelegate ToUpper = operands =>
@@ -155,21 +157,21 @@ namespace Microsoft.Expressions
                        throw new ExpressionPropertyMissingException();
 
         public static EvaluationDelegate If = operands =>
-                       operands[0] is bool bool0 ? (bool0 ? operands[1]:operands[2]):
+                       operands[0] is bool bool0 ? (bool0 ? operands[1] : operands[2]) :
                        throw new ExpressionPropertyMissingException();
 
         public static EvaluationDelegate Rand = operands =>
-                        operands[0] is int int0 && operands[1] is int int1 ? new Random().Next(int0,int1) :
+                        operands[0] is int int0 && operands[1] is int int1 ? new Random().Next(int0, int1) :
                         throw new ExpressionPropertyMissingException();
 
         public static EvaluationDelegate Sum = operands =>
         {
-            if(operands.All(u=>(u is int)))
+            if (operands.All(u => (u is int)))
             {
                 return operands.Sum(u => (int)u);
             }
 
-            if(operands.All(u => ((u is int) || (u is double))))
+            if (operands.All(u => ((u is int) || (u is double))))
             {
                 return operands.Sum(u => Convert.ToDouble(u));
             }
@@ -185,9 +187,9 @@ namespace Microsoft.Expressions
 
         public static EvaluationDelegate AddDays = operands =>
         {
-            if(operands[0] is string string0 && operands[1] is int int0)
+            if (operands[0] is string string0 && operands[1] is int int0)
             {
-                var formatString = operands.Count == 3 && operands[2] is string string1 
+                var formatString = operands.Count == 3 && operands[2] is string string1
                     ? string1 : DefaultDateTimeFormat;
 
                 var timestamp = ParseTimestamp(string0);
@@ -240,7 +242,7 @@ namespace Microsoft.Expressions
         };
 
         public static EvaluationDelegate DayOfMonth = operands =>
-                      operands[0] is string string0? ParseTimestamp(string0).Day :
+                      operands[0] is string string0 ? ParseTimestamp(string0).Day :
                       throw new ExpressionPropertyMissingException();
 
         public static EvaluationDelegate DayOfWeek = operands =>
@@ -252,11 +254,11 @@ namespace Microsoft.Expressions
                       throw new ExpressionPropertyMissingException();
 
         public static EvaluationDelegate Month = operands =>
-                      operands[0] is string string0 ? ParseTimestamp(string0).Month:
+                      operands[0] is string string0 ? ParseTimestamp(string0).Month :
                       throw new ExpressionPropertyMissingException();
 
         public static EvaluationDelegate Date = operands =>
-                      operands[0] is string string0 ? ParseTimestamp(string0).Date.ToString("d"):
+                      operands[0] is string string0 ? ParseTimestamp(string0).Date.ToString("d") :
                       throw new ExpressionPropertyMissingException();
 
         public static EvaluationDelegate Year = operands =>
@@ -359,9 +361,106 @@ namespace Microsoft.Expressions
                        operands[0] is string string0 ? (float)Convert.ToDouble(string0) :
                       throw new ExpressionPropertyMissingException();
 
+        public static EvaluationDelegate ConvertToInt = operands =>
+                      operands[0] is string string0 ? Convert.ToInt32(string0) :
+                     throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate ConvertToString = operands =>
+                    operands[0] is string string0? string0:
+                    JsonConvert.SerializeObject(operands[0]);
+
+        public static EvaluationDelegate ConvertToBool = operands => Convert.ToBoolean(operands[0]);
+
+        public static EvaluationDelegate CreateArray = operands =>
+                      new List<object>(operands) { };
+
+        public static EvaluationDelegate CheckContains = operands =>
+        {
+            //string to find subString
+            if (operands[0] is string string0 &&
+                operands[1] is string string1)
+            {
+                if (string0.Contains(string1))
+                    return true;
+            }
+            //list to find a value
+            else if (operands[0] is IList list1)
+            {
+                if (list1.Contains(operands[1]))
+                    return true;
+            }
+            //Dictionary contains key
+            else if (operands[0] is IDictionary dict && operands[1] is string string2)
+            {
+                if (dict is Dictionary<string, object> realdict
+                    && realdict.ContainsKey(string2))
+                    return true;
+            }
+            else if(operands[1] is string string3)
+            {
+                var propInfo = operands[0].GetType().GetProperty(string3);
+                if (propInfo != null)
+                {
+                    return true;
+                }
+            }
+            return false;
+        };
 
 
+        public static EvaluationDelegate CheckEmpty = operands =>
+        {
+            if (operands[0] == null)
+                return true;
 
+            if (operands[0] is string string0)
+                return string.IsNullOrEmpty(string0);
+
+            if (operands[0] is IList list)
+                return list.Count == 0;
+
+            return operands[0].GetType().GetProperties().Length == 0;
+        };
+
+        public static EvaluationDelegate First = operands =>
+        {
+            if (operands[0] is string string0 && string0.Length > 0)
+                return string0.First().ToString();
+
+            if (operands[0] is IList list && list.Count > 0)
+                return list[0];
+
+            throw new ExpressionPropertyMissingException();
+        };
+
+        public static EvaluationDelegate Join = operands =>
+                     operands[0] is IList list0 && operands[1] is string string0 ? string.Join(string0, list0.OfType<object>().Select(x => x.ToString())) :
+                     throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate Last = operands =>
+        {
+            if (operands[0] is string string0 && string0.Length > 0)
+                return string0.Last().ToString();
+
+            if (operands[0] is IList list && list.Count > 0)
+                return list[list.Count - 1];
+
+            throw new ExpressionPropertyMissingException();
+        };
+
+       
+
+
+        public static EvaluationDelegate Parameters = operands =>
+        {
+            if (operands[0] is string string0 && string0.Length > 0)
+                return string0.Last().ToString();
+
+            if (operands[0] is IList list && list.Count > 0)
+                return list[list.Count - 1];
+
+            throw new ExpressionPropertyMissingException();
+        };
 
 
         private static TimeSpan GetTimeSpan(long interval, string timeUnit)
@@ -402,10 +501,5 @@ namespace Microsoft.Expressions
         {
             return date1.Year == date2.Year && date1.Month == date2.Month && date1.Day == date2.Day;
         }
-    }
-
-    enum C
-    {
-        ok
     }
 }

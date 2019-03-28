@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Antlr4.Runtime;
@@ -138,7 +139,36 @@ namespace Microsoft.Expressions.Tests
 
             //Conversion functions test
             Test("float('10.333')", 10.333f),
+            Test("int('10')", 10),
+            Test("string('str')", "str"),
+            Test("string(one)", "1.0"),
+            Test("string(bag)", "{\"three\":3.0,\"set\":{\"four\":4.0},\"list\":[\"red\",\"blue\"],\"index\":3}"),
+            Test("bool(1)", true),
+            Test("bool(0)", false),
+            Test("bool('false')", false),
+            Test("bool('true')", true),
+            Test("createArray('h', 'e', 'l', 'l', 'o')", new List<object>{"h", "e", "l", "l", "o" }),
 
+            //Collection functions test
+            Test("contains('hello world', 'hello')", true),
+            Test("contains('hello world', 'hellow')", false),
+            Test("contains(items, 'zero')", true),
+            Test("contains(items, 'hi')", false),
+            Test("contains(bag, 'three')", true),
+            Test("contains(bag, 'xxx')", false),
+            Test("empty('')", true),
+            Test("empty('a')", false),
+            Test("empty(bag)", false),
+            Test("empty(items)", false),
+            Test("first(items)", "zero"),
+            Test("first('hello')", "h"),
+            Test("first(createArray(0, 1, 2))", 0),
+            Test("join(items,',')", "zero,one,two"),
+            Test("join(createArray('a', 'b', 'c'), '.')", "a.b.c"),
+            Test("last(items)", "two"),
+            Test("last('hello')", "o"),
+            Test("last(createArray(0, 1, 2))", 2),
+            Test("parameter(hello)", "hello"),
 
             Test("!one", false),
             Test("!!one", true),
@@ -247,14 +277,14 @@ namespace Microsoft.Expressions.Tests
 
         private void AssertObjectEquals(object expected, object actual)
         {
-            // Compare two arrays
-            if (expected is object[] expectedArray
-                && actual is object[] actualArray)
+            // Compare two lists
+            if (expected is IList expectedList
+                && actual is IList actualList)
             {
-                Assert.AreEqual(expectedArray.Length, actualArray.Length);
-                for (var i = 0; i < expectedArray.Length; i++)
+                Assert.AreEqual(expectedList.Count, actualList.Count);
+                for (var i = 0; i < expectedList.Count; i++)
                 {
-                    Assert.AreEqual(expectedArray[i], actualArray[i]);
+                    Assert.AreEqual(expectedList[i], actualList[i]);
                 }
             }
             else

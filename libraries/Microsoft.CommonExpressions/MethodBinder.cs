@@ -73,6 +73,16 @@ namespace Microsoft.Expressions
             {"dateReadBack", BuildinFunctions.DateReadBack},
             {"getTimeOfDay", BuildinFunctions.GetTimeOfDay},
             {"float", BuildinFunctions.ConvertToFloat},
+            {"int", BuildinFunctions.ConvertToInt},
+            {"string", BuildinFunctions.ConvertToString},
+            {"bool", BuildinFunctions.ConvertToBool},
+            {"createArray", BuildinFunctions.CreateArray},
+            {"contains", BuildinFunctions.CheckContains},
+            {"empty", BuildinFunctions.CheckEmpty},
+            {"first", BuildinFunctions.First},
+            {"join", BuildinFunctions.Join},
+            {"last", BuildinFunctions.Last},
+            {"parameters", BuildinFunctions.Parameters},
         };
 
         /// <summary>
