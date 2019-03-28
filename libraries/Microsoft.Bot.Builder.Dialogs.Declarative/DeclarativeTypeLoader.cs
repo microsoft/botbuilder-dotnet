@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Dialogs.Rules;
 using Microsoft.Extensions.Configuration;
@@ -16,9 +16,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
 {
     public static class DeclarativeTypeLoader
     {
-        public static T Load<T>(string json, IBotResourceProvider resourceProvider)
+        public static T Load<T>(string json, ResourceExplorer resourceExplorer)
         {
-            IRefResolver refResolver = new IdRefResolver(resourceProvider);
+            IRefResolver refResolver = new IdRefResolver(resourceExplorer);
 
             var cog = JsonConvert.DeserializeObject<T>(
                 json, new JsonSerializerSettings()

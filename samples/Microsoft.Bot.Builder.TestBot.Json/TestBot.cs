@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Rules;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
@@ -20,9 +19,9 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
         private readonly IDialog rootDialog;
 
-        private readonly IBotResourceProvider resourceProvider;
+        private readonly ResourceExplorer resourceExplorer;
         
-        public TestBot(TestBotAccessors accessors, IBotResourceProvider resourceProvider)
+        public TestBot(TestBotAccessors accessors, ResourceExplorer resourceProvider)
         {
             //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning - ToDoBot\ToDoBot.main.dialog"), resourceProvider);
             rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning - ToDoLuisBot\ToDoLuisBot.main.dialog"), resourceProvider);

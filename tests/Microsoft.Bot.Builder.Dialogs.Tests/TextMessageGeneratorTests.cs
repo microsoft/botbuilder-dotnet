@@ -5,7 +5,7 @@ using System;
 using System.Threading.Tasks;
 using AdaptiveCards;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
@@ -34,8 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         private TextMessageActivityGenerator GetGenerator()
         {
-            var rm = new BotResourceManager();
-            rm.AddFolderResources(GetLgFolder());
+            var rm = ResourceExplorer.LoadProject(GetLgFolder());
             var lg = new LGLanguageGenerator(rm);
             var mg = new TextMessageActivityGenerator(lg);
             return mg;

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
@@ -62,9 +62,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             };
 
             // manage all bot resources
-            var botResourceManager = new BotResourceManager()
-                // add current folder, it's project file, packages, projects, etc.
-                .AddProjectResources(HostingEnvironment.ContentRootPath);
+            var botResourceManager = ResourceExplorer.LoadProject(HostingEnvironment.ContentRootPath);
 
             services.AddBot<IBot>(
                 (IServiceProvider sp) =>
@@ -84,7 +82,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                     };
 
                     options.Middleware.Add(new RegisterClassMiddleware<IStorage>(dataStore));
-                    options.Middleware.Add(new RegisterClassMiddleware<IBotResourceProvider>(botResourceManager));
+                    options.Middleware.Add(new RegisterClassMiddleware<ResourceExplorer>(botResourceManager));
 
                     var lg = new LGLanguageGenerator(botResourceManager);
                     options.Middleware.Add(new RegisterClassMiddleware<ILanguageGenerator>(lg));

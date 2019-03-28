@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
     public class LGLanguageGenerator : ILanguageGenerator
     {
         private Dictionary<string, TemplateEngine> engines;
-        private BotResourceManager resourceManager;
+        private ResourceExplorer resourceManager;
 
-        public LGLanguageGenerator(BotResourceManager resourceManager, ILanguagePolicy languagePolicy = null)
+        public LGLanguageGenerator(ResourceExplorer resourceManager, ILanguagePolicy languagePolicy = null)
         {
             this.resourceManager = resourceManager;
             this.LanguagePolicy = languagePolicy ?? new LanguagePolicy();
@@ -31,12 +32,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             {
                 var engs = new Dictionary<string, TemplateEngine>(StringComparer.CurrentCultureIgnoreCase);
 
-                var lgs = await this.resourceManager.GetResources("lg");
-                var getResourceTasks = lgs.Select(resource => resource.GetTextAsync());
-                await Task.WhenAll(getResourceTasks).ConfigureAwait(false);
+                var lgs = this.resourceManager.GetResources("lg").ToArray();
+                var contents = lgs.Select(resource => File.ReadAllText(resource.FullName));
 
                 Dictionary<string, StringBuilder> languageResources = new Dictionary<string, StringBuilder>();
-                foreach (var result in getResourceTasks.Select(task => task.Result))
+                foreach (var result in contents)
                 {
                     var lgText = result;
                     // get lang (HACK)
