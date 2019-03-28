@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace Microsoft.Bot.Builder.Expressions
 {
@@ -78,5 +82,140 @@ namespace Microsoft.Bot.Builder.Expressions
 
         public static EvaluationDelegate Exist = operands =>
                         operands[0] != null;
+
+        public static EvaluationDelegate Mod = operands =>
+                        operands[0] is int int0 && operands[1] is int int1 ? int0%int1:
+                        throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate Concat = (IReadOnlyList<object> operands) =>
+        {
+            var stringBuilder = new StringBuilder();
+            foreach (var item in operands)
+            {
+                if (item is string str)
+                {
+                    stringBuilder.Append(str);
+                }
+                else throw new ExpressionPropertyMissingException();
+            }
+            return stringBuilder.ToString();
+        };
+
+        public static EvaluationDelegate Length = operands =>
+                        operands[0] is string string0 ? string0.Length:
+                        throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate Replace = operands =>
+                       operands[0] is string string0 && operands[1] is string string1 && operands[2] is string string2 ?
+                       string0.Replace(string1, string2) : throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate ReplaceIgnoreCase = operands =>
+                       operands[0] is string string0 && operands[1] is string string1 && operands[2] is string string2 ?
+                       Regex.Replace(string0, string1, string2, RegexOptions.IgnoreCase) : throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate Split = operands =>
+                      operands[0] is string string0 && operands[1] is string string1 && string1.Length == 1 ?
+                      string0.Split(string1.ToCharArray()[0]) : throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate SubString = (IReadOnlyList<object> operands) =>
+        {
+            if(operands[0] is string string0 && operands[1] is int int0 && operands[2] is int int1)
+            {
+                if(int0 < 0 || int0 >= string0.Length)
+                {
+                    throw new ExpressionPropertyMissingException();
+                }
+                if(int1 >= string0.Length)
+                {
+                    return string0.Substring(int0);
+                }
+                return string0.Substring(int0, int1 - int0);
+            }
+            else throw new ExpressionPropertyMissingException();
+        };
+
+        public static EvaluationDelegate ToLower = operands =>
+                       operands[0] is string string0 ? string0.ToLower() : 
+                       throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate ToUpper = operands =>
+                       operands[0] is string string0 ? string0.ToUpper() :
+                       throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate Trim = operands =>
+                       operands[0] is string string0 ? string0.Trim() :
+                       throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate If = operands =>
+                       operands[0] is bool bool0 ? (bool0 ? operands[1]:operands[2]):
+                       throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate Rand = operands =>
+                        operands[0] is int int0 && operands[1] is int int1 ? new Random().Next(int0,int1) :
+                        throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate Sum = (IReadOnlyList<object> operands) =>
+        {
+            if(operands.All(u=>(u is int)))
+            {
+                return operands.Sum(u => (int)u);
+            }
+
+            if(operands.All(u => ((u is int) || (u is double))))
+            {
+                return operands.Sum(u => Convert.ToDouble(u));
+            }
+
+            throw new ExpressionPropertyMissingException();
+        };
+
+        public static EvaluationDelegate Average = operands =>
+                        operands.All(u => ((u is int) || (u is double))) ? operands.Average(u => Convert.ToDouble(u)) :
+                        throw new ExpressionPropertyMissingException();
+
+        //Date and time functions
+        
+        public static EvaluationDelegate AddDays = operands =>
+                       operands[0] is DateTime dateTime0 && operands[1] is int int0 ? dateTime0.AddDays(int0) :
+                       throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate AddHours = operands =>
+                      operands[0] is DateTime dateTime0 && operands[1] is int int0 ? dateTime0.AddHours(int0) :
+                      throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate AddMinutes = operands =>
+                      operands[0] is DateTime dateTime0 && operands[1] is int int0 ? dateTime0.AddMinutes(int0) :
+                      throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate AddSeconds = operands =>
+                      operands[0] is DateTime dateTime0 && operands[1] is int int0 ? dateTime0.AddSeconds(int0) :
+                      throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate DayOfMonth = operands =>
+                      operands[0] is DateTime dateTime0? dateTime0.Day :
+                      throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate DayOfWeek = operands =>
+                      operands[0] is DateTime dateTime0 ? (int)dateTime0.DayOfWeek :
+                      throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate DayOfYear = operands =>
+                      operands[0] is DateTime dateTime0 ? dateTime0.DayOfYear :
+                      throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate Month = operands =>
+                      operands[0] is DateTime dateTime0 ? dateTime0.Month:
+                      throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate Date = operands =>
+                      operands[0] is DateTime dateTime0 ? dateTime0.Date :
+                      throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate Year = operands =>
+                      operands[0] is DateTime dateTime0 ? dateTime0.Year :
+                      throw new ExpressionPropertyMissingException();
+
+        public static EvaluationDelegate UtcNow = (operands) =>
+                      DateTimeOffset.UtcNow.ToUnixTimeSeconds();
     }
 }
