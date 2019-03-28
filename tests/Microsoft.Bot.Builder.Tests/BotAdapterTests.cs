@@ -14,11 +14,11 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("BotAdapter")]
     public class BotAdapterTests
     {
-        [TestMethod]        
+        [TestMethod]
         public void AdapterSingleUse()
         {
             var a = new SimpleAdapter();
-            a.Use(new CallCountingMiddleware()); 
+            a.Use(new CallCountingMiddleware());
         }
 
         [TestMethod]
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             void ValidateResponses(Activity[] activities)
             {
-                // no need to do anything. 
+                // no need to do anything.
             }
 
             var a = new SimpleAdapter(ValidateResponses);
@@ -44,8 +44,9 @@ namespace Microsoft.Bot.Builder.Tests
             activity.Id = activityId;
 
             var resourceResponse = await c.SendActivityAsync(activity);
-            Assert.IsTrue(resourceResponse.Id == activityId, "Incorrect response Id returned"); 
+            Assert.IsTrue(resourceResponse.Id == activityId, "Incorrect response Id returned");
         }
+
         [TestMethod]
         public async Task ContinueConversation_DirectMsgAsync()
         {
@@ -64,7 +65,7 @@ namespace Microsoft.Bot.Builder.Tests
                 ServiceUrl = "testUrl",
                 Conversation = new ConversationAccount
                 {
-                    ConversationType = "",
+                    ConversationType = string.Empty,
                     Id = "testConversationId",
                     IsGroup = false,
                     Name = "testConversationName",
@@ -77,24 +78,14 @@ namespace Microsoft.Bot.Builder.Tests
                     Role = "bot",
                 },
             };
-            Task continueCallback(ITurnContext turnContext, CancellationToken cancellationToken)
+            Task ContinueCallback(ITurnContext turnContext, CancellationToken cancellationToken)
             {
                 callbackInvoked = true;
                 return Task.CompletedTask;
             }
-            await adapter.ContinueConversationAsync("MyBot", cr, continueCallback, default(CancellationToken));
+
+            await adapter.ContinueConversationAsync("MyBot", cr, ContinueCallback, default(CancellationToken));
             Assert.IsTrue(callbackInvoked);
-        }
-
-    }
-
-    public class CallCountingMiddleware : IMiddleware
-    {
-        public int Calls { get; set; }
-        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
-        {
-            Calls++;
-            await next(cancellationToken);
         }
     }
 }

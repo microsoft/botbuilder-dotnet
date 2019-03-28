@@ -7,13 +7,13 @@ namespace Microsoft.Bot.Connector.Authentication
 {
     /// <summary>
     /// CredentialProvider interface. This interface allows Bots to provide their own
-    /// implementation of what is, and what is not, a valid appId and password. This is 
+    /// implementation of what is, and what is not, a valid appId and password. This is
     /// useful in the case of multi-tenant bots, where the bot may need to call
     /// out to a service to determine if a particular appid/password pair
-    /// is valid. 
-    /// 
-    /// For Single Tenant bots (the vast majority) the simple static providers 
-    /// are sufficient. 
+    /// is valid.
+    ///
+    /// For Single Tenant bots (the vast majority) the simple static providers
+    /// are sufficient.
     /// </summary>
     public interface ICredentialProvider
     {

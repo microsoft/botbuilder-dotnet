@@ -28,8 +28,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private const string CosmosDatabaseName = "test-db";
         private const string CosmosCollectionName = "bot-storage";
 
-        private static string _emulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe");
         private const string _noEmulatorMessage = "This test requires CosmosDB Emulator! go to https://aka.ms/documentdb-emulator-docs to download and install.";
+        private static string _emulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe");
         private static Lazy<bool> _hasEmulator = new Lazy<bool>(() =>
         {
             if (File.Exists(_emulatorPath))
@@ -84,10 +84,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public void Sanatize_Key_Should_Work()
         {
-            // Note: The SanatizeKey method delegates to the CosmosDBKeyEscape class. The method is 
+            // Note: The SanatizeKey method delegates to the CosmosDBKeyEscape class. The method is
             // marked as obsolete, and should no longer be used. This test is here to make sure
             // the method does actually delegate, as we can't remove it due to back-compat reasons.
-
 #pragma warning disable 0618
             // Ascii code of "?" is "3f".
             var sanitizedKey = CosmosDbStorage.SanitizeKey("?test?");
@@ -98,10 +97,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public void Constructor_Should_Throw_On_InvalidOptions()
         {
-            // No Options. Should throw. 
+            // No Options. Should throw.
             Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(null));
 
-            // No Endpoint. Should throw. 
+            // No Endpoint. Should throw.
             Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
             {
                 AuthKey = "test",
@@ -110,7 +109,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 CosmosDBEndpoint = null,
             }));
 
-            // No Auth Key. Should throw. 
+            // No Auth Key. Should throw.
             Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
             {
                 AuthKey = null,
@@ -119,7 +118,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 CosmosDBEndpoint = new Uri("https://test.com"),
             }));
 
-            // No Database Id. Should throw. 
+            // No Database Id. Should throw.
             Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
             {
                 AuthKey = "test",
@@ -128,7 +127,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 CosmosDBEndpoint = new Uri("https://test.com"),
             }));
 
-            // No Collection Id. Should throw. 
+            // No Collection Id. Should throw.
             Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
             {
                 AuthKey = "test",
@@ -143,24 +142,24 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             var customClient = GetDocumentClient().Object;
 
-            // No client. Should throw. 
+            // No client. Should throw.
             Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(null, new CosmosDbCustomClientOptions
             {
                 CollectionId = "testId",
                 DatabaseId = "testDb",
             }));
 
-            // No Options. Should throw. 
+            // No Options. Should throw.
             Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(customClient, null));
 
-            // No Database Id. Should throw. 
+            // No Database Id. Should throw.
             Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(customClient, new CosmosDbCustomClientOptions
             {
                 CollectionId = "testId",
                 DatabaseId = null,
             }));
 
-            // No Collection Id. Should throw. 
+            // No Collection Id. Should throw.
             Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(customClient, new CosmosDbCustomClientOptions
             {
                 CollectionId = null,
@@ -186,29 +185,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
             var storage = new CosmosDbStorage(optionsWithConfigurator);
             Assert.IsTrue(wasCalled, "The Connection Policy Configurator was not called.");
-        }
-
-        private Mock<IDocumentClient> GetDocumentClient()
-        {
-            var mock = new Mock<IDocumentClient>();
-
-            mock.Setup(client => client.CreateDatabaseIfNotExistsAsync(It.IsAny<Database>(), It.IsAny<RequestOptions>()))
-                .ReturnsAsync(() => {
-                    var database = new Database();
-                    database.SetPropertyValue("SelfLink", "dummyDB_SelfLink");
-                    return new ResourceResponse<Database>(database);
-                });
-
-            mock.Setup(client => client.CreateDocumentCollectionIfNotExistsAsync(It.IsAny<Uri>(), It.IsAny<DocumentCollection>(), It.IsAny<RequestOptions>()))
-                .ReturnsAsync(() => {
-                    var documentCollection = new DocumentCollection();
-                    documentCollection.SetPropertyValue("SelfLink", "dummyDC_SelfLink");
-                    return new ResourceResponse<DocumentCollection>(documentCollection);
-                });
-
-            mock.Setup(client => client.ConnectionPolicy).Returns(new ConnectionPolicy());
-
-            return mock;
         }
 
         [TestMethod]
@@ -240,7 +216,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await base._createObjectTest(_storage);
+                await CreateObjectTest(_storage);
             }
         }
 
@@ -250,7 +226,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await base._readUnknownTest(_storage);
+                await ReadUnknownTest(_storage);
             }
         }
 
@@ -260,7 +236,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await base._updateObjectTest(_storage);
+                await UpdateObjectTest(_storage);
             }
         }
 
@@ -270,7 +246,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await base._deleteObjectTest(_storage);
+                await DeleteObjectTest(_storage);
             }
         }
 
@@ -280,7 +256,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await base._handleCrazyKeys(_storage);
+                await HandleCrazyKeys(_storage);
             }
         }
 
@@ -298,7 +274,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     CollectionId = CosmosCollectionName,
                     CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
                     DatabaseId = CosmosDatabaseName,
-                    ConnectionPolicyConfigurator = (ConnectionPolicy policy) => policyRef = policy
+                    ConnectionPolicyConfigurator = (ConnectionPolicy policy) => policyRef = policy,
                 });
 
                 Assert.IsNotNull(policyRef, "ConnectionPolicy configurator was not called.");
@@ -369,24 +345,31 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
                 var dialogState = convoState.CreateProperty<DialogState>("dialogState");
                 var dialogs = new DialogSet(dialogState);
-                dialogs.Add(new WaterfallDialog("test", new WaterfallStep[]
-                {
-                    async (stepContext, ct) =>
+                var steps = new WaterfallStep[]
                     {
-                        Assert.AreEqual(stepContext.ActiveDialog.State["stepIndex"].GetType(), typeof(Int32));
-                        await stepContext.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn;
-                    },
-                    async (stepContext, ct) =>
-                    {
-                        Assert.AreEqual(stepContext.ActiveDialog.State["stepIndex"].GetType(), typeof(Int32));
-                        await stepContext.Context.SendActivityAsync("step2"); return Dialog.EndOfTurn;
-                    },
-                    async (stepContext, ct) =>
-                    {
-                        Assert.AreEqual(stepContext.ActiveDialog.State["stepIndex"].GetType(), typeof(Int32));
-                        await stepContext.Context.SendActivityAsync("step3"); return Dialog.EndOfTurn;
-                    },
-                }));
+                        async (stepContext, ct) =>
+                        {
+                            Assert.AreEqual(stepContext.ActiveDialog.State["stepIndex"].GetType(), typeof(int));
+                            await stepContext.Context.SendActivityAsync("step1");
+                            return Dialog.EndOfTurn;
+                        },
+                        async (stepContext, ct) =>
+                        {
+                            Assert.AreEqual(stepContext.ActiveDialog.State["stepIndex"].GetType(), typeof(int));
+                            await stepContext.Context.SendActivityAsync("step2");
+                            return Dialog.EndOfTurn;
+                        },
+                        async (stepContext, ct) =>
+                        {
+                            Assert.AreEqual(stepContext.ActiveDialog.State["stepIndex"].GetType(), typeof(int));
+                            await stepContext.Context.SendActivityAsync("step3");
+                            return Dialog.EndOfTurn;
+                        },
+                    };
+                dialogs.Add(
+                    new WaterfallDialog(
+                    "test",
+                    steps));
 
                 await new TestFlow(adapter, async (turnContext, cancellationToken) =>
                 {
@@ -410,11 +393,41 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         public bool CheckEmulator()
         {
             if (!_hasEmulator.Value)
+            {
                 Assert.Inconclusive(_noEmulatorMessage);
+            }
+
             if (Debugger.IsAttached)
+            {
                 Assert.IsTrue(_hasEmulator.Value, _noEmulatorMessage);
+            }
 
             return _hasEmulator.Value;
+        }
+
+        private Mock<IDocumentClient> GetDocumentClient()
+        {
+            var mock = new Mock<IDocumentClient>();
+
+            mock.Setup(client => client.CreateDatabaseIfNotExistsAsync(It.IsAny<Database>(), It.IsAny<RequestOptions>()))
+                .ReturnsAsync(() =>
+                {
+                    var database = new Database();
+                    database.SetPropertyValue("SelfLink", "dummyDB_SelfLink");
+                    return new ResourceResponse<Database>(database);
+                });
+
+            mock.Setup(client => client.CreateDocumentCollectionIfNotExistsAsync(It.IsAny<Uri>(), It.IsAny<DocumentCollection>(), It.IsAny<RequestOptions>()))
+                .ReturnsAsync(() =>
+                {
+                    var documentCollection = new DocumentCollection();
+                    documentCollection.SetPropertyValue("SelfLink", "dummyDC_SelfLink");
+                    return new ResourceResponse<DocumentCollection>(documentCollection);
+                });
+
+            mock.Setup(client => client.ConnectionPolicy).Returns(new ConnectionPolicy());
+
+            return mock;
         }
     }
 }

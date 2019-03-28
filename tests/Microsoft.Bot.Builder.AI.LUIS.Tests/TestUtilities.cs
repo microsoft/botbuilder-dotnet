@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             {
                 return File.ReadAllLines(@"\\fusebox\private\sdk\UnitTestKeys.cmd")
                     .Where(l => l.StartsWith("@set"))
-                    .Select(l => l.Replace("@set ", "").Split('='))
+                    .Select(l => l.Replace("@set ", string.Empty).Split('='))
                     .ToDictionary(pairs => pairs[0], pairs => pairs[1]);
             }
             catch (Exception err)
@@ -35,6 +35,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                     value = defaultValue;
                 }
             }
+
             return value;
         }
     }

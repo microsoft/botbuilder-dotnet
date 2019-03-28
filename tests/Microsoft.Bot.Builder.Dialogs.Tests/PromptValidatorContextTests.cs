@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 return Task.FromResult(true);
             }));
 
-            dialogs.Add(new WaterfallDialog("nameDialog", new WaterfallStep[]
+            var steps = new WaterfallStep[]
                     {
                         async (stepContext, cancellationToken) =>
                         {
@@ -38,9 +38,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                             var name = (string)stepContext.Result;
                             await stepContext.Context.SendActivityAsync(MessageFactory.Text($"{name} is a great name!"), cancellationToken);
                             return await stepContext.EndDialogAsync();
-                        }
-                    }
-                ));
+                        },
+                    };
+            dialogs.Add(new WaterfallDialog(
+                "nameDialog",
+                steps));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -85,10 +87,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     await promptContext.Context.SendActivityAsync(MessageFactory.Text("Please send a name that is longer than 3 characters."), cancellationToken);
                 }
+
                 return false;
             }));
 
-            dialogs.Add(new WaterfallDialog("nameDialog", new WaterfallStep[]
+            var steps = new WaterfallStep[]
                     {
                         async (stepContext, cancellationToken) =>
                         {
@@ -99,9 +102,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                             var name = (string)stepContext.Result;
                             await stepContext.Context.SendActivityAsync(MessageFactory.Text($"{name} is a great name!"), cancellationToken);
                             return await stepContext.EndDialogAsync();
-                        }
-                    }
-                ));
+                        },
+                    };
+            dialogs.Add(new WaterfallDialog(
+                "nameDialog",
+                steps));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {

@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void OAuthPromptWithEmptyIdShouldFail()
         {
-            var emptyId = "";
+            var emptyId = string.Empty;
             var confirmPrompt = new OAuthPrompt(emptyId, new OAuthPromptSettings());
         }
 
@@ -62,10 +62,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, botCallbackHandler)
             .Send("hello")
-            .AssertReply(activity => {
+            .AssertReply(activity =>
+            {
                 Assert.AreEqual(1, ((Activity)activity).Attachments.Count);
                 Assert.AreEqual(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
-                
+
                 // Prepare an EventActivity with a TokenResponse and send it to the botCallbackHandler
                 var eventActivity = CreateEventResponse(adapter, activity, connectionName, token);
                 var ctx = new TurnContext(adapter, (Activity)eventActivity);
@@ -116,7 +117,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, botCallbackHandler)
             .Send("hello")
-            .AssertReply(activity => {
+            .AssertReply(activity =>
+            {
                 Assert.AreEqual(1, ((Activity)activity).Attachments.Count);
                 Assert.AreEqual(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
 
@@ -143,7 +145,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             eventActivity.Value = JObject.FromObject(new TokenResponse()
             {
                 ConnectionName = connectionName,
-                Token = token
+                Token = token,
             });
 
             return eventActivity;

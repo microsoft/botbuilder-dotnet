@@ -7,17 +7,22 @@ using System.Linq;
 
 namespace Microsoft.Bot.Schema
 {
+    /// <summary>
+    /// Instance of the <see cref="SuggestedActions"/> class.
+    /// </summary>
     public partial class SuggestedActions
     {
         /// <summary>
-        /// Initializes a new instance of the SuggestedActions class.
+        /// Initializes a new instance of the <see cref="SuggestedActions"/> class.
         /// </summary>
         /// <param name="to">Ids of the recipients that the actions should be
         /// shown to. These Ids are relative to the channelId and a subset of
         /// all recipients of the activity.</param>
         /// <param name="actions">Actions that can be shown to the user.</param>
-        /// <exception cref="ArgumentNullException"/>
+        /// <exception cref="ArgumentNullException">ArgumentNullException.</exception>
         public SuggestedActions(IEnumerable<string> to, IEnumerable<CardAction> actions)
-            : this(to.ToArray(), actions.ToArray()) { }
+            : this(to.ToArray(), actions.ToArray())
+        {
+        }
     }
 }

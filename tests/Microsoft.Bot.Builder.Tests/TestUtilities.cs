@@ -12,6 +12,22 @@ namespace Microsoft.Bot.Builder.Tests
 {
     public class TestUtilities
     {
+        private static Lazy<Dictionary<string, string>> environmentKeys = new Lazy<Dictionary<string, string>>(() =>
+        {
+            try
+            {
+                return File.ReadAllLines(@"\\fusebox\private\sdk\UnitTestKeys-new.cmd")
+                    .Where(l => l.StartsWith("@set", StringComparison.OrdinalIgnoreCase))
+                    .Select(l => l.Replace("@set ", string.Empty, StringComparison.OrdinalIgnoreCase).Split('='))
+                    .ToDictionary(pairs => pairs[0], pairs => pairs[1]);
+            }
+            catch (Exception err)
+            {
+                System.Diagnostics.Debug.WriteLine(err.Message);
+                return new Dictionary<string, string>();
+            }
+        });
+
         public static TurnContext CreateEmptyContext()
         {
             var b = new TestAdapter();
@@ -21,12 +37,12 @@ namespace Microsoft.Bot.Builder.Tests
                 ChannelId = "EmptyContext",
                 Conversation = new ConversationAccount
                 {
-                    Id = "test"
+                    Id = "test",
                 },
                 From = new ChannelAccount
                 {
                     Id = "empty@empty.context.org",
-                }
+                },
             };
             var bc = new TurnContext(b, a);
 
@@ -44,25 +60,9 @@ namespace Microsoft.Bot.Builder.Tests
                 return (T)bc;
             }
             else
-                throw new ArgumentException($"Unknown Type {typeof(T).Name}");            
+                throw new ArgumentException($"Unknown Type {typeof(T).Name}");
         }
         */
-
-        private static Lazy<Dictionary<string, string>> environmentKeys = new Lazy<Dictionary<string, string>>(() =>
-        {
-            try
-            {
-                return File.ReadAllLines(@"\\fusebox\private\sdk\UnitTestKeys-new.cmd")
-                    .Where(l => l.StartsWith("@set", StringComparison.OrdinalIgnoreCase))
-                    .Select(l => l.Replace("@set ", string.Empty, StringComparison.OrdinalIgnoreCase).Split('='))
-                    .ToDictionary(pairs => pairs[0], pairs => pairs[1]);
-            }
-            catch (Exception err)
-            {
-                System.Diagnostics.Debug.WriteLine(err.Message);
-                return new Dictionary<string, string>();
-            }
-        });
 
         public static string GetKey(string key)
         {
@@ -71,8 +71,11 @@ namespace Microsoft.Bot.Builder.Tests
                 // fallback to environment variables
                 value = Environment.GetEnvironmentVariable(key);
                 if (string.IsNullOrWhiteSpace(value))
+                {
                     value = null;
+                }
             }
+
             return value;
         }
     }

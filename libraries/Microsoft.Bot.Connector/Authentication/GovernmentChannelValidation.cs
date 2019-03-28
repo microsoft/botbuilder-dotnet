@@ -12,40 +12,42 @@ namespace Microsoft.Bot.Connector.Authentication
 {
     public sealed class GovernmentChannelValidation
     {
-        public static string OpenIdMetadataUrl { get; set; } = GovernmentAuthenticationConstants.ToBotFromChannelOpenIdMetadataUrl;
-
         /// <summary>
-        /// TO BOT FROM GOVERNMENT CHANNEL: Token validation parameters when connecting to a bot
+        /// TO BOT FROM GOVERNMENT CHANNEL: Token validation parameters when connecting to a bot.
         /// </summary>
         public static readonly TokenValidationParameters ToBotFromGovernmentChannelTokenValidationParameters =
             new TokenValidationParameters()
             {
                 ValidateIssuer = true,
                 ValidIssuers = new[] { GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer },
+
                 // Audience validation takes place in JwtTokenExtractor
                 ValidateAudience = false,
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.FromMinutes(5),
-                RequireSignedTokens = true
+                RequireSignedTokens = true,
             };
+
+        public static string OpenIdMetadataUrl { get; set; } = GovernmentAuthenticationConstants.ToBotFromChannelOpenIdMetadataUrl;
 
         /// <summary>
         /// Validate the incoming Auth Header as a token sent from a Bot Framework Government Channel Service.
         /// </summary>
-        /// <param name="authHeader">The raw HTTP header in the format: "Bearer [longString]"</param>
+        /// <param name="authHeader">The raw HTTP header in the format: "Bearer [longString]".</param>
         /// <param name="credentials">The user defined set of valid credentials, such as the AppId.</param>
-        /// <param name="serviceUrl">The service url from the request</param>
+        /// <param name="serviceUrl">The service url from the request.</param>
         /// <param name="httpClient">Authentication of tokens requires calling out to validate Endorsements and related documents. The
         /// HttpClient is used for making those calls. Those calls generally require TLS connections, which are expensive to
         /// setup and teardown, so a shared HttpClient is recommended.</param>
         /// <param name="channelId">The ID of the channel to validate.</param>
-        /// <returns></returns>
+        /// <returns>ClaimsIdentity.</returns>
         public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, string serviceUrl, HttpClient httpClient, string channelId)
         {
-            var tokenExtractor = new JwtTokenExtractor(httpClient,
-                  ToBotFromGovernmentChannelTokenValidationParameters,
-                  OpenIdMetadataUrl,
-                  AuthenticationConstants.AllowedSigningAlgorithms);
+            var tokenExtractor = new JwtTokenExtractor(
+                httpClient,
+                ToBotFromGovernmentChannelTokenValidationParameters,
+                OpenIdMetadataUrl,
+                AuthenticationConstants.AllowedSigningAlgorithms);
 
             var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId).ConfigureAwait(false);
 
@@ -59,25 +61,26 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="identity">The claims identity to validate.</param>
         /// <param name="credentials">The user defined set of valid credentials, such as the AppId.</param>
-        /// <param name="serviceUrl">The service url from the request</param>
+        /// <param name="serviceUrl">The service url from the request.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static async Task ValidateIdentity(ClaimsIdentity identity, ICredentialProvider credentials, string serviceUrl)
         {
             if (identity == null)
             {
-                // No valid identity. Not Authorized. 
+                // No valid identity. Not Authorized.
                 throw new UnauthorizedAccessException();
             }
 
             if (!identity.IsAuthenticated)
             {
-                // The token is in some way invalid. Not Authorized. 
+                // The token is in some way invalid. Not Authorized.
                 throw new UnauthorizedAccessException();
             }
 
             // Now check that the AppID in the claimset matches
             // what we're looking for. Note that in a multi-tenant bot, this value
-            // comes from developer code that may be reaching out to a service, hence the 
-            // Async validation. 
+            // comes from developer code that may be reaching out to a service, hence the
+            // Async validation.
 
             // Look for the "aud" claim, but only if issued from the Bot Framework
             Claim audienceClaim = identity.Claims.FirstOrDefault(
@@ -94,13 +97,13 @@ namespace Microsoft.Bot.Connector.Authentication
             string appIdFromClaim = audienceClaim.Value;
             if (string.IsNullOrWhiteSpace(appIdFromClaim))
             {
-                // Claim is present, but doesn't have a value. Not Authorized. 
+                // Claim is present, but doesn't have a value. Not Authorized.
                 throw new UnauthorizedAccessException();
             }
 
             if (!await credentials.IsValidAppIdAsync(appIdFromClaim))
             {
-                // The AppId is not valid. Not Authorized. 
+                // The AppId is not valid. Not Authorized.
                 throw new UnauthorizedAccessException($"Invalid AppId passed on token: {appIdFromClaim}");
             }
 
@@ -119,6 +122,6 @@ namespace Microsoft.Bot.Connector.Authentication
                     throw new UnauthorizedAccessException();
                 }
             }
-        }       
+        }
     }
 }

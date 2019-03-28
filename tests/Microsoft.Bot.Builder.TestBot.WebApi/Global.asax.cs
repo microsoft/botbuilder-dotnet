@@ -9,10 +9,7 @@ namespace Microsoft.Bot.Builder.TestBot.WebApi
     {
         protected void Application_Start()
         {
-            GlobalConfiguration.Configure(config =>
-            {
-                BotConfig.Register(config);
-            });
+            GlobalConfiguration.Configure(WebApiConfig.Register);
         }
     }
 }

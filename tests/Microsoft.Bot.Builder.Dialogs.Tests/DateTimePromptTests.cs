@@ -141,17 +141,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             if (prompt.Recognized.Succeeded)
             {
                 var resolution = prompt.Recognized.Value.First();
+
                 // re-write the resolution to just include the date part.
                 var rewrittenResolution = new DateTimeResolution
                 {
                     Timex = resolution.Timex.Split('T')[0],
-                    Value = resolution.Value.Split(' ')[0]
+                    Value = resolution.Value.Split(' ')[0],
                 };
                 prompt.Recognized.Value = new List<DateTimeResolution> { rewrittenResolution };
                 return Task.FromResult(true);
             }
+
             return Task.FromResult(false);
         }
     }
 }
-

@@ -86,7 +86,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await Task.CompletedTask;
         }
 
-
         [TestMethod]
         public async Task TelemetryAddWaterfallTest()
         {
@@ -97,7 +96,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             testComponentDialog.TelemetryClient = new MyBotTelemetryClient();
             testComponentDialog.AddDialog(new WaterfallDialog("C"));
-            
+
             Assert.IsTrue(testComponentDialog.FindDialog("C").TelemetryClient is MyBotTelemetryClient);
             await Task.CompletedTask;
         }
@@ -122,8 +121,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await Task.CompletedTask;
         }
-
-
 
         [TestMethod]
         public async Task BasicComponentDialogTest()
@@ -231,7 +228,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var options = new Dictionary<string, string> { { "value", "test" } };
 
             var childComponent = new ComponentDialog("childComponent");
-            childComponent.AddDialog(new WaterfallDialog("childDialog", new WaterfallStep[]
+            var childSteps = new WaterfallStep[]
             {
                 async (step, ct) =>
                 {
@@ -243,12 +240,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     Assert.AreEqual("test", (string)step.Result);
                     await step.Context.SendActivityAsync("Child finished.");
                     return await step.EndDialogAsync();
-                }
-            }));
+                },
+            };
+            childComponent.AddDialog(new WaterfallDialog(
+                "childDialog",
+                childSteps));
 
             var parentComponent = new ComponentDialog("parentComponent");
             parentComponent.AddDialog(childComponent);
-            parentComponent.AddDialog(new WaterfallDialog("parentDialog", new WaterfallStep[]
+            var parentSteps = new WaterfallStep[]
             {
                 async (step, dc) =>
                 {
@@ -257,8 +257,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     Assert.IsTrue(stepOptions.ContainsKey("value"));
                     await step.Context.SendActivityAsync($"Parent called with: {stepOptions["value"]}");
                     return await step.EndDialogAsync(stepOptions["value"]);
-                }
-            }));
+                },
+            };
+            parentComponent.AddDialog(new WaterfallDialog(
+                "parentDialog",
+                parentSteps));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -287,16 +290,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         private static WaterfallDialog CreateWaterfall()
         {
-            return new WaterfallDialog("test-waterfall", new WaterfallStep[] {
+            var steps = new WaterfallStep[]
+                {
                 WaterfallStep1,
                 WaterfallStep2,
-            });
+            };
+            return new WaterfallDialog(
+                "test-waterfall",
+                steps);
         }
 
         private static async Task<DialogTurnResult> WaterfallStep1(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             return await stepContext.PromptAsync("number", new PromptOptions { Prompt = MessageFactory.Text("Enter a number.") }, cancellationToken);
         }
+
         private static async Task<DialogTurnResult> WaterfallStep2(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             if (stepContext.Values != null)
@@ -304,6 +312,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var numberResult = (int)stepContext.Result;
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thanks for '{numberResult}'"), cancellationToken);
             }
+
             return await stepContext.PromptAsync("number", new PromptOptions { Prompt = MessageFactory.Text("Enter another number.") }, cancellationToken);
         }
 
@@ -314,6 +323,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var numberResult = (int)stepContext.Result;
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Got '{numberResult}'."), cancellationToken);
             }
+
             return await stepContext.BeginDialogAsync("TestComponentDialog", null, cancellationToken);
         }
 
@@ -332,20 +342,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             public TestNestedComponentDialog()
                 : base("TestNestedComponentDialog")
             {
-                AddDialog(new WaterfallDialog("test-waterfall", new WaterfallStep[] {
+                var steps = new WaterfallStep[]
+                {
                     WaterfallStep1,
                     WaterfallStep2,
                     WaterfallStep3,
-                }));
+                };
+                AddDialog(new WaterfallDialog(
+                    "test-waterfall",
+                    steps));
                 AddDialog(new NumberPrompt<int>("number", defaultLocale: Culture.English));
                 AddDialog(new TestComponentDialog());
             }
         }
+
         private class MyBotTelemetryClient : IBotTelemetryClient
         {
             public MyBotTelemetryClient()
             {
-
             }
 
             public void Flush()
@@ -378,8 +392,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 throw new NotImplementedException();
             }
         }
-
     }
-
 }
-

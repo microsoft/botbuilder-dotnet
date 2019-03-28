@@ -1,4 +1,4 @@
-﻿    // Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using Microsoft.AspNetCore.Builder;
@@ -31,12 +31,9 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             var botConfig = BotConfiguration.Load("testbot.bot", null);
             services.AddBotApplicationInsights(botConfig);
 
-
-            // Adding IConfiguration in sample test server.  Otherwise this appears to be 
+            // Adding IConfiguration in sample test server.  Otherwise this appears to be
             // registered.
             services.AddSingleton<IConfiguration>(this.Configuration);
-
-            
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -44,6 +41,5 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             app.UseBotApplicationInsights();
             Assert.IsNotNull(app.ApplicationServices.GetService<IBotTelemetryClient>());
         }
-
     }
 }

@@ -1,6 +1,6 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading.Tasks;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Xunit;
@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Connector.Tests
 
             Assert.Contains("login.microsoftonline.us", cred.OAuthEndpoint);
         }
-        
+
         [Fact]
         public void MicrosoftGovernmentAppCredentials_Uses_Gov_Scope()
         {

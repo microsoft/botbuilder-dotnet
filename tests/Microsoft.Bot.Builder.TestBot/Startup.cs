@@ -1,93 +1,44 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Integration;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
-namespace Microsoft.Bot.Builder.TestBot
+namespace Microsoft.BotBuilderSamples
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
-        {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-
-            Configuration = builder.Build();
-        }
-
-        public IConfiguration Configuration { get; }
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddSingleton<IAdapterIntegration>(sp =>
-            //{
-            //    var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
-            //    var accessors = sp.GetRequiredService<TestBotAccessors>();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            //    options.Middleware.Add(new AutoSaveStateMiddleware(accessors.ConversationState));
-            //    options.Middleware.Add(new ShowTypingMiddleware());
+            // Create the credential provider to be used with the Bot Framework Adapter.
+            services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
 
-            //    var botFrameworkAdapter = new BotFrameworkAdapter(options.CredentialProvider, options.ChannelProvider, options.ConnectorClientRetryPolicy, options.HttpClient)
-            //    {
-            //        OnTurnError = options.OnTurnError,
-            //    };
+            // Create the Bot Framework Adapter with error handling enabled. 
+            services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
-            //    foreach (var middleware in options.Middleware)
-            //    {
-            //        botFrameworkAdapter.Use(middleware);
-            //    }
+            // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.) 
+            services.AddSingleton<IStorage, MemoryStorage>();
 
-            //    //return botFrameworkAdapter;
+            // Create the User state. (Used in this bot's Dialog implementation.)
+            services.AddSingleton<UserState>();
 
-            //    return new InteceptorAdapter(botFrameworkAdapter);
-            //});
+            // Create the Conversation state. (Used by the Dialog system itself.)
+            services.AddSingleton<ConversationState>();
 
-            IStorage dataStore = new MemoryStorage();
-            var conversationState = new ConversationState(dataStore);
+            // The Dialog that will be run by the bot.
+            services.AddSingleton<MainDialog>();
 
-            var accessors = new TestBotAccessors
-            {
-                ConversationDialogState = conversationState.CreateProperty<DialogState>("DialogState"),
-                ConversationState = conversationState
-            };
-
-            services.AddBot<IBot>(
-                (IServiceProvider sp) =>
-                {
-                    return new TestBot(accessors);
-                },
-                (BotFrameworkOptions options) =>
-                {
-                    options.OnTurnError = async (turnContext, exception) =>
-                    {
-                        await conversationState.ClearStateAsync(turnContext);
-                        await conversationState.SaveChangesAsync(turnContext);
-                    };
-                    options.Middleware.Add(new AutoSaveStateMiddleware(conversationState));
-                });
-
-            //services.AddBot<TestBot>(options =>
-            //{
-            //    IStorage dataStore = new MemoryStorage();
-            //    options.State.Add(new ConversationState(dataStore));
-            //    options.Middleware.Add(new AutoSaveStateMiddleware(options.State.ToArray()));
-            //    options.Middleware.Add(new ShowTypingMiddleware());
-            //});
+            // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
+            services.AddTransient<IBot, DialogAndWelcomeBot<MainDialog>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -97,18 +48,16 @@ namespace Microsoft.Bot.Builder.TestBot
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                app.UseHsts();
+            }
 
-            // NOTE: Uncomment this to force request buffering to test accessing the request body in buffered scenarios (default is always unbuffered)
-            //app.Use(async (httpContext, next) =>
-            //{
-            //    httpContext.Request.EnableBuffering();
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
 
-            //    await next();
-            //});
-
-            app.UseDefaultFiles()
-                .UseStaticFiles()
-                .UseBotFramework();
+            //app.UseHttpsRedirection();
+            app.UseMvc();
         }
     }
 }

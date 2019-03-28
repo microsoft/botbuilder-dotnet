@@ -9,28 +9,43 @@ namespace Microsoft.Bot.Schema
     public interface ITraceActivity : IActivity
     {
         /// <summary>
-        /// Name of the trace activity.
+        /// Gets or Sets Name of the trace activity.
         /// </summary>
+        /// <value>
+        /// Name of the trace activity.
+        /// </value>
         string Name { get; set; }
 
         /// <summary>
-        /// Descriptive label for the trace.
+        /// Gets or Sets Descriptive label for the trace.
         /// </summary>
+        /// <value>
+        /// Descriptive label for the trace.
+        /// </value>
         string Label { get; set; }
 
         /// <summary>
-        /// Unique string which identifies the format of the value object.
+        /// Gets or Sets Unique string which identifies the format of the value object.
         /// </summary>
+        /// <value>
+        /// Unique string which identifies the format of the value object.
+        /// </value>
         string ValueType { get; set; }
 
         /// <summary>
-        /// Open-ended value.
+        /// Gets or Sets Open-ended value.
         /// </summary>
+        /// <value>
+        /// Open-ended value.
+        /// </value>
         object Value { get; set; }
 
         /// <summary>
-        /// Reference to another conversation or activity.
+        /// Gets or sets of Sets Open-ended value.
         /// </summary>
+        /// <value>
+        /// Open-ended value.
+        /// </value>
         ConversationReference RelatesTo { get; set; }
     }
 }

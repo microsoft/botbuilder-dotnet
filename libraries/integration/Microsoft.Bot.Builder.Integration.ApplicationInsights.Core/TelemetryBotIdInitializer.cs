@@ -46,6 +46,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
                         {
                             userId = (string)from["id"];
                         }
+
                         var channelId = (string)body["channelId"];
 
                         var conversationId = string.Empty;

@@ -11,26 +11,38 @@ namespace Microsoft.Bot.Schema
     public class TokenExchangeState
     {
         /// <summary>
-        /// The connection name that was used
+        /// Gets or sets the connection name that was used.
         /// </summary>
+        /// <value>
+        /// The connection name that was used.
+        /// </value>
         [JsonProperty("connectionName")]
         public string ConnectionName { get; set; }
 
         /// <summary>
-        /// A reference to the conversation
+        /// Gets or sets a reference to the conversation.
         /// </summary>
+        /// <value>
+        /// A reference to the conversation.
+        /// </value>
         [JsonProperty("conversation")]
         public ConversationReference Conversation { get; set; }
 
         /// <summary>
-        /// The URL of the bot messaging endpoint
+        /// Gets or sets the URL of the bot messaging endpoint.
         /// </summary>
+        /// <value>
+        /// The URL of the bot messaging endpoint.
+        /// </value>
         [JsonProperty("botUrl")]
         public string BotUrl { get; set; }
 
         /// <summary>
-        /// The bot's registered application ID
+        /// Gets or sets the bot's registered application ID.
         /// </summary>
+        /// <value>
+        /// The bot's registered application ID.
+        /// </value>
         [JsonProperty("msAppId")]
         public string MsAppId { get; set; }
     }

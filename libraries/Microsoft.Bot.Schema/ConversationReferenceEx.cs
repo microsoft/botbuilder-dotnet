@@ -6,13 +6,14 @@ using System;
 namespace Microsoft.Bot.Schema
 {
     /// <summary>
-    /// ConversationReference extensions - helper for creating Activity
+    /// ConversationReference extensions - helper for creating Activity.
     /// </summary>
-    public partial class ConversationReference 
+    public partial class ConversationReference
     {
         /// <summary>
         /// Creates <see cref="Activity"/> from conversation reference as it is posted to bot.
         /// </summary>
+        /// <returns>Continuation activity.</returns>
         public Activity GetContinuationActivity()
         {
             var activity = Activity.CreateEventActivity();

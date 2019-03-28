@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="httpClient">The HTTP client.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task completes successfully, the result contains the claims-based
-        /// identity for the request</remarks>
+        /// identity for the request.</remarks>
         public static async Task<ClaimsIdentity> AuthenticateRequest(IActivity activity, string authHeader, ICredentialProvider credentials, IChannelProvider provider, HttpClient httpClient = null)
         {
             if (string.IsNullOrWhiteSpace(authHeader))
@@ -37,13 +37,13 @@ namespace Microsoft.Bot.Connector.Authentication
                 bool isAuthDisabled = await credentials.IsAuthenticationDisabledAsync().ConfigureAwait(false);
                 if (isAuthDisabled)
                 {
-                    // In the scenario where Auth is disabled, we still want to have the 
+                    // In the scenario where Auth is disabled, we still want to have the
                     // IsAuthenticated flag set in the ClaimsIdentity. To do this requires
-                    // adding in an empty claim. 
+                    // adding in an empty claim.
                     return new ClaimsIdentity(new List<Claim>(), "anonymous");
                 }
 
-                // No Auth Header. Auth is required. Request is not authorized. 
+                // No Auth Header. Auth is required. Request is not authorized.
                 throw new UnauthorizedAccessException();
             }
 
@@ -65,11 +65,13 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="httpClient">The HTTP client.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task completes successfully, the result contains the claims-based
-        /// identity for the request</remarks>
+        /// identity for the request.</remarks>
         public static async Task<ClaimsIdentity> ValidateAuthHeader(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, string channelId, string serviceUrl = null, HttpClient httpClient = null)
         {
             if (string.IsNullOrEmpty(authHeader))
+            {
                 throw new ArgumentNullException(nameof(authHeader));
+            }
 
             bool usingEmulator = EmulatorValidation.IsTokenFromEmulator(authHeader);
 
@@ -77,7 +79,7 @@ namespace Microsoft.Bot.Connector.Authentication
             {
                 return await EmulatorValidation.AuthenticateEmulatorToken(authHeader, credentials, channelProvider, httpClient ?? _httpClient, channelId);
             }
-            else if(channelProvider == null || channelProvider.IsPublicAzure())
+            else if (channelProvider == null || channelProvider.IsPublicAzure())
             {
                 // No empty or null check. Empty can point to issues. Null checks only.
                 if (serviceUrl != null)

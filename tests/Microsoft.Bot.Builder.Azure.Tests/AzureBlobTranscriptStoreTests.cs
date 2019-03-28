@@ -16,7 +16,6 @@ using Activity = Microsoft.Bot.Schema.Activity;
 // These tests require Azure Storage Emulator v5.7
 // The emulator must be installed at this path C:\Program Files (x86)\Microsoft SDKs\Azure\Storage Emulator\AzureStorageEmulator.exe
 // More info: https://docs.microsoft.com/azure/storage/common/storage-use-emulator
-
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
     [TestClass]
@@ -24,20 +23,22 @@ namespace Microsoft.Bot.Builder.Azure.Tests
     [TestCategory("Storage - BlobTranscripts")]
     public class AzureBlobTranscriptStoreTests : StorageBaseTests
     {
-        private AzureBlobTranscriptStore _transcriptStore;
-
         private const string ConnectionString = @"AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;";
         private const string ContainerName = "transcripttestblob";
         private const string ChannelId = "test";
 
-        private static readonly string[] LongId = {
-        "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq1234567890Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq098765432112345678900987654321Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq123456789009876543211234567890Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq09876543211234567890098765432112345678900987654321"};
+        private static readonly string[] LongId =
+        {
+            "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq1234567890Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq098765432112345678900987654321Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq123456789009876543211234567890Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq09876543211234567890098765432112345678900987654321",
+        };
+
         private static readonly string[] ConversationIds =
         {
             "qaz", "wsx", "edc", "rfv", "tgb", "yhn", "ujm", "123", "456", "789",
             "ZAQ", "XSW", "CDE", "VFR", "BGT", "NHY", "NHY", "098", "765", "432",
-            "zxc", "vbn", "mlk", "jhy", "yui", "kly", "asd", "asw", "aaa", "zzz"
+            "zxc", "vbn", "mlk", "jhy", "yui", "kly", "asd", "asw", "aaa", "zzz",
         };
+
         private static readonly string[] ConversationSpecialIds = { "asd !&/#.'+:?\"", "ASD@123<>|}{][", "$%^;\\*()_" };
         private static readonly string[] ActivityIds =
         {
@@ -45,6 +46,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
             "21", "22", "23", "24", "25", "26", "27", "28", "29", "30",
         };
+
+        private AzureBlobTranscriptStore _transcriptStore;
 
         // These tests require Azure Storage Emulator v5.7
         [TestInitialize]
@@ -71,7 +74,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public async Task TranscriptsEmptyTest()
-        {            
+        {
             var unusedChannelId = Guid.NewGuid().ToString();
             var transcripts = await _transcriptStore.ListTranscriptsAsync(unusedChannelId);
             Assert.AreEqual(transcripts.Items.Length, 0);
@@ -101,6 +104,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 activities.Add(a);
                 loggedActivities[i] = _transcriptStore.GetTranscriptActivitiesAsync(ChannelId, ConversationIds[i]).Result.Items[0];
             }
+
             Assert.AreEqual(5, loggedActivities.Length);
         }
 
@@ -132,6 +136,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 activities.Add(a);
                 loggedActivities[i] = _transcriptStore.GetTranscriptActivitiesAsync(ChannelId, ConversationSpecialIds[i]).Result.Items[0];
             }
+
             Assert.AreEqual(activities.Count, loggedActivities.Length);
         }
 
@@ -167,6 +172,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 await _transcriptStore.LogActivityAsync(a);
                 activities.Add(a);
             }
+
             loggedPagedResult = _transcriptStore.GetTranscriptActivitiesAsync(cleanChanel, ConversationIds[0]).Result;
             var ct = loggedPagedResult.ContinuationToken;
             Assert.AreEqual(20, loggedPagedResult.Items.Length);
@@ -189,6 +195,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 var a = CreateActivity(i, i, ConversationIds);
                 await _transcriptStore.DeleteTranscriptAsync(a.ChannelId, a.Conversation.Id);
             }
+
             loggedActivities =
                 await _transcriptStore.GetTranscriptActivitiesAsync(ChannelId, ConversationIds[i]);
             Assert.AreEqual(0, loggedActivities.Items.Length);
@@ -233,7 +240,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 await store.GetTranscriptActivitiesAsync(ChannelId, ConversationIds[0]));
         }
 
-
         private static Activity CreateActivity(int i, int j, string[] conversationIds)
         {
             return new Activity
@@ -245,69 +251,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 Conversation = new ConversationAccount(id: conversationIds[i]),
                 Timestamp = DateTime.Now,
                 From = new ChannelAccount("testUser"),
-                Recipient = new ChannelAccount("testBot")
+                Recipient = new ChannelAccount("testBot"),
             };
-        }
-    }
-    public static class StorageEmulatorHelper
-    {
-        /* Usage:
-         * ======
-           AzureStorageEmulator.exe init            : Initialize the emulator database and configuration.
-           AzureStorageEmulator.exe start           : Start the emulator.
-           AzureStorageEmulator.exe stop            : Stop the emulator.
-           AzureStorageEmulator.exe status          : Get current emulator status.
-           AzureStorageEmulator.exe clear           : Delete all data in the emulator.
-           AzureStorageEmulator.exe help [command]  : Show general or command-specific help.
-         */
-        public enum StorageEmulatorCommand
-        {
-            Init,
-            Start,
-            Stop,
-            Status,
-            Clear
-        }
-
-        public static int StartStorageEmulator()
-        {
-            return ExecuteStorageEmulatorCommand(StorageEmulatorCommand.Start);
-        }
-
-        public static int StopStorageEmulator()
-        {
-            return ExecuteStorageEmulatorCommand(StorageEmulatorCommand.Stop);
-        }
-
-        public static int ExecuteStorageEmulatorCommand(StorageEmulatorCommand command)
-        {
-            var emulatorPath = System.IO.Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
-                "Microsoft SDKs",
-                "Azure",
-                "Storage Emulator",
-                "AzureStorageEmulator.exe");
-
-            var start = new ProcessStartInfo
-            {
-                Arguments = command.ToString(),
-                FileName = emulatorPath
-            };
-            var exitCode = ExecuteProcess(start);
-            return exitCode;
-        }
-
-        private static int ExecuteProcess(ProcessStartInfo startInfo)
-        {
-            int exitCode = -1;
-            using (var proc = new Process { StartInfo = startInfo })
-            {
-                proc.Start();
-                proc.WaitForExit();
-                exitCode = proc.ExitCode;
-            }
-
-            return exitCode;
         }
     }
 }

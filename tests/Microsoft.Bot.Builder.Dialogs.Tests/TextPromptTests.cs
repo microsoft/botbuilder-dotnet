@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void TextPromptWithEmptyIdShouldFail()
         {
-            var emptyId = "";
+            var emptyId = string.Empty;
             var textPrompt = new TextPrompt(emptyId);
         }
 
@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void TextPromptWithNullIdShouldFail()
         {
-            var nullId = "";
+            var nullId = string.Empty;
             nullId = null;
             var textPrompt = new TextPrompt(nullId);
         }
@@ -137,11 +137,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     return Task.FromResult(true);
                 }
+
                 return Task.FromResult(false);
             };
             var textPrompt = new TextPrompt("TextPrompt", validator);
             dialogs.Add(textPrompt);
-        
+
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
@@ -149,7 +150,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
                 {
-                    var options = new PromptOptions {
+                    var options = new PromptOptions
+                    {
                         Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter some text." },
                         RetryPrompt = new Activity { Type = ActivityTypes.Message, Text = "Make sure the text is greater than three characters." },
                     };

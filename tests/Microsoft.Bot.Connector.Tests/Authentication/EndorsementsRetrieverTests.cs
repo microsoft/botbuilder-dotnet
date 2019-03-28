@@ -2,15 +2,15 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
-using Xunit;
-using RichardSzalay.MockHttp;
-using System.Net.Http;
 using Microsoft.IdentityModel.Protocols;
-using System.Threading;
-using System.Net;
+using Moq;
+using RichardSzalay.MockHttp;
+using Xunit;
 
 namespace Microsoft.Bot.Connector.Authentication.Tests
 {
@@ -186,7 +186,7 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
                 _mockHttpMessageHandler.When(FakeKeysAddressUrl)
                     .Respond(HttpStatusCode.NotFound);
 
-                Func <Task> action = async () => await _endorsementsRetriever.GetDocumentAsync(FakeDocumentAddress, CancellationToken.None);
+                Func<Task> action = async () => await _endorsementsRetriever.GetDocumentAsync(FakeDocumentAddress, CancellationToken.None);
 
                 action.Should().Throw<Exception>();
             }

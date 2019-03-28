@@ -4,15 +4,10 @@
 namespace Connector.Tests
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Net.Http;
-    using System.Threading;
-    using System.Threading.Tasks;
     using Microsoft.Bot.Connector;
     using Microsoft.Bot.Connector.Authentication;
     using Microsoft.Bot.Schema;
-    using Microsoft.Rest;
     using Xunit;
 
     public class ConnectorClientTest : BaseTest

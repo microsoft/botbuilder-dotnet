@@ -18,11 +18,524 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestCategory("Choice Prompts")]
     public class ChoicePromptTests
     {
-        private List<Choice> colorChoices = new List<Choice> {
+        private List<Choice> colorChoices = new List<Choice>
+        {
             new Choice { Value = "red" },
             new Choice { Value = "green" },
-            new Choice { Value = "blue" }
+            new Choice { Value = "blue" },
         };
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ChoicePromptWithEmptyIdShouldFail()
+        {
+            var emptyId = string.Empty;
+            var choicePrompt = new ChoicePrompt(emptyId);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ChoicePromptWithNullIdShouldFail()
+        {
+            var nullId = string.Empty;
+            nullId = null;
+            var choicePrompt = new ChoicePrompt(nullId);
+        }
+
+        [TestMethod]
+        public async Task ChoicePromptWithCardActionAndNoValueShouldNotFail()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English));
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    var choice = new Choice()
+                    {
+                        Action = new CardAction()
+                        {
+                            Type = "imBack",
+                            Value = "value",
+                            Title = "title"
+                        }
+                    };
+
+                    var options = new PromptOptions()
+                    {
+                        Choices = new List<Choice> { choice }
+                    };
+                    await dc.PromptAsync("ChoicePrompt",
+                        options,
+                        cancellationToken);
+                }
+            })
+            .Send("hello")
+            .AssertReply(StartsWithValidator(" (1) title"))
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task ShouldSendPrompt()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English));
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync(
+                        "ChoicePrompt",
+                        new PromptOptions
+                        {
+                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
+                            Choices = colorChoices,
+                        },
+                        cancellationToken);
+                }
+            })
+            .Send("hello")
+            .AssertReply(StartsWithValidator("favorite color?"))
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task ShouldSendPromptAsAnInlineList()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English));
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync();
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync(
+                        "ChoicePrompt",
+                        new PromptOptions
+                        {
+                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
+                            Choices = colorChoices,
+                        },
+                        cancellationToken);
+                }
+            })
+            .Send("hello")
+            .AssertReply("favorite color? (1) red, (2) green, or (3) blue")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task ShouldSendPromptAsANumberedList()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var dialogs = new DialogSet(dialogState);
+
+            // Create ChoicePrompt and change style to ListStyle.List which affects how choices are presented.
+            var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
+            listPrompt.Style = ListStyle.List;
+            dialogs.Add(listPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync(
+                        "ChoicePrompt",
+                        new PromptOptions
+                        {
+                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
+                            Choices = colorChoices,
+                        },
+                        cancellationToken);
+                }
+            })
+            .Send("hello")
+            .AssertReply("favorite color?\n\n   1. red\n   2. green\n   3. blue")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task ShouldSendPromptUsingSuggestedActions()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var dialogs = new DialogSet(dialogState);
+            var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
+            listPrompt.Style = ListStyle.SuggestedAction;
+            dialogs.Add(listPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync(
+                        "ChoicePrompt",
+                        new PromptOptions
+                        {
+                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
+                            Choices = colorChoices,
+                        },
+                        cancellationToken);
+                }
+            })
+            .Send("hello")
+            .AssertReply(SuggestedActionsValidator(
+                "favorite color?",
+                new SuggestedActions
+                {
+                    Actions = new List<CardAction>
+                    {
+                        new CardAction { Type = "imBack", Value = "red", Title = "red" },
+                        new CardAction { Type = "imBack", Value = "green", Title = "green" },
+                        new CardAction { Type = "imBack", Value = "blue", Title = "blue" },
+                    },
+                }))
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task ShouldSendPromptUsingHeroCard()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var dialogs = new DialogSet(dialogState);
+            var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
+            listPrompt.Style = ListStyle.HeroCard;
+            dialogs.Add(listPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+                {
+                    var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                    var results = await dc.ContinueDialogAsync(cancellationToken);
+                    if (results.Status == DialogTurnStatus.Empty)
+                    {
+                        await dc.PromptAsync(
+                            "ChoicePrompt",
+                            new PromptOptions
+                            {
+                                Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
+                                Choices = colorChoices,
+                            },
+                            cancellationToken);
+                    }
+                })
+                .Send("hello")
+                .AssertReply(HeroCardValidator(new HeroCard
+                    {
+                        Text = "favorite color?",
+                        Buttons = new List<CardAction>
+                        {
+                            new CardAction { Type = "imBack", Value = "red", Title = "red" },
+                            new CardAction { Type = "imBack", Value = "green", Title = "green" },
+                            new CardAction { Type = "imBack", Value = "blue", Title = "blue" },
+                        },
+                    }))
+                .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task ShouldSendPromptWithoutAddingAList()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var dialogs = new DialogSet(dialogState);
+
+            var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
+            listPrompt.Style = ListStyle.None;
+            dialogs.Add(listPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync(
+                        "ChoicePrompt",
+                        new PromptOptions
+                        {
+                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
+                            Choices = colorChoices,
+                        },
+                        cancellationToken);
+                }
+            })
+            .Send("hello")
+            .AssertReply("favorite color?")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task ShouldSendPromptWithoutAddingAListButAddingSsml()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var dialogs = new DialogSet(dialogState);
+
+            var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
+            listPrompt.Style = ListStyle.None;
+            dialogs.Add(listPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync(
+                        "ChoicePrompt",
+                        new PromptOptions
+                        {
+                            Prompt = new Activity
+                            {
+                                Type = ActivityTypes.Message,
+                                Text = "favorite color?",
+                                Speak = "spoken prompt",
+                            },
+                            Choices = colorChoices,
+                        },
+                        cancellationToken);
+                }
+            })
+            .Send("hello")
+            .AssertReply(SpeakValidator("favorite color?", "spoken prompt"))
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task ShouldRecognizeAChoice()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var dialogs = new DialogSet(dialogState);
+
+            var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
+            listPrompt.Style = ListStyle.None;
+            dialogs.Add(listPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync(
+                        "ChoicePrompt",
+                        new PromptOptions
+                        {
+                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
+                            Choices = colorChoices,
+                        },
+                        cancellationToken);
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    var choiceResult = (FoundChoice)results.Result;
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"{choiceResult.Value}"), cancellationToken);
+                }
+            })
+            .Send("hello")
+            .AssertReply(StartsWithValidator("favorite color?"))
+            .Send("red")
+            .AssertReply("red")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task ShouldNOTrecognizeOtherText()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var dialogs = new DialogSet(dialogState);
+            var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
+            listPrompt.Style = ListStyle.None;
+            dialogs.Add(listPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync(
+                        "ChoicePrompt",
+                        new PromptOptions
+                        {
+                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
+                            RetryPrompt = new Activity { Type = ActivityTypes.Message, Text = "your favorite color, please?" },
+                            Choices = colorChoices,
+                        },
+                        cancellationToken);
+                }
+            })
+            .Send("hello")
+            .AssertReply(StartsWithValidator("favorite color?"))
+            .Send("what was that?")
+            .AssertReply("your favorite color, please?")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task ShouldCallCustomValidator()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var dialogs = new DialogSet(dialogState);
+
+            PromptValidator<FoundChoice> validator = async (promptContext, cancellationToken) =>
+            {
+                await promptContext.Context.SendActivityAsync(MessageFactory.Text("validator called"), cancellationToken);
+                return true;
+            };
+            var listPrompt = new ChoicePrompt("ChoicePrompt", validator, Culture.English);
+            listPrompt.Style = ListStyle.None;
+            dialogs.Add(listPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync(
+                        "ChoicePrompt",
+                        new PromptOptions
+                        {
+                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
+                            Choices = colorChoices,
+                        },
+                        cancellationToken);
+                }
+            })
+            .Send("hello")
+            .AssertReply(StartsWithValidator("favorite color?"))
+            .Send("I'll take the red please.")
+            .AssertReply("validator called")
+            .StartTestAsync();
+        }
+
+        /*
+        [TestMethod]
+        public async Task ShouldHandleAnUndefinedRequest()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+
+            var adapter = new TestAdapter()
+                .Use(convoState);
+
+            PromptValidator<FoundChoice> validator = (context, promptContext, cancellationToken) =>
+            {
+                Assert.IsTrue(false);
+                return Task.CompletedTask;
+            };
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
+                var prompt = new ChoicePrompt(Culture.English, validator);
+                prompt.Style = ListStyle.None;
+
+                var dialogCompletion = await prompt.ContinueDialogAsync(turnContext, state);
+                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+                {
+                    await prompt.BeginAsync(turnContext, state,
+                        new ChoicePromptOptions
+                        {
+                            PromptString = "favorite color?",
+                            Choices = ChoiceFactory.ToChoices(colorChoices)
+                        });
+                }
+                else if (dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+                {
+                    if (dialogCompletion.Result == null)
+                    {
+                        await turnContext.SendActivityAsync("NotRecognized");
+                    }
+                }
+            })
+            .Send("hello")
+            .AssertReply(StartsWithValidator("favorite color?"))
+            .Send("value shouldn't have been recognized.")
+            .AssertReply("NotRecognized")
+            .StartTestAsync();
+        }*/
 
         private Action<IActivity> StartsWithValidator(string expected)
         {
@@ -81,461 +594,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.AreEqual(expectedSpeak, msg.Speak);
             };
         }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void ChoicePromptWithEmptyIdShouldFail()
-        {
-            var emptyId = "";
-            var choicePrompt = new ChoicePrompt(emptyId);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void ChoicePromptWithNullIdShouldFail()
-        {
-            var nullId = "";
-            nullId = null;
-            var choicePrompt = new ChoicePrompt(nullId);
-        }
-
-        [TestMethod]
-        public async Task ShouldSendPrompt()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            // Create new DialogSet.
-            var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English));
-
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    await dc.PromptAsync("ChoicePrompt",
-                        new PromptOptions
-                        {
-                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
-                            Choices = colorChoices
-                        },
-                        cancellationToken);
-                }
-            })
-            .Send("hello")
-            .AssertReply(StartsWithValidator("favorite color?"))
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task ShouldSendPromptAsAnInlineList()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English));
-
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync();
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    await dc.PromptAsync("ChoicePrompt",
-                        new PromptOptions
-                        {
-                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
-                            Choices = colorChoices
-                        },
-                        cancellationToken);
-                }
-            })
-            .Send("hello")
-            .AssertReply("favorite color? (1) red, (2) green, or (3) blue")
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task ShouldSendPromptAsANumberedList()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            var dialogs = new DialogSet(dialogState);
-
-            // Create ChoicePrompt and change style to ListStyle.List which affects how choices are presented.
-            var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
-            listPrompt.Style = ListStyle.List;
-            dialogs.Add(listPrompt);
-
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    await dc.PromptAsync("ChoicePrompt",
-                        new PromptOptions
-                        {
-                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
-                            Choices = colorChoices
-                        },
-                        cancellationToken);
-                }
-            })
-            .Send("hello")
-            .AssertReply("favorite color?\n\n   1. red\n   2. green\n   3. blue")
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task ShouldSendPromptUsingSuggestedActions()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            var dialogs = new DialogSet(dialogState);
-            var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
-            listPrompt.Style = ListStyle.SuggestedAction;
-            dialogs.Add(listPrompt);
-
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    await dc.PromptAsync("ChoicePrompt",
-                        new PromptOptions
-                        {
-                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
-                            Choices = colorChoices
-                        },
-                        cancellationToken);
-                }
-            })
-            .Send("hello")
-            .AssertReply(SuggestedActionsValidator("favorite color?",
-                new SuggestedActions
-                {
-                    Actions = new List<CardAction>
-                    {
-                        new CardAction { Type="imBack", Value="red", Title="red" },
-                        new CardAction { Type="imBack", Value="green", Title="green" },
-                        new CardAction { Type="imBack", Value="blue", Title="blue" },
-                    }
-                }))
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task ShouldSendPromptUsingHeroCard()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            var dialogs = new DialogSet(dialogState);
-            var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
-            listPrompt.Style = ListStyle.HeroCard;
-            dialogs.Add(listPrompt);
-
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-                {
-                    var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                    var results = await dc.ContinueDialogAsync(cancellationToken);
-                    if (results.Status == DialogTurnStatus.Empty)
-                    {
-                        await dc.PromptAsync("ChoicePrompt",
-                            new PromptOptions
-                            {
-                                Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
-                                Choices = colorChoices
-                            },
-                            cancellationToken);
-                    }
-                })
-                .Send("hello")
-                .AssertReply(HeroCardValidator(new HeroCard
-                    {
-                        Text = "favorite color?",
-                        Buttons = new List<CardAction>
-                        {
-                            new CardAction { Type="imBack", Value="red", Title="red" },
-                            new CardAction { Type="imBack", Value="green", Title="green" },
-                            new CardAction { Type="imBack", Value="blue", Title="blue" },
-                        }
-                    }))
-                .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task ShouldSendPromptWithoutAddingAList()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            var dialogs = new DialogSet(dialogState);
-
-            var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
-            listPrompt.Style = ListStyle.None;
-            dialogs.Add(listPrompt);
-
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    await dc.PromptAsync("ChoicePrompt",
-                        new PromptOptions
-                        {
-                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
-                            Choices = colorChoices
-                        },
-                        cancellationToken);
-                }
-            })
-            .Send("hello")
-            .AssertReply("favorite color?")
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task ShouldSendPromptWithoutAddingAListButAddingSsml()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            var dialogs = new DialogSet(dialogState);
-
-            var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
-            listPrompt.Style = ListStyle.None;
-            dialogs.Add(listPrompt);
-
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    await dc.PromptAsync("ChoicePrompt",
-                        new PromptOptions
-                        {
-                            Prompt = new Activity {
-                                Type = ActivityTypes.Message,
-                                Text = "favorite color?",
-                                Speak = "spoken prompt"
-                            },
-                            Choices = colorChoices
-                        },
-                        cancellationToken);
-                }
-            })
-            .Send("hello")
-            .AssertReply(SpeakValidator("favorite color?", "spoken prompt"))
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task ShouldRecognizeAChoice()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            var dialogs = new DialogSet(dialogState);
-
-            var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
-            listPrompt.Style = ListStyle.None;
-            dialogs.Add(listPrompt);
-
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    await dc.PromptAsync("ChoicePrompt",
-                        new PromptOptions
-                        {
-                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
-                            Choices = colorChoices
-                        },
-                        cancellationToken);
-                }
-                else if (results.Status == DialogTurnStatus.Complete)
-                {
-                    var choiceResult = (FoundChoice)results.Result;
-                    await turnContext.SendActivityAsync(MessageFactory.Text($"{choiceResult.Value}"), cancellationToken);
-                }
-            })
-            .Send("hello")
-            .AssertReply(StartsWithValidator("favorite color?"))
-            .Send("red")
-            .AssertReply("red")
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task ShouldNOTrecognizeOtherText()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            var dialogs = new DialogSet(dialogState);
-            var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
-            listPrompt.Style = ListStyle.None;
-            dialogs.Add(listPrompt);
-
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    await dc.PromptAsync("ChoicePrompt",
-                        new PromptOptions
-                        {
-                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
-                            RetryPrompt = new Activity { Type = ActivityTypes.Message, Text = "your favorite color, please?" },
-                            Choices = colorChoices
-                        },
-                        cancellationToken);
-                }
-            })
-            .Send("hello")
-            .AssertReply(StartsWithValidator("favorite color?"))
-            .Send("what was that?")
-            .AssertReply("your favorite color, please?")
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task ShouldCallCustomValidator()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            var dialogs = new DialogSet(dialogState);
-
-            PromptValidator<FoundChoice> validator = async (promptContext, cancellationToken) =>
-            {
-                await promptContext.Context.SendActivityAsync(MessageFactory.Text("validator called"), cancellationToken);
-                return true;
-            };
-            var listPrompt = new ChoicePrompt("ChoicePrompt", validator, Culture.English);
-            listPrompt.Style = ListStyle.None;
-            dialogs.Add(listPrompt);
-
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    await dc.PromptAsync("ChoicePrompt",
-                        new PromptOptions
-                        {
-                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
-                            Choices = colorChoices
-                        },
-                        cancellationToken);
-                }
-            })
-            .Send("hello")
-            .AssertReply(StartsWithValidator("favorite color?"))
-            .Send("I'll take the red please.")
-            .AssertReply("validator called")
-            .StartTestAsync();
-        }
-
-        /*
-        [TestMethod]
-        public async Task ShouldHandleAnUndefinedRequest()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
-
-            var adapter = new TestAdapter()
-                .Use(convoState);
-
-            PromptValidator<FoundChoice> validator = (context, promptContext, cancellationToken) =>
-            {
-                Assert.IsTrue(false);
-                return Task.CompletedTask;
-            };
-
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
-                var prompt = new ChoicePrompt(Culture.English, validator);
-                prompt.Style = ListStyle.None;
-
-                var dialogCompletion = await prompt.ContinueDialogAsync(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
-                {
-                    await prompt.BeginAsync(turnContext, state,
-                        new ChoicePromptOptions
-                        {
-                            PromptString = "favorite color?",
-                            Choices = ChoiceFactory.ToChoices(colorChoices)
-                        });
-                }
-                else if (dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
-                {
-                    if (dialogCompletion.Result == null)
-                    {
-                        await turnContext.SendActivityAsync("NotRecognized");
-                    }
-                }
-            })
-            .Send("hello")
-            .AssertReply(StartsWithValidator("favorite color?"))
-            .Send("value shouldn't have been recognized.")
-            .AssertReply("NotRecognized")
-            .StartTestAsync();
-        }*/
-        }
     }
+}

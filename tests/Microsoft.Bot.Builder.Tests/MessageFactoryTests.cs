@@ -96,11 +96,14 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
             Assert.IsNotNull(message.SuggestedActions);
             Assert.IsNotNull(message.SuggestedActions.Actions);
-            Assert.IsTrue(textActions.SetEquals(message.SuggestedActions.Actions.Select(action => (string)action.Value)),
+            Assert.IsTrue(
+                textActions.SetEquals(message.SuggestedActions.Actions.Select(action => (string)action.Value)),
                 "The message's suggested actions have the wrong set of values.");
-            Assert.IsTrue(textActions.SetEquals(message.SuggestedActions.Actions.Select(action=>action.Title)),
+            Assert.IsTrue(
+                textActions.SetEquals(message.SuggestedActions.Actions.Select(action => action.Title)),
                 "The message's suggested actions have the wrong set of titles.");
-            Assert.IsTrue(message.SuggestedActions.Actions.All(action => action.Type.Equals(ActionTypes.ImBack)),
+            Assert.IsTrue(
+                message.SuggestedActions.Actions.All(action => action.Type.Equals(ActionTypes.ImBack)),
                 "The message's suggested actions are of the wrong action type.");
         }
 
@@ -118,7 +121,7 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Type = ActionTypes.ImBack,
                 Value = cardActionValue,
-                Title = cardActionTitle
+                Title = cardActionTitle,
             };
 
             IList<CardAction> cardActions = new List<CardAction> { ca };
@@ -144,29 +147,29 @@ namespace Microsoft.Bot.Builder.Tests
             string ssml = Guid.NewGuid().ToString();
             string inputHint = InputHints.ExpectingInput;
 
-            string caValue1 = Guid.NewGuid().ToString();
-            string caTitle1 = Guid.NewGuid().ToString();
+            string cardValue1 = Guid.NewGuid().ToString();
+            string cardTitle1 = Guid.NewGuid().ToString();
 
             CardAction cardAction1 = new CardAction
             {
                 Type = ActionTypes.ImBack,
-                Value = caValue1,
-                Title = caTitle1
+                Value = cardValue1,
+                Title = cardTitle1,
             };
 
-            string caValue2 = Guid.NewGuid().ToString();
-            string caTitle2 = Guid.NewGuid().ToString();
+            string cardValue2 = Guid.NewGuid().ToString();
+            string cardTitle2 = Guid.NewGuid().ToString();
 
             CardAction cardAction2 = new CardAction
             {
                 Type = ActionTypes.ImBack,
-                Value = caValue2,
-                Title = caTitle2
+                Value = cardValue2,
+                Title = cardTitle2,
             };
 
             HashSet<CardAction> cardActions = new HashSet<CardAction> { cardAction1, cardAction2 };
-            HashSet<object> values = new HashSet<object> { caValue1, caValue2 };
-            HashSet<string> titles = new HashSet<string> { caTitle1, caTitle2 };
+            HashSet<object> values = new HashSet<object> { cardValue1, cardValue2 };
+            HashSet<string> titles = new HashSet<string> { cardTitle1, cardTitle2 };
 
             IMessageActivity message = MessageFactory.SuggestedActions(cardActions, text, ssml, inputHint);
 
@@ -177,11 +180,14 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.IsNotNull(message.SuggestedActions);
             Assert.IsNotNull(message.SuggestedActions.Actions);
             Assert.IsTrue(message.SuggestedActions.Actions.Count == 2);
-            Assert.IsTrue(values.SetEquals(message.SuggestedActions.Actions.Select(action=>action.Value)),
+            Assert.IsTrue(
+                values.SetEquals(message.SuggestedActions.Actions.Select(action => action.Value)),
                 "The message's suggested actions have the wrong set of values.");
-            Assert.IsTrue(titles.SetEquals(message.SuggestedActions.Actions.Select(action => action.Title)),
+            Assert.IsTrue(
+                titles.SetEquals(message.SuggestedActions.Actions.Select(action => action.Title)),
                 "The message's suggested actions have the wrong set of titles.");
-            Assert.IsTrue(message.SuggestedActions.Actions.All(action=>action.Type.Equals(ActionTypes.ImBack)),
+            Assert.IsTrue(
+                message.SuggestedActions.Actions.All(action => action.Type.Equals(ActionTypes.ImBack)),
                 "The message's suggested actions are of the wrong action type.");
         }
 
@@ -195,7 +201,7 @@ namespace Microsoft.Bot.Builder.Tests
             string attachmentName = Guid.NewGuid().ToString();
             Attachment a = new Attachment
             {
-                Name = attachmentName
+                Name = attachmentName,
             };
 
             IMessageActivity message = MessageFactory.Attachment(a, text, ssml, inputHint);
@@ -205,7 +211,7 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
             Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
             Assert.IsTrue(message.Attachments.Count == 1, "Incorrect Attachment Count");
-            Assert.IsTrue(message.Attachments[0].Name == attachmentName, "Incorrect Attachment Name"); 
+            Assert.IsTrue(message.Attachments[0].Name == attachmentName, "Incorrect Attachment Name");
         }
 
         [TestMethod]
@@ -213,7 +219,7 @@ namespace Microsoft.Bot.Builder.Tests
         public void AttachmentNull()
         {
             IMessageActivity message = MessageFactory.Attachment((Attachment)null);
-            Assert.Fail("Exception not thrown"); 
+            Assert.Fail("Exception not thrown");
         }
 
         [TestMethod]
@@ -233,7 +239,6 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        
         public void CarouselTwoAttachments()
         {
             string text = Guid.NewGuid().ToString();
@@ -243,13 +248,13 @@ namespace Microsoft.Bot.Builder.Tests
             string attachmentName = Guid.NewGuid().ToString();
             Attachment attachment1 = new Attachment
             {
-                Name = attachmentName
+                Name = attachmentName,
             };
 
             string attachmentName2 = Guid.NewGuid().ToString();
             Attachment attachment2 = new Attachment
             {
-                Name = attachmentName2
+                Name = attachmentName2,
             };
 
             IList<Attachment> multipleAttachments = new List<Attachment> { attachment1, attachment2 };
@@ -265,7 +270,6 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.IsTrue(message.Attachments[1].Name == attachmentName2, "Incorrect Attachment2 Name");
         }
 
-
         public void CarouselUnorderedAttachments()
         {
             string text = Guid.NewGuid().ToString();
@@ -275,13 +279,13 @@ namespace Microsoft.Bot.Builder.Tests
             string attachmentName1 = Guid.NewGuid().ToString();
             Attachment attachment1 = new Attachment
             {
-                Name = attachmentName1
+                Name = attachmentName1,
             };
 
             string attachmentName2 = Guid.NewGuid().ToString();
             Attachment attachment2 = new Attachment
             {
-                Name = attachmentName2
+                Name = attachmentName2,
             };
 
             HashSet<Attachment> multipleAttachments = new HashSet<Attachment> { attachment1, attachment2 };
@@ -308,13 +312,13 @@ namespace Microsoft.Bot.Builder.Tests
             string attachmentName = Guid.NewGuid().ToString();
             Attachment a = new Attachment
             {
-                Name = attachmentName
+                Name = attachmentName,
             };
 
             string attachmentName2 = Guid.NewGuid().ToString();
             Attachment a2 = new Attachment
             {
-                Name = attachmentName2
+                Name = attachmentName2,
             };
 
             IList<Attachment> multipleAttachments = new List<Attachment> { a, a2 };
@@ -340,13 +344,13 @@ namespace Microsoft.Bot.Builder.Tests
             string attachmentName1 = Guid.NewGuid().ToString();
             Attachment attachment1 = new Attachment
             {
-                Name = attachmentName1
+                Name = attachmentName1,
             };
 
             string attachmentName2 = Guid.NewGuid().ToString();
             Attachment attachment2 = new Attachment
             {
-                Name = attachmentName2
+                Name = attachmentName2,
             };
 
             HashSet<Attachment> multipleAttachments = new HashSet<Attachment> { attachment1, attachment2 };
@@ -369,17 +373,17 @@ namespace Microsoft.Bot.Builder.Tests
             string text = Guid.NewGuid().ToString();
             string ssml = Guid.NewGuid().ToString();
             string inputHint = InputHints.ExpectingInput;
-            string uri = $"https:// { Guid.NewGuid().ToString()}";
+            string uri = $"https:// {Guid.NewGuid().ToString()}";
             string contentType = MediaTypeNames.Image.Jpeg;
-            string name =  Guid.NewGuid().ToString(); 
+            string name = Guid.NewGuid().ToString();
 
-            IMessageActivity message = MessageFactory.ContentUrl(uri, contentType, name, text, ssml, inputHint);            
+            IMessageActivity message = MessageFactory.ContentUrl(uri, contentType, name, text, ssml, inputHint);
 
             Assert.AreEqual(message.Text, text, "Message Text does not match");
             Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
             Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
             Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
-            Assert.IsTrue(message.Attachments.Count == 1);            
+            Assert.IsTrue(message.Attachments.Count == 1);
             Assert.IsTrue(message.Attachments[0].Name == name, "Incorrect Attachment1 Name");
             Assert.IsTrue(message.Attachments[0].ContentType == contentType, "Incorrect contentType");
             Assert.IsTrue(message.Attachments[0].ContentUrl == uri, "Incorrect Uri");
@@ -388,18 +392,19 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task ValidateIMBackWithText()
         {
-            TestAdapter adapter = new TestAdapter();                 
+            TestAdapter adapter = new TestAdapter();
 
             async Task ReplyWithimBackBack(ITurnContext ctx, CancellationToken cancellationToken)
             {
                 if (ctx.Activity.AsMessageActivity().Text == "test")
                 {
-                    var activity = MessageFactory.SuggestedActions(new CardAction[]
+                    var activity = MessageFactory.SuggestedActions(
+                        new CardAction[]
                     {
-                        new CardAction(type: "imBack", text: "red", title: "redTitle")
+                        new CardAction(type: "imBack", text: "red", title: "redTitle"),
                     }, "Select color");
 
-                    await ctx.SendActivityAsync((Activity)activity); 
+                    await ctx.SendActivityAsync((Activity)activity);
                 }
             }
 
@@ -407,9 +412,9 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Assert.IsTrue(activity.Type == ActivityTypes.Message);
 
-                var messageActivity = activity.AsMessageActivity(); 
+                var messageActivity = activity.AsMessageActivity();
 
-                Assert.IsTrue(messageActivity.Text == "Select color");                
+                Assert.IsTrue(messageActivity.Text == "Select color");
                 Assert.IsTrue(messageActivity.SuggestedActions.Actions.Count == 1, "Incorrect Count");
                 Assert.IsTrue(messageActivity.SuggestedActions.Actions[0].Type == ActionTypes.ImBack, "Incorrect Action Type");
                 Assert.IsTrue(messageActivity.SuggestedActions.Actions[0].Text == "red", "incorrect text");
@@ -431,12 +436,13 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 if (ctx.Activity.AsMessageActivity().Text == "test")
                 {
-                    var activity = MessageFactory.SuggestedActions(new CardAction[]
+                    var activity = MessageFactory.SuggestedActions(
+                        new CardAction[]
                     {
-                        new CardAction(type: "imBack", text: "red", title: "redTitle")
-                    }, "");
+                        new CardAction(type: "imBack", text: "red", title: "redTitle"),
+                    }, string.Empty);
 
-                    await ctx.SendActivityAsync((Activity) activity); 
+                    await ctx.SendActivityAsync((Activity)activity);
                 }
             }
 
@@ -449,7 +455,7 @@ namespace Microsoft.Bot.Builder.Tests
                 Assert.IsTrue(messageActivity.Text == null);
                 Assert.IsTrue(messageActivity.SuggestedActions.Actions.Count == 1, "Incorrect Count");
                 Assert.IsTrue(messageActivity.SuggestedActions.Actions[0].Type == ActionTypes.ImBack, "Incorrect Action Type");
-                Assert.IsTrue(messageActivity.SuggestedActions.Actions[0].Text== "red", "incorrect text");
+                Assert.IsTrue(messageActivity.SuggestedActions.Actions[0].Text == "red", "incorrect text");
                 Assert.IsTrue(messageActivity.SuggestedActions.Actions[0].Title == "redTitle", "incorrect text");
             }
 

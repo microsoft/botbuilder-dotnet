@@ -41,12 +41,14 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                                 data.Value = value;
                                 await testProperty.SetAsync(context, data);
                             }
+
                             break;
                         case "read":
                             {
                                 var data = await testProperty.GetAsync(context, () => new UserStateObject());
                                 await context.SendActivityAsync($"value:{data.Value}");
                             }
+
                             break;
                         default:
                             await context.SendActivityAsync("bot message");
@@ -87,12 +89,14 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                                 data.Value = value;
                                 await testProperty.SetAsync(context, data);
                             }
+
                             break;
                         case "read":
                             {
                                 var data = await testProperty.GetAsync(context, () => new ConversationStateObject());
                                 await context.SendActivityAsync($"value:{data.Value}");
                             }
+
                             break;
                         default:
                             await context.SendActivityAsync("bot message");
@@ -131,12 +135,14 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                                 data.Value = value;
                                 await testProperty.SetAsync(context, data);
                             }
+
                             break;
                         case "read":
                             {
                                 var data = await testProperty.GetAsync(context, () => new CustomStateObject());
                                 await context.SendActivityAsync($"value:{data.Value}");
                             }
+
                             break;
                         default:
                             await context.SendActivityAsync("bot message");
@@ -155,6 +161,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             {
                 return (message[0], message[1]);
             }
+
             return (message[0], null);
         }
 
@@ -177,7 +184,8 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         {
             public const string PropertyName = "Microsoft.Bot.Builder.Transcripts.Tests.CustomState";
 
-            public CustomState(IStorage storage) : base(storage, PropertyName)
+            public CustomState(IStorage storage)
+                : base(storage, PropertyName)
             {
             }
 

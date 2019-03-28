@@ -26,15 +26,9 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
             var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new WaterfallDialog("test", new WaterfallStep[]
-            {
-                async (step, cancellationToken) => { await step.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn; },
-                async (step, cancellationToken) => { await step.Context.SendActivityAsync("step2"); return Dialog.EndOfTurn; },
-                async (step, cancellationToken) => { await step.Context.SendActivityAsync("step3"); return Dialog.EndOfTurn; },
-            }));
 
+            dialogs.Add(new WaterfallDialog("test", NewWaterfall()));
             dialogs.TelemetryClient = telemetryClient.Object;
-            
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -52,7 +46,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
             .Send("hello")
             .AssertReply("step3")
             .StartTestAsync();
-            telemetryClient.Verify(m => m.TrackEvent(It.IsAny<string>(), It.IsAny<IDictionary<string,string>>(), It.IsAny<IDictionary<string, double>>()), Times.Exactly(4));
+            telemetryClient.Verify(m => m.TrackEvent(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, double>>()), Times.Exactly(4));
             Console.WriteLine("Complete");
         }
 
@@ -66,13 +60,8 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
 
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
             var dialogs = new DialogSet(dialogState);
-            var telemetryClient = new Mock<IBotTelemetryClient>(); ;
-            var waterfallDialog = new WaterfallDialog("test", new WaterfallStep[]
-            {
-                    async (step, cancellationToken) => { await step.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn; },
-                    async (step, cancellationToken) => { await step.Context.SendActivityAsync("step2"); return Dialog.EndOfTurn; },
-                    async (step, cancellationToken) => { await step.Context.SendActivityAsync("step3"); return Dialog.EndOfTurn; },
-            });
+            var telemetryClient = new Mock<IBotTelemetryClient>();
+            var waterfallDialog = new WaterfallDialog("test", NewWaterfall());
 
 
             dialogs.Add(waterfallDialog);
@@ -97,7 +86,6 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
             telemetryClient.Verify(m => m.TrackEvent(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, double>>()), Times.Exactly(4));
         }
 
-
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void WaterfallWithStepsNull()
@@ -120,16 +108,12 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var saved_properties = new Dictionary<string, IDictionary<string, string>>();
             var counter = 0;
+
             // Set up the client to save all logged property names and associated properties (in "saved_properties").
             telemetryClient.Setup(c => c.TrackEvent(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, double>>()))
                             .Callback<string, IDictionary<string, string>, IDictionary<string, double>>((name, properties, metrics) => saved_properties.Add($"{name}_{counter++}", properties))
                             .Verifiable();
-            var waterfallDialog = new MyWaterfallDialog("test", new WaterfallStep[]
-            {
-                    async (step, cancellationToken) => { await step.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn; },
-                    async (step, cancellationToken) => { await step.Context.SendActivityAsync("step2"); return Dialog.EndOfTurn; },
-                    async (step, cancellationToken) => { await step.Context.SendActivityAsync("step3"); return Dialog.EndOfTurn; },
-            });
+            var waterfallDialog = new MyWaterfallDialog("test", NewWaterfall());
 
             dialogs.Add(waterfallDialog);
             dialogs.TelemetryClient = telemetryClient.Object;
@@ -153,6 +137,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
             .AssertReply("step1")
             .StartTestAsync();
             telemetryClient.Verify(m => m.TrackEvent(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, double>>()), Times.Exactly(7));
+
             // Verify:
             // Event name is "WaterfallComplete"
             // Event occurs on the 4th event logged
@@ -162,6 +147,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
             Assert.IsTrue(saved_properties["WaterfallComplete_4"]["DialogId"] == "test");
             Assert.IsTrue(saved_properties["WaterfallComplete_4"].ContainsKey("InstanceId"));
             Assert.IsTrue(saved_properties["WaterfallStep_1"].ContainsKey("InstanceId"));
+
             // Verify naming on lambda's is "StepXofY"
             Assert.IsTrue(saved_properties["WaterfallStep_1"].ContainsKey("StepName"));
             Assert.IsTrue(saved_properties["WaterfallStep_1"]["StepName"] == "Step1of3");
@@ -182,17 +168,31 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var saved_properties = new Dictionary<string, IDictionary<string, string>>();
             var counter = 0;
+
             // Set up the client to save all logged property names and associated properties (in "saved_properties").
             telemetryClient.Setup(c => c.TrackEvent(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, double>>()))
                             .Callback<string, IDictionary<string, string>, IDictionary<string, double>>((name, properties, metrics) => saved_properties.Add($"{name}_{counter++}", properties))
                             .Verifiable();
 
-            var waterfallDialog = new MyWaterfallDialog("test", new WaterfallStep[]
+            var steps = new WaterfallStep[]
             {
-                    async (step, cancellationToken) => { await step.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn; },
-                    async (step, cancellationToken) => { await step.Context.SendActivityAsync("step2"); return Dialog.EndOfTurn; },
-                    async (step, cancellationToken) => { await step.CancelAllDialogsAsync(); return Dialog.EndOfTurn; },
-            });
+                    async (step, cancellationToken) =>
+                    {
+                        await step.Context.SendActivityAsync("step1");
+                        return Dialog.EndOfTurn;
+                    },
+                    async (step, cancellationToken) =>
+                    {
+                        await step.Context.SendActivityAsync("step2");
+                        return Dialog.EndOfTurn;
+                    },
+                    async (step, cancellationToken) =>
+                    {
+                        await step.CancelAllDialogsAsync();
+                        return Dialog.EndOfTurn;
+                    },
+            };
+            var waterfallDialog = new MyWaterfallDialog("test", steps);
 
             dialogs.Add(waterfallDialog);
             dialogs.TelemetryClient = telemetryClient.Object;
@@ -214,6 +214,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
             .AssertReply("step1")
             .StartTestAsync();
             telemetryClient.Verify(m => m.TrackEvent(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, double>>()), Times.Exactly(7));
+
             // Verify:
             // Event name is "WaterfallCancel"
             // Event occurs on the 4th event logged
@@ -225,6 +226,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
             Assert.IsTrue(saved_properties["WaterfallCancel_4"]["DialogId"] == "test");
             Assert.IsTrue(saved_properties["WaterfallCancel_4"].ContainsKey("StepName"));
             Assert.IsTrue(saved_properties["WaterfallCancel_4"].ContainsKey("InstanceId"));
+
             // Event contains "StepName"
             // Event naming on lambda's is "StepXofY"
             Assert.IsTrue(saved_properties["WaterfallCancel_4"]["StepName"] == "Step3of3");
@@ -232,19 +234,38 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
             Assert.IsFalse(waterfallDialog.EndDialogCalled);
         }
 
+        private static WaterfallStep[] NewWaterfall()
+        {
+            return new WaterfallStep[]
+            {
+                async (step, cancellationToken) =>
+                {
+                    await step.Context.SendActivityAsync("step1");
+                    return Dialog.EndOfTurn;
+                },
+                async (step, cancellationToken) =>
+                {
+                    await step.Context.SendActivityAsync("step2");
+                    return Dialog.EndOfTurn;
+                },
+                async (step, cancellationToken) =>
+                {
+                    await step.Context.SendActivityAsync("step3");
+                    return Dialog.EndOfTurn;
+                },
+            };
+        }
 
         public class MyWaterfallDialog : WaterfallDialog
         {
             public MyWaterfallDialog(string id, IEnumerable<WaterfallStep> steps = null)
                 : base(id, steps)
             {
-                
-
             }
+
             public bool EndDialogCalled { get; set; } = false;
+
             public bool CancelDialogCalled { get; set; } = false;
-
-
 
             public override Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
             {
@@ -256,9 +277,9 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
                 {
                     CancelDialogCalled = true;
                 }
+
                 return base.EndDialogAsync(turnContext, instance, reason, cancellationToken);
             }
-
         }
     }
 }
