@@ -106,17 +106,20 @@ namespace Microsoft.Expressions.Tests
             Test("average(one, two, 3)", 2.0),
 
             //Date and time function test
-            //init dateTime: new DateTime(2000,1,1,8,0,0)
-            Test("addDays(dateTime, 1)", new DateTime(2000,1,2,8,0,0)),
-            Test("addHours(dateTime, 1)", new DateTime(2000,1,1,9,0,0)),
-            Test("addMinutes(dateTime, 1)", new DateTime(2000,1,1,8,1,0)),
-            Test("addSeconds(dateTime, 1)", new DateTime(2000,1,1,8,0,1)),
-            Test("dayOfMonth(dateTime)", 1),
-            Test("dayOfWeek(dateTime)", 6),//Saturday
-            Test("dayOfYear(dateTime)", 1),
-            Test("month(dateTime)", 1),
-            Test("date(dateTime)", new DateTime(2000,1,1)),
-            Test("year(dateTime)", 2000),
+            //init dateTime: 2018-03-15T13:00:00Z
+            Test("addDays(timestamp, 1)", "2018-03-16T13:00:00.0000000Z"),
+            Test("addDays(timestamp, 1,'g')", "3/16/2018 1:00 PM"),
+            Test("addDays(timestamp, 1,'MM-dd-yy')", "03-16-18"),
+            Test("addHours(timestamp, 1)", "2018-03-15T14:00:00.0000000Z"),
+            Test("addMinutes(timestamp, 1)", "2018-03-15T13:01:00.0000000Z"),
+            Test("addSeconds(timestamp, 1)", "2018-03-15T13:00:01.0000000Z"),
+            Test("dayOfMonth(timestamp)", 15),
+            Test("dayOfWeek(timestamp)", 4),//Thursday
+            Test("dayOfYear(timestamp)", 74),
+            Test("month(timestamp)", 3),
+            Test("date(timestamp)", "3/15/2018"),
+            Test("year(timestamp)", 2018),
+
 
             Test("!one", false),
             Test("!!one", true),
@@ -159,7 +162,7 @@ namespace Microsoft.Expressions.Tests
                     list = new[] { "red", "blue" }
                 },
                 items = new string[] { "zero", "one", "two" },
-                dateTime = new DateTime(2000, 1, 1, 8, 0, 0)
+                timestamp = "2018-03-15T13:00:00Z"
             };
 
             var parsed = ExpressionEngine.Parse(input);
@@ -189,7 +192,7 @@ namespace Microsoft.Expressions.Tests
                     list = new[] { "red", "blue" }
                 },
                 items = new string[] { "zero", "one", "two" },
-                dateTime = new DateTime(2000,1,1,8,0,0)
+                timestamp = "2018-03-15T13:00:00Z"
             };
 
             object actual = null;

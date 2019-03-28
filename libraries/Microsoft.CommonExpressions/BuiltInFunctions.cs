@@ -3,12 +3,19 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Linq;
+using System.Globalization;
 
 namespace Microsoft.Expressions
 {
 
     public static class BuildinFunctions
     {
+
+        /// <summary>
+        /// The default date time format string.
+        /// </summary>
+        private static readonly string DefaultDateTimeFormat = "o";
+
         public static EvaluationDelegate Add = operands =>
                 operands[0] is double double0 && operands[1] is double double1 ? double0 + double1 :
                 operands[0] is int int0 && operands[1] is int int1 ? (object)(int0 + int1) :
@@ -174,48 +181,109 @@ namespace Microsoft.Expressions
                         throw new ExpressionPropertyMissingException();
 
         //Date and time functions
-        
-        public static EvaluationDelegate AddDays = operands =>
-                       operands[0] is DateTime dateTime0 && operands[1] is int int0 ? dateTime0.AddDays(int0) :
-                       throw new ExpressionPropertyMissingException();
 
-        public static EvaluationDelegate AddHours = operands =>
-                      operands[0] is DateTime dateTime0 && operands[1] is int int0 ? dateTime0.AddHours(int0) :
-                      throw new ExpressionPropertyMissingException();
+        public static EvaluationDelegate AddDays = (IReadOnlyList<object> operands) =>
+        {
+            if(operands[0] is string string0 && operands[1] is int int0)
+            {
+                var formatString = operands.Count == 3 && operands[2] is string string1 
+                    ? string1 : DefaultDateTimeFormat;
 
-        public static EvaluationDelegate AddMinutes = operands =>
-                      operands[0] is DateTime dateTime0 && operands[1] is int int0 ? dateTime0.AddMinutes(int0) :
-                      throw new ExpressionPropertyMissingException();
+                var timestamp = ParseTimestamp(string0);
+                return timestamp.AddDays(int0).ToString(formatString);
+            }
 
-        public static EvaluationDelegate AddSeconds = operands =>
-                      operands[0] is DateTime dateTime0 && operands[1] is int int0 ? dateTime0.AddSeconds(int0) :
-                      throw new ExpressionPropertyMissingException();
+            throw new ExpressionPropertyMissingException();
+        };
+
+        public static EvaluationDelegate AddHours = (IReadOnlyList<object> operands) =>
+        {
+            if (operands[0] is string string0 && operands[1] is int int0)
+            {
+                var formatString = operands.Count == 3 && operands[2] is string string1
+                    ? string1 : DefaultDateTimeFormat;
+
+                var timestamp = ParseTimestamp(string0);
+                return timestamp.AddHours(int0).ToString(formatString);
+            }
+
+            throw new ExpressionPropertyMissingException();
+        };
+
+        public static EvaluationDelegate AddMinutes = (IReadOnlyList<object> operands) =>
+        {
+            if (operands[0] is string string0 && operands[1] is int int0)
+            {
+                var formatString = operands.Count == 3 && operands[2] is string string1
+                    ? string1 : DefaultDateTimeFormat;
+
+                var timestamp = ParseTimestamp(string0);
+                return timestamp.AddMinutes(int0).ToString(formatString);
+            }
+
+            throw new ExpressionPropertyMissingException();
+        };
+
+        public static EvaluationDelegate AddSeconds = (IReadOnlyList<object> operands) =>
+        {
+            if (operands[0] is string string0 && operands[1] is int int0)
+            {
+                var formatString = operands.Count == 3 && operands[2] is string string1
+                    ? string1 : DefaultDateTimeFormat;
+
+                var timestamp = ParseTimestamp(string0);
+                return timestamp.AddSeconds(int0).ToString(formatString);
+            }
+
+            throw new ExpressionPropertyMissingException();
+        };
 
         public static EvaluationDelegate DayOfMonth = operands =>
-                      operands[0] is DateTime dateTime0? dateTime0.Day :
+                      operands[0] is string string0? ParseTimestamp(string0).Day :
                       throw new ExpressionPropertyMissingException();
 
         public static EvaluationDelegate DayOfWeek = operands =>
-                      operands[0] is DateTime dateTime0 ? (int)dateTime0.DayOfWeek :
+                     operands[0] is string string0 ? (int)(ParseTimestamp(string0).DayOfWeek) :
                       throw new ExpressionPropertyMissingException();
 
         public static EvaluationDelegate DayOfYear = operands =>
-                      operands[0] is DateTime dateTime0 ? dateTime0.DayOfYear :
+                      operands[0] is string string0 ? ParseTimestamp(string0).DayOfYear :
                       throw new ExpressionPropertyMissingException();
 
         public static EvaluationDelegate Month = operands =>
-                      operands[0] is DateTime dateTime0 ? dateTime0.Month:
+                      operands[0] is string string0 ? ParseTimestamp(string0).Month:
                       throw new ExpressionPropertyMissingException();
 
         public static EvaluationDelegate Date = operands =>
-                      operands[0] is DateTime dateTime0 ? dateTime0.Date :
+                      operands[0] is string string0 ? ParseTimestamp(string0).Date.ToString("d"):
                       throw new ExpressionPropertyMissingException();
 
         public static EvaluationDelegate Year = operands =>
-                      operands[0] is DateTime dateTime0 ? dateTime0.Year :
+                       operands[0] is string string0 ? ParseTimestamp(string0).Year :
                       throw new ExpressionPropertyMissingException();
 
-        public static EvaluationDelegate UtcNow = (operands) =>
-                      DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        public static EvaluationDelegate UtcNow = (IReadOnlyList<object> operands) =>
+        {
+            var formatString = operands.Count == 1 && operands[0] is string string0
+                    ? string0 : DefaultDateTimeFormat;
+
+            return DateTime.UtcNow.ToString(formatString);
+        };
+
+
+
+        private static DateTime ParseTimestamp(string timeStamp)
+        {
+            if (!DateTime.TryParse(
+              s: timeStamp,
+              provider: CultureInfo.InvariantCulture,
+              styles: DateTimeStyles.RoundtripKind,
+              result: out var parsedTimestamp))
+            {
+                throw new ExpressionPropertyMissingException();
+            }
+
+            return parsedTimestamp;
+        }
     }
 }
