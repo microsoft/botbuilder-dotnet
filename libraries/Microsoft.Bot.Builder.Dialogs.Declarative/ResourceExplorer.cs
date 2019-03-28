@@ -90,9 +90,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
             }
 
             var packages = Path.GetFullPath("packages");
+            var relativePackagePath = Path.Combine(@"..", "packages");
             while (!Directory.Exists(packages) && Path.GetDirectoryName(packages) != Path.GetPathRoot(packages))
             {
-                packages = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(packages), @"..\packages"));
+                packages = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(packages), relativePackagePath));
                 if (packages == null)
                 {
                     throw new ArgumentNullException("Can't find packages folder");
