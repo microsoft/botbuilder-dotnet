@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
     {
         public readonly EvaluationContext Context;
 
-        private IExpressionParser _expressionParser;
+        private readonly IExpressionParser _expressionParser;
 
         private Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
         private EvaluationTarget CurrentTarget()
@@ -147,6 +147,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             exp = exp.TrimStart('{').TrimEnd('}');
             var parse = _expressionParser.Parse(exp);
             var references = new HashSet<string>();
+            // Extend the expression reference walk so that when a string is encountered it is evaluated as
+            // a {expression} or [template] and expanded.
             var path = Microsoft.Bot.Builder.Expressions.Extensions.ReferenceWalk(parse, references,
                 (expression) =>
                 {
