@@ -10,6 +10,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Rules;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Recognizers.Text;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
@@ -24,8 +25,9 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         
         public TestBot(TestBotAccessors accessors, IBotResourceProvider resourceProvider)
         {
+            rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\EmailBot\EmailBot.main.dialog"), resourceProvider);
             //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning - ToDoBot\ToDoBot.main.dialog"), resourceProvider);
-            rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning - ToDoLuisBot\ToDoLuisBot.main.dialog"), resourceProvider);
+            //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning - ToDoLuisBot\ToDoLuisBot.main.dialog"), resourceProvider);
             //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\RootDialog\RootDialog.main.dialog"), resourceProvider);
             //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 1 - DefaultRule\DefaultRule.main.dialog"), resourceProvider);
             //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 2 - WaitForInput\WaitForInput.main.dialog"), resourceProvider);
@@ -35,7 +37,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 6 - DoSteps\DoSteps.main.dialog"), resourceProvider);
             //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 7 - CallDialog\CallDialog.main.dialog"), resourceProvider);
             //rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.dialog"), resourceProvider);
-
             _dialogs = new DialogSet(accessors.ConversationDialogState);
             _dialogs.Add(rootDialog);
         }

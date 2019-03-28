@@ -1,0 +1,90 @@
+{
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "rules": [
+        {
+            "$type": "Microsoft.DefaultRule",
+            "steps": [
+                {
+                    "$type": "Microsoft.IfProperty",
+                    "expression": "dialog.subject == null",
+                    "ifTrue": [
+                        {
+                            "$type": "Microsoft.TextPrompt",
+                            "initialPrompt": "OK, please enter the subject of your email.",
+                            "property": "dialog.subject"
+                        }
+                    ]
+                },
+                {
+                    "$type": "Microsoft.IfProperty",
+                    "expression": "dialog.body == null",
+                    "ifTrue": [
+                        {
+                            "$type": "Microsoft.TextPrompt",
+                            "initialPrompt": "OK, please enter the body of your email.",
+                            "property": "dialog.body"
+                        }
+                    ]
+                },
+
+                {
+                    "$type": "Microsoft.IfProperty",
+                    "expression": "dialog.email == null",
+                    "ifTrue": [
+                        {
+                            "$type": "Microsoft.TextPrompt",
+                            "initialPrompt": "OK, please enter the recipient email address.",
+                            "property": "dialog.email"
+                        }
+                    ]
+                },
+
+                {
+                    "$type": "Microsoft.IfProperty",
+                    "expression": "dialog.token == null",
+                    "ifTrue": [
+                        {
+                            "$type": "Microsoft.OAuthPrompt",
+                            "ConnectionName": "msgraph",
+                            "Title": "Log in",
+                            "Text": "Please log in to your email account",
+                            "Property": "dialog.token"
+                        }
+                    ]
+                },
+
+                {
+                    "$type": "Microsoft.HttpRequest",
+                    "url": "https://graph.microsoft.com/v1.0/me/sendMail",
+                    "method": "POST",
+                    "header": {
+                        "Authorization": "Bearer {dialog.token.token}"
+                    },
+                    "body": {
+                        "message": {
+                            "body": {
+                                "content": "{dialog.body}",
+                                "contentType": "Text"
+                            },
+                            "subject": "{dialog.subject}",
+                            "toRecipients": [
+                                {
+                                    "emailAddress": {
+                                        "address": "{dialog.email}"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "Property": "dialog.postResponse"
+                },
+
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Your email has been sent succsessfully"
+                }
+            ]
+        }
+    ]
+}

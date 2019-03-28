@@ -1,0 +1,41 @@
+{
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "rules": [
+        {
+            "$type": "Microsoft.DefaultRule",
+            "steps": [
+                {
+                    "$type": "Microsoft.IfProperty",
+                    "expression": "user.token == null",
+                    "ifTrue": [
+                        {
+                            "$type": "Microsoft.OAuthPrompt",
+                            "ConnectionName": "msgraph",
+                            "Title": "Log in",
+                            "Text": "Please log in to your email account",
+                            "Property": "dialog.token"
+                        }
+                    ]
+                },
+                {
+                    "$type": "Microsoft.HttpRequest",
+                    "url": "https://graph.microsoft.com/v1.0/me/messages",
+                    "method": "GET",
+                    "header": {
+                        "Authorization": "Bearer {dialog.token.token}"
+                    },
+                    "Property": "dialog.getResponse"
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Here is your latest email subject: {dialog.getResponse.value[0].subject}"
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "which is from: {dialog.getResponse.value[0].sender.emailAddress.address}"
+                }
+            ]
+        }
+    ]
+}
