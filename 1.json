@@ -1,0 +1,4 @@
+{
+  "issues": "Compat issues with assembly Microsoft.Bot.Builder:\r\nMembersMustExist : Member 'Microsoft.Bot.Builder.BotFrameworkAdapter.GetAadTokensAsync(Microsoft.Bot.Builder.ITurnContext, System.String, System.String[], System.String)' does not exist in the implementation but it does exist in the contract.\r\nMembersMustExist : Member 'Microsoft.Bot.Builder.BotFrameworkAdapter.GetTokenStatusAsync(Microsoft.Bot.Builder.ITurnContext, System.String, System.String)' does not exist in the implementation but it does exist in the contract.\r\nInterfacesShouldHaveSameMembers : Interface member 'Microsoft.Bot.Builder.Integration.IAdapterIntegration.ContinueConversationAsync(System.String, Microsoft.Bot.Schema.ConversationReference, Microsoft.Bot.Builder.BotCallbackHandler, System.Threading.CancellationToken)' is present in the implementation but not in the contract.\r",
+  "body": 3
+}
