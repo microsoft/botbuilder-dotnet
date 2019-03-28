@@ -39,4 +39,13 @@
 		<ProjectReference Include="..\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Reference Include="Microsoft.Bot.Protocol">
+	    <HintPath>..\..\..\Intercom\Microsoft.DirectLineFlex\Microsoft.Bot.Protocol\bin\Debug\netcoreapp2.2\Microsoft.Bot.Protocol.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Microsoft.Bot.Protocol.WebSockets">
+	    <HintPath>..\..\..\Intercom\Microsoft.DirectLineFlex\Microsoft.Bot.Protocol.WebSockets\bin\Debug\netcoreapp2.2\Microsoft.Bot.Protocol.WebSockets.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+
 </Project>
