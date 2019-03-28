@@ -48,11 +48,6 @@ namespace Microsoft.Bot.Connector.Authentication
         public const string EmulateOAuthCardsKey = "EmulateOAuthCards";
 
         /// <summary>
-        /// Application Setting Key for which tenant to obtain an access token from for bot to channel communication
-        /// </summary>
-        public const string ChannelAuthTenantKey = "ChannelAuthTenant";
-
-        /// <summary>
         /// TO BOT FROM CHANNEL: OpenID metadata document for tokens coming from MSA
         /// </summary>
         public const string ToBotFromChannelOpenIdMetadataUrl = "https://login.botframework.com/v1/.well-known/openidconfiguration";
