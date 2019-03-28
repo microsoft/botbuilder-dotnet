@@ -119,6 +119,25 @@ namespace Microsoft.Expressions.Tests
             Test("month(timestamp)", 3),
             Test("date(timestamp)", "3/15/2018"),
             Test("year(timestamp)", 2018),
+            Test("formatDateTime(timestamp)", "2018-03-15T13:00:00.0000000Z"),
+            Test("formatDateTime(timestamp, 'g')", "3/15/2018 1:00 PM"),
+            Test("formatDateTime(timestamp, 'MM-dd-yy')", "03-15-18"),
+            Test("subtractFromTime(timestamp, 1, 'Day')", "2018-03-14T13:00:00.0000000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Day','g')", "3/14/2018 1:00 PM"),
+            Test("dateReadBack(timestamp, addDays(timestamp, 1))", "Tomorrow"),
+            Test("dateReadBack(timestamp, addDays(timestamp, 2))", "The day after tomorrow"),
+            Test("dateReadBack(addDays(timestamp, 1),timestamp))", "Yesterday"),
+            Test("dateReadBack(addDays(timestamp, 2),timestamp))", "The day before yesterday"),
+            Test("getTimeOfDay('2018-03-15T00:00:00Z')", "midnight"),
+            Test("getTimeOfDay('2018-03-15T08:00:00Z')", "morning"),
+            Test("getTimeOfDay('2018-03-15T12:00:00Z')", "noon"),
+            Test("getTimeOfDay('2018-03-15T13:00:00Z')", "afternoon"),
+            Test("getTimeOfDay('2018-03-15T18:00:00Z')", "evening"),
+            Test("getTimeOfDay('2018-03-15T22:00:00Z')", "evening"),
+            Test("getTimeOfDay('2018-03-15T23:00:00Z')", "night"),
+
+            //Conversion functions test
+            Test("float('10.333')", 10.333f),
 
 
             Test("!one", false),
