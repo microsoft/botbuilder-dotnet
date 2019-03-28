@@ -14,6 +14,7 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.TestBot.Json.Recognizers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Debugger;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -68,7 +69,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 (IServiceProvider sp) =>
                 {
                     // declarative Adaptive dialogs bot sample
-                    return new TestBot(accessors, resourceExplorer);
+                    return new TestBot(accessors, resourceExplorer, Source.NullRegistry.Instance);
 
                     // LG bot sample
                     // return new TestBotLG(accessors);

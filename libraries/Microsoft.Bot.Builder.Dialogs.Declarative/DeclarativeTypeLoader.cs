@@ -1,8 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Debugger;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
@@ -16,21 +19,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
 {
     public static class DeclarativeTypeLoader
     {
-        public static T Load<T>(string json, ResourceExplorer resourceExplorer)
+        public static T Load<T>(string json, ResourceExplorer resourceExplorer, Source.IRegistry registry)
         {
-            IRefResolver refResolver = new IdRefResolver(resourceExplorer);
+            IRefResolver refResolver = new IdRefResolver(resourceExplorer, registry);
 
-            var cog = JsonConvert.DeserializeObject<T>(
+            var paths = new Stack<string>();
+            paths.Push(path);
+
+            var json = File.ReadAllText(path);
+
+            var dialog = JsonConvert.DeserializeObject<T>(
                 json, new JsonSerializerSettings()
                 {
                     SerializationBinder = new UriTypeBinder(),
                     TypeNameHandling = TypeNameHandling.Auto,
                     Converters = new List<JsonConverter>()
                     {
-                        new InterfaceConverter<IDialog>(refResolver),
-                        new InterfaceConverter<IRule>(refResolver),
-                        new InterfaceConverter<IStorage>(refResolver),
-                        new InterfaceConverter<IRecognizer>(refResolver),
+                        new InterfaceConverter<IDialog>(refResolver, registry, paths),
+                        new InterfaceConverter<IRule>(refResolver, registry, paths),
+                        new InterfaceConverter<IStorage>(refResolver, registry, paths),
+                        new InterfaceConverter<IRecognizer>(refResolver, registry, paths),
                         new ExpressionConverter(),
                         new ActivityConverter(),
                         new ActivityTemplateConverter()
@@ -44,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                         NamingStrategy = new CamelCaseNamingStrategy()
                     }
                 });
-            return cog;
+            return dialog;
         }
 
         /// <summary>

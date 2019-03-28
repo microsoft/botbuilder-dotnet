@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Debugger;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Json.Pointer;
 using Newtonsoft.Json.Linq;
@@ -16,10 +17,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
 
         private readonly JToken rootDocument;
         private readonly ResourceExplorer resourceExplorer;
+        private readonly Source.IRegistry registry;
 
-        public IdRefResolver(ResourceExplorer resourceExplorer, JToken rootDocument = null)
+        public IdRefResolver(ResourceExplorer resourceExplorer, Source.IRegistry registry, JToken rootDocument = null)
         {
             this.resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer));
+            this.registry = registry;
             this.rootDocument = rootDocument;
         }
 
@@ -38,9 +41,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
             }
 
             var targetFragments = refTarget.Split('#');
-
-            string jsonFile;
-            string jsonPointer = null;
 
             var dialogResources = resourceExplorer.GetResources("dialog").ToArray();
             var refResources = dialogResources?.Where(r => Path.GetFileNameWithoutExtension(r.Name) == targetFragments[0]).ToList();
@@ -61,7 +61,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
 
                 throw new Exception();
             }
-            var text = File.ReadAllText(refResources.First().FullName);
+            var file = refResources.Single();
+            var text = File.ReadAllText(file.FullName);
             var json = JToken.Parse(text);
 
             foreach (JProperty prop in refToken.Children<JProperty>())
@@ -87,6 +88,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
                     }
                 }
             }
+
+            // if we have a source path for the resource, then make it available to InterfaceConverter
+            registry.Add(json, new Source.Range() { Path = file.FullName });
 
             return json;
         }

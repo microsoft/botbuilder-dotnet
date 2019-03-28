@@ -2,15 +2,18 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Debugger;
 using Microsoft.Bot.Builder.Dialogs.Rules;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -24,7 +27,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
         private TestBotAccessors accessors;
 
-        public TestBot(TestBotAccessors accessors, ResourceExplorer resourceExplorer)
+        public TestBot(TestBotAccessors accessors, ResourceExplorer resourceExplorer, Source.IRegistry registry)
         {
             this.accessors = accessors;
             this.resourceExplorer = resourceExplorer;
@@ -55,7 +58,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             //var rootFile = resourceExplorer.GetResource("CallDialog.main.dialog");
             //var rootFile = resourceExplorer.GetResource("ExternalLanguage.main.dialog");
 
-            rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(rootFile.FullName), resourceExplorer);
+            rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(rootFile.FullName), resourceExplorer, registry);
             _dialogs = new DialogSet(accessors.ConversationDialogState);
             _dialogs.Add(rootDialog);
         }
