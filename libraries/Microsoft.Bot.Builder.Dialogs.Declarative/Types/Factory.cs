@@ -134,6 +134,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.TextPrompt", typeof(TextPrompt));
             Register("Microsoft.IntegerPrompt", typeof(IntegerPrompt));
             Register("Microsoft.FloatPrompt", typeof(FloatPrompt));
+            Register("Microsoft.ConfirmPrompt", typeof(ConfirmPrompt));
 
             // Recognizers
             Register("Microsoft.LuisRecognizer", typeof(LuisRecognizer), new LuisRecognizerLoader(TypeFactory.Configuration));
