@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder
         {
             if (string.IsNullOrWhiteSpace(botAppId))
             {
-                botAppId = this._credentialProvider.AppId;
+                botAppId = HasAppId(this._credentialProvider);
 
                 if (string.IsNullOrWhiteSpace(botAppId))
                 {
@@ -934,6 +934,25 @@ namespace Microsoft.Bot.Builder
                 new MicrosoftAppCredentials(appId, appPassword, _httpClient);
             _appCredentialMap[appId] = appCredentials;
             return appCredentials;
+        }
+
+        /// <summary>
+        /// Looks for the AppId property in the Credential Provider.
+        /// </summary>
+        /// <param name="credentialProvider">The Adapter's Credential Provider.</param>
+        /// <returns>AppId in case it exists.</returns>
+        private string HasAppId(ICredentialProvider credentialProvider)
+        {
+            var property = credentialProvider.GetType().GetProperty("AppId");
+
+            if (property is null)
+            {
+                return string.Empty;
+            }
+
+            var value = property.GetValue(credentialProvider);
+
+            return value != null ? value.ToString() : string.Empty;
         }
     }
 }
