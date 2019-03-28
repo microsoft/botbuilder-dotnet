@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Tests.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Plugins;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using System.Collections.Generic;
@@ -233,23 +233,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         private TestFlow BuildTestFlow(string path)
         {
             string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, $@"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj"));
-            var botResourceManager = new BotResourceManager()
-               // add current folder, it's project file, packages, projects, etc.
-               .AddProjectResources(projPath);
+            var resourceExplorer = ResourceExplorer.LoadProject(projPath);
 
-            var dialog = DeclarativeTypeLoader.Load<IDialog>(path, botResourceManager, Source.NullRegistry.Instance);
+            var dialog = DeclarativeTypeLoader.Load<IDialog>(path, resourceExplorer, Source.NullRegistry.Instance);
 
             IStorage dataStore = new MemoryStorage();
 
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var lg = new LGLanguageGenerator(botResourceManager);
+            var lg = new LGLanguageGenerator(resourceExplorer);
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()))
                 .Use(new AutoSaveStateMiddleware(convoState))
-                .Use(new RegisterClassMiddleware<IBotResourceProvider>(botResourceManager))
+                .Use(new RegisterClassMiddleware<ResourceExplorer>(resourceExplorer))
                 .Use(new RegisterClassMiddleware<ILanguageGenerator>(lg))
                 .Use(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)))
                 .Use(new RegisterClassMiddleware<IStorage>(dataStore));

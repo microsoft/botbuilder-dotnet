@@ -4,12 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Debugger;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Rules;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
@@ -21,25 +21,47 @@ namespace Microsoft.Bot.Builder.TestBot.Json
     {
         private DialogSet _dialogs;
 
-        private readonly IDialog rootDialog;
-        
-        public TestBot(TestBotAccessors accessors, IBotResourceProvider resourceProvider, Source.IRegistry registry)
+        private IDialog rootDialog;
+
+        private readonly ResourceExplorer resourceExplorer;
+
+        private TestBotAccessors accessors;
+
+        private Source.IRegistry registry;
+
+        public TestBot(TestBotAccessors accessors, ResourceExplorer resourceExplorer, Source.IRegistry registry)
         {
-            const string path =
-            @"Samples\Planning - ToDoBot\ToDoBot.main.dialog";
-            //@"Samples\Planning - ToDoLuisBot\ToDoLuisBot.main.dialog";
-            //@"Samples\RootDialog\RootDialog.main.dialog";
-            //@"Samples\Planning 1 - DefaultRule\DefaultRule.main.dialog";
-            //@"Samples\Planning 2 - WaitForInput\WaitForInput.main.dialog";
-            //@"Samples\Planning 3 - IfProperty\IfProperty.main.dialog";
-            //@"Samples\Planning 4 - TextPrompt\TextPrompt.main.dialog";
-            //@"Samples\Planning 5 - WelcomeRule\WelcomeRule.main.dialog";
-            //@"Samples\Planning 6 - DoSteps\DoSteps.main.dialog";
-            //@"Samples\Planning 7 - CallDialog\CallDialog.main.dialog";
-            //@"Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.dialog";
+            this.registry = registry;
+            this.accessors = accessors;
+            this.resourceExplorer = resourceExplorer;
+            this.resourceExplorer.Changed += ResourceExplorer_Changed;
+            this.resourceExplorer.Deleted += ResourceExplorer_Changed;
 
-            rootDialog = DeclarativeTypeLoader.Load<IDialog>(Path.GetFullPath(path), resourceProvider, registry);
+            LoadRootDialog();
+        }
 
+        private void ResourceExplorer_Changed(object sender, FileSystemEventArgs e)
+        {
+            if (Path.GetExtension(e.FullPath) == ".dialog")
+            {
+                LoadRootDialog();
+            }
+        }
+
+        private void LoadRootDialog()
+        {
+            var rootFile = resourceExplorer.GetResource(@"ToDoBot.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("ToDoLuisBot.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("DefaultRule.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("WaitForInput.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("IfProperty.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("TextPrompt.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("WelcomeRule.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("DoSteps.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("CallDialog.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("ExternalLanguage.main.dialog");
+
+            rootDialog = DeclarativeTypeLoader.Load<IDialog>(rootFile.FullName, resourceExplorer, registry);
             _dialogs = new DialogSet(accessors.ConversationDialogState);
             _dialogs.Add(rootDialog);
         }
