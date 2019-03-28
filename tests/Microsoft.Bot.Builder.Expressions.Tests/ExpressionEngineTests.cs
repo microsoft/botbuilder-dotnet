@@ -29,6 +29,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 //            Test("bag.list[bag.index - 2] + 'more'", "bluemore", new HashSet<string> {"bag.list", "bag.index" }),
             Test("min(1.0, two) + max(one, 2.0)", 3.0, new HashSet<string>{ "two", "one" }),
 
+            // Multiple arg tests
+            Test("and(1 == 1, 1 < 2, 1 > 2)", false),
+            Test("add(1, 2, 3)", 6),
+
             // operator as functions tests
             Test("add(1, 2)", 3),
             Test("add(1.0, 2.0)", 3.0),

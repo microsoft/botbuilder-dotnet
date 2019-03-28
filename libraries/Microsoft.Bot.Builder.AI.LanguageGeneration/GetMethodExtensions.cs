@@ -33,15 +33,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             switch (name)
             {
                 case "count":
-                    return new ExpressionEvaluator((expression, state) => BuiltInFunctions.Apply(this.Count, expression, state));
+                    return new ExpressionEvaluator(BuiltInFunctions.Apply(this.Count));
                 case "join":
-                    return new ExpressionEvaluator((expression, state) => BuiltInFunctions.Apply(this.Join, expression, state));
+                    return new ExpressionEvaluator(BuiltInFunctions.Apply(this.Join));
                 case "foreach":
                 case "map":
-                    return new ExpressionEvaluator((expression, state) => BuiltInFunctions.Apply(this.Foreach, expression, state));
+                    return new ExpressionEvaluator(BuiltInFunctions.Apply(this.Foreach));
                 case "mapjoin":
                 case "humanize":
-                    return new ExpressionEvaluator((expression, state) => BuiltInFunctions.Apply(this.ForeachThenJoin, expression, state));
+                    return new ExpressionEvaluator(BuiltInFunctions.Apply(this.ForeachThenJoin));
             }
             return BuiltInFunctions.Lookup(name);
         }

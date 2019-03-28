@@ -4,11 +4,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Expressions
 {
     public static partial class Extensions
     {
+        /// <summary>
+        /// Test an object to see if it is a numeric type.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <returns>True if numeric type.</returns>
         public static bool IsNumber(this object value)
         {
             return value is sbyte
@@ -29,9 +35,9 @@ namespace Microsoft.Bot.Builder.Expressions
         /// </summary>
         /// <remarks>
         /// Return all static paths to memory.  If there is a computed element index, then the path is terminated there, 
-        /// but you might get paths from the computed part as well.
+        /// but you might get other paths from the computed part as well.
         /// </remarks>
-        /// <param name="expression">Expresion to get references from.</param>
+        /// <param name="expression">Expression to get references from.</param>
         /// <returns>Hash set of the static reference paths.</returns>
         public static IReadOnlyList<string> References(this Expression expression)
         {
@@ -44,6 +50,13 @@ namespace Microsoft.Bot.Builder.Expressions
             return references.ToList();
         }
 
+        /// <summary>
+        /// Walking function for identifying static memory references in an expression.
+        /// </summary>
+        /// <param name="expression">Expression to analyze.</param>
+        /// <param name="references">Tracking for references found.</param>
+        /// <param name="extension">If present, called to override lookup for things like template expansion.</param>
+        /// <returns>Accessor path of expression.</returns>
         public static string ReferenceWalk(Expression expression, HashSet<string> references, Func<Expression, bool> extension = null)
         {
             string path = null;
@@ -96,6 +109,13 @@ namespace Microsoft.Bot.Builder.Expressions
 
         private static Type[] _string = new Type[] { typeof(string) };
 
+        /// <summary>
+        /// Lookup a property in IDictionary, JObject or through reflection.
+        /// </summary>
+        /// <param name="instance">Instance with property.</param>
+        /// <param name="property">Property to lookup.</param>
+        /// <param name="expression">Expression that generated instance.</param>
+        /// <returns>Value and error information if any.</returns>
         public static (object value, string error) AccessProperty(this object instance, string property, Expression expression = null)
         {
             // NOTE: This returns null rather than an error if property is not present
@@ -114,6 +134,20 @@ namespace Microsoft.Bot.Builder.Expressions
                         value = dict[property];
                     }
                 }
+                else if (instance is JObject jobj)
+                {
+                    if (jobj.TryGetValue(property, out JToken jtoken))
+                    {
+                        if (jtoken is JArray jarray)
+                        {
+                            value = jarray.ToArray<object>();
+                        }
+                        else if (jtoken is JValue jvalue)
+                        {
+                            value = jvalue.Value;
+                        }
+                    }
+                }
                 else
                 {
                     // Use reflection
@@ -122,15 +156,6 @@ namespace Microsoft.Bot.Builder.Expressions
                     if (prop != null)
                     {
                         value = prop.GetValue(instance);
-                    }
-                    else
-                    {
-                        // This will work on JSON objects
-                        var indexer = type.GetProperty("Item", _string);
-                        if (indexer != null)
-                        {
-                            value = indexer.GetValue(instance, new object[] { property });
-                        }
                     }
                 }
             }

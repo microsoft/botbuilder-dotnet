@@ -6,17 +6,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Expressions
 {
+    /// <summary>
+    /// Definition of default built-in functions for expressions.
+    /// </summary>
     public static class BuiltInFunctions
     {
-        // Validators
-        public static void ValidateArityAndType(Expression expression, int arity, params ExpressionReturnType[] types)
+        // Validators do static validation of expressions
+
+        /// <summary>
+        /// Validate that expression has a certain number of children that are of any of the supported types.
+        /// </summary>
+        /// <remarks>
+        /// If a child has a return type of Object then validation will happen at runtime.</remarks>
+        /// <param name="expression">Expression to validate.</param>
+        /// <param name="minArity">Minimum number of children.</param>
+        /// <param name="maxArity">Maximum number of children.</param>
+        /// <param name="types">Allowed return types for children.</param>
+        public static void ValidateArityAndAnyType(Expression expression, int minArity, int maxArity, params ExpressionReturnType[] types)
         {
-            if (arity != -1 && expression.Children.Length != arity)
+            if (expression.Children.Length < minArity)
             {
-                throw new ArgumentException($"{expression} should have {arity} children.");
+                throw new ArgumentException($"{expression} should have at least {minArity} children.");
+            }
+            if (expression.Children.Length > maxArity)
+            {
+                throw new ArgumentException($"{expression} can't have more than {maxArity} children.");
             }
             foreach (var child in expression.Children)
             {
@@ -50,6 +68,11 @@ namespace Microsoft.Bot.Builder.Expressions
             }
         }
 
+        /// <summary>
+        /// Validate the number and type of arguments to a function.
+        /// </summary>
+        /// <param name="expression">Expression to validate.</param>
+        /// <param name="types">Expected types in order.</param>
         public static void ValidateOrder(Expression expression, params ExpressionReturnType[] types)
         {
             if (expression.Children.Length != types.Count())
@@ -67,25 +90,35 @@ namespace Microsoft.Bot.Builder.Expressions
             }
         }
 
-        public static void ValidateBinaryNumber(Expression expression)
-            => ValidateArityAndType(expression, 2, ExpressionReturnType.Number);
+        /// <summary>
+        /// Validate 1 or more numeric arguments.
+        /// </summary>
+        /// <param name="expression">Expression to validate.</param>
+        public static void ValidateNumber(Expression expression)
+            => ValidateArityAndAnyType(expression, 1, int.MaxValue, ExpressionReturnType.Number);
 
-        public static void ValidateBinaryNumberOrString(Expression expression)
-            => ValidateArityAndType(expression, 2, ExpressionReturnType.Number, ExpressionReturnType.String);
-
-        public static void ValidateUnary(Expression expression)
-            => ValidateArityAndType(expression, 1, ExpressionReturnType.Object);
-
+        /// <summary>
+        /// Validate 1 or more boolean arguments.
+        /// </summary>
+        /// <param name="expression">Expression to validate.</param>
         public static void ValidateBoolean(Expression expression)
-            => ValidateArityAndType(expression, -1, ExpressionReturnType.Boolean);
+            => ValidateArityAndAnyType(expression, 1, int.MaxValue, ExpressionReturnType.Boolean);
 
-        // Verifiers
+        /// <summary>
+        /// Validate there are 2 numeric or string arguments.
+        /// </summary>
+        /// <param name="expression">Expression to validate.</param>
+        public static void ValidateBinaryNumberOrString(Expression expression)
+            => ValidateArityAndAnyType(expression, 2, 2, ExpressionReturnType.Number, ExpressionReturnType.String);
 
-        public static string NoVerify(object value, Expression expression)
-        {
-            return null;
-        }
+        // Verifiers do runtime error checking of expression evaluation
 
+        /// <summary>
+        /// Verify value is numeric.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <param name="expression">Expression that led to value.</param>
+        /// <returns>Error or null if valid.</returns>
         public static string VerifyNumber(object value, Expression expression)
         {
             string error = null;
@@ -96,16 +129,28 @@ namespace Microsoft.Bot.Builder.Expressions
             return error;
         }
 
+        /// <summary>
+        /// Verify value is a number or string.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <param name="expression">Expression that led to value.</param>
+        /// <returns>Error or null if valid.</returns>
         public static string VerifyNumberOrString(object value, Expression expression)
         {
             string error = null;
-            if (!value.IsNumber() && !(value is string))
+            if (value != null && !value.IsNumber() && !(value is string))
             {
                 error = $"{expression} is not string or number.";
             }
             return error;
         }
 
+        /// <summary>
+        /// Verify value is boolean.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <param name="expression">Expression that led to value.</param>
+        /// <returns>Error or null if valid.</returns>
         public static string VerifyBoolean(object value, Expression expression)
         {
             string error = null;
@@ -116,40 +161,88 @@ namespace Microsoft.Bot.Builder.Expressions
             return error;
         }
 
-        // Apply
-        public static (object value, string error) Apply(
-            Func<IReadOnlyList<dynamic>, object> function,
-            Expression expression,
-            object state,
-            Func<object, Expression, string> verify = null)
-        {
-            object value = null;
-            string error = null;
-            var args = new List<dynamic>();
-            foreach (var child in expression.Children)
-            {
-                (value, error) = child.TryEvaluate(state);
-                if (error != null)
-                {
-                    break;
-                }
-                if (verify != null)
-                {
-                    error = verify(value, child);
-                }
-                if (error != null)
-                {
-                    break;
-                }
-                args.Add(value);
-            }
-            if (error == null)
-            {
-                value = function(args);
-            }
-            return (value, error);
-        }
+        // Apply -- these are helpers for adding functions to the expression library.
 
+        /// <summary>
+        /// Generate an expression delegate that applies function after verifying all children.
+        /// </summary>
+        /// <param name="function">Function to apply.</param>
+        /// <param name="verify">Function to check each arg for validity.</param>
+        /// <returns>Delegate for evaluating an expression.</returns>
+        public static EvaluateExpressionDelegate Apply(Func<IReadOnlyList<dynamic>, object> function, Func<object, Expression, string> verify = null)
+            =>
+            (expression, state) =>
+            {
+                object value = null;
+                string error = null;
+                var args = new List<dynamic>();
+                foreach (var child in expression.Children)
+                {
+                    (value, error) = child.TryEvaluate(state);
+                    if (error != null)
+                    {
+                        break;
+                    }
+                    if (verify != null)
+                    {
+                        error = verify(value, child);
+                    }
+                    if (error != null)
+                    {
+                        break;
+                    }
+                    args.Add(value);
+                }
+                if (error == null)
+                {
+                    value = function(args);
+                }
+                return (value, error);
+            };
+
+
+        /// <summary>
+        /// Generate an expression delegate that applies function on the accumulated value after verifying all children.
+        /// </summary>
+        /// <param name="function">Function to apply.</param>
+        /// <param name="verify">Function to check each arg for validity.</param>
+        /// <returns>Delegate for evaluating an expression.</returns>
+        public static EvaluateExpressionDelegate ApplySequence(Func<IReadOnlyList<dynamic>, object> function, Func<object, Expression, string> verify = null)
+            => Apply(
+                (args) =>
+                {
+                    var binaryArgs = new List<object> { null, null };
+                    var soFar = args[0];
+                    for (var i = 1; i < args.Count; ++i)
+                    {
+                        binaryArgs[0] = soFar;
+                        binaryArgs[1] = args[i];
+                        soFar = function(binaryArgs);
+                    }
+                    return soFar;
+                }, verify);
+
+        /// <summary>
+        /// Numeric operators that can have 1 or more args.
+        /// </summary>
+        /// <param name="function">Function to apply.</param>
+        /// <returns>Delegate for evaluating an expression.</returns>
+        public static ExpressionEvaluator Numeric(Func<IReadOnlyList<dynamic>, object> function)
+            => new ExpressionEvaluator(ApplySequence(function, VerifyNumber), ExpressionReturnType.Number, ValidateNumber);
+
+        /// <summary>
+        /// Comparison operators that have 2 args and work over strings or numbers.
+        /// </summary>
+        /// <param name="function">Function to apply.</param>
+        /// <returns>Delegate for evaluating an expression.</returns>        
+        public static ExpressionEvaluator Comparison(Func<IReadOnlyList<dynamic>, object> function)
+            => new ExpressionEvaluator(Apply(function, VerifyNumberOrString), ExpressionReturnType.Boolean, ValidateBinaryNumberOrString);
+
+        /// <summary>
+        /// Lookup a built-in function information by type.
+        /// </summary>
+        /// <param name="type">Type to look up.</param>
+        /// <returns>Information about expression type.</returns>
         public static ExpressionEvaluator Lookup(string type)
         {
             if (!_functions.TryGetValue(type, out ExpressionEvaluator eval))
@@ -201,18 +294,19 @@ namespace Microsoft.Bot.Builder.Expressions
 
         private static (object value, string error) ExtractElement(Expression expression, object state)
         {
+            object value = null;
+            string error = null;
             var instance = expression.Children[0];
             var index = expression.Children[1];
-            object value;
-            string error = null;
-            (value, error) = instance.TryEvaluate(state);
+            object inst;
+            (inst, error) = instance.TryEvaluate(state);
             if (error == null)
             {
-                var inst = value;
-                (value, error) = index.TryEvaluate(state);
+                object idxValue;
+                (idxValue, error) = index.TryEvaluate(state);
                 if (error == null)
                 {
-                    if (value is int idx)
+                    if (idxValue is int idx)
                     {
                         int count = -1;
                         if (inst is Array arr)
@@ -231,6 +325,14 @@ namespace Microsoft.Bot.Builder.Expressions
                             {
                                 dynamic idyn = inst;
                                 value = idyn[idx];
+                                if (value is JArray jarray)
+                                {
+                                    value = jarray.ToArray<object>();
+                                }
+                                else if (value is JValue jvalue)
+                                {
+                                    value = jvalue.Value;
+                                }
                             }
                             else
                             {
@@ -312,60 +414,42 @@ namespace Microsoft.Bot.Builder.Expressions
             var functions = new Dictionary<string, ExpressionEvaluator>{
                 // Math
                 { ExpressionType.Element, new ExpressionEvaluator(ExtractElement, ExpressionReturnType.Object,
-                    (expr) => ValidateOrder(expr, ExpressionReturnType.Object, ExpressionReturnType.Number)) }
-                , { ExpressionType.Add,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] + args[1], expression, state, VerifyNumber),
-                        ExpressionReturnType.Object, ValidateBinaryNumber) }
-                , {ExpressionType.Subtract,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] - args[1], expression, state, VerifyNumber),
-                        ExpressionReturnType.Number, ValidateBinaryNumber) }
-                , {ExpressionType.Multiply,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] * args[1], expression, state, VerifyNumber),
-                        ExpressionReturnType.Number, ValidateBinaryNumber) }
-                , {ExpressionType.Divide,
-                    // TODO: Check for 0
-                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] / args[1], expression, state, VerifyNumber),
-                        ExpressionReturnType.Number, ValidateBinaryNumber) }
-                , {ExpressionType.Min,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => Math.Min(args[0], args[1]), expression, state, VerifyNumber),
-                        ExpressionReturnType.Number, ValidateBinaryNumber) }
-                , {ExpressionType.Max,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => Math.Max(args[0], args[1]), expression, state, VerifyNumber),
-                        ExpressionReturnType.Number, ValidateBinaryNumber) }
+                    (expr) => ValidateOrder(expr, ExpressionReturnType.Object, ExpressionReturnType.Number)) },
+                { ExpressionType.Add, Numeric((args) => args[0] + args[1]) },
+                {ExpressionType.Subtract, Numeric((args) => args[0] - args[1]) },
+                {ExpressionType.Multiply, Numeric((args) => args[0] * args[1]) },
+                {ExpressionType.Divide,
+                    new ExpressionEvaluator(ApplySequence((args) => args[0] / args[1],
+                    (value, expression) => {
+                        string error = VerifyNumber(value, expression);
+                        if (error == null && Convert.ToDouble(value) == 0.0)
+                        {
+                            error = $"Cannot divide by 0 from {expression}";
+                        }
+                        return error;
+                    }), ExpressionReturnType.Number, ValidateNumber) },
+                 {ExpressionType.Min, Numeric((args) => Math.Min(args[0], args[1])) },
+                 {ExpressionType.Max, Numeric((args) => Math.Max(args[0], args[1])) },
 
                 // Comparisons
-                , {ExpressionType.LessThan,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] < args[1], expression, state, NoVerify),
-                        ExpressionReturnType.Boolean, ValidateBinaryNumberOrString) }
-                , {ExpressionType.LessThanOrEqual,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] <= args[1], expression, state, NoVerify),
-                        ExpressionReturnType.Boolean, ValidateBinaryNumberOrString) }
-                , {ExpressionType.Equal,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] == args[1], expression, state, NoVerify),
-                        ExpressionReturnType.Boolean, ValidateBinaryNumberOrString) }
-                , {ExpressionType.NotEqual,
-                     new ExpressionEvaluator((expression, state) => Apply((args) => args[0] != args[1], expression, state, NoVerify),
-                        ExpressionReturnType.Boolean, ValidateBinaryNumberOrString) }
-                , {ExpressionType.GreaterThan,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] > args[1], expression, state, NoVerify),
-                        ExpressionReturnType.Boolean, ValidateBinaryNumberOrString) }
-                , {ExpressionType.GreaterThanOrEqual,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => args[0] >= args[1], expression, state, NoVerify),
-                        ExpressionReturnType.Boolean, ValidateBinaryNumberOrString) }
+                {ExpressionType.LessThan, Comparison((args) => args[0] < args[1]) },
+                {ExpressionType.LessThanOrEqual, Comparison((args) => args[0] <= args[1]) },
+                {ExpressionType.Equal, Comparison((args) => args[0] == args[1]) },
+                {ExpressionType.NotEqual, Comparison((args) => args[0] != args[1]) },
+                {ExpressionType.GreaterThan,Comparison((args) => args[0] > args[1]) },
+                {ExpressionType.GreaterThanOrEqual, Comparison((args) => args[0] >= args[1]) },
 
                 // Logical
-                , {ExpressionType.And,
-                    new ExpressionEvaluator((expression, state) => And(expression, state),
-                        ExpressionReturnType.Boolean, ValidateBoolean) }
-                , {ExpressionType.Or,
-                    new ExpressionEvaluator((expression, state) => Or(expression, state),
-                        ExpressionReturnType.Boolean, ValidateBoolean) }
-                , {ExpressionType.Not,
-                    new ExpressionEvaluator((expression, state) => Apply((args) => !args[0], expression, state, VerifyBoolean),
-                        ExpressionReturnType.Boolean, (expression) => ValidateOrder(expression, ExpressionReturnType.Boolean)) }
+                {ExpressionType.And,
+                    new ExpressionEvaluator((expression, state) => And(expression, state), ExpressionReturnType.Boolean, ValidateBoolean) },
+                {ExpressionType.Or,
+                    new ExpressionEvaluator((expression, state) => Or(expression, state), ExpressionReturnType.Boolean, ValidateBoolean) },
+                {ExpressionType.Not,
+                    new ExpressionEvaluator(Apply((args) => !args[0], VerifyBoolean),
+                        ExpressionReturnType.Boolean, (expression) => ValidateOrder(expression, ExpressionReturnType.Boolean)) },
 
                 // Misc
-                , {ExpressionType.Accessor,
+                {ExpressionType.Accessor,
                     new ExpressionEvaluator(Accessor, ExpressionReturnType.Object, ValidateAccessor) }
             };
 
@@ -397,6 +481,9 @@ namespace Microsoft.Bot.Builder.Expressions
             return functions;
         }
 
+        /// <summary>
+        /// Dictionary of built-in functions.
+        /// </summary>
         public static Dictionary<string, ExpressionEvaluator> _functions = BuildFunctionLookup();
     }
 }

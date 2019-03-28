@@ -4,21 +4,43 @@ using System;
 
 namespace Microsoft.Bot.Builder.Expressions
 {
+    /// <summary>
+    /// Constant expression.
+    /// </summary>
     public class Constant : Expression
     {
-        public Constant(object value)
-            : base(ExpressionType.Constant,
-                  new ExpressionEvaluator((expression, state) => ((expression as Constant).Value, null),
-                      (value is string ? ExpressionReturnType.String
-                      : value.IsNumber() ? ExpressionReturnType.Number
-                      : value is Boolean ? ExpressionReturnType.Boolean
-                      : ExpressionReturnType.Object),
-                      (expression) => { }))
+        /// <summary>
+        /// Construct an expression constant.
+        /// </summary>
+        /// <param name="value"></param>
+        public Constant(object value = null)
+            : base(ExpressionType.Constant, 
+                  new ExpressionEvaluator((expression, state) => ((expression as Constant).Value, null)))
         {
             Value = value;
         }
 
-        public object Value { get; }
+        /// <summary>
+        /// Constant value.
+        /// </summary>
+        public object Value
+        {
+            get
+            {
+                return _value;
+            }
+            set
+            {
+                _evaluator.ReturnType =
+                      (value is string ? ExpressionReturnType.String
+                      : value.IsNumber() ? ExpressionReturnType.Number
+                      : value is Boolean ? ExpressionReturnType.Boolean
+                      : ExpressionReturnType.Object);
+                _value = value;
+            }
+        }
+
+        private object _value;
 
         public override string ToString()
         {
@@ -28,11 +50,8 @@ namespace Microsoft.Bot.Builder.Expressions
             }
             else
             {
-                return Value.ToString();
+                return Value?.ToString();
             }
         }
-
-        public static Constant MakeExpression(object value)
-            => new Constant(value);
     }
 }

@@ -7,14 +7,20 @@ using System.Linq;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
-using Microsoft.Bot.Builder.Expressions;
 
 namespace Microsoft.Bot.Builder.Expressions.Parser
 {
-    public delegate ExpressionEvaluator EvaluatorLookup(string name);
 
+
+    /// <summary>
+    /// Parser to turn strings into an <see cref="Expression"/>.
+    /// </summary>
     public class ExpressionEngine : IExpressionParser
     {
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="lookup">If present delegate to lookup evaluation information from type string.</param>
         public ExpressionEngine(EvaluatorLookup lookup = null)
         {
             _lookup = lookup ?? BuiltInFunctions.Lookup;
@@ -26,7 +32,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
         /// <summary>
         /// Parse the input into an expression.
         /// </summary>
-        /// <param name="expression"></param>
+        /// <param name="expression">Expression to parse.</param>
         /// <returns>Expresion tree.</returns>
         public Expression Parse(string expression)
         {
@@ -120,15 +126,15 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                 var symbol = context.GetText();
                 if (symbol == "false")
                 {
-                    result = Constant.MakeExpression(false);
+                    result = Expression.ConstantExpression(false);
                 }
                 else if (symbol == "true")
                 {
-                    result = Constant.MakeExpression(true);
+                    result = Expression.ConstantExpression(true);
                 }
                 else
                 {
-                    result = MakeExpression(ExpressionType.Accessor, Constant.MakeExpression(symbol));
+                    result = MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(symbol));
                 }
                 return result;
             }
@@ -143,23 +149,23 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             public override Expression VisitMemberAccessExp([NotNull] ExpressionParser.MemberAccessExpContext context)
             {
                 var instance = Visit(context.primaryExpression());
-                return MakeExpression(ExpressionType.Accessor, Constant.MakeExpression(context.IDENTIFIER().GetText()), instance);
+                return MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(context.IDENTIFIER().GetText()), instance);
             }
 
             public override Expression VisitNumericAtom([NotNull] ExpressionParser.NumericAtomContext context)
             {
                 if (int.TryParse(context.GetText(), out var intValue))
-                    return Constant.MakeExpression(intValue);
+                    return Expression.ConstantExpression(intValue);
 
                 if (double.TryParse(context.GetText(), out var doubleValue))
-                    return Constant.MakeExpression(doubleValue);
+                    return Expression.ConstantExpression(doubleValue);
 
                 throw new Exception($"{context.GetText()} is not a number.");
             }
 
             public override Expression VisitParenthesisExp([NotNull] ExpressionParser.ParenthesisExpContext context) => Visit(context.expression());
 
-            public override Expression VisitStringAtom([NotNull] ExpressionParser.StringAtomContext context) => Constant.MakeExpression(context.GetText().Trim('\''));
+            public override Expression VisitStringAtom([NotNull] ExpressionParser.StringAtomContext context) => Expression.ConstantExpression(context.GetText().Trim('\''));
         }
 
     }
