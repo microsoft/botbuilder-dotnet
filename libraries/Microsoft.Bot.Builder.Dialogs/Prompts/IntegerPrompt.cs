@@ -17,6 +17,11 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class IntegerPrompt : NumberPrompt<int>
     {
+        public IntegerPrompt()
+            : base()
+        {
+        }
+
         public IntegerPrompt(string dialogId = null, PromptValidator<int> validator = null, string defaultLocale = null)
             : base(dialogId, validator, defaultLocale)
         {

@@ -15,8 +15,8 @@
                     "expression": "!exists(dialog.todo)",
                     "ifTrue": [
                         {
-                            "$type": "Microsoft.TextPrompt",
-                            "initialPrompt": "OK, please enter the title of the todo you want to remove.",
+                            "$type": "Microsoft.TextInput",
+                            "prompt": "OK, please enter the title of the todo you want to remove.",
                             "property": "dialog.todo"
                         }
                     ]

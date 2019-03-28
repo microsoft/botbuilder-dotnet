@@ -18,6 +18,8 @@ namespace Microsoft.Bot.Builder.Dialogs
     {
         private Regex _patternMatcher;
 
+        public TextPrompt() : base() { }
+
         public TextPrompt(string dialogId = nameof(TextPrompt), PromptValidator<string> validator = null)
             : base(dialogId ?? nameof(TextPrompt), validator)
         {

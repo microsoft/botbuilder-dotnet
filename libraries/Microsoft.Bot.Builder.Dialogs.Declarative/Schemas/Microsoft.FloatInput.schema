@@ -1,7 +1,9 @@
 {
     "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
-    "$role": "unionType(Microsoft.IDialog)",
-    "title": "Integer prompt",
+    "$implements": [
+        "Microsoft.IDialog"
+    ],
+    "title": "Float  prompt",
     "description": "This represents a dialog which gathers a number in a specified range",
     "type": "object",
     "additionalProperties": false,
@@ -29,7 +31,7 @@
                 "120"
             ]
         },
-        "initialPrompt": {
+        "prompt": {
             "$type": "Microsoft.IActivityTemplate",
             "title": "Initial Prompt",
             "description": "The message to send to start.",
@@ -45,28 +47,12 @@
                 "Let's try again. What is your age?"
             ]
         },
-        "noMatchResponse": {
+        "invalidResponse": {
             "$type": "Microsoft.IActivityTemplate",
             "title": "No match",
             "description": "The message to send to when no number was recognized.",
             "examples": [
                 "No number was recognized"
-            ]
-        },
-        "tooSmallResponse": {
-            "$type": "Microsoft.IActivityTemplate",
-            "title": "Too small",
-            "description": "The message to send to when the recognized number was less then the MinValue. ",
-            "examples": [
-                "Nobody is younger than 0."
-            ]
-        },
-        "tooLargeResponse": {
-            "$type": "Microsoft.IActivityTemplate",
-            "title": "Too large",
-            "description": "The message to send to when the recognized number was greater then the MinValue.",
-            "examples": [
-                "Nobody is that old!"
             ]
         }
     }

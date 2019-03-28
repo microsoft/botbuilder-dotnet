@@ -10,12 +10,12 @@
           "expression": "user.name == null",
           "ifTrue": [
             {
-              "$type": "Microsoft.TextPrompt",
-              "pattern": "\\w{3,50}",
-              "property": "user.name",
-              "initialPrompt": "[Greeting.Name.initialPrompt]",
-              "retryPrompt": "[Greeting.Name.retryPrompt]",
-              "noMatchResponse": "[Greeting.Name.notMatched]"
+                "$type": "Microsoft.TextInput",
+                "pattern": "\\w{3,50}",
+                "property": "user.name",
+                "prompt": "[Greeting.Name.initialPrompt]",
+                "retryPrompt": "[Greeting.Name.retryPrompt]",
+                "invalidPrompt": "[Greeting.Name.notMatched]"
             }
           ]
         },
