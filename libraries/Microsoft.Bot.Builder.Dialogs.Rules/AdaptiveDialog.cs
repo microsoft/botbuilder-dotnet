@@ -90,19 +90,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             if (this.Steps.Any())
             {
                 // use this.Steps as initial plan
-                var plan = new List<PlanChangeList>();
-                var changeList = new PlanChangeList()
+                var changeList = new PlanChangeList();
+                foreach(var step in this.Steps)
                 {
-                    Steps = new List<PlanStepState>()
-                };
+                    changeList.Steps.Add(new PlanStepState(step.Id, options));
+                }
 
-                Steps.ForEach(s => changeList.Steps.Add(new PlanStepState(s.Id, options)));
-
-                plan.Add(changeList);
+                planning.QueueChanges(changeList);
             }
-
-            // Evaluate rules and queue up plan changes
-            await EvaluateRulesAsync(planning, new DialogEvent() { Name = PlanningEvents.BeginDialog.ToString(), Value = options, Bubble = false }, cancellationToken).ConfigureAwait(false);
+            else
+            {
+                // Evaluate rules and queue up plan changes
+                await EvaluateRulesAsync(planning, new DialogEvent() { Name = PlanningEvents.BeginDialog.ToString(), Value = options, Bubble = false }, cancellationToken).ConfigureAwait(false);
+            }
 
             // Run plan
             return await ContinuePlanAsync(planning, cancellationToken).ConfigureAwait(false);
