@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Expressions;
+using Microsoft.Bot.Builder.Expressions;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
         public SetProperty() : base()
         { }
 
-        public IExpression Expression { get; set; }
+        public Expression Expression { get; set; }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
                 // Simply evaluate the expression, for example user.name = 'Carlos'
                 // Consider renaming this to EvaluateExpression rather than SetProperty
                 // Otherwise we should have property and value properties
-                await Expression.Evaluate(dc.State).ConfigureAwait(false);
+                Expression.TryEvaluate(dc.State);
                 return await planning.EndDialogAsync(cancellationToken).ConfigureAwait(false);
             }
             else

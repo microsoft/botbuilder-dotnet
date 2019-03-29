@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Version Condition=" '$(PackageVersion)' == '' ">4.5.0-local</Version>
@@ -17,9 +17,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>Microsoft.Expressions</PackageId>
-    <Description>This library implements Microsoft Common Expression evaluator for .NET</Description>
-    <Summary>This library implements Microsoft Common Expression evaluator for .NET</Summary>
+    <PackageId>Microsoft.Bot.Builder.Expressions.Parser</PackageId>
+    <Description>This library implements a Microsoft Bot Builder expression parser for .NET</Description>
+    <Summary>This library implements a Microsoft Bot Builder expression parser for .NET</Summary>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -39,11 +39,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
-    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Expressions.xml</DocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Expressions.Parser.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Expressions.xml</DocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Expressions.Parser.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -54,10 +54,13 @@
   <ItemGroup>
     <PackageReference Include="Antlr4.CodeGenerator" Version="4.6.6">
       <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Bot.Builder.Expressions\Microsoft.Bot.Builder.Expressions.csproj" />
   </ItemGroup>
 
 </Project>

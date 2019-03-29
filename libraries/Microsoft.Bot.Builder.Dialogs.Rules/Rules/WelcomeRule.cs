@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Expressions;
-using Microsoft.Bot.Builder.Dialogs.Expressions;
 using Microsoft.Bot.Schema;
+using Microsoft.Bot.Builder.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 {
@@ -29,11 +28,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
             this.WelcomeProperty = conversationProperty;
         }
 
-        public override IExpression GetExpression(PlanningContext planningContext, DialogEvent dialogEvent)
+        public override Expression GetExpression(PlanningContext planningContext, DialogEvent dialogEvent)
         {
-            return new AndExpressions(
+            return Expression.AndExpression(
                 base.GetExpression(planningContext, dialogEvent),
-                new FunctionExpression(async (vars) =>
+                Expression.Lambda((vars) =>
                    {
                        // Have we already welcomed the user?
                        if (planningContext.State.Conversation.TryGetValue(welcomeProperty, out object result))

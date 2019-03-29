@@ -5,13 +5,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Expressions;
+using Microsoft.Bot.Builder.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 {
     public class IfProperty : DialogCommand, IDialogDependencies
     {
-        public IExpression Expression { get; set; }
+        public Expression Expression { get; set; }
 
         public List<IDialog> IfTrue { get; set; } = new List<IDialog>();
 
@@ -21,13 +21,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
             : base()
         {
         }
-        
+
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Ensure planning context
             if (dc is PlanningContext planning)
             {
-                var conditionResult = (bool)await Expression.Evaluate(dc.State);
+                var (value, error) = Expression.TryEvaluate(dc.State);
+                var conditionResult = error == null && (bool)value;
 
                 var stepsToRun = conditionResult ? IfTrue : IfFalse;
 

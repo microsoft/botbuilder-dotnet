@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Expressions;
-using Microsoft.Bot.Builder.Dialogs.Expressions;
-using Microsoft.Bot.Builder.Dialogs.Rules.Expressions;
+using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 {
@@ -15,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
     /// </summary>
     public abstract class Rule : IRule
     {
-        private IExpression expression;
+        private Expression expression;
 
         public Rule(string constraint = null, List<IDialog> steps = null, PlanChangeTypes changeType = PlanChangeTypes.DoSteps)
         {
@@ -42,9 +41,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
         /// <summary>
         /// Get the expression for this rule by calling GatherConstraints()
         /// </summary>
-        public virtual IExpression GetExpression(PlanningContext planningContext, DialogEvent dialogEvent)
+        public virtual Expression GetExpression(PlanningContext planningContext, DialogEvent dialogEvent)
         {
-            var expressionFactory = planningContext.Context.TurnState.Get<IExpressionFactory>() ?? new CommonExpressionFactory();
+            var expressionFactory = planningContext.Context.TurnState.Get<IExpressionParser>() ?? new ExpressionEngine();
 
             if (this.expression == null)
             {
@@ -55,27 +54,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 
                 if (expressions.Any())
                 {
-                    this.expression = expressionFactory.CreateExpression($"({String.Join(") && (", expressions)})");
+                    this.expression = expressionFactory.Parse($"({String.Join(") && (", expressions)})");
                 }
             }
 
-            return new FunctionExpression(async (vars) =>
+            return Expression.LambaExpression((expression, vars) =>
             {
+                object value = null;
+                string error = null;
                 planningContext.State.Turn["DialogEvent"] = dialogEvent;
 
                 if (this.expression != null)
                 {
-                    try
+                    (value, error) = this.expression.TryEvaluate(vars);
+                    if (error != null)
                     {
-                        return await this.expression.Evaluate(vars);
-                    }
-                    catch (Exception err)
-                    {
-                        System.Diagnostics.Trace.TraceWarning(err.Message);
-                        return false;
+                        System.Diagnostics.Trace.TraceWarning(error);
+                        value = false;
                     }
                 }
-                return true;
+                return ((bool)value, error);
             });
         }
 

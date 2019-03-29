@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Expressions;
+using Microsoft.Bot.Builder.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules
 {
@@ -12,7 +9,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         /// <summary>
         /// Get the expression for this rule
         /// </summary>
-        IExpression GetExpression(PlanningContext context, DialogEvent dialogEvent);
+        Expression GetExpression(PlanningContext context, DialogEvent dialogEvent);
 
         /// <summary>
         /// Execute the action for this rule

@@ -640,7 +640,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             {
                 await planning.DebuggerStepAsync(Rules[i], dialogEvent, cancellationToken).ConfigureAwait(false);
                 var expression = Rules[i].GetExpression(planning, dialogEvent);
-                var result = (bool)await expression.Evaluate(planning.State);
+                var (value, error) = expression.TryEvaluate(planning.State);
+                var result = error == null && (bool)value;
                 if (result == true)
                 {
                     System.Diagnostics.Trace.TraceInformation($"Executing Dialog: {this.Id} Rule[{i}]: {Rules[i].GetType().Name}: {expression}");
@@ -666,7 +667,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             {
                 await planning.DebuggerStepAsync(Rules[i], dialogEvent, cancellationToken).ConfigureAwait(false);
                 var expression = Rules[i].GetExpression(planning, dialogEvent);
-                var result = (bool)await expression.Evaluate(planning.State);
+                var (value, error) = expression.TryEvaluate(planning.State);
+                var result = error == null && (bool)value;
                 if (result == true)
                 {
                     System.Diagnostics.Trace.TraceInformation($"Executing Dialog: {this.Id} Rule[{i}]: {Rules[i].GetType().Name}: {expression}");

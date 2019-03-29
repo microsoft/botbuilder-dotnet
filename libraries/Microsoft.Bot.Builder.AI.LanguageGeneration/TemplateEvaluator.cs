@@ -6,7 +6,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
-using Microsoft.Expressions;
+using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
@@ -22,23 +23,22 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         public string TemplateName { get; set; }
         public object Scope { get; set; }
     }
-    class Evaluator: LGFileParserBaseVisitor<string>
-    { 
+
+    class TemplateEvaluator : LGFileParserBaseVisitor<string>
+    {
         public readonly EvaluationContext Context;
 
         private readonly IGetMethod GetMethodX;
         private readonly IGetValue GetValueX;
 
-        
-        private Stack<EvaluationTarget> evalutationTargetStack = new Stack<EvaluationTarget>();
+        private Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
-        public Evaluator(EvaluationContext context, IGetMethod getMethod, IGetValue getValue)
+        public TemplateEvaluator(EvaluationContext context, IGetMethod getMethod, IGetValue getValue)
         {
             Context = context;
             GetMethodX = getMethod ?? new GetMethodExtensions(this);
             GetValueX = getValue ?? new GetValueExtensions(this);
         }
-
 
         public string EvaluateTemplate(string templateName, object scope)
         {
@@ -47,15 +47,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 throw new LGEvaluatingException($"No such template: {templateName}");
             }
 
-            if (evalutationTargetStack.Any(e => e.TemplateName == templateName))
-            { 
-                throw new LGEvaluatingException($"Loop detected: {String.Join(" => ", evalutationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+            if (evaluationTargetStack.Any(e => e.TemplateName == templateName))
+            {
+                throw new Exception($"Loop detected: {String.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
             // Using a stack to track the evalution trace
-            evalutationTargetStack.Push(new EvaluationTarget(templateName, scope)); 
+            evaluationTargetStack.Push(new EvaluationTarget(templateName, scope));
             string result = Visit(Context.TemplateContexts[templateName]);
-            evalutationTargetStack.Pop();
+            evaluationTargetStack.Pop();
 
             return result;
         }
@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 return null;
             }
         }
-        
+
 
         public override string VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
         {
@@ -157,11 +157,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             try
             {
                 exp = exp.TrimStart('{').TrimEnd('}');
-                var result = EvalByExpressionEngine(exp, CurrentTarget().Scope); 
+                var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
 
-                if ((result is Boolean r1 && r1 == false) ||
-                    (result is int r2 && r2 == 0) ||
-                    result == null)
+                if (error != null
+                    || result == null
+                    || (result is Boolean r1 && r1 == false) 
+                    || (result is int r2 && r2 == 0))
                 {
                     return false;
                 }
@@ -179,7 +180,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         private string EvalExpression(string exp)
         {
             exp = exp.TrimStart('{').TrimEnd('}');
-            var result = EvalByExpressionEngine(exp, CurrentTarget().Scope);
+            var result = EvalByExpressionEngine(exp, CurrentTarget().Scope).value;
             return result?.ToString();
         }
 
@@ -192,9 +193,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             {
                 // EvaluateTemplate all arguments using ExpressoinEngine
                 var argsEndPos = exp.LastIndexOf(')');
-                
+                if (argsEndPos < 0 || argsEndPos < argsStartPos + 1)
+                {
+                    throw new Exception($"Not a valid template ref: {exp}");
+                }
                 var argExpressions = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(',');
-                var args = argExpressions.Select(x => EvalByExpressionEngine(x, CurrentTarget().Scope)).ToList();
+                var args = argExpressions.Select(x => EvalByExpressionEngine(x, CurrentTarget().Scope).value).ToList();
 
                 // Construct a new Scope for this template reference
                 // Bind all arguments to parameters
@@ -202,7 +206,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 var newScope = ConstructScope(templateName, args);
 
                 return EvaluateTemplate(templateName, newScope);
-                
+
             }
             return EvaluateTemplate(exp, CurrentTarget().Scope);
         }
@@ -210,7 +214,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         private EvaluationTarget CurrentTarget()
         {
             // just don't want to write evaluationTargetStack.Peek() everywhere
-            return evalutationTargetStack.Peek();
+            return evaluationTargetStack.Peek();
         }
 
         private string EvalMultiLineText(string exp)
@@ -239,14 +243,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return hasParameters ? parameters : new List<string>();
         }
 
-        private object EvalByExpressionEngine(string exp, object scope)
+        private (object value, string error) EvalByExpressionEngine(string exp, object scope)
         {
-            return ExpressionEngine.Evaluate(exp, scope, GetValueX.GetValueX, GetMethodX.GetMethodX);
+            var parse = new ExpressionEngine(GetMethodX.GetMethodX).Parse(exp);
+            return parse.TryEvaluate(scope);
         }
 
         public object ConstructScope(string templateName, List<object> args)
         {
-            if (args.Count == 1 && 
+            if (args.Count == 1 &&
                 !Context.TemplateParameters.ContainsKey(templateName))
             {
                 // Special case, if no parameters defined, and only one arg, don't wrap
