@@ -70,7 +70,7 @@ We will support the following recognizers in Adaptive dialogs
 | SendActivity          |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| |
 | EmitEvent             |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| EmitEvents -> EmitEvent             |
 | EndTurn               |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| WaitForInput -> EndTurn             |
-| EditPlan              |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>| Should allow plan push, pop, insert at position |
+| EditPlan              |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| Should allow plan push, pop, insert at position |
 | ReplacePlan           |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>| |
 | ~~EditPlanTitle~~         |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>| SetPlanTitle -> EditPlanTitle   |
 | ~~SaveEntity~~            |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| SetProperty - '@EntityName' resolves to turn.entities.EntityName[0] |
