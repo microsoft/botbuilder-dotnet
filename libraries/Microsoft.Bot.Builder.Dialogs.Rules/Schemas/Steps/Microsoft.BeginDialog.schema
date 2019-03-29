@@ -1,8 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "Call Dialog",
-    "description": "Step which calls another dialog.",
+    "title": "Begin Dialog",
+    "description": "Step which begins another dialog (and when that dialog is done, it will return the caller).",
     "type": "object",
     "additionalProperties": false,
     "properties": {

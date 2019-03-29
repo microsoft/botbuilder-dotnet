@@ -1,9 +1,6 @@
 ﻿{
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
-    "storage": {
-        "$type": "Microsoft.MemoryStorage"
-    },
     "recognizer": {
         "$type": "Microsoft.RegexRecognizer",
         "rules": {
@@ -25,10 +22,7 @@
             "$type": "Microsoft.IntentRule",
             "intent": "JokeIntent",
             "steps": [
-                {
-                    "$type": "Microsoft.CallDialog",
-                    "dialog": "CancelDialog.TellJoke"
-                }
+                "CancelDialog.TellJoke"
             ]
         },
         {

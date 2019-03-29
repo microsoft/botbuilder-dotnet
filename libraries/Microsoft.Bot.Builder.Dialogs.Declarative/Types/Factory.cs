@@ -112,10 +112,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.WelcomeRule", typeof(WelcomeRule));
 
             // Steps
-            Register("Microsoft.CallDialog", typeof(CallDialog));
+            Register("Microsoft.BeginDialog", typeof(BeginDialog));
             Register("Microsoft.CancelDialog", typeof(CancelDialog));
             Register("Microsoft.EndDialog", typeof(EndDialog));
-            Register("Microsoft.GotoDialog", typeof(GotoDialog));
+            Register("Microsoft.ReplaceWithDialog", typeof(ReplaceWithDialog));
             Register("Microsoft.IfProperty", typeof(IfProperty));
             Register("Microsoft.SendActivity", typeof(SendActivity));
             Register("Microsoft.WaitForInput", typeof(WaitForInput));

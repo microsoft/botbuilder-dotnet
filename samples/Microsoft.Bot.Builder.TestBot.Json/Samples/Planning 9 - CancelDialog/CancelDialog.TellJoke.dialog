@@ -1,9 +1,6 @@
 {
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
-    "storage": {
-        "$type": "Microsoft.MemoryStorage"
-    },
     "recognizer": {
         "$type": "Microsoft.RegexRecognizer",
         "rules": {

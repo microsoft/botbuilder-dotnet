@@ -568,7 +568,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new IntentRule("JokeIntent",
                     steps: new List<IDialog>()
                     {
-                        new CallDialog("TellJokeDialog")
+                        new BeginDialog("TellJokeDialog")
                     }),
                 new WelcomeRule(
                     steps: new List<IDialog>()
@@ -578,7 +578,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new CallDialog("AskNameDialog")
+                        new BeginDialog("AskNameDialog")
                     })});
 
             ruleDialog.AddDialog(new[] {

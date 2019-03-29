@@ -292,7 +292,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new IntentRule("JokeIntent",
                     steps: new List<IDialog>()
                     {
-                        new CallDialog() { Dialog = tellJokeDialog }
+                        new BeginDialog() { Dialog = tellJokeDialog }
                     }),
                 new WelcomeRule(
                     steps: new List<IDialog>()
@@ -302,7 +302,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new CallDialog() { Dialog = askNameDialog }
+                        new BeginDialog() { Dialog = askNameDialog }
                     })
             });
 
@@ -374,7 +374,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new IntentRule("JokeIntent",
                     steps: new List<IDialog>()
                     {
-                        new GotoDialog("TellJokeDialog")
+                        new ReplaceWithDialog("TellJokeDialog")
                     }),
                 new WelcomeRule(
                     steps: new List<IDialog>()
@@ -384,7 +384,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new GotoDialog("AskNameDialog")
+                        new ReplaceWithDialog("AskNameDialog")
                     })
             });
 
@@ -443,7 +443,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new CallDialog() { Dialog = tellJokeDialog },
+                        new BeginDialog() { Dialog = tellJokeDialog },
                         new SendActivity("You went out from ask name dialog.")
                     })
             });

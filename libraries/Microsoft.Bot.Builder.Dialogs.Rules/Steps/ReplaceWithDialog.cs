@@ -9,11 +9,11 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 {
     /// <summary>
-    /// Step which calls another dialog
+    /// Step which calls another dialog, when it is done it will go to the callers parent dialog
     /// </summary>
-    public class GotoDialog : BaseCallDialog
+    public class ReplaceWithDialog : BaseInvokeDialog
     {
-        public GotoDialog(string dialogIdToCall = null, string id = null, string property = null, object options = null) 
+        public ReplaceWithDialog(string dialogIdToCall = null, string id = null, string property = null, object options = null) 
             : base(dialogIdToCall, id, property, options)
         {
         }

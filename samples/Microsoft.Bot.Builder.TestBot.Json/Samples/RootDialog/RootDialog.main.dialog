@@ -10,7 +10,7 @@
             "TextPromptIntent": "(?i)text|textprompt",
             "WelcomeRuleIntent": "(?i)welcome",
             "DoStepsIntent": "(?i)steps|intent",
-            "CallDialogIntent": "(?i)call",
+            "BeginDialogIntent": "(?i)call",
             "ExternalLanguageIntent": "(?i)external|lg",
             "CancelDialogIntent": "(?i)cancel"
         }
@@ -60,9 +60,9 @@
         },
         {
             "$type": "Microsoft.IntentRule",
-            "intent": "CallDialogIntent",
+            "intent": "BeginDialogIntent",
             "steps": [
-                "CallDialog.main"
+                "BeginDialog.main"
             ]
         },
         {

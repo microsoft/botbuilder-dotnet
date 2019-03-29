@@ -13,20 +13,14 @@
             "$type": "Microsoft.IntentRule",
             "intent": "JokeIntent",
             "steps": [
-                {
-                    "$type": "Microsoft.CallDialog",
-                    "dialog": "CallDialog.TellJokeDialog"
-                }
+                "BeginDialog.TellJokeDialog"
             ]
         },
         {
             "$type": "Microsoft.IntentRule",
             "intent": "FortuneTellerIntent",
             "steps": [
-                {
-                    "$type": "Microsoft.CallDialog",
-                    "dialog": "CallDialog.FortuneTellerDialog"
-                }
+                "BeginDialog.FortuneTellerDialog"
             ]
         },
         {

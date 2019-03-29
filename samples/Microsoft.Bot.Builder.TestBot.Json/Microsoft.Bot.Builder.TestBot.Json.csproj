@@ -12,9 +12,9 @@
     <None Remove="Samples\Planning 4 - TextPrompt\TextPrompt.main.dialog" />
     <None Remove="Samples\Planning 5 - WelcomeRule\WelcomeRule.main.dialog" />
     <None Remove="Samples\Planning 6 - DoSteps\DoSteps.main.dialog" />
-    <None Remove="Samples\Planning 7 - CallDialog\CallDialog.FortuneTellerDialog.dialog" />
-    <None Remove="Samples\Planning 7 - CallDialog\CallDialog.main.dialog" />
-    <None Remove="Samples\Planning 7 - CallDialog\CallDialog.TellJokeDialog.dialog" />
+    <None Remove="Samples\Planning 7 - BeginDialog\BeginDialog.FortuneTellerDialog.dialog" />
+    <None Remove="Samples\Planning 7 - BeginDialog\BeginDialog.main.dialog" />
+    <None Remove="Samples\Planning 7 - BeginDialog\BeginDialog.TellJokeDialog.dialog" />
     <None Remove="Samples\Planning 8 - ExternalLanguage\ExternalLanguage - Copy.main.lg" />
     <None Remove="Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.dialog" />
     <None Remove="Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.lg" />
@@ -33,9 +33,9 @@
     <Content Include="Samples\RootDialog\RootDialog.main.dialog" />
     <Content Include="Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.lg" />
     <Content Include="Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.dialog" />
-    <Content Include="Samples\Planning 7 - CallDialog\CallDialog.FortuneTellerDialog.dialog" />
-    <Content Include="Samples\Planning 7 - CallDialog\CallDialog.TellJokeDialog.dialog" />
-    <Content Include="Samples\Planning 7 - CallDialog\CallDialog.main.dialog" />
+    <Content Include="Samples\Planning 7 - BeginDialog\BeginDialog.FortuneTellerDialog.dialog" />
+    <Content Include="Samples\Planning 7 - BeginDialog\BeginDialog.TellJokeDialog.dialog" />
+    <Content Include="Samples\Planning 7 - BeginDialog\BeginDialog.main.dialog" />
     <Content Include="Samples\Planning 6 - DoSteps\DoSteps.main.dialog" />
     <Content Include="Samples\Planning 5 - WelcomeRule\WelcomeRule.main.dialog" />
     <Content Include="Samples\Planning 4 - TextPrompt\TextPrompt.main.dialog" />

@@ -9,11 +9,11 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 {
     /// <summary>
-    /// Step which calls another dialog
+    /// Step which begins executing another dialog, when it is done, it will return to the caller
     /// </summary>
-    public class CallDialog : BaseCallDialog
+    public class BeginDialog : BaseInvokeDialog
     {
-        public CallDialog(string dialogIdToCall = null, string id = null, string property = null, object options = null)
+        public BeginDialog(string dialogIdToCall = null, string id = null, string property = null, object options = null)
             : base(dialogIdToCall, id, property, options)
         {
         }

@@ -121,9 +121,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         }
 
         [TestMethod]
-        public async Task JsonDialogLoad_CallDialog()
+        public async Task JsonDialogLoad_BeginDialog()
         {
-            string path = Path.Combine(samplesDirectory, @"Planning 7 - CallDialog\CallDialog.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"Planning 7 - BeginDialog\BeginDialog.main.dialog");
 
             await BuildTestFlow(path)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))

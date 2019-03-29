@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
     /// <summary>
     /// Step which calls another dialog
     /// </summary>
-    public abstract class BaseCallDialog : Dialog, IDialogDependencies
+    public abstract class BaseInvokeDialog : Dialog, IDialogDependencies
     {
         protected string dialogIdToCall;
 
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
             }
         }
 
-        public BaseCallDialog(string dialogIdToCall = null, string id = null, string property = null, object options = null) 
+        public BaseInvokeDialog(string dialogIdToCall = null, string id = null, string property = null, object options = null) 
             : base()
         {
             this.dialogIdToCall = dialogIdToCall;
