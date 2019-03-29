@@ -2,9 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Protocol;
+using Microsoft.Bot.Protocol.WebSockets;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -12,15 +14,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
 {
     internal class StreamingExtensionRequestHandler : RequestHandler
     {
-        public StreamingExtensionRequestHandler(BotFrameworkStreamingExtensionsAdapter adapter, IBot bot)
+        public StreamingExtensionRequestHandler()
         {
-            this.StreamingAdapter = adapter;
-            this.Bot = bot;
         }
 
-        private BotFrameworkStreamingExtensionsAdapter StreamingAdapter { get; set; }
+        public WebSocketServer Server { get; set; }
 
-        private IBot Bot { get; set; }
+        public IBot Bot { get; set; }
 
         /// <summary>
         /// Processes incoming requests and returns the response, if any.
@@ -33,16 +33,23 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
 
             var body = request.ReadBodyAsString().Result;
 
-            if (string.IsNullOrEmpty(body))
+            if (string.IsNullOrEmpty(body) || request.Streams?.Count > 0)
             {
                 response.StatusCode = 400;
+                return response;
+            }
+
+            if (request.Streams.Where(x => x.Type != "application/json; charset=utf8").Any())
+            {
+                response.StatusCode = 406;
                 return response;
             }
 
             try
             {
                 var activity = JsonConvert.DeserializeObject<Activity>(body, SerializationSettings.DefaultDeserializationSettings);
-                var invokeResponse = await this.StreamingAdapter.ProcessActivityAsync(activity, new BotCallbackHandler(this.Bot.OnTurnAsync), CancellationToken.None).ConfigureAwait(false);
+                var adapter = new BotFrameworkStreamingExtensionsAdapter(Server);
+                var invokeResponse = await adapter.ProcessActivityAsync(activity, new BotCallbackHandler(this.Bot.OnTurnAsync), CancellationToken.None).ConfigureAwait(false);
 
                 if (invokeResponse == null)
                 {
@@ -62,7 +69,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             catch (Exception)
             {
                 // TODO: Better exception handling.
-                response.StatusCode = 403;
+                response.StatusCode = 500;
             }
 
             return response;

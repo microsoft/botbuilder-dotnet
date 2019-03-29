@@ -17,7 +17,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
     {
         private readonly IChannelProvider _channelProvider;
         private readonly ICredentialProvider _credentialProvider;
-        
 
         public BotFrameworkWebSocketAdapter(ICredentialProvider credentialProvider, IChannelProvider channelProvider = null, ILogger<BotFrameworkWebSocketAdapter> logger = null)
         {
@@ -74,19 +73,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
         public async Task CreateWebSocketConnectionAsync(HttpContext httpContext, string authHeader, string channelId, IBot bot)
         {
             var socket = await httpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
-            var serverID = Guid.NewGuid().ToString();
-            var server = new WebSocketServer(socket, new StreamingExtensionRequestHandler(new BotFrameworkStreamingExtensionsAdapter(serverID), bot));
-
-            try
-            {
-                WebSocketServerRegistry.RegisterNewServer(serverID, server);
-            }
-            catch (Exception)
-            {
-                httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                return;
-            }
-
+            var handler = new StreamingExtensionRequestHandler();
+            var server = new WebSocketServer(socket, handler);
+            handler.Server = server;
+            handler.Bot = bot;
             var startListening = server.StartAsync();
             Task.WaitAll(startListening);
         }
