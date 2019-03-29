@@ -15,8 +15,8 @@
                     "expression": "dialog.todo == null",
                     "ifTrue": [
                         {
-                            "$type": "Microsoft.TextPrompt",
-                            "initialPrompt": "OK, please enter the title of your todo.",
+                            "$type": "Microsoft.TextInput",
+                            "prompt": "OK, please enter the title of your todo.",
                             "property": "dialog.todo"
                         }
                     ]

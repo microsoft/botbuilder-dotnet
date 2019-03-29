@@ -184,7 +184,7 @@ namespace Microsoft.Bot.Builder.Adapters
                         throw new Exception($"{description}: Type should match");
                     }
 
-                    if (expected.AsMessageActivity().Text != reply.AsMessageActivity().Text)
+                    if (expected.AsMessageActivity().Text.Trim() != reply.AsMessageActivity().Text.Trim())
                     {
                         if (description == null)
                         {
@@ -389,6 +389,8 @@ namespace Microsoft.Bot.Builder.Adapters
             return AssertReply(
                 (reply) =>
                 {
+                    var text = reply.AsMessageActivity().Text;
+
                     foreach (var candidate in candidates)
                     {
                         if (reply.AsMessageActivity().Text == candidate)
@@ -397,7 +399,7 @@ namespace Microsoft.Bot.Builder.Adapters
                         }
                     }
 
-                    throw new Exception(description ?? $"Not one of candidates: {string.Join("\n", candidates)}");
+                    throw new Exception(description ?? $"Text \"{text}\" does not one of candidates: {string.Join("\n", candidates)}");
                 },
                 description,
                 timeout);

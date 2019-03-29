@@ -9,13 +9,6 @@ using Microsoft.Bot.Builder.Dialogs.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 {
-    public class IfPropertyCondition
-    {
-        public IExpression Expression { get; set; }
-
-        public List<IDialog> Steps { get; set; }
-    }
-
     public class IfProperty : DialogCommand, IDialogDependencies
     {
         public IExpression Expression { get; set; }
@@ -56,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
             }
             else
             {
-                throw new Exception("`IfProperty` should only be used in the context of a planning or sequence dialog.");
+                throw new Exception("`IfProperty` should only be used in the context of an adaptive dialog.");
             }
         }
 

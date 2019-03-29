@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -20,8 +21,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            dc.State.SetValue(Property, null);
-            return await dc.EndDialogAsync();
+            // Ensure planning context
+            if (dc is PlanningContext planning)
+            {
+                dc.State.SetValue(Property, null);
+                return await dc.EndDialogAsync();
+            }
+            else
+            {
+                throw new Exception("`ClearProperty` should only be used in the context of an adaptive dialog.");
+            }
         }
     }
 }

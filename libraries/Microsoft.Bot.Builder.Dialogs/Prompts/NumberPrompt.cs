@@ -20,6 +20,8 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class NumberPrompt<TNumber> : Prompt<TNumber, NumberPromptOptions<TNumber>>, IRangePromptOptions<TNumber>
         where TNumber : struct, IComparable<TNumber>
     {
+        public NumberPrompt() { }
+
         public NumberPrompt(string dialogId = nameof(NumberPrompt<TNumber>), PromptValidator<TNumber> validator = null, string defaultLocale = null)
             : base(dialogId ?? nameof(NumberPrompt<TNumber>), validator)
         {
