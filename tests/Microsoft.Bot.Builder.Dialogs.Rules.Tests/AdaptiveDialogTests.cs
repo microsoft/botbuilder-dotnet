@@ -221,9 +221,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             ruleDialog.AddRule(new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new IfProperty()
+                        new IfCondition()
                         {
-                            Expression = new CommonExpression("user.name == null"),
+                            Condition = new CommonExpression("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextInput() {
@@ -255,9 +255,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new IfProperty()
+                        new IfCondition()
                         {
-                            Expression = new CommonExpression("user.name == null"),
+                            Condition = new CommonExpression("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextInput()
@@ -296,9 +296,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new IfProperty()
+                        new IfCondition()
                         {
-                            Expression = new CommonExpression("user.name == null"),
+                            Condition = new CommonExpression("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextInput()
@@ -334,9 +334,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new IfProperty()
+                        new IfCondition()
                         {
-                            Expression = new CommonExpression("user.name == null"),
+                            Condition = new CommonExpression("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextPrompt()
@@ -346,10 +346,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                                 }
                             }
                         },
-                        new IfProperty()
+                        new IfCondition()
                         {
                             // Check comparison with string literal
-                            Expression = new CommonExpression("user.name == 'Carlos'"),
+                            Condition = new CommonExpression("user.name == 'Carlos'"),
                             IfTrue = new List<IDialog>()
                             {
                                 new SendActivity("Hello carlin")
@@ -391,9 +391,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new IfProperty()
+                        new IfCondition()
                         {
-                            Expression = new CommonExpression("user.name == null"),
+                            Condition = new CommonExpression("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextInput()
@@ -447,9 +447,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new IfProperty()
+                        new IfCondition()
                         {
-                            Expression = new CommonExpression("user.name == null"),
+                            Condition = new CommonExpression("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextInput()
@@ -518,9 +518,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             {
                                 new NoMatchRule(new List<IDialog>()
                                     {
-                                        new IfProperty()
+                                        new IfCondition()
                                         {
-                                            Expression = new CommonExpression("user.name == null"),
+                                            Condition = new CommonExpression("user.name == null"),
                                             IfTrue = new List<IDialog>()
                                             {
                                                 new TextInput()
@@ -588,9 +588,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new NoMatchRule(new List<IDialog>()
                         {
-                            new IfProperty()
+                            new IfCondition()
                             {
-                                Expression = new CommonExpression("user.name == null"),
+                                Condition = new CommonExpression("user.name == null"),
                                 IfTrue = new List<IDialog>()
                                 {
                                     new TextInput()

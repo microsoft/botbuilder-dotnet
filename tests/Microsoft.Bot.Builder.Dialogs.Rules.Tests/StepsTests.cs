@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         }
 
         [TestMethod]
-        public async Task Step_IfProperty()
+        public async Task Step_IfCondition()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -86,9 +86,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new IfProperty()
+                        new IfCondition()
                         {
-                            Expression = new CommonExpression("user.name == null"),
+                            Condition = new CommonExpression("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextPrompt() {
@@ -108,6 +108,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task Step_Switch()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var planningDialog = new AdaptiveDialog("planningTest")
+            {
+                Steps = new List<IDialog>()
+                    {
+                        new SetProperty()
+                        {
+                            Property = "user.name",
+                            Value = new CommonExpression("'frank'")
+                        },
+                        new Switch()
+                        {
+                            Condition = new CommonExpression("user.name"),
+                            Cases = new Dictionary<string, List<IDialog>>()
+                            {
+                                { "susan", new List<IDialog>() { new SendActivity("hi susan") } },
+                                { "bob", new List<IDialog>() { new SendActivity("hi bob") } },
+                                { "frank", new List<IDialog>() { new SendActivity("hi frank") } }
+                            },
+                            Default = new List<IDialog>() { new SendActivity("Who are you?") }
+                        },
+                    }
+            };
+
+            await CreateFlow(planningDialog, convoState, userState)
+            .Send("hi")
+                .AssertReply("hi frank")
+            .StartTestAsync();
+        }
 
         [TestMethod]
         public async Task Step_TextPrompt()
@@ -122,9 +156,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new IfProperty()
+                        new IfCondition()
                         {
-                            Expression = new CommonExpression("user.name == null"),
+                            Condition = new CommonExpression("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextInput()
@@ -162,9 +196,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new IfProperty()
+                        new IfCondition()
                         {
-                            Expression = new CommonExpression("user.name == null"),
+                            Condition = new CommonExpression("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextInput()
@@ -212,9 +246,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new IfProperty()
+                        new IfCondition()
                         {
-                            Expression = new CommonExpression("user.name == null"),
+                            Condition = new CommonExpression("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextPrompt()
@@ -243,7 +277,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
 
         [TestMethod]
-        public async Task Step_CallDialog()
+        public async Task Step_BeginDialog()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -271,9 +305,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new IfProperty()
+                        new IfCondition()
                         {
-                            Expression = new CommonExpression("user.name == null"),
+                            Condition = new CommonExpression("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextPrompt()
@@ -322,7 +356,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         }
 
         [TestMethod]
-        public async Task Step_GotoDialog()
+        public async Task Step_ReplaceWithDialog()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -350,9 +384,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new IfProperty()
+                        new IfCondition()
                         {
-                            Expression = new CommonExpression("user.name == null"),
+                            Condition = new CommonExpression("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextInput()

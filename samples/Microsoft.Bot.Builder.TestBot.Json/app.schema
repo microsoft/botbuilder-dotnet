@@ -141,6 +141,11 @@
             "$ref": "#/definitions/Microsoft.SendList"
         },
         {
+            "title": "Microsoft.Switch",
+            "description": "Step which conditionally decides which step to execute next.",
+            "$ref": "#/definitions/Microsoft.Switch"
+        },
+        {
             "title": "Microsoft.TextInput",
             "description": "This represents a dialog which gathers a text from the user",
             "$ref": "#/definitions/Microsoft.TextInput"
@@ -1052,6 +1057,11 @@
                     "$ref": "#/definitions/Microsoft.SendList"
                 },
                 {
+                    "title": "Microsoft.Switch",
+                    "description": "Step which conditionally decides which step to execute next.",
+                    "$ref": "#/definitions/Microsoft.Switch"
+                },
+                {
                     "title": "Microsoft.TextPrompt",
                     "description": "This represents a dialog which gathers a text from the user",
                     "$ref": "#/definitions/Microsoft.TextPrompt"
@@ -1195,6 +1205,15 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "condition": {
+                    "$type": "Microsoft.IExpression",
+                    "title": "Condition",
+                    "description": "Expression to evaluate.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IExpression"
+                },
                 "ifTrue": {
                     "oneOf": [
                         {
@@ -1230,15 +1249,6 @@
                     ],
                     "title": "If False",
                     "description": "Step to execute if expression is false."
-                },
-                "expression": {
-                    "$type": "Microsoft.IExpression",
-                    "title": "Condition",
-                    "description": "Expression to evaluate.",
-                    "examples": [
-                        "user.age > 3"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IExpression"
                 }
             },
             "required": [
@@ -2263,6 +2273,105 @@
                         "listProperty",
                         "messageTemplate",
                         "itemTemplate"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Switch": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Switch Step",
+            "description": "Step which conditionally decides which step to execute next.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Switch"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "condition": {
+                    "$type": "Microsoft.IExpression",
+                    "title": "Condition",
+                    "description": "Expression to evaluate.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IExpression"
+                },
+                "cases": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "oneOf": [
+                            {
+                                "$type": "Microsoft.IDialog",
+                                "$ref": "#/definitions/Microsoft.IDialog"
+                            },
+                            {
+                                "type": "array",
+                                "items": {
+                                    "$type": "Microsoft.IDialog",
+                                    "$ref": "#/definitions/Microsoft.IDialog"
+                                },
+                                "title": "array"
+                            }
+                        ],
+                        "title": "If False",
+                        "description": "Step to execute if case is true"
+                    }
+                },
+                "default": {
+                    "oneOf": [
+                        {
+                            "$type": "Microsoft.IDialog",
+                            "$ref": "#/definitions/Microsoft.IDialog"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "$type": "Microsoft.IDialog",
+                                "$ref": "#/definitions/Microsoft.IDialog"
+                            },
+                            "title": "array"
+                        }
+                    ],
+                    "title": "If True",
+                    "description": "Step to execute if expression is true."
+                }
+            },
+            "required": [
+                "$type"
+            ],
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "expression",
+                        "ifTrue"
                     ]
                 }
             ]

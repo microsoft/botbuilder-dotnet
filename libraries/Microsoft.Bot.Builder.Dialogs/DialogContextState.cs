@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -211,6 +212,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public void SetValue(string pathExpression, object value)
         {
+            if (value is Task)
+            {
+                throw new Exception($"{pathExpression} = You can't pass an unresolved Task to SetValue");
+            }
+
             // If the json path does not exist
             string[] segments = pathExpression.Split('.');
             dynamic current = this;

@@ -71,6 +71,7 @@
     <None Remove="Schemas\Steps\Microsoft.SaveEntity.schema" />
     <None Remove="Schemas\Steps\Microsoft.SendActivity.schema" />
     <None Remove="Schemas\Steps\Microsoft.SendList.schema" />
+    <None Remove="Schemas\Steps\Microsoft.Switch.schema" />
     <None Remove="Schemas\Steps\Microsoft.WaitForInput.schema" />
   </ItemGroup>
   
@@ -84,6 +85,7 @@
     <Content Include="Schemas\Rules\Microsoft.IfPropertyRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.IntentRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.WelcomeRule.schema" />
+    <Content Include="Schemas\Steps\Microsoft.Switch.schema" />
     <Content Include="Schemas\Steps\Microsoft.HttpRequest.schema" />
     <Content Include="Schemas\Steps\Microsoft.SendList.schema" />
     <Content Include="Schemas\Steps\Microsoft.SaveEntity.schema" />

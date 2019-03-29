@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Input
             }
             else
             {
-                return await dc.EndDialogAsync(cancellationToken);
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken);
             }
         }
 

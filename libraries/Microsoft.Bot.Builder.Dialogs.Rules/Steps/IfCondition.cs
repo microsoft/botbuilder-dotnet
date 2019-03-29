@@ -9,15 +9,21 @@ using Microsoft.Bot.Builder.Dialogs.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 {
-    public class IfProperty : DialogCommand, IDialogDependencies
+    /// <summary>
+    /// Conditional branch
+    /// </summary>
+    public class IfCondition : DialogCommand, IDialogDependencies
     {
-        public IExpression Expression { get; set; }
+        /// <summary>
+        /// Condition expression against memory Example: "user.age > 18"
+        /// </summary>
+        public IExpression Condition { get; set; }
 
         public List<IDialog> IfTrue { get; set; } = new List<IDialog>();
 
         public List<IDialog> IfFalse { get; set; } = new List<IDialog>();
 
-        public IfProperty()
+        public IfCondition()
             : base()
         {
         }
@@ -27,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
             // Ensure planning context
             if (dc is PlanningContext planning)
             {
-                var conditionResult = (bool)await Expression.Evaluate(dc.State);
+                var conditionResult = (bool)await Condition.Evaluate(dc.State);
 
                 var stepsToRun = conditionResult ? IfTrue : IfFalse;
 
@@ -45,11 +51,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
                     Steps = planSteps.ToList()
                 });
 
-                return await planning.EndDialogAsync(cancellationToken).ConfigureAwait(false);
+                return await planning.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                throw new Exception("`IfProperty` should only be used in the context of an adaptive dialog.");
+                throw new Exception("`IfCondition` should only be used in the context of an adaptive dialog.");
             }
         }
 

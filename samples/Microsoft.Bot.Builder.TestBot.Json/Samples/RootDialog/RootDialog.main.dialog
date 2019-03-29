@@ -6,7 +6,7 @@
         "intents": {
             "DefaultIntent": "(?i)default|defaultrule",
             "WaitForInputIntent": "(?i)wait|input",
-            "IfPropertyIntent": "(?i)property|ifproperty",
+            "IfConditionIntent": "(?i)property|ifproperty",
             "TextPromptIntent": "(?i)text|textprompt",
             "WelcomeRuleIntent": "(?i)welcome",
             "DoStepsIntent": "(?i)steps|intent",
@@ -32,9 +32,9 @@
         },
         {
             "$type": "Microsoft.IntentRule",
-            "intent": "IfPropertyIntent",
+            "intent": "IfConditionIntent",
             "steps": [
-                "IfProperty.main"
+                "IfCondition.main"
             ]
         },
         {

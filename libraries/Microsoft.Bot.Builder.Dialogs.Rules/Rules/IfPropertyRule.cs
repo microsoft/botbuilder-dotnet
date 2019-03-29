@@ -8,16 +8,16 @@
 
 //namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 //{
-//    public class IfPropertyRuleCondition
+//    public class IfConditionRuleCondition
 //    {
 //        public IExpressionEval Expression { get; set; }
 //        public List<IRule> Rules { get; set; }
 
 //    }
 
-//    public class IfPropertyRule : IRule
+//    public class IfConditionRule : IRule
 //    {
-//        public List<IfPropertyRuleCondition> Conditionals { get; set; }
+//        public List<IfConditionRuleCondition> Conditionals { get; set; }
 
 //        public List<IDialog> Steps
 //        {
@@ -30,11 +30,11 @@
 //        }
 
 
-//        public IfPropertyRule(IExpressionEval expression, List<IRule> rules)
+//        public IfConditionRule(IExpressionEval expression, List<IRule> rules)
 //        {
 //            if (expression != null && rules != null)
 //            {
-//                Conditionals.Add(new IfPropertyRuleCondition()
+//                Conditionals.Add(new IfConditionRuleCondition()
 //                {
 //                    Expression = expression,
 //                    Rules = rules
@@ -42,7 +42,7 @@
 //            }
 //        }
 
-//        public IfPropertyRule()
+//        public IfConditionRule()
 //        {
 //        }
 
@@ -78,7 +78,7 @@
 
 //        public void ElseIf(IExpressionEval expression, List<IRule> rules)
 //        {
-//            Conditionals.Add(new IfPropertyRuleCondition()
+//            Conditionals.Add(new IfConditionRuleCondition()
 //            {
 //                Expression = expression,
 //                Rules = rules
@@ -87,7 +87,7 @@
 
 //        public void Else(List<IRule> rules)
 //        {
-//            Conditionals.Add(new IfPropertyRuleCondition()
+//            Conditionals.Add(new IfConditionRuleCondition()
 //            {
 //                Expression = new StaticExpression(true),
 //                Rules = rules

@@ -297,6 +297,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<DialogTurnResult> EndDialogAsync(object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (result is CancellationToken token)
+            {
+                new ArgumentException($"{this.ActiveDialog.Id}.EndDialogAsync() You can't pass a cancellation token as the result of a dialog when calling EndDialog.");
+            }
+
             // End the active dialog
             await EndActiveDialogAsync(DialogReason.EndCalled, result).ConfigureAwait(false);
             activeTags = null;

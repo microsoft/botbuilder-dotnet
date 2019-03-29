@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             //var rootFile = resourceExplorer.GetResource("ToDoLuisBot.main.dialog");
             //var rootFile = resourceExplorer.GetResource("NoMatchRule.main.dialog");
             //var rootFile = resourceExplorer.GetResource("WaitForInput.main.dialog");
-            //var rootFile = resourceExplorer.GetResource("IfProperty.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("IfCondition.main.dialog");
             //var rootFile = resourceExplorer.GetResource("TextPrompt.main.dialog");
             //var rootFile = resourceExplorer.GetResource("WelcomeRule.main.dialog");
             //var rootFile = resourceExplorer.GetResource("DoSteps.main.dialog");

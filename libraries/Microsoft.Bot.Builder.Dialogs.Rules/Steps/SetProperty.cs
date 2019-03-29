@@ -11,7 +11,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
         public SetProperty() : base()
         { }
 
-        public IExpression Expression { get; set; }
+        /// <summary>
+        /// Value expression
+        /// </summary>
+        public IExpression Value { get; set; }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -21,8 +24,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
                 // Simply evaluate the expression, for example user.name = 'Carlos'
                 // Consider renaming this to EvaluateExpression rather than SetProperty
                 // Otherwise we should have property and value properties
-                await Expression.Evaluate(dc.State).ConfigureAwait(false);
-                return await planning.EndDialogAsync(cancellationToken).ConfigureAwait(false);
+                var value = await Value.Evaluate(dc.State).ConfigureAwait(false);
+                return await planning.EndDialogAsync(value, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -32,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 
         protected override string OnComputeId()
         {
-            return $"SetProperty[${this.Expression.ToString() ?? string.Empty}]";
+            return $"SetProperty[${this.Property.ToString() ?? string.Empty}]";
         }
     }
 }

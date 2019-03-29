@@ -3,8 +3,8 @@
     "$type": "Microsoft.AdaptiveDialog",
     "steps": [
         {
-            "$type": "Microsoft.IfProperty",
-            "expression": "user.todos == null",
+            "$type": "Microsoft.IfCondition",
+            "condition": "user.todos == null",
             "ifTrue": [
                 {
                     "$type": "Microsoft.SendActivity",

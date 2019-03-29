@@ -38,12 +38,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Expressions
         }
 
 
-        public Task<object> Evaluate(IDictionary<string, object> state)
+        public async Task<object> Evaluate(IDictionary<string, object> state)
         {
             if (this._parseTree != null)
             {
                 var result = ExpressionEngine.Evaluate(this._parseTree, state);
-                return Task.FromResult(result);
+                return result;
             }
 
             throw new ArgumentNullException(nameof(Expression));

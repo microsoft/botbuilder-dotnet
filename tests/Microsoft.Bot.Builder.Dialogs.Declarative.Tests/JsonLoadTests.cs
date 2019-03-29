@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_IfProperty()
         {
-            string path = Path.Combine(samplesDirectory, @"Planning 3 - IfProperty\IfProperty.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"Planning 3 - IfCondition\IfCondition.main.dialog");
 
             await BuildTestFlow(path)
             .Send("hello")

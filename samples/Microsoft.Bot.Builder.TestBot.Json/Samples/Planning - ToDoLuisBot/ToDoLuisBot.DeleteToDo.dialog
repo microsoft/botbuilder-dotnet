@@ -8,8 +8,8 @@
             "property": "dialog.todo"
         },
         {
-            "$type": "Microsoft.IfProperty",
-            "expression": "!exists(dialog.todo)",
+            "$type": "Microsoft.IfCondition",
+            "condition": "!exists(dialog.todo)",
             "ifTrue": [
                 {
                     "$type": "Microsoft.TextInput",

@@ -38,8 +38,8 @@
             "$type": "Microsoft.NoMatchRule",
             "steps": [
                 {
-                    "$type": "Microsoft.IfProperty",
-                    "expression": "user.name == null",
+                    "$type": "Microsoft.IfCondition",
+                    "condition": "user.name == null",
                     "ifTrue": [
                         {
                             "$type": "Microsoft.TextInput",
