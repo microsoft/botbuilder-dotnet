@@ -114,6 +114,18 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.AreEqual(conversationReference.ActivityId, activity.ReplyToId);
         }
 
+        [TestMethod]
+        public void CreateTraceAllowsNullRecipient()
+        {
+            // https://github.com/Microsoft/botbuilder-dotnet/issues/1580
+            var activity = CreateActivity();
+            activity.Recipient = null;
+            var trace = activity.CreateTrace("test");
+
+            // CreateTrace flips Recipient and From
+            Assert.IsNull(trace.From.Id);
+        }
+
         private Activity CreateActivity()
         {
             var account1 = new ChannelAccount
