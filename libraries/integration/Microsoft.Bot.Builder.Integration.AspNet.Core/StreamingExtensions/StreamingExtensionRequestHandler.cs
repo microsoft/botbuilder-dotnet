@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
         {
             var response = new Response();
 
-            var body = request.ReadBodyAsString().Result;
+            var body = await request.ReadBodyAsString().ConfigureAwait(false);
 
             if (string.IsNullOrEmpty(body) || request.Streams?.Count > 0)
             {

@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
                 }
 
                 // For all non-invoke scenarios, the HTTP layers above don't have to mess
-                // withthe Body and return codes.
+                // with the Body and return codes.
                 return null;
             }
         }
