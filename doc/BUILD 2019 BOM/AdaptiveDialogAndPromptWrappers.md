@@ -84,21 +84,6 @@ We will support the following recognizers in Adaptive dialogs
 | ~~SendCharts~~            |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>| Do a sample with this to demonstrate a custom step. |
 | ~~SendList~~              |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| |
 
-### Interrpution handling
-
-CUT PlanChangeType off rule.
-
-<strike>**Interruption plan change types** in scope for //BUILD
-
-|     Interruption handling     |         C#             |          TS            |
-|-------------------------------|------------------------|------------------------|
-| doSteps                       |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>| 
-| doStepsBeforeTags             |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|
-| doStepsLater                  |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|
-| endPlan                       |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|
-| newPlan                       |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|
-| replacePlan                   |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|
-</strike>
 ### Prompt wrappers 
 
 We will add new \<entityType\>Input class that does the follwing - 
@@ -118,6 +103,23 @@ We will add new \<entityType\>Input class that does the follwing -
 | attachmentInput       |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| |
 | ~~OAuthPrompt~~       |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| |
 | ~~ActivityPrompt~~    |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| |
+
+### Interrpution handling
+
+CUT PlanChangeType off rule.
+
+<strike>**Interruption plan change types** in scope for //BUILD
+
+|     Interruption handling     |         C#             |          TS            |
+|-------------------------------|------------------------|------------------------|
+| doSteps                       |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>| 
+| doStepsBeforeTags             |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|
+| doStepsLater                  |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|
+| endPlan                       |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|
+| newPlan                       |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|
+| replacePlan                   |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|
+</strike>
+
 
 ### Documentation
 - [ ] API reference doc
