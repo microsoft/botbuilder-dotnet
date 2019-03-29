@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Azure
             }
             else
             {
-                // These need to be overridden til the following values.
+                // These need to be overridden to the following values.
                 jsonSerializer.TypeNameHandling = TypeNameHandling.All;
                 jsonSerializer.NullValueHandling = NullValueHandling.Include;
                 jsonSerializer.ContractResolver = new DefaultContractResolver();
