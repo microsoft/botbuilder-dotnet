@@ -63,7 +63,7 @@
     <None Remove="Schemas\Rules\Microsoft.WelcomeRule.schema" />
     <None Remove="Schemas\Steps\Microsoft.BeginDialog.schema" />
     <None Remove="Schemas\Steps\Microsoft.CancelDialog.schema" />
-    <None Remove="Schemas\Steps\Microsoft.ChangeList.schema" />
+    <None Remove="Schemas\Steps\Microsoft.EditArray.schema" />
     <None Remove="Schemas\Steps\Microsoft.EndDialog.schema" />
     <None Remove="Schemas\Steps\Microsoft.HttpRequest.schema" />
     <None Remove="Schemas\Steps\Microsoft.IfProperty.schema" />
@@ -87,7 +87,7 @@
     <Content Include="Schemas\Steps\Microsoft.HttpRequest.schema" />
     <Content Include="Schemas\Steps\Microsoft.SendList.schema" />
     <Content Include="Schemas\Steps\Microsoft.SaveEntity.schema" />
-    <Content Include="Schemas\Steps\Microsoft.ChangeList.schema" />
+    <Content Include="Schemas\Steps\Microsoft.EditArray.schema" />
     <Content Include="Schemas\Steps\Microsoft.BeginDialog.schema" />
     <Content Include="Schemas\Steps\Microsoft.CancelDialog.schema" />
     <Content Include="Schemas\Steps\Microsoft.EndDialog.schema" />

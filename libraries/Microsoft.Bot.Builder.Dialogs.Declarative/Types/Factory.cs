@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.SendActivity", typeof(SendActivity));
             Register("Microsoft.WaitForInput", typeof(WaitForInput));
             Register("Microsoft.SaveEntity", typeof(SaveEntity));
-            Register("Microsoft.ChangeList", typeof(ChangeList));
+            Register("Microsoft.EditArray", typeof(EditArray));
             Register("Microsoft.SendList", typeof(SendList));
             Register("Microsoft.ClearProperty", typeof(ClearProperty));
             Register("Microsoft.HttpRequest", typeof(HttpRequest));

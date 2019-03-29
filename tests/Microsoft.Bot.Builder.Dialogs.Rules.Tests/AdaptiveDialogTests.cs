@@ -144,14 +144,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             Prompt = new ActivityTemplate("Please add an item to todos."),
                             Property = "dialog.todo"
                         },
-                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "dialog.todo"),
+                        new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
                         new SendList("user.todos"),
                         new TextInput()
                         {
                             Prompt = new ActivityTemplate("Please add an item to todos."),
                             Property = "dialog.todo"
                         },
-                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "dialog.todo"),
+                        new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
                         new SendList("user.todos"),
 
                         // Remove item
@@ -159,7 +159,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             Prompt = new ActivityTemplate("Enter a item to remove."),
                             Property = "dialog.todo"
                         },
-                        new ChangeList(ChangeList.ChangeListType.Remove, "user.todos", "dialog.todo"),
+                        new EditArray(EditArray.ArrayChangeType.Remove, "user.todos", "dialog.todo"),
                         new SendList("user.todos"),
 
                         // Add item and pop item
@@ -167,24 +167,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             Prompt = new ActivityTemplate("Please add an item to todos."),
                             Property = "dialog.todo"
                         },
-                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "dialog.todo"),
+                        new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
                         new TextInput()
                         {
                             Prompt = new ActivityTemplate("Please add an item to todos."),
                             Property = "dialog.todo"
                         },
-                        new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "dialog.todo"),
+                        new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
                         new SendList("user.todos"),
 
-                        new ChangeList(ChangeList.ChangeListType.Pop, "user.todos"),
+                        new EditArray(EditArray.ArrayChangeType.Pop, "user.todos"),
                         new SendList("user.todos"),
 
                         // Take item
-                        new ChangeList(ChangeList.ChangeListType.Take, "user.todos"),
+                        new EditArray(EditArray.ArrayChangeType.Take, "user.todos"),
                         new SendList("user.todos"),
 
                         // Clear list
-                        new ChangeList(ChangeList.ChangeListType.Clear, "user.todos"),
+                        new EditArray(EditArray.ArrayChangeType.Clear, "user.todos"),
                         new SendList("user.todos")
                     })
             });

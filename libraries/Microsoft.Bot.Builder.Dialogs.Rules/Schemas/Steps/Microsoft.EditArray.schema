@@ -1,15 +1,15 @@
 {
     "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "Change List Step",
-    "description": "This is a step which allows you to modify a collection in memory",
+    "title": "Edit Array Step",
+    "description": "This is a step which allows you to modify an array in memory",
     "type": "object",
     "additionalProperties": false,
     "properties": {
         "changeType": {
             "type": "string",
             "title": "Change Type",
-            "description": "The list operation to perform",
+            "description": "The array operation to perform",
             "enum": [
                 "Push",
                 "Pop",

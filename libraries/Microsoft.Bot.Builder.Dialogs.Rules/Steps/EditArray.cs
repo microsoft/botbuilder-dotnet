@@ -9,47 +9,47 @@ using Newtonsoft.Json.Converters;
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 {
     /// <summary>
-    /// Lets you modify a collection in memory
+    /// Lets you modify an array in memory
     /// </summary>
-    public class ChangeList : DialogCommand
+    public class EditArray : DialogCommand
     {
-        public enum ChangeListType
+        public enum ArrayChangeType
         {
             /// <summary>
-            /// Push item onto the list
+            /// Push item onto the end of the array
             /// </summary>
             Push,
 
             /// <summary>
-            /// Pop the item off the list
+            /// Pop the item off the end of the array
             /// </summary>
             Pop,
 
             /// <summary>
-            /// Take an item from the front of the list
+            /// Take an item from the front of the array
             /// </summary>
             Take,
 
             /// <summary>
-            /// Remove the item from the list, regardless of it's location
+            /// Remove the item from the array, regardless of it's location
             /// </summary>
             Remove,
 
             /// <summary>
-            /// Clear the contents of the list
+            /// Clear the contents of the array
             /// </summary>
             Clear
         }
 
 
-        public ChangeList()
+        public EditArray()
             : base()
         {
         }
 
         protected override string OnComputeId()
         {
-            return $"list[{ChangeType + ": " + ListProperty}]";
+            return $"array[{ChangeType + ": " + ListProperty}]";
         }
 
         /// <summary>
@@ -57,28 +57,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
         /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("changeType")]
-        public ChangeListType ChangeType { get; set; }
+        public ArrayChangeType ChangeType { get; set; }
 
         /// <summary>
-        /// Memory expression of the list to manipulate
+        /// Memory expression of the array to manipulate
         /// </summary>
-        [JsonProperty("listProperty")]
+        [JsonProperty("arrayProperty")]
         public string ListProperty { get; set; }
 
         /// <summary>
-        /// Memory of the item to put onto the list
+        /// Memory of the item to put onto the array
         /// </summary>
         [JsonProperty("itemProperty")]
         public string ItemProperty { get; set; }
 
-        public ChangeList(ChangeListType changeType, string listProperty = null, string itemProperty = null)
+        public EditArray(ArrayChangeType changeType, string arrayProperty = null, string itemProperty = null)
             : base()
         {
             this.ChangeType = changeType;
 
-            if (!string.IsNullOrEmpty(listProperty))
+            if (!string.IsNullOrEmpty(arrayProperty))
             {
-                this.ListProperty = listProperty;
+                this.ListProperty = arrayProperty;
             }
 
             if (!string.IsNullOrEmpty(itemProperty))
@@ -91,10 +91,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
         {
             if (string.IsNullOrEmpty(ListProperty))
             {
-                throw new Exception($"ChangeList: \"{ ChangeType }\" operation couldn't be performed because the listProperty wasn't specified.");
+                throw new Exception($"EditArray: \"{ ChangeType }\" operation couldn't be performed because the arrayProperty wasn't specified.");
             }
 
-            var list = dc.State.GetValue(ListProperty, new List<object>());
+            var array = dc.State.GetValue(ListProperty, new List<object>());
 
             object item = null;
             string serialized = string.Empty;
@@ -102,53 +102,53 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 
             switch (ChangeType)
             {
-                case ChangeListType.Pop:
-                    item = list[list.Count - 1];
-                    list.RemoveAt(list.Count - 1);
+                case ArrayChangeType.Pop:
+                    item = array[array.Count - 1];
+                    array.RemoveAt(array.Count - 1);
                     if (!string.IsNullOrEmpty(ItemProperty))
                     {
                         dc.State.SetValue(ItemProperty, item);
                     }
                     lastResult = item;
                     break;
-                case ChangeListType.Push:
+                case ArrayChangeType.Push:
                     EnsureItemProperty();
                     item = dc.State.GetValue<object>(ItemProperty);
                     lastResult = item != null;
                     if ((bool)lastResult)
                     {
-                        list.Add(item);
+                        array.Add(item);
                     }
                     break;
-                case ChangeListType.Take:
-                    if (list.Count == 0)
+                case ArrayChangeType.Take:
+                    if (array.Count == 0)
                     {
                         break;
                     }
-                    item = list[0];
-                    list.RemoveAt(0);
+                    item = array[0];
+                    array.RemoveAt(0);
                     if (!string.IsNullOrEmpty(ItemProperty))
                     {
                         dc.State.SetValue(ItemProperty, item);
                     }
                     lastResult = item;
                     break;
-                case ChangeListType.Remove:
+                case ArrayChangeType.Remove:
                     EnsureItemProperty();
                     item = dc.State.GetValue<object>(ItemProperty);
                     if (item != null)
                     {
                         lastResult = false;
-                        list.Remove(item);
+                        array.Remove(item);
                     }
                     break;
-                case ChangeListType.Clear:
-                    lastResult = list.Count > 0;
-                    list.Clear();
+                case ArrayChangeType.Clear:
+                    lastResult = array.Count > 0;
+                    array.Clear();
                     break;
             }
 
-            dc.State.SetValue(ListProperty, list);
+            dc.State.SetValue(ListProperty, array);
             dc.State.SetValue("dialog.lastResult", lastResult);
             return await dc.EndDialogAsync();
         }
@@ -157,7 +157,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
         {
             if (string.IsNullOrEmpty(ItemProperty))
             {
-                throw new Exception($"ChangeList: \"{ ChangeType }\" operation couldn't be performed for list \"{ListProperty}\" because an itemProperty wasn't specified.");
+                throw new Exception($"EditArray: \"{ ChangeType }\" operation couldn't be performed for array \"{ListProperty}\" because an itemProperty wasn't specified.");
             }
         }
 
