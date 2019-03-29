@@ -57,7 +57,7 @@
     <None Remove="Schemas\Recognizers\Microsoft.MultiLanguageRecognizers.schema" />
     <None Remove="Schemas\Recognizers\Microsoft.RegexRecognizer.schema" />
     <None Remove="Schemas\Rules\Microsoft.BeginDialogRule.schema" />
-    <None Remove="Schemas\Rules\Microsoft.DefaultRule.schema" />
+    <None Remove="Schemas\Rules\Microsoft.NoMatchRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.EventRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.IfPropertyRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.IntentRule.schema" />
@@ -85,7 +85,7 @@
     <Content Include="Schemas\Rules\Microsoft.Rule.schema" />
     <Content Include="Schemas\Rules\Microsoft.BeginDialogRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.EventRule.schema" />
-    <Content Include="Schemas\Rules\Microsoft.DefaultRule.schema" />
+    <Content Include="Schemas\Rules\Microsoft.NoMatchRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.IfPropertyRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.IntentRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.ReplacePlanRule.schema" />

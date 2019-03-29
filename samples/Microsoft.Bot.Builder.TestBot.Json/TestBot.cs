@@ -35,7 +35,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             this.accessors = accessors;
             this.resourceExplorer = resourceExplorer;
             this.resourceExplorer.Changed += ResourceExplorer_Changed;
-            this.resourceExplorer.Deleted += ResourceExplorer_Changed;
 
             LoadRootDialog();
         }
@@ -52,7 +51,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         {
             var rootFile = resourceExplorer.GetResource(@"ToDoBot.main.dialog");
             //var rootFile = resourceExplorer.GetResource("ToDoLuisBot.main.dialog");
-            //var rootFile = resourceExplorer.GetResource("DefaultRule.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("NoMatchRule.main.dialog");
             //var rootFile = resourceExplorer.GetResource("WaitForInput.main.dialog");
             //var rootFile = resourceExplorer.GetResource("IfProperty.main.dialog");
             //var rootFile = resourceExplorer.GetResource("TextPrompt.main.dialog");

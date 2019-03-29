@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         new TextPrompt() { InitialPrompt = new ActivityTemplate("Hello, what is your name?"),  OutputBinding = "user.name" },
@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -119,7 +119,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -159,7 +159,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -209,7 +209,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                         new WaitForInput(),
                         new SendActivity("To get to the other side")
                     }),
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -255,7 +255,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
             tellJokeDialog.AddRules(new List<IRule>()
             {
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
@@ -268,7 +268,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var askNameDialog = new AdaptiveDialog("AskNameDialog");
             askNameDialog.AddRules(new List<IRule>()
             {
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -299,7 +299,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                     }),
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         new CallDialog() { Dialog = askNameDialog }
@@ -334,7 +334,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
             tellJokeDialog.AddRules(new List<IRule>()
             {
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
@@ -347,7 +347,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var askNameDialog = new AdaptiveDialog("AskNameDialog");
             askNameDialog.AddRules(new List<IRule>()
             {
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -381,7 +381,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                     }),
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         new GotoDialog("AskNameDialog")
@@ -427,7 +427,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new EndDialog()
                     }),
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
@@ -440,7 +440,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         new CallDialog() { Dialog = tellJokeDialog },

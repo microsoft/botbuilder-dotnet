@@ -6,9 +6,12 @@ using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 {
-    public class DefaultRule : EventRule
+    /// <summary>
+    /// This rule fires when no other rule has fired. This allows you to set up a steps for "falling back"
+    /// </summary>
+    public class NoMatchRule : EventRule
     {
-        public DefaultRule(List<IDialog> steps = null, PlanChangeTypes changeType = PlanChangeTypes.DoSteps)
+        public NoMatchRule(List<IDialog> steps = null, PlanChangeTypes changeType = PlanChangeTypes.DoSteps)
             : base(new List<string>() { PlanningEvents.Fallback.ToString() }, steps, changeType)
         {
         }

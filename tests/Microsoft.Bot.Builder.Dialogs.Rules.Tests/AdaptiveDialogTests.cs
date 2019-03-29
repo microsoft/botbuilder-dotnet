@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             var ruleDialog = new AdaptiveDialog("planningTest");
 
-            ruleDialog.AddRule(new DefaultRule(
+            ruleDialog.AddRule(new NoMatchRule(
                     new List<IDialog>()
                     {
                         new SendActivity("Hello Planning!")
@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             var ruleDialog = new AdaptiveDialog("planningTest");
 
-            ruleDialog.AddRule(new DefaultRule(new List<IDialog>()
+            ruleDialog.AddRule(new NoMatchRule(new List<IDialog>()
                     {
                         new SendActivity("Hello Planning!"),
                         new SendActivity("Howdy awain")
@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.AddRule(
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         new TextInput()
@@ -136,7 +136,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         // Add item
@@ -218,7 +218,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             var ruleDialog = new AdaptiveDialog("planningTest");
 
-            ruleDialog.AddRule(new DefaultRule(
+            ruleDialog.AddRule(new NoMatchRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -252,7 +252,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.AddRule(
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -293,7 +293,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new SendActivity("Welcome my friend!")
                     }),
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -331,7 +331,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             ruleDialog.AddRules(new List<IRule>()
             {
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -388,7 +388,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                         new WaitForInput(),
                         new SendActivity("To get to the other side")
                     }),
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -444,7 +444,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                     }),
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         new IfProperty()
@@ -495,7 +495,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                         new AdaptiveDialog("TellJokeDialog")
                         {
                             Rules = new List<IRule>() {
-                                new DefaultRule(new List<IDialog>()
+                                new NoMatchRule(new List<IDialog>()
                                 {
                                     new SendActivity("Why did the chicken cross the road?"),
                                     new WaitForInput(),
@@ -509,14 +509,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                     }),
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         new AdaptiveDialog("AskNameDialog")
                         {
                             Rules = new List<IRule>()
                             {
-                                new DefaultRule(new List<IDialog>()
+                                new NoMatchRule(new List<IDialog>()
                                     {
                                         new IfProperty()
                                         {
@@ -575,7 +575,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                     }),
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         new CallDialog("AskNameDialog")
@@ -586,7 +586,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 {
                     Rules = new List<IRule>()
                     {
-                        new DefaultRule(new List<IDialog>()
+                        new NoMatchRule(new List<IDialog>()
                         {
                             new IfProperty()
                             {
@@ -611,7 +611,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new AdaptiveDialog("TellJokeDialog")
                     {
                         Rules = new List<IRule>() {
-                            new DefaultRule(new List<IDialog>()
+                            new NoMatchRule(new List<IDialog>()
                             {
                                 new SendActivity("Why did the chicken cross the road?"),
                                 new WaitForInput(),

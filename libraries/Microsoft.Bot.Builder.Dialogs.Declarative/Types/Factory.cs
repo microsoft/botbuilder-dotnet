@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.BeginDialogRule", typeof(BeginDialogRule));
             Register("Microsoft.IntentRule", typeof(IntentRule));
             Register("Microsoft.EventRule", typeof(EventRule));
-            Register("Microsoft.DefaultRule", typeof(DefaultRule));
+            Register("Microsoft.NoMatchRule", typeof(NoMatchRule));
             Register("Microsoft.ReplacePlanRule", typeof(ReplacePlanRule));
             Register("Microsoft.WelcomeRule", typeof(WelcomeRule));
 

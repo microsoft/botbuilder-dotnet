@@ -20,7 +20,7 @@
             "$type": "Microsoft.IntentRule",
             "intent": "DefaultIntent",
             "steps": [
-                "DefaultRule.main"
+                "NoMatchRule.main"
             ]
         },
         {
@@ -90,7 +90,7 @@
             ]
         },
         {
-            "$type": "Microsoft.DefaultRule",
+            "$type": "Microsoft.NoMatchRule",
             "steps": [
                 {
                     "$type": "Microsoft.SendActivity",

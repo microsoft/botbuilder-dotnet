@@ -33,9 +33,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         public TestContext TestContext { get; set; }
 
         [TestMethod]
-        public async Task JsonDialogLoad_DefaultRule()
+        public async Task JsonDialogLoad_NoMatchRule()
         {
-            string path = Path.Combine(samplesDirectory, @"Planning 1 - DefaultRule\DefaultRule.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"Planning 1 - NoMatchRule\NoMatchRule.main.dialog");
 
             await BuildTestFlow(path)
             .Send("hello")

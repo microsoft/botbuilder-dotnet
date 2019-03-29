@@ -39,7 +39,7 @@
             ]
         },
         {
-            "$type": "Microsoft.DefaultRule",
+            "$type": "Microsoft.NoMatchRule",
             "steps": [
                 {
                     "$type": "Microsoft.IfProperty",

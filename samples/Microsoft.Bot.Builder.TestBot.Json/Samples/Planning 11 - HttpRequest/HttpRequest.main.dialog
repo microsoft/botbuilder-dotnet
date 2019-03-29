@@ -4,7 +4,7 @@
   "$id": "root",
   "rules": [
     {
-      "$type": "Microsoft.DefaultRule",
+      "$type": "Microsoft.NoMatchRule",
       "steps": [
         {
           "$type": "Microsoft.SendActivity",

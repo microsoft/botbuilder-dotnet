@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 
         public List<OnCatchConditional> Conditionals { get; set; }
 
-        public override async Task<bool> OnDialogEventAsync(DialogContext dc, DialogEvent e)
+        public async override Task<bool> OnDialogEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
             // Find the planning context to use
             // There is an issue created by consultation where our current DialogContext might
