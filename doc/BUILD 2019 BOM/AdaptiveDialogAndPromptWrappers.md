@@ -7,12 +7,12 @@
 _The new Adaptive dialog and the event model simplify sophisticated conversation modelling primitives, eliminate much of the boiler plate code and helps me focus on the model of the conversation rather than the mechanics of dialog management_
 
 ## Remaining work
-- - [x] Close on scope of work for //BUILD for Adaptive dialogs - [recognizers](#Recognizers), [steps](#Steps), [rules](#Rules), [interruption handling](#Interrpution-handling) supported; [prompt wrappers](#Prompt-wrappers)
-- - [x] Close on naming for rules, steps, prompt wrappers and interruption handling scopes
-- - [x] Close on scope of prompt wrappers
-    - C# implementation introduces properties on existing prompts. TS does not have any implementation of the new properties
-    - TS added new prompt++ (suffix input) that does binding to memory as well as existential check before prompting. C# does not appear to do any existential checks
-    - C# has float prompt added while TS does not have this. 
+- - [x] ~~Close on scope of work for //BUILD for Adaptive dialogs - [recognizers](#Recognizers), [steps](#Steps), [rules](#Rules), [interruption handling](#Interrpution-handling) supported; [prompt wrappers](#Prompt-wrappers)~~
+- - [x] ~~Close on naming for rules, steps, prompt wrappers and interruption handling scopes~~
+- - [x] ~~Close on scope of prompt wrappers~~
+    - ~~C# implementation introduces properties on existing prompts. TS does not have any implementation of the new properties~~
+    - ~~TS added new prompt++ (suffix input) that does binding to memory as well as existential check before prompting. C# does not appear to do any existential checks~~
+    - ~~C# has float prompt added while TS does not have this.~~
 - - [ ] Alignment on Bot + Run method
 - - [ ] Functional parity across C# and TS for planned set of steps, rules, interruption handling and prompt wrappers
     - - [ ] Class level consistency
@@ -88,7 +88,7 @@ We will support the following recognizers in Adaptive dialogs
 
 CUT PlanChangeType off rule.
 
-~~**Interruption plan change types** in scope for //BUILD
+<strike>**Interruption plan change types** in scope for //BUILD
 
 |     Interruption handling     |         C#             |          TS            |
 |-------------------------------|------------------------|------------------------|
@@ -98,7 +98,7 @@ CUT PlanChangeType off rule.
 | endPlan                       |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|
 | newPlan                       |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|
 | replacePlan                   |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|
-~~
+</strike>
 ### Prompt wrappers 
 
 We will add new \<entityType\>Input class that does the follwing - 
