@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Connector.Authentication
         public const string EmulateOAuthCardsKey = "EmulateOAuthCards";
 
         /// <summary>
-        /// TO BOT FROM CHANNEL: OpenID metadata document for tokens coming from MSA
+        /// TO BOT FROM CHANNEL: OpenID metadata document for tokens coming from MSA.
         /// </summary>
         public const string ToBotFromChannelOpenIdMetadataUrl = "https://login.botframework.com/v1/.well-known/openidconfiguration";
 
