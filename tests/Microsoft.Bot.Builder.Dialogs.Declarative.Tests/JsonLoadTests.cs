@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                 "Whassup Carlos?"
             })
             .Send("Help")
-            .AssertReply("I can tell jokes and also forsee the future!")
+            .AssertReply("I can tell jokes and also forsee the future!\n")
             .Send("Do you know a joke?")
             .AssertReply("Why did the chicken cross the road?")
             .Send("Why?")

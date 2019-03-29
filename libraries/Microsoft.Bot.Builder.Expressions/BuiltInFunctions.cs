@@ -684,12 +684,16 @@ namespace Microsoft.Bot.Builder.Expressions
                 { ExpressionType.Average,
                     new ExpressionEvaluator(Apply(args => args.Average(u => (double)u), VerifyNumber),
                         ReturnType.Number, ValidateNumber) },
+                { ExpressionType.Count,
+                    new ExpressionEvaluator(Apply(args => ((IList<object>)args[0]).Count), ReturnType.Number, ValidateUnary)},
 
                 // Booleans
                 { ExpressionType.LessThan, Comparison(args => args[0] < args[1]) },
                 { ExpressionType.LessThanOrEqual, Comparison(args => args[0] <= args[1]) },
-                { ExpressionType.Equal, Comparison(args => args[0] == args[1]) },
-                { ExpressionType.NotEqual, Comparison(args => args[0] != args[1]) },
+                { ExpressionType.Equal,
+                    new ExpressionEvaluator(Apply(args => args[0] == args[1]), ReturnType.Boolean, ValidateBinary) },
+                { ExpressionType.NotEqual, 
+                    new ExpressionEvaluator(Apply(args => args[0] != args[1]), ReturnType.Boolean, ValidateBinary) },
                 { ExpressionType.GreaterThan,Comparison(args => args[0] > args[1]) },
                 { ExpressionType.GreaterThanOrEqual, Comparison(args => args[0] >= args[1]) },
                 { ExpressionType.Exists, new ExpressionEvaluator(Apply(args => args[0] != null), ReturnType.Boolean, ValidateUnary) },
@@ -874,9 +878,9 @@ namespace Microsoft.Bot.Builder.Expressions
 
                 // Conversions
                 { ExpressionType.Float,
-                    new ExpressionEvaluator(Apply(args => (float)Convert.ToDouble(args[0])), ReturnType.Number, ValidateUnaryString) },
+                    new ExpressionEvaluator(Apply(args => (float)Convert.ToDouble(args[0])), ReturnType.Number, ValidateUnary) },
                 { ExpressionType.Int,
-                    new ExpressionEvaluator(Apply(args => Convert.ToInt32(args[0])), ReturnType.Number, ValidateUnaryString) },
+                    new ExpressionEvaluator(Apply(args => Convert.ToInt32(args[0])), ReturnType.Number, ValidateUnary) },
                 // TODO: Is this really the best way?
                 { ExpressionType.String,
                     new ExpressionEvaluator(Apply(args => JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"')), ReturnType.String, ValidateUnary) },

@@ -141,9 +141,9 @@
             "$ref": "#/definitions/Microsoft.SendList"
         },
         {
-            "title": "Microsoft.TextPrompt",
+            "title": "Microsoft.TextInput",
             "description": "This represents a dialog which gathers a text from the user",
-            "$ref": "#/definitions/Microsoft.TextPrompt"
+            "$ref": "#/definitions/Microsoft.TextInput"
         },
         {
             "title": "Microsoft.WaitForInput",
@@ -1182,9 +1182,9 @@
                     "$ref": "#/definitions/Microsoft.SendList"
                 },
                 {
-                    "title": "Microsoft.TextPrompt",
+                    "title": "Microsoft.TextInput",
                     "description": "This represents a dialog which gathers a text from the user",
-                    "$ref": "#/definitions/Microsoft.TextPrompt"
+                    "$ref": "#/definitions/Microsoft.TextInput"
                 },
                 {
                     "title": "Microsoft.WaitForInput",
@@ -2299,7 +2299,7 @@
                 }
             ]
         },
-        "Microsoft.TextPrompt": {
+        "Microsoft.TextInput": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Text prompt",
             "description": "This represents a dialog which gathers a text from the user",
@@ -2311,7 +2311,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.TextPrompt"
+                    "const": "Microsoft.TextInput"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -2340,7 +2340,7 @@
                         "\\w{3,30}"
                     ]
                 },
-                "initialPrompt": {
+                "prompt": {
                     "$type": "Microsoft.IActivityTemplate",
                     "title": "Initial Prompt",
                     "description": "The message to send to start.",
@@ -2358,7 +2358,7 @@
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
-                "noMatchResponse": {
+                "invalidResponse": {
                     "$type": "Microsoft.IActivityTemplate",
                     "title": "No match",
                     "description": "The message to send to when the input didn't match.",

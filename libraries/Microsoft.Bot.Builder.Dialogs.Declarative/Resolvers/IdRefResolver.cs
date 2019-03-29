@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
 
                 refResources.ForEach(r => builder.AppendLine($"Name: {r.Name}. Path: .{r.FullName}"));
 
-                throw new Exception();
+                throw new Exception(builder.ToString());
             }
             var file = refResources.Single();
             var text = File.ReadAllText(file.FullName);

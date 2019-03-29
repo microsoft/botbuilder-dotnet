@@ -11,6 +11,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
+using Microsoft.Bot.Builder.Dialogs.Rules.Input;
 using Microsoft.Bot.Builder.Dialogs.Rules.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Rules.Rules;
 using Microsoft.Bot.Builder.Dialogs.Rules.Steps;
@@ -109,10 +110,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new DefaultRule(
                     new List<IDialog>()
                     {
-                        new TextPrompt()
+                        new TextInput()
                         {
-                            InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
-                            OutputBinding = "user.name"
+                            Prompt = new ActivityTemplate("Hello, what is your name?"),
+                            Property = "user.name"
                         },
                         new SendActivity("Hello {user.name}, nice to meet you!"),
                     }));
@@ -139,38 +140,38 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     new List<IDialog>()
                     {
                         // Add item
-                        new TextPrompt() {
-                            InitialPrompt = new ActivityTemplate("Please add an item to todos."),
-                            OutputBinding = "dialog.todo"
+                        new TextInput() {
+                            Prompt = new ActivityTemplate("Please add an item to todos."),
+                            Property = "dialog.todo"
                         },
                         new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "dialog.todo"),
                         new SendList("user.todos"),
-                        new TextPrompt()
+                        new TextInput()
                         {
-                            InitialPrompt = new ActivityTemplate("Please add an item to todos."),
-                            OutputBinding = "dialog.todo"
+                            Prompt = new ActivityTemplate("Please add an item to todos."),
+                            Property = "dialog.todo"
                         },
                         new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "dialog.todo"),
                         new SendList("user.todos"),
 
                         // Remove item
-                        new TextPrompt() {
-                            InitialPrompt = new ActivityTemplate("Enter a item to remove."),
-                            OutputBinding = "dialog.todo"
+                        new TextInput() {
+                            Prompt = new ActivityTemplate("Enter a item to remove."),
+                            Property = "dialog.todo"
                         },
                         new ChangeList(ChangeList.ChangeListType.Remove, "user.todos", "dialog.todo"),
                         new SendList("user.todos"),
 
                         // Add item and pop item
-                        new TextPrompt() {
-                            InitialPrompt = new ActivityTemplate("Please add an item to todos."),
-                            OutputBinding = "dialog.todo"
+                        new TextInput() {
+                            Prompt = new ActivityTemplate("Please add an item to todos."),
+                            Property = "dialog.todo"
                         },
                         new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "dialog.todo"),
-                        new TextPrompt()
+                        new TextInput()
                         {
-                            InitialPrompt = new ActivityTemplate("Please add an item to todos."),
-                            OutputBinding = "dialog.todo"
+                            Prompt = new ActivityTemplate("Please add an item to todos."),
+                            Property = "dialog.todo"
                         },
                         new ChangeList(ChangeList.ChangeListType.Push, "user.todos", "dialog.todo"),
                         new SendList("user.todos"),
@@ -225,9 +226,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             Expression = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
-                                new TextPrompt() {
-                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
-                                    OutputBinding = "user.name"
+                                new TextInput() {
+                                    Prompt = new ActivityTemplate("Hello, what is your name?"),
+                                    Property = "user.name"
                                 },
                             }
                         },
@@ -259,9 +260,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             Expression = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
-                                new TextPrompt()
+                                new TextInput()
                                 {
-                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
+                                    Prompt = new ActivityTemplate("Hello, what is your name?"),
                                     Property = "user.name"
                                 }
                             }
@@ -300,10 +301,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             Expression = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
-                                new TextPrompt()
+                                new TextInput()
                                 {
-                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
-                                    OutputBinding = "user.name"
+                                    Prompt = new ActivityTemplate("Hello, what is your name?"),
+                                    Property = "user.name"
                                 }
                             }
                         },
@@ -319,6 +320,54 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 .AssertReply("Hello Carlos, nice to meet you!")
             .StartTestAsync();
         }
+
+        [TestMethod]
+        public async Task Planning_StringLiteralInExpression()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var ruleDialog = new AdaptiveDialog("planningTest");
+
+            ruleDialog.AddRules(new List<IRule>()
+            {
+                new DefaultRule(
+                    new List<IDialog>()
+                    {
+                        new IfProperty()
+                        {
+                            Expression = new ExpressionEngine().Parse("user.name == null"),
+                            IfTrue = new List<IDialog>()
+                            {
+                                new TextPrompt()
+                                {
+                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
+                                    OutputBinding = "user.name"
+                                }
+                            }
+                        },
+                        new IfProperty()
+                        {
+                            // Check comparison with string literal
+                            Expression = new ExpressionEngine().Parse("user.name == 'Carlos'"),
+                            IfTrue = new List<IDialog>()
+                            {
+                                new SendActivity("Hello carlin")
+                            }
+                        },
+                        new SendActivity("Hello {user.name}, nice to meet you!")
+                    })});
+
+            await CreateFlow(ruleDialog, convoState, userState)
+            .Send(new Activity() { Type = ActivityTypes.ConversationUpdate, MembersAdded = new List<ChannelAccount>() { new ChannelAccount("bot", "Bot"), new ChannelAccount("user", "User") } })
+            .Send("hi")
+                .AssertReply("Hello, what is your name?")
+            .Send("Carlos")
+                .AssertReply("Hello carlin")
+                .AssertReply("Hello Carlos, nice to meet you!")
+            .StartTestAsync();
+        }
+
 
         [TestMethod]
         public async Task Planning_DoSteps()
@@ -347,10 +396,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             Expression = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
-                                new TextPrompt()
+                                new TextInput()
                                 {
-                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
-                                    OutputBinding = "user.name"
+                                    Prompt = new ActivityTemplate("Hello, what is your name?"),
+                                    Property = "user.name"
                                 }
                             }
                         },
@@ -403,10 +452,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             Expression = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
-                                new TextPrompt()
+                                new TextInput()
                                 {
-                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
-                                    OutputBinding = "user.name"
+                                    Prompt = new ActivityTemplate("Hello, what is your name?"),
+                                    Property = "user.name"
                                 }
                             }
                         },
@@ -474,10 +523,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                                             Expression = new ExpressionEngine().Parse("user.name == null"),
                                             IfTrue = new List<IDialog>()
                                             {
-                                                new TextPrompt()
+                                                new TextInput()
                                                 {
-                                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
-                                                    OutputBinding = "user.name"
+                                                    Prompt = new ActivityTemplate("Hello, what is your name?"),
+                                                    Property = "user.name"
                                                 }
                                             }
                                         },
@@ -544,10 +593,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                                 Expression = new ExpressionEngine().Parse("user.name == null"),
                                 IfTrue = new List<IDialog>()
                                 {
-                                    new TextPrompt()
+                                    new TextInput()
                                     {
-                                        InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
-                                        OutputBinding = "user.name"
+                                        Prompt = new ActivityTemplate("Hello, what is your name?"),
+                                        Property = "user.name"
                                     }
                                 }
                             },

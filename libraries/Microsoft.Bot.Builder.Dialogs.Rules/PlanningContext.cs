@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         /// apply.
         /// </remarks>
         /// <returns>True if there were any changes to apply. </returns>
-        public async Task<bool> ApplyChangesAsync(CancellationToken cancellationToken)
+        public async Task<bool> ApplyChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             var changes = Plans.Changes;
 
@@ -121,7 +121,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
         /// </summary>
         /// <param name="steps">Steps to insert at the beginning of the plan.</param>
         /// <returns>True if a new plan had to be started.</returns>
-        public async Task<bool> DoStepsAsync(List<PlanStepState> steps, CancellationToken cancellationToken)
+        public async Task<bool> DoStepsAsync(List<PlanStepState> steps, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Initialize new plan if needed
             bool isNewPlan = Plans.Plan == null;
@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             return isNewPlan;
         }
 
-        public async Task<bool> DoStepsBeforeTagsAsync(List<string> tags, List<PlanStepState> steps, CancellationToken cancellationToken)
+        public async Task<bool> DoStepsBeforeTagsAsync(List<string> tags, List<PlanStepState> steps, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Initialize new plan if needed
             bool isNewPlan = Plans.Plan == null;
@@ -199,7 +199,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             return isNewPlan;
         }
 
-        public async Task<bool> DoStepsLaterAsync(List<PlanStepState> steps, CancellationToken cancellationToken)
+        public async Task<bool> DoStepsLaterAsync(List<PlanStepState> steps, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Initialize new plan if needed
             bool isNewPlan = Plans.Plan == null;
@@ -222,7 +222,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             return isNewPlan;
         }
 
-        public async Task<bool> EndPlanAsync(List<PlanStepState> steps, CancellationToken cancellationToken)
+        public async Task<bool> EndPlanAsync(List<PlanStepState> steps = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var resumePlan = Plans.SavedPlans != null && Plans.SavedPlans.Count > 0;
 
@@ -258,13 +258,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             return resumePlan;
         }
 
-        public async Task<bool> EndStepAsync(CancellationToken cancellationToken)
+        public async Task<bool> EndStepAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             if (Plans.Plan != null && Plans.Plan.Steps.Count > 0)
             {
                 if (Plans.Plan.Steps.Count == 1)
                 {
-                    return await this.EndPlanAsync(null, cancellationToken).ConfigureAwait(false);
+                    return await this.EndPlanAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
@@ -275,7 +275,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             return false;
         }
 
-        public async Task<bool> NewPlanAsync(List<PlanStepState> steps, CancellationToken cancellationToken)
+        public async Task<bool> NewPlanAsync(List<PlanStepState> steps, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Save existing plan
             var savePlan = Plans.Plan != null && Plans.Plan.Steps.Count > 0;
@@ -308,7 +308,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             return savePlan;
         }
 
-        public async Task<bool> ReplacePlanAsync(List<PlanStepState> steps, CancellationToken cancellationToken)
+        public async Task<bool> ReplacePlanAsync(List<PlanStepState> steps, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Update plan
             var planReplaced = Plans.Plan != null && Plans.Plan.Steps.Count > 0;
