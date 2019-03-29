@@ -22,13 +22,16 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
         private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
         private WebSocketServer server;
+        private string serverID;
 
         public BotFrameworkStreamingExtensionsAdapter(
+            string serverID,
             HttpClient customHttpClient = null,
             WebSocketServer webSocketServer = null,
             IMiddleware middleware = null,
             ILogger logger = null)
         {
+            this.serverID = serverID;
             _logger = logger ?? NullLogger.Instance;
             _httpClient = customHttpClient ?? DefaultHttpClient;
             server = webSocketServer;
@@ -147,8 +150,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
                 var baseUrl = activity.ServiceUrl + (activity.ServiceUrl.EndsWith("/") ? string.Empty : "/");
                 var requestPath = $"{baseUrl}v3/conversations/{activity.Conversation.Id}/activities/{activity.Id}";
                 var requestBody = JsonConvert.SerializeObject(activity, SerializationSettings.BotSchemaSerializationSettings);
-                var serverResponse = await server.SendAsync(Request.CreateRequest(Request.POST, requestPath, new StringContent(requestBody, System.Text.Encoding.UTF8))).ConfigureAwait(false);
-                response = serverResponse.ReadBodyAsJson<ResourceResponse>();
+                server = WebSocketServerRegistry.GetServerByID(serverID);
+
+                if (server != null)
+                {
+                    var serverResponse = await server.SendAsync(Request.CreateRequest(Request.POST, requestPath, new StringContent(requestBody, System.Text.Encoding.UTF8))).ConfigureAwait(false);
+                    response = serverResponse.ReadBodyAsJson<ResourceResponse>();
+                }
 
                 // If No response is set, then defult to a "simple" response. This can't really be done
                 // above, as there are cases where the ReplyTo/SendTo methods will also return null
