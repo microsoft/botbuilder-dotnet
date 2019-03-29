@@ -14,7 +14,7 @@
             "ifFalse": [
                 {
                     "$type": "Microsoft.SendList",
-                    "listProperty": "user.todos",
+                    "arrayProperty": "user.todos",
                     "messageTemplate": "Here are your todos: "
                 }
             ]

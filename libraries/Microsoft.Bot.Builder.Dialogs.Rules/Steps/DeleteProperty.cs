@@ -5,12 +5,15 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 {
-    public class ClearProperty : DialogCommand
+    /// <summary>
+    /// Deletes a property from memory
+    /// </summary>
+    public class DeleteProperty : DialogCommand
     {
-        public ClearProperty() : base()
+        public DeleteProperty() : base()
         { }
 
-        public ClearProperty(string property)
+        public DeleteProperty(string property)
             : base()
         {
             if (!string.IsNullOrEmpty(property))

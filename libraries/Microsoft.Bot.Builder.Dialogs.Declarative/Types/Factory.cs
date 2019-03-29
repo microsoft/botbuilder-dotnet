@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.SaveEntity", typeof(SaveEntity));
             Register("Microsoft.EditArray", typeof(EditArray));
             Register("Microsoft.SendList", typeof(SendList));
-            Register("Microsoft.ClearProperty", typeof(ClearProperty));
+            Register("Microsoft.DeleteProperty", typeof(DeleteProperty));
             Register("Microsoft.HttpRequest", typeof(HttpRequest));
 
             // Dialogs

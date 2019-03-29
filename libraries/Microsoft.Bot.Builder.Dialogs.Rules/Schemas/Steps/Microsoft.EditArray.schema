@@ -18,10 +18,10 @@
                 "Clear"
             ]
         },
-        "listProperty": {
+        "arrayProperty": {
             "type": "string",
-            "title": "List Property",
-            "description": "Memory expression of the list to manipulate."
+            "title": "Array Property",
+            "description": "Memory expression of the array to manipulate."
         },
         "itemProperty": {
             "type": "string",

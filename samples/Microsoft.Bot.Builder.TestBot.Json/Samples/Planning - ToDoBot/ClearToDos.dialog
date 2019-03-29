@@ -3,9 +3,9 @@
     "$type": "Microsoft.AdaptiveDialog",
     "steps": [
         {
-            "$type": "Microsoft.ChangeList",
+            "$type": "Microsoft.EditArray",
             "changeType": "Clear",
-            "listProperty": "user.todos"
+            "arrayProperty": "user.todos"
         },
         {
             "$type": "Microsoft.SendActivity",

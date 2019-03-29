@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 
         protected override string OnComputeId()
         {
-            return $"array[{ChangeType + ": " + ListProperty}]";
+            return $"array[{ChangeType + ": " + ArrayProperty}]";
         }
 
         /// <summary>
@@ -61,9 +61,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 
         /// <summary>
         /// Memory expression of the array to manipulate
-        /// </summary>
+        /// </summary>Edit
         [JsonProperty("arrayProperty")]
-        public string ListProperty { get; set; }
+        public string ArrayProperty { get; set; }
 
         /// <summary>
         /// Memory of the item to put onto the array
@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 
             if (!string.IsNullOrEmpty(arrayProperty))
             {
-                this.ListProperty = arrayProperty;
+                this.ArrayProperty = arrayProperty;
             }
 
             if (!string.IsNullOrEmpty(itemProperty))
@@ -89,12 +89,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (string.IsNullOrEmpty(ListProperty))
+            if (string.IsNullOrEmpty(ArrayProperty))
             {
                 throw new Exception($"EditArray: \"{ ChangeType }\" operation couldn't be performed because the arrayProperty wasn't specified.");
             }
 
-            var array = dc.State.GetValue(ListProperty, new List<object>());
+            var array = dc.State.GetValue(ArrayProperty, new List<object>());
 
             object item = null;
             string serialized = string.Empty;
@@ -148,7 +148,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
                     break;
             }
 
-            dc.State.SetValue(ListProperty, array);
+            dc.State.SetValue(ArrayProperty, array);
             dc.State.SetValue("dialog.lastResult", lastResult);
             return await dc.EndDialogAsync();
         }
@@ -157,7 +157,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
         {
             if (string.IsNullOrEmpty(ItemProperty))
             {
-                throw new Exception($"EditArray: \"{ ChangeType }\" operation couldn't be performed for array \"{ListProperty}\" because an itemProperty wasn't specified.");
+                throw new Exception($"EditArray: \"{ ChangeType }\" operation couldn't be performed for array \"{ArrayProperty}\" because an itemProperty wasn't specified.");
             }
         }
 

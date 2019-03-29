@@ -19,9 +19,9 @@
             ]
         },
         {
-            "$type": "Microsoft.ChangeList",
+            "$type": "Microsoft.EditArray",
             "changeType": "Push",
-            "listProperty": "user.todos",
+            "arrayProperty": "user.todos",
             "itemProperty": "dialog.todo"
         },
         {
@@ -29,7 +29,7 @@
             "activity": "Successfully added a todo named \"{dialog.todo}\""
         },
         {
-            "$type": "Microsoft.ClearProperty",
+            "$type": "Microsoft.DeleteProperty",
             "property": "dialog.todo"
         }
     ],
