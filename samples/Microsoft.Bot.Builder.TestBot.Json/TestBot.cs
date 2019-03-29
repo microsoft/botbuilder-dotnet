@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             this.accessors = accessors;
             this.resourceExplorer = resourceExplorer;
             this.resourceExplorer.Changed += ResourceExplorer_Changed;
-            this.resourceExplorer.Deleted += ResourceExplorer_Changed;
+            // this.resourceExplorer.Deleted += ResourceExplorer_Changed;
 
             LoadRootDialog();
         }

@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Expressions
     /// <summary>
     /// Type expected from evalating an expression.
     /// </summary>
-    public enum ExpressionReturnType
+    public enum ReturnType
     {
         /// <summary>
         /// True or false boolean value.
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <summary>
         /// Expected result of evaluating expression.
         /// </summary>
-        public ExpressionReturnType ReturnType { get { return _evaluator.ReturnType; } }
+        public ReturnType ReturnType { get { return _evaluator.ReturnType; } }
 
         /// <summary>
         /// Validate immediate expression.

@@ -16,6 +16,9 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string Divide = "/";
         public const string Min = "min";
         public const string Max = "max";
+        public const string Power = "^";
+        public const string Mod = "%";
+        public const string Average = "average";
 
         // Comparisons
         public const string LessThan = "<";
@@ -24,18 +27,62 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string NotEqual = "!=";
         public const string GreaterThan = ">";
         public const string GreaterThanOrEqual = ">=";
+        public const string Exists = "exists";
+        public const string Contains = "contains";
+        public const string Empty = "empty";
 
         // Logic
         public const string And = "&&";
         public const string Or = "||";
         public const string Not = "!";
+        public const string Optional = "optional";
+
+        // String
+        public const string Concat = "&";
+        public const string Length = "length";
+        public const string Replace = "replace";
+        public const string ReplaceIgnoreCase = "replaceIgnoreCase";
+        public const string Split = "split";
+        public const string Substring = "substring";
+        public const string ToLower = "toLower";
+        public const string ToUpper = "toUpper";
+        public const string Trim = "trim";
+        public const string Join = "join";
+
+        // DateTime
+        public const string AddDays = "addDays";
+        public const string AddHours = "addHours";
+        public const string AddMinutes = "addMinutes";
+        public const string AddSeconds = "addSeconds";
+        public const string DayOfMonth = "dayOfMonth";
+        public const string DayOfWeek = "dayOfWeek";
+        public const string DayOfYear = "dayOfYear";
+        public const string Month = "month";
+        public const string Date = "date";
+        public const string Year = "year";
+        public const string UtcNow = "utcNow";
+        public const string FormatDateTime = "formatDateTime";
+        public const string SubtractFromTime = "subtractFromTime";
+        public const string DateReadBack = "dateReadBack";
+        public const string GetTimeOfDay = "getTimeOfDay";
+
+        // Conversions
+        public const string Float = "float";
+        public const string Int = "int";
+        public const string String = "string";
+        public const string Bool = "bool";
 
         // Memory
         public const string Accessor = "Accessor";
         public const string Element = "Element";
+        public const string CreateArray = "createArray";
+        public const string First = "first";
+        public const string Last = "last";
 
         // Misc
         public const string Constant = "Constant";
         public const string Lambda = "Lambda";
+        public const string If = "if";
+        public const string Rand = "rand";
     }
 }

@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="returnType">Type expected from evaluation.</param>
         /// <param name="validator">Static validation of expression.</param>
         public ExpressionEvaluator(EvaluateExpressionDelegate evaluator,
-            ExpressionReturnType returnType = ExpressionReturnType.Object,
+            ReturnType returnType = ReturnType.Object,
             ValidateExpressionDelegate validator = null)
         {
             _evaluator = evaluator;
@@ -66,6 +66,6 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <summary>
         /// Type expected by evaluating the expression.
         /// </summary>
-        public ExpressionReturnType ReturnType { get; set; }
+        public ReturnType ReturnType { get; set; }
     }
 }

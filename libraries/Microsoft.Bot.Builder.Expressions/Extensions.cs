@@ -31,6 +31,23 @@ namespace Microsoft.Bot.Builder.Expressions
         }
 
         /// <summary>
+        /// Test an object to see if it is an integer type.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <returns>True if numeric type.</returns>
+        public static bool IsInteger(this object value)
+        {
+            return value is sbyte
+                    || value is byte
+                    || value is short
+                    || value is ushort
+                    || value is int
+                    || value is uint
+                    || value is long
+                    || value is ulong;
+        }
+
+        /// <summary>
         /// Return the static reference paths to memory.
         /// </summary>
         /// <remarks>

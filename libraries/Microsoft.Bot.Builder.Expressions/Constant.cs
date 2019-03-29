@@ -32,10 +32,10 @@ namespace Microsoft.Bot.Builder.Expressions
             set
             {
                 _evaluator.ReturnType =
-                      (value is string ? ExpressionReturnType.String
-                      : value.IsNumber() ? ExpressionReturnType.Number
-                      : value is Boolean ? ExpressionReturnType.Boolean
-                      : ExpressionReturnType.Object);
+                      (value is string ? ReturnType.String
+                      : value.IsNumber() ? ReturnType.Number
+                      : value is Boolean ? ReturnType.Boolean
+                      : ReturnType.Object);
                 _value = value;
             }
         }
