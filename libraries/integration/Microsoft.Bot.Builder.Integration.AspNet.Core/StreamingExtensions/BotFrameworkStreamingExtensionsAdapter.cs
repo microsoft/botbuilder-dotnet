@@ -42,12 +42,25 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             }
         }
 
+        /// <summary>
+        /// Registers any middleware the adapter should include in the pipeline.
+        /// </summary>
+        /// <param name="middleware">The middleware to add to the pipeline.</param>
+        /// <returns>This instance of the adapter.</returns>
         public new BotFrameworkStreamingExtensionsAdapter Use(IMiddleware middleware)
         {
             MiddlewareSet.Use(middleware);
             return this;
         }
 
+        /// <summary>
+        /// Overload for processing activities when given an authheader.
+        /// </summary>
+        /// <param name="authHeader">The auth token provided by the request.</param>
+        /// <param name="activity">The activity to process.</param>
+        /// <param name="callback">The BotCallBackHandler to call on completion.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>The response to the activity.</returns>
         public async Task<InvokeResponse> ProcessActivityAsync(string authHeader, Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             BotAssert.ActivityNotNull(activity);
@@ -55,6 +68,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             return await ProcessActivityAsync(activity, callback, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Primary adapter method for processing activities sent from channel.
+        /// </summary>
+        /// <param name="activity">The activity to process.</param>
+        /// <param name="callback">The BotCallBackHandler to call on completion.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>The response to the activity.</returns>
         public async Task<InvokeResponse> ProcessActivityAsync(Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             BotAssert.ActivityNotNull(activity);

@@ -22,6 +22,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
 
         private IBot Bot { get; set; }
 
+        /// <summary>
+        /// Processes incoming requests and returns the response, if any.
+        /// </summary>
+        /// <param name="request">A ReceiveRequest from the connected channel.</param>
+        /// <returns>A response created by the BotFrameworkStreamingExtensionsAdapter.</returns>
         public override async Task<Response> ProcessRequestAsync(ReceiveRequest request)
         {
             var response = new Response();
