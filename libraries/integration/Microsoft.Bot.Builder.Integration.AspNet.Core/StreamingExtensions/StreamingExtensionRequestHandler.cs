@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Protocol;
@@ -35,13 +36,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
 
             if (string.IsNullOrEmpty(body) || request.Streams?.Count > 0)
             {
-                response.StatusCode = 400;
+                response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return response;
             }
 
             if (request.Streams.Where(x => x.Type != "application/json; charset=utf8").Any())
             {
-                response.StatusCode = 406;
+                response.StatusCode = (int)HttpStatusCode.NotAcceptable;
                 return response;
             }
 
@@ -53,7 +54,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
 
                 if (invokeResponse == null)
                 {
-                    response.StatusCode = 200;
+                    response.StatusCode = (int)HttpStatusCode.OK;
                 }
                 else
                 {
@@ -69,7 +70,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             catch (Exception)
             {
                 // TODO: Better exception handling.
-                response.StatusCode = 500;
+                response.StatusCode = (int)HttpStatusCode.InternalServerError;
             }
 
             return response;

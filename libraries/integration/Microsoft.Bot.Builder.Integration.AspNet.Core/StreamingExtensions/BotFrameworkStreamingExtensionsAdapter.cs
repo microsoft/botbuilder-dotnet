@@ -164,7 +164,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
                 var request = Request.CreatePost(requestPath);
                 request.SetBody(activity);
                 var serverResponse = await _server.SendAsync(request).ConfigureAwait(false);
-                response = serverResponse.ReadBodyAsJson<ResourceResponse>();
+
+                if (serverResponse.StatusCode == (int)HttpStatusCode.OK)
+                {
+                    response = serverResponse.ReadBodyAsJson<ResourceResponse>();
+                }
 
                 // If No response is set, then defult to a "simple" response. This can't really be done
                 // above, as there are cases where the ReplyTo/SendTo methods will also return null
