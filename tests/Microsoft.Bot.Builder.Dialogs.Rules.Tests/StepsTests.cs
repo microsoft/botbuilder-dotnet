@@ -289,7 +289,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new ReplacePlanRule("JokeIntent",
+                new IntentRule("JokeIntent",
                     steps: new List<IDialog>()
                     {
                         new CallDialog() { Dialog = tellJokeDialog }
@@ -371,7 +371,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new ReplacePlanRule("JokeIntent",
+                new IntentRule("JokeIntent",
                     steps: new List<IDialog>()
                     {
                         new GotoDialog("TellJokeDialog")

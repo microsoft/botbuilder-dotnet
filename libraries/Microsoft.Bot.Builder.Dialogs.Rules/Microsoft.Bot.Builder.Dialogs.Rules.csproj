@@ -59,7 +59,6 @@
     <None Remove="Schemas\Rules\Microsoft.EventRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.IfPropertyRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.IntentRule.schema" />
-    <None Remove="Schemas\Rules\Microsoft.ReplacePlanRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.Rule.schema" />
     <None Remove="Schemas\Rules\Microsoft.WelcomeRule.schema" />
     <None Remove="Schemas\Steps\Microsoft.CallDialog.schema" />
@@ -84,7 +83,6 @@
     <Content Include="Schemas\Rules\Microsoft.EventRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.IfPropertyRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.IntentRule.schema" />
-    <Content Include="Schemas\Rules\Microsoft.ReplacePlanRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.WelcomeRule.schema" />
     <Content Include="Schemas\Steps\Microsoft.HttpRequest.schema" />
     <Content Include="Schemas\Steps\Microsoft.SendList.schema" />

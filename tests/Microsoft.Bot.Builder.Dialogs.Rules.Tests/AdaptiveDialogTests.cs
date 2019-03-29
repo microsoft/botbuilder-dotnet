@@ -432,7 +432,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             ruleDialog.AddRules(new List<IRule>()
             {
-                new ReplacePlanRule("JokeIntent",
+                new IntentRule("JokeIntent",
                     steps: new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
@@ -489,7 +489,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             ruleDialog.AddRules(new List<IRule>()
             {
-                new ReplacePlanRule("JokeIntent",
+                new IntentRule("JokeIntent",
                     steps: new List<IDialog>()
                     {
                         new AdaptiveDialog("TellJokeDialog")
@@ -565,7 +565,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             ruleDialog.AddRules(new List<IRule>()
             {
-                new ReplacePlanRule("JokeIntent",
+                new IntentRule("JokeIntent",
                     steps: new List<IDialog>()
                     {
                         new CallDialog("TellJokeDialog")
@@ -648,7 +648,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new ReplacePlanRule("JokeIntent",
+                new IntentRule("JokeIntent",
                     steps: new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
