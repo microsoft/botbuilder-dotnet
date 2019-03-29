@@ -82,7 +82,7 @@ namespace Microsoft.Expressions
             {"first", BuildinFunctions.First},
             {"join", BuildinFunctions.Join},
             {"last", BuildinFunctions.Last},
-            {"parameters", BuildinFunctions.Parameters},
+            {"count", BuildinFunctions.Count},
         };
 
         /// <summary>

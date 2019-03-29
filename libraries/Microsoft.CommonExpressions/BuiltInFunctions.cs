@@ -258,7 +258,7 @@ namespace Microsoft.Expressions
                       throw new ExpressionPropertyMissingException();
 
         public static EvaluationDelegate Date = operands =>
-                      operands[0] is string string0 ? ParseTimestamp(string0).Date.ToString("d") :
+                      operands[0] is string string0 ? ParseTimestamp(string0).Date.ToString("M/dd/yyyy") :
                       throw new ExpressionPropertyMissingException();
 
         public static EvaluationDelegate Year = operands =>
@@ -319,17 +319,9 @@ namespace Microsoft.Expressions
                 {
                     return "Tomorrow";
                 }
-                else if (IsSameDay(timestamp1.AddDays(2), timestamp2))
-                {
-                    return "The day after tomorrow";
-                }
                 else if (IsSameDay(timestamp1.AddDays(-1), timestamp2))
                 {
                     return "Yesterday";
-                }
-                else if (IsSameDay(timestamp1.AddDays(-2), timestamp2))
-                {
-                    return "The day before yesterday";
                 }
             }
 
@@ -358,8 +350,7 @@ namespace Microsoft.Expressions
         };
 
         public static EvaluationDelegate ConvertToFloat = operands =>
-                       operands[0] is string string0 ? (float)Convert.ToDouble(string0) :
-                      throw new ExpressionPropertyMissingException();
+                      (float)Convert.ToDouble(operands[0]);
 
         public static EvaluationDelegate ConvertToInt = operands =>
                       operands[0] is string string0 ? Convert.ToInt32(string0) :
@@ -448,20 +439,9 @@ namespace Microsoft.Expressions
             throw new ExpressionPropertyMissingException();
         };
 
-       
-
-
-        public static EvaluationDelegate Parameters = operands =>
-        {
-            if (operands[0] is string string0 && string0.Length > 0)
-                return string0.Last().ToString();
-
-            if (operands[0] is IList list && list.Count > 0)
-                return list[list.Count - 1];
-
-            throw new ExpressionPropertyMissingException();
-        };
-
+        public static EvaluationDelegate Count = operands =>
+                    operands[0] is IList list0 ? list0.Count :
+                    throw new ExpressionPropertyMissingException();
 
         private static TimeSpan GetTimeSpan(long interval, string timeUnit)
         {
