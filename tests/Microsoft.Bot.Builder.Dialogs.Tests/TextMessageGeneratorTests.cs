@@ -5,7 +5,7 @@ using System;
 using System.Threading.Tasks;
 using AdaptiveCards;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
@@ -34,17 +34,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         private TextMessageActivityGenerator GetGenerator()
         {
-            var rm = new BotResourceManager();
-            rm.AddFolderResources(GetLgFolder());
+            var rm = ResourceExplorer.LoadProject(GetProjectFolder());
             var lg = new LGLanguageGenerator(rm);
             var mg = new TextMessageActivityGenerator(lg);
             return mg;
         }
 
 
-        private string GetLgFolder()
+        private string GetProjectFolder()
         {
-            return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "lg";
+            return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin"));
         }
 
         [TestMethod]
@@ -172,8 +171,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             data.adaptiveCardTitle = "test";
             IMessageActivity activity = await mg.Generate("", "[AttachmentsTest]", id: null, data: data, types: null, tags: null);
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
-            Assert.AreEqual("Enjoy these pictures!", activity.Text);
-            Assert.AreEqual("Enjoy <emphasize>these</emphasize> pictures!", activity.Speak);
+            Assert.AreEqual("Enjoy these pictures!", activity.Text.Trim());
+            Assert.AreEqual("Enjoy <emphasize>these</emphasize> pictures!", activity.Speak.Trim());
             Assert.AreEqual(AttachmentLayoutTypes.Carousel, activity.AttachmentLayout);
             Assert.AreEqual(4, activity.Attachments.Count);
             Assert.AreEqual("http://4.bp.blogspot.com/--cFa6t-x4qY/UAqEgUvPd2I/AAAAAAAANIg/pMLE080Zjh4/s1600/turtle.jpg", (string)((dynamic)activity.Attachments[0].ContentUrl));

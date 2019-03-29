@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Rules.Rules;
 using Microsoft.Bot.Builder.Dialogs.Rules.Steps;
 using Microsoft.Extensions.Configuration;
@@ -58,11 +58,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     }),
             });
 
-            var botResourceManager = new BotResourceManager();
+            var botResourceManager = new ResourceExplorer();
             var lg = new LGLanguageGenerator(botResourceManager);
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new RegisterClassMiddleware<IBotResourceProvider>(botResourceManager))
+                .Use(new RegisterClassMiddleware<ResourceExplorer>(botResourceManager))
                 .Use(new RegisterClassMiddleware<ILanguageGenerator>(lg))
                 .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
                 .Use(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)))

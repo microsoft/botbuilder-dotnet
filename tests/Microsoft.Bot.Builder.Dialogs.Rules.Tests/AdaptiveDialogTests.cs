@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Rules.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Rules.Rules;
 using Microsoft.Bot.Builder.Dialogs.Rules.Steps;
@@ -29,13 +29,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
         private TestFlow CreateFlow(AdaptiveDialog ruleDialog, ConversationState convoState, UserState userState)
         {
-            var botResourceManager = new BotResourceManager();
-            var lg = new LGLanguageGenerator(botResourceManager);
+            var explorer = new ResourceExplorer();
+            var lg = new LGLanguageGenerator(explorer);
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
                 .Use(new RegisterClassMiddleware<IExpressionParser>(new ExpressionEngine()))
-                .Use(new RegisterClassMiddleware<IBotResourceProvider>(botResourceManager))
+                .Use(new RegisterClassMiddleware<ResourceExplorer>(explorer))
                 .Use(new RegisterClassMiddleware<ILanguageGenerator>(lg))
                 .Use(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)))
                 .Use(new AutoSaveStateMiddleware(convoState, userState))

@@ -90,36 +90,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Tests
             return (Activity)activity;
         }
 
-        [TestMethod]
-        public async Task LanguageRecognizerSetTets()
-        {
-            var recognizerSet = new LanguageRecognizerSet();
-            recognizerSet.Recognizers.Add("en-uk", new TestRecognizer("en-uk"));
-            recognizerSet.Recognizers.Add("en", new TestRecognizer("en"));
-            recognizerSet.Recognizers.Add("fr", new TestRecognizer("fr"));
-            recognizerSet.Recognizers.Add("default", new TestRecognizer("default"));
-
-            var testAdapter = CreateTestAdapter("TestDialog", out var dialogs, out var botHandler);
-
-            dialogs.Add(new RecognizerDialog()
-            {
-                Id = "TestDialog",
-                Recognizer = recognizerSet
-            });
-
-            await new TestFlow(testAdapter, botHandler)
-                .Send(CreateLocaleActivity("en-uk"))
-                    .AssertReply("en-uk")
-                .Send(CreateLocaleActivity("en-us"))
-                    .AssertReply("en")
-                .Send(CreateLocaleActivity("en"))
-                    .AssertReply("en")
-                .Send(CreateLocaleActivity("fr"))
-                    .AssertReply("fr")
-                .Send(CreateLocaleActivity("de"))
-                    .AssertReply("default")
-                .StartTestAsync();
-
-        }
     }
 }

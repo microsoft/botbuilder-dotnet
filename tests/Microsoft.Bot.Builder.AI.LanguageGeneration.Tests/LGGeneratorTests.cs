@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
@@ -19,8 +19,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public async Task TestExactLanguageLookup()
         {
-            var resourceManager = new BotResourceManager()
-                .AddFolderResources(GetFallbackFolder());
+            var resourceManager = ResourceExplorer.LoadProject(GetFallbackFolder());
             var lg = new LGLanguageGenerator(resourceManager);
 
             Assert.AreEqual("english-us", await lg.Generate("en-us", id: "test"));
@@ -44,8 +43,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             string[] yTypes = new string[] { "y", "x" };
             string[] xTypes = new string[] { "x" };
 
-            var resourceManager = new BotResourceManager()
-                .AddFolderResources(GetFallbackFolder());
+            var resourceManager = ResourceExplorer.LoadProject(GetFallbackFolder());
             var lg = new LGLanguageGenerator(resourceManager);
 
             // property is defined at each point in the hierarchy
@@ -67,8 +65,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             string[] tags2 = new string[] { "tag2" };
             string[] oddTags = new string[] { "foo", "bar" };
 
-            var resourceManager = new BotResourceManager()
-                .AddFolderResources(GetFallbackFolder());
+            var resourceManager = ResourceExplorer.LoadProject(GetFallbackFolder());
             var lg = new LGLanguageGenerator(resourceManager);
 
             Assert.AreEqual("english", await lg.Generate("en", id: "test", tags: notags));
@@ -89,8 +86,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             string[] tags2 = new string[] { "tag2" };
             string[] oddTags = new string[] { "foo", "bar" };
 
-            var resourceManager = new BotResourceManager()
-                .AddFolderResources(GetFallbackFolder());
+            var resourceManager = ResourceExplorer.LoadProject(GetFallbackFolder());
             var lg = new LGLanguageGenerator(resourceManager);
 
             Assert.AreEqual("test x", await lg.Generate("en", id: "property", tags: notags, types: xTypes));

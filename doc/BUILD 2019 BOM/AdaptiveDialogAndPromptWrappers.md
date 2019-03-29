@@ -88,10 +88,12 @@ We will support the following recognizers in Adaptive dialogs
 
 |     Interruption handling     |         C#             |          TS            |
 |-------------------------------|------------------------|------------------------|
-| doStepsAndResumeCurrentDialog |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
-| doStepsAfterCurrentDialog     |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
-| replaceDialog                 |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
-| continueCurrentDialog         |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
+| doSteps                       |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
+| doStepsBeforeTags             |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
+| doStepsLater                  |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|
+| endPlan                       |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
+| newPlan                       |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
+| replacePlan                   |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|
 
 ### Prompt wrappers 
 

@@ -184,7 +184,7 @@ namespace Microsoft.Bot.Builder.Adapters
                         throw new Exception($"{description}: Type should match");
                     }
 
-                    if (expected.AsMessageActivity().Text != reply.AsMessageActivity().Text)
+                    if (expected.AsMessageActivity().Text.Trim() != reply.AsMessageActivity().Text.Trim())
                     {
                         if (description == null)
                         {
