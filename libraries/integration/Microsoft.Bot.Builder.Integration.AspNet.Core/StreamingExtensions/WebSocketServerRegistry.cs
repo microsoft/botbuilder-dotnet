@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             }
             catch (Exception)
             {
-                return false;
+                throw;
             }
         }
 
