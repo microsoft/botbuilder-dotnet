@@ -11,12 +11,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 {
     public class EventRule : Rule
     {
-        public EventRule(List<string> events = null, List<IDialog> steps = null, PlanChangeTypes changeType = PlanChangeTypes.DoSteps, string constraint = null)
-            : base(constraint: constraint, steps: steps, changeType: changeType)
+        public EventRule(List<string> events = null, List<IDialog> steps = null, string constraint = null)
+            : base(constraint: constraint, steps: steps)
         {
             this.Events = events ?? new List<string>();
             this.Steps = steps ?? new List<IDialog>();
-            this.ChangeType = changeType;
         }
 
         public List<string> Events { get; set; }

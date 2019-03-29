@@ -17,11 +17,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
     {
         private IExpression expression;
 
-        public Rule(string constraint = null, List<IDialog> steps = null, PlanChangeTypes changeType = PlanChangeTypes.DoSteps)
+        public Rule(string constraint = null, List<IDialog> steps = null)
         {
             this.Constraint = constraint;
             this.Steps = steps;
-            this.ChangeType = changeType;
         }
 
         /// <summary>
@@ -33,11 +32,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
         /// Gets or sets the steps to add to the plan when the rule constraints are met
         /// </summary>
         public List<IDialog> Steps { get; set; } = new List<IDialog>();
-
-        /// <summary>
-        /// Gets or sets the Policy for the changing the plan
-        /// </summary>
-        public PlanChangeTypes ChangeType { get; set; }
 
         /// <summary>
         /// Get the expression for this rule by calling GatherConstraints()
@@ -109,7 +103,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
         {
             var changeList = new PlanChangeList()
             {
-                ChangeType = this.ChangeType,
                 Steps = new List<PlanStepState>()
             };
 

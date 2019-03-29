@@ -11,13 +11,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 {
     public class UtteranceRecognizeRule : EventRule
     {
-        public UtteranceRecognizeRule(string intent = null, List<string> entities = null, List<IDialog> steps = null, PlanChangeTypes changeType = PlanChangeTypes.DoSteps, string constraint = null)
+        public UtteranceRecognizeRule(string intent = null, List<string> entities = null, List<IDialog> steps = null, string constraint = null)
             : base(events: new List<string>()
             {
                 PlanningEvents.UtteranceRecognized.ToString()
             },
             steps: steps,
-            changeType: changeType,
             constraint: constraint)
         {
             Intent = intent ?? null;
@@ -61,7 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 
                 return new PlanChangeList()
                 {
-                    ChangeType = this.ChangeType,
+                    //ChangeType = this.ChangeType,
                     IntentsMatched = new List<string> {
                         this.Intent,
                     },
@@ -78,7 +77,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
 
             return new PlanChangeList()
             {
-                ChangeType = this.ChangeType,
                 Steps = Steps.Select(s => new PlanStepState()
                 {
                     DialogStack = new List<DialogInstance>(),

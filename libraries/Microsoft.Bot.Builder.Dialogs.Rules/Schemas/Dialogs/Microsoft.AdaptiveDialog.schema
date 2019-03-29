@@ -15,6 +15,13 @@
         },
         "recognizer": {
             "$type": "Microsoft.IRecognizer"
+        },
+        "steps": {
+            "type": "array",
+            "description": "Initial Sequence of steps or dialogs to execute when dialog is started",
+            "items": {
+                "$type": "Microsoft.IDialog"
+            }
         }
     },
     "required": [

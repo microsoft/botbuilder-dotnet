@@ -11,8 +11,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
     /// </summary>
     public class NoMatchRule : EventRule
     {
-        public NoMatchRule(List<IDialog> steps = null, PlanChangeTypes changeType = PlanChangeTypes.DoSteps)
-            : base(new List<string>() { PlanningEvents.Fallback.ToString() }, steps, changeType)
+        public NoMatchRule(List<IDialog> steps = null)
+            : base(new List<string>() { PlanningEvents.Fallback.ToString() }, steps)
         {
         }
     }

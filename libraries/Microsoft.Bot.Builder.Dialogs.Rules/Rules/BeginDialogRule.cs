@@ -17,13 +17,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
         /// <param name="steps"></param>
         /// <param name="changeType"></param>
         /// <param name="constraint"></param>
-        public BeginDialogRule(List<IDialog> steps = null, PlanChangeTypes changeType = PlanChangeTypes.DoSteps, string constraint = null)
+        public BeginDialogRule(List<IDialog> steps = null, string constraint = null)
             : base(events: new List<string>()
             {
                 PlanningEvents.BeginDialog.ToString()
             },
             steps: steps,
-            changeType: changeType,
             constraint: constraint)
         {
         }
