@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Expressions
+namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
     /// <summary>
     /// Get the value of a property of an object
@@ -25,7 +25,7 @@ namespace Microsoft.Expressions
         {
             if (instance == null)
             {
-                throw new GetPropertyValueFailException($"getting property {property.ToString()} on null");
+                throw new Exception($"getting property {property.ToString()} on null");
             }
 
             if (instance is IDictionary<string, object> || instance is IDictionary)
@@ -37,11 +37,11 @@ namespace Microsoft.Expressions
                 var jObj = instance as JObject;
                 return jObj[property] ?? null;
             }
-            else if (instance is IList list) 
+            else if (instance is IList list)
             {
-                // this also covers JArray
-                // this must be after JObject, because JObject is also IList<JToken>
-                return list[(int)property];
+                    // this also covers JArray
+                    // this must be after JObject, because JObject is also IList<JToken>
+                    return list[(int)property];
             }
             return Reflection(instance, property);
         };
@@ -101,7 +101,7 @@ namespace Microsoft.Expressions
             }
             catch (Exception e)
             {
-                throw new GetPropertyValueFailException($"Can't not get property {property.ToString()} on {instance}, error: {e.Message}");
+                throw new Exception($"Can't get property {property.ToString()} on {instance}, error: {e.Message}");
             }
         }
     }

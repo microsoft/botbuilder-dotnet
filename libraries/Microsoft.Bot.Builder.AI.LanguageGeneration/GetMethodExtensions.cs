@@ -2,14 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.Expressions;
+using Microsoft.Bot.Builder.Expressions;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
     public interface IGetMethod
     {
-        EvaluationDelegate GetMethodX(string name);
+        ExpressionEvaluator GetMethodX(string name);
     }
 
     class GetMethodExtensions : IGetMethod
@@ -18,30 +19,31 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         // This ensentially make all functions as closure
         // This is perticularly used for using templateName as lambda
         // Such as {foreach(alarms, ShowAlarm)}
-        private readonly Evaluator _evaluator;
-        public GetMethodExtensions(Evaluator evaluator)
+        private readonly TemplateEvaluator _evaluator;
+
+        public GetMethodExtensions(TemplateEvaluator evaluator)
         {
             _evaluator = evaluator;
         }
 
         // 
-        public EvaluationDelegate GetMethodX(string name)
+        public ExpressionEvaluator GetMethodX(string name)
         {
+            // TODO: Should add verifiers and validators
             switch (name)
             {
                 case "count":
-                    return this.Count;
+                    return new ExpressionEvaluator(BuiltInFunctions.Apply(this.Count));
                 case "join":
-                    return this.Join;
+                    return new ExpressionEvaluator(BuiltInFunctions.Apply(this.Join));
                 case "foreach":
                 case "map":
-                    return this.Foreach;
+                    return new ExpressionEvaluator(BuiltInFunctions.Apply(this.Foreach));
                 case "mapjoin":
                 case "humanize":
-                    return this.ForeachThenJoin;
-                default:
-                    return MethodBinder.All(name);
+                    return new ExpressionEvaluator(BuiltInFunctions.Apply(this.ForeachThenJoin));
             }
+            return BuiltInFunctions.Lookup(name);
         }
 
         public object Count(IReadOnlyList<object> parameters)
@@ -55,14 +57,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
         public object Join(IReadOnlyList<object> parameters)
         {
+            object result = null;
             if (parameters.Count == 2 &&
                 parameters[0] is IList p0 &&
                 parameters[1] is String sep)
             {
-                return String.Join(sep + " ", p0.OfType<object>().Select(x => x.ToString())); // "," => ", " 
+                result = String.Join(sep + " ", p0.OfType<object>().Select(x => x.ToString())); // "," => ", " 
             }
-
-            if (parameters.Count == 3 &&
+            else if (parameters.Count == 3 &&
                 parameters[0] is IList li &&
                 parameters[1] is String sep1 &&
                 parameters[2] is String sep2)
@@ -72,15 +74,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
                 if (li.Count < 3)
                 {
-                    return String.Join(sep2, li.OfType<object>().Select(x => x.ToString()));
+                    result = String.Join(sep2, li.OfType<object>().Select(x => x.ToString()));
                 }
                 else
                 {
                     var firstPart = String.Join(sep1, li.OfType<object>().TakeWhile(o => o != null && o != li.OfType<object>().LastOrDefault()));
-                    return firstPart + sep2 + li.OfType<object>().Last().ToString();
+                    result = firstPart + sep2 + li.OfType<object>().Last().ToString();
                 }
             }
-            throw new NotImplementedException();
+            return result;
         }
 
         public object Foreach(IReadOnlyList<object> parameters)
@@ -111,17 +113,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         {
             if (parameters.Count >= 2 &&
                 parameters[0] is IList li &&
-                parameters[1] is string func)
+                parameters[1] is string template)
             {
-                if (!IsTemplateRef(ref func) || !_evaluator.Context.TemplateContexts.ContainsKey(func))
+                template = template.TrimStart('[').TrimEnd(']');
+                if (!_evaluator.Context.TemplateContexts.ContainsKey(template))
                 {
-                    throw new Exception($"No such template defined: {func}");
+                    throw new Exception($"No such template defined: {template}");
                 }
 
                 var result = li.OfType<object>().Select(x =>
                 {
-                    var newScope = _evaluator.ConstructScope(func, new List<object>() { x });
-                    var evaled = _evaluator.EvaluateTemplate(func, newScope);
+                    var newScope = _evaluator.ConstructScope(template, new List<object>() { x });
+                    var evaled = _evaluator.EvaluateTemplate(template, newScope);
                     return evaled;
                 }).ToList();
 
@@ -149,5 +152,4 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return false;
         }
     }
-
 }

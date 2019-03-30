@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
-using Microsoft.Expressions;
+using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
@@ -12,16 +13,19 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
     {
         public readonly EvaluationContext Context;
 
-        private Stack<EvaluationTarget> evalutationTargetStack = new Stack<EvaluationTarget>();
+        private readonly IExpressionParser _expressionParser;
+
+        private Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
         private EvaluationTarget CurrentTarget()
         {
             // just don't want to write evaluationTargetStack.Peek() everywhere
-            return evalutationTargetStack.Peek();
+            return evaluationTargetStack.Peek();
         }
-                 
+
         public Analyzer(EvaluationContext context)
         {
             Context = context;
+            _expressionParser = new ExpressionEngine(new GetMethodExtensions(null).GetMethodX);
         }
 
         public List<string> AnalyzeTemplate(string templateName)
@@ -31,13 +35,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 throw new Exception($"No such template: {templateName}");
             }
 
-            if (evalutationTargetStack.Any(e => e.TemplateName == templateName))
+            if (evaluationTargetStack.Any(e => e.TemplateName == templateName))
             {
-                throw new Exception($"Loop detected: {String.Join(" => ", evalutationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                throw new Exception($"Loop detected: {String.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
             // Using a stack to track the evalution trace
-            evalutationTargetStack.Push(new EvaluationTarget(templateName, null));
+            evaluationTargetStack.Push(new EvaluationTarget(templateName, null));
             var rawDependencies = Visit(Context.TemplateContexts[templateName]);
 
             var parameters = ExtractParameters(templateName);
@@ -45,7 +49,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             // we need to exclude parameters from raw dependencies
             var dependencies = rawDependencies.Except(parameters).Distinct().ToList();
 
-            evalutationTargetStack.Pop();
+            evaluationTargetStack.Pop();
 
             return dependencies;
         }
@@ -141,17 +145,47 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         private List<string> AnalyzeExpression(string exp)
         {
             exp = exp.TrimStart('{').TrimEnd('}');
-            var parseTree = ExpressionEngine.Parse(exp);
-            return AnalyzeParserTree(parseTree);
-        }
-
-        private List<string> AnalyzeParserTree(IParseTree parserTree)
-        {
-            var result = new List<string>();
-            
-            var visitor = new ExpressionAnalyzerVisitor(Context);
-
-            return visitor.Analyzer(parserTree);
+            var parse = _expressionParser.Parse(exp);
+            var references = new HashSet<string>();
+            // Extend the expression reference walk so that when a string is encountered it is evaluated as
+            // a {expression} or [template] and expanded.
+            var path = Microsoft.Bot.Builder.Expressions.Extensions.ReferenceWalk(parse, references,
+                (expression) =>
+                {
+                    var found = false;
+                    if (expression is Constant cnst && cnst.Value is string str)
+                    {
+                        if (str.StartsWith("[") && str.EndsWith("]"))
+                        {
+                            found = true;
+                            var end = str.IndexOf('(');
+                            if (end == -1)
+                            {
+                                end = str.Length - 1;
+                            }
+                            var template = str.Substring(1, end - 1);
+                            var analyzer = new Analyzer(Context);
+                            foreach (var reference in analyzer.AnalyzeTemplate(template))
+                            {
+                                references.Add(reference);
+                            }
+                        }
+                        else if (str.StartsWith("{") && str.EndsWith("}"))
+                        {
+                            found = true;
+                            foreach (var childRef in AnalyzeExpression(str))
+                            {
+                                references.Add(childRef);
+                            }
+                        }
+                    }
+                    return found;
+                });
+            if (path != null)
+            {
+                references.Add(path);
+            }
+            return references.ToList();
         }
 
         private List<string> AnalyzeTemplateRef(string exp)
@@ -163,7 +197,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             {
                 // EvaluateTemplate all arguments using ExpressoinEngine
                 var argsEndPos = exp.LastIndexOf(')');
-              
+
                 var templateName = exp.Substring(0, argsStartPos);
 
                 return AnalyzeTemplate(templateName);

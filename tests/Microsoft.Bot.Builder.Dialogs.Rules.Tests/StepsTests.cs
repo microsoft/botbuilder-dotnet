@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Expressions;
-using Microsoft.Bot.Builder.Dialogs.Rules.Expressions;
 using Microsoft.Bot.Builder.Dialogs.Rules.Input;
 using Microsoft.Bot.Builder.Dialogs.Rules.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Rules.Rules;
 using Microsoft.Bot.Builder.Dialogs.Rules.Steps;
+using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new IfCondition()
                         {
-                            Condition = new CommonExpression("user.name == null"),
+                            Expression = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextInput() {
@@ -158,7 +158,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new IfCondition()
                         {
-                            Condition = new CommonExpression("user.name == null"),
+                            Expression = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextInput()
@@ -198,7 +198,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new IfCondition()
                         {
-                            Condition = new CommonExpression("user.name == null"),
+                            Expression = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextInput()
@@ -248,7 +248,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new IfCondition()
                         {
-                            Condition = new CommonExpression("user.name == null"),
+                            Expression = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextInput()
@@ -307,7 +307,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new IfCondition()
                         {
-                            Condition = new CommonExpression("user.name == null"),
+                            Expression = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextInput()
@@ -386,7 +386,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new IfCondition()
                         {
-                            Condition = new CommonExpression("user.name == null"),
+                            Expression = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextInput()
