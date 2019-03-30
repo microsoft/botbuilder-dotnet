@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
                 // Simply evaluate the expression, for example user.name = 'Carlos'
                 // Consider renaming this to EvaluateExpression rather than SetProperty
                 // Otherwise we should have property and value properties
-                var value = Value.TryEvaluate(dc.State);
+                var (value, error) = Value.TryEvaluate(dc.State);
                 return await planning.EndDialogAsync(value, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else
