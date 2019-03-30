@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public static partial class Debugger
+    public static partial class DebugSupport
     {
         public interface IDebugger
         {

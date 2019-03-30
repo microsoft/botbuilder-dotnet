@@ -3,18 +3,20 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
+using Microsoft.Bot.Builder.Dialogs.Debugger;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.TestBot.Json.Recognizers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Debugger;
+using Microsoft.Extensions.Logging.Debug;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -62,6 +64,14 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 UserState = userState
             };
 
+            var sourceMap = new SourceMap();
+            DebugAdapter adapter = null;
+            bool enableDebugger = false;
+            if (enableDebugger)
+            {
+                adapter = new DebugAdapter(sourceMap, sourceMap, new DebugLogger(nameof(DebugAdapter)));
+            }
+
             // manage all bot resources
             var resourceExplorer = ResourceExplorer.LoadProject(HostingEnvironment.ContentRootPath);
 
@@ -69,7 +79,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 (IServiceProvider sp) =>
                 {
                     // declarative Adaptive dialogs bot sample
-                    return new TestBot(accessors, resourceExplorer, Source.NullRegistry.Instance);
+                    return new TestBot(accessors, resourceExplorer, sourceMap);
 
                     // LG bot sample
                     // return new TestBotLG(accessors);
@@ -81,6 +91,11 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                         await conversationState.ClearStateAsync(turnContext);
                         await conversationState.SaveChangesAsync(turnContext);
                     };
+
+                    if (adapter != null)
+                    {
+                        options.Middleware.Add(adapter);
+                    }
 
                     options.Middleware.Add(new RegisterClassMiddleware<IStorage>(dataStore));
                     options.Middleware.Add(new RegisterClassMiddleware<ResourceExplorer>(resourceExplorer));

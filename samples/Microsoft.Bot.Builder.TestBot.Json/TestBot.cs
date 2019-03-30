@@ -9,11 +9,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Debugger;
 using Microsoft.Bot.Builder.Dialogs.Rules;
 using Microsoft.Bot.Schema;
-using Microsoft.Recognizers.Text;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {

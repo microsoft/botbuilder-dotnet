@@ -7,13 +7,13 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Tests.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Plugins;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Rules;
 using System;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Debugger;
 
 namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 {

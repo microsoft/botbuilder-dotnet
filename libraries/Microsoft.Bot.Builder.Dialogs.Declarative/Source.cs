@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Declarative.Debugger
+namespace Microsoft.Bot.Builder.Dialogs.Declarative
 {
     public static class Source
     {
