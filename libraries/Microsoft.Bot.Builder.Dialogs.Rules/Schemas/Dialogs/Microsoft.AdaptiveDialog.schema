@@ -6,12 +6,29 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
-        "rules": {
-            "type": "array",
-            "description": "Array of rules to use to evaluate conversation",
-            "items": {
-                "$type": "Microsoft.IRule"
-            }
+        "property": {
+            "type": "string",
+            "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
+            "examples": [
+                "value.birthday"
+            ]
+        },
+        "inputProperties": {
+            "type": "object",
+            "description": "This defines properties which be passed as arguments to this dialog",
+            "additionalProperties": {
+                "type": "string"
+            },
+            "examples": [
+                "value.birthday"
+            ]
+        },
+        "outputProperty": {
+            "type": "string",
+            "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
+            "examples": [
+                "value.birthday"
+            ]
         },
         "recognizer": {
             "$type": "Microsoft.IRecognizer"
@@ -21,6 +38,13 @@
             "description": "Initial Sequence of steps or dialogs to execute when dialog is started",
             "items": {
                 "$type": "Microsoft.IDialog"
+            }
+        },
+        "rules": {
+            "type": "array",
+            "description": "Array of rules to use to evaluate conversation",
+            "items": {
+                "$type": "Microsoft.IRule"
             }
         }
     },

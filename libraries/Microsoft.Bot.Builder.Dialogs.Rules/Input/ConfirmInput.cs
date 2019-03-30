@@ -8,11 +8,14 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Input
 {
-    public class BoolInput : InputWrapper<ConfirmPrompt, bool>
+    /// <summary>
+    /// declarative input control that will gather yes/no confirmation input.
+    /// </summary>
+    public class ConfirmInput : InputWrapper<ConfirmPrompt, bool>
     {
         protected override string OnComputeId()
         {
-            return $"BoolInput[{BindingPath()}]";
+            return $"ConfirmInput[{BindingPath()}]";
         }
     }
 }

@@ -1,0 +1,58 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/CogSchema/src/cogSchema.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "ConfirmInput Dialog",
+    "description": "This represents a dialog which gathers a yes/no style responses",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "property": {
+            "type": "string",
+            "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
+            "examples": [
+                "user.confirmed"
+            ]
+        },
+        "inputProperties": {
+            "type": "object",
+            "description": "This defines properties which be passed as arguments to this dialog",
+            "additionalProperties": {
+                "type": "string"
+            },
+            "examples": [
+                "user.confirmed"
+            ]
+        },
+        "outputProperty": {
+            "type": "string",
+            "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
+            "examples": [
+                "user.confirmed"
+            ]
+        },
+        "prompt": {
+            "$type":"Microsoft.IActivityTemplate",
+            "title": "Initial Prompt",
+            "description": "The message to send to as prompt for this input.",
+            "examples": [
+                "Are you sure?"
+            ]
+        },
+        "retryPrompt": {
+            "$type":"Microsoft.IActivityTemplate",
+            "title": "Retry Prompt",
+            "description": "The message to send to prompt again.",
+            "examples": [
+                "Let's try again."
+            ]
+        },
+        "invalidPrompt": {
+            "$type":"Microsoft.IActivityTemplate",
+            "title": "Invalid Prompt",
+            "description": "The message to send to when then input was not recognized or not valid for the input type.",
+            "examples": [
+                "I didn't recognize a yes/no response"
+            ]
+        }
+    }
+}

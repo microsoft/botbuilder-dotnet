@@ -19,16 +19,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
         {
             get
             {
-                if (InputBindings.ContainsKey(eventValueProperty))
+                if (InputProperties.ContainsKey(eventValueProperty))
                 {
-                    return InputBindings[eventValueProperty];
+                    return InputProperties[eventValueProperty];
                 }
                 return string.Empty;
             }
 
             set
             {
-                InputBindings[eventValueProperty] = value;
+                InputProperties[eventValueProperty] = value;
             }
         }
 
@@ -36,12 +36,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
         {
             get
             {
-                return OutputBinding;
+                return OutputProperty;
             }
 
             set
             {
-                OutputBinding = value;
+                OutputProperty = value;
             }
         }
 

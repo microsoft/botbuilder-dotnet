@@ -176,7 +176,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // TODO: reevaluate assumptions here, breaking options with this approach
             if (options?.GetType() == typeof(Dictionary<string, object>))
             {
-                foreach (var option in dialog.InputBindings)
+                foreach (var option in dialog.InputProperties)
                 {
                     var bindingKey = option.Key;
                     var bindingValue = option.Value;
@@ -558,9 +558,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 Stack.RemoveAt(0);
 
                 // Process dialogs output binding
-                if (!string.IsNullOrEmpty(dialog?.OutputBinding) && result != null)
+                if (!string.IsNullOrEmpty(dialog?.OutputProperty) && result != null)
                 {
-                    this.State.SetValue(dialog.OutputBinding, result);
+                    this.State.SetValue(dialog.OutputProperty, result);
                 }
             }
         }

@@ -28,12 +28,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Input
         {
             get
             {
-                return OutputBinding;
+                return OutputProperty;
             }
             set
             {
-                InputBindings["value"] = value;
-                OutputBinding = value;
+                InputProperties["value"] = value;
+                OutputProperty = value;
             }
         }
 

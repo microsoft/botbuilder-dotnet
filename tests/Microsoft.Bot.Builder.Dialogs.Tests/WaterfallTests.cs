@@ -19,8 +19,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public BindingTestDialog(string dialogId, string inputBinding, string outputBinding)
             : base(dialogId)
         {
-            this.InputBindings["value"] = inputBinding;
-            this.OutputBinding = outputBinding;
+            this.InputProperties["value"] = inputBinding;
+            this.OutputProperty = outputBinding;
         }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))

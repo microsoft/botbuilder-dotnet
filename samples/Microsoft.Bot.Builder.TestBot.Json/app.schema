@@ -21,9 +21,9 @@
             "$ref": "#/definitions/Microsoft.CancelDialog"
         },
         {
-            "title": "Microsoft.DateTimePrompt",
-            "description": "This represents a dialog which gathers a DateTime in a specified range",
-            "$ref": "#/definitions/Microsoft.DateTimePrompt"
+            "title": "Microsoft.ConfirmInput",
+            "description": "This represents a dialog which gathers a yes/no style responses",
+            "$ref": "#/definitions/Microsoft.ConfirmInput"
         },
         {
             "title": "Microsoft.DeleteProperty",
@@ -56,11 +56,6 @@
             "$ref": "#/definitions/Microsoft.FloatInput"
         },
         {
-            "title": "Microsoft.FloatPrompt",
-            "description": "This represents a dialog which gathers a number in a specified range",
-            "$ref": "#/definitions/Microsoft.FloatPrompt"
-        },
-        {
             "title": "Microsoft.HttpRequest",
             "description": "This is a step which replaces the current dialog with the target dialog",
             "$ref": "#/definitions/Microsoft.HttpRequest"
@@ -79,11 +74,6 @@
             "title": "Microsoft.IntegerInput",
             "description": "This represents a dialog which gathers a number in a specified range",
             "$ref": "#/definitions/Microsoft.IntegerInput"
-        },
-        {
-            "title": "Microsoft.IntegerPrompt",
-            "description": "This represents a dialog which gathers a number in a specified range",
-            "$ref": "#/definitions/Microsoft.IntegerPrompt"
         },
         {
             "title": "Microsoft.IntentRule",
@@ -146,14 +136,9 @@
             "$ref": "#/definitions/Microsoft.SendList"
         },
         {
-            "title": "Microsoft.Switch",
+            "title": "Microsoft.SwitchCondition",
             "description": "Step which conditionally decides which step to execute next.",
-            "$ref": "#/definitions/Microsoft.Switch"
-        },
-        {
-            "title": "Microsoft.TextInput",
-            "description": "This represents a dialog which gathers a text from the user",
-            "$ref": "#/definitions/Microsoft.TextInput"
+            "$ref": "#/definitions/Microsoft.SwitchCondition"
         },
         {
             "title": "Microsoft.TextInput",
@@ -193,13 +178,29 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
-                "rules": {
-                    "type": "array",
-                    "description": "Array of rules to use to evaluate conversation",
-                    "items": {
-                        "$type": "Microsoft.IRule",
-                        "$ref": "#/definitions/Microsoft.IRule"
+                "property": {
+                    "type": "string",
+                    "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
+                    "examples": [
+                        "value.birthday"
+                    ]
+                },
+                "inputProperties": {
+                    "type": "object",
+                    "description": "This defines properties which be passed as arguments to this dialog",
+                    "examples": [
+                        "value.birthday"
+                    ],
+                    "additionalProperties": {
+                        "type": "string"
                     }
+                },
+                "outputProperty": {
+                    "type": "string",
+                    "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
+                    "examples": [
+                        "value.birthday"
+                    ]
                 },
                 "recognizer": {
                     "$type": "Microsoft.IRecognizer",
@@ -211,6 +212,14 @@
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                },
+                "rules": {
+                    "type": "array",
+                    "description": "Array of rules to use to evaluate conversation",
+                    "items": {
+                        "$type": "Microsoft.IRule",
+                        "$ref": "#/definitions/Microsoft.IRule"
                     }
                 }
             },
@@ -327,10 +336,10 @@
                 "$type"
             ]
         },
-        "Microsoft.DateTimePrompt": {
+        "Microsoft.ConfirmInput": {
             "$role": "unionType(Microsoft.IDialog)",
-            "title": "DateTime prompt",
-            "description": "This represents a dialog which gathers a DateTime in a specified range",
+            "title": "ConfirmInput Dialog",
+            "description": "This represents a dialog which gathers a yes/no style responses",
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -339,7 +348,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.DateTimePrompt"
+                    "const": "Microsoft.ConfirmInput"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -355,33 +364,34 @@
                 },
                 "property": {
                     "type": "string",
-                    "description": "This is the property to set.",
+                    "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
                     "examples": [
-                        "value.birthday"
+                        "user.confirmed"
                     ]
                 },
-                "minValue": {
-                    "type": "integer",
-                    "title": "Mininum value",
-                    "description": "The minimum value that is acceptable.  If the value is less then this then the TooSmallReponse and RetryPrompt will be sent.",
+                "inputProperties": {
+                    "type": "object",
+                    "description": "This defines properties which be passed as arguments to this dialog",
                     "examples": [
-                        "1900-01-01"
+                        "user.confirmed"
+                    ],
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "outputProperty": {
+                    "type": "string",
+                    "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
+                    "examples": [
+                        "user.confirmed"
                     ]
                 },
-                "maxValue": {
-                    "type": "integer",
-                    "title": "Maximum value",
-                    "description": "The maximum value that is acceptable.  If the value is greater then this then the TooLargeResponse and RetryPrompt will be sent.",
-                    "examples": [
-                        "2100-01-01"
-                    ]
-                },
-                "initialPrompt": {
+                "prompt": {
                     "$type": "Microsoft.IActivityTemplate",
                     "title": "Initial Prompt",
-                    "description": "The message to send to start.",
+                    "description": "The message to send to as prompt for this input.",
                     "examples": [
-                        "What is your birth date?"
+                        "Are you sure?"
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
@@ -390,34 +400,16 @@
                     "title": "Retry Prompt",
                     "description": "The message to send to prompt again.",
                     "examples": [
-                        "Let's try again. What is your birth date?"
+                        "Let's try again."
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
-                "noMatchResponse": {
+                "invalidPrompt": {
                     "$type": "Microsoft.IActivityTemplate",
-                    "title": "No match",
-                    "description": "The message to send to when no date was recognized.",
+                    "title": "Invalid Prompt",
+                    "description": "The message to send to when then input was not recognized or not valid for the input type.",
                     "examples": [
-                        "No date was recognized"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "tooSmallResponse": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "Too small",
-                    "description": "The message to send to when the recognized number was less then the MinValue. ",
-                    "examples": [
-                        "Hmmm...I think your birthday means you must be dead."
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "tooLargeResponse": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "Too large",
-                    "description": "The message to send to when the recognized number was greater then the MinValue.",
-                    "examples": [
-                        "You can't be born in the future!"
+                        "I didn't recognize a yes/no response"
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 }
@@ -713,9 +705,7 @@
             ]
         },
         "Microsoft.FloatInput": {
-            "$implements": [
-                "Microsoft.IDialog"
-            ],
+            "$role": "unionType(Microsoft.IDialog)",
             "title": "Float  prompt",
             "description": "This represents a dialog which gathers a number in a specified range",
             "type": "object",
@@ -742,33 +732,34 @@
                 },
                 "property": {
                     "type": "string",
-                    "description": "This is the property to set.",
+                    "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
                     "examples": [
-                        "value.age"
+                        "user.height"
                     ]
                 },
-                "minValue": {
-                    "type": "integer",
-                    "title": "Mininum value",
-                    "description": "The minimum value that is acceptable.  If the value is less then this then the TooSmallReponse and RetryPrompt will be sent.",
+                "inputProperties": {
+                    "type": "object",
+                    "description": "This defines properties which be passed as arguments to this dialog",
                     "examples": [
-                        "0"
-                    ]
+                        "user.height"
+                    ],
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 },
-                "maxValue": {
-                    "type": "integer",
-                    "title": "Maximum value",
-                    "description": "The maximum value that is acceptable.  If the value is greater then this then the TooLargeResponse and RetryPrompt will be sent.",
+                "outputProperty": {
+                    "type": "string",
+                    "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
                     "examples": [
-                        "120"
+                        "user.height"
                     ]
                 },
                 "prompt": {
                     "$type": "Microsoft.IActivityTemplate",
                     "title": "Initial Prompt",
-                    "description": "The message to send to start.",
+                    "description": "The message to send to as prompt for this input.",
                     "examples": [
-                        "What is your age?"
+                        "What is your height?"
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
@@ -777,66 +768,23 @@
                     "title": "Retry Prompt",
                     "description": "The message to send to prompt again.",
                     "examples": [
-                        "Let's try again. What is your age?"
+                        "Let's try again. What is your height?"
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
-                "invalidResponse": {
+                "invalidPrompt": {
                     "$type": "Microsoft.IActivityTemplate",
-                    "title": "No match",
-                    "description": "The message to send to when no number was recognized.",
+                    "title": "Invalid Prompt",
+                    "description": "The message to send to when then input was not recognized or not valid for the input type.",
                     "examples": [
-                        "No number was recognized"
+                        "I didn't recognize a number"
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                }
-            },
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "$type"
-            ]
-        },
-        "Microsoft.FloatPrompt": {
-            "$role": "unionType(Microsoft.IDialog)",
-            "title": "Float  prompt",
-            "description": "This represents a dialog which gathers a number in a specified range",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.FloatPrompt"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "property": {
-                    "type": "string",
-                    "description": "This is the property to set.",
-                    "examples": [
-                        "value.age"
-                    ]
                 },
                 "minValue": {
                     "type": "integer",
                     "title": "Mininum value",
-                    "description": "The minimum value that is acceptable.  If the value is less then this then the TooSmallReponse and RetryPrompt will be sent.",
+                    "description": "The minimum value that is acceptable.  ",
                     "examples": [
                         "0"
                     ]
@@ -844,55 +792,10 @@
                 "maxValue": {
                     "type": "integer",
                     "title": "Maximum value",
-                    "description": "The maximum value that is acceptable.  If the value is greater then this then the TooLargeResponse and RetryPrompt will be sent.",
+                    "description": "The maximum value that is acceptable.  ",
                     "examples": [
                         "120"
                     ]
-                },
-                "initialPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "Initial Prompt",
-                    "description": "The message to send to start.",
-                    "examples": [
-                        "What is your age?"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "retryPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "Retry Prompt",
-                    "description": "The message to send to prompt again.",
-                    "examples": [
-                        "Let's try again. What is your age?"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "noMatchResponse": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "No match",
-                    "description": "The message to send to when no number was recognized.",
-                    "examples": [
-                        "No number was recognized"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "tooSmallResponse": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "Too small",
-                    "description": "The message to send to when the recognized number was less then the MinValue. ",
-                    "examples": [
-                        "Nobody is younger than 0."
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "tooLargeResponse": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "Too large",
-                    "description": "The message to send to when the recognized number was greater then the MinValue.",
-                    "examples": [
-                        "Nobody is that old!"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 }
             },
             "patternProperties": {
@@ -1028,9 +931,9 @@
                     "$ref": "#/definitions/Microsoft.CancelDialog"
                 },
                 {
-                    "title": "Microsoft.DateTimePrompt",
-                    "description": "This represents a dialog which gathers a DateTime in a specified range",
-                    "$ref": "#/definitions/Microsoft.DateTimePrompt"
+                    "title": "Microsoft.ConfirmInput",
+                    "description": "This represents a dialog which gathers a yes/no style responses",
+                    "$ref": "#/definitions/Microsoft.ConfirmInput"
                 },
                 {
                     "title": "Microsoft.DeleteProperty",
@@ -1053,9 +956,9 @@
                     "$ref": "#/definitions/Microsoft.EndTurn"
                 },
                 {
-                    "title": "Microsoft.FloatPrompt",
+                    "title": "Microsoft.FloatInput",
                     "description": "This represents a dialog which gathers a number in a specified range",
-                    "$ref": "#/definitions/Microsoft.FloatPrompt"
+                    "$ref": "#/definitions/Microsoft.FloatInput"
                 },
                 {
                     "title": "Microsoft.HttpRequest",
@@ -1071,11 +974,6 @@
                     "title": "Microsoft.IntegerInput",
                     "description": "This represents a dialog which gathers a number in a specified range",
                     "$ref": "#/definitions/Microsoft.IntegerInput"
-                },
-                {
-                    "title": "Microsoft.IntegerPrompt",
-                    "description": "This represents a dialog which gathers a number in a specified range",
-                    "$ref": "#/definitions/Microsoft.IntegerPrompt"
                 },
                 {
                     "title": "Microsoft.ReplaceWithDialog",
@@ -1098,9 +996,9 @@
                     "$ref": "#/definitions/Microsoft.SendList"
                 },
                 {
-                    "title": "Microsoft.Switch",
+                    "title": "Microsoft.SwitchCondition",
                     "description": "Step which conditionally decides which step to execute next.",
-                    "$ref": "#/definitions/Microsoft.Switch"
+                    "$ref": "#/definitions/Microsoft.SwitchCondition"
                 },
                 {
                     "title": "Microsoft.TextInput",
@@ -1413,33 +1311,34 @@
                 },
                 "property": {
                     "type": "string",
-                    "description": "This is the property to set.",
+                    "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
                     "examples": [
-                        "value.age"
+                        "value.birthday"
                     ]
                 },
-                "minValue": {
-                    "type": "integer",
-                    "title": "Mininum value",
-                    "description": "The minimum value that is acceptable.  If the value is less then this then the TooSmallReponse and RetryPrompt will be sent.",
+                "inputProperties": {
+                    "type": "object",
+                    "description": "This defines properties which be passed as arguments to this dialog",
                     "examples": [
-                        "0"
-                    ]
+                        "value.birthday"
+                    ],
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 },
-                "maxValue": {
-                    "type": "integer",
-                    "title": "Maximum value",
-                    "description": "The maximum value that is acceptable.  If the value is greater then this then the TooLargeResponse and RetryPrompt will be sent.",
+                "outputProperty": {
+                    "type": "string",
+                    "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
                     "examples": [
-                        "120"
+                        "value.birthday"
                     ]
                 },
                 "prompt": {
                     "$type": "Microsoft.IActivityTemplate",
                     "title": "Initial Prompt",
-                    "description": "The message to send to start.",
+                    "description": "The message to send to as prompt for this input.",
                     "examples": [
-                        "What is your age?"
+                        "What is your birth date?"
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
@@ -1448,66 +1347,23 @@
                     "title": "Retry Prompt",
                     "description": "The message to send to prompt again.",
                     "examples": [
-                        "Let's try again. What is your age?"
+                        "Let's try again. What is your birth date?"
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "invalidPrompt": {
                     "$type": "Microsoft.IActivityTemplate",
-                    "title": "No match",
-                    "description": "The message to send to when no number was recognized.",
+                    "title": "Invalid Prompt",
+                    "description": "The message to send to when then input was not recognized or not valid for the input type.",
                     "examples": [
-                        "No number was recognized"
+                        "No date was recognized"
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                }
-            },
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "$type"
-            ]
-        },
-        "Microsoft.IntegerPrompt": {
-            "$role": "unionType(Microsoft.IDialog)",
-            "title": "Integer prompt",
-            "description": "This represents a dialog which gathers a number in a specified range",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.IntegerPrompt"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "property": {
-                    "type": "string",
-                    "description": "This is the property to set.",
-                    "examples": [
-                        "value.age"
-                    ]
                 },
                 "minValue": {
                     "type": "integer",
                     "title": "Mininum value",
-                    "description": "The minimum value that is acceptable.  If the value is less then this then the TooSmallReponse and RetryPrompt will be sent.",
+                    "description": "The minimum value that is acceptable.  ",
                     "examples": [
                         "0"
                     ]
@@ -1515,55 +1371,10 @@
                 "maxValue": {
                     "type": "integer",
                     "title": "Maximum value",
-                    "description": "The maximum value that is acceptable.  If the value is greater then this then the TooLargeResponse and RetryPrompt will be sent.",
+                    "description": "The maximum value that is acceptable.  ",
                     "examples": [
                         "120"
                     ]
-                },
-                "initialPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "Initial Prompt",
-                    "description": "The message to send to start.",
-                    "examples": [
-                        "What is your age?"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "retryPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "Retry Prompt",
-                    "description": "The message to send to prompt again.",
-                    "examples": [
-                        "Let's try again. What is your age?"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "noMatchResponse": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "No match",
-                    "description": "The message to send to when no number was recognized.",
-                    "examples": [
-                        "No number was recognized"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "tooSmallResponse": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "Too small",
-                    "description": "The message to send to when the recognized number was less then the MinValue. ",
-                    "examples": [
-                        "Nobody is younger than 0."
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "tooLargeResponse": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "Too large",
-                    "description": "The message to send to when the recognized number was greater then the MinValue.",
-                    "examples": [
-                        "Nobody is that old!"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 }
             },
             "patternProperties": {
@@ -2313,7 +2124,7 @@
                 }
             ]
         },
-        "Microsoft.Switch": {
+        "Microsoft.SwitchCondition": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Switch Step",
             "description": "Step which conditionally decides which step to execute next.",
@@ -2325,7 +2136,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.Switch"
+                    "const": "Microsoft.SwitchCondition"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -2413,87 +2224,6 @@
             ]
         },
         "Microsoft.TextInput": {
-            "$implements": [
-                "Microsoft.IDialog"
-            ],
-            "title": "Text prompt",
-            "description": "This represents a dialog which gathers a text from the user",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.TextInput"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "property": {
-                    "type": "string",
-                    "description": "This is the property to set the result.",
-                    "examples": [
-                        "value.name"
-                    ]
-                },
-                "pattern": {
-                    "type": "string",
-                    "title": "Pattern",
-                    "description": "A regular expression pattern which must match",
-                    "examples": [
-                        "\\w{3,30}"
-                    ]
-                },
-                "initialPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "Initial Prompt",
-                    "description": "The message to send to start.",
-                    "examples": [
-                        "What is your name?"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "retryPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "Retry Prompt",
-                    "description": "The message to send to prompt again.",
-                    "examples": [
-                        "Let's try again. What is your name?"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "noMatchResponse": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "No match",
-                    "description": "The message to send to when the input didn't match.",
-                    "examples": [
-                        "That doesn't match the pattern requirements.",
-                        "A valid phone number looks like xxx-xxx-xxxx."
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                }
-            },
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "$type"
-            ]
-        },
-        "Microsoft.TextInput": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Text prompt",
             "description": "This represents a dialog which gathers a text from the user",
@@ -2521,25 +2251,34 @@
                 },
                 "property": {
                     "type": "string",
-                    "description": "This is the property to set the result.",
+                    "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
                     "examples": [
-                        "value.name"
+                        "user.name"
                     ]
                 },
-                "pattern": {
+                "inputProperties": {
+                    "type": "object",
+                    "description": "This defines properties which be passed as arguments to this dialog",
+                    "examples": [
+                        "user.name"
+                    ],
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "outputProperty": {
                     "type": "string",
-                    "title": "Pattern",
-                    "description": "A regular expression pattern which must match",
+                    "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
                     "examples": [
-                        "\\w{3,30}"
+                        "user.name"
                     ]
                 },
-                "initialPrompt": {
+                "prompt": {
                     "$type": "Microsoft.IActivityTemplate",
                     "title": "Initial Prompt",
-                    "description": "The message to send to start.",
+                    "description": "The message to send to as prompt for this input.",
                     "examples": [
-                        "What is your name?"
+                        "What is your birth date?"
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
@@ -2548,19 +2287,26 @@
                     "title": "Retry Prompt",
                     "description": "The message to send to prompt again.",
                     "examples": [
-                        "Let's try again. What is your name?"
+                        "Let's try again. What is your birth date?"
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
-                "noMatchResponse": {
+                "invalidPrompt": {
                     "$type": "Microsoft.IActivityTemplate",
-                    "title": "No match",
-                    "description": "The message to send to when the input didn't match.",
+                    "title": "Invalid Prompt",
+                    "description": "The message to send to when then input was not recognized or not valid for the input type.",
                     "examples": [
-                        "That doesn't match the pattern requirements.",
-                        "A valid phone number looks like xxx-xxx-xxxx."
+                        "No date was recognized"
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "pattern": {
+                    "type": "string",
+                    "title": "Pattern",
+                    "description": "A regular expression pattern which must match",
+                    "examples": [
+                        "\\w{3,30}"
+                    ]
                 }
             },
             "patternProperties": {

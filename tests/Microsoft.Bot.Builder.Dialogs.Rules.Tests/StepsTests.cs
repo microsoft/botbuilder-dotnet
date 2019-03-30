@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"),  OutputBinding = "user.name" },
+                        new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"),  OutputProperty = "user.name" },
                         new SendActivity("Hello {user.name}, nice to meet you!"),
                     })});
 
@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             {
                                 new TextInput() {
                                     Prompt  = new ActivityTemplate("Hello, what is your name?"),
-                                    OutputBinding = "user.name"
+                                    OutputProperty = "user.name"
                                 },
                             }
                         },
@@ -254,7 +254,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                                 new TextInput()
                                 {
                                     Prompt  = new ActivityTemplate("Hello, what is your name?"),
-                                    OutputBinding = "user.name"
+                                    OutputProperty = "user.name"
                                 }
                             }
                         },
@@ -313,7 +313,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                                 new TextInput()
                                 {
                                     Prompt  = new ActivityTemplate("Hello, what is your name?"),
-                                    OutputBinding = "user.name"
+                                    OutputProperty = "user.name"
                                 }
                             }
                         },

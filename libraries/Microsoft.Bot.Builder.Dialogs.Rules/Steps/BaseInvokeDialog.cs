@@ -32,12 +32,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
         {
             get
             {
-                return InputBindings["value"];
+                return InputProperties["value"];
             }
             set
             {
-                InputBindings["value"] = value;
-                OutputBinding = value;
+                InputProperties["value"] = value;
+                OutputProperty = value;
             }
         }
 
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
             : base()
         {
             this.dialogIdToCall = dialogIdToCall;
-            this.OutputBinding = "dialog.lastResult";
+            this.OutputProperty = "dialog.lastResult";
 
             if (options != null)
             {

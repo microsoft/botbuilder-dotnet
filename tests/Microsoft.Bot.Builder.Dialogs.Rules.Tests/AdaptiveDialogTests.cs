@@ -348,7 +348,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                                 new TextInput()
                                 {
                                     Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                    OutputBinding = "user.name"
+                                    OutputProperty = "user.name"
                                 }
                             }
                         },

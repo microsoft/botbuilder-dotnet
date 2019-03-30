@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 
         protected override string OnComputeId()
         {
-            return $"SendActivity({OutputBinding ?? string.Empty})";
+            return $"SendActivity({OutputProperty ?? string.Empty})";
         }
     }
 }
