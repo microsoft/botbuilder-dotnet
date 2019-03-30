@@ -229,7 +229,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new IfCondition()
                         {
-                            Expression = new ExpressionEngine().Parse("user.name == null"),
+                            Condition = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextInput() {
@@ -263,7 +263,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new IfCondition()
                         {
-                            Expression = new ExpressionEngine().Parse("user.name == null"),
+                            Condition = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextInput()
@@ -304,7 +304,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new IfCondition()
                         {
-                            Expression = new ExpressionEngine().Parse("user.name == null"),
+                            Condition = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextInput()
@@ -342,7 +342,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new IfCondition()
                         {
-                            Expression = new ExpressionEngine().Parse("user.name == null"),
+                            Condition = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextInput()
@@ -355,7 +355,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                         new IfCondition()
                         {
                             // Check comparison with string literal
-                            Expression = new ExpressionEngine().Parse("user.name == 'Carlos'"),
+                            Condition = new ExpressionEngine().Parse("user.name == 'Carlos'"),
                             IfTrue = new List<IDialog>()
                             {
                                 new SendActivity("Hello carlin")
@@ -399,7 +399,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new IfCondition()
                         {
-                            Expression = new ExpressionEngine().Parse("user.name == null"),
+                            Condition = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextInput()
@@ -455,7 +455,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new IfCondition()
                         {
-                            Expression = new ExpressionEngine().Parse("user.name == null"),
+                            Condition = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextInput()
@@ -526,7 +526,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                                     {
                                         new IfCondition()
                                         {
-                                            Expression = new ExpressionEngine().Parse("user.name == null"),
+                                            Condition = new ExpressionEngine().Parse("user.name == null"),
                                             IfTrue = new List<IDialog>()
                                             {
                                                 new TextInput()
@@ -596,7 +596,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                         {
                             new IfCondition()
                             {
-                                Expression = new ExpressionEngine().Parse("user.name == null"),
+                                Condition = new ExpressionEngine().Parse("user.name == null"),
                                 IfTrue = new List<IDialog>()
                                 {
                                     new TextInput()

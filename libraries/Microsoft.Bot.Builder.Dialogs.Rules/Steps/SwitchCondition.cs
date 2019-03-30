@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Expressions;
+using Microsoft.Bot.Builder.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 {
@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
         /// <summary>
         /// Condition expression against memory Example: "user.age"
         /// </summary>
-        public IExpression Condition { get; set; }
+        public Expression Condition { get; set; }
 
         /// <summary>
         /// Cases
@@ -38,11 +38,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
             // Ensure planning context
             if (dc is PlanningContext planning)
             {
-                var conditionResult = (await Condition.Evaluate(dc.State).ConfigureAwait(false));
+                var (value, error) = Condition.TryEvaluate(dc.State);
 
                 List<IDialog> stepsToRun = this.Default;
 
-                if (this.Cases.TryGetValue(conditionResult?.ToString(), out List<IDialog> steps))
+                if (this.Cases.TryGetValue(value?.ToString(), out List<IDialog> steps))
                 {
                     stepsToRun = steps;
                 }

@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
         /// <summary>
         /// Condition expression against memory Example: "user.age > 18"
         /// </summary>
-        public Expression Expression { get; set; }
+        public Expression Condition { get; set; }
 
         public List<IDialog> IfTrue { get; set; } = new List<IDialog>();
 
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
             // Ensure planning context
             if (dc is PlanningContext planning)
             {
-                var (value, error) = Expression.TryEvaluate(dc.State);
+                var (value, error) = Condition.TryEvaluate(dc.State);
                 var conditionResult = error == null && (bool)value;
 
                 var stepsToRun = conditionResult ? IfTrue : IfFalse;
