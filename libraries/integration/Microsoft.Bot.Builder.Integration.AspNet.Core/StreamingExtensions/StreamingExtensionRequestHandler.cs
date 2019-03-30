@@ -34,13 +34,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
 
             var body = await request.ReadBodyAsString().ConfigureAwait(false);
 
-            if (string.IsNullOrEmpty(body) || request.Streams?.Count > 0)
+            if (string.IsNullOrEmpty(body) || request.Streams?.Count == 0)
             {
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return response;
             }
 
-            if (request.Streams.Where(x => x.Type != "application/json; charset=utf8").Any())
+            if (request.Streams.Where(x => x.Type != "application/json; charset=utf-8").Any())
             {
                 response.StatusCode = (int)HttpStatusCode.NotAcceptable;
                 return response;
