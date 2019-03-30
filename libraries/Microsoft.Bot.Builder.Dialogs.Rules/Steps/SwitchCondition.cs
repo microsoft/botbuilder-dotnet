@@ -39,6 +39,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
             if (dc is PlanningContext planning)
             {
                 var (value, error) = Condition.TryEvaluate(dc.State);
+                if (error != null)
+                {
+                    // Do what? 
+                }
 
                 List<IDialog> stepsToRun = this.Default;
 

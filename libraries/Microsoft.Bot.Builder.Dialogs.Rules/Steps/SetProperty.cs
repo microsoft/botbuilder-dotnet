@@ -21,10 +21,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
             // Ensure planning context
             if (dc is PlanningContext planning)
             {
-                // Simply evaluate the expression, for example user.name = 'Carlos'
-                // Consider renaming this to EvaluateExpression rather than SetProperty
-                // Otherwise we should have property and value properties
+                // SetProperty evaluates the "Value" expression and returns it as the result of the dialog
                 var (value, error) = Value.TryEvaluate(dc.State);
+                // what to do with error
+
                 return await planning.EndDialogAsync(value, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else
