@@ -44,9 +44,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         }
 
         [TestMethod]
-        public async Task JsonDialogLoad_WaitForInput()
+        public async Task JsonDialogLoad_EndTurn()
         {
-            string path = Path.Combine(samplesDirectory, @"Planning 2 - WaitForInput\WaitForInput.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"Planning 2 - EndTurn\EndTurn.main.dialog");
 
             await BuildTestFlow(path)
             .Send("hello")
@@ -70,9 +70,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         }
 
         [TestMethod]
-        public async Task JsonDialogLoad_TextPrompt()
+        public async Task JsonDialogLoad_TextInput()
         {
-            string path = Path.Combine(samplesDirectory, @"Planning 4 - TextPrompt\TextPrompt.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"Planning 4 - TextInput\TextInput.main.dialog");
 
             await BuildTestFlow(path)
             .Send("hello")
@@ -218,10 +218,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
             await BuildTestFlow(path)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
-            .Send("Hello")
             .AssertReply("Welcome! Here is a http request sample, please enter a name for you visual pet.")
             .Send("TestPetName")
-            .AssertReply("Great! Your pet's name is TestPetName, now please enter the id of your pet, this could help you find your pet later.")
+            .AssertReply("Great! Your pet's name is TestPetName")
+            .AssertReply("Now please enter the id of your pet, this could help you find your pet later.")
             .Send("12121")
             .AssertReply("Done! You have added a pet named \"TestPetName\" with id \"12121\"")
             .AssertReply("Now try to specify the id of your pet, and I will help your find it out from the store.")

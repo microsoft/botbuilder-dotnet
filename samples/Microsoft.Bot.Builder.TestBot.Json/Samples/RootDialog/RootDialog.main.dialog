@@ -7,7 +7,7 @@
             "DefaultIntent": "(?i)default|defaultrule",
             "WaitForInputIntent": "(?i)wait|input",
             "IfConditionIntent": "(?i)property|ifproperty",
-            "TextPromptIntent": "(?i)text|textprompt",
+            "TextInputIntent": "(?i)text|textprompt",
             "WelcomeRuleIntent": "(?i)welcome",
             "DoStepsIntent": "(?i)steps|intent",
             "BeginDialogIntent": "(?i)call",
@@ -39,9 +39,9 @@
         },
         {
             "$type": "Microsoft.IntentRule",
-            "intent": "TextPromptIntent",
+            "intent": "TextInputIntent",
             "steps": [
-                "TextPrompt.main"
+                "TextInput.main"
             ]
         },
         {

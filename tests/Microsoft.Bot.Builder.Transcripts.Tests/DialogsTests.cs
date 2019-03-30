@@ -245,7 +245,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         }
 
         [TestMethod]
-        public async Task TextPrompt()
+        public async Task TextInput()
         {
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
@@ -268,7 +268,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                 {
 
                     var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
-                    var prompt = new TextPrompt(validator);
+                    var prompt = new TextInput(validator);
 
                     var dialogCompletion = await prompt.ContinueDialogAsync(turnContext, state);
                     if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)

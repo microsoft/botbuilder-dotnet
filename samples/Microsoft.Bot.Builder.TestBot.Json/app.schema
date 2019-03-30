@@ -41,6 +41,11 @@
             "$ref": "#/definitions/Microsoft.EndDialog"
         },
         {
+            "title": "Microsoft.EndTurn",
+            "description": "End the current turn without ending the dialog.",
+            "$ref": "#/definitions/Microsoft.EndTurn"
+        },
+        {
             "title": "Microsoft.EventRule",
             "description": "Defines a rule for an event which is triggered by some sourcy",
             "$ref": "#/definitions/Microsoft.EventRule"
@@ -151,14 +156,9 @@
             "$ref": "#/definitions/Microsoft.TextInput"
         },
         {
-            "title": "Microsoft.TextPrompt",
+            "title": "Microsoft.TextInput",
             "description": "This represents a dialog which gathers a text from the user",
-            "$ref": "#/definitions/Microsoft.TextPrompt"
-        },
-        {
-            "title": "Microsoft.WaitForInput",
-            "description": "Dialog command to wait for input from the user.",
-            "$ref": "#/definitions/Microsoft.WaitForInput"
+            "$ref": "#/definitions/Microsoft.TextInput"
         },
         {
             "title": "Microsoft.WelcomeRule",
@@ -602,6 +602,42 @@
                 "$type"
             ]
         },
+        "Microsoft.EndTurn": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "End Turn",
+            "description": "End the current turn without ending the dialog.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.EndTurn"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "$type"
+            ]
+        },
         "Microsoft.EventRule": {
             "title": "Event Rule",
             "description": "Defines a rule for an event which is triggered by some sourcy",
@@ -1012,6 +1048,11 @@
                     "$ref": "#/definitions/Microsoft.EndDialog"
                 },
                 {
+                    "title": "Microsoft.EndTurn",
+                    "description": "End the current turn without ending the dialog.",
+                    "$ref": "#/definitions/Microsoft.EndTurn"
+                },
+                {
                     "title": "Microsoft.FloatPrompt",
                     "description": "This represents a dialog which gathers a number in a specified range",
                     "$ref": "#/definitions/Microsoft.FloatPrompt"
@@ -1062,14 +1103,9 @@
                     "$ref": "#/definitions/Microsoft.Switch"
                 },
                 {
-                    "title": "Microsoft.TextPrompt",
+                    "title": "Microsoft.TextInput",
                     "description": "This represents a dialog which gathers a text from the user",
-                    "$ref": "#/definitions/Microsoft.TextPrompt"
-                },
-                {
-                    "title": "Microsoft.WaitForInput",
-                    "description": "Dialog command to wait for input from the user.",
-                    "$ref": "#/definitions/Microsoft.WaitForInput"
+                    "$ref": "#/definitions/Microsoft.TextInput"
                 },
                 {
                     "type": "string",
@@ -2457,7 +2493,7 @@
                 "$type"
             ]
         },
-        "Microsoft.TextPrompt": {
+        "Microsoft.TextInput": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Text prompt",
             "description": "This represents a dialog which gathers a text from the user",
@@ -2469,7 +2505,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.TextPrompt"
+                    "const": "Microsoft.TextInput"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -2525,42 +2561,6 @@
                         "A valid phone number looks like xxx-xxx-xxxx."
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                }
-            },
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "$type"
-            ]
-        },
-        "Microsoft.WaitForInput": {
-            "$role": "unionType(Microsoft.IDialog)",
-            "title": "Wait for input from the user",
-            "description": "Dialog command to wait for input from the user.",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.WaitForInput"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 }
             },
             "patternProperties": {

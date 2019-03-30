@@ -18,7 +18,7 @@
           "activity": "Why did the chicken cross the road?"
         },
         {
-          "$type": "Microsoft.WaitForInput"
+          "$type": "Microsoft.EndTurn"
         },
         {
           "$type": "Microsoft.SendActivity",

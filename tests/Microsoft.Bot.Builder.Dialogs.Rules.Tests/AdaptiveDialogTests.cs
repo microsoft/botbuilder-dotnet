@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         }
 
         [TestMethod]
-        public async Task Planning_TopLevelFallback()
+        public async Task AdaptiveDialog_TopLevelFallback()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         }
 
         [TestMethod]
-        public async Task Planning_TopLevelFallbackMultipleActivities()
+        public async Task AdaptiveDialog_TopLevelFallbackMultipleActivities()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         }
 
         [TestMethod]
-        public async Task Planning_WaitForInput()
+        public async Task AdaptiveDialog_EndTurn()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         }
 
         [TestMethod]
-        public async Task Planning_ListManage()
+        public async Task AdaptiveDialog_EditArray()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -141,51 +141,57 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         // Add item
                         new TextInput() {
+                            AlwaysPrompt = true,
                             Prompt = new ActivityTemplate("Please add an item to todos."),
                             Property = "dialog.todo"
                         },
                         new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
-                        new SendList("user.todos"),
+                        new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
                         new TextInput()
                         {
+                            AlwaysPrompt = true,
                             Prompt = new ActivityTemplate("Please add an item to todos."),
                             Property = "dialog.todo"
+
                         },
                         new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
-                        new SendList("user.todos"),
+                        new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
 
                         // Remove item
                         new TextInput() {
+                            AlwaysPrompt = true,
                             Prompt = new ActivityTemplate("Enter a item to remove."),
                             Property = "dialog.todo"
                         },
                         new EditArray(EditArray.ArrayChangeType.Remove, "user.todos", "dialog.todo"),
-                        new SendList("user.todos"),
+                        new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
 
                         // Add item and pop item
                         new TextInput() {
+                            AlwaysPrompt = true,
                             Prompt = new ActivityTemplate("Please add an item to todos."),
                             Property = "dialog.todo"
                         },
                         new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
                         new TextInput()
                         {
+                            AlwaysPrompt = true,
                             Prompt = new ActivityTemplate("Please add an item to todos."),
                             Property = "dialog.todo"
                         },
                         new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
-                        new SendList("user.todos"),
+                        new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
 
                         new EditArray(EditArray.ArrayChangeType.Pop, "user.todos"),
-                        new SendList("user.todos"),
+                        new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
 
                         // Take item
                         new EditArray(EditArray.ArrayChangeType.Take, "user.todos"),
-                        new SendList("user.todos"),
+                        new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
 
                         // Clear list
                         new EditArray(EditArray.ArrayChangeType.Clear, "user.todos"),
-                        new SendList("user.todos")
+                        new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
                     })
             });
 
@@ -193,25 +199,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             .Send("hi")
                 .AssertReply("Please add an item to todos.")
             .Send("todo1")
-                .AssertReply("- todo1\n")
+                .AssertReply("Your todos: todo1")
                 .AssertReply("Please add an item to todos.")
             .Send("todo2")
-                .AssertReply("- todo1\n- todo2\n")
+                .AssertReply("Your todos: todo1, todo2")
                 .AssertReply("Enter a item to remove.")
             .Send("todo2")
-                .AssertReply("- todo1\n")
+                .AssertReply("Your todos: todo1")
                 .AssertReply("Please add an item to todos.")
             .Send("todo3")
                 .AssertReply("Please add an item to todos.")
             .Send("todo4")
-                .AssertReply("- todo1\n- todo3\n- todo4\n")
-                .AssertReply("- todo1\n- todo3\n")
-                .AssertReply("- todo3\n")
+                .AssertReply("Your todos: todo1, todo3, todo4")
+                .AssertReply("Your todos: todo1, todo3")
+                .AssertReply("Your todos: todo3")
             .StartTestAsync();
         }
 
         [TestMethod]
-        public async Task Planning_IfProperty()
+        public async Task AdaptiveDialog_IfProperty()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -244,7 +250,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         }
 
         [TestMethod]
-        public async Task Planning_TextPrompt()
+        public async Task AdaptiveDialog_TextInput()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -279,7 +285,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         }
 
         [TestMethod]
-        public async Task Planning_WelcomeRule()
+        public async Task AdaptiveDialog_WelcomeRule()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -322,7 +328,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         }
 
         [TestMethod]
-        public async Task Planning_StringLiteralInExpression()
+        public async Task AdaptiveDialog_StringLiteralInExpression()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -339,9 +345,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             Condition = new CommonExpression("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
-                                new TextPrompt()
+                                new TextInput()
                                 {
-                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
+                                    Prompt = new ActivityTemplate("Hello, what is your name?"),
                                     OutputBinding = "user.name"
                                 }
                             }
@@ -370,7 +376,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
 
         [TestMethod]
-        public async Task Planning_DoSteps()
+        public async Task AdaptiveDialog_DoSteps()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -385,7 +391,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     steps: new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
-                        new WaitForInput(),
+                        new EndTurn(),
                         new SendActivity("To get to the other side")
                     }),
                 new NoMatchRule(
@@ -421,7 +427,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         }
 
         [TestMethod]
-        public async Task Planning_ReplacePlan()
+        public async Task AdaptiveDialog_ReplacePlan()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -436,7 +442,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     steps: new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
-                        new WaitForInput(),
+                        new EndTurn(),
                         new SendActivity("To get to the other side")
                     }),
                 new WelcomeRule(
@@ -478,7 +484,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         }
 
         [TestMethod]
-        public async Task Planning_NestedInlineSequences()
+        public async Task AdaptiveDialog_NestedInlineSequences()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -498,7 +504,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                                 new NoMatchRule(new List<IDialog>()
                                 {
                                     new SendActivity("Why did the chicken cross the road?"),
-                                    new WaitForInput(),
+                                    new EndTurn(),
                                     new SendActivity("To get to the other side")
                                 })
                             }
@@ -554,7 +560,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         }
 
         [TestMethod]
-        public async Task Planning_CallDialog()
+        public async Task AdaptiveDialog_BeginDialog()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -614,7 +620,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             new NoMatchRule(new List<IDialog>()
                             {
                                 new SendActivity("Why did the chicken cross the road?"),
-                                new WaitForInput(),
+                                new EndTurn(),
                                 new SendActivity("To get to the other side")
                             })
                         }
@@ -637,7 +643,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         }
 
         [TestMethod]
-        public async Task Planning_IntentRule()
+        public async Task AdaptiveDialog_IntentRule()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -652,7 +658,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     steps: new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
-                        new WaitForInput(),
+                        new EndTurn(),
                         new SendActivity("To get to the other side")
                     }),
                 new WelcomeRule(

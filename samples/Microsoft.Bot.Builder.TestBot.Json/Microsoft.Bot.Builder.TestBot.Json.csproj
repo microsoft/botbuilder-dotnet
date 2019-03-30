@@ -7,9 +7,8 @@
   <ItemGroup>
     <None Remove="en-us.lg" />
     <None Remove="main.dialog" />
-    <None Remove="Samples\Planning 2 - WaitForInput\WaitforInput.main.dialog" />
+    <None Remove="Samples\Planning 2 - EndTurn\EndTurn.main.dialog" />
     <None Remove="Samples\Planning 3 - IfCondition\IfCondition.main.dialog" />
-    <None Remove="Samples\Planning 4 - TextPrompt\TextPrompt.main.dialog" />
     <None Remove="Samples\Planning 5 - WelcomeRule\WelcomeRule.main.dialog" />
     <None Remove="Samples\Planning 6 - DoSteps\DoSteps.main.dialog" />
     <None Remove="Samples\Planning 7 - BeginDialog\BeginDialog.FortuneTellerDialog.dialog" />
@@ -26,6 +25,7 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Samples\Planning 1 - NoMatchRule\NoMatchRule.main.dialog" />
+    <_ContentIncludedByDefault Remove="Samples\Planning 4 - TextInput\TextInput.main.dialog" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,9 +38,8 @@
     <Content Include="Samples\Planning 7 - BeginDialog\BeginDialog.main.dialog" />
     <Content Include="Samples\Planning 6 - DoSteps\DoSteps.main.dialog" />
     <Content Include="Samples\Planning 5 - WelcomeRule\WelcomeRule.main.dialog" />
-    <Content Include="Samples\Planning 4 - TextPrompt\TextPrompt.main.dialog" />
     <Content Include="Samples\Planning 3 - IfCondition\IfCondition.main.dialog" />
-    <Content Include="Samples\Planning 2 - WaitForInput\WaitforInput.main.dialog" />
+    <Content Include="Samples\Planning 2 - EndTurn\EndTurn.main.dialog" />
     <Content Include="Samples\Planning 9 - CancelDialog\CancelDialog.main.dialog" />
 
   </ItemGroup>

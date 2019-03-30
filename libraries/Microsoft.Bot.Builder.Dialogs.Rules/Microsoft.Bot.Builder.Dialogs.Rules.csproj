@@ -65,14 +65,14 @@
     <None Remove="Schemas\Steps\Microsoft.CancelDialog.schema" />
     <None Remove="Schemas\Steps\Microsoft.EditArray.schema" />
     <None Remove="Schemas\Steps\Microsoft.EndDialog.schema" />
+    <None Remove="Schemas\Steps\Microsoft.EndTurn.schema" />
     <None Remove="Schemas\Steps\Microsoft.HttpRequest.schema" />
     <None Remove="Schemas\Steps\Microsoft.IfProperty.schema" />
     <None Remove="Schemas\Steps\Microsoft.ReplaceWithDialog.schema" />
     <None Remove="Schemas\Steps\Microsoft.SaveEntity.schema" />
     <None Remove="Schemas\Steps\Microsoft.SendActivity.schema" />
     <None Remove="Schemas\Steps\Microsoft.SendList.schema" />
-    <None Remove="Schemas\Steps\Microsoft.Switch.schema" />
-    <None Remove="Schemas\Steps\Microsoft.WaitForInput.schema" />
+    <None Remove="Schemas\Steps\Microsoft.SwitchCondition.schema" />
   </ItemGroup>
   
   <ItemGroup>
@@ -85,7 +85,7 @@
     <Content Include="Schemas\Rules\Microsoft.IfPropertyRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.IntentRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.WelcomeRule.schema" />
-    <Content Include="Schemas\Steps\Microsoft.Switch.schema" />
+    <Content Include="Schemas\Steps\Microsoft.SwitchCondition.schema" />
     <Content Include="Schemas\Steps\Microsoft.HttpRequest.schema" />
     <Content Include="Schemas\Steps\Microsoft.SendList.schema" />
     <Content Include="Schemas\Steps\Microsoft.SaveEntity.schema" />
@@ -96,7 +96,7 @@
     <Content Include="Schemas\Steps\Microsoft.ReplaceWithDialog.schema" />
     <Content Include="Schemas\Steps\Microsoft.IfProperty.schema" />
     <Content Include="Schemas\Steps\Microsoft.SendActivity.schema" />
-    <Content Include="Schemas\Steps\Microsoft.WaitForInput.schema" />
+    <Content Include="Schemas\Steps\Microsoft.EndTurn.schema" />
   </ItemGroup>
 
   <ItemGroup>

@@ -8,16 +8,19 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
 {
-    public class WaitForInput : Dialog
+    /// <summary>
+    /// This command ends the current turn without ending the dialog
+    /// </summary>
+    public class EndTurn : Dialog
     {
-        public WaitForInput() : base()
+        public EndTurn() : base()
         {
             this.Id = OnComputeId();
         }
 
         protected override string OnComputeId()
         {
-            return $"WaitForInput[]";
+            return $"EndTurn[]";
         }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))

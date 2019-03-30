@@ -52,12 +52,12 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             var rootFile = resourceExplorer.GetResource(@"ToDoBot.main.dialog");
             //var rootFile = resourceExplorer.GetResource("ToDoLuisBot.main.dialog");
             //var rootFile = resourceExplorer.GetResource("NoMatchRule.main.dialog");
-            //var rootFile = resourceExplorer.GetResource("WaitForInput.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("EndTurn.main.dialog");
             //var rootFile = resourceExplorer.GetResource("IfCondition.main.dialog");
-            //var rootFile = resourceExplorer.GetResource("TextPrompt.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("TextInput.main.dialog");
             //var rootFile = resourceExplorer.GetResource("WelcomeRule.main.dialog");
             //var rootFile = resourceExplorer.GetResource("DoSteps.main.dialog");
-            //var rootFile = resourceExplorer.GetResource("CallDialog.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("BeginDialog.main.dialog");
             //var rootFile = resourceExplorer.GetResource("ExternalLanguage.main.dialog");
 
             rootDialog = DeclarativeTypeLoader.Load<IDialog>(rootFile.FullName, resourceExplorer, registry);

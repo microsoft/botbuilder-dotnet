@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                 new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new TextPrompt() { InitialPrompt = new ActivityTemplate("Hello, what is your name?"),  OutputBinding = "user.name" },
+                        new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"),  OutputBinding = "user.name" },
                         new SendActivity("Hello {user.name}, nice to meet you!"),
                     })});
 
@@ -91,8 +91,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             Condition = new CommonExpression("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
-                                new TextPrompt() {
-                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
+                                new TextInput() {
+                                    Prompt  = new ActivityTemplate("Hello, what is your name?"),
                                     OutputBinding = "user.name"
                                 },
                             }
@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             Property = "user.name",
                             Value = new CommonExpression("'frank'")
                         },
-                        new Switch()
+                        new SwitchCondition()
                         {
                             Condition = new CommonExpression("user.name"),
                             Cases = new Dictionary<string, List<IDialog>>()
@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         }
 
         [TestMethod]
-        public async Task Step_TextPrompt()
+        public async Task Step_TextInput()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -184,7 +184,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         }
 
         [TestMethod]
-        public async Task Step_TextPromptWithInvalidPrompt()
+        public async Task Step_TextInputWithInvalidPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -240,7 +240,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     steps: new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
-                        new WaitForInput(),
+                        new EndTurn(),
                         new SendActivity("To get to the other side")
                     }),
                 new NoMatchRule(
@@ -251,9 +251,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             Condition = new CommonExpression("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
-                                new TextPrompt()
+                                new TextInput()
                                 {
-                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
+                                    Prompt  = new ActivityTemplate("Hello, what is your name?"),
                                     OutputBinding = "user.name"
                                 }
                             }
@@ -293,7 +293,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
-                        new WaitForInput(),
+                        new EndTurn(),
                         new SendActivity("To get to the other side")
                     }
                  )
@@ -310,9 +310,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                             Condition = new CommonExpression("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
-                                new TextPrompt()
+                                new TextInput()
                                 {
-                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
+                                    Prompt  = new ActivityTemplate("Hello, what is your name?"),
                                     OutputBinding = "user.name"
                                 }
                             }
@@ -372,7 +372,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
-                        new WaitForInput(),
+                        new EndTurn(),
                         new SendActivity("To get to the other side")
                     }
                  )
@@ -465,7 +465,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
-                        new WaitForInput(),
+                        new EndTurn(),
                         new SendActivity("To get to the other side")
                     }
                  )

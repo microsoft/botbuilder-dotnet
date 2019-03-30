@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
     /// <summary>
     /// Conditional branch with multiple cases
     /// </summary>
-    public class Switch : DialogCommand, IDialogDependencies
+    public class SwitchCondition : DialogCommand, IDialogDependencies
     {
         /// <summary>
         /// Condition expression against memory Example: "user.age"
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Steps
         /// </summary>
         public List<IDialog> Default { get; set; } = new List<IDialog>();
 
-        public Switch() : base()
+        public SwitchCondition() : base()
         {
         }
 

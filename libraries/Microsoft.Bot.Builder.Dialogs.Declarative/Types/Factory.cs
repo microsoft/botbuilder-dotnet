@@ -117,11 +117,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.EndDialog", typeof(EndDialog));
             Register("Microsoft.ReplaceWithDialog", typeof(ReplaceWithDialog));
             Register("Microsoft.IfCondition", typeof(IfCondition));
+            Register("Microsoft.SwitchCondition", typeof(SwitchCondition));
             Register("Microsoft.SendActivity", typeof(SendActivity));
-            Register("Microsoft.WaitForInput", typeof(WaitForInput));
+            Register("Microsoft.EndTurn", typeof(EndTurn));
             Register("Microsoft.SaveEntity", typeof(SaveEntity));
             Register("Microsoft.EditArray", typeof(EditArray));
-            Register("Microsoft.SendList", typeof(SendList));
             Register("Microsoft.DeleteProperty", typeof(DeleteProperty));
             Register("Microsoft.HttpRequest", typeof(HttpRequest));
 
