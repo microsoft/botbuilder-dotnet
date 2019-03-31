@@ -12,18 +12,18 @@
       ]
     },
     {
-      "$type": "Microsoft.DefaultRule",
+      "$type": "Microsoft.NoMatchRule",
       "steps": [
         {
-          "$type": "Microsoft.IfProperty",
-          "expression": "user.name == null",
-          "ifTrue": [
-            {
-                "$type": "Microsoft.TextInput",
-                "property": "user.name",
-                "prompt": "Hello, I'm Zoidberg. What is your name?"
-            }
-          ]
+            "$type": "Microsoft.IfCondition",
+            "condition": "user.name == null",
+            "ifTrue": [
+                {
+                    "$type": "Microsoft.TextInput",
+                    "property": "user.name",
+                    "prompt": "Hello, I'm Zoidberg. What is your name?"
+                }
+            ]
         },
         {
           "$type": "Microsoft.SendActivity",

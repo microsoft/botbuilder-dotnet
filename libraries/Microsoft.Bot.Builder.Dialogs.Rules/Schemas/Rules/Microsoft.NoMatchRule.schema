@@ -1,0 +1,9 @@
+﻿{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$ref": "./Microsoft.EventRule.schema#",
+    "title": "No Match Rule",
+    "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
+    "required": [
+        "steps"
+    ]
+}

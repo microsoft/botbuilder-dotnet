@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
                     if (change.EntitiesRecognized != null && change.EntitiesRecognized.Count > 0)
                     {
                         var entities = this.State.Entities;
-                        foreach(var name in change.EntitiesRecognized.Keys)
+                        foreach (var name in change.EntitiesRecognized.Keys)
                         {
                             if (!entities.ContainsKey(name))
                             {
@@ -187,7 +187,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             {
                 Plans.Plan.Steps.InsertRange(0, steps);
             }
-            
+
 
 
             // Emit new plan event
@@ -370,23 +370,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
 
     public class PlanningState
     {
+        public PlanningState()
+        {
+        }
+
         public dynamic Options { get; set; }
         public PlanState Plan { get; set; }
-        public List<PlanState> SavedPlans { get; set; }
-        public List<PlanChangeList> Changes { get; set; }
+        public List<PlanState> SavedPlans { get; set; } = new List<PlanState>();
+        public List<PlanChangeList> Changes { get; set; } = new List<PlanChangeList>();
         public object Result { get; set; }
     }
 
     public class PlanStepState : DialogState
     {
+        public PlanStepState()
+        {
+        }
+
+        public PlanStepState(string dialogId = null, object options = null)
+        {
+            DialogId = dialogId;
+            Options = options;
+        }
+
         public string DialogId { get; set; }
-        public object Options{ get; set; }
+        public object Options { get; set; }
     }
 
     public class PlanState
     {
         public string Title { get; set; }
-        public List<PlanStepState> Steps { get; set; }
+        public List<PlanStepState> Steps { get; set; } = new List<PlanStepState>();
     }
 
     public enum PlanChangeTypes
@@ -401,11 +415,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
 
     public class PlanChangeList
     {
-        public PlanChangeTypes ChangeType { get; set; }
-        public List<PlanStepState> Steps { get; set; }
-        public List<string> Tags { get; set; }
-        public List<string> EntitiesMatched { get; set; }
-        public List<string> IntentsMatched { get; set; }
-        public Dictionary<string, object> EntitiesRecognized { get; set; }
+        public PlanChangeTypes ChangeType { get; set; } = PlanChangeTypes.DoSteps;
+        public List<PlanStepState> Steps { get; set; } = new List<PlanStepState>();
+        public List<string> Tags { get; set; } = new List<string>();
+        public List<string> EntitiesMatched { get; set; } = new List<string>();
+        public List<string> IntentsMatched { get; set; } = new List<string>();
+        public Dictionary<string, object> EntitiesRecognized { get; set; } = new Dictionary<string, object>();
     }
 }

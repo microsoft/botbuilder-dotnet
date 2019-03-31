@@ -1,28 +1,25 @@
 {
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
-    "rules": [
+    "steps": [
         {
-            "$type": "Microsoft.DefaultRule",
-            "steps": [
+            "$type": "Microsoft.IfCondition",
+            "condition": "user.todos == null",
+            "ifTrue": [
                 {
-                    "$type": "Microsoft.IfProperty",
-                    "expression": "user.todos == null",
-                    "ifTrue": [
-                        {
-                            "$type": "Microsoft.SendActivity",
-                            "activity": "You have no todos."
-                        }
-                    ],
-                    "ifFalse": [
-                        {
-                            "$type": "Microsoft.SendActivity",
-                            "activity": "[ShowTodo]"
-                        }
-                    ]
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "You have no todos."
+                }
+            ],
+            "ifFalse": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "[ShowTodo]"
                 }
             ]
-        },
+        }
+    ],
+    "rules": [
         {
             "$type": "Microsoft.IntentRule",
             "intent": "CancelIntent",

@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.TestBot
             // we are only interested in Message activities - any other type of activity we will immediately complete teh waterfall
             if (stepContext.Context.Activity.Type != ActivityTypes.Message)
             {
-                return await stepContext.EndDialogAsync(cancellationToken);
+                return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
             }
 
             // this prompt will not continue until we receive a number
@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.TestBot
         {
             var value = (int)stepContext.Result;
             await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Bot received the number '{value}'."), cancellationToken);
-            return await stepContext.EndDialogAsync(cancellationToken);
+            return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
         }
     }
 }

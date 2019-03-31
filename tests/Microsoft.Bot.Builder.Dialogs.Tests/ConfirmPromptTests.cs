@@ -113,9 +113,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 }
             })
             .Send("hello")
-                .AssertReply("Please confirm. (1) Yes or (2) No")
+                .AssertReply("Please confirm.")
             .Send("wah?")
-                .AssertReply("That's bad. Please try again. (1) Yes or (2) No")
+                .AssertReply("That's bad. Please try again.")
             .Send("yes")
             .AssertReply("Confirmed.")
             .StartTestAsync();

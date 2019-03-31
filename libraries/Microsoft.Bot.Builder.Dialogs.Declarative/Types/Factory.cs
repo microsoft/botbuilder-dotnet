@@ -106,25 +106,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             // while things are changing rapidly still
 
             // Rules
-            Register("Microsoft.BeginDialogRule", typeof(BeginDialogRule));
             Register("Microsoft.IntentRule", typeof(IntentRule));
             Register("Microsoft.EventRule", typeof(EventRule));
-            Register("Microsoft.DefaultRule", typeof(DefaultRule));
-            Register("Microsoft.ReplacePlanRule", typeof(ReplacePlanRule));
+            Register("Microsoft.NoMatchRule", typeof(NoMatchRule));
             Register("Microsoft.WelcomeRule", typeof(WelcomeRule));
 
             // Steps
-            Register("Microsoft.CallDialog", typeof(CallDialog));
+            Register("Microsoft.BeginDialog", typeof(BeginDialog));
             Register("Microsoft.CancelDialog", typeof(CancelDialog));
             Register("Microsoft.EndDialog", typeof(EndDialog));
-            Register("Microsoft.GotoDialog", typeof(GotoDialog));
-            Register("Microsoft.IfProperty", typeof(IfProperty));
+            Register("Microsoft.ReplaceWithDialog", typeof(ReplaceWithDialog));
+            Register("Microsoft.IfCondition", typeof(IfCondition));
+            Register("Microsoft.SwitchCondition", typeof(SwitchCondition));
             Register("Microsoft.SendActivity", typeof(SendActivity));
-            Register("Microsoft.WaitForInput", typeof(WaitForInput));
+            Register("Microsoft.EndTurn", typeof(EndTurn));
             Register("Microsoft.SaveEntity", typeof(SaveEntity));
-            Register("Microsoft.ChangeList", typeof(ChangeList));
-            Register("Microsoft.SendList", typeof(SendList));
-            Register("Microsoft.ClearProperty", typeof(ClearProperty));
+            Register("Microsoft.EditArray", typeof(EditArray));
+            Register("Microsoft.DeleteProperty", typeof(DeleteProperty));
             Register("Microsoft.HttpRequest", typeof(HttpRequest));
 
             // Dialogs
@@ -134,7 +132,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.TextInput", typeof(TextInput));
             Register("Microsoft.IntegerInput", typeof(IntegerInput));
             Register("Microsoft.FloatInput", typeof(FloatInput));
-            Register("Microsoft.BoolInput", typeof(BoolInput));
+            Register("Microsoft.BoolInput", typeof(ConfirmInput));
 
             // Recognizers
             Register("Microsoft.LuisRecognizer", typeof(LuisRecognizer), new LuisRecognizerLoader(TypeFactory.Configuration));

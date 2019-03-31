@@ -3,21 +3,21 @@
   "$type": "Microsoft.AdaptiveDialog",
   "rules": [
     {
-      "$type": "Microsoft.DefaultRule",
+      "$type": "Microsoft.NoMatchRule",
       "steps": [
         {
-          "$type": "Microsoft.IfProperty",
-          "expression": "user.name == null",
-          "ifTrue": [
-            {
-                "$type": "Microsoft.TextInput",
-                "pattern": "\\w{3,50}",
-                "property": "user.name",
-                "prompt": "[Greeting.Name.initialPrompt]",
-                "retryPrompt": "[Greeting.Name.retryPrompt]",
-                "invalidPrompt": "[Greeting.Name.notMatched]"
-            }
-          ]
+            "$type": "Microsoft.IfCondition",
+            "condition": "user.name == null",
+            "ifTrue": [
+                {
+                    "$type": "Microsoft.TextInput",
+                    "pattern": "\\w{3,50}",
+                    "property": "user.name",
+                    "prompt": "[Greeting.Name.initialPrompt]",
+                    "retryPrompt": "[Greeting.Name.retryPrompt]",
+                    "invalidPrompt": "[Greeting.Name.notMatched]"
+                }
+            ]
         },
         {
           "$type": "Microsoft.SendActivity",

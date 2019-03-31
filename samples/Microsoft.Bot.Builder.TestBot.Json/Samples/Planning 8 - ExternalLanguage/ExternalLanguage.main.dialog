@@ -15,14 +15,14 @@
             "$type": "Microsoft.IntentRule",
             "intent": "JokeIntent",
             "steps": [
-              "ExternalLanguage.TellJoke"
+                "ExternalLanguage.TellJoke"
             ]
         },
         {
             "$type": "Microsoft.IntentRule",
             "intent": "FortuneTellerIntent",
             "steps": [
-              "ExternalLanguage.FortuneTeller"
+                "ExternalLanguage.FortuneTeller"
             ]
         },
         {
@@ -38,10 +38,7 @@
             "$type": "Microsoft.IntentRule",
             "intent": "GreetingIntent",
             "steps": [
-              {
-                "$type": "Microsoft.CallDialog",
-                "dialog": "ExternalLanguage.Greeting"
-              }
+                "ExternalLanguage.Greeting"
             ]
         },
         {
@@ -55,7 +52,7 @@
             ]
         },
         {
-            "$type": "Microsoft.DefaultRule",
+            "$type": "Microsoft.NoMatchRule",
             "steps": [
                 {
                     "$type": "Microsoft.SendActivity",

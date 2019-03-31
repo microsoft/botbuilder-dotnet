@@ -12,53 +12,34 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Rules
 {
-    public class PlanningDialogRunOptions
-    {
-        public BotState BotState { get; set; }
 
-        public object DialogOptions { get; set; }
-
-        public int? ExpireAfter { get; set; }
-
-        public Dictionary<string, object> UserState { get; set; }
-    }
-
-    public class StoredBotState
-    {
-        public Dictionary<string, object> UserState { get; set; }
-        public Dictionary<string, object> ConversationState { get; set; }
-        public List<DialogInstance> DialogStack { get; set; }
-    }
-
-    public class BotStateStorageKeys
-    {
-        public string UserState { get; set; }
-        public string ConversationState { get; set; }
-        public string DialogState { get; set; }
-    }
-
-    public class BotTurnResult
-    {
-        public DialogTurnResult TurnResult { get; set; }
-        public List<Activity> Activities { get; set; }
-        public StoredBotState NewState { get; set; }
-    }
-
+    /// <summary>
+    /// The Adaptive Dialog models conversation using events and rules to adapt dynamicaly to changing conversation flow
+    /// </summary>
     public class AdaptiveDialog : Dialog
     {
         private bool installedDependencies = false;
         protected readonly DialogSet dialogs = new DialogSet();
         protected DialogSet runDialogs = new DialogSet(); // Used by the Run method
 
-        public virtual List<IRule> Rules { get; set; } = new List<IRule>();
-
         public IStatePropertyAccessor<BotState> BotState { get; set; }
 
         public IStatePropertyAccessor<Dictionary<string, object>> UserState { get; set; }
 
+        /// <summary>
+        /// Recognizer for processing incoming user input 
+        /// </summary>
         public IRecognizer Recognizer { get; set; }
 
-        // public IStorage Storage { get; set; }
+        /// <summary>
+        /// Gets or sets the steps to execute when the dialog begins
+        /// </summary>
+        public List<IDialog> Steps { get; set; } = new List<IDialog>();
+
+        /// <summary>
+        /// Rules for handling events to dynamic modifying the executing plan 
+        /// </summary>
+        public virtual List<IRule> Rules { get; set; } = new List<IRule>();
 
         public override IBotTelemetryClient TelemetryClient
         {
@@ -81,6 +62,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            AddDialog(this.Steps.ToArray());
+
             if (!installedDependencies)
             {
                 installedDependencies = true;
@@ -104,8 +87,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules
             // Create a new planning context
             var planning = PlanningContext.Create(dc, state);
 
-            // Evaluate rules and queue up plan changes
-            await EvaluateRulesAsync(planning, new DialogEvent() { Name = PlanningEvents.BeginDialog.ToString(), Value = options, Bubble = false }, cancellationToken).ConfigureAwait(false);
+            if (this.Steps.Any())
+            {
+                // use this.Steps as initial plan
+                var changeList = new PlanChangeList();
+                foreach(var step in this.Steps)
+                {
+                    changeList.Steps.Add(new PlanStepState(step.Id, options));
+                }
+
+                planning.QueueChanges(changeList);
+            }
+            else
+            {
+                // Evaluate rules and queue up plan changes
+                await EvaluateRulesAsync(planning, new DialogEvent() { Name = PlanningEvents.BeginDialog.ToString(), Value = options, Bubble = false }, cancellationToken).ConfigureAwait(false);
+            }
 
             // Run plan
             return await ContinuePlanAsync(planning, cancellationToken).ConfigureAwait(false);

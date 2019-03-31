@@ -1,0 +1,28 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "type": "object",
+    "title": "Replace Dialog",
+    "description": "This is a step which replaces the current dialog with the target dialog",
+    "additionalProperties": false,
+    "properties": {
+        "dialog": {
+            "$type": "Microsoft.IDialog",
+            "title": "Dialog",
+            "description": "This is the dialog to switch to."
+        },
+        "options": {
+            "type": "object",
+            "additionalProperties": true,
+            "title": "Options",
+            "description": "Options to pass to the dialog."
+        },
+        "property": {
+            "title": "Property",
+            "description": "The property to bind to the dialog and store the result in",
+            "examples": [
+                "user.name"
+            ]
+        }
+    }
+}

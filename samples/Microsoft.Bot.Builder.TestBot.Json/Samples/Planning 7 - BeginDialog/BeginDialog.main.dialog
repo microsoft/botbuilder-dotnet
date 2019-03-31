@@ -1,0 +1,56 @@
+{
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "recognizer": {
+        "$type": "Microsoft.RegexRecognizer",
+        "intents": {
+            "JokeIntent": "(?i)joke",
+            "FortuneTellerIntent": "(?i)fortune|future"
+        }
+    },
+    "rules": [
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "JokeIntent",
+            "steps": [
+                "BeginDialog.TellJokeDialog"
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "FortuneTellerIntent",
+            "steps": [
+                "BeginDialog.FortuneTellerDialog"
+            ]
+        },
+        {
+            "$type": "Microsoft.WelcomeRule",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Welcome!"
+                }
+            ]
+        },
+        {
+            "$type": "Microsoft.NoMatchRule",
+            "steps": [
+                {
+                    "$type": "Microsoft.IfCondition",
+                    "condition": "user.name == null",
+                    "ifTrue": [
+                        {
+                            "$type": "Microsoft.TextInput",
+                            "property": "user.name",
+                            "prompt": "Hello, I'm Zoidberg. What is your name?"
+                        }
+                    ]
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Hello {user.name}, nice to talk to you!"
+                }
+            ]
+        }
+    ]
+}

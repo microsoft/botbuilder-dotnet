@@ -40,7 +40,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         {
             File.Delete(testDialogFile);
             TaskCompletionSource<bool> changeFired = new TaskCompletionSource<bool>();
-            TaskCompletionSource<bool> deletedFired = new TaskCompletionSource<bool>();
 
             var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"..\..\.."));
             var explorer = new ResourceExplorer();
