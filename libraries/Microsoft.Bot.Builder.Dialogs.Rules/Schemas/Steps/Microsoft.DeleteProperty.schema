@@ -1,0 +1,16 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "Delete PropertyS",
+    "description": "This is a step which allows you to remove a property from memory",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "property": {
+            "type": "string",
+            "title": "Property",
+            "description": "The Memory property path to delete",
+        }
+    },
+    "required": [ "property" ]
+}

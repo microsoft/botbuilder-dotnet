@@ -20,17 +20,6 @@
             "items": {
                 "$type": "Microsoft.IDialog"
             }
-        },
-        "changeType": {
-            "type": "string",
-            "enum": [
-                "NewPlan",
-                "DoSteps",
-                "DoStepsBeforeTags",
-                "DoStepsLater",
-                "EndPlan",
-                "ReplacePlan"
-            ]
         }
     },
     "required": [

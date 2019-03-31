@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var planningDialog = new AdaptiveDialog();
             planningDialog.AddRules(new List<IRule>()
             {
-                new DefaultRule(steps:
+                new NoMatchRule(steps:
                     new List<IDialog>()
                     {
                         new SendActivity()

@@ -22,7 +22,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Rules
                     PlanningEvents.Fallback.ToString(),
                 },
                   steps: steps,
-                  changeType: PlanChangeTypes.DoSteps,
                   constraint: constraint)
         {
             this.WelcomeProperty = conversationProperty;

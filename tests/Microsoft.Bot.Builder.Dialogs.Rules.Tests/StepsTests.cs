@@ -58,10 +58,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new TextPrompt() { InitialPrompt = new ActivityTemplate("Hello, what is your name?"),  OutputBinding = "user.name" },
+                        new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"),  OutputProperty = "user.name" },
                         new SendActivity("Hello {user.name}, nice to meet you!"),
                     })});
 
@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         }
 
         [TestMethod]
-        public async Task Step_IfProperty()
+        public async Task Step_IfCondition()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -83,17 +83,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new IfProperty()
+                        new IfCondition()
                         {
-                            Expression = new ExpressionEngine().Parse("user.name == null"),
+                            Condition = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
-                                new TextPrompt() {
-                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
-                                    OutputBinding = "user.name"
+                                new TextInput() {
+                                    Prompt  = new ActivityTemplate("Hello, what is your name?"),
+                                    OutputProperty = "user.name"
                                 },
                             }
                         },
@@ -108,9 +108,43 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task Step_Switch()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var planningDialog = new AdaptiveDialog("planningTest")
+            {
+                Steps = new List<IDialog>()
+                    {
+                        new SetProperty()
+                        {
+                            Property = "user.name",
+                            Value = new ExpressionEngine().Parse("'frank'")
+                        },
+                        new SwitchCondition()
+                        {
+                            Condition = new ExpressionEngine().Parse("user.name"),
+                            Cases = new Dictionary<string, List<IDialog>>()
+                            {
+                                { "susan", new List<IDialog>() { new SendActivity("hi susan") } },
+                                { "bob", new List<IDialog>() { new SendActivity("hi bob") } },
+                                { "frank", new List<IDialog>() { new SendActivity("hi frank") } }
+                            },
+                            Default = new List<IDialog>() { new SendActivity("Who are you?") }
+                        },
+                    }
+            };
+
+            await CreateFlow(planningDialog, convoState, userState)
+            .Send("hi")
+                .AssertReply("hi frank")
+            .StartTestAsync();
+        }
 
         [TestMethod]
-        public async Task Step_TextPrompt()
+        public async Task Step_TextInput()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -119,12 +153,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new IfProperty()
+                        new IfCondition()
                         {
-                            Expression = new ExpressionEngine().Parse("user.name == null"),
+                            Condition = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextInput()
@@ -150,7 +184,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         }
 
         [TestMethod]
-        public async Task Step_TextPromptWithInvalidPrompt()
+        public async Task Step_TextInputWithInvalidPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -159,12 +193,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new IfProperty()
+                        new IfCondition()
                         {
-                            Expression = new ExpressionEngine().Parse("user.name == null"),
+                            Condition = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextInput()
@@ -206,21 +240,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     steps: new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
-                        new WaitForInput(),
+                        new EndTurn(),
                         new SendActivity("To get to the other side")
                     }),
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new IfProperty()
+                        new IfCondition()
                         {
-                            Expression = new ExpressionEngine().Parse("user.name == null"),
+                            Condition = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
-                                new TextPrompt()
+                                new TextInput()
                                 {
-                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
-                                    OutputBinding = "user.name"
+                                    Prompt  = new ActivityTemplate("Hello, what is your name?"),
+                                    OutputProperty = "user.name"
                                 }
                             }
                         },
@@ -243,7 +277,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
 
         [TestMethod]
-        public async Task Step_CallDialog()
+        public async Task Step_BeginDialog()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -255,11 +289,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
             tellJokeDialog.AddRules(new List<IRule>()
             {
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
-                        new WaitForInput(),
+                        new EndTurn(),
                         new SendActivity("To get to the other side")
                     }
                  )
@@ -268,18 +302,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var askNameDialog = new AdaptiveDialog("AskNameDialog");
             askNameDialog.AddRules(new List<IRule>()
             {
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new IfProperty()
+                        new IfCondition()
                         {
-                            Expression = new ExpressionEngine().Parse("user.name == null"),
+                            Condition = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
-                                new TextPrompt()
+                                new TextInput()
                                 {
-                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
-                                    OutputBinding = "user.name"
+                                    Prompt  = new ActivityTemplate("Hello, what is your name?"),
+                                    OutputProperty = "user.name"
                                 }
                             }
                         },
@@ -289,20 +323,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new ReplacePlanRule("JokeIntent",
+                new IntentRule("JokeIntent",
                     steps: new List<IDialog>()
                     {
-                        new CallDialog() { Dialog = tellJokeDialog }
+                        new BeginDialog() { Dialog = tellJokeDialog }
                     }),
                 new WelcomeRule(
                     steps: new List<IDialog>()
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                     }),
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new CallDialog() { Dialog = askNameDialog }
+                        new BeginDialog() { Dialog = askNameDialog }
                     })
             });
 
@@ -322,7 +356,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
         }
 
         [TestMethod]
-        public async Task Step_GotoDialog()
+        public async Task Step_ReplaceWithDialog()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -334,11 +368,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
             tellJokeDialog.AddRules(new List<IRule>()
             {
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
-                        new WaitForInput(),
+                        new EndTurn(),
                         new SendActivity("To get to the other side")
                     }
                  )
@@ -347,12 +381,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
             var askNameDialog = new AdaptiveDialog("AskNameDialog");
             askNameDialog.AddRules(new List<IRule>()
             {
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new IfProperty()
+                        new IfCondition()
                         {
-                            Expression = new ExpressionEngine().Parse("user.name == null"),
+                            Condition = new ExpressionEngine().Parse("user.name == null"),
                             IfTrue = new List<IDialog>()
                             {
                                 new TextInput()
@@ -371,20 +405,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new ReplacePlanRule("JokeIntent",
+                new IntentRule("JokeIntent",
                     steps: new List<IDialog>()
                     {
-                        new GotoDialog("TellJokeDialog")
+                        new ReplaceWithDialog("TellJokeDialog")
                     }),
                 new WelcomeRule(
                     steps: new List<IDialog>()
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                     }),
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new GotoDialog("AskNameDialog")
+                        new ReplaceWithDialog("AskNameDialog")
                     })
             });
 
@@ -427,11 +461,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
                     {
                         new EndDialog()
                     }),
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
-                        new WaitForInput(),
+                        new EndTurn(),
                         new SendActivity("To get to the other side")
                     }
                  )
@@ -440,10 +474,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Rules.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new DefaultRule(
+                new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new CallDialog() { Dialog = tellJokeDialog },
+                        new BeginDialog() { Dialog = tellJokeDialog },
                         new SendActivity("You went out from ask name dialog.")
                     })
             });

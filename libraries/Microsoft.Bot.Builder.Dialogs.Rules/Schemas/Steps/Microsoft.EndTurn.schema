@@ -1,0 +1,8 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "End Turn",
+    "description": "End the current turn without ending the dialog.",
+    "type": "object",
+    "additionalProperties": false
+}

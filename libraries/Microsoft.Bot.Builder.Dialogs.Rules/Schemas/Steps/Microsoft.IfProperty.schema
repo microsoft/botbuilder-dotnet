@@ -6,6 +6,14 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
+        "condition": {
+            "$type": "Microsoft.IExpression",
+            "title": "Condition",
+            "description": "Expression to evaluate.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
         "ifTrue": {
             "oneOf": [
                 {
@@ -35,14 +43,6 @@
             ],
             "title": "If False",
             "description": "Step to execute if expression is false."
-        },
-        "expression": {
-            "$type": "Microsoft.IExpression",
-            "title": "Condition",
-            "description": "Expression to evaluate.",
-            "examples": [
-                "user.age > 3"
-            ]
         }
     },
     "required": [

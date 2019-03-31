@@ -1,0 +1,36 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "Edit Array Step",
+    "description": "This is a step which allows you to modify an array in memory",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "changeType": {
+            "type": "string",
+            "title": "Change Type",
+            "description": "The array operation to perform",
+            "enum": [
+                "Push",
+                "Pop",
+                "Take",
+                "Remove",
+                "Clear"
+            ]
+        },
+        "arrayProperty": {
+            "type": "string",
+            "title": "Array Property",
+            "description": "Memory expression of the array to manipulate."
+        },
+        "itemProperty": {
+            "type": "string",
+            "title": "List Property",
+            "description": "Memory expression for the item"
+        }
+    },
+    "required": [
+        "changeType",
+        "listProperty"
+    ]
+}
