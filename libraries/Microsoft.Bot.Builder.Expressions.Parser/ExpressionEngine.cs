@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
@@ -165,7 +166,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
 
             public override Expression VisitParenthesisExp([NotNull] ExpressionParser.ParenthesisExpContext context) => Visit(context.expression());
 
-            public override Expression VisitStringAtom([NotNull] ExpressionParser.StringAtomContext context) => Expression.ConstantExpression(context.GetText().Trim('\''));
+            public override Expression VisitStringAtom([NotNull] ExpressionParser.StringAtomContext context) => Expression.ConstantExpression(Regex.Unescape(context.GetText().Trim('\'')));
         }
 
     }
