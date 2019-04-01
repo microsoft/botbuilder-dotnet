@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -43,8 +44,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
                 throw new ArgumentNullException(nameof(bot));
             }
 
-            var authHeader = httpRequest.Headers["Authorization"];
-            var channelId = httpRequest.Headers["ChannelId"];
+            var authHeader = httpRequest.Headers.Where(x => x.Key.ToLower() == "authorization").FirstOrDefault().Value;
+            var channelId = httpRequest.Headers.Where(x => x.Key.ToLower() == "channelid").FirstOrDefault().Value;
             try
             {
                 var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialProvider, _channelProvider, channelId).ConfigureAwait(false);
