@@ -18,6 +18,11 @@ namespace Microsoft.Bot.Connector.Authentication
         public const string ToChannelFromBotLoginUrlTemplate = "https://login.microsoftonline.com/{0}";
 
         /// <summary>
+        /// The default tenant to acquire bot to channel token from.
+        /// </summary>
+        public const string DefaultChannelAuthTenant = "botframework.com";
+
+        /// <summary>
         /// TO CHANNEL FROM BOT: OAuth scope to request.
         /// </summary>
         public const string ToChannelFromBotOAuthScope = "https://api.botframework.com";

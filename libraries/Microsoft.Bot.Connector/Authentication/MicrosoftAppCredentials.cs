@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="appId">The Microsoft app ID.</param>
         /// <param name="password">The Microsoft app password.</param>
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
-        public MicrosoftAppCredentials(string appId, string password, HttpClient customHttpClient) : this(appId, password, null, null) { }
+        public MicrosoftAppCredentials(string appId, string password, HttpClient customHttpClient) : this(appId, password, null, customHttpClient) { }
 
         /// <summary>
         /// Creates a new instance of the <see cref="MicrosoftAppCredentials"/> class.
@@ -106,31 +106,45 @@ namespace Microsoft.Bot.Connector.Authentication
         public string MicrosoftAppPassword { get; set; }
 
         /// <summary>
-        /// Gets or sets the channel auth token tenant for this credential.
+        /// Sets the channel auth token tenant for this credential.
         /// </summary>
+        /// <value>
+        /// The channel auth token tenant for this credential.
+        /// </value>
         private string _channelAuthTenant;
+
         public string ChannelAuthTenant
         {
-            get { return string.IsNullOrEmpty(_channelAuthTenant) ? "botframework.com" : _channelAuthTenant; }
-            private set { _channelAuthTenant = value; }
+            get
+            {
+                return string.IsNullOrEmpty(_channelAuthTenant)
+                    ? AuthenticationConstants.DefaultChannelAuthTenant
+                    : _channelAuthTenant;
+            }
+
+            set
+            {
+                // Advanced user only, see https://aka.ms/bots/tenant-restriction
+                var endpointUrl = string.Format(AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, value);
+
+                if (Uri.TryCreate(endpointUrl, UriKind.Absolute, out var result))
+                {
+                    _channelAuthTenant = value;
+                }
+                else
+                {
+                    throw new Exception($"Invalid channel auth tenant: {value}");
+                }
+            }
         }
 
         /// <summary>
         /// Gets the OAuth endpoint to use.
         /// </summary>
-        public virtual string OAuthEndpoint
-        {
-            get
-            {
-                // Advanced user only, see https://aka.ms/bots/tenant-restriction
-                var endpointUrl = string.Format(AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, ChannelAuthTenant);
-
-                if (Uri.TryCreate(endpointUrl, UriKind.Absolute, out var result))
-                    return endpointUrl;
-
-                throw new Exception($"Invalid token endpoint: {endpointUrl}");
-            }
-        }
+        /// <value>
+        /// The OAuth endpoint to use.
+        /// </value>
+        public virtual string OAuthEndpoint => string.Format(AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, ChannelAuthTenant);
 
         /// <summary>
         /// Gets the OAuth scope to use.
@@ -138,10 +152,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <value>
         /// The OAuth scope to use.
         /// </value>
-        public virtual string OAuthScope
-        {
-            get { return AuthenticationConstants.ToChannelFromBotOAuthScope; }
-        }
+        public virtual string OAuthScope => AuthenticationConstants.ToChannelFromBotOAuthScope;
 
         /// <summary>
         /// Adds the host of service url to <see cref="MicrosoftAppCredentials"/> trusted hosts.
