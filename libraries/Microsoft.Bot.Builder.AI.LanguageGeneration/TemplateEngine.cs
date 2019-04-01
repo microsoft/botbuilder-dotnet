@@ -112,7 +112,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         public string EvaluateTemplate(string templateName, object scope, IGetMethod methodBinder = null)
         {
 
-            var evaluator = new TemplateEvaluator(evaluationContext, methodBinder);
+            var evaluator = new Evaluator(evaluationContext, methodBinder);
             return evaluator.EvaluateTemplate(templateName, scope);
         }
 
@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var tokens = new CommonTokenStream(lexer);
             var parser = new LGFileParser(tokens);
             parser.RemoveErrorListeners();
-            var listener = new TemplateErrorListener();
+            var listener = new ErrorListener();
 
             parser.AddErrorListener(listener);
             parser.BuildParseTree = true;
@@ -154,7 +154,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             // Step 2: constuct a new evalution context on top of the current one
             var evaluationContext = new EvaluationContext(this.evaluationContext);
             evaluationContext.TemplateContexts[fakeTemplateId] = context;
-            var evaluator = new TemplateEvaluator(evaluationContext, methodBinder);
+            var evaluator = new Evaluator(evaluationContext, methodBinder);
 
             RunStaticCheck(evaluationContext);
 
@@ -191,7 +191,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var tokens = new CommonTokenStream(lexer);
             var parser = new LGFileParser(tokens);
             parser.RemoveErrorListeners();
-            var listener = new TemplateErrorListener();
+            var listener = new ErrorListener();
 
             parser.AddErrorListener(listener);
             parser.BuildParseTree = true;

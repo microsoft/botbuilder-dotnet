@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             var tokenStream = new CommonTokenStream(lexer);
             var parser = new ExpressionParser(tokenStream);
             parser.RemoveErrorListeners();
-            parser.AddErrorListener(ExpressionErrorListener.Instance);
+            parser.AddErrorListener(ErrorListener.Instance);
             parser.BuildParseTree = true;
             return parser.expression();
         }

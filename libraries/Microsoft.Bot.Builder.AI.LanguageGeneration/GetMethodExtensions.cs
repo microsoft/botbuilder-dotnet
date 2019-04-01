@@ -19,9 +19,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         // This ensentially make all functions as closure
         // This is perticularly used for using templateName as lambda
         // Such as {foreach(alarms, ShowAlarm)}
-        private readonly TemplateEvaluator _evaluator;
+        private readonly Evaluator _evaluator;
 
-        public GetMethodExtensions(TemplateEvaluator evaluator)
+        public GetMethodExtensions(Evaluator evaluator)
         {
             _evaluator = evaluator;
         }
