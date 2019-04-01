@@ -15,6 +15,7 @@ using Microsoft.Bot.Builder.TestBot.Json.Recognizers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Debugger;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
