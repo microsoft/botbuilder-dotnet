@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private DialogSet _dialogs;
 
-        public ComponentDialog(string dialogId)
+        public ComponentDialog(string dialogId, string foo = null)
             : base(dialogId)
         {
             if (string.IsNullOrEmpty(dialogId))
