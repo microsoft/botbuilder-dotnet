@@ -167,64 +167,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
-        public async Task NumberPromptDataValidator()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new AutoSaveStateMiddleware(convoState));
-                //.Use(new TranscriptLoggerMiddleware(new UnitTestFileLogger()));
-
-            var dialogs = new DialogSet(dialogState);
-
-            var numberPrompt = new IntegerPrompt(defaultLocale: Culture.English)
-            {
-                MinValue = 0,
-                MaxValue = 100,
-                InitialPrompt = new ActivityTemplate("Enter a number."),
-                RetryPrompt = new ActivityTemplate("Let's try again. Enter a number."),
-                NoMatchResponse = new ActivityTemplate("That's not a number."),
-                TooSmallResponse = new ActivityTemplate("You must enter a positive number."),
-                TooLargeResponse = new ActivityTemplate("You must enter a less than 100."),
-            };
-            dialogs.Add(numberPrompt);
-
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    var options = new PromptOptions
-                    {
-                    };
-                    await dc.PromptAsync("NumberPrompt", options, cancellationToken);
-                }
-                else if (results.Status == DialogTurnStatus.Complete)
-                {
-                    var numberResult = (int)results.Result;
-                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the number '{numberResult}'."), cancellationToken);
-                }
-            })
-            .Send("hello")
-                .AssertReply("Enter a number.")
-            .Send("xyz")
-                .AssertReply("That's not a number.")
-                .AssertReply("Let's try again. Enter a number.")
-            .Send("150")
-                .AssertReply("You must enter a less than 100.")
-                .AssertReply("Let's try again. Enter a number.")
-            .Send("-30")
-                .AssertReply("You must enter a positive number.")
-                .AssertReply("Let's try again. Enter a number.")
-            .Send("64")
-                .AssertReply("Bot received the number '64'.")
-            .StartTestAsync();
-        }
-
-        [TestMethod]
         public async Task FloatNumberPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());

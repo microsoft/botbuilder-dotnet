@@ -13,43 +13,17 @@ using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public class DateTimePromptOptions : PromptOptions
-    {
-        public DateTime? MinValue { get; set; }
-
-        public DateTime? MaxValue { get; set; }
-    }
-
-    public class DateTimePrompt : Prompt<IList<DateTimeResolution>, DateTimePromptOptions>, IRangePromptOptions<DateTime>
+    public class DateTimePrompt : Prompt<IList<DateTimeResolution>>
     {
         public DateTimePrompt(string dialogId = null, PromptValidator<IList<DateTimeResolution>> validator = null, string defaultLocale = null)
             : base(dialogId, validator)
         {
             DefaultLocale = defaultLocale;
-            MinValue = DateTime.MinValue;
-            MaxValue = DateTime.MaxValue;
-
-            this.TooSmallResponse = this.DefineActivityProperty(nameof(TooSmallResponse));
-            this.TooLargeResponse = this.DefineActivityProperty(nameof(TooLargeResponse));
         }
 
         public string DefaultLocale { get; set; }
 
-        public DateTime MinValue { get; set; }
-
-        public DateTime MaxValue { get; set; }
-
-        public ITemplate<Activity> TooSmallResponse { get; set; }
-
-        public ITemplate<Activity> TooLargeResponse { get; set; }
-
-        protected override async Task OnBeforePromptAsync(DialogContext dc, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            // TODO: Parametrize to which state to bind.
-            await base.OnBeforePromptAsync(dc, isRetry, cancellationToken).ConfigureAwait(false);
-        }
-
-        protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, DateTimePromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
+        protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -61,140 +35,17 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(options));
             }
 
-            if (options.MinValue == null)
+            if (isRetry && options.RetryPrompt != null)
             {
-                options.MinValue = this.MinValue;
+                await turnContext.SendActivityAsync(options.RetryPrompt, cancellationToken).ConfigureAwait(false);
             }
-
-            if (options.MaxValue == null)
+            else if (options.Prompt != null)
             {
-                options.MaxValue = this.MaxValue;
-            }
-
-            if (_validator == null)
-            {
-                _validator = new PromptValidator<IList<DateTimeResolution>>(async (promptContext, cancel) =>
-                {
-                    if (!promptContext.Recognized.Succeeded)
-                    {
-                        var noMatchResponse = await this.NoMatchResponse.BindToData(turnContext, state).ConfigureAwait(false);
-                        if (noMatchResponse != null)
-                        {
-                            await promptContext.Context.SendActivityAsync(noMatchResponse).ConfigureAwait(false);
-                        }
-
-                        if (options.RetryPrompt != null)
-                        {
-                            await promptContext.Context.SendActivityAsync(options.RetryPrompt).ConfigureAwait(false);
-                            return false;
-                        }
-
-                        var retry = await this.RetryPrompt.BindToData(turnContext, state).ConfigureAwait(false);
-                        if (retry != null)
-                        {
-                            await promptContext.Context.SendActivityAsync(retry).ConfigureAwait(false);
-                            return false;
-                        }
-
-                        var prompt = await this.InitialPrompt.BindToData(turnContext, state).ConfigureAwait(false);
-                        if (prompt != null)
-                        {
-                            await promptContext.Context.SendActivityAsync(prompt).ConfigureAwait(false);
-                        }
-                        return false;
-                    }
-
-                    var result = promptContext.Recognized.Value.FirstOrDefault();
-                    if (DateTime.TryParse(result.Value, out DateTime value))
-                    {
-
-                        if (value < options.MinValue.Value)
-                        {
-                            var tooSmall = await this.TooSmallResponse.BindToData(turnContext, state).ConfigureAwait(false);
-                            if (tooSmall != null)
-                            {
-                                await promptContext.Context.SendActivityAsync(tooSmall).ConfigureAwait(false);
-                            }
-
-                            if (options.RetryPrompt != null)
-                            {
-                                await promptContext.Context.SendActivityAsync(options.RetryPrompt).ConfigureAwait(false);
-                                return false;
-                            }
-
-                            var retry = await this.RetryPrompt.BindToData(turnContext, state).ConfigureAwait(false);
-                            await promptContext.Context.SendActivityAsync(retry).ConfigureAwait(false);
-                            return false;
-                        }
-
-                        if (value > options.MaxValue.Value)
-                        {
-                            var tooLarge = await this.TooLargeResponse.BindToData(turnContext, state).ConfigureAwait(false);
-                            if (tooLarge != null)
-                            {
-                                await promptContext.Context.SendActivityAsync(tooLarge).ConfigureAwait(false);
-                            }
-
-                            if (options.RetryPrompt != null)
-                            {
-                                await promptContext.Context.SendActivityAsync(options.RetryPrompt).ConfigureAwait(false);
-                                return false;
-                            }
-
-                            var retry = await this.RetryPrompt.BindToData(turnContext, state).ConfigureAwait(false);
-                            await promptContext.Context.SendActivityAsync(retry).ConfigureAwait(false);
-                            return false;
-                        }
-
-                        return true;
-                    }
-
-                    var noMatch = await this.NoMatchResponse.BindToData(turnContext, state).ConfigureAwait(false);
-                    if (noMatch != null)
-                    {
-
-                        await promptContext.Context.SendActivityAsync(noMatch).ConfigureAwait(false);
-                    }
-
-                    var retryResponse = await this.RetryPrompt.BindToData(turnContext, state).ConfigureAwait(false);
-                    await promptContext.Context.SendActivityAsync(retryResponse).ConfigureAwait(false);
-                    return false;
-                });
-            }
-
-            if (isRetry)
-            {
-                if (options.RetryPrompt != null)
-                {
-                    await turnContext.SendActivityAsync(options.RetryPrompt, cancellationToken).ConfigureAwait(false);
-                }
-                else
-                {
-                    var retry = await this.RetryPrompt.BindToData(turnContext, state).ConfigureAwait(false);
-                    if (retry != null)
-                    {
-                        await turnContext.SendActivityAsync(retry).ConfigureAwait(false);
-                    }
-                }
-            }
-            else
-            {
-                if (options.Prompt != null)
-                {
-                    await turnContext.SendActivityAsync(options.Prompt, cancellationToken).ConfigureAwait(false);
-                }
-                else
-                {
-                    var initialPrompt = await this.InitialPrompt.BindToData(turnContext, state).ConfigureAwait(false);
-                    if (initialPrompt != null)
-                    {
-                        await turnContext.SendActivityAsync(initialPrompt).ConfigureAwait(false);
-                    }
-                }
+                await turnContext.SendActivityAsync(options.Prompt, cancellationToken).ConfigureAwait(false);
             }
         }
 
-        protected override Task<PromptRecognizerResult<IList<DateTimeResolution>>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, DateTimePromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
+        protected override Task<PromptRecognizerResult<IList<DateTimeResolution>>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
