@@ -109,10 +109,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             }
         }
         
-        public string EvaluateTemplate(string templateName, object scope, IGetValue valueBinder = null, IGetMethod methodBinder = null)
+        public string EvaluateTemplate(string templateName, object scope, IGetMethod methodBinder = null)
         {
 
-            var evaluator = new TemplateEvaluator(evaluationContext, methodBinder, valueBinder);
+            var evaluator = new TemplateEvaluator(evaluationContext, methodBinder);
             return evaluator.EvaluateTemplate(templateName, scope);
         }
 
@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         /// <param name="inlineStr"></param>
         /// <param name="scope"></param>
         /// <returns></returns>
-        public string Evaluate(string inlineStr, object scope, IGetValue valueBinder = null, IGetMethod methodBinder = null)
+        public string Evaluate(string inlineStr, object scope, IGetMethod methodBinder = null)
         {
             // TODO: maybe we can directly ref the templateBody without giving a name, but that means
             // we needs to make a little changes in the evalutor, especially the loop detection part
@@ -154,7 +154,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             // Step 2: constuct a new evalution context on top of the current one
             var evaluationContext = new EvaluationContext(this.evaluationContext);
             evaluationContext.TemplateContexts[fakeTemplateId] = context;
-            var evaluator = new TemplateEvaluator(evaluationContext, methodBinder, valueBinder);
+            var evaluator = new TemplateEvaluator(evaluationContext, methodBinder);
 
             RunStaticCheck(evaluationContext);
 

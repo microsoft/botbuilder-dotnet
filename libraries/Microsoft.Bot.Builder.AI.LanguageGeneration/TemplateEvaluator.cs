@@ -29,15 +29,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         public readonly EvaluationContext Context;
 
         private readonly IGetMethod GetMethodX;
-        private readonly IGetValue GetValueX;
 
         private Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
-        public TemplateEvaluator(EvaluationContext context, IGetMethod getMethod, IGetValue getValue)
+        public TemplateEvaluator(EvaluationContext context, IGetMethod getMethod)
         {
             Context = context;
             GetMethodX = getMethod ?? new GetMethodExtensions(this);
-            GetValueX = getValue ?? new GetValueExtensions(this);
         }
 
         public string EvaluateTemplate(string templateName, object scope)

@@ -171,7 +171,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             try
             {
                 // do inline evaluation first
-                return engine.Evaluate(text, data, valueBinder != null ? new FuncParameterGetValue(valueBinder) : null, null);
+                return engine.Evaluate(text, data, null);
             }
             catch (Exception)
             {
