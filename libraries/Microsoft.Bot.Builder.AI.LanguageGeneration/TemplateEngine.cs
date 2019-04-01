@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Antlr4.Runtime;
 using Newtonsoft.Json;
+using System;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
@@ -62,7 +63,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         }
 
 
-        private TemplateEngine(LGFileParser.FileContext context, List<LGReportMessage> initParseExceptions = null)
+        private TemplateEngine(LGFileParser.FileContext context)
         {
             // Pre-compute some information to help the evalution process later
             var templateContexts = new Dictionary<string, LGFileParser.TemplateDefinitionContext>();
@@ -93,17 +94,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             }
             evaluationContext = new EvaluationContext(templateContexts, templateParameters);
 
-            RunStaticCheck(evaluationContext, initParseExceptions);
+            RunStaticCheck(evaluationContext);
         }
 
-        public void RunStaticCheck(EvaluationContext evaluationContext, List<LGReportMessage> initExceptions = null)
+        public void RunStaticCheck(EvaluationContext evaluationContext)
         {
-            if (initExceptions == null)
-                initExceptions = new List<LGReportMessage>();
-
             var checker = new StaticChecker(evaluationContext);
             var reportMessages = checker.Check();
-            reportMessages.AddRange(initExceptions);
 
             var errorMessages = reportMessages.Where(u => u.ReportType == LGReportMessageType.Error).ToList();
             if (errorMessages.Count != 0)
@@ -159,7 +156,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             evaluationContext.TemplateContexts[fakeTemplateId] = context;
             var evaluator = new TemplateEvaluator(evaluationContext, methodBinder, valueBinder);
 
-            RunStaticCheck(evaluationContext, listener.GetExceptions());
+            RunStaticCheck(evaluationContext);
 
             // Step 3: evaluate
             return evaluator.EvaluateTemplate(fakeTemplateId, scope);
@@ -201,7 +198,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
             var context = parser.file();
 
-            return new TemplateEngine(context, listener.GetExceptions());
+            return new TemplateEngine(context);
         }
     }
 }

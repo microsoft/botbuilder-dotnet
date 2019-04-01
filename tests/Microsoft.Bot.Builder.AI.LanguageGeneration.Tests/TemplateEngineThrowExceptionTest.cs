@@ -54,14 +54,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             }
             catch (Exception e)
             {
-                if(e is LGParsingException)
-                {
-                    TestContext.WriteLine(e.Message);
-                }
-                else
-                {
-                    throw e;
-                }
+                TestContext.WriteLine(e.Message);
             }
         }
 
