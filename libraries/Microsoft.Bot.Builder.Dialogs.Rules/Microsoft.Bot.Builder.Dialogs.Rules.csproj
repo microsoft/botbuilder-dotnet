@@ -94,7 +94,6 @@
     <Content Include="Schemas\Steps\Microsoft.CancelDialog.schema" />
     <Content Include="Schemas\Steps\Microsoft.EndDialog.schema" />
     <Content Include="Schemas\Steps\Microsoft.ReplaceWithDialog.schema" />
-    <Content Include="Schemas\Steps\Microsoft.IfProperty.schema" />
     <Content Include="Schemas\Steps\Microsoft.SendActivity.schema" />
     <Content Include="Schemas\Steps\Microsoft.EndTurn.schema" />
   </ItemGroup>
