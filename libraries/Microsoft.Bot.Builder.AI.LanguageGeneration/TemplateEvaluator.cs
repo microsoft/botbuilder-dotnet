@@ -185,8 +185,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             {
                 throw new Exception($"Error occurs when evaluating expression ${exp}: {error}");
             }
-
-            return result?.ToString();
+            if (result == null)
+            {
+                throw new Exception($"Error occurs when evaluating expression '{exp}': {exp} is evaluated to null");
+            }
+            return result.ToString();
         }
 
         private string EvalTemplateRef(string exp)
