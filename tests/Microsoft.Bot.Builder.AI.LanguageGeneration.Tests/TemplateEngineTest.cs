@@ -289,7 +289,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             }
             catch (Exception e)
             {
-                Assert.IsInstanceOfType(e, typeof(ExpressionEvaluationException));
                 TestContext.WriteLine(e.Message);
             }
         }

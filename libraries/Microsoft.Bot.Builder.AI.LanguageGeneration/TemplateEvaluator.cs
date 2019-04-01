@@ -180,7 +180,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         private string EvalExpression(string exp)
         {
             exp = exp.TrimStart('{').TrimEnd('}');
-            var result = EvalByExpressionEngine(exp, CurrentTarget().Scope).value;
+            var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
+            if (error != null)
+            {
+                throw new Exception($"Error occurs when evaluating expression ${exp}: {error}");
+            }
+
             return result?.ToString();
         }
 
