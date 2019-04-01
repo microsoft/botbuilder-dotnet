@@ -1,0 +1,7 @@
+﻿> Template names must not have () in them
+# t1(a)test(param1) 
+- hi
+
+> Parameters for template must not contain any special characters
+# t2($%^)
+- hi
