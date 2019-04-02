@@ -14,7 +14,7 @@
                 "user.age > 3"
             ]
         },
-        "ifTrue": {
+        "steps": {
             "oneOf": [
                 {
                     "$type": "Microsoft.IDialog"
@@ -26,27 +26,12 @@
                     }
                 }
             ],
-            "title": "If True",
-            "description": "Step to execute if expression is true."
-        },
-        "ifFalse": {
-            "oneOf": [
-                {
-                    "$type": "Microsoft.IDialog"
-                },
-                {
-                    "type": "array",
-                    "items": {
-                        "$type": "Microsoft.IDialog"
-                    }
-                }
-            ],
-            "title": "If False",
-            "description": "Step to execute if expression is false."
+            "title": "Steps",
+            "description": "Step to execute if condition is true."
         }
     },
     "required": [
         "expression",
-        "ifTrue"
+        "steps"
     ]
 }

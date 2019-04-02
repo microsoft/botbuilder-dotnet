@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Expressions;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 {
@@ -20,11 +21,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         /// <summary>
         /// Condition expression against memory Example: "user.age > 18"
         /// </summary>
+        [JsonProperty("condition")]
         public Expression Condition { get; set; }
 
-        public List<IDialog> IfTrue { get; set; } = new List<IDialog>();
-
-        public List<IDialog> IfFalse { get; set; } = new List<IDialog>();
+        [JsonProperty("steps")]
+        public List<IDialog> Steps { get; set; } = new List<IDialog>();
 
         public IfCondition()
             : base()
@@ -39,21 +40,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 var (value, error) = Condition.TryEvaluate(dc.State);
                 var conditionResult = error == null && (bool)value;
 
-                var stepsToRun = conditionResult ? IfTrue : IfFalse;
-
-                var planSteps = stepsToRun.Select(s => new PlanStepState()
+                if (conditionResult == true)
                 {
-                    DialogStack = new List<DialogInstance>(),
-                    DialogId = s.Id,
-                    Options = options
-                });
+                    var planSteps = this.Steps.Select(s => new PlanStepState()
+                    {
+                        DialogStack = new List<DialogInstance>(),
+                        DialogId = s.Id,
+                        Options = options
+                    });
 
-                // Queue up steps that should run after current step
-                planning.QueueChanges(new PlanChangeList()
-                {
-                    ChangeType = PlanChangeTypes.DoSteps,
-                    Steps = planSteps.ToList()
-                });
+                    // Queue up steps that should run after current step
+                    planning.QueueChanges(new PlanChangeList()
+                    {
+                        ChangeType = PlanChangeTypes.DoSteps,
+                        Steps = planSteps.ToList()
+                    });
+                }
 
                 return await planning.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -65,14 +67,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
         protected override string OnComputeId()
         {
-            var trueIdList = IfTrue.Select(s => s.Id);
-            var falseIdList = IfFalse.Select(s => s.Id);
-            return $"conditional({string.Join(",", trueIdList)}|{string.Join(",", falseIdList)})";
+            var idList = Steps.Select(s => s.Id);
+            return $"conditional({this.Condition}|{string.Join(",", idList)})";
         }
 
         public override List<IDialog> ListDependencies()
         {
-            return IfTrue.Concat(IfFalse).ToList();
+            return Steps;
         }
     }
 }

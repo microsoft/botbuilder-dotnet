@@ -1201,7 +1201,7 @@
                     ],
                     "$ref": "#/definitions/Microsoft.IExpression"
                 },
-                "ifTrue": {
+                "steps": {
                     "oneOf": [
                         {
                             "$type": "Microsoft.IDialog",
@@ -1216,26 +1216,8 @@
                             "title": "array"
                         }
                     ],
-                    "title": "If True",
-                    "description": "Step to execute if expression is true."
-                },
-                "ifFalse": {
-                    "oneOf": [
-                        {
-                            "$type": "Microsoft.IDialog",
-                            "$ref": "#/definitions/Microsoft.IDialog"
-                        },
-                        {
-                            "type": "array",
-                            "items": {
-                                "$type": "Microsoft.IDialog",
-                                "$ref": "#/definitions/Microsoft.IDialog"
-                            },
-                            "title": "array"
-                        }
-                    ],
-                    "title": "If False",
-                    "description": "Step to execute if expression is false."
+                    "title": "Steps",
+                    "description": "Step to execute if condition is true."
                 }
             },
             "patternProperties": {
@@ -1254,7 +1236,7 @@
                     "title": "Type",
                     "required": [
                         "expression",
-                        "ifTrue",
+                        "steps",
                         "$type"
                     ]
                 }
