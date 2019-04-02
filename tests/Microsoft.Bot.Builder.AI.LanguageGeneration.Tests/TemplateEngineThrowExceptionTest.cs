@@ -30,8 +30,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Test("NoTemplateRef.lg"),
             Test("TemplateParamsNotMatchArgsNum.lg"),
             Test("ErrorSeperateChar.lg"),
+            Test("ErrorSeperateChar2.lg"),
             Test("MultilineVariation.lg"),
             Test("InvalidTemplateName.lg"),
+            Test("InvalidTemplateName2.lg"),
         };
 
         public static IEnumerable<object[]> WariningData => new[]
