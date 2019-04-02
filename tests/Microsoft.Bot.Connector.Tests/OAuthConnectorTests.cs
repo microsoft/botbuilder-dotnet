@@ -9,7 +9,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.Rest;
 using Xunit;
 
-namespace Connector.Tests
+namespace Microsoft.Bot.Connector.Tests
 {
     public class OAuthConnectorTests : BaseTest
     {
