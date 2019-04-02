@@ -34,7 +34,7 @@ NUMBER : DIGIT + ( '.' DIGIT +)? ;
 
 WHITESPACE : (' '|'\t') -> skip;
 
-IDENTIFIER : (LETTER | '_') (LETTER | DIGIT | '-' | '_')*;
+IDENTIFIER : (LETTER | '_' | '#' | '@' | '$') (LETTER | DIGIT | '-' | '_')*;
 
 NEWLINE : '\r'? '\n' -> skip;
 

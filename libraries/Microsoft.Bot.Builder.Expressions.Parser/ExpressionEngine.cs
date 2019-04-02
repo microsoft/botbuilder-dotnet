@@ -133,6 +133,10 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                 {
                     result = Expression.ConstantExpression(true);
                 }
+                else if (IsShortHandExpression(symbol))
+                {
+                    result = MakeShortHandExpression(symbol);
+                }
                 else
                 {
                     result = MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(symbol));
@@ -150,7 +154,13 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             public override Expression VisitMemberAccessExp([NotNull] ExpressionParser.MemberAccessExpContext context)
             {
                 var instance = Visit(context.primaryExpression());
-                return MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(context.IDENTIFIER().GetText()), instance);
+                var property = context.IDENTIFIER().GetText();
+
+                if (IsShortHandExpression(property))
+                {
+                    throw new Exception($"shorthand like {property} is not allowed in an accessor");
+                }
+                return MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(property), instance);
             }
 
             public override Expression VisitNumericAtom([NotNull] ExpressionParser.NumericAtomContext context)
@@ -167,6 +177,48 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             public override Expression VisitParenthesisExp([NotNull] ExpressionParser.ParenthesisExpContext context) => Visit(context.expression());
 
             public override Expression VisitStringAtom([NotNull] ExpressionParser.StringAtomContext context) => Expression.ConstantExpression(Regex.Unescape(context.GetText().Trim('\'')));
+
+            
+
+            private bool IsShortHandExpression(string name)
+            {
+                return name.StartsWith("#") || name.StartsWith("@") || name.StartsWith("$");
+            }
+
+            private Expression MakeShortHandExpression(string name)
+            {
+                if (!IsShortHandExpression(name))
+                {
+                    throw new Exception($"variable name:{name} is not a shorthand");
+                }
+
+                char prefix = name[0];
+                name = name.Substring(1);
+
+                // $title == dialog.result.title
+                // @city == turn.entities.city 
+                // #BookFlight == turn.intents.BookFlight
+                switch (prefix)
+                {
+                    case '#':
+                        return MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(name),
+                                   MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression("intents"),
+                                       MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression("turn"))));
+
+                    case '@':
+                        return MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(name),
+                                   MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression("entities"),
+                                       MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression("turn"))));
+
+                    case '$':
+                        return MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(name),
+                                   MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression("result"),
+                                       MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression("dialog"))));
+                }
+
+                throw new Exception($"no match for shorthand prefix: {prefix}");
+
+            }
         }
 
     }

@@ -240,7 +240,15 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("one == 1.0 && optional(two < 0)", true),
             Test("one == 1.0 && optional(two > 0)", true),
             Test("one == 2.0 && optional(two > 0)", false),
-            Test("one == 2.0 && optional(two < 0)", false)
+            Test("one == 2.0 && optional(two < 0)", false),
+
+            Test("@city == 'Bellevue'", false, new HashSet<string> {"turn.entities.city"}),
+            Test("@city", "Seattle", new HashSet<string> {"turn.entities.city"}),
+            Test("@city == 'Seattle'", true, new HashSet<string> {"turn.entities.city"}),
+            Test("#BookFlight == 'BookFlight'", true, new HashSet<string> {"turn.intents.BookFlight"}),
+            Test("exists(#BookFlight)", true, new HashSet<string> {"turn.intents.BookFlight"}),
+            Test("$title", "Dialog Title", new HashSet<string> {"dialog.result.title"}),
+            Test("$subTitle", "Dialog Sub Title", new HashSet<string> {"dialog.result.subTitle"}),
         };
 
         [DataTestMethod]
@@ -264,7 +272,26 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     index = 3
                 },
                 items = new string[] { "zero", "one", "two" },
-                timestamp = "2018-03-15T13:00:00Z"
+                timestamp = "2018-03-15T13:00:00Z",
+                turn = new
+                {
+                    entities = new
+                    {
+                        city = "Seattle"
+                    },
+                    intents = new
+                    {
+                        BookFlight = "BookFlight"
+                    }
+                },
+                dialog = new
+                {
+                    result = new
+                    {
+                        title = "Dialog Title",
+                        subTitle = "Dialog Sub Title"
+                    }
+                },
             };
             var parsed = new ExpressionEngine().Parse(input);
             Assert.IsNotNull(parsed);
