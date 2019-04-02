@@ -269,7 +269,16 @@ namespace Microsoft.Bot.Builder.AI.Luis
             RecognizerResult recognizerResult = null;
             LuisResult luisResult = null;
 
-            if (!string.IsNullOrWhiteSpace(utterance))
+            if (string.IsNullOrWhiteSpace(utterance))
+            {
+                recognizerResult = new RecognizerResult
+                {
+                    Text = utterance,
+                    Intents = new Dictionary<string, IntentScore>() { { string.Empty, new IntentScore() { Score = 1.0 } } },
+                    Entities = new JObject(),
+                };
+            }
+            else
             {
                 luisResult = await _runtime.Prediction.ResolveAsync(
                     _application.ApplicationId,
@@ -294,15 +303,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 {
                     recognizerResult.Properties.Add("luisResult", luisResult);
                 }
-            }
-            else
-            {
-                recognizerResult = new RecognizerResult
-                {
-                    Text = utterance,
-                    Intents = new Dictionary<string, IntentScore>() { { string.Empty, new IntentScore() { Score = 1.0 } } },
-                    Entities = new JObject(),
-                };
             }
 
             // Log telemetry
