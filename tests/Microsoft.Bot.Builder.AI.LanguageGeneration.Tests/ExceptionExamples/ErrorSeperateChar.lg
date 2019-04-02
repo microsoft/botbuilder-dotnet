@@ -1,3 +1,6 @@
 ﻿> Error template parameters
 # template(param1; param2)
 - hello 
+
+# template(param1 param2)
+- hello 

@@ -10,10 +10,11 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Debugger;
-using Microsoft.Bot.Builder.Dialogs.Rules;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Newtonsoft.Json;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -51,13 +52,13 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         {
             var rootFile = resourceExplorer.GetResource(@"ToDoBot.main.dialog");
             //var rootFile = resourceExplorer.GetResource("ToDoLuisBot.main.dialog");
-            //var rootFile = resourceExplorer.GetResource("DefaultRule.main.dialog");
-            //var rootFile = resourceExplorer.GetResource("WaitForInput.main.dialog");
-            //var rootFile = resourceExplorer.GetResource("IfProperty.main.dialog");
-            //var rootFile = resourceExplorer.GetResource("TextPrompt.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("NoMatchRule.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("EndTurn.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("IfCondition.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("TextInput.main.dialog");
             //var rootFile = resourceExplorer.GetResource("WelcomeRule.main.dialog");
             //var rootFile = resourceExplorer.GetResource("DoSteps.main.dialog");
-            //var rootFile = resourceExplorer.GetResource("CallDialog.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("BeginDialog.main.dialog");
             //var rootFile = resourceExplorer.GetResource("ExternalLanguage.main.dialog");
 
             rootDialog = DeclarativeTypeLoader.Load<IDialog>(rootFile.FullName, resourceExplorer, registry);

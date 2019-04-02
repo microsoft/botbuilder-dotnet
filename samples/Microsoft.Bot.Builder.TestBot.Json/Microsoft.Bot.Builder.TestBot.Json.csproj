@@ -7,15 +7,13 @@
   <ItemGroup>
     <None Remove="en-us.lg" />
     <None Remove="main.dialog" />
-    <None Remove="Samples\Planning 1 - DefaultRule\DefaultRule.main.dialog" />
-    <None Remove="Samples\Planning 2 - WaitForInput\WaitforInput.main.dialog" />
-    <None Remove="Samples\Planning 3 - IfProperty\IfProperty.main.dialog" />
-    <None Remove="Samples\Planning 4 - TextPrompt\TextPrompt.main.dialog" />
+    <None Remove="Samples\Planning 2 - EndTurn\EndTurn.main.dialog" />
+    <None Remove="Samples\Planning 3 - IfCondition\IfCondition.main.dialog" />
     <None Remove="Samples\Planning 5 - WelcomeRule\WelcomeRule.main.dialog" />
     <None Remove="Samples\Planning 6 - DoSteps\DoSteps.main.dialog" />
-    <None Remove="Samples\Planning 7 - CallDialog\CallDialog.FortuneTellerDialog.dialog" />
-    <None Remove="Samples\Planning 7 - CallDialog\CallDialog.main.dialog" />
-    <None Remove="Samples\Planning 7 - CallDialog\CallDialog.TellJokeDialog.dialog" />
+    <None Remove="Samples\Planning 7 - BeginDialog\BeginDialog.FortuneTellerDialog.dialog" />
+    <None Remove="Samples\Planning 7 - BeginDialog\BeginDialog.main.dialog" />
+    <None Remove="Samples\Planning 7 - BeginDialog\BeginDialog.TellJokeDialog.dialog" />
     <None Remove="Samples\Planning 8 - ExternalLanguage\ExternalLanguage - Copy.main.lg" />
     <None Remove="Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.dialog" />
     <None Remove="Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.lg" />
@@ -26,19 +24,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Samples\Planning 1 - DefaultRule\DefaultRule.main.dialog" />
+    <_ContentIncludedByDefault Remove="Samples\Planning 1 - NoMatchRule\NoMatchRule.main.dialog" />
+    <_ContentIncludedByDefault Remove="Samples\Planning 4 - TextInput\TextInput.main.dialog" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Samples\RootDialog\RootDialog.lg" />
     <Content Include="Samples\RootDialog\RootDialog.main.dialog" />
     <Content Include="Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.lg" />
     <Content Include="Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.dialog" />
-    <Content Include="Samples\Planning 7 - CallDialog\CallDialog.FortuneTellerDialog.dialog" />
-    <Content Include="Samples\Planning 7 - CallDialog\CallDialog.TellJokeDialog.dialog" />
-    <Content Include="Samples\Planning 7 - CallDialog\CallDialog.main.dialog" />
+    <Content Include="Samples\Planning 7 - BeginDialog\BeginDialog.FortuneTellerDialog.dialog" />
+    <Content Include="Samples\Planning 7 - BeginDialog\BeginDialog.TellJokeDialog.dialog" />
+    <Content Include="Samples\Planning 7 - BeginDialog\BeginDialog.main.dialog" />
     <Content Include="Samples\Planning 6 - DoSteps\DoSteps.main.dialog" />
     <Content Include="Samples\Planning 5 - WelcomeRule\WelcomeRule.main.dialog" />
-    <Content Include="Samples\Planning 4 - TextPrompt\TextPrompt.main.dialog" />
-    <Content Include="Samples\Planning 3 - IfProperty\IfProperty.main.dialog" />
-    <Content Include="Samples\Planning 2 - WaitForInput\WaitforInput.main.dialog" />
+    <Content Include="Samples\Planning 3 - IfCondition\IfCondition.main.dialog" />
+    <Content Include="Samples\Planning 2 - EndTurn\EndTurn.main.dialog" />
     <Content Include="Samples\Planning 9 - CancelDialog\CancelDialog.main.dialog" />
 
   </ItemGroup>
@@ -58,6 +59,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\integration\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.AI.LanguageGeneration\Microsoft.Bot.Builder.AI.LanguageGeneration.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Composition\Microsoft.Bot.Builder.Dialogs.Composition.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Declarative\Microsoft.Bot.Builder.Dialogs.Declarative.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />

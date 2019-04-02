@@ -1,0 +1,29 @@
+﻿{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IRule)",
+    "title": "Event Rule",
+    "description": "Defines a rule for an event which is triggered by some sourcy",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "expression": {
+            "type": "string",
+            "title": "Constraint",
+            "description": "Optional constraint to which must be met for this rule to fire",
+            "examples": [
+                "user.vip == true"
+            ]
+        },
+        "steps": {
+            "type": "array",
+            "description": "Sequence of steps or dialogs to execute",
+            "items": {
+                "$type": "Microsoft.IDialog"
+            }
+        }
+    },
+    "required": [
+        "events",
+        "steps"
+    ]
+}

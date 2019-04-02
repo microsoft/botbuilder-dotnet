@@ -1,9 +1,0 @@
-﻿{
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
-    "$ref": "./Microsoft.EventRule.schema#",
-    "title": "BeginDialogRule Rule",
-    "description": "Defines a sequence of steps to do when the BeginDialog event fires",
-    "required": [
-        "steps"
-    ]
-}

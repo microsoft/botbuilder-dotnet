@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,6 +11,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Debugger;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Json.Pointer;
 using Newtonsoft.Json.Linq;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
 {

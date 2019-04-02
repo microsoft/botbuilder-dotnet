@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Antlr4.Runtime;
 using Newtonsoft.Json;
+using System;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
@@ -62,7 +63,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         }
 
 
-        private TemplateEngine(LGFileParser.FileContext context, List<LGReportMessage> initParseExceptions = null)
+        private TemplateEngine(LGFileParser.FileContext context)
         {
             // Pre-compute some information to help the evalution process later
             var templateContexts = new Dictionary<string, LGFileParser.TemplateDefinitionContext>();
@@ -93,17 +94,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             }
             evaluationContext = new EvaluationContext(templateContexts, templateParameters);
 
-            RunStaticCheck(evaluationContext, initParseExceptions);
+            RunStaticCheck(evaluationContext);
         }
 
-        public void RunStaticCheck(EvaluationContext evaluationContext, List<LGReportMessage> initExceptions = null)
+        public void RunStaticCheck(EvaluationContext evaluationContext)
         {
-            if (initExceptions == null)
-                initExceptions = new List<LGReportMessage>();
-
             var checker = new StaticChecker(evaluationContext);
             var reportMessages = checker.Check();
-            reportMessages.AddRange(initExceptions);
 
             var errorMessages = reportMessages.Where(u => u.ReportType == LGReportMessageType.Error).ToList();
             if (errorMessages.Count != 0)
@@ -112,10 +109,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             }
         }
         
-        public string EvaluateTemplate(string templateName, object scope, IGetValue valueBinder = null, IGetMethod methodBinder = null)
+        public string EvaluateTemplate(string templateName, object scope, IGetMethod methodBinder = null)
         {
 
-            var evaluator = new TemplateEvaluator(evaluationContext, methodBinder, valueBinder);
+            var evaluator = new Evaluator(evaluationContext, methodBinder);
             return evaluator.EvaluateTemplate(templateName, scope);
         }
 
@@ -132,7 +129,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         /// <param name="inlineStr"></param>
         /// <param name="scope"></param>
         /// <returns></returns>
-        public string Evaluate(string inlineStr, object scope, IGetValue valueBinder = null, IGetMethod methodBinder = null)
+        public string Evaluate(string inlineStr, object scope, IGetMethod methodBinder = null)
         {
             // TODO: maybe we can directly ref the templateBody without giving a name, but that means
             // we needs to make a little changes in the evalutor, especially the loop detection part
@@ -147,7 +144,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var tokens = new CommonTokenStream(lexer);
             var parser = new LGFileParser(tokens);
             parser.RemoveErrorListeners();
-            var listener = new TemplateErrorListener();
+            var listener = new ErrorListener();
 
             parser.AddErrorListener(listener);
             parser.BuildParseTree = true;
@@ -157,9 +154,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             // Step 2: constuct a new evalution context on top of the current one
             var evaluationContext = new EvaluationContext(this.evaluationContext);
             evaluationContext.TemplateContexts[fakeTemplateId] = context;
-            var evaluator = new TemplateEvaluator(evaluationContext, methodBinder, valueBinder);
+            var evaluator = new Evaluator(evaluationContext, methodBinder);
 
-            RunStaticCheck(evaluationContext, listener.GetExceptions());
+            RunStaticCheck(evaluationContext);
 
             // Step 3: evaluate
             return evaluator.EvaluateTemplate(fakeTemplateId, scope);
@@ -194,14 +191,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var tokens = new CommonTokenStream(lexer);
             var parser = new LGFileParser(tokens);
             parser.RemoveErrorListeners();
-            var listener = new TemplateErrorListener();
+            var listener = new ErrorListener();
 
             parser.AddErrorListener(listener);
             parser.BuildParseTree = true;
 
             var context = parser.file();
 
-            return new TemplateEngine(context, listener.GetExceptions());
+            return new TemplateEngine(context);
         }
     }
 }

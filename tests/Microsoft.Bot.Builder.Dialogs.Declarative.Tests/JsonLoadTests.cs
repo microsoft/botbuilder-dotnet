@@ -1,19 +1,21 @@
-﻿using System.IO;
+﻿// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Tests.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Plugins;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using System.Collections.Generic;
-using Microsoft.Bot.Builder.Dialogs.Rules;
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Debugger;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 
 namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 {
@@ -33,9 +35,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         public TestContext TestContext { get; set; }
 
         [TestMethod]
-        public async Task JsonDialogLoad_DefaultRule()
+        public async Task JsonDialogLoad_NoMatchRule()
         {
-            string path = Path.Combine(samplesDirectory, @"Planning 1 - DefaultRule\DefaultRule.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"Planning 1 - NoMatchRule\NoMatchRule.main.dialog");
 
             await BuildTestFlow(path)
             .Send("hello")
@@ -44,9 +46,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         }
 
         [TestMethod]
-        public async Task JsonDialogLoad_WaitForInput()
+        public async Task JsonDialogLoad_EndTurn()
         {
-            string path = Path.Combine(samplesDirectory, @"Planning 2 - WaitForInput\WaitForInput.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"Planning 2 - EndTurn\EndTurn.main.dialog");
 
             await BuildTestFlow(path)
             .Send("hello")
@@ -59,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_IfProperty()
         {
-            string path = Path.Combine(samplesDirectory, @"Planning 3 - IfProperty\IfProperty.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"Planning 3 - IfCondition\IfCondition.main.dialog");
 
             await BuildTestFlow(path)
             .Send("hello")
@@ -70,9 +72,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         }
 
         [TestMethod]
-        public async Task JsonDialogLoad_TextPrompt()
+        public async Task JsonDialogLoad_TextInput()
         {
-            string path = Path.Combine(samplesDirectory, @"Planning 4 - TextPrompt\TextPrompt.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"Planning 4 - TextInput\TextInput.main.dialog");
 
             await BuildTestFlow(path)
             .Send("hello")
@@ -121,9 +123,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         }
 
         [TestMethod]
-        public async Task JsonDialogLoad_CallDialog()
+        public async Task JsonDialogLoad_BeginDialog()
         {
-            string path = Path.Combine(samplesDirectory, @"Planning 7 - CallDialog\CallDialog.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"Planning 7 - BeginDialog\BeginDialog.main.dialog");
 
             await BuildTestFlow(path)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
@@ -218,10 +220,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
             await BuildTestFlow(path)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
-            .Send("Hello")
             .AssertReply("Welcome! Here is a http request sample, please enter a name for you visual pet.")
             .Send("TestPetName")
-            .AssertReply("Great! Your pet's name is TestPetName, now please enter the id of your pet, this could help you find your pet later.")
+            .AssertReply("Great! Your pet's name is TestPetName")
+            .AssertReply("Now please enter the id of your pet, this could help you find your pet later.")
             .Send("12121")
             .AssertReply("Done! You have added a pet named \"TestPetName\" with id \"12121\"")
             .AssertReply("Now try to specify the id of your pet, and I will help your find it out from the store.")

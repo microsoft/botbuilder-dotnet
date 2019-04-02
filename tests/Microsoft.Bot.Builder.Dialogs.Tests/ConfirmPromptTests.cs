@@ -73,55 +73,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
-        public async Task ConfirmDataPrompt()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new AutoSaveStateMiddleware(convoState))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
-
-            // Create new DialogSet.
-            var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new ConfirmPrompt()
-            {
-                Id = "ConfirmPrompt",
-                InitialPrompt = new ActivityTemplate("Please confirm."),
-                RetryPrompt = new ActivityTemplate("That's bad. Please try again."),
-            });
-
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    await dc.PromptAsync("ConfirmPrompt", new PromptOptions { }, cancellationToken);
-                }
-                else if (results.Status == DialogTurnStatus.Complete)
-                {
-                    if ((bool)results.Result)
-                    {
-                        await turnContext.SendActivityAsync(MessageFactory.Text("Confirmed."), cancellationToken);
-                    }
-                    else
-                    {
-                        await turnContext.SendActivityAsync(MessageFactory.Text("Not confirmed."), cancellationToken);
-                    }
-                }
-            })
-            .Send("hello")
-                .AssertReply("Please confirm. (1) Yes or (2) No")
-            .Send("wah?")
-                .AssertReply("That's bad. Please try again. (1) Yes or (2) No")
-            .Send("yes")
-            .AssertReply("Confirmed.")
-            .StartTestAsync();
-        }
-
-        [TestMethod]
         public async Task ConfirmPromptRetry()
         {
             var convoState = new ConversationState(new MemoryStorage());

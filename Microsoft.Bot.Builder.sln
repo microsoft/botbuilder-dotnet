@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.329
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28721.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{4269F3C3-6B42-419B-B64A-3E6DC0F1574A}"
 EndProject
@@ -80,9 +80,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.La
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.LanguageGeneration.Tests", "tests\Microsoft.Bot.Builder.AI.LanguageGeneration.Tests\Microsoft.Bot.Builder.AI.LanguageGeneration.Tests.csproj", "{A6E642AE-B132-4A90-A95A-A44A82BC0B66}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Rules", "libraries\Microsoft.Bot.Builder.Dialogs.Rules\Microsoft.Bot.Builder.Dialogs.Rules.csproj", "{3CF175CF-1AF4-4109-96CB-221684DCED7D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive", "libraries\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj", "{3CF175CF-1AF4-4109-96CB-221684DCED7D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Rules.Tests", "tests\Microsoft.Bot.Builder.Dialogs.Rules.Tests\Microsoft.Bot.Builder.Dialogs.Rules.Tests.csproj", "{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive.Tests", "tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests.csproj", "{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{1DEDDC46-F2F4-448F-A0B7-FD48682EEC80}"
 EndProject
@@ -98,7 +98,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Expre
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Expressions", "libraries\Microsoft.Bot.Builder.Expressions\Microsoft.Bot.Builder.Expressions.csproj", "{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Expressions.Parser", "libraries\Microsoft.Bot.Builder.Expressions.Parser\Microsoft.Bot.Builder.Expressions.Parser.csproj", "{FB2EA804-158C-4654-AD60-A2105AC366FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Expressions.Parser", "libraries\Microsoft.Bot.Builder.Expressions.Parser\Microsoft.Bot.Builder.Expressions.Parser.csproj", "{FB2EA804-158C-4654-AD60-A2105AC366FF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Declarative.Tests", "tests\Microsoft.Bot.Builder.Dialogs.Declarative.Tests\Microsoft.Bot.Builder.Dialogs.Declarative.Tests.csproj", "{D5E70443-4BA2-42ED-992A-010268440B08}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -449,6 +451,14 @@ Global
 		{FB2EA804-158C-4654-AD60-A2105AC366FF}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{FB2EA804-158C-4654-AD60-A2105AC366FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FB2EA804-158C-4654-AD60-A2105AC366FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5E70443-4BA2-42ED-992A-010268440B08}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5E70443-4BA2-42ED-992A-010268440B08}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{D5E70443-4BA2-42ED-992A-010268440B08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5E70443-4BA2-42ED-992A-010268440B08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5E70443-4BA2-42ED-992A-010268440B08}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5E70443-4BA2-42ED-992A-010268440B08}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{D5E70443-4BA2-42ED-992A-010268440B08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5E70443-4BA2-42ED-992A-010268440B08}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -500,6 +510,7 @@ Global
 		{AE3FC7F6-B212-4438-B1D7-C121BB4C15ED} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{FB2EA804-158C-4654-AD60-A2105AC366FF} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
+		{D5E70443-4BA2-42ED-992A-010268440B08} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

@@ -1,0 +1,29 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "Begin Dialog",
+    "description": "Step which begins another dialog (and when that dialog is done, it will return the caller).",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "dialog": {
+            "$type": "Microsoft.IDialog",
+            "title": "Dialog",
+            "description": "This is the dialog to call."
+        },
+        "options": {
+            "type": "object",
+            "additionalProperties": true,
+            "title": "Options",
+            "description": "Options to pass to the dialog."
+        },
+        "property": {
+            "type": "string",
+            "title": "Property",
+            "description": "The property to bind to the dialog and store the result in",
+            "examples": [
+                "user.name"
+            ]
+        }
+    }
+}

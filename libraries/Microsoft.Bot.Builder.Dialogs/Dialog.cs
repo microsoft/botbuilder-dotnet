@@ -48,19 +48,22 @@ namespace Microsoft.Bot.Builder.Dialogs
         public List<string> Tags { get; private set; } = new List<string>();
 
         /// <summary>
-        /// JSONPath expression for the memory slots to bind the dialogs options to on a call to `beginDialog()`.
+        /// Gets or sets jSONPath expression for the memory slots to bind the dialogs options to on a call to `beginDialog()`.
         /// </summary>
-        public Dictionary<string, string> InputBindings { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> InputProperties { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
-        /// JSONPath expression for the memory slot to bind the dialogs result to when `endDialog()` is called.
+        /// Gets or sets jSONPath expression for the memory slot to bind the dialogs result to when `endDialog()` is called.
         /// </summary>
-        public string OutputBinding { get; set; }
+        public string OutputProperty { get; set; }
 
+        /// <summary>
+        /// Property which is bidirectional property for input and output.  Example: user.age will be passed in, and user.age will be set when the dialog completes
+        /// </summary>
         public virtual string Property
         {
-            get { return OutputBinding; }
-            set { OutputBinding = value; }
+            get { return OutputProperty; }
+            set { OutputProperty = value; }
         }
 
         /// <summary>
@@ -177,13 +180,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             const string valueKey = "value";
 
-            if (InputBindings.ContainsKey(valueKey))
+            if (InputProperties.ContainsKey(valueKey))
             {
-                return InputBindings[valueKey];
+                return InputProperties[valueKey];
             }
-            else if (!string.IsNullOrEmpty(OutputBinding))
+            else if (!string.IsNullOrEmpty(OutputProperty))
             {
-                return OutputBinding;
+                return OutputProperty;
             }
 
             return string.Empty;
