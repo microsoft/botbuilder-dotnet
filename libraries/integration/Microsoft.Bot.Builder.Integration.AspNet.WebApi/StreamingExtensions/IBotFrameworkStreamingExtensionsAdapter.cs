@@ -69,6 +69,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
         /// </remarks>
         /// <param name='parameters'>
         /// Parameters to create the conversation from.
+        /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
@@ -214,10 +215,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
         /// successful this method will remove the specified activity.
         /// </remarks>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='activityId'>
-        /// activityId to delete
+        /// activityId to delete.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
@@ -238,7 +239,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
         /// conversation.
         /// </remarks>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
@@ -272,13 +273,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
         /// request may rarely return members from a previous request.
         /// </remarks>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='pageSize'>
-        /// Suggested page size
+        /// Suggested page size.
         /// </param>
         /// <param name='continuationToken'>
-        /// Continuation Token
+        /// Continuation Token.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
@@ -324,10 +325,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
         /// particular activity in the conversation.
         /// </remarks>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='activityId'>
-        /// Activity ID
+        /// Activity ID.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
