@@ -30,6 +30,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             { Chinese, new ChoiceFactoryOptions { InlineSeparator = "， ", InlineOr = " 要么 ", InlineOrMore = "， 要么 ", IncludeNumbers = true } },
         };
 
+        public ChoicePrompt()
+            : base()
+        {
+        }
+
         public ChoicePrompt(string dialogId, PromptValidator<FoundChoice> validator = null, string defaultLocale = null)
             : base(dialogId, validator)
         {
