@@ -6,13 +6,14 @@
 
 ## Remaining work
 - - [ ] Implement Common Expression Language [Spec](https://microsoft.sharepoint.com/:w:/t/ConversationalAI785/EfIx5-gPhE5HlAGhvNEoKLIBo0AeoWmq1ITRhai2q2trLA?e=x9uKyb)
-- - [ ] Rewrite parser using ANTLR
-- - [ ] Implement R0 set of pre-built functions for C# and JS
-- - [ ] Implement support for short hand entity resolution - $entityName, #entityName, @entityName
-- - [ ] Close on JSON .vs. native object support in expression language
-- - [ ] Pick up new changes from Chris McConnell on expression evaluate, parse tree walk
-- - [ ] Wire up expression language in LG subsystem
-- - [ ] Wire up expression language support in Adaptive dialog rules and steps
+- - [X] Rewrite parser using ANTLR
+- - [ ] Implement R0 set of pre-built functions for C# and JS (80~90% complete)
+- - [X] Implement support for short hand entity resolution - $entityName, #entityName, @entityName
+- - [X] Close on JSON .vs. native object support in expression language
+- - [X] Pick up new changes from Chris McConnell on expression evaluate, parse tree walk
+- - [X] Wire up expression language in LG subsystem
+- - [X] Wire up expression language support in Adaptive dialog rules and steps
+- - [ ] Add support for explicit values with both 'value' and "value". [Spec](https://microsoft.sharepoint.com/:w:/t/ConversationalAI785/EfIx5-gPhE5HlAGhvNEoKLIBo0AeoWmq1ITRhai2q2trLA?e=zX8HSY)
 - - [ ] Final API shape review
 - - [ ] Final packaging, naming review
 - - [ ] On board to build and release DevOps pipeline
@@ -23,13 +24,18 @@
 
 |        Class              |         C#             |          TS            |
 |---------------------------|------------------------|------------------------|
-| BuiltInFunctions          |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
-| Exceptions                |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
-| ExpressionEngine          |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
-| ExpressionErrorListener   |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
-| ExpressionEvaluator       |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
-| MethodBinder              |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
-| PropertyBinder            |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
+| **Exression**             |                        |                        |
+| BuiltInFunctions          |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
+| Constants                 |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
+| Expression                |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
+| ExpressionEvaluator       |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
+| ExpressionType            |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
+| Extensions                |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
+| IExpressionParser         |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
+| **Epxression.Parser**     |                        |                        |
+| Exceptions                |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
+| ExpressionEngine          |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
+| ExpressionErrorListener   |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
 
 ### Documentation
 - [ ] API reference doc

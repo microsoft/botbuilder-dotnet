@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         {
             if (!Context.TemplateContexts.ContainsKey(templateName))
             {
-                throw new LGEvaluatingException($"No such template: {templateName}");
+                throw new Exception($"No such template: {templateName}");
             }
 
             if (evaluationTargetStack.Any(e => e.TemplateName == templateName))

@@ -30,8 +30,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Test("NoTemplateRef.lg"),
             Test("TemplateParamsNotMatchArgsNum.lg"),
             Test("ErrorSeperateChar.lg"),
+            Test("ErrorSeperateChar2.lg"),
             Test("MultilineVariation.lg"),
             Test("InvalidTemplateName.lg"),
+            Test("InvalidTemplateName2.lg"),
         };
 
         public static IEnumerable<object[]> WariningData => new[]
@@ -46,16 +48,21 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [DynamicData(nameof(ExceptionData))]
         public void ThrowExceptionTest(string input)
         {
+            var isFail = false;
             try
             {
                 TemplateEngine.FromFile(GetExampleFilePath(input));
-                //no exception, throw exception
-                throw new Exception("No exception throw.");
+                isFail = true;
             }
             catch (Exception e)
             {
                 TestContext.WriteLine(e.Message);
             }
+
+            if (isFail)
+            {
+                Assert.Fail("No exception is thrown.");
+            }    
         }
 
         [DataTestMethod]

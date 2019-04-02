@@ -27,7 +27,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("a+"),
             Test("a+b*"),
             Test("fun(a, b, c"),
-            Test("func(A,b,b,)")
+            Test("func(A,b,b,)"),
+            Test("a.#title"),
         };
 
 
@@ -77,7 +78,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     index = 3,
                     list = new[] { "red", "blue" }
                 },
-                items = new string[] { "zero", "one", "two" }
+                items = new string[] { "zero", "one", "two" },
+                
             };
 
             try

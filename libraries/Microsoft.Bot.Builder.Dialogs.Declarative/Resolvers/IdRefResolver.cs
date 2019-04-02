@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
             return token?
                 .Children<JProperty>()
                 .FirstOrDefault(jProperty => jProperty.Name == RefPropertyName)
-                ?.Value<string>();
+                ?.Value.ToString();
         }
     }
 }
