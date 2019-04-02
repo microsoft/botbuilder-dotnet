@@ -23,13 +23,16 @@
 
 |        Class              |         C#             |          TS            |
 |---------------------------|------------------------|------------------------|
-| BuiltInFunctions          |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
-| Exceptions                |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
-| ExpressionEngine          |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
-| ExpressionErrorListener   |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
-| ExpressionEvaluator       |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
-| MethodBinder              |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
-| PropertyBinder            |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
+| **Exression**             |                        |                        |
+| BuiltInFunctions          |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
+| Constants                 |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
+| Expression                |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
+| ExpressionType            |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
+| Extensions                |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
+| IExpressionParser         |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
+| **Epxression.Parser**     |                        |                        |
+| ExpressionEngine          |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
+| ErrorListener             |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
 
 ### Documentation
 - [ ] API reference doc
