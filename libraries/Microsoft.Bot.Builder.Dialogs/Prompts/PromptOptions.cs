@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// This property can be used to override or set the value of <see cref="ChoicePrompt.Style"/> property
         /// when the prompt is being executed using <see cref="DialogContext.PromptAsync"/>.
         /// </value>
-        public ListStyle? ChoiceStyle { get; set; }
+        public ListStyle? Style { get; set; }
 
         public object Validations { get; set; }
     }

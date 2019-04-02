@@ -529,7 +529,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                             {
                                 Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                                 Choices = _colorChoices,
-                                ChoiceStyle = ListStyle.SuggestedAction,
+                                Style = ListStyle.SuggestedAction,
                             },
                             cancellationToken);
                     }
