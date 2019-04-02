@@ -27,12 +27,14 @@
 | BuiltInFunctions          |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
 | Constants                 |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
 | Expression                |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
+| ExpressionEvaluator       |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
 | ExpressionType            |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
 | Extensions                |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
 | IExpressionParser         |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
 | **Epxression.Parser**     |                        |                        |
+| Exceptions                |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
 | ExpressionEngine          |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
-| ErrorListener             |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
+| ExpressionErrorListener   |<ul><li>- [X] </li></ul>|<ul><li>- [ ] </li></ul>|
 
 ### Documentation
 - [ ] API reference doc
