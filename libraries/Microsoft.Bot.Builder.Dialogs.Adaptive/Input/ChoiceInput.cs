@@ -18,6 +18,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     {
         public List<Choice> choices { get; set; }
 
+        protected override ChoicePrompt CreatePrompt()
+        {
+            return new ChoicePrompt()
+            { };
+
+        }
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Check value in state and only call if missing or required by AlwaysPrompt
