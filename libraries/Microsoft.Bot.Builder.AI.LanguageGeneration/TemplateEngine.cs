@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var errorMessages = reportMessages.Where(u => u.ReportType == LGReportMessageType.Error).ToList();
             if (errorMessages.Count != 0)
             {
-                throw new LGParsingException(JsonConvert.SerializeObject(errorMessages));
+                throw new Exception(JsonConvert.SerializeObject(errorMessages));
             }
         }
         

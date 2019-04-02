@@ -46,16 +46,21 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [DynamicData(nameof(ExceptionData))]
         public void ThrowExceptionTest(string input)
         {
+            var isFail = false;
             try
             {
                 TemplateEngine.FromFile(GetExampleFilePath(input));
-                //no exception, throw exception
-                throw new Exception("No exception throw.");
+                isFail = true;
             }
             catch (Exception e)
             {
                 TestContext.WriteLine(e.Message);
             }
+
+            if (isFail)
+            {
+                Assert.Fail("No exception is thrown.");
+            }    
         }
 
         [DataTestMethod]
