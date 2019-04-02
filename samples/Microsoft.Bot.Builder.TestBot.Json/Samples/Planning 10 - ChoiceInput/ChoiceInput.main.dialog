@@ -2,31 +2,32 @@
    "$schema": "../../app.schema",
    "$type": "Microsoft.AdaptiveDialog",
    "rules": [
-      {
-         "$type": "Microsoft.NoMatchRule",
-        "steps": [
-          {
-            "$type": "Microsoft.SendActivity",
-            "activity": "Test Choice Input"
-          },
-          {
-            "$type": "Microsoft.ChoiceInput",
-            "property": "user.choice",
-            "choices": [
-              {
-              "value": "Add1"
-              },
-              {
-              "value": "Add2"
-              }
-            ],
-            "prompt": "please select a choice from below:"
-          },
-          {
-            "$type": "Microsoft.SendActivity",
-            "activity": "{user.choice}"
-          }
-        ]
-      },
+    {
+      "$type": "Microsoft.NoMatchRule",
+      "steps": [
+        {
+          "$type": "Microsoft.ChoiceInput",
+          "property": "user.style",
+          "choices": [
+            {
+              "value": "Test1"
+            },
+            {
+              "value": "Test2"
+            },
+            {
+              "value": "Test3"
+            }
+          ],
+          "prompt": "Please select a value from below",
+          "style": "HeroCard",
+          "alwaysPrompt": true
+        },
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "You select: {user.style.Value}"
+        }
+      ]
+    }          
    ]
 }

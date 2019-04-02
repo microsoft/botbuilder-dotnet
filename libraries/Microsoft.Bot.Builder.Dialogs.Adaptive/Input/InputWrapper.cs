@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     /// <typeparam name="TValue">Type of the value that the prompt will store and get to and from memory</typeparam>
     public class InputWrapper<TPrompt, TValue> : DialogCommand, IDialogDependencies where TPrompt : IDialog, new()
     {
-        private TPrompt prompt;
+        protected TPrompt prompt;
 
         /// <summary>
         /// Activity to send to the user

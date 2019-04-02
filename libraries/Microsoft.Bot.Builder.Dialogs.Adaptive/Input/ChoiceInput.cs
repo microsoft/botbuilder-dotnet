@@ -16,14 +16,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     /// </summary>
     public class ChoiceInput : InputWrapper<ChoicePrompt, FoundChoice>
     {
-        public List<Choice> choices { get; set; }
+        public List<Choice> Choices { get; set; }
 
-        protected override ChoicePrompt CreatePrompt()
-        {
-            return new ChoicePrompt()
-            { };
+        public ListStyle Style { get; set; }
 
-        }
+        // Override the base method since we need to pass choices to the prompt options
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Check value in state and only call if missing or required by AlwaysPrompt
@@ -39,7 +36,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 var prompt = await Prompt.BindToData(dc.Context, dc.State).ConfigureAwait(false);
                 var retryPrompt = RetryPrompt == null ? prompt : await RetryPrompt.BindToData(dc.Context, dc.State).ConfigureAwait(false);
 
-                return await dc.PromptAsync(nameof(ChoicePrompt), new ChoicePromptOptions() { Prompt = prompt, RetryPrompt = retryPrompt, Choices = this.choices}, cancellationToken).ConfigureAwait(false);
+                this.prompt.Style = this.Style;
+
+                return await dc.PromptAsync(this.prompt.Id, new ChoicePromptOptions() { Prompt = prompt, RetryPrompt = retryPrompt, Choices = this.Choices}, cancellationToken).ConfigureAwait(false);
             }
             else
             {

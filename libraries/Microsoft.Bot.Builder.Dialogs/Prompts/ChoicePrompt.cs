@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
         }
 
-        public ChoicePrompt(string dialogId, PromptValidator<FoundChoice> validator = null, string defaultLocale = null)
+        public ChoicePrompt(string dialogId = nameof(ChoicePrompt), PromptValidator<FoundChoice> validator = null, string defaultLocale = null)
             : base(dialogId, validator)
         {
             Style = ListStyle.Auto;
