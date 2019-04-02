@@ -54,7 +54,8 @@
 
   <ItemGroup>
     <None Remove="Schemas\Dialogs\Microsoft.AdaptiveDialog.schema" />
-    <None Remove="Schemas\Recognizers\Microsoft.MultiLanguageRecognizers.schema" />
+    <None Remove="Schemas\Microsoft.ILanguagePolicy.schema" />
+    <None Remove="Schemas\Recognizers\Microsoft.MultiLanguageRecognizer.schema" />
     <None Remove="Schemas\Recognizers\Microsoft.RegexRecognizer.schema" />
     <None Remove="Schemas\Rules\Microsoft.EventRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.IfPropertyRule.schema" />
@@ -68,7 +69,7 @@
     <None Remove="Schemas\Steps\Microsoft.EndTurn.schema" />
     <None Remove="Schemas\Steps\Microsoft.HttpRequest.schema" />
     <None Remove="Schemas\Steps\Microsoft.IfProperty.schema" />
-    <None Remove="Schemas\Steps\Microsoft.ReplaceWithDialog.schema" />
+    <None Remove="Schemas\Steps\Microsoft.ReplaceDialog.schema" />
     <None Remove="Schemas\Steps\Microsoft.SaveEntity.schema" />
     <None Remove="Schemas\Steps\Microsoft.SendActivity.schema" />
     <None Remove="Schemas\Steps\Microsoft.SendList.schema" />
@@ -77,8 +78,9 @@
   
   <ItemGroup>
     <Content Include="Schemas\Dialogs\Microsoft.AdaptiveDialog.schema" />
+    <Content Include="Schemas\Microsoft.ILanguagePolicy.schema" />
     <Content Include="Schemas\Microsoft.IRule.schema" />
-    <Content Include="Schemas\Recognizers\Microsoft.MultiLanguageRecognizers.schema" />
+    <Content Include="Schemas\Recognizers\Microsoft.MultiLanguageRecognizer.schema" />
     <Content Include="Schemas\Recognizers\Microsoft.RegexRecognizer.schema" />
     <Content Include="Schemas\Rules\Microsoft.Rule.schema" />
     <Content Include="Schemas\Rules\Microsoft.EventRule.schema" />
@@ -93,7 +95,7 @@
     <Content Include="Schemas\Steps\Microsoft.BeginDialog.schema" />
     <Content Include="Schemas\Steps\Microsoft.CancelDialog.schema" />
     <Content Include="Schemas\Steps\Microsoft.EndDialog.schema" />
-    <Content Include="Schemas\Steps\Microsoft.ReplaceWithDialog.schema" />
+    <Content Include="Schemas\Steps\Microsoft.ReplaceDialog.schema" />
     <Content Include="Schemas\Steps\Microsoft.SendActivity.schema" />
     <Content Include="Schemas\Steps\Microsoft.EndTurn.schema" />
   </ItemGroup>

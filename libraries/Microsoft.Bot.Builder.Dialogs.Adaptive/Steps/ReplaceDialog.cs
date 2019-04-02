@@ -14,9 +14,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     /// <summary>
     /// Step which calls another dialog, when it is done it will go to the callers parent dialog
     /// </summary>
-    public class ReplaceWithDialog : BaseInvokeDialog
+    public class ReplaceDialog : BaseInvokeDialog
     {
-        public ReplaceWithDialog(string dialogIdToCall = null, string id = null, string property = null, object options = null) 
+        public ReplaceDialog(string dialogIdToCall = null, string id = null, string property = null, object options = null) 
             : base(dialogIdToCall, id, property, options)
         {
         }

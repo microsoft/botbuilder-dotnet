@@ -357,7 +357,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_ReplaceWithDialog()
+        public async Task Step_ReplaceDialog()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -409,7 +409,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 new IntentRule("JokeIntent",
                     steps: new List<IDialog>()
                     {
-                        new ReplaceWithDialog("TellJokeDialog")
+                        new ReplaceDialog("TellJokeDialog")
                     }),
                 new WelcomeRule(
                     steps: new List<IDialog>()
@@ -419,7 +419,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 new NoMatchRule(
                     new List<IDialog>()
                     {
-                        new ReplaceWithDialog("AskNameDialog")
+                        new ReplaceDialog("AskNameDialog")
                     })
             });
 
