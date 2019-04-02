@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Azure
         // database is done only once.
         private static SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
-        private readonly JsonSerializer _jsonSerializer;
+        private readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
 
         private readonly string _databaseId;
         private readonly string _collectionId;
@@ -39,25 +39,11 @@ namespace Microsoft.Bot.Builder.Azure
         /// using the provided CosmosDB credentials, database ID, and collection ID.
         /// </summary>
         /// <param name="cosmosDbStorageOptions">Cosmos DB storage configuration options.</param>
-        /// <param name="jsonSerializer">Optional JsonSerializer. Mind that the TypeNameHandling, NullvalueHandling and ContractResolver will be overridden.</param>
-        public CosmosDbStorage(CosmosDbStorageOptions cosmosDbStorageOptions, JsonSerializer jsonSerializer = null)
+        public CosmosDbStorage(CosmosDbStorageOptions cosmosDbStorageOptions)
         {
             if (cosmosDbStorageOptions == null)
             {
                 throw new ArgumentNullException(nameof(cosmosDbStorageOptions));
-            }
-
-            if (jsonSerializer == null)
-            {
-                _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
-            }
-            else
-            {
-                // These need to be overridden to the following values.
-                jsonSerializer.TypeNameHandling = TypeNameHandling.All;
-                jsonSerializer.NullValueHandling = NullValueHandling.Include;
-                jsonSerializer.ContractResolver = new DefaultContractResolver();
-                _jsonSerializer = jsonSerializer;
             }
 
             if (cosmosDbStorageOptions.CosmosDBEndpoint == null)
@@ -92,6 +78,22 @@ namespace Microsoft.Bot.Builder.Azure
             // Invoke CollectionPolicy delegate to further customize settings
             cosmosDbStorageOptions.ConnectionPolicyConfigurator?.Invoke(connectionPolicy);
             _client = new DocumentClient(cosmosDbStorageOptions.CosmosDBEndpoint, cosmosDbStorageOptions.AuthKey, connectionPolicy);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CosmosDbStorage"/> class.
+        /// using the provided CosmosDB credentials, database ID, and collection ID.
+        /// </summary>
+        /// <param name="cosmosDbStorageOptions">Cosmos DB storage configuration options.</param>
+        /// <param name="jsonSerializer">Mind that the TypeNameHandling, NullvalueHandling and ContractResolver may need special TLC: Recommended settings are as follows:
+        /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.All;</para>
+        /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include;</para>
+        /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver();</para>
+        /// </param>
+        public CosmosDbStorage(CosmosDbStorageOptions cosmosDbStorageOptions, JsonSerializer jsonSerializer)
+            : this(cosmosDbStorageOptions)
+        {
+            _jsonSerializer = jsonSerializer;
         }
 
         /// <summary>
