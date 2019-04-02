@@ -91,9 +91,9 @@
             "$ref": "#/definitions/Microsoft.LuisRecognizer"
         },
         {
-            "title": "Microsoft.MultiLanguageRecognizers",
+            "title": "Microsoft.MultiLanguageRecognizer",
             "description": "Recognizer which allows you to configure the recognizer per language, and to define the policy for using them",
-            "$ref": "#/definitions/Microsoft.MultiLanguageRecognizers"
+            "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
         },
         {
             "title": "Microsoft.NoMatchRule",
@@ -111,9 +111,9 @@
             "$ref": "#/definitions/Microsoft.RegexRecognizer"
         },
         {
-            "title": "Microsoft.ReplaceWithDialog",
+            "title": "Microsoft.ReplaceDialog",
             "description": "This is a step which replaces the current dialog with the target dialog",
-            "$ref": "#/definitions/Microsoft.ReplaceWithDialog"
+            "$ref": "#/definitions/Microsoft.ReplaceDialog"
         },
         {
             "title": "Microsoft.Rule",
@@ -223,9 +223,6 @@
                     }
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -240,7 +237,9 @@
                 },
                 {
                     "title": "Type",
-                    "required": []
+                    "required": [
+                        "$type"
+                    ]
                 }
             ]
         },
@@ -296,8 +295,19 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "$type"
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
             ]
         },
         "Microsoft.CancelDialog": {
@@ -332,8 +342,19 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "$type"
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
             ]
         },
         "Microsoft.ConfirmInput": {
@@ -419,8 +440,19 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "$type"
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
             ]
         },
         "Microsoft.DeleteProperty": {
@@ -455,9 +487,6 @@
                     "description": "The Memory property path to delete"
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -473,7 +502,8 @@
                 {
                     "title": "Type",
                     "required": [
-                        "property"
+                        "property",
+                        "$type"
                     ]
                 }
             ]
@@ -527,9 +557,6 @@
                     "description": "Memory expression for the item"
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -546,7 +573,8 @@
                     "title": "Type",
                     "required": [
                         "changeType",
-                        "listProperty"
+                        "listProperty",
+                        "$type"
                     ]
                 }
             ]
@@ -590,8 +618,19 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "$type"
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
             ]
         },
         "Microsoft.EndTurn": {
@@ -626,8 +665,19 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "$type"
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
             ]
         },
         "Microsoft.EventRule": {
@@ -679,9 +729,6 @@
                     }
                 }
             },
-            "required": [
-                "$type"
-            ],
             "$role": "unionType(Microsoft.IRule)",
             "patternProperties": {
                 "^\\$": {
@@ -699,7 +746,8 @@
                     "title": "Type",
                     "required": [
                         "events",
-                        "steps"
+                        "steps",
+                        "$type"
                     ]
                 }
             ]
@@ -803,8 +851,19 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "$type"
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
             ]
         },
         "Microsoft.HttpRequest": {
@@ -875,9 +934,6 @@
                     "description": "Http headers to include with the HTTP request (supports data binding)"
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -894,7 +950,8 @@
                     "title": "Type",
                     "required": [
                         "url",
-                        "entity"
+                        "entity",
+                        "$type"
                     ]
                 }
             ]
@@ -976,9 +1033,9 @@
                     "$ref": "#/definitions/Microsoft.IntegerInput"
                 },
                 {
-                    "title": "Microsoft.ReplaceWithDialog",
+                    "title": "Microsoft.ReplaceDialog",
                     "description": "This is a step which replaces the current dialog with the target dialog",
-                    "$ref": "#/definitions/Microsoft.ReplaceWithDialog"
+                    "$ref": "#/definitions/Microsoft.ReplaceDialog"
                 },
                 {
                     "title": "Microsoft.SaveEntity",
@@ -1023,7 +1080,7 @@
             ]
         },
         "Microsoft.ILanguagePolicy": {
-            "title": "Microsoft Language Policy",
+            "title": "Microsoft ILanguagePolicy",
             "description": "Union of components which implement the ILanguagePolicy interface",
             "$role": "unionType",
             "oneOf": [
@@ -1031,10 +1088,6 @@
                     "title": "Microsoft.LanguagePolicy",
                     "description": "This represents a dialog which gathers a DateTime in a specified range",
                     "$ref": "#/definitions/Microsoft.LanguagePolicy"
-                },
-                {
-                    "type": "string",
-                    "title": "string"
                 }
             ]
         },
@@ -1049,9 +1102,9 @@
                     "$ref": "#/definitions/Microsoft.LuisRecognizer"
                 },
                 {
-                    "title": "Microsoft.MultiLanguageRecognizers",
+                    "title": "Microsoft.MultiLanguageRecognizer",
                     "description": "Recognizer which allows you to configure the recognizer per language, and to define the policy for using them",
-                    "$ref": "#/definitions/Microsoft.MultiLanguageRecognizers"
+                    "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
                 },
                 {
                     "title": "Microsoft.QnaMakerRecognizer",
@@ -1185,9 +1238,6 @@
                     "description": "Step to execute if expression is false."
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -1204,7 +1254,8 @@
                     "title": "Type",
                     "required": [
                         "expression",
-                        "ifTrue"
+                        "ifTrue",
+                        "$type"
                     ]
                 }
             ]
@@ -1260,9 +1311,6 @@
                     }
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -1278,7 +1326,8 @@
                 {
                     "title": "Type",
                     "required": [
-                        "conditionals"
+                        "conditionals",
+                        "$type"
                     ]
                 }
             ]
@@ -1382,8 +1431,19 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "$type"
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
             ]
         },
         "Microsoft.IntentRule": {
@@ -1446,9 +1506,6 @@
                     }
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -1465,7 +1522,8 @@
                     "title": "Type",
                     "required": [
                         "intent",
-                        "steps"
+                        "steps",
+                        "$type"
                     ]
                 }
             ]
@@ -1502,8 +1560,19 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "$type"
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
             ]
         },
         "Microsoft.LuisRecognizer": {
@@ -1545,9 +1614,6 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -1565,12 +1631,13 @@
                     "required": [
                         "applicationId",
                         "endpoint",
-                        "endpointKey"
+                        "endpointKey",
+                        "$type"
                     ]
                 }
             ]
         },
-        "Microsoft.MultiLanguageRecognizers": {
+        "Microsoft.MultiLanguageRecognizer": {
             "$role": "unionType(Microsoft.IRecognizer)",
             "title": "Multi Language Recognizer",
             "description": "Recognizer which allows you to configure the recognizer per language, and to define the policy for using them",
@@ -1581,7 +1648,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.MultiLanguageRecognizers"
+                    "const": "Microsoft.MultiLanguageRecognizer"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -1612,9 +1679,6 @@
                     }
                 }
             },
-            "required": [
-                "$type"
-            ],
             "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
@@ -1631,7 +1695,8 @@
                 {
                     "title": "Type",
                     "required": [
-                        "recognizers"
+                        "recognizers",
+                        "$type"
                     ]
                 }
             ]
@@ -1639,9 +1704,6 @@
         "Microsoft.NoMatchRule": {
             "title": "No Match Rule",
             "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
-            "required": [
-                "$type"
-            ],
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -1704,7 +1766,8 @@
                 {
                     "title": "Type",
                     "required": [
-                        "steps"
+                        "steps",
+                        "$type"
                     ]
                 }
             ]
@@ -1750,9 +1813,6 @@
                     ]
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -1769,7 +1829,8 @@
                     "title": "Type",
                     "required": [
                         "applicationId",
-                        "endpoint"
+                        "endpoint",
+                        "$type"
                     ]
                 }
             ]
@@ -1808,9 +1869,6 @@
                     }
                 }
             },
-            "required": [
-                "$type"
-            ],
             "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
@@ -1827,12 +1885,13 @@
                 {
                     "title": "Type",
                     "required": [
-                        "intents"
+                        "intents",
+                        "$type"
                     ]
                 }
             ]
         },
-        "Microsoft.ReplaceWithDialog": {
+        "Microsoft.ReplaceDialog": {
             "$role": "unionType(Microsoft.IDialog)",
             "type": "object",
             "title": "Replace Dialog",
@@ -1844,7 +1903,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.ReplaceWithDialog"
+                    "const": "Microsoft.ReplaceDialog"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -1883,8 +1942,19 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "$type"
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
             ]
         },
         "Microsoft.Rule": {
@@ -1930,9 +2000,6 @@
                     }
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -1949,7 +2016,8 @@
                     "title": "Type",
                     "required": [
                         "events",
-                        "steps"
+                        "steps",
+                        "$type"
                     ]
                 }
             ]
@@ -1991,9 +2059,6 @@
                     "description": "Memory expression of the property to save as an entity."
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -2010,7 +2075,8 @@
                     "title": "Type",
                     "required": [
                         "property",
-                        "entity"
+                        "entity",
+                        "$type"
                     ]
                 }
             ]
@@ -2053,8 +2119,19 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "$type"
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
             ]
         },
         "Microsoft.SendList": {
@@ -2099,9 +2176,6 @@
                     "description": "Memory expression for the item"
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -2119,7 +2193,8 @@
                     "required": [
                         "listProperty",
                         "messageTemplate",
-                        "itemTemplate"
+                        "itemTemplate",
+                        "$type"
                     ]
                 }
             ]
@@ -2199,9 +2274,6 @@
                     "description": "Step to execute if expression is true."
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -2218,7 +2290,8 @@
                     "title": "Type",
                     "required": [
                         "expression",
-                        "ifTrue"
+                        "ifTrue",
+                        "$type"
                     ]
                 }
             ]
@@ -2314,8 +2387,19 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "$type"
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
             ]
         },
         "Microsoft.WelcomeRule": {
@@ -2323,9 +2407,6 @@
             "title": "Welcome Rule",
             "description": "Defines a sequence of steps to take if the user is a new user",
             "type": "object",
-            "required": [
-                "$type"
-            ],
             "additionalProperties": false,
             "properties": {
                 "$type": {
@@ -2386,7 +2467,8 @@
                 {
                     "title": "Type",
                     "required": [
-                        "steps"
+                        "steps",
+                        "$type"
                     ]
                 }
             ]

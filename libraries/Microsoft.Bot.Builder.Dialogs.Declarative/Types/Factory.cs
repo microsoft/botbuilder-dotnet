@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.BeginDialog", typeof(BeginDialog));
             Register("Microsoft.CancelDialog", typeof(CancelDialog));
             Register("Microsoft.EndDialog", typeof(EndDialog));
-            Register("Microsoft.ReplaceWithDialog", typeof(ReplaceWithDialog));
+            Register("Microsoft.ReplaceDialog", typeof(ReplaceDialog));
             Register("Microsoft.IfCondition", typeof(IfCondition));
             Register("Microsoft.SwitchCondition", typeof(SwitchCondition));
             Register("Microsoft.SendActivity", typeof(SendActivity));
