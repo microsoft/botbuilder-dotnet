@@ -1,5 +1,5 @@
-# Declarative Dialog and prompts  BOM - //BUILD 2019
-**doc status: draft (review is needed)**
+# Declarative Dialog and Prompts  BOM - //BUILD 2019
+**Doc status: draft (review is needed)**
 
 **Ship vehicle:** 4.x-preview
 
@@ -42,7 +42,7 @@ We will support the following rules (within Adaptive Dialog) in declarative form
 | IfPropertyRule                |<ul><li>- [x] </li></ul>|                                                                                                         |
 | IntentRule                    |<ul><li>- [x] </li></ul>|                                                                                                         |
 | WelcomeRule                   |<ul><li>- [x] </li></ul>|                                                                                                         |
-| AdaptiveRule (base class)     |<ul><li>- NA  </li></ul>| Not being used in declarative form                                                                      |
+| AdaptiveRule (base class)     |<ul><li>  NA  </li></ul>| Not being used in declarative form                                                                      |
 
 
 **Declarative Dialogs** in scope for //Build
@@ -81,16 +81,19 @@ We will support the following input wrappers (over SDK prompts) in declarative f
 | EndDialog             |<ul><li>- [x] </li></ul>|                                                                     |
 | ReplaceWithDialog     |<ul><li>- [x] </li></ul>|                                                                     |
 | CancelDialog          |<ul><li>- [x] </li></ul>|                                                                     |
-| RepeatWithDialog      |<ul><li>- [x] </li></ul>|                                                                     |
+| RepeatWithDialog      |<ul><li>- [ ] </li></ul>|                                                                     |
 | CodeStep              |<ul><li>- [ ] </li></ul>| Do we want to support for Declarative (if so when?)                 |
 | EditArray             |<ul><li>- [x] </li></ul>|                                                                     |
 | SaveEntity            |<ul><li>- [x] </li></ul>|                                                                     |
+| SetProperty           |<ul><li>- [x] </li></ul>| Need to figure right name compare to SaveEntity/SetProperty         |
 | DeleteProperty        |<ul><li>- [x] </li></ul>| Need to figure right name compare to SaveEntity                     |
 | IfCondition           |<ul><li>- [x] </li></ul>|                                                                     |
 | HttpRequest           |<ul><li>- [x] </li></ul>|                                                                     |
 | SendActivity          |<ul><li>- [x] </li></ul>|                                                                     |
-| EmitEvent             |<ul><li>- [x] </li></ul>| Do we want to support this in declarative?                          |
+| EmitEvent             |<ul><li>- [ ] </li></ul>| Do we want to support this in declarative?                          |
 | EndTurn               |<ul><li>- [x] </li></ul>|                                                                     |
+| SwitchCondision       |<ul><li>- [ ] </li></ul>|                                                                     |
+
 
 
 ### Prompt wrappers 
@@ -104,8 +107,7 @@ We will support the following input wrappers (over SDK prompts) in declarative f
 | dateInput             |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|                                     |
 | timeInput             |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|                                     |
 | attachmentInput       |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|                                     |
-| ~~OAuthPrompt~~       |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|                                     |
-| ~~ActivityPrompt~~    |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|                                     |
+
 
 
 ### Documentation
@@ -120,4 +122,3 @@ We will support the following input wrappers (over SDK prompts) in declarative f
 ### Samples
 TBD
 Declarative sample per type(?)
-
