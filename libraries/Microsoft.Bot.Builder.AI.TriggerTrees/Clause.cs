@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Expressions;
 
 namespace Microsoft.Bot.Builder.AI.TriggerTrees
 {
@@ -100,7 +97,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 foreach (var shortPredicate in shorter.Predicates)
                 {
                     var shorterRel = RelationshipType.Incomparable;
-                    if (!IsIgnore(shortPredicate))
+                    if (shortPredicate.Type != TriggerTree.Ignore)
                     {
                         foreach (var longPredicate in longer.Predicates)
                         {
@@ -215,8 +212,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         {
             if (soFar == RelationshipType.Equal)
             {
-                var shortIgnores = shorterClause.Predicates.Where(p => IsIgnore(p));
-                var longIgnores = longerClause.Predicates.Where(p => IsIgnore(p));
+                var shortIgnores = shorterClause.Predicates.Where(p => p.Type != TriggerTree.Ignore);
+                var longIgnores = longerClause.Predicates.Where(p => p.Type != TriggerTree.Ignore);
                 var swapped = false;
                 if (longIgnores.Count() < shortIgnores.Count())
                 {
@@ -228,7 +225,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
 
                 foreach (var shortPredicate in shortIgnores)
                 {
-                    bool found = false;
+                    var found = false;
                     foreach (var longPredicate in longIgnores)
                     {
                         if (shortPredicate.DeepEquals(longPredicate))
@@ -261,24 +258,19 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
 
         private RelationshipType Relationship(Expression expr, Expression other, Dictionary<string, IPredicateComparer> comparers)
         {
-            RelationshipType relationship = RelationshipType.Incomparable;
+            var relationship = RelationshipType.Incomparable;
             var root = expr;
             var rootOther = other;
-            if (expr.NodeType == ExpressionType.Not && other.NodeType == ExpressionType.Not)
+            if (expr.Type == ExpressionType.Not && other.Type == ExpressionType.Not)
             {
-                root = ((UnaryExpression)expr).Operand;
-                rootOther = ((UnaryExpression)other).Operand;
+                root = expr.Children[0];
+                rootOther = other.Children[0];
 
             }
             IPredicateComparer comparer = null;
-            if (root.NodeType == ExpressionType.Call && rootOther.NodeType == ExpressionType.Call)
+            if (root.Type == other.Type)
             {
-                var name = ((MethodCallExpression)root).Method.Name;
-                var nameOther = ((MethodCallExpression)rootOther).Method.Name;
-                if (name == nameOther)
-                {
-                    comparers.TryGetValue(name, out comparer);
-                }
+                comparers.TryGetValue(root.Type, out comparer);
             }
             if (comparer != null)
             {
@@ -291,15 +283,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             return relationship;
         }
 
-        private static readonly MethodInfo IGNORE = typeof(TriggerTree).GetMethod("Ignore");
-        private int PredicateCount()
-        {
-            return Predicates.Count(e => !IsIgnore(e));
-        }
-
-        private bool IsIgnore(Expression expression)
-        {
-            return expression is MethodCallExpression call && call.Method == IGNORE;
-        }
+        private int PredicateCount() => Predicates.Count(e => e.Type != TriggerTree.Ignore);
     }
 }

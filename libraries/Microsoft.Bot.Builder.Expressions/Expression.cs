@@ -51,11 +51,16 @@ namespace Microsoft.Bot.Builder.Expressions
         public Expression(string type, ExpressionEvaluator evaluator = null, params Expression[] children)
         {
             Type = type;
-            _evaluator = evaluator ?? BuiltInFunctions.Lookup(type);
+            Evaluator = evaluator ?? BuiltInFunctions.Lookup(type);
             Children = children;
         }
 
+        /// <summary>
+        /// Type of expression.
+        /// </summary>
         public string Type { get; }
+
+        public ExpressionEvaluator Evaluator { get; }
 
         /// <summary>
         /// Children expressions.
@@ -65,14 +70,14 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <summary>
         /// Expected result of evaluating expression.
         /// </summary>
-        public ReturnType ReturnType { get { return _evaluator.ReturnType; } }
+        public ReturnType ReturnType { get { return Evaluator.ReturnType; } }
 
         /// <summary>
         /// Validate immediate expression.
         /// </summary>
         public void Validate()
         {
-            _evaluator.ValidateExpression(this);
+            Evaluator.ValidateExpression(this);
         }
 
         /// <summary>
@@ -95,7 +100,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// </param>
         /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
         public (object value, string error) TryEvaluate(object state)
-            => _evaluator.TryEvaluate(this, state);
+            => Evaluator.TryEvaluate(this, state);
 
         public override string ToString()
         {
@@ -124,8 +129,6 @@ namespace Microsoft.Bot.Builder.Expressions
             builder.Append(')');
             return builder.ToString();
         }
-
-        protected ExpressionEvaluator _evaluator { get; }
 
         /// <summary>
         /// Make an expression and validate it.

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Expressions;
 
 namespace Microsoft.Bot.Builder.AI.TriggerTrees
@@ -18,9 +13,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// <summary>
         /// Original trigger expression.
         /// </summary>
-        public string OriginalExpression;
+        public Expression OriginalExpression;
 
-        private IParseTree _parse;
         private TriggerTree _tree;
         private IEnumerable<Quantifier> _quantifiers;
         private List<Clause> _clauses;
@@ -33,7 +27,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// <summary>
         /// Expressions are converted into Disjunctive Normal Form where ! is pushed to the leaves and there is an implicit || between clauses and && within a clause. 
         /// </summary>
-        public IReadOnlyList<Clause> Clauses { get { return _clauses; } }
+        public IReadOnlyList<Clause> Clauses => _clauses;
 
         /// <summary>
         /// Construct a trigger expression.
@@ -42,16 +36,15 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// <param name="expression">Expression for when the trigger action is possible.</param>
         /// <param name="action">Action to take when a trigger matches.</param>
         /// <param name="quantifiers">Quantifiers to dynamically expand the expression.</param>
-        internal Trigger(TriggerTree tree, string expression, object action, params Quantifier[] quantifiers)
+        internal Trigger(TriggerTree tree, Expression expression, object action, params Quantifier[] quantifiers)
         {
-            _parse = new ExpressionEngine().Parse(expression);
             _tree = tree;
             Action = action;
             OriginalExpression = expression;
             _quantifiers = quantifiers;
             if (expression != null)
             {
-                var notNormalized = PushDownNot(_parse, false);
+                var notNormalized = PushDownNot(expression, false);
                 _clauses = GenerateClauses(notNormalized).ToList();
                 RemoveDuplicatedPredicates();
                 OptimizeClauses();
@@ -181,94 +174,81 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             }
         }
 
+        private Expression MakeExpression(string type, Expression expression) => Expression.MakeExpression(type, null, expression.Children);
+
         // Push not down to leaves using De Morgan's rule
-        private Expression PushDownNot(IParseTree expression, bool inNot)
+        private Expression PushDownNot(Expression expression, bool inNot)
         {
-            var e = new Parse
             Expression newExpr = expression;
-            var unary = expression as UnaryExpression;
-            var binary = expression as BinaryExpression;
-            switch (expression.NodeType)
+            switch (expression.Type)
             {
-                case ExpressionType.AndAlso:
+                case ExpressionType.And:
                     {
                         if (inNot)
                         {
-                            newExpr = System.Linq.Expressions.Expression.OrElse(PushDownNot(binary.Left, true), PushDownNot(binary.Right, true));
+                            newExpr = Expression.MakeExpression(ExpressionType.Or, null, (from child in expression.Children select PushDownNot(child, true)).ToArray());
                         }
                         else
                         {
-                            newExpr = System.Linq.Expressions.Expression.AndAlso(PushDownNot(binary.Left, false), PushDownNot(binary.Right, false));
+                            newExpr = Expression.MakeExpression(ExpressionType.And, null, (from child in expression.Children select PushDownNot(child, false)).ToArray());
                         }
                     }
                     break;
-                case ExpressionType.OrElse:
+                case ExpressionType.Or:
                     {
                         if (inNot)
                         {
-                            newExpr = System.Linq.Expressions.Expression.AndAlso(PushDownNot(binary.Left, true), PushDownNot(binary.Right, true));
+                            newExpr = Expression.MakeExpression(ExpressionType.And, null, (from child in expression.Children select PushDownNot(child, true)).ToArray());
                         }
                         else
                         {
-                            newExpr = System.Linq.Expressions.Expression.OrElse(PushDownNot(binary.Left, false), PushDownNot(binary.Right, false));
+                            newExpr = Expression.MakeExpression(ExpressionType.Or, null, (from child in expression.Children select PushDownNot(child, false)).ToArray());
                         }
                     }
                     break;
                 case ExpressionType.Not:
-                    newExpr = PushDownNot(((UnaryExpression)expression).Operand, !inNot);
+                    newExpr = PushDownNot(expression.Children[0], !inNot);
                     break;
                 // Rewrite comparison operators
                 case ExpressionType.LessThan:
                     if (inNot)
                     {
-                        newExpr = Expression.GreaterThanOrEqual(binary.Left, binary.Right);
+                        newExpr = MakeExpression(ExpressionType.GreaterThanOrEqual, expression);
                     }
                     break;
                 case ExpressionType.LessThanOrEqual:
                     if (inNot)
                     {
-                        newExpr = Expression.GreaterThan(binary.Left, binary.Right);
+                        newExpr = MakeExpression(ExpressionType.GreaterThan, expression);
                     }
                     break;
                 case ExpressionType.Equal:
                     if (inNot)
                     {
-                        newExpr = Expression.NotEqual(binary.Left, binary.Right);
+                        newExpr = MakeExpression(ExpressionType.NotEqual, expression);
                     }
                     break;
                 case ExpressionType.GreaterThanOrEqual:
                     if (inNot)
                     {
-                        newExpr = Expression.LessThan(binary.Left, binary.Right);
+                        newExpr = MakeExpression(ExpressionType.LessThan, expression);
                     }
                     break;
                 case ExpressionType.GreaterThan:
                     if (inNot)
                     {
-                        newExpr = Expression.LessThanOrEqual(binary.Left, binary.Right);
+                        newExpr = MakeExpression(ExpressionType.LessThanOrEqual, expression);
                     }
                     break;
-                case ExpressionType.Call:
-                    {
-                        var special = TriggerTree.GetOptional(expression) ?? TriggerTree.GetIgnore(expression);
-                        if (special != null)
-                        {
-                            // Pass not through optional/ignore
-                            newExpr = Expression.Call(special.Method, PushDownNot(special.Arguments[0], inNot));
-                        }
-                        else
-                        {
-                            if (inNot)
-                            {
-                                newExpr = Expression.Not(expression);
-                            }
-                        }
-                    }
+                case TriggerTree.Optional:
+                case TriggerTree.Ignore:
+                    // Pass through optional/ignore
+                    newExpr = MakeExpression(expression.Type, PushDownNot(expression.Children[0], inNot));
                     break;
                 default:
                     if (inNot)
                     {
-                        newExpr = Expression.Not(expression);
+                        newExpr = Expression.MakeExpression(ExpressionType.Not, null, expression);
                     }
                     break;
             }
@@ -277,16 +257,14 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
 
         private IEnumerable<Expression> OrLeaves(Expression expression)
         {
-            if (expression.NodeType == ExpressionType.OrElse)
+            if (expression.Type == ExpressionType.Or)
             {
-                var or = (BinaryExpression)expression;
-                foreach (var leaf in OrLeaves(or.Left))
+                foreach (var child in expression.Children)
                 {
-                    yield return leaf;
-                }
-                foreach (var leaf in OrLeaves(or.Right))
-                {
-                    yield return leaf;
+                    foreach (var leaf in OrLeaves(child))
+                    {
+                        yield return leaf;
+                    }
                 }
             }
             else
@@ -297,50 +275,60 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
 
         private IEnumerable<Clause> GenerateClauses(Expression expression)
         {
-            var binary = expression as BinaryExpression;
-            switch (expression.NodeType)
+            switch (expression.Type)
             {
-                case ExpressionType.AndAlso:
+                case ExpressionType.And:
                     {
-                        var rightClauses = GenerateClauses(binary.Right);
-                        foreach (var left in GenerateClauses(binary.Left))
+                        // Need to combine every combination of clauses
+                        var soFar = new List<Clause>();
+                        var first = true;
+                        foreach (var child in expression.Children)
                         {
-                            foreach (var right in rightClauses)
+                            var clauses = GenerateClauses(child);
+                            if (first)
                             {
-                                var clause = new Clause();
-                                clause.Predicates.AddRange(left.Predicates);
-                                clause.Predicates.AddRange(right.Predicates);
+                                soFar.AddRange(clauses);
+                                first = false;
+                            }
+                            else
+                            {
+                                var newClauses = new List<Clause>();
+                                foreach (var old in soFar)
+                                {
+                                    foreach (var clause in clauses)
+                                    {
+                                        var newClause = new Clause();
+                                        newClause.Predicates.AddRange(old.Predicates);
+                                        newClause.Predicates.AddRange(clause.Predicates);
+                                        newClauses.Add(newClause);
+                                    }
+                                }
+                                soFar = newClauses;
+                            }
+                        }
+                        foreach (var clause in soFar)
+                        {
+                            yield return clause;
+                        }
+                    }
+                    break;
+                case ExpressionType.Or:
+                    {
+                        foreach (var child in expression.Children)
+                        {
+                            foreach (var clause in GenerateClauses(child))
+                            {
                                 yield return clause;
                             }
                         }
                     }
                     break;
-                case ExpressionType.OrElse:
+                case TriggerTree.Optional:
                     {
-                        foreach (var left in GenerateClauses(binary.Left))
+                        yield return new Clause();
+                        foreach (var clause in GenerateClauses(expression.Children[0]))
                         {
-                            yield return left;
-                        }
-                        foreach (var right in GenerateClauses(binary.Right))
-                        {
-                            yield return right;
-                        }
-                    }
-                    break;
-                case ExpressionType.Call:
-                    {
-                        var optional = TriggerTree.GetOptional(expression);
-                        if (optional != null)
-                        {
-                            yield return new Clause();
-                            foreach (var clause in GenerateClauses(optional.Arguments[0]))
-                            {
-                                yield return clause;
-                            }
-                        }
-                        else
-                        {
-                            yield return new Clause(expression);
+                            yield return clause;
                         }
                     }
                     break;
@@ -443,75 +431,32 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             }
         }
 
-        private Expression SubstituteVariable(string variable, string binding, Expression expression, ref bool changed)
+        private Expression SubstituteVariable(string variable, string binding, Expression expression, out bool changed)
         {
             var newExpr = expression;
-            var unary = expression as UnaryExpression;
-            var binary = expression as BinaryExpression;
-            switch (expression.NodeType)
+            changed = false;
+            if (expression.Type == ExpressionType.Accessor
+                && expression.Children.Count() == 1
+                && expression.Children[0] is Constant cnst
+                && cnst.Value is string str
+                && str == variable)
             {
-                case ExpressionType.Call:
-                    {
-                        var call = (MethodCallExpression)expression;
-                        var args = new List<Expression>();
-                        foreach (var arg in call.Arguments)
-                        {
-                            args.Add(SubstituteVariable(variable, binding, arg, ref changed));
-                        }
-                        newExpr = System.Linq.Expressions.Expression.Call(call.Object, call.Method, args);
-                    }
-                    break;
-                case ExpressionType.Not:
-                    newExpr = System.Linq.Expressions.Expression.Not(SubstituteVariable(variable, binding, unary.Operand, ref changed));
-                    break;
-                case ExpressionType.LessThan:
-                    newExpr = System.Linq.Expressions.Expression.LessThan(
-                        SubstituteVariable(variable, binding, binary.Left, ref changed),
-                        SubstituteVariable(variable, binding, binary.Right, ref changed));
-                    break;
-                case ExpressionType.LessThanOrEqual:
-                    newExpr = System.Linq.Expressions.Expression.LessThanOrEqual(
-                        SubstituteVariable(variable, binding, binary.Left, ref changed),
-                        SubstituteVariable(variable, binding, binary.Right, ref changed));
-                    break;
-                case ExpressionType.Equal:
-                    newExpr = System.Linq.Expressions.Expression.Equal(
-                        SubstituteVariable(variable, binding, binary.Left, ref changed),
-                        SubstituteVariable(variable, binding, binary.Right, ref changed));
-                    break;
-                case ExpressionType.NotEqual:
-                    newExpr = System.Linq.Expressions.Expression.NotEqual(
-                        SubstituteVariable(variable, binding, binary.Left, ref changed),
-                        SubstituteVariable(variable, binding, binary.Right, ref changed));
-                    break;
-                case ExpressionType.GreaterThan:
-                    newExpr = System.Linq.Expressions.Expression.GreaterThan(
-                        SubstituteVariable(variable, binding, binary.Left, ref changed),
-                        SubstituteVariable(variable, binding, binary.Right, ref changed));
-                    break;
-                case ExpressionType.GreaterThanOrEqual:
-                    newExpr = System.Linq.Expressions.Expression.GreaterThanOrEqual(
-                        SubstituteVariable(variable, binding, binary.Left, ref changed),
-                        SubstituteVariable(variable, binding, binary.Right, ref changed));
-                    break;
-                case ExpressionType.Constant:
-                    {
-                        var constant = (ConstantExpression)expression;
-                        if (constant.Type == typeof(string) && (string)constant.Value == variable)
-                        {
-                            newExpr = System.Linq.Expressions.Expression.Constant(binding);
-                            changed = true;
-                        }
-                    }
-                    break;
-                case ExpressionType.Convert:
-                    newExpr = System.Linq.Expressions.Expression.Convert(SubstituteVariable(variable, binding, unary.Operand, ref changed), unary.Type);
-                    break;
-                case ExpressionType.ConvertChecked:
-                    newExpr = System.Linq.Expressions.Expression.ConvertChecked(SubstituteVariable(variable, binding, unary.Operand, ref changed), unary.Type);
-                    break;
-                default:
-                    break;
+                cnst.Value = binding;
+                newExpr = cnst;
+                changed = true;
+            }
+            else
+            {
+                var children = new List<Expression>();
+                foreach (var child in expression.Children)
+                {
+                    children.Add(SubstituteVariable(variable, binding, child, out bool childChanged));
+                    changed = changed || childChanged;
+                }
+                if (changed)
+                {
+                    newExpr = new Expression(expression.Type, expression.Evaluator, children.ToArray());
+                }
             }
             return newExpr;
         }
@@ -527,8 +472,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     {
                         foreach (var binding in quantifier.Bindings)
                         {
-                            var changed = false;
-                            var newPredicate = SubstituteVariable(quantifier.Variable, binding, predicate, ref changed);
+                            var newPredicate = SubstituteVariable(quantifier.Variable, binding, predicate, out bool changed);
                             newClause.Predicates.Add(newPredicate);
                             if (!changed)
                             {
@@ -543,8 +487,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     // Empty quantifier is trivially true so remove any predicate that refers to quantifier
                     foreach (var predicate in clause.Predicates)
                     {
-                        var changed = false;
-                        SubstituteVariable(quantifier.Variable, string.Empty, predicate, ref changed);
+                        SubstituteVariable(quantifier.Variable, string.Empty, predicate, out bool changed);
                         if (!changed)
                         {
                             newClause.Predicates.Add(predicate);
@@ -563,7 +506,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                         var newClause = new Clause(clause);
                         foreach (var predicate in clause.Predicates)
                         {
-                            var newPredicate = SubstituteVariable(quantifier.Variable, binding, predicate, ref changed);
+                            var newPredicate = SubstituteVariable(quantifier.Variable, binding, predicate, out bool predicateChanged);
+                            changed = changed || predicateChanged;
                             newClause.Predicates.Add(newPredicate);
                         }
                         if (changed)
@@ -583,9 +527,10 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     var changed = false;
                     foreach (var predicate in clause.Predicates)
                     {
-                        SubstituteVariable(quantifier.Variable, string.Empty, predicate, ref changed);
-                        if (changed)
+                        SubstituteVariable(quantifier.Variable, string.Empty, predicate, out bool predicateChanged);
+                        if (predicateChanged)
                         {
+                            changed = true;
                             break;
                         }
                     }

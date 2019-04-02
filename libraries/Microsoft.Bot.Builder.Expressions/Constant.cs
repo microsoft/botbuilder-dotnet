@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Expressions
             }
             set
             {
-                _evaluator.ReturnType =
+                Evaluator.ReturnType =
                       (value is string ? ReturnType.String
                       : value.IsNumber() ? ReturnType.Number
                       : value is Boolean ? ReturnType.Boolean

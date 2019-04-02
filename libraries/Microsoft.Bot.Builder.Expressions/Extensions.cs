@@ -48,6 +48,39 @@ namespace Microsoft.Bot.Builder.Expressions
         }
 
         /// <summary>
+        /// Do a deep equality between expressions.
+        /// </summary>
+        /// <param name="expr">Base expression.</param>
+        /// <param name="other">Other expression.</param>
+        /// <returns>True if expressions are the same.</returns>
+        public static bool DeepEquals(this Expression expr, Expression other)
+        {
+            bool eq = true;
+            if (expr != null && other != null)
+            {
+                eq = expr.Type == other.Type;
+                if (eq)
+                {
+                    if (expr.Type == ExpressionType.Constant)
+                    {
+                        var val = ((Constant)expr).Value;
+                        var otherVal = ((Constant)other).Value;
+                        eq = val.Equals(otherVal);
+                    }
+                    else
+                    {
+                        eq = expr.Children.Count() == other.Children.Count();
+                        for (var i = 0; eq && i < expr.Children.Count(); ++i)
+                        {
+                            eq = expr.Children[i].DeepEquals(other.Children[i]);
+                        }
+                    }
+                }
+            }
+            return eq;
+        }
+
+        /// <summary>
         /// Return the static reference paths to memory.
         /// </summary>
         /// <remarks>
