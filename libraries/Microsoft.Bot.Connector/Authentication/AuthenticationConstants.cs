@@ -11,6 +11,13 @@ namespace Microsoft.Bot.Connector.Authentication
     public static class AuthenticationConstants
     {
         /// <summary>
+        /// TO CHANNEL FROM BOT: Login URL.
+        ///
+        /// DEPRECATED. For binary compat only.
+        /// </summary>
+        public const string ToChannelFromBotLoginUrl = "https://login.microsoftonline.com/botframework.com";
+
+        /// <summary>
         /// TO CHANNEL FROM BOT: Login URL template string. Bot developer may specify
         /// which tenant to obtain an access token from. By default, the channels only
         /// accept tokens from "botframework.com". For more details see https://aka.ms/bots/tenant-restriction
