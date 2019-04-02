@@ -11,8 +11,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text;
+using Microsoft.Bot.Builder.Expressions;
 
 namespace Microsoft.Bot.Builder.AI.TriggerTrees
 {
@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// <summary>
         /// All of the most specific triggers that contain the <see cref="Clause"/> in this node.
         /// </summary>
-        public IReadOnlyList<Trigger> Triggers { get { return _triggers; } }
+        public IReadOnlyList<Trigger> Triggers => _triggers; 
 
         /// <summary>
         /// All triggers that contain the <see cref="Clause"/> in this node. 
@@ -35,17 +35,22 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// then the second trigger would be in AllTriggers, but not Triggers because it 
         /// is more general.
         /// </remarks>
-        public IReadOnlyList<Trigger> AllTriggers { get { return _allTriggers; } }
+        public IReadOnlyList<Trigger> AllTriggers => _allTriggers;
 
         /// <summary>
         /// Specialized children of this node.
         /// </summary>
-        public IReadOnlyList<Node> Specializations { get { return _specializations; } }
+        public IReadOnlyList<Node> Specializations => _specializations; 
 
         /// <summary>
         /// The logical conjunction this node represents.
         /// </summary>
         public Clause Clause { get; }
+
+        /// <summary>
+        /// Expression to evaluate for node.
+        /// </summary>
+        public Expression Expression { get; }
 
         /// <summary>
         /// The tree this node is found in.
@@ -55,7 +60,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         private List<Trigger> _allTriggers = new List<Trigger>();
         private List<Trigger> _triggers = new List<Trigger>();
         private List<Node> _specializations = new List<Node>();
-        private readonly Evaluator _evaluator;
 
 #if Count
         private static int _count = 0;
@@ -75,29 +79,23 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 _triggers.Add(trigger);
                 if (Clause != null)
                 {
-                    var firstPredicate = true;
-                    Expression body = null;
-                    foreach (var clausePredicate in Clause.Predicates)
+                    var children = new List<Expression>();
+                    foreach (var child in Clause.Children)
                     {
-                        var predicate = clausePredicate;
-                        var ignore = TriggerTree.GetIgnore(predicate);
-                        if (ignore != null)
+                        var predicate = child;
+                        if (predicate.Type == TriggerTree.Ignore)
                         {
-                            predicate = ignore.Arguments[0];
+                            predicate = child.Children[0];
                         }
-                        if (firstPredicate)
-                        {
-                            firstPredicate = false;
-                            body = predicate;
-                        }
-                        else
-                        {
-                            body = Expression.AndAlso(body, predicate);
-                        }
+                        children.Add(child);
                     }
-                    if (body != null)
+                    if (children.Any())
                     {
-                        _evaluator = Expression.Lambda<Evaluator>(body, trigger.OriginalExpression.Parameters).Compile();
+                        Expression = Expression.MakeExpression(ExpressionType.And, null, children.ToArray());
+                    }
+                    else
+                    {
+                        Expression = Expression.ConstantExpression(true);
                     }
                 }
             }
@@ -110,20 +108,18 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             return builder.ToString();
         }
 
-        public void ToString(StringBuilder builder, int indent = 0)
-        {
-            Clause.ToString(builder, indent);
-        }
+        public void ToString(StringBuilder builder, int indent = 0) 
+            => Clause.ToString(builder, indent);
 
         /// <summary>
         /// Return the most specific matches below this node.
         /// </summary>
-        /// <param name="frame">Frame to evaluate against.</param>
+        /// <param name="state">Frame to evaluate against.</param>
         /// <returns>List of the most specific matches found.</returns>
-        internal IReadOnlyList<Node> Matches(IDictionary<string, object> frame)
+        internal IReadOnlyList<Node> Matches(object state)
         {
             var matches = new List<Node>();
-            Matches(frame, matches, new Dictionary<Node, bool>());
+            Matches(state, matches, new Dictionary<Node, bool>());
             return matches;
         }
 
@@ -133,12 +129,11 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// <param name="other"></param>
         /// <returns>Relationship between this node and the other.</returns>
         public RelationshipType Relationship(Node other)
-        {
-            return Clause.Relationship(other.Clause, Tree.Comparers);
-        }
+            => Clause.Relationship(other.Clause, Tree.Comparers);
 
         private enum Operation { None, Found, Added, Removed, Inserted };
 
+#pragma warning disable IDE0022
         internal bool AddNode(Node triggerNode)
         {
 #if TraceTree
@@ -151,6 +146,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
 #endif
             return AddNode(triggerNode, new Dictionary<Node, Operation>()) == Operation.Added;
         }
+#pragma warning restore IDE0022
 
         internal bool RemoveTrigger(Trigger trigger)
         {
@@ -187,7 +183,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     case RelationshipType.Equal:
                         {
                             // Ensure action is not already there
-                            bool found = false;
+                            var found = false;
                             foreach (var existing in _allTriggers)
                             {
                                 if (trigger.Action != null && trigger.Action.Equals(existing.Action))
@@ -258,7 +254,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                         break;
                     case RelationshipType.Generalizes:
                         {
-                            bool foundOne = false;
+                            var foundOne = false;
                             List<Node> removals = null;
 #if TraceTree
                             if (Node.ShowTrace) ++Debug.IndentLevel;
@@ -327,6 +323,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         }
 
 #if DEBUG
+#pragma warning disable IDE0022
         private bool CheckInvariants()
         {
 #if VerifyTree
@@ -381,13 +378,14 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
 #endif
             return true;
         }
+#pragma warning restore IDE0022
 #endif
 
         private bool AddSpecialization(Node specialization)
         {
             var added = false;
             List<Node> removals = null;
-            bool skip = false;
+            var skip = false;
             foreach (var child in _specializations)
             {
                 var reln = specialization.Relationship(child);
@@ -496,14 +494,14 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             return op;
         }
 
-        private bool Matches(IDictionary<string, object> memory, List<Node> matches, Dictionary<Node, bool> matched)
+        private bool Matches(object state, List<Node> matches, Dictionary<Node, bool> matched)
         {
-            if (!matched.TryGetValue(this, out bool found))
+            if (!matched.TryGetValue(this, out var found))
             {
                 found = false;
                 foreach (var child in _specializations)
                 {
-                    if (child.Matches(memory, matches, matched))
+                    if (child.Matches(state, matches, matched))
                     {
                         found = true;
                     }
@@ -511,7 +509,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 // No child matched so we might
                 if (!found)
                 {
-                    if (_evaluator == null ? Triggers.Any() : _evaluator(memory))
+                    var (value, error) = Expression.TryEvaluate(state);
+                    if (error != null && value is bool match && match && Triggers.Any())
                     {
                         matches.Add(this);
                         found = true;

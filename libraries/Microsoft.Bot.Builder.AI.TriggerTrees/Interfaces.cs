@@ -4,13 +4,6 @@ using Microsoft.Bot.Builder.Expressions;
 namespace Microsoft.Bot.Builder.AI.TriggerTrees
 {
     /// <summary>
-    /// Delegate to test memory to see if a trigger expression is true.
-    /// </summary>
-    /// <param name="memory"></param>
-    /// <returns></returns>
-    public delegate bool Evaluator(IDictionary<string, object> memory);
-
-    /// <summary>
     /// Optimize a clause by rewriting it.
     /// </summary>
     /// <remarks>

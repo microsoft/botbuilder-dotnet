@@ -152,7 +152,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             builder.Append(' ', indent);
             if (_clauses.Any())
             {
-                bool first = true;
+                var first = true;
                 foreach (var clause in _clauses)
                 {
                     if (first)
@@ -179,7 +179,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         // Push not down to leaves using De Morgan's rule
         private Expression PushDownNot(Expression expression, bool inNot)
         {
-            Expression newExpr = expression;
+            var newExpr = expression;
             switch (expression.Type)
             {
                 case ExpressionType.And:
@@ -297,10 +297,10 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                                 {
                                     foreach (var clause in clauses)
                                     {
-                                        var newClause = new Clause();
-                                        newClause.Predicates.AddRange(old.Predicates);
-                                        newClause.Predicates.AddRange(clause.Predicates);
-                                        newClauses.Add(newClause);
+                                        var children = new List<Expression>();
+                                        children.AddRange(old.Children);
+                                        children.AddRange(clause.Children);
+                                        newClauses.Add(new Clause(children));
                                     }
                                 }
                                 soFar = newClauses;
@@ -346,14 +346,14 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             for (var i = 0; i < _clauses.Count(); ++i)
             {
                 var clause = _clauses[i];
-                var newClause = new Clause();
-                for (var p = 0; p < clause.Predicates.Count(); ++p)
+                var children = new List<Expression>();
+                for (var p = 0; p < clause.Children.Count(); ++p)
                 {
-                    var pred = clause.Predicates[p];
+                    var pred = clause.Children[p];
                     var found = false;
-                    for (var q = p + 1; q < clause.Predicates.Count(); ++q)
+                    for (var q = p + 1; q < clause.Children.Count(); ++q)
                     {
-                        if (pred.DeepEquals(clause.Predicates[q]))
+                        if (pred.DeepEquals(clause.Children[q]))
                         {
                             found = true;
                             break;
@@ -361,10 +361,10 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     }
                     if (!found)
                     {
-                        newClause.Predicates.Add(pred);
+                        children.Add(pred);
                     }
                 }
-                _clauses[i] = newClause;
+                _clauses[i] = new Clause(children);
             }
         }
 
@@ -450,7 +450,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 var children = new List<Expression>();
                 foreach (var child in expression.Children)
                 {
-                    children.Add(SubstituteVariable(variable, binding, child, out bool childChanged));
+                    children.Add(SubstituteVariable(variable, binding, child, out var childChanged));
                     changed = changed || childChanged;
                 }
                 if (changed)
@@ -465,15 +465,15 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         {
             if (quantifier.Type == QuantifierType.All)
             {
-                var newClause = new Clause(clause);
+                var children = new List<Expression>();
                 if (quantifier.Bindings.Any())
                 {
-                    foreach (var predicate in clause.Predicates)
+                    foreach (var predicate in clause.Children)
                     {
                         foreach (var binding in quantifier.Bindings)
                         {
-                            var newPredicate = SubstituteVariable(quantifier.Variable, binding, predicate, out bool changed);
-                            newClause.Predicates.Add(newPredicate);
+                            var newPredicate = SubstituteVariable(quantifier.Variable, binding, predicate, out var changed);
+                            children.Add(newPredicate);
                             if (!changed)
                             {
                                 // No change to first predicate, so can stop
@@ -485,16 +485,16 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 else
                 {
                     // Empty quantifier is trivially true so remove any predicate that refers to quantifier
-                    foreach (var predicate in clause.Predicates)
+                    foreach (var predicate in clause.Children)
                     {
-                        SubstituteVariable(quantifier.Variable, string.Empty, predicate, out bool changed);
+                        SubstituteVariable(quantifier.Variable, string.Empty, predicate, out var changed);
                         if (!changed)
                         {
-                            newClause.Predicates.Add(predicate);
+                            children.Add(predicate);
                         }
                     }
                 }
-                yield return newClause;
+                yield return new Clause(children);
             }
             else
             {
@@ -504,16 +504,18 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     foreach (var binding in quantifier.Bindings)
                     {
                         var newClause = new Clause(clause);
-                        foreach (var predicate in clause.Predicates)
+                        var children = new List<Expression>();
+                        foreach (var predicate in clause.Children)
                         {
-                            var newPredicate = SubstituteVariable(quantifier.Variable, binding, predicate, out bool predicateChanged);
+                            var newPredicate = SubstituteVariable(quantifier.Variable, binding, predicate, out var predicateChanged);
                             changed = changed || predicateChanged;
-                            newClause.Predicates.Add(newPredicate);
+                            children.Add(newPredicate);
                         }
                         if (changed)
                         {
                             newClause.AnyBindings.Add(quantifier.Variable, binding);
                         }
+                        newClause.Children = children.ToArray();
                         yield return newClause;
                         if (!changed)
                         {
@@ -525,9 +527,9 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 {
                     // Keep clause if does not contain any binding
                     var changed = false;
-                    foreach (var predicate in clause.Predicates)
+                    foreach (var predicate in clause.Children)
                     {
-                        SubstituteVariable(quantifier.Variable, string.Empty, predicate, out bool predicateChanged);
+                        SubstituteVariable(quantifier.Variable, string.Empty, predicate, out var predicateChanged);
                         if (predicateChanged)
                         {
                             changed = true;
@@ -547,11 +549,11 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             foreach (var clause in _clauses)
             {
                 // NOTE: This is quadratic in clause length but GetHashCode is not equal for expressions and we expect the number of clauses to be small.
-                var predicates = clause.Predicates;
-                for (var i = 0; i < predicates.Count; ++i)
+                var predicates = new List<Expression>(clause.Children);
+                for (var i = 0; i < predicates.Count(); ++i)
                 {
                     var first = predicates[i];
-                    for (var j = i + 1; j < predicates.Count;)
+                    for (var j = i + 1; j < predicates.Count();)
                     {
                         var second = predicates[j];
                         if (first.DeepEquals(second))

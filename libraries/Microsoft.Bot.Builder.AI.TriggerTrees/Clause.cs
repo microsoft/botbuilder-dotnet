@@ -6,16 +6,17 @@ using Microsoft.Bot.Builder.Expressions;
 
 namespace Microsoft.Bot.Builder.AI.TriggerTrees
 {
-    public class Clause
+    public class Clause: Expression
     {
-        public List<Expression> Predicates = new List<Expression>();
         public Dictionary<string, string> AnyBindings = new Dictionary<string, string>();
         internal bool Subsumed = false;
 
         internal Clause()
+            : base(ExpressionType.And)
         { }
 
         internal Clause(Clause fromClause)
+            : base(ExpressionType.And)
         {
             foreach (var pair in fromClause.AnyBindings)
             {
@@ -24,8 +25,13 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         }
 
         internal Clause(Expression expression)
+            : base(ExpressionType.And, null, expression)
         {
-            Predicates.Add(expression);
+        }
+
+        internal Clause(IEnumerable<Expression> children)
+            : base(ExpressionType.And, null, children.ToArray())
+        {
         }
 
         public override string ToString()
@@ -44,7 +50,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             }
             builder.Append('(');
             var first = true;
-            foreach (var predicate in Predicates)
+            foreach (var child in Children)
             {
                 if (first)
                 {
@@ -54,7 +60,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 {
                     builder.Append(" && ");
                 }
-                builder.Append(predicate.ToString());
+                builder.Append(child.ToString());
             }
             builder.Append(')');
             foreach (var binding in AnyBindings)
@@ -94,12 +100,12 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             else
             {
                 // If every one of shorter predicates is equal or superset of one in longer, then shoter is a superset of longer
-                foreach (var shortPredicate in shorter.Predicates)
+                foreach (var shortPredicate in shorter.Children)
                 {
                     var shorterRel = RelationshipType.Incomparable;
                     if (shortPredicate.Type != TriggerTree.Ignore)
                     {
-                        foreach (var longPredicate in longer.Predicates)
+                        foreach (var longPredicate in longer.Children)
                         {
                             shorterRel = Relationship(shortPredicate, longPredicate, comparers);
                             if (shorterRel != RelationshipType.Incomparable)
@@ -212,8 +218,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         {
             if (soFar == RelationshipType.Equal)
             {
-                var shortIgnores = shorterClause.Predicates.Where(p => p.Type != TriggerTree.Ignore);
-                var longIgnores = longerClause.Predicates.Where(p => p.Type != TriggerTree.Ignore);
+                var shortIgnores = shorterClause.Children.Where(p => p.Type != TriggerTree.Ignore);
+                var longIgnores = longerClause.Children.Where(p => p.Type != TriggerTree.Ignore);
                 var swapped = false;
                 if (longIgnores.Count() < shortIgnores.Count())
                 {
@@ -242,7 +248,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 }
                 if (soFar == RelationshipType.Equal)
                 {
-                    if (shorterClause.Predicates.Count() == 0 && longerClause.Predicates.Count() > 0)
+                    if (shorterClause.Children.Count() == 0 && longerClause.Children.Count() > 0)
                     {
                         soFar = RelationshipType.Generalizes;
                     }
@@ -283,6 +289,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             return relationship;
         }
 
-        private int PredicateCount() => Predicates.Count(e => e.Type != TriggerTree.Ignore);
+        private int PredicateCount() => Children.Count(e => e.Type != TriggerTree.Ignore);
     }
 }
