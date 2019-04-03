@@ -111,52 +111,51 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         {
             var result = new List<LGReportMessage>();
 
-            var caseRules = context.conditionalTemplateBody().caseRule();
-            if(caseRules == null || caseRules.Length == 0)
+            var ifRules = context.conditionalTemplateBody().ifConditionRule();
+            for (int idx = 0; idx < ifRules.Length; idx++)
             {
-                result.Add(new LGReportMessage($"Only default condition will result in a warning.", LGReportMessageType.WARN));
-            }
-            else
-            {
-                foreach (var caseRule in caseRules)
+                // check if rules must start with if and end with else, and have elseif in middle
+                var conditionLabel = ifRules[idx].ifCondition().IFELSE().GetText().ToLower();
+
+                if (idx == 0 && !string.Equals(conditionLabel, "if:"))
                 {
-                    if (caseRule.caseCondition().EXPRESSION() == null
-                        || caseRule.caseCondition().EXPRESSION().Length == 0)
-                    {
-                        result.Add(new LGReportMessage($"Condition {caseRule.caseCondition().GetText()} MUST be enclosed in curly brackets."));
-                    }
-                    else
-                    {
-                        result.AddRange(CheckExpression(caseRule.caseCondition().EXPRESSION(0).GetText()));
-                    }
-
-
-                    if (caseRule.normalTemplateBody() == null)
-                    {
-                        result.Add(new LGReportMessage($"Case {caseRule.GetText()} should have template body"));
-                    }
-                    else
-                    {
-                        result.AddRange(Visit(caseRule.normalTemplateBody()));
-                    }
+                    result.Add(new LGReportMessage($"condition is not start with if: '{context.conditionalTemplateBody().GetText()}'", LGReportMessageType.WARN));
                 }
-            }
-            
 
-            var defaultRule = context?.conditionalTemplateBody()?.defaultRule();
+                if (idx > 0 && string.Equals(conditionLabel, "if:"))
+                {
+                    result.Add(new LGReportMessage($"condition can't have more than one if: '{context.conditionalTemplateBody().GetText()}'", LGReportMessageType.Error));
+                }
 
-            if (defaultRule != null)
-            {
-                if (defaultRule.normalTemplateBody() == null)
-                    result.Add(new LGReportMessage($"Default rule {defaultRule.GetText()} should have template body"));
+                if (idx == ifRules.Length - 1 && !string.Equals(conditionLabel, "else:"))
+                {
+                    result.Add(new LGReportMessage($"condition is not end with else: '{context.conditionalTemplateBody().GetText()}'", LGReportMessageType.WARN));
+                }
+
+                if (0 < idx && idx < ifRules.Length-1 && !string.Equals(conditionLabel, "elseif:"))
+                {
+                    result.Add(new LGReportMessage($"only elseif is allowed in middle of condition: '{context.conditionalTemplateBody().GetText()}'", LGReportMessageType.Error));
+                }
+
+                // check rule should should with one and only expression
+                if (conditionLabel != "else:")
+                {
+                    if (ifRules[idx].ifCondition().EXPRESSION().Length != 1)
+                    {
+                        result.Add(new LGReportMessage($"if and elseif should followed by one valid expression: '{ifRules[idx].GetText()}'", LGReportMessageType.Error));
+                    }
+
+                    result.AddRange(CheckExpression(ifRules[idx].ifCondition().EXPRESSION(0).GetText()));
+                }
                 else
                 {
-                    result.AddRange(Visit(defaultRule.normalTemplateBody()));
+                    if (ifRules[idx].ifCondition().EXPRESSION().Length != 0)
+                    {
+                        result.Add(new LGReportMessage($"else should not followed by any expression: '{ifRules[idx].GetText()}'", LGReportMessageType.Error));
+                    }
                 }
-            }
-            else
-            {
-                result.Add(new LGReportMessage($"It is best to use the DEFAULT field", LGReportMessageType.WARN));
+
+                result.AddRange(Visit(ifRules[idx].normalTemplateBody()));
             }
 
             return result;

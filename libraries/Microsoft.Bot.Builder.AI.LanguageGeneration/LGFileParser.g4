@@ -49,21 +49,13 @@ normalTemplateString
 	;
 
 conditionalTemplateBody
-    : caseRule+ defaultRule?
-    | defaultRule
+    : ifConditionRule+
     ;
 
-caseRule
-    : caseCondition newline normalTemplateBody?
+ifConditionRule
+    : ifCondition newline normalTemplateBody?
     ;
 
-defaultRule
-    : defaultCondition newline normalTemplateBody?
-    ;
-
-caseCondition
-	: DASH CASE (WS|TEXT|EXPRESSION)*
-	;
-defaultCondition
-    : DASH DEFAULT
+ifCondition
+    : DASH IFELSE (WS|TEXT|EXPRESSION)*
     ;
