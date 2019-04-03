@@ -64,13 +64,14 @@ namespace Microsoft.Bot.Builder.Dialogs
             var choices = options.Choices ?? new List<Choice>();
             var channelId = turnContext.Activity.ChannelId;
             var choiceOptions = ChoiceOptions ?? DefaultChoiceOptions[culture];
+            var choiceStyle = options.Style ?? Style;
             if (isRetry && options.RetryPrompt != null)
             {
-                prompt = AppendChoices(options.RetryPrompt, channelId, choices, Style, choiceOptions);
+                prompt = AppendChoices(options.RetryPrompt, channelId, choices, choiceStyle, choiceOptions);
             }
             else
             {
-                prompt = AppendChoices(options.Prompt, channelId, choices, Style, choiceOptions);
+                prompt = AppendChoices(options.Prompt, channelId, choices, choiceStyle, choiceOptions);
             }
 
             // Send prompt
