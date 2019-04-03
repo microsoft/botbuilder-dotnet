@@ -21,7 +21,6 @@ using RichardSzalay.MockHttp;
 
 namespace Microsoft.Bot.Builder.AI.Luis.Tests
 {
-
     public class OverrideFillRecognizer : LuisRecognizer
     {
         public OverrideFillRecognizer(IBotTelemetryClient telemetryClient, LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, bool logPersonalInformation = false, HttpClientHandler clientHandler = null)

@@ -21,7 +21,6 @@ using RichardSzalay.MockHttp;
 
 namespace Microsoft.Bot.Builder.AI.Luis.Tests
 {
-
     public class TelemetryConvertResult : IRecognizerConvert
     {
         private RecognizerResult _result;

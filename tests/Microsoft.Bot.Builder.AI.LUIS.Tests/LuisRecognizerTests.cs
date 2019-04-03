@@ -949,8 +949,8 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
         private static TurnContext GetContext(string utterance)
         {
-            var b = new TestAdapter();
-            var a = new Activity
+            var testAdapter = new TestAdapter();
+            var activity = new Activity
             {
                 Type = ActivityTypes.Message,
                 Text = utterance,
@@ -958,7 +958,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 Recipient = new ChannelAccount(),
                 From = new ChannelAccount(),
             };
-            return new TurnContext(b, a);
+            return new TurnContext(testAdapter, activity);
         }
 
         // Compare two JSON structures and ensure entity and intent scores are within delta
