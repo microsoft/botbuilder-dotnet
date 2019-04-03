@@ -187,6 +187,118 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
             return responses;
         }
 
+        public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken) => throw new NotImplementedException();
+
+        public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken) => throw new NotImplementedException();
+
+        public async Task<ConversationsResult> GetConversationsAsync(string continuationToken = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var route = "/v3/conversations/";
+            var request = Request.CreateGet(route);
+
+            return await SendRequestAsync<ConversationsResult>(request).ConfigureAwait(false);
+        }
+
+        public async Task<ConversationResourceResponse> PostConversationAsync(ConversationParameters parameters, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var route = "/v3/conversations/";
+            var request = Request.CreatePost(route);
+            request.SetBody(parameters);
+
+            return await SendRequestAsync<ConversationResourceResponse>(request).ConfigureAwait(false);
+        }
+
+        public async Task<ResourceResponse> PostToConversationAsync(string conversationId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (activity == null)
+            {
+                throw new ArgumentNullException(nameof(activity));
+            }
+
+            var route = string.Format("/v3/conversations/{0}/activities", conversationId);
+            var request = Request.CreatePost(route);
+            request.SetBody(activity);
+
+            return await SendRequestAsync<ResourceResponse>(request).ConfigureAwait(false);
+        }
+
+        public async Task<ResourceResponse> PostConversationHistoryAsync(string conversationId, Transcript transcript, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var route = string.Format("/v3/conversations/{0}/activities/history", conversationId);
+            var request = Request.CreatePost(route);
+            request.SetBody(transcript);
+
+            return await SendRequestAsync<ResourceResponse>(request).ConfigureAwait(false);
+        }
+
+        public async Task<ResourceResponse> UpdateActivityAsync(string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (activity == null)
+            {
+                throw new ArgumentNullException(nameof(activity));
+            }
+
+            var route = string.Format("/v3/conversations/{0}/activities/{1}", conversationId, activity.Id);
+            var request = Request.CreatePut(route);
+            request.SetBody(activity);
+
+            return await SendRequestAsync<ResourceResponse>(request).ConfigureAwait(false);
+        }
+
+        public async Task<ResourceResponse> PostToActivityAsync(string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (activity == null)
+            {
+                throw new ArgumentNullException(nameof(activity));
+            }
+
+            var route = string.Format("/v3/conversations/{0}/activities/{1}", conversationId, activity.Id);
+            var request = Request.CreatePost(route);
+            request.SetBody(activity);
+
+            return await SendRequestAsync<ResourceResponse>(request).ConfigureAwait(false);
+        }
+
+        public async Task<HttpOperationResponse> DeleteActivityAsync(string conversationId, string activityId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var route = string.Format("/v3/conversations/{0}/activities/{1}", conversationId, activityId);
+            var request = Request.CreateDelete(route);
+
+            return await SendRequestAsync<HttpOperationResponse>(request).ConfigureAwait(false);
+        }
+
+        public async Task<IList<ChannelAccount>> GetConversationMembersAsync(string conversationId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var route = string.Format("/v3/conversations/{0}/members", conversationId);
+            var request = Request.CreateGet(route);
+
+            return await SendRequestAsync<IList<ChannelAccount>>(request).ConfigureAwait(false);
+        }
+
+        public async Task<PagedMembersResult> GetConversationPagedMembersAsync(string conversationId, int? pageSize = null, string continuationToken = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var route = string.Format("/v3/conversations/{0}/pagedmembers", conversationId);
+            var request = Request.CreateGet(route);
+
+            return await SendRequestAsync<PagedMembersResult>(request).ConfigureAwait(false);
+        }
+
+        public async Task<HttpOperationResponse> DeleteConversationMemberAsync(string conversationId, string memberId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var route = string.Format("/v3/conversations/{0}/members/{1}", conversationId, memberId);
+            var request = Request.CreateDelete(route);
+
+            return await SendRequestAsync<HttpOperationResponse>(request).ConfigureAwait(false);
+        }
+
+        public async Task<IList<ChannelAccount>> GetActivityMembersAsync(string conversationId, string activityId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var route = string.Format("/v3/conversations/{0}/activities/{1}/members", conversationId, activityId);
+            var request = Request.CreateGet(route);
+
+            return await SendRequestAsync<IList<ChannelAccount>>(request).ConfigureAwait(false);
+        }
+
         private async Task<T> SendRequestAsync<T>(Request request)
         {
             try
@@ -204,118 +316,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
             }
 
             return default(T);
-        }
-
-        public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken) => throw new NotImplementedException();
-
-        public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken) => throw new NotImplementedException();
-
-        public async Task<ConversationsResult> GetConversationsAsync(string continuationToken = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var route = "v3/conversations";
-            var request = Request.CreateGet(route);
-
-            return await SendRequestAsync<ConversationsResult>(request).ConfigureAwait(false);
-        }
-
-        public async Task<ConversationResourceResponse> PostConversationAsync(ConversationParameters parameters, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var route = "v3/conversations";
-            var request = Request.CreatePost(route);
-            request.SetBody(parameters);
-
-            return await SendRequestAsync<ConversationResourceResponse>(request).ConfigureAwait(false);
-        }
-
-        public async Task<ResourceResponse> PostToConversationAsync(string conversationId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (activity == null)
-            {
-                throw new ArgumentNullException(nameof(activity));
-            }
-
-            var route = string.Format("v3/conversations/{0}/activities", conversationId);
-            var request = Request.CreatePost(route);
-            request.SetBody(activity);
-
-            return await SendRequestAsync<ResourceResponse>(request).ConfigureAwait(false);
-        }
-
-        public async Task<ResourceResponse> PostConversationHistoryAsync(string conversationId, Transcript transcript, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var route = string.Format("v3/conversations/{0}/activities/history", conversationId);
-            var request = Request.CreatePost(route);
-            request.SetBody(transcript);
-
-            return await SendRequestAsync<ResourceResponse>(request).ConfigureAwait(false);
-        }
-
-        public async Task<ResourceResponse> UpdateActivityAsync(string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (activity == null)
-            {
-                throw new ArgumentNullException(nameof(activity));
-            }
-
-            var route = string.Format("v3/conversations/{0}/activities/{1}", conversationId, activity.Id);
-            var request = Request.CreatePut(route);
-            request.SetBody(activity);
-
-            return await SendRequestAsync<ResourceResponse>(request).ConfigureAwait(false);
-        }
-
-        public async Task<ResourceResponse> PostToActivityAsync(string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (activity == null)
-            {
-                throw new ArgumentNullException(nameof(activity));
-            }
-
-            var route = string.Format("v3/conversations/{0}/activities/{1}", conversationId, activity.Id);
-            var request = Request.CreatePost(route);
-            request.SetBody(activity);
-
-            return await SendRequestAsync<ResourceResponse>(request).ConfigureAwait(false);
-        }
-
-        public async Task<HttpOperationResponse> DeleteActivityAsync(string conversationId, string activityId, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var route = string.Format("v3/conversations/{0}/activities/{1}", conversationId, activityId);
-            var request = Request.CreateDelete(route);
-
-            return await SendRequestAsync<HttpOperationResponse>(request).ConfigureAwait(false);
-        }
-
-        public async Task<IList<ChannelAccount>> GetConversationMembersAsync(string conversationId, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var route = string.Format("v3/conversations/{0}/members", conversationId);
-            var request = Request.CreateGet(route);
-
-            return await SendRequestAsync<IList<ChannelAccount>>(request).ConfigureAwait(false);
-        }
-
-        public async Task<PagedMembersResult> GetConversationPagedMembersAsync(string conversationId, int? pageSize = null, string continuationToken = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var route = string.Format("v3/conversations/{0}/pagedmembers", conversationId);
-            var request = Request.CreateGet(route);
-
-            return await SendRequestAsync<PagedMembersResult>(request).ConfigureAwait(false);
-        }
-
-        public async Task<HttpOperationResponse> DeleteConversationMemberAsync(string conversationId, string memberId, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var route = string.Format("v3/conversations/{0}/members/{1}", conversationId, memberId);
-            var request = Request.CreateDelete(route);
-
-            return await SendRequestAsync<HttpOperationResponse>(request).ConfigureAwait(false);
-        }
-
-        public async Task<IList<ChannelAccount>> GetActivityMembersAsync(string conversationId, string activityId, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var route = string.Format("v3/conversations/{0}/activities/{1}/members", conversationId, activityId);
-            var request = Request.CreateGet(route);
-
-            return await SendRequestAsync<IList<ChannelAccount>>(request).ConfigureAwait(false);
         }
     }
 }
