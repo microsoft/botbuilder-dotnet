@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Bot.Connector.Authentication.CredentialProviders;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -179,6 +180,50 @@ namespace Microsoft.Bot.Builder.Tests
         {
             bool callbackInvoked = false;
             var adapter = new BotFrameworkAdapter(new SimpleCredentialProvider());
+            ConversationReference cr = new ConversationReference
+            {
+                ActivityId = "activityId",
+                Bot = new ChannelAccount
+                {
+                    Id = "channelId",
+                    Name = "testChannelAccount",
+                    Role = "bot",
+                },
+                ChannelId = "testChannel",
+                ServiceUrl = "https://test.com",
+                Conversation = new ConversationAccount
+                {
+                    ConversationType = string.Empty,
+                    Id = "testConversationId",
+                    IsGroup = false,
+                    Name = "testConversationName",
+                    Role = "user",
+                },
+                User = new ChannelAccount
+                {
+                    Id = "channelId",
+                    Name = "testChannelAccount",
+                    Role = "bot",
+                },
+            };
+            Task ContinueCallback(ITurnContext turnContext, CancellationToken cancellationToken)
+            {
+                callbackInvoked = true;
+                return Task.CompletedTask;
+            }
+
+            await adapter.ContinueConversationAsync(null, cr, ContinueCallback, default(CancellationToken));
+            Assert.IsTrue(callbackInvoked);
+        }
+
+        [TestMethod]
+        [ExpectedException(
+            typeof(ArgumentNullException),
+            "An AppId of null was inappropriately allowed.")]
+        public async Task ContinueConversation_IAppIdMissing()
+        {
+            bool callbackInvoked = false;
+            var adapter = new BotFrameworkAdapter(new TestCredentialProvider("AppId", "AppSecret"));
             ConversationReference cr = new ConversationReference
             {
                 ActivityId = "activityId",

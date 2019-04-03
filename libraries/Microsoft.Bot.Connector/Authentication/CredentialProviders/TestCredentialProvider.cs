@@ -1,30 +1,27 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+﻿using System.Threading.Tasks;
 
-using System.Threading.Tasks;
-
-namespace Microsoft.Bot.Connector.Authentication
+namespace Microsoft.Bot.Connector.Authentication.CredentialProviders
 {
     /// <summary>
-    /// A simple implementation of the <see cref="ICredentialProvider"/> interface.
+    /// A test implementation of the <see cref="ICredentialProvider"/> interface that doesn't implements IAppId interface.
     /// </summary>
-    public class SimpleCredentialProvider : ICredentialProvider, IAppId
+    public class TestCredentialProvider : ICredentialProvider
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SimpleCredentialProvider"/> class.
+        /// Initializes a new instance of the <see cref="TestCredentialProvider"/> class.
         /// with empty credentials.
         /// </summary>
-        public SimpleCredentialProvider()
+        public TestCredentialProvider()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SimpleCredentialProvider"/> class.
+        /// Initializes a new instance of the <see cref="TestCredentialProvider"/> class.
         /// with the provided credentials.
         /// </summary>
         /// <param name="appId">The app ID.</param>
         /// <param name="password">The app password.</param>
-        public SimpleCredentialProvider(string appId, string password)
+        public TestCredentialProvider(string appId, string password)
         {
             this.AppId = appId;
             this.Password = password;

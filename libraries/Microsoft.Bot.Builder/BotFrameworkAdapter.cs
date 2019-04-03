@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder
         {
             if (string.IsNullOrWhiteSpace(botAppId))
             {
-                botAppId = HasAppId(this._credentialProvider);
+                botAppId = GetAppId();
 
                 if (string.IsNullOrWhiteSpace(botAppId))
                 {
@@ -939,20 +939,35 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Looks for the AppId property in the Credential Provider.
         /// </summary>
-        /// <param name="credentialProvider">The Adapter's Credential Provider.</param>
         /// <returns>AppId in case it exists.</returns>
-        private string HasAppId(ICredentialProvider credentialProvider)
+        private string GetAppId()
         {
-            var property = credentialProvider.GetType().GetProperty("AppId");
-
-            if (property is null)
+            try
             {
-                return string.Empty;
+                var interfaces = this._credentialProvider.GetType().GetInterfaces();
+
+                if (!interfaces.Any(x => x.Name == "IAppId"))
+                {
+                    throw new ArgumentNullException("BotFrameworkAdapter.ContinueConversationAsync(): Interface IAppId is missing");
+                }
+
+                var interf = this._credentialProvider.GetType().GetInterface("IAppId");
+
+                var property = interf.GetProperty("AppId");
+
+                if (property is null)
+                {
+                    return string.Empty;
+                }
+
+                var value = property.GetValue(this._credentialProvider);
+
+                return value != null ? value.ToString() : string.Empty;
             }
-
-            var value = property.GetValue(credentialProvider);
-
-            return value != null ? value.ToString() : string.Empty;
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }
