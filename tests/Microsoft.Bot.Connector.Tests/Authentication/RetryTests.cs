@@ -3,7 +3,6 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.Bot.Connector.Tests;
 using Xunit;
 
 namespace Microsoft.Bot.Connector.Authentication.Tests
