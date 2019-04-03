@@ -3,8 +3,6 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.Bot.Connector;
-using Microsoft.Bot.Connector.Tests;
 using Microsoft.Bot.Schema;
 using Microsoft.Rest;
 using Xunit;

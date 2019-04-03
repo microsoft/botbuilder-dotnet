@@ -3,7 +3,6 @@
 
 using System;
 using System.Net.Http;
-using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Xunit;
