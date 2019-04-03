@@ -27,6 +27,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         [JsonProperty("steps")]
         public List<IDialog> Steps { get; set; } = new List<IDialog>();
 
+        [JsonProperty("elseSteps")]
+        public List<IDialog> ElseSteps { get; set; } = new List<IDialog>();
+
         public IfCondition()
             : base()
         {
@@ -40,22 +43,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 var (value, error) = Condition.TryEvaluate(dc.State);
                 var conditionResult = error == null && (bool)value;
 
+                var steps = new List<IDialog>();
                 if (conditionResult == true)
                 {
-                    var planSteps = this.Steps.Select(s => new PlanStepState()
-                    {
-                        DialogStack = new List<DialogInstance>(),
-                        DialogId = s.Id,
-                        Options = options
-                    });
-
-                    // Queue up steps that should run after current step
-                    planning.QueueChanges(new PlanChangeList()
-                    {
-                        ChangeType = PlanChangeTypes.DoSteps,
-                        Steps = planSteps.ToList()
-                    });
+                    steps = this.Steps;
                 }
+                else
+                {
+                    steps = this.ElseSteps;
+                }
+
+                var planSteps = steps.Select(s => new PlanStepState()
+                {
+                    DialogStack = new List<DialogInstance>(),
+                    DialogId = s.Id,
+                    Options = options
+                });
+
+                // Queue up steps that should run after current step
+                planning.QueueChanges(new PlanChangeList()
+                {
+                    ChangeType = PlanChangeTypes.DoSteps,
+                    Steps = planSteps.ToList()
+                });
 
                 return await planning.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }

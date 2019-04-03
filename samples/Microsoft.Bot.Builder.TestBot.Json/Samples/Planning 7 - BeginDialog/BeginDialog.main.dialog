@@ -38,7 +38,7 @@
                 {
                     "$type": "Microsoft.IfCondition",
                     "condition": "user.name == null",
-                    "ifTrue": [
+                    "steps": [
                         {
                             "$type": "Microsoft.TextInput",
                             "property": "user.name",

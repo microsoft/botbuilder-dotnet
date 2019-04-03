@@ -10,7 +10,7 @@
         {
             "$type": "Microsoft.IfCondition",
             "condition": "!exists(dialog.todo)",
-            "ifTrue": [
+            "steps": [
                 {
                     "$type": "Microsoft.TextInput",
                     "prompt": "OK, please enter the title of the todo you want to remove.",

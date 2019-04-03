@@ -231,7 +231,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IfCondition()
                         {
                             Condition = new ExpressionEngine().Parse("user.name == null"),
-                            IfTrue = new List<IDialog>()
+                            Steps = new List<IDialog>()
                             {
                                 new TextInput() {
                                     Prompt = new ActivityTemplate("Hello, what is your name?"),
@@ -265,7 +265,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IfCondition()
                         {
                             Condition = new ExpressionEngine().Parse("user.name == null"),
-                            IfTrue = new List<IDialog>()
+                            Steps = new List<IDialog>()
                             {
                                 new TextInput()
                                 {
@@ -306,7 +306,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IfCondition()
                         {
                             Condition = new ExpressionEngine().Parse("user.name == null"),
-                            IfTrue = new List<IDialog>()
+                            Steps = new List<IDialog>()
                             {
                                 new TextInput()
                                 {
@@ -344,7 +344,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IfCondition()
                         {
                             Condition = new ExpressionEngine().Parse("user.name == null"),
-                            IfTrue = new List<IDialog>()
+                            Steps = new List<IDialog>()
                             {
                                 new TextInput()
                                 {
@@ -357,7 +357,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         {
                             // Check comparison with string literal
                             Condition = new ExpressionEngine().Parse("user.name == 'Carlos'"),
-                            IfTrue = new List<IDialog>()
+                            Steps = new List<IDialog>()
                             {
                                 new SendActivity("Hello carlin")
                             }
@@ -401,7 +401,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IfCondition()
                         {
                             Condition = new ExpressionEngine().Parse("user.name == null"),
-                            IfTrue = new List<IDialog>()
+                            Steps = new List<IDialog>()
                             {
                                 new TextInput()
                                 {
@@ -457,7 +457,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IfCondition()
                         {
                             Condition = new ExpressionEngine().Parse("user.name == null"),
-                            IfTrue = new List<IDialog>()
+                            Steps = new List<IDialog>()
                             {
                                 new TextInput()
                                 {
@@ -528,7 +528,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                         new IfCondition()
                                         {
                                             Condition = new ExpressionEngine().Parse("user.name == null"),
-                                            IfTrue = new List<IDialog>()
+                                            Steps = new List<IDialog>()
                                             {
                                                 new TextInput()
                                                 {
@@ -598,7 +598,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new IfCondition()
                             {
                                 Condition = new ExpressionEngine().Parse("user.name == null"),
-                                IfTrue = new List<IDialog>()
+                                Steps = new List<IDialog>()
                                 {
                                     new TextInput()
                                     {
@@ -676,5 +676,48 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("To get to the other side")
             .StartTestAsync();
         }
+
+
+        [TestMethod]
+        public async Task RuleSetTests()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var planningDialog = new AdaptiveDialog("planningTest")
+            {
+                Rules = new List<IRule>()
+                {
+                    new RuleSet()
+                    {
+                        Constraint = "user.age > 13",
+                        Rules = new List<IRule>()
+                        {
+                            new IntentRule()
+                            {
+                                Intent = "SubTest"
+                            },
+                            new RuleSet()
+                            {
+                                Rules = new List<IRule>()
+                                {
+                                    new IntentRule()
+                                    {
+                                        Intent = "SubSubTest"
+                                    },
+                                }
+                            }
+                        }
+                    },
+                    new IntentRule()
+                    {
+                        Intent = "Test"
+                    }
+                }
+            };
+
+            Assert.AreEqual(3, planningDialog.GetAllRules(planningDialog.Rules), "rules collapsing failed");
+        }
+
     }
 }

@@ -5,13 +5,13 @@
         {
             "$type": "Microsoft.IfCondition",
             "condition": "user.todos == null",
-            "ifTrue": [
+            "steps": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "You have no todos."
                 }
             ],
-            "ifFalse": [
+            "elseSteps": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "[ShowTodo]"

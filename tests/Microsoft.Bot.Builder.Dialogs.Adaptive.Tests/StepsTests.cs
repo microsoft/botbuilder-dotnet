@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IfCondition()
                         {
                             Condition = new ExpressionEngine().Parse("user.name == null"),
-                            IfTrue = new List<IDialog>()
+                            Steps = new List<IDialog>()
                             {
                                 new TextInput() {
                                     Prompt  = new ActivityTemplate("Hello, what is your name?"),
@@ -160,7 +160,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IfCondition()
                         {
                             Condition = new ExpressionEngine().Parse("user.name == null"),
-                            IfTrue = new List<IDialog>()
+                            Steps = new List<IDialog>()
                             {
                                 new TextInput()
                                 {
@@ -200,7 +200,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IfCondition()
                         {
                             Condition = new ExpressionEngine().Parse("user.name == null"),
-                            IfTrue = new List<IDialog>()
+                            Steps = new List<IDialog>()
                             {
                                 new TextInput()
                                 {
@@ -250,7 +250,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IfCondition()
                         {
                             Condition = new ExpressionEngine().Parse("user.name == null"),
-                            IfTrue = new List<IDialog>()
+                            Steps = new List<IDialog>()
                             {
                                 new TextInput()
                                 {
@@ -309,7 +309,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IfCondition()
                         {
                             Condition = new ExpressionEngine().Parse("user.name == null"),
-                            IfTrue = new List<IDialog>()
+                            Steps = new List<IDialog>()
                             {
                                 new TextInput()
                                 {
@@ -388,7 +388,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IfCondition()
                         {
                             Condition = new ExpressionEngine().Parse("user.name == null"),
-                            IfTrue = new List<IDialog>()
+                            Steps = new List<IDialog>()
                             {
                                 new TextInput()
                                 {
@@ -490,5 +490,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("You went out from ask name dialog.")
             .StartTestAsync();
         }
+
+
     }
 }

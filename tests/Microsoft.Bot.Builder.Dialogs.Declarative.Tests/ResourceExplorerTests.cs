@@ -54,7 +54,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 if (Path.GetFileName(resource.Name) == "foo.dialog")
                 {
                     changeFired.SetResult(true);
-                    changeFired = new TaskCompletionSource<bool>();
                 }
             };
 
@@ -66,10 +65,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             // new file
             File.WriteAllText(testDialogFile, "{}");
             await changeFired.Task.ConfigureAwait(false);
+            changeFired = new TaskCompletionSource<bool>();
 
             // changed file
             File.WriteAllText(testDialogFile, "{}");
             await changeFired.Task.ConfigureAwait(false);
+            changeFired = new TaskCompletionSource<bool>();
 
             // delete file
             File.Delete(testDialogFile);

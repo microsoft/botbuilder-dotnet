@@ -8,7 +8,7 @@
                 {
                     "$type": "Microsoft.IfCondition",
                     "condition": "user.name == null",
-                    "ifTrue": [
+                    "steps": [
                         {
                             "$type": "Microsoft.TextInput",
                             "prompt": "Hello, I'm Zoidberg. What is your name?",

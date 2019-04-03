@@ -28,7 +28,23 @@
             ],
             "title": "Steps",
             "description": "Step to execute if condition is true."
+        },
+        "elseSteps": {
+            "oneOf": [
+                {
+                    "$type": "Microsoft.IDialog"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "$type": "Microsoft.IDialog"
+                    }
+                }
+            ],
+            "title": "Else Steps",
+            "description": "Step to execute if condition is false."
         }
+
     },
     "required": [
         "expression",
