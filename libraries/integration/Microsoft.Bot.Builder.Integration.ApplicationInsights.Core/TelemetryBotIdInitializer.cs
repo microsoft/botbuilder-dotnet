@@ -65,13 +65,22 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
                         var telemetryProperties = ((ISupportProperties)telemetry).Properties;
 
                         // Set the activity id https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#id
-                        telemetryProperties.Add("activityId", (string)body["id"]);
+                        if (!telemetryProperties.ContainsKey("activityId"))
+                        {
+                            telemetryProperties.Add("activityId", (string)body["id"]);
+                        }
 
                         // Set the channel id https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#channel-id
-                        telemetryProperties.Add("channelId", (string)channelId);
+                        if (!telemetryProperties.ContainsKey("channelId"))
+                        {
+                            telemetryProperties.Add("channelId", (string)channelId);
+                        }
 
                         // Set the activity type https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#type
-                        telemetryProperties.Add("activityType", (string)body["type"]);
+                        if (!telemetryProperties.ContainsKey("activityType"))
+                        {
+                            telemetryProperties.Add("activityType", (string)body["type"]);
+                        }
                     }
                 }
             }
