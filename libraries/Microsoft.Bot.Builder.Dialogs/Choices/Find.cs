@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             }
 
             // Sort matches by score descending
-            matches.Sort((a, b) => (int)(b.Resolution.Score - a.Resolution.Score));
+            matches.Sort((a, b) => b.Resolution.Score.CompareTo(a.Resolution.Score));
 
             // Filter out duplicate matching indexes and overlapping characters.
             // - The start & end positions are token positions and need to be translated to
@@ -232,7 +232,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 // occurring in the value that weren't in the utterance. So an utterance
                 // of "second last" matched against a value of "second from last" would
                 // result in an accuracy of 0.5.
-                var accuracy = matched / (matched + totalDeviation);
+                var accuracy = (float)matched / (matched + totalDeviation);
 
                 // The final score is simply the completeness multiplied by the accuracy.
                 var score = completeness * accuracy;
