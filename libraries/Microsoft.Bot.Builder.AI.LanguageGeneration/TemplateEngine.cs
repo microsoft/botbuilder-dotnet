@@ -100,12 +100,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         public void RunStaticCheck(EvaluationContext evaluationContext)
         {
             var checker = new StaticChecker(evaluationContext);
-            var reportMessages = checker.Check();
+            var report = checker.Check();
 
-            var errorMessages = reportMessages.Where(u => u.ReportType == LGReportMessageType.Error).ToList();
-            if (errorMessages.Count != 0)
+            var errors = report.Where(u => u.Type == ReportEntryType.ERROR).ToList();
+            if (errors.Count != 0)
             {
-                throw new Exception(JsonConvert.SerializeObject(errorMessages));
+                throw new Exception(string.Join("\n", errors));
             }
         }
         
