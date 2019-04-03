@@ -178,6 +178,8 @@ namespace Microsoft.Bot.Builder.Azure
         /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
         public async Task<IDictionary<string, object>> ReadAsync(string[] keys, CancellationToken cancellationToken)
         {
+            FeedOptions options = null;
+
             if (keys == null)
             {
                 throw new ArgumentNullException(nameof(keys));
@@ -192,6 +194,11 @@ namespace Microsoft.Bot.Builder.Azure
             // Ensure Initialization has been run
             await InitializeAsync().ConfigureAwait(false);
 
+            if (!string.IsNullOrEmpty(this._partitionKey))
+            {
+                options = new FeedOptions() { PartitionKey = new PartitionKey(this._partitionKey) };
+            }
+
             var storeItems = new Dictionary<string, object>(keys.Length);
 
             var parameterSequence = string.Join(",", Enumerable.Range(0, keys.Length).Select(i => $"@id{i}"));
@@ -202,7 +209,7 @@ namespace Microsoft.Bot.Builder.Azure
                 Parameters = new SqlParameterCollection(parameterValues),
             };
 
-            var query = _client.CreateDocumentQuery<DocumentStoreItem>(_collectionLink, querySpec).AsDocumentQuery();
+            var query = _client.CreateDocumentQuery<DocumentStoreItem>(_collectionLink, querySpec, options).AsDocumentQuery();
             while (query.HasMoreResults)
             {
                 foreach (var doc in await query.ExecuteNextAsync<DocumentStoreItem>(cancellationToken).ConfigureAwait(false))
