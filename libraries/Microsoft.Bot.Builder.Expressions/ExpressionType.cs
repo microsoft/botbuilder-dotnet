@@ -19,6 +19,7 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string Power = "^";
         public const string Mod = "%";
         public const string Average = "average";
+        public const string Sum = "sum";
         public const string Count = "count";
 
         // Comparisons
