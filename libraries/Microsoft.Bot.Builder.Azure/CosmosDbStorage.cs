@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// using the provided CosmosDB credentials, database ID, and collection ID.
         /// </summary>
         /// <param name="cosmosDbStorageOptions">Cosmos DB storage configuration options.</param>
-        /// <param name="jsonSerializer">Mind that the TypeNameHandling, NullvalueHandling and ContractResolver may need special TLC: Recommended settings are as follows:
+        /// <param name="jsonSerializer">If passing in a custom JsonSerializer, we recommend the following settings: 
         /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.All;</para>
         /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include;</para>
         /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver();</para>
@@ -93,6 +93,11 @@ namespace Microsoft.Bot.Builder.Azure
         public CosmosDbStorage(CosmosDbStorageOptions cosmosDbStorageOptions, JsonSerializer jsonSerializer)
             : this(cosmosDbStorageOptions)
         {
+            if (jsonSerializer == null)
+            {
+                throw new ArgumentNullException(nameof(jsonSerializer));
+            }
+
             _jsonSerializer = jsonSerializer;
         }
 
