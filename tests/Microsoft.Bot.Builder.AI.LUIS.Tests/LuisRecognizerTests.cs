@@ -142,6 +142,28 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         }
 
         [TestMethod]
+        public async Task NullUtterance()
+        {
+            const string utterance = null;
+            const string responsePath = "SingleIntent_SimplyEntity.json";   // The path is irrelevant in this case
+
+            var mockHttp = GetMockHttpClientHandlerObject(utterance, responsePath);
+            var luisRecognizer = GetLuisRecognizer(mockHttp, verbose: true);
+            var context = GetContext(utterance);
+            var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
+
+            Assert.IsNotNull(result);
+            Assert.IsNull(result.AlteredText);
+            Assert.AreEqual(utterance, result.Text);
+            Assert.IsNotNull(result.Intents);
+            Assert.AreEqual(1, result.Intents.Count);
+            Assert.IsNotNull(result.Intents[string.Empty]);
+            Assert.AreEqual(result.GetTopScoringIntent(), (string.Empty, 1.0));
+            Assert.IsNotNull(result.Entities);
+            Assert.AreEqual(0, result.Entities.Count);
+        }
+
+        [TestMethod]
         public async Task MultipleIntents_PrebuiltEntity()
         {
             const string utterance = "Please deliver February 2nd 2001";

@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
+using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
@@ -89,7 +90,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
         {
         }
 
-
         /// <summary>
         /// Gets or sets a value indicating whether to log personal information that came from the user to telemetry.
         /// </summary>
@@ -163,6 +163,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <summary>
         /// Return results of the analysis (Suggested actions and intents).
         /// </summary>
+        /// <typeparam name="T">The recognition result type.</typeparam>
         /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
         /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
@@ -172,7 +173,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             where T : IRecognizerConvert, new()
         {
             var result = new T();
-            result.Convert(await RecognizeInternalAsync(turnContext, telemetryProperties, telemetryMetrics,  cancellationToken).ConfigureAwait(false));
+            result.Convert(await RecognizeInternalAsync(turnContext, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false));
             return result;
         }
 
@@ -220,7 +221,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 { LuisTelemetryConstants.Intent2Property, (topTwoIntents?.Count() > 1) ? topTwoIntents?[1].Key ?? string.Empty : string.Empty },
                 { LuisTelemetryConstants.IntentScore2Property, (topTwoIntents?.Count() > 1) ? topTwoIntents?[1].Value.Score?.ToString("N2") ?? "0.00" : "0.00" },
                 { LuisTelemetryConstants.FromIdProperty, turnContext.Activity.From.Id },
-
             };
 
             if (recognizerResult.Properties.TryGetValue("sentiment", out var sentiment) && sentiment is JObject)
@@ -266,34 +266,43 @@ namespace Microsoft.Bot.Builder.AI.Luis
             }
 
             var utterance = turnContext.Activity?.AsMessageActivity()?.Text;
+            RecognizerResult recognizerResult = null;
+            LuisResult luisResult = null;
 
             if (string.IsNullOrWhiteSpace(utterance))
             {
-                throw new ArgumentNullException(nameof(utterance));
+                recognizerResult = new RecognizerResult
+                {
+                    Text = utterance,
+                    Intents = new Dictionary<string, IntentScore>() { { string.Empty, new IntentScore() { Score = 1.0 } } },
+                    Entities = new JObject(),
+                };
             }
-
-            var luisResult = await _runtime.Prediction.ResolveAsync(
-                _application.ApplicationId,
-                utterance,
-                timezoneOffset: _options.TimezoneOffset,
-                verbose: _options.IncludeAllIntents,
-                staging: _options.Staging,
-                spellCheck: _options.SpellCheck,
-                bingSpellCheckSubscriptionKey: _options.BingSpellCheckSubscriptionKey,
-                log: _options.Log ?? true,
-                cancellationToken: cancellationToken).ConfigureAwait(false);
-
-            var recognizerResult = new RecognizerResult
+            else
             {
-                Text = utterance,
-                AlteredText = luisResult.AlteredQuery,
-                Intents = LuisUtil.GetIntents(luisResult),
-                Entities = LuisUtil.ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, _options.IncludeInstanceData ?? true),
-            };
-            LuisUtil.AddProperties(luisResult, recognizerResult);
-            if (_includeApiResults)
-            {
-                recognizerResult.Properties.Add("luisResult", luisResult);
+                luisResult = await _runtime.Prediction.ResolveAsync(
+                    _application.ApplicationId,
+                    utterance,
+                    timezoneOffset: _options.TimezoneOffset,
+                    verbose: _options.IncludeAllIntents,
+                    staging: _options.Staging,
+                    spellCheck: _options.SpellCheck,
+                    bingSpellCheckSubscriptionKey: _options.BingSpellCheckSubscriptionKey,
+                    log: _options.Log ?? true,
+                    cancellationToken: cancellationToken).ConfigureAwait(false);
+
+                recognizerResult = new RecognizerResult
+                {
+                    Text = utterance,
+                    AlteredText = luisResult.AlteredQuery,
+                    Intents = LuisUtil.GetIntents(luisResult),
+                    Entities = LuisUtil.ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, _options.IncludeInstanceData ?? true),
+                };
+                LuisUtil.AddProperties(luisResult, recognizerResult);
+                if (_includeApiResults)
+                {
+                    recognizerResult.Properties.Add("luisResult", luisResult);
+                }
             }
 
             // Log telemetry
