@@ -511,8 +511,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
-
-
         public bool CheckEmulator()
         {
             if (!_hasEmulator.Value)
