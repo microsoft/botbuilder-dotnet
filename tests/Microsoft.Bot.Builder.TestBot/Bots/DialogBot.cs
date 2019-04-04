@@ -18,10 +18,12 @@ namespace Microsoft.BotBuilderSamples
     public class DialogBot<T> : ActivityHandler
         where T : Dialog
     {
-        private readonly Dialog _dialog;
-        private readonly BotState _conversationState;
-        private readonly BotState _userState;
-        private readonly ILogger _logger;
+#pragma warning disable SA1401 // Fields should be private
+        protected readonly Dialog _dialog;
+        protected readonly BotState _conversationState;
+        protected readonly BotState _userState;
+        protected readonly ILogger _logger;
+#pragma warning restore SA1401 // Fields should be
 
         public DialogBot(ConversationState conversationState, UserState userState, T dialog, ILogger<DialogBot<T>> logger)
         {

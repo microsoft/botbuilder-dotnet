@@ -14,8 +14,10 @@ namespace Microsoft.BotBuilderSamples
 {
     public class MainDialog : ComponentDialog
     {
-        private readonly IConfiguration _configuration;
-        private readonly ILogger _logger;
+#pragma warning disable SA1401 // Fields should be private
+        protected readonly IConfiguration _configuration;
+        protected readonly ILogger _logger;
+#pragma warning restore SA1401 // Fields should be private
 
         public MainDialog(IConfiguration configuration, ILogger<MainDialog> logger)
             : base(nameof(MainDialog))
