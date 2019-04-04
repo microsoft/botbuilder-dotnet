@@ -8,6 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
@@ -44,10 +46,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
                 if (!string.IsNullOrEmpty(this.ChoicesProperty))
                 {
-                    var choiceValue = dc.State.GetValue<List<Choice>>(this.ChoicesProperty);
+                    var choiceValue = dc.State.GetValue<object>(this.ChoicesProperty);
                     if (choiceValue != null)
                     {
-                        choices = choiceValue;
+                        try
+                        {
+                            if (choiceValue is string)
+                            {
+                                choices = JsonConvert.DeserializeObject<List<Choice>>(choiceValue.ToString());
+                            }
+                            else if (choiceValue is List<Choice>)
+                            {
+                                choices = (List<Choice>)choiceValue;
+                            }
+                        }
+                        catch
+                        {
+
+                        }
                     }
                 }
 
