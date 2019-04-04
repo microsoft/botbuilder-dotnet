@@ -12,8 +12,22 @@ namespace Microsoft.Bot.Connector.Authentication
     {
         /// <summary>
         /// TO CHANNEL FROM BOT: Login URL.
+        ///
+        /// DEPRECATED. For binary compat only.
         /// </summary>
         public const string ToChannelFromBotLoginUrl = "https://login.microsoftonline.com/botframework.com";
+
+        /// <summary>
+        /// TO CHANNEL FROM BOT: Login URL template string. Bot developer may specify
+        /// which tenant to obtain an access token from. By default, the channels only
+        /// accept tokens from "botframework.com". For more details see https://aka.ms/bots/tenant-restriction
+        /// </summary>
+        public const string ToChannelFromBotLoginUrlTemplate = "https://login.microsoftonline.com/{0}";
+
+        /// <summary>
+        /// The default tenant to acquire bot to channel token from.
+        /// </summary>
+        public const string DefaultChannelAuthTenant = "botframework.com";
 
         /// <summary>
         /// TO CHANNEL FROM BOT: OAuth scope to request.
