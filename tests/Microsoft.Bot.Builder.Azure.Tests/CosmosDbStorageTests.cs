@@ -16,6 +16,7 @@ using Microsoft.Bot.Builder.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
@@ -392,7 +393,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     .StartTestAsync();
             }
         }
-        
+
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
         public async Task DeleteAsyncFromSingleCollection()
@@ -423,7 +424,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
                 await CreateCosmosDbWithPartitionedCollection(partitionKeyPath);
 
-                // Connect to the comosDb created before
+                // Connect to the comosDb created before with "Contoso" as partitionKey
                 var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions("Contoso"));
                 var changes = new Dictionary<string, object>();
                 changes.Add(DocumentId, ItemToTest);
@@ -459,6 +460,58 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await storage.DeleteAsync(new string[] { DocumentId }, CancellationToken.None));
             }
         }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
+        public async Task ReadAsyncWithPartitionKey()
+        {
+            if (CheckEmulator())
+            {
+                /// The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
+                /// The partitionKeyPath must have the "document" value to properly route the values as partitionKey
+                /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
+                string partitionKeyPath = "document/city";
+
+                await CreateCosmosDbWithPartitionedCollection(partitionKeyPath);
+
+                // Connect to the comosDb created before with "Contoso" as partitionKey
+                var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions("Contoso"));
+                var changes = new Dictionary<string, object>();
+                changes.Add(DocumentId, ItemToTest);
+
+                await storage.WriteAsync(changes, CancellationToken.None);
+
+                var result = await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None);                
+                Assert.AreEqual(ItemToTest.City, result[DocumentId].City);
+            }
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
+        public async Task ReadAsyncWithoutPartitionKey()
+        {
+            if (CheckEmulator())
+            {
+                /// The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
+                /// The partitionKeyPath must have the "document" value to properly route the values as partitionKey
+                /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
+                string partitionKeyPath = "document/city";
+
+                await CreateCosmosDbWithPartitionedCollection(partitionKeyPath);
+
+                // Connect to the comosDb created before without partitionKey
+                var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions());
+                var changes = new Dictionary<string, object>();
+                changes.Add(DocumentId, ItemToTest);
+
+                await storage.WriteAsync(changes, CancellationToken.None);
+
+                // Should throw DocumentClientException: Cross partition query is required but disabled
+                await Assert.ThrowsExceptionAsync<DocumentClientException>(async () => await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None));                               
+            }
+        }
+
+
 
         public bool CheckEmulator()
         {
