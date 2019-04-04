@@ -242,6 +242,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("one == 2.0 && optional(two > 0)", false),
             Test("one == 2.0 && optional(two < 0)", false),
 
+            Test("string(addProperty(json('{\"key1\":\"value1\"}'), 'key2','value2'))", "{\"key1\":\"value1\",\"key2\":\"value2\"}"),
+            Test("string(setProperty(json('{\"key1\":\"value1\"}'), 'key1','value2'))", "{\"key1\":\"value2\"}"),
+            Test("string(removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), 'key2'))", "{\"key1\":\"value1\"}"),
+
             Test("@city == 'Bellevue'", false, new HashSet<string> {"turn.entities.city"}),
             Test("@city", "Seattle", new HashSet<string> {"turn.entities.city"}),
             Test("@city == 'Seattle'", true, new HashSet<string> {"turn.entities.city"}),

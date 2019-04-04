@@ -86,5 +86,11 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string Lambda = "Lambda";
         public const string If = "if";
         public const string Rand = "rand";
+
+        // Object manipulation and construction functions
+        public const string Json = "json";
+        public const string AddProperty = "addProperty";
+        public const string RemoveProperty = "removeProperty";
+        public const string SetProperty = "setProperty";
     }
 }

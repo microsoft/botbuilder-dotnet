@@ -938,7 +938,18 @@ namespace Microsoft.Bot.Builder.Expressions
                         if (args[0] is string string0 && string0.Length > 0) return string0.Last().ToString();
                         if (args[0] is IList list && list.Count > 0) return list[list.Count - 1];
                         return null;
-                    }), ReturnType.Object, ValidateUnary) }
+                    }), ReturnType.Object, ValidateUnary) },
+
+                // Object manipulation and construction functions
+                // TODO
+                { ExpressionType.Json,
+                    new ExpressionEvaluator(Apply(args => JToken.Parse(args[0])), ReturnType.String, ValidateUnary) },
+                { ExpressionType.AddProperty,
+                    new ExpressionEvaluator(Apply(args => {var newJobj = (JObject)args[0]; newJobj[args[1].ToString()] = args[2];return newJobj; })) },
+                { ExpressionType.SetProperty,
+                    new ExpressionEvaluator(Apply(args => {var newJobj = (JObject)args[0]; newJobj[args[1].ToString()] = args[2];return newJobj; })) },
+                { ExpressionType.RemoveProperty,
+                    new ExpressionEvaluator(Apply(args => {var newJobj = (JObject)args[0]; newJobj.Property(args[1].ToString()).Remove();return newJobj; })) },
             };
 
             // Math aliases
