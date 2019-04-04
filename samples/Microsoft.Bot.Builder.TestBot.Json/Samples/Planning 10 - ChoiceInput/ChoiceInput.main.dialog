@@ -19,8 +19,8 @@
               "value": "Test3"
             }
           ],
-          "prompt": "Please select a value from below",
-          "style": "HeroCard",
+          "prompt": "Please select a value from below:",
+          "style": "List",
           "alwaysPrompt": true
         },
         {

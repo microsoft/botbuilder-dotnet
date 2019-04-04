@@ -18,6 +18,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     {
         public List<Choice> Choices { get; set; }
 
+        public string ChoicesProperty { get; set; }
+
         public ListStyle Style { get; set; }
 
         // Override the base method since we need to pass choices to the prompt options
@@ -38,7 +40,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
                 this.prompt.Style = this.Style;
 
-                return await dc.PromptAsync(this.prompt.Id, new ChoicePromptOptions() { Prompt = prompt, RetryPrompt = retryPrompt, Choices = this.Choices}, cancellationToken).ConfigureAwait(false);
+                var choices = this.Choices ?? new List<Choice>();
+
+                if (!string.IsNullOrEmpty(this.ChoicesProperty))
+                {
+                    var choiceValue = dc.State.GetValue<List<Choice>>(this.ChoicesProperty);
+                    if (choiceValue != null)
+                    {
+                        choices = choiceValue;
+                    }
+                }
+
+                return await dc.PromptAsync(this.prompt.Id, new ChoicePromptOptions() { Prompt = prompt, RetryPrompt = retryPrompt, Choices = choices}, cancellationToken).ConfigureAwait(false);
             }
             else
             {
