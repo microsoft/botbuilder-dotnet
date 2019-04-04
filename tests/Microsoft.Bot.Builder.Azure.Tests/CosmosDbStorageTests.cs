@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
@@ -16,7 +17,6 @@ using Microsoft.Bot.Builder.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
-using System.Linq;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
@@ -30,13 +30,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private const string CosmosAuthKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
         private const string CosmosDatabaseName = "test-db";
         private const string CosmosCollectionName = "bot-storage";
-
-        // Variables used to test delete cases
         private const string DocumentId = "UtteranceLog-001";
-        private readonly StoreItem ItemToTest = new StoreItem { MessageList = new string[] { "hi", "how are u" }, City = "Contoso" };
 
-        private static string _emulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe");
         private const string _noEmulatorMessage = "This test requires CosmosDB Emulator! go to https://aka.ms/documentdb-emulator-docs to download and install.";
+        private static readonly string _emulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe");
         private static Lazy<bool> _hasEmulator = new Lazy<bool>(() =>
         {
             if (File.Exists(_emulatorPath))
@@ -53,6 +50,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
             return false;
         });
+
+        // Item used to test delete cases
+        private readonly StoreItem itemToTest = new StoreItem { MessageList = new string[] { "hi", "how are u" }, City = "Contoso" };
 
         private IStorage _storage;
 
@@ -402,7 +402,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             {
                 var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions());
                 var changes = new Dictionary<string, object>();
-                changes.Add(DocumentId, ItemToTest);
+                changes.Add(DocumentId, itemToTest);
 
                 await storage.WriteAsync(changes, CancellationToken.None);
 
@@ -427,7 +427,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 // Connect to the comosDb created before with "Contoso" as partitionKey
                 var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions("Contoso"));
                 var changes = new Dictionary<string, object>();
-                changes.Add(DocumentId, ItemToTest);
+                changes.Add(DocumentId, itemToTest);
 
                 await storage.WriteAsync(changes, CancellationToken.None);
 
@@ -452,7 +452,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 // Connect to the comosDb created before
                 var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions());
                 var changes = new Dictionary<string, object>();
-                changes.Add(DocumentId, ItemToTest);
+                changes.Add(DocumentId, itemToTest);
 
                 await storage.WriteAsync(changes, CancellationToken.None);
 
@@ -477,12 +477,12 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 // Connect to the comosDb created before with "Contoso" as partitionKey
                 var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions("Contoso"));
                 var changes = new Dictionary<string, object>();
-                changes.Add(DocumentId, ItemToTest);
+                changes.Add(DocumentId, itemToTest);
 
                 await storage.WriteAsync(changes, CancellationToken.None);
 
-                var result = await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None);                
-                Assert.AreEqual(ItemToTest.City, result[DocumentId].City);
+                var result = await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None);
+                Assert.AreEqual(itemToTest.City, result[DocumentId].City);
             }
         }
 
@@ -502,12 +502,12 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 // Connect to the comosDb created before without partitionKey
                 var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions());
                 var changes = new Dictionary<string, object>();
-                changes.Add(DocumentId, ItemToTest);
+                changes.Add(DocumentId, itemToTest);
 
                 await storage.WriteAsync(changes, CancellationToken.None);
 
                 // Should throw DocumentClientException: Cross partition query is required but disabled
-                await Assert.ThrowsExceptionAsync<DocumentClientException>(async () => await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None));                               
+                await Assert.ThrowsExceptionAsync<DocumentClientException>(async () => await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None));
             }
         }
 
