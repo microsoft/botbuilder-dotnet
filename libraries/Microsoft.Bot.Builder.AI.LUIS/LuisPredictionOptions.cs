@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license.
 
+using System;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.Luis
@@ -57,6 +58,14 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// Whether to use the staging endpoint.
         /// </value>
         public bool? Staging { get; set; }
+
+        /// <summary>
+        /// Gets or sets the time in milliseconds to wait before the request times out.
+        /// </summary>
+        /// <value>
+        /// The time in milliseconds to wait before the request times out. Default is 100000 milliseconds.
+        /// </value>
+        public double Timeout { get; set; } = 100000;
 
         /// <summary>
         /// Gets or sets the time zone offset.

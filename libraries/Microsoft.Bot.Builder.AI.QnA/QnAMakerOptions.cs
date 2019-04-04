@@ -24,6 +24,14 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public float ScoreThreshold { get; set; }
 
         /// <summary>
+        /// Gets or sets the time in milliseconds to wait before the request times out.
+        /// </summary>
+        /// <value>
+        /// The time in milliseconds to wait before the request times out. Default is 100000 milliseconds.
+        /// </value>
+        public double Timeout { get; set; }
+
+        /// <summary>
         /// Gets or sets the number of ranked results you want in the output.
         /// </summary>
         /// <value>
