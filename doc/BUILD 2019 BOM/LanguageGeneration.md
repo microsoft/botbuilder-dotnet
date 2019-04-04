@@ -62,3 +62,8 @@
 |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| Multi-language	| Support multi-language	| Use bot resoure manager and languge fall back policy |	|	Bot |
 |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|Cafe bot | Full blown cafe bot that shows sohpisticated LG use, LG for QnA pairs | All LG concepts | | Bot |
 
+## Post BUILD backlog
+- - [ ] Support for SWITCH .. CASE .. DEFAULT in conditional response templates
+- - [ ] Support for file scoped template reference in evaluation/ expansion
+- - [ ] Support for external file references with json card definitions (Steve Ickman's suggestion)
+- - [ ] Plugin to telemetry pipeline for bot analytics.
