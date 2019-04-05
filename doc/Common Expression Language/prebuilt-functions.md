@@ -1,433 +1,106 @@
-This document outlines the available prebuilt functions ordered by their general purpose,
+# Common Expression Language
+## Pre-built functions 
+This document lists the available prebuilt functions ordered by their general purpose,
 or you can browse the functions based on [alphabetical order](#alphabetical-list).
 
-<a name="ordered-by-purpose"></a>
-<a name="string-functions"></a>
+- [String functions](#String-functions)
+- [Collection functions](#Collection-functions)
+- [Logical comparison functions](#Logical-comparison-functions)
+- [Conversion functions](#Conversion-functions)
+- [Math functions](#Math-functions)
+- [Date and time functions](#Date-and-time-functions)
+- [Object manipulation and construction functions](#Object-manipulation-and-construction-functions)
 
-## String functions
+### String functions
+|Function	|Explanation|
+|-----------|-----------|
+|[replace](#replace)|	Replace a substring with the specified string, and return the updated string. case sensitive|
+|[replaceIgnoreCase](#replaceIgnoreCase)|	Replace a substring with the specified string, and return the updated string. Case in-sensitive	|
+|[split](#split)	|Returns an array that contains substrings based on the delimiter specified.|
+|[substring](#substring)	|Returns characters from a string. Substring(sourceString, startPos, endPos). startPos cannot be less than 0. endPos greater than source strings length will be taken as the max length of the string	|
+|[toLower](#toLower)	|Convert a string to all upper case characters	|
+|[toUpper](#toUpper)	|Convert a string to all lower case characters	|
+|[trim](#trim)	|Remove leading and trailing white spaces from a string	|
 
-To work with strings, you can use these string functions
-and also some [collection functions](#collection-functions).
-String functions work only on strings.
 
-| String function | Task |
-| --------------- | ---- |
-| [concat](#concat) | Combine two or more strings, and return the combined string. |
-| [length](#length) | Returns the length of the string passed in |
-| [replace](../logic-apps/workflow-definition-language-functions-reference.md#replace) | Replace a substring with the specified string, and return the updated string. |
-| [split](../logic-apps/workflow-definition-language-functions-reference.md#split) | Return an array that contains substrings, separated by commas, from a larger string based on a specified delimiter character in the original string. |
-| [startsWith](../logic-apps/workflow-definition-language-functions-reference.md#startswith) | Check whether a string starts with a specific substring. |
-| [substring](../logic-apps/workflow-definition-language-functions-reference.md#substring) | Return characters from a string, starting from the specified position. |
-| [toLower](../logic-apps/workflow-definition-language-functions-reference.md#toLower) | Return a string in lowercase format. |
-| [toUpper](../logic-apps/workflow-definition-language-functions-reference.md#toUpper) | Return a string in uppercase format. |
-| [trim](../logic-apps/workflow-definition-language-functions-reference.md#trim) | Remove leading and trailing whitespace from a string, and return the updated string. |
-|||
+### Collection functions
+|Function	|Explanation|
+|-----------|-----------|
+|[contains](#contains)	|Works to find an item in a string or to find an item in an array or to find a parameter in a complex object. E.g. contains(‘hello world, ‘hello); contains([‘1’, ‘2’], ‘1’); contains({“foo”:”bar”}, “foo”)	|
+|[parameters](#parameters)	|Returns the value of the specified parameter. Can be nested to walk through complex objects. Can include array index if parameter value is an array. e.g. for {‘foo’:’bar’}, parameters(‘foo’) will return ‘bar’; for {‘foo’: [‘bar’, ‘bar2’]}, parameters(‘foo’)[0] will return ‘bar’; for {‘foo’: {‘bar’ : ‘bar2’}}, parameters(‘foo’).bar will return ‘bar2’	|
+|[empty](#empty)	|Check if the collection is empty	|
+|[first](#first)	|Returns the first item from the collection	|
+|[join](#join) 	|Return a string that has all the items from an array and has each character separated by a delimiter. Join(collection, delimiter). Join(createArray(‘a’,’b’), ‘.’) = “a.b”	|
+|[last](#last) 	|Returns the last item from the collection	|
+|[count](#count)	|Returns the number of items in the collection	|
 
-<a name="collection-functions"></a>
 
-## Collection functions
+### Logical comparison functions
+|Function	|Explanation|
+|-----------|-----------|
+|[and](#and)	|Logical and. Returns true if all specified expressions evaluate to true.	|
+|[equals](#equals)	|Comparison equal. Returns true if specified values are equal	|
+|[greater](#greater)	|Comparison greater than	|
+|[greaterOrEquals](#greaterOrEquals)	| Comparison greater than or equal to. greaterOrEquals(exp1, exp2)	|
+|[if](#if)	| if(exp, valueIfTrue, valueIfFalse)	|
+|[less](#less)	|	Comparison less than opearation|
+|[lessOrEquals](#lessOrEquals)	|	Comparison less than or equal operation|
+|[not](#not)	|	Logical not opearator|
+|[or](#or)	| Logical OR opearation.	|
 
-To work with collections, generally arrays, strings,
-and sometimes, dictionaries, you can use these collection functions.
+### Conversion functions
+|Function	|Explanation|
+|-----------|-----------|
+|[float](#float)	|Return floating point representation of the specified string or the string itself if conversion is not possible	|
+|[int](#int)	|Return integer representation of the specified string or the string itself if conversion is not possible	|
+|[json](#json)	|Return JSON type value for a string	|
+|[string](#string)	|Return string version of the specified value	|
+|[bool](#bool)	|Return Boolean representation of the specified string. Bool(‘true’), bool(1)	|
+|[createArray](#createArray)	|Create an array from multiple inputs	|
 
-| Collection function | Task |
-| ------------------- | ---- |
-| [contains](../logic-apps/workflow-definition-language-functions-reference.md#contains) | Check whether a collection has a specific item. |
-| [length](#length) | Return the number of items in a string or array. |
-| [empty](../logic-apps/workflow-definition-language-functions-reference.md#empty) | Check whether a collection is empty. |
-| [first](../logic-apps/workflow-definition-language-functions-reference.md#first) | Return the first item from a collection. |
-| [intersection](../logic-apps/workflow-definition-language-functions-reference.md#intersection) | Return a collection that has *only* the common items across the specified collections. |
-| [item](../logic-apps/workflow-definition-language-functions-reference.md#item) | When inside a repeating action over an array, return the current item in the array during the action's current iteration. |
-| [join](../logic-apps/workflow-definition-language-functions-reference.md#join) | Return a string that has *all* the items from an array, separated by the specified character. |
-| [last](../logic-apps/workflow-definition-language-functions-reference.md#last) | Return the last item from a collection. |
+### Math functions
+|Function	|Explanation|
+|-----------|-----------|
+|[add](#add)	|Mathematical and. Accepts two parameters	|
+|[div](#div)	|Mathematical division	|
+|[max](#max)	|Returns the largest value from a collection	|
+|[min](#min)	|Returns the smallest value from a collection	|
+|[mod](#mod)	|Returns remainder from dividing two numbers	|
+|[mul](#mul)	|Mathematical multiplication	|
+|[rand](#rand)	|Returns a random number between specified min and max value – rand(\<minValue\>, \<maxValue\>)	|
+|[sub](#sub)	|Mathematical subtraction	|
+|[sum](#sum)	|Returns sum of numbers in an array	|
+|[exp](#exp)	|Exponentiation function. Exp(base, exponent)	|
 
-| [skip](../logic-apps/workflow-definition-language-functions-reference.md#skip) | Remove items from the front of a collection, and return *all the other* items. |
-| [take](../logic-apps/workflow-definition-language-functions-reference.md#take) | Return items from the front of a collection. |
-| [union](../logic-apps/workflow-definition-language-functions-reference.md#union) | Return a collection that has *all* the items from the specified collections. |
-|||
+### Date and time functions
+|Function	|Explanation|
+|-----------|-----------|
+|[addDays](#addDays)	|Add number of specified days to a given timestamp	|
+|[addHours](#addHours)	|Add specified number of hours to a given timestamp	|
+|[addMinutes](#addMinutes)	|Add specified number of minutes to a given timestamp	|
+|[addSeconds](#addSeconds)	|Add specified number of seconds to a given timestamp	|
+|[dayOfMonth](#dayOfMonth)	|Returns day of month for a given timestamp or timex expression.	|
+|[dayOfWeek](#dayOfWeek)	|Returns day of the week for a given timestamp	|
+|[dayOfYear](#dayOfYear)	|Returns day of the year for a given timestamp	|
+|[formatDateTime](#formatDateTime)	|Return a timestamp in the specified format.|
+|[subtractFromTime](#subtractFromTime)	|Subtract a number of time units from a timestamp.|
+|[utcNow](#utcNow)	|Returns current timestamp as string	|
+|[dateReadBack](#dateReadBack)	|Uses the date-time library to provide a date readback. dateReadBack(currentDate, targetDate). E.g. dateReadBack(‘2016/05/30’,’2016/05/23’)=>"Yesterday"	|
+|month	|Returns the month of given timestamp	|
+|date	|Returns date for a given timestamp	|
+|year	|Returns year for the given timestamp	|
+|getTimeOfDay	|Returns time of day for a given timestamp (midnight = 12AM, morning = 12:01AM – 11:59PM, noon = 12PM, afternoon = 12:01PM -05:59PM, evening = 06:00PM – 10:00PM, night = 10:01PM – 11:59PM) 	|
 
-<a name="comparison-functions"></a>
 
-## Logical comparison functions
-
-To work with conditions, compare values and expression results,
-or evaluate various kinds of logic, you can use these logical comparison functions.
-For the full reference about each function, see the
-[alphabetical list](../logic-apps/workflow-definition-language-functions-reference.md#alphabetical-list).
-
-| Logical comparison function | Task |
-| --------------------------- | ---- |
-| [and](../logic-apps/workflow-definition-language-functions-reference.md#and) | Check whether all expressions are true. |
-| [equals](../logic-apps/workflow-definition-language-functions-reference.md#equals) | Check whether both values are equivalent. |
-| [greater](../logic-apps/workflow-definition-language-functions-reference.md#greater) | Check whether the first value is greater than the second value. |
-| [greaterOrEquals](../logic-apps/workflow-definition-language-functions-reference.md#greaterOrEquals) | Check whether the first value is greater than or equal to the second value. |
-| [if](../logic-apps/workflow-definition-language-functions-reference.md#if) | Check whether an expression is true or false. Based on the result, return a specified value. |
-| [less](../logic-apps/workflow-definition-language-functions-reference.md#less) | Check whether the first value is less than the second value. |
-| [lessOrEquals](../logic-apps/workflow-definition-language-functions-reference.md#lessOrEquals) | Check whether the first value is less than or equal to the second value. |
-| [not](../logic-apps/workflow-definition-language-functions-reference.md#not) | Check whether an expression is false. |
-| [or](../logic-apps/workflow-definition-language-functions-reference.md#or) | Check whether at least one expression is true. |
-|||
-
-<a name="conversion-functions"></a>
-
-## Conversion functions
-
-To change a value's type or format, you can use these conversion functions.
-For example, you can change a value from a Boolean to an integer.
-To learn how Logic Apps handles content types during
-conversion, see [Handle content types](../logic-apps/logic-apps-content-type.md).
-For the full reference about each function, see the
-[alphabetical list](../logic-apps/workflow-definition-language-functions-reference.md#alphabetical-list).
-
-| Conversion function | Task |
-| ------------------- | ---- |
-| [array](../logic-apps/workflow-definition-language-functions-reference.md#array) | Return an array from a single specified input. For multiple inputs, see [createArray](../logic-apps/workflow-definition-language-functions-reference.md#createArray). |
-| [base64](../logic-apps/workflow-definition-language-functions-reference.md#base64) | Return the base64-encoded version for a string. |
-| [base64ToBinary](../logic-apps/workflow-definition-language-functions-reference.md#base64ToBinary) | Return the binary version for a base64-encoded string. |
-| [base64ToString](../logic-apps/workflow-definition-language-functions-reference.md#base64ToString) | Return the string version for a base64-encoded string. |
-| [binary](../logic-apps/workflow-definition-language-functions-reference.md#binary) | Return the binary version for an input value. |
-| [bool](../logic-apps/workflow-definition-language-functions-reference.md#bool) | Return the Boolean version for an input value. |
-| [createArray](../logic-apps/workflow-definition-language-functions-reference.md#createArray) | Return an array from multiple inputs. |
-| [dataUri](../logic-apps/workflow-definition-language-functions-reference.md#dataUri) | Return the data URI for an input value. |
-| [dataUriToBinary](../logic-apps/workflow-definition-language-functions-reference.md#dataUriToBinary) | Return the binary version for a data URI. |
-| [dataUriToString](../logic-apps/workflow-definition-language-functions-reference.md#dataUriToString) | Return the string version for a data URI. |
-| [decodeBase64](../logic-apps/workflow-definition-language-functions-reference.md#decodeBase64) | Return the string version for a base64-encoded string. |
-| [decodeDataUri](../logic-apps/workflow-definition-language-functions-reference.md#decodeDataUri) | Return the binary version for a data URI. |
-| [decodeUriComponent](../logic-apps/workflow-definition-language-functions-reference.md#decodeUriComponent) | Return a string that replaces escape characters with decoded versions. |
-| [encodeUriComponent](../logic-apps/workflow-definition-language-functions-reference.md#encodeUriComponent) | Return a string that replaces URL-unsafe characters with escape characters. |
-| [float](../logic-apps/workflow-definition-language-functions-reference.md#float) | Return a floating point number for an input value. |
-| [int](../logic-apps/workflow-definition-language-functions-reference.md#int) | Return the integer version for a string. |
-| [json](../logic-apps/workflow-definition-language-functions-reference.md#json) | Return the JavaScript Object Notation (JSON) type value or object for a string or XML. |
-| [string](../logic-apps/workflow-definition-language-functions-reference.md#string) | Return the string version for an input value. |
-| [uriComponent](../logic-apps/workflow-definition-language-functions-reference.md#uriComponent) | Return the URI-encoded version for an input value by replacing URL-unsafe characters with escape characters. |
-| [uriComponentToBinary](../logic-apps/workflow-definition-language-functions-reference.md#uriComponentToBinary) | Return the binary version for a URI-encoded string. |
-| [uriComponentToString](../logic-apps/workflow-definition-language-functions-reference.md#uriComponentToString) | Return the string version for a URI-encoded string. |
-| [xml](../logic-apps/workflow-definition-language-functions-reference.md#xml) | Return the XML version for a string. |
-|||
-
-<a name="math-functions"></a>
-
-## Math functions
-
-To work with integers and floats, you can use these math functions.
-For the full reference about each function, see the
-[alphabetical list](../logic-apps/workflow-definition-language-functions-reference.md#alphabetical-list).
-
-| Math function | Task |
-| ------------- | ---- |
-| [add](../logic-apps/workflow-definition-language-functions-reference.md#add) | Return the result from adding two numbers. |
-| [div](../logic-apps/workflow-definition-language-functions-reference.md#div) | Return the result from dividing two numbers. |
-| [max](../logic-apps/workflow-definition-language-functions-reference.md#max) | Return the highest value from a set of numbers or an array. |
-| [min](../logic-apps/workflow-definition-language-functions-reference.md#min) | Return the lowest value from a set of numbers or an array. |
-| [mod](../logic-apps/workflow-definition-language-functions-reference.md#mod) | Return the remainder from dividing two numbers. |
-| [mul](../logic-apps/workflow-definition-language-functions-reference.md#mul) | Return the product from multiplying two numbers. |
-| [rand](../logic-apps/workflow-definition-language-functions-reference.md#rand) | Return a random integer from a specified range. |
-| [range](../logic-apps/workflow-definition-language-functions-reference.md#range) | Return an integer array that starts from a specified integer. |
-| [sub](../logic-apps/workflow-definition-language-functions-reference.md#sub) | Return the result from subtracting the second number from the first number. |
-|||
-
-<a name="date-time-functions"></a>
-
-## Date and time functions
-
-To work with dates and times, you can use these date and time functions.
-For the full reference about each function, see the
-[alphabetical list](../logic-apps/workflow-definition-language-functions-reference.md#alphabetical-list).
-
-| Date or time function | Task |
-| --------------------- | ---- |
-| [addDays](../logic-apps/workflow-definition-language-functions-reference.md#addDays) | Add a number of days to a timestamp. |
-| [addHours](../logic-apps/workflow-definition-language-functions-reference.md#addHours) | Add a number of hours to a timestamp. |
-| [addMinutes](../logic-apps/workflow-definition-language-functions-reference.md#addMinutes) | Add a number of minutes to a timestamp. |
-| [addSeconds](../logic-apps/workflow-definition-language-functions-reference.md#addSeconds) | Add a number of seconds to a timestamp. |
-| [addToTime](../logic-apps/workflow-definition-language-functions-reference.md#addToTime) | Add a number of time units to a timestamp. See also [getFutureTime](../logic-apps/workflow-definition-language-functions-reference.md#getFutureTime). |
-| [convertFromUtc](../logic-apps/workflow-definition-language-functions-reference.md#convertFromUtc) | Convert a timestamp from Universal Time Coordinated (UTC) to the target time zone. |
-| [convertTimeZone](../logic-apps/workflow-definition-language-functions-reference.md#convertTimeZone) | Convert a timestamp from the source time zone to the target time zone. |
-| [convertToUtc](../logic-apps/workflow-definition-language-functions-reference.md#convertToUtc) | Convert a timestamp from the source time zone to Universal Time Coordinated (UTC). |
-| [dayOfMonth](../logic-apps/workflow-definition-language-functions-reference.md#dayOfMonth) | Return the day of the month component from a timestamp. |
-| [dayOfWeek](../logic-apps/workflow-definition-language-functions-reference.md#dayOfWeek) | Return the day of the week component from a timestamp. |
-| [dayOfYear](../logic-apps/workflow-definition-language-functions-reference.md#dayOfYear) | Return the day of the year component from a timestamp. |
-| [formatDateTime](../logic-apps/workflow-definition-language-functions-reference.md#formatDateTime) | Return the date from a timestamp. |
-| [getFutureTime](../logic-apps/workflow-definition-language-functions-reference.md#getFutureTime) | Return the current timestamp plus the specified time units. See also [addToTime](../logic-apps/workflow-definition-language-functions-reference.md#addToTime). |
-| [getPastTime](../logic-apps/workflow-definition-language-functions-reference.md#getPastTime) | Return the current timestamp minus the specified time units. See also [subtractFromTime](../logic-apps/workflow-definition-language-functions-reference.md#subtractFromTime). |
-| [startOfDay](../logic-apps/workflow-definition-language-functions-reference.md#startOfDay) | Return the start of the day for a timestamp. |
-| [startOfHour](../logic-apps/workflow-definition-language-functions-reference.md#startOfHour) | Return the start of the hour for a timestamp. |
-| [startOfMonth](../logic-apps/workflow-definition-language-functions-reference.md#startOfMonth) | Return the start of the month for a timestamp. |
-| [subtractFromTime](../logic-apps/workflow-definition-language-functions-reference.md#subtractFromTime) | Subtract a number of time units from a timestamp. See also [getPastTime](../logic-apps/workflow-definition-language-functions-reference.md#getPastTime). |
-| [ticks](../logic-apps/workflow-definition-language-functions-reference.md#ticks) | Return the `ticks` property value for a specified timestamp. |
-| [utcNow](../logic-apps/workflow-definition-language-functions-reference.md#utcNow) | Return the current timestamp as a string. |
-|||
-
-<a name="workflow-functions"></a>
-
-## Workflow functions
-
-These workflow functions can help you:
-
-* Get details about a workflow instance at run time.
-* Work with the inputs used for instantiating logic apps.
-* Reference the outputs from triggers and actions.
-
-For example, you can reference the outputs from
-one action and use that data in a later action.
-For the full reference about each function, see the
-[alphabetical list](../logic-apps/workflow-definition-language-functions-reference.md#alphabetical-list).
-
-| Workflow function | Task |
-| ----------------- | ---- |
-| [action](../logic-apps/workflow-definition-language-functions-reference.md#action) | Return the current action's output at runtime, or values from other JSON name-and-value pairs. See also [actions](../logic-apps/workflow-definition-language-functions-reference.md#actions). |
-| [actionBody](../logic-apps/workflow-definition-language-functions-reference.md#actionBody) | Return an action's `body` output at runtime. See also [body](../logic-apps/workflow-definition-language-functions-reference.md#body). |
-| [actionOutputs](../logic-apps/workflow-definition-language-functions-reference.md#actionOutputs) | Return an action's output at runtime. See [actions](../logic-apps/workflow-definition-language-functions-reference.md#actions). |
-| [actions](../logic-apps/workflow-definition-language-functions-reference.md#actions) | Return an action's output at runtime, or values from other JSON name-and-value pairs. See also [action](../logic-apps/workflow-definition-language-functions-reference.md#action).  |
-| [body](#body) | Return an action's `body` output at runtime. See also [actionBody](../logic-apps/workflow-definition-language-functions-reference.md#actionBody). |
-| [formDataMultiValues](../logic-apps/workflow-definition-language-functions-reference.md#formDataMultiValues) | Create an array with the values that match a key name in *form-data* or *form-encoded* action outputs. |
-| [formDataValue](../logic-apps/workflow-definition-language-functions-reference.md#formDataValue) | Return a single value that matches a key name in an action's *form-data* or *form-encoded output*. |
-| [item](../logic-apps/workflow-definition-language-functions-reference.md#item) | When inside a repeating action over an array, return the current item in the array during the action's current iteration. |
-| [items](../logic-apps/workflow-definition-language-functions-reference.md#items) | When inside a for-each or do-until-loop, return the current item from the specified loop.|
-| [listCallbackUrl](../logic-apps/workflow-definition-language-functions-reference.md#listCallbackUrl) | Return the "callback URL" that calls a trigger or action. |
-| [multipartBody](../logic-apps/workflow-definition-language-functions-reference.md#multipartBody) | Return the body for a specific part in an action's output that has multiple parts. |
-| [parameters](../logic-apps/workflow-definition-language-functions-reference.md#parameters) | Return the value for a parameter that is described in your logic app definition. |
-| [trigger](../logic-apps/workflow-definition-language-functions-reference.md#trigger) | Return a trigger's output at runtime, or from other JSON name-and-value pairs. See also [triggerOutputs](#triggerOutputs) and [triggerBody](../logic-apps/workflow-definition-language-functions-reference.md#triggerBody). |
-| [triggerBody](../logic-apps/workflow-definition-language-functions-reference.md#triggerBody) | Return a trigger's `body` output at runtime. See [trigger](../logic-apps/workflow-definition-language-functions-reference.md#trigger). |
-| [triggerFormDataValue](../logic-apps/workflow-definition-language-functions-reference.md#triggerFormDataValue) | Return a single value matching a key name in *form-data* or *form-encoded* trigger outputs. |
-| [triggerMultipartBody](../logic-apps/workflow-definition-language-functions-reference.md#triggerMultipartBody) | Return the body for a specific part in a trigger's multipart output. |
-| [triggerFormDataMultiValues](../logic-apps/workflow-definition-language-functions-reference.md#triggerFormDataMultiValues) | Create an array whose values match a key name in *form-data* or *form-encoded* trigger outputs. |
-| [triggerOutputs](../logic-apps/workflow-definition-language-functions-reference.md#triggerOutputs) | Return a trigger's output at runtime, or values from other JSON name-and-value pairs. See [trigger](../logic-apps/workflow-definition-language-functions-reference.md#trigger). |
-| [variables](../logic-apps/workflow-definition-language-functions-reference.md#variables) | Return the value for a specified variable. |
-| [workflow](../logic-apps/workflow-definition-language-functions-reference.md#workflow) | Return all the details about the workflow itself during run time. |
-|||
-
-<a name="uri-parsing-functions"></a>
-
-## URI parsing functions
-
-To work with uniform resource identifiers (URIs)
-and get various property values for these URIs,
-you can use these URI parsing functions.
-For the full reference about each function, see the
-[alphabetical list](../logic-apps/workflow-definition-language-functions-reference.md#alphabetical-list).
-
-| URI parsing function | Task |
-| -------------------- | ---- |
-| [uriHost](../logic-apps/workflow-definition-language-functions-reference.md#uriHost) | Return the `host` value for a uniform resource identifier (URI). |
-| [uriPath](../logic-apps/workflow-definition-language-functions-reference.md#uriPath) | Return the `path` value for a uniform resource identifier (URI). |
-| [uriPathAndQuery](../logic-apps/workflow-definition-language-functions-reference.md#uriPathAndQuery) | Return the `path` and `query` values for a uniform resource identifier (URI). |
-| [uriPort](../logic-apps/workflow-definition-language-functions-reference.md#uriPort) | Return the `port` value for a uniform resource identifier (URI). |
-| [uriQuery](../logic-apps/workflow-definition-language-functions-reference.md#uriQuery) | Return the `query` value for a uniform resource identifier (URI). |
-| [uriScheme](../logic-apps/workflow-definition-language-functions-reference.md#uriScheme) | Return the `scheme` value for a uniform resource identifier (URI). |
-|||
-
-<a name="manipulation-functions"></a>
-
-## Manipulation functions: JSON & XML
-
-To work with JSON objects and XML nodes, you can use these manipulation functions.
-For the full reference about each function, see the
-[alphabetical list](../logic-apps/workflow-definition-language-functions-reference.md#alphabetical-list).
-
-| Manipulation function | Task |
-| --------------------- | ---- |
-| [addProperty](../logic-apps/workflow-definition-language-functions-reference.md#addProperty) | Add a property and its value, or name-value pair, to a JSON object, and return the updated object. |
-| [coalesce](../logic-apps/workflow-definition-language-functions-reference.md#coalesce) | Return the first non-null value from one or more parameters. |
-| [removeProperty](../logic-apps/workflow-definition-language-functions-reference.md#removeProperty) | Remove a property from a JSON object and return the updated object. |
-| [setProperty](../logic-apps/workflow-definition-language-functions-reference.md#setProperty) | Set the value for a JSON object's property and return the updated object. |
-| [xpath](../logic-apps/workflow-definition-language-functions-reference.md#xpath) | Check XML for nodes or values that match an XPath (XML Path Language) expression, and return the matching nodes or values. |
-|||
+### Object manipulation and construction functions
+|Function	|Explanation|
+|-----------|-----------|
+|[json](#json)	|Convert a given string JSON notation into a JSON object	R0|
+|[addProperty](#addProperty)	|Add a new property to a given json object	R0|
+|[removeProperty](#removeProperty)	|Remove a property from given json object	R0|
+|[setProperty](#setProperty)	|Set the value for a given property in a given json object	R0|
 
 <a name="alphabetical-list"></a>
-<a name="action"></a>
-
-### action
-
-Return the *current* action's output at runtime,
-or values from other JSON name-and-value pairs,
-which you can assign to an expression.
-By default, this function references the entire action object,
-but you can optionally specify a property whose value you want.
-See also [actions()](../logic-apps/workflow-definition-language-functions-reference.md#actions).
-
-You can use the `action()` function only in these places:
-
-* The `unsubscribe` property for a webhook action
-so you can access the result from the original `subscribe` request
-* The `trackedProperties` property for an action
-* The `do-until` loop condition for an action
-
-```
-action()
-action().outputs.body.<property>
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*property*> | No | String | The name for the action object's property whose value you want: **name**, **startTime**, **endTime**, **inputs**, **outputs**, **status**, **code**, **trackingId**, and **clientTrackingId**. In the Azure portal, you can find these properties by reviewing a specific run history's details. For more information, see [REST API - Workflow Run Actions](https://docs.microsoft.com/rest/api/logic/workflowrunactions/get). |
-|||||
-
-| Return value | Type | Description |
-| ------------ | -----| ----------- |
-| <*action-output*> | String | The output from the current action or property |
-||||
-
-<a name="actionBody"></a>
-
-### actionBody
-
-Return an action's `body` output at runtime.
-Shorthand for `actions('<actionName>').outputs.body`.
-See [body()](#body) and [actions()](#actions).
-
-```
-actionBody('<actionName>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*actionName*> | Yes | String | The name for the action's `body` output that you want |
-|||||
-
-| Return value | Type | Description |
-| ------------ | -----| ----------- |
-| <*action-body-output*> | String | The `body` output from the specified action |
-||||
-
-*Example*
-
-This example gets the `body` output from the Twitter action `Get user`:
-
-```
-actionBody('Get_user')
-```
-
-And returns this result:
-
-```json
-"body": {
-  "FullName": "Contoso Corporation",
-  "Location": "Generic Town, USA",
-  "Id": 283541717,
-  "UserName": "ContosoInc",
-  "FollowersCount": 172,
-  "Description": "Leading the way in transforming the digital workplace.",
-  "StatusesCount": 93,
-  "FriendsCount": 126,
-  "FavouritesCount": 46,
-  "ProfileImageUrl": "https://pbs.twimg.com/profile_images/908820389907722240/gG9zaHcd_400x400.jpg"
-}
-```
-
-<a name="actionOutputs"></a>
-
-### actionOutputs
-
-Return an action's output at runtime.
-Shorthand for `actions('<actionName>').outputs`.
-See [actions()](#actions).
-
-```
-actionOutputs('<actionName>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*actionName*> | Yes | String | The name for the action's output that you want |
-|||||
-
-| Return value | Type | Description |
-| ------------ | -----| ----------- |
-| <*output*> | String | The output from the specified action |
-||||
-
-*Example*
-
-This example gets the output from the Twitter action `Get user`:
-
-```
-actionOutputs('Get_user')
-```
-
-And returns this result:
-
-```json
-{
-  "statusCode": 200,
-  "headers": {
-    "Pragma": "no-cache",
-    "Vary": "Accept-Encoding",
-    "x-ms-request-id": "a916ec8f52211265d98159adde2efe0b",
-    "X-Content-Type-Options": "nosniff",
-    "Timing-Allow-Origin": "*",
-    "Cache-Control": "no-cache",
-    "Date": "Mon, 09 Apr 2018 18:47:12 GMT",
-    "Set-Cookie": "ARRAffinity=b9400932367ab5e3b6802e3d6158afffb12fcde8666715f5a5fbd4142d0f0b7d;Path=/;HttpOnly;Domain=twitter-wus.azconn-wus.p.azurewebsites.net",
-    "X-AspNet-Version": "4.0.30319",
-    "X-Powered-By": "ASP.NET",
-    "Content-Type": "application/json; charset=utf-8",
-    "Expires": "-1",
-    "Content-Length": "339"
-  },
-  "body": {
-    "FullName": "Contoso Corporation",
-    "Location": "Generic Town, USA",
-    "Id": 283541717,
-    "UserName": "ContosoInc",
-    "FollowersCount": 172,
-    "Description": "Leading the way in transforming the digital workplace.",
-    "StatusesCount": 93,
-    "FriendsCount": 126,
-    "FavouritesCount": 46,
-    "ProfileImageUrl": "https://pbs.twimg.com/profile_images/908820389907722240/gG9zaHcd_400x400.jpg"
-  }
-}
-```
-
-<a name="actions"></a>
-
-### actions
-
-Return an action's output at runtime,
-or values from other JSON name-and-value pairs,
-which you can assign to an expression. By default,
-the function references the entire action object,
-but you can optionally specify a property whose value that you want.
-For shorthand versions, see [actionBody()](#actionBody),
-[actionOutputs()](#actionOutputs), and [body()](#body).
-For the current action, see [action()](#action).
-
-> [!NOTE]
-> Previously, you could use the `actions()` function or
-> the `conditions` element when specifying that an action
-> ran based on the output from another action. However,
-> to declare explicitly dependencies between actions,
-> you must now use the dependent action's `runAfter` property.
-> To learn more about the `runAfter` property, see
-> [Catch and handle failures with the runAfter property](../logic-apps/logic-apps-workflow-definition-language.md).
-
-```
-actions('<actionName>')
-actions('<actionName>').outputs.body.<property>
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*actionName*> | Yes | String | The name for the action object whose output you want  |
-| <*property*> | No | String | The name for the action object's property whose value you want: **name**, **startTime**, **endTime**, **inputs**, **outputs**, **status**, **code**, **trackingId**, and **clientTrackingId**. In the Azure portal, you can find these properties by reviewing a specific run history's details. For more information, see [REST API - Workflow Run Actions](https://docs.microsoft.com/rest/api/logic/workflowrunactions/get). |
-|||||
-
-| Return value | Type | Description |
-| ------------ | -----| ----------- |
-| <*action-output*> | String | The output from the specified action or property |
-||||
-
-*Example*
-
-This example gets the `status` property value
-from the Twitter action `Get user` at runtime:
-
-```
-actions('Get_user').outputs.body.status
-```
-
-And returns this result: `"Succeeded"`
 
 <a name="add"></a>
 
@@ -613,10 +286,10 @@ addProperty(<object>, '<property>', <value>)
 
 This example adds the `timeOfDay` property to the `reservation` object,
 which is converted to JSON with the [JSON()](#json) function.
-The function assigns a value `morning` and returns the updated object:
+The function assigns an explicit value and returns the updated object:
 
 ```
-addProperty(json('reservation'), 'accountNumber', 'morning')
+addProperty(json('reservation'), 'timeOfDay', 'morning')
 ```
 
 <a name="addSeconds"></a>
@@ -660,50 +333,6 @@ addSeconds('2018-03-15T00:00:30Z', -5)
 ```
 
 And returns this result: `"2018-03-15T00:00:25.0000000Z"`
-
-<a name="addToTime"></a>
-
-### addToTime
-
-Add a number of time units to a timestamp.
-See also [getFutureTime()](#getFutureTime).
-
-```
-addToTime('<timestamp>', <interval>, '<timeUnit>', '<format>'?)
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*timestamp*> | Yes | String | The string that contains the timestamp |
-| <*interval*> | Yes | Integer | The number of specified time units to add |
-| <*timeUnit*> | Yes | String | The unit of time to use with *interval*: "Second", "Minute", "Hour", "Day", "Week", "Month", "Year" |
-| <*format*> | No | String | Either a [single format specifier](https://docs.microsoft.com/dotnet/standard/base-types/standard-date-and-time-format-strings) or a [custom format pattern](https://docs.microsoft.com/dotnet/standard/base-types/custom-date-and-time-format-strings). The default format for the timestamp is ["o"](https://docs.microsoft.com/dotnet/standard/base-types/standard-date-and-time-format-strings) (yyyy-MM-ddTHH:mm:ss:fffffffK), which complies with [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) and preserves time zone information. |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*updated-timestamp*> | String | The timestamp plus the specified number of time units  |
-||||
-
-*Example 1*
-
-This example adds one day to the specified timestamp:
-
-```
-addToTime('2018-01-01T00:00:00Z', 1, 'Day')
-```
-
-And returns this result: `"2018-01-02T00:00:00:0000000Z"`
-
-*Example 2*
-
-This example adds one day to the specified timestamp:
-
-```
-addToTime('2018-01-01T00:00:00Z', 1, 'Day', 'D')
-```
-
-And returns the result using the optional "D" format: `"Tuesday, January 2, 2018"`
 
 <a name="and"></a>
 
@@ -759,212 +388,7 @@ And returns these results:
 * Second example: One expression is false, so returns `false`.
 * Third example: Both expressions are false, so returns `false`.
 
-<a name="array"></a>
-
-### array
-
-Return an array from a single specified input.
-For multiple inputs, see [createArray()](#createArray).
-
-```
-array('<value>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*value*> | Yes | String | The string for creating an array |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| [<*value*>] | Array | An array that contains the single specified input |
-||||
-
-*Example*
-
-This example creates an array from the "hello" string:
-
-```
-array('hello')
-```
-
-And returns this result: `["hello"]`
-
-<a name="base64"></a>
-
-### base64
-
-Return the base64-encoded version for a string.
-
-```
-base64('<value>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*value*> | Yes | String | The input string |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*base64-string*> | String | The base64-encoded version for the input string |
-||||
-
-*Example*
-
-This example converts the "hello" string to a base64-encoded string:
-
-```
-base64('hello')
-```
-
-And returns this result: `"aGVsbG8="`
-
-<a name="base64ToBinary"></a>
-
-### base64ToBinary
-
-Return the binary version for a base64-encoded string.
-
-```
-base64ToBinary('<value>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*value*> | Yes | String | The base64-encoded string to convert |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*binary-for-base64-string*> | String | The binary version for the base64-encoded string |
-||||
-
-*Example*
-
-This example converts the "aGVsbG8=" base64-encoded string to a binary string:
-
-```
-base64ToBinary('aGVsbG8=')
-```
-
-And returns this result:
-
-`"0110000101000111010101100111001101100010010001110011100000111101"`
-
-<a name="base64ToString"></a>
-
-### base64ToString
-
-Return the string version for a base64-encoded string,
-effectively decoding the base64 string.
-Use this function rather than [decodeBase64()](#decodeBase64).
-Although both functions work the same way,
-`base64ToString()` is preferred.
-
-```
-base64ToString('<value>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*value*> | Yes | String | The base64-encoded string to decode |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*decoded-base64-string*> | String | The string version for a base64-encoded string |
-||||
-
-*Example*
-
-This example converts the "aGVsbG8=" base64-encoded string to just a string:
-
-```
-base64ToString('aGVsbG8=')
-```
-
-And returns this result: `"hello"`
-
-<a name="binary"></a>
-
-### binary
-
-Return the binary version for a string.
-
-```
-binary('<value>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*value*> | Yes | String | The string to convert |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*binary-for-input-value*> | String | The binary version for the specified string |
-||||
-
-*Example*
-
-This example converts the "hello" string to a binary string:
-
-```
-binary('hello')
-```
-
-And returns this result:
-
-`"0110100001100101011011000110110001101111"`
-
-<a name="body"></a>
-
-### body
-
-Return an action's `body` output at runtime.
-Shorthand for `actions('<actionName>').outputs.body`.
-See [actionBody()](#actionBody) and [actions()](#actions).
-
-```
-body('<actionName>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*actionName*> | Yes | String | The name for the action's `body` output that you want |
-|||||
-
-| Return value | Type | Description |
-| ------------ | -----| ----------- |
-| <*action-body-output*> | String | The `body` output from the specified action |
-||||
-
-*Example*
-
-This example gets the `body` output from the `Get user` Twitter action:
-
-```
-body('Get_user')
-```
-
-And returns this result:
-
-```json
-"body": {
-    "FullName": "Contoso Corporation",
-    "Location": "Generic Town, USA",
-    "Id": 283541717,
-    "UserName": "ContosoInc",
-    "FollowersCount": 172,
-    "Description": "Leading the way in transforming the digital workplace.",
-    "StatusesCount": 93,
-    "FriendsCount": 126,
-    "FavouritesCount": 46,
-    "ProfileImageUrl": "https://pbs.twimg.com/profile_images/908820389907722240/gG9zaHcd_400x400.jpg"
-}
-```
-
+<a name="average
 <a name="bool"></a>
 
 ### bool
@@ -998,74 +422,6 @@ And returns these results:
 
 * First example: `true`
 * Second example: `false`
-
-<a name="coalesce"></a>
-
-### coalesce
-
-Return the first non-null value from one or more parameters.
-Empty strings, empty arrays, and empty objects are not null.
-
-```
-coalesce(<object_1>, <object_2>, ...)
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*object_1*>, <*object_2*>, ... | Yes | Any, can mix types | One or more items to check for null |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*first-non-null-item*> | Any | The first item or value that is not null. If all parameters are null, this function returns null. |
-||||
-
-*Example*
-
-These examples return the first non-null value from the specified values,
-or null when all the values are null:
-
-```
-coalesce(null, true, false)
-coalesce(null, 'hello', 'world')
-coalesce(null, null, null)
-```
-
-And returns these results:
-
-* First example: `true`
-* Second example: `"hello"`
-* Third example: `null`
-
-<a name="concat"></a>
-
-### concat
-
-Combine two or more strings, and return the combined string.
-
-```
-concat('<text1>', '<text2>', ...)
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*text1*>, <*text2*>, ... | Yes | String | At least two strings to combine |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*text1text2...*> | String | The string created from the combined input strings |
-||||
-
-*Example*
-
-This example combines the strings "Hello" and "World":
-
-```
-concat('Hello', 'World')
-```
-
-And returns this result: `"HelloWorld"`
 
 <a name="contains"></a>
 
@@ -1115,133 +471,37 @@ the substring "universe" and returns false:
 ```
 contains('hello world', 'universe')
 ```
+<a name="count"></a>
 
-<a name="convertFromUtc"></a>
+### count
 
-### convertFromUtc
-
-Convert a timestamp from Universal Time Coordinated (UTC) to the target time zone.
-
-```
-convertFromUtc('<timestamp>', '<destinationTimeZone>', '<format>'?)
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*timestamp*> | Yes | String | The string that contains the timestamp |
-| <*destinationTimeZone*> | Yes | String | The name for the target time zone. For more information, see [Time Zone IDs](https://docs.microsoft.com/previous-versions/windows/embedded/gg154758(v=winembedded.80)). |
-| <*format*> | No | String | Either a [single format specifier](https://docs.microsoft.com/dotnet/standard/base-types/standard-date-and-time-format-strings) or a [custom format pattern](https://docs.microsoft.com/dotnet/standard/base-types/custom-date-and-time-format-strings). The default format for the timestamp is ["o"](https://docs.microsoft.com/dotnet/standard/base-types/standard-date-and-time-format-strings) (yyyy-MM-ddTHH:mm:ss:fffffffK), which complies with [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) and preserves time zone information. |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*converted-timestamp*> | String | The timestamp converted to the target time zone |
-||||
-
-*Example 1*
-
-This example converts a timestamp to the specified time zone:
+Return the number of items in a collection.
 
 ```
-convertFromUtc('2018-01-01T08:00:00.0000000Z', 'Pacific Standard Time')
-```
-
-And returns this result: `"2018-01-01T00:00:00.0000000"`
-
-*Example 2*
-
-This example converts a timestamp to the specified time zone and format:
-
-```
-convertFromUtc('2018-01-01T08:00:00.0000000Z', 'Pacific Standard Time', 'D')
-```
-
-And returns this result: `"Monday, January 1, 2018"`
-
-<a name="convertTimeZone"></a>
-
-### convertTimeZone
-
-Convert a timestamp from the source time zone to the target time zone.
-
-```
-convertTimeZone('<timestamp>', '<sourceTimeZone>', '<destinationTimeZone>', '<format>'?)
+count('<collection>')
+count([<collection>])
 ```
 
 | Parameter | Required | Type | Description |
 | --------- | -------- | ---- | ----------- |
-| <*timestamp*> | Yes | String | The string that contains the timestamp |
-| <*sourceTimeZone*> | Yes | String | The name for the source time zone. For more information, see [Time Zone IDs](https://docs.microsoft.com/previous-versions/windows/embedded/gg154758(v=winembedded.80)). |
-| <*destinationTimeZone*> | Yes | String | The name for the target time zone. For more information, see [Time Zone IDs](https://docs.microsoft.com/previous-versions/windows/embedded/gg154758(v=winembedded.80)). |
-| <*format*> | No | String | Either a [single format specifier](https://docs.microsoft.com/dotnet/standard/base-types/standard-date-and-time-format-strings) or a [custom format pattern](https://docs.microsoft.com/dotnet/standard/base-types/custom-date-and-time-format-strings). The default format for the timestamp is ["o"](https://docs.microsoft.com/dotnet/standard/base-types/standard-date-and-time-format-strings) (yyyy-MM-ddTHH:mm:ss:fffffffK), which complies with [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) and preserves time zone information. |
+| <*collection*> | Yes | String or Array | The collection with the items to count |
 |||||
 
 | Return value | Type | Description |
 | ------------ | ---- | ----------- |
-| <*converted-timestamp*> | String | The timestamp converted to the target time zone |
+| <*length-or-count*> | Integer | The number of items in the collection |
 ||||
 
-*Example 1*
+*Example*
 
-This example converts the source time zone to the target time zone:
-
-```
-convertTimeZone('2018-01-01T08:00:00.0000000Z', 'UTC', 'Pacific Standard Time')
-```
-
-And returns this result: `"2018-01-01T00:00:00.0000000"`
-
-*Example 2*
-
-This example converts a time zone to the specified time zone and format:
+These examples count the number of items in these collections:
 
 ```
-convertTimeZone('2018-01-01T80:00:00.0000000Z', 'UTC', 'Pacific Standard Time', 'D')
+count('abcd')
+count(createArray(0, 1, 2, 3))
 ```
 
-And returns this result: `"Monday, January 1, 2018"`
-
-<a name="convertToUtc"></a>
-
-### convertToUtc
-
-Convert a timestamp from the source time zone to Universal Time Coordinated (UTC).
-
-```
-convertToUtc('<timestamp>', '<sourceTimeZone>', '<format>'?)
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*timestamp*> | Yes | String | The string that contains the timestamp |
-| <*sourceTimeZone*> | Yes | String | The name for the source time zone. For more information, see [Time Zone IDs](https://docs.microsoft.com/previous-versions/windows/embedded/gg154758(v=winembedded.80)). |
-| <*format*> | No | String | Either a [single format specifier](https://docs.microsoft.com/dotnet/standard/base-types/standard-date-and-time-format-strings) or a [custom format pattern](https://docs.microsoft.com/dotnet/standard/base-types/custom-date-and-time-format-strings). The default format for the timestamp is ["o"](https://docs.microsoft.com/dotnet/standard/base-types/standard-date-and-time-format-strings) (yyyy-MM-ddTHH:mm:ss:fffffffK), which complies with [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) and preserves time zone information. |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*converted-timestamp*> | String | The timestamp converted to UTC |
-||||
-
-*Example 1*
-
-This example converts a timestamp to UTC:
-
-```
-convertToUtc('01/01/2018 00:00:00', 'Pacific Standard Time')
-```
-
-And returns this result: `"2018-01-01T08:00:00.0000000Z"`
-
-*Example 2*
-
-This example converts a timestamp to UTC:
-
-```
-convertToUtc('01/01/2018 00:00:00', 'Pacific Standard Time', 'D')
-```
-
-And returns this result: `"Monday, January 1, 2018"`
+And return this result: `4`
 
 <a name="createArray"></a>
 
@@ -1274,104 +534,8 @@ createArray('h', 'e', 'l', 'l', 'o')
 
 And returns this result: `["h", "e", "l", "l", "o"]`
 
-<a name="dataUri"></a>
-
-### dataUri
-
-Return a data uniform resource identifier (URI) for a string.
-
-```
-dataUri('<value>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*value*> | Yes | String | The string to convert |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*data-uri*> | String | The data URI for the input string |
-||||
-
-*Example*
-
-This example creates a data URI for the "hello" string:
-
-```
-dataUri('hello')
-```
-
-And returns this result: `"data:text/plain;charset=utf-8;base64,aGVsbG8="`
-
-<a name="dataUriToBinary"></a>
-
-### dataUriToBinary
-
-Return the binary version for a data uniform resource identifier (URI).
-Use this function rather than [decodeDataUri()](#decodeDataUri).
-Although both functions work the same way,
-`decodeDataUri()` is preferred.
-
-```
-dataUriToBinary('<value>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*value*> | Yes | String | The data URI to convert |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*binary-for-data-uri*> | String | The binary version for the data URI |
-||||
-
-*Example*
-
-This example creates a binary version for this data URI:
-
-```
-dataUriToBinary('data:text/plain;charset=utf-8;base64,aGVsbG8=')
-```
-
-And returns this result:
-
-`"01100100011000010111010001100001001110100111010001100101011110000111010000101111011100000
-1101100011000010110100101101110001110110110001101101000011000010111001001110011011001010111
-0100001111010111010101110100011001100010110100111000001110110110001001100001011100110110010
-10011011000110100001011000110000101000111010101100111001101100010010001110011100000111101"`
-
-<a name="dataUriToString"></a>
-
-### dataUriToString
-
-Return the string version for a data uniform resource identifier (URI).
-
-```
-dataUriToString('<value>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*value*> | Yes | String | The data URI to convert |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*string-for-data-uri*> | String | The string version for the data URI |
-||||
-
-*Example*
-
-This example creates a string for this data URI:
-
-```
-dataUriToString('data:text/plain;charset=utf-8;base64,aGVsbG8=')
-```
-
-And returns this result: `"hello"`
-
+<a name="date
+<a name="dateReadBack
 <a name="dayOfMonth"></a>
 
 ### dayOfMonth
@@ -1463,110 +627,6 @@ dayOfYear('2018-03-15T13:27:36Z')
 
 And returns this result: `74`
 
-<a name="decodeBase64"></a>
-
-### decodeBase64
-
-Return the string version for a base64-encoded string,
-effectively decoding the base64 string.
-Consider using [base64ToString()](#base64ToString)
-rather than `decodeBase64()`.
-Although both functions work the same way,
-`base64ToString()` is preferred.
-
-```
-decodeBase64('<value>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*value*> | Yes | String | The base64-encoded string to decode |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*decoded-base64-string*> | String | The string version for a base64-encoded string |
-||||
-
-*Example*
-
-This example creates a string for a base64-encoded string:
-
-```
-decodeBase64('aGVsbG8=')
-```
-
-And returns this result: `"hello"`
-
-<a name="decodeDataUri"></a>
-
-### decodeDataUri
-
-Return the binary version for a data uniform resource identifier (URI).
-Consider using [dataUriToBinary()](#dataUriToBinary),
-rather than `decodeDataUri()`.
-Although both functions work the same way,
-`dataUriToBinary()` is preferred.
-
-```
-decodeDataUri('<value>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*value*> | Yes | String | The data URI string to decode |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*binary-for-data-uri*> | String | The binary version for a data URI string |
-||||
-
-*Example*
-
-This example returns the binary version for this data URI:
-
-```
-decodeDataUri('data:text/plain;charset=utf-8;base64,aGVsbG8=')
-```
-
-And returns this result:
-
-`"01100100011000010111010001100001001110100111010001100101011110000111010000101111011100000
-1101100011000010110100101101110001110110110001101101000011000010111001001110011011001010111
-0100001111010111010101110100011001100010110100111000001110110110001001100001011100110110010
-10011011000110100001011000110000101000111010101100111001101100010010001110011100000111101"`
-
-<a name="decodeUriComponent"></a>
-
-### decodeUriComponent
-
-Return a string that replaces escape characters with decoded versions.
-
-```
-decodeUriComponent('<value>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*value*> | Yes | String | The string with the escape characters to decode |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*decoded-uri*> | String | The updated string with the decoded escape characters |
-||||
-
-*Example*
-
-This example replaces the escape characters in this string with decoded versions:
-
-```
-decodeUriComponent('http%3A%2F%2Fcontoso.com')
-```
-
-And returns this result: `"https://contoso.com"`
-
 <a name="div"></a>
 
 ### div
@@ -1599,41 +659,6 @@ div(11, 5)
 ```
 
 And return this result: `2`
-
-<a name="encodeUriComponent"></a>
-
-### encodeUriComponent
-
-Return a uniform resource identifier (URI) encoded version for a
-string by replacing URL-unsafe characters with escape characters.
-Consider using [uriComponent()](#uriComponent),
-rather than `encodeUriComponent()`.
-Although both functions work the same way,
-`uriComponent()` is preferred.
-
-```
-encodeUriComponent('<value>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*value*> | Yes | String | The string to convert to URI-encoded format |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*encoded-uri*> | String | The URI-encoded string with escape characters |
-||||
-
-*Example*
-
-This example creates a URI-encoded version for this string:
-
-```
-encodeUriComponent('https://contoso.com')
-```
-
-And returns this result: `"http%3A%2F%2Fcontoso.com"`
 
 <a name="empty"></a>
 
@@ -1707,6 +732,37 @@ And returns these results:
 * First example: Both values are equivalent, so the function returns `true`.
 * Second example: Both values aren't equivalent, so the function returns `false`.
 
+<a name="exp"></a>
+
+### exp
+
+Return exponentiation of one number to another.
+
+```
+exp(realNumber, exponentNumber)
+```
+
+| Parameter | Required | Type | Description |
+| --------- | -------- | ---- | ----------- |
+| realNumber | Yes | Number | real number to compute exponent of |
+| exponentNumber | Yes | Number | exponent number |
+|||||
+
+| Return value | Type | Description |
+| ------------ | -----| ----------- |
+| <*result-exp*> | Integer or Float | The result from computing exponent of realNumber |
+||||
+
+*Example*
+
+This example computes the exponent:
+
+```
+exp(2, 2)
+```
+
+And returns this result: `4`
+
 <a name="first"></a>
 
 ### first
@@ -1741,6 +797,7 @@ And return these results:
 
 * First example: `"h"`
 * Second example: `0`
+
 
 <a name="float"></a>
 
@@ -1806,161 +863,8 @@ formatDateTime('03/15/2018 12:00:00', 'yyyy-MM-ddTHH:mm:ss')
 
 And returns this result: `"2018-03-15T12:00:00"`
 
-<a name="formDataMultiValues"></a>
 
-### formDataMultiValues
-
-Return an array with values that match a key name
-in an action's *form-data* or *form-encoded* output.
-
-```
-formDataMultiValues('<actionName>', '<key>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*actionName*> | Yes | String | The action whose output has the key value you want |
-| <*key*> | Yes | String | The name for the key whose value you want |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| [<*array-with-key-values*>] | Array | An array with all the values that match the specified key |
-||||
-
-*Example*
-
-This example creates an array from the "Subject" key's value
-in the specified action's form-data or form-encoded output:
-
-```
-formDataMultiValues('Send_an_email', 'Subject')
-```
-
-And returns the subject text in an array, for example: `["Hello world"]`
-
-<a name="formDataValue"></a>
-
-### formDataValue
-
-Return a single value that matches a key name
-in an action's *form-data* or *form-encoded* output.
-If the function finds more than one match,
-the function throws an error.
-
-```
-formDataValue('<actionName>', '<key>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*actionName*> | Yes | String | The action whose output has the key value you want |
-| <*key*> | Yes | String | The name for the key whose value you want |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*key-value*> | String | The value in the specified key  |
-||||
-
-*Example*
-
-This example creates a string from the "Subject" key's value
-in the specified action's form-data or form-encoded output:
-
-```
-formDataValue('Send_an_email', 'Subject')
-```
-
-And returns the subject text as a string, for example: `"Hello world"`
-
-<a name="getFutureTime"></a>
-
-### getFutureTime
-
-Return the current timestamp plus the specified time units.
-
-```
-getFutureTime(<interval>, <timeUnit>, <format>?)
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*interval*> | Yes | Integer | The number of specified time units to subtract |
-| <*timeUnit*> | Yes | String | The unit of time to use with *interval*: "Second", "Minute", "Hour", "Day", "Week", "Month", "Year" |
-| <*format*> | No | String | Either a [single format specifier](https://docs.microsoft.com/dotnet/standard/base-types/standard-date-and-time-format-strings) or a [custom format pattern](https://docs.microsoft.com/dotnet/standard/base-types/custom-date-and-time-format-strings). The default format for the timestamp is ["o"](https://docs.microsoft.com/dotnet/standard/base-types/standard-date-and-time-format-strings) (yyyy-MM-ddTHH:mm:ss:fffffffK), which complies with [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) and preserves time zone information. |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*updated-timestamp*> | String | The current timestamp plus the specified number of time units |
-||||
-
-*Example 1*
-
-Suppose the current timestamp is "2018-03-01T00:00:00.0000000Z".
-This example adds five days to that timestamp:
-
-```
-getFutureTime(5, 'Day')
-```
-
-And returns this result: `"2018-03-06T00:00:00.0000000Z"`
-
-*Example 2*
-
-Suppose the current timestamp is "2018-03-01T00:00:00.0000000Z".
-This example adds five days and converts the result to "D" format:
-
-```
-getFutureTime(5, 'Day', 'D')
-```
-
-And returns this result: `"Tuesday, March 6, 2018"`
-
-<a name="getPastTime"></a>
-
-### getPastTime
-
-Return the current timestamp minus the specified time units.
-
-```
-getPastTime(<interval>, <timeUnit>, <format>?)
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*interval*> | Yes | Integer | The number of specified time units to subtract |
-| <*timeUnit*> | Yes | String | The unit of time to use with *interval*: "Second", "Minute", "Hour", "Day", "Week", "Month", "Year" |
-| <*format*> | No | String | Either a [single format specifier](https://docs.microsoft.com/dotnet/standard/base-types/standard-date-and-time-format-strings) or a [custom format pattern](https://docs.microsoft.com/dotnet/standard/base-types/custom-date-and-time-format-strings). The default format for the timestamp is ["o"](https://docs.microsoft.com/dotnet/standard/base-types/standard-date-and-time-format-strings) (yyyy-MM-ddTHH:mm:ss:fffffffK), which complies with [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) and preserves time zone information. |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*updated-timestamp*> | String | The current timestamp minus the specified number of time units |
-||||
-
-*Example 1*
-
-Suppose the current timestamp is "2018-02-01T00:00:00.0000000Z".
-This example subtracts five days from that timestamp:
-
-```
-getPastTime(5, 'Day')
-```
-
-And returns this result: `"2018-01-27T00:00:00.0000000Z"`
-
-*Example 2*
-
-Suppose the current timestamp is "2018-02-01T00:00:00.0000000Z".
-This example subtracts five days and converts the result to "D" format:
-
-```
-getPastTime(5, 'Day', 'D')
-```
-
-And returns this result: `"Saturday, January 27, 2018"`
+<a name="getTimeOfDay
 
 <a name="greater"></a>
 
@@ -2101,60 +1005,38 @@ int('10')
 
 And returns this result: `10`
 
-<a name="item"></a>
+<a name="join"></a>
 
-### item
+### join
 
-When used inside a repeating action over an array,
-return the current item in the array during the action's current iteration.
-You can also get the values from that item's properties.
-
-```
-item()
-```
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*current-array-item*> | Any | The current item in the array for the action's current iteration |
-||||
-
-*Example*
-
-This example gets the `body` element from the current message for
-the "Send_an_email" action inside a for-each loop's current iteration:
+Return a string that has all the items from an array
+and has each character separated by a *delimiter*.
 
 ```
-item().body
-```
-
-<a name="items"></a>
-
-### items
-
-Return the current item from each cycle in a for-each loop.
-Use this function inside the for-each loop.
-
-```
-items('<loopName>')
+join([<collection>], '<delimiter>')
 ```
 
 | Parameter | Required | Type | Description |
 | --------- | -------- | ---- | ----------- |
-| <*loopName*> | Yes | String | The name for the for-each loop |
+| <*collection*> | Yes | Array | The array that has the items to join |
+| <*delimiter*> | Yes | String | The separator that appears between each character in the resulting string |
 |||||
 
 | Return value | Type | Description |
 | ------------ | ---- | ----------- |
-| <*item*> | Any | The item from the current cycle in the specified for-each loop |
+| <*char1*><*delimiter*><*char2*><*delimiter*>... | String | The resulting string created from all the items in the specified array |
 ||||
 
 *Example*
 
-This example gets the current item from the specified for-each loop:
+This example creates a string from all the items in this
+array with the specified character as the delimiter:
 
 ```
-items('myForEachLoopName')
+join(createArray('a', 'b', 'c'), '.')
 ```
+
+And returns this result: `"a.b.c"`
 
 <a name="json"></a>
 
@@ -2226,75 +1108,6 @@ And returns this result:
 }
 ```
 
-<a name="intersection"></a>
-
-### intersection
-
-Return a collection that has *only* the
-common items across the specified collections.
-To appear in the result, an item must appear in
-all the collections passed to this function.
-If one or more items have the same name,
-the last item with that name appears in the result.
-
-```
-intersection([<collection1>], [<collection2>], ...)
-intersection('<collection1>', '<collection2>', ...)
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*collection1*>, <*collection2*>, ... | Yes | Array or Object, but not both | The collections from where you want *only* the common items |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*common-items*> | Array or Object, respectively | A collection that has only the common items across the specified collections |
-||||
-
-*Example*
-
-This example finds the common items across these arrays:
-
-```
-intersection(createArray(1, 2, 3), createArray(101, 2, 1, 10), createArray(6, 8, 1, 2))
-```
-
-And returns an array with *only* these items: `[1, 2]`
-
-<a name="join"></a>
-
-### join
-
-Return a string that has all the items from an array
-and has each character separated by a *delimiter*.
-
-```
-join([<collection>], '<delimiter>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*collection*> | Yes | Array | The array that has the items to join |
-| <*delimiter*> | Yes | String | The separator that appears between each character in the resulting string |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*char1*><*delimiter*><*char2*><*delimiter*>... | String | The resulting string created from all the items in the specified array |
-||||
-
-*Example*
-
-This example creates a string from all the items in this
-array with the specified character as the delimiter:
-
-```
-join(createArray('a', 'b', 'c'), '.')
-```
-
-And returns this result: `"a.b.c"`
-
 <a name="last"></a>
 
 ### last
@@ -2329,38 +1142,6 @@ And returns these results:
 
 * First example: `"d"`
 * Second example: `3`
-
-<a name="length"></a>
-
-### length
-
-Return the length of a string passed in or number of items in a collection.
-
-```
-length('<collection>')
-length([<collection>])
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*collection*> | Yes | String or Array | The collection with the items to count |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*length-or-count*> | Integer | The number of items in the collection |
-||||
-
-*Example*
-
-These examples count the number of items in these collections:
-
-```
-length('abcd')
-length(createArray(0, 1, 2, 3))
-```
-
-And return this result: `4`
 
 <a name="less"></a>
 
@@ -2437,30 +1218,6 @@ And return these results:
 
 * First example: `true`
 * Second example: `false`
-
-<a name="listCallbackUrl"></a>
-
-### listCallbackUrl
-
-Return the "callback URL" that calls a trigger or action.
-This function works only with triggers and actions for the
-**HttpWebhook** and **ApiConnectionWebhook** connector types,
-but not the **Manual**, **Recurrence**, **HTTP**, and **APIConnection** types.
-
-```
-listCallbackUrl()
-```
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*callback-URL*> | String | The callback URL for a trigger or action |
-||||
-
-*Example*
-
-This example shows a sample callback URL that this function might return:
-
-`"https://prod-01.westus.logic.azure.com:443/workflows/<*workflow-ID*>/triggers/manual/run?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=<*signature-ID*>"`
 
 <a name="max"></a>
 
@@ -2561,6 +1318,7 @@ mod(3, 2)
 
 And return this result: `1`
 
+<a name="month
 <a name="mul"></a>
 
 ### mul
@@ -2595,28 +1353,6 @@ And return these results:
 
 * First example: `2`
 * Second example `3`
-
-<a name="multipartBody"></a>
-
-### multipartBody
-
-Return the body for a specific part in an
-action's output that has multiple parts.
-
-```
-multipartBody('<actionName>', <index>)
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*actionName*> | Yes | String | The name for the action that has output with multiple parts |
-| <*index*> | Yes | Integer | The index value for the part that you want |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*body*> | String | The body for the specified part |
-||||
 
 <a name="not"></a>
 
@@ -2789,37 +1525,35 @@ rand(1, 5)
 
 And returns one of these numbers as the result: `1`, `2`, `3`, or `4`
 
-<a name="range"></a>
+<a name="removeProperty"></a>
 
-### range
+### removeProperty
 
-Return an integer array that starts from a specified integer.
+Remove a property from an object and return the updated object.
 
 ```
-range(<startIndex>, <count>)
+removeProperty(<object>, '<property>')
 ```
 
 | Parameter | Required | Type | Description |
 | --------- | -------- | ---- | ----------- |
-| <*startIndex*> | Yes | Integer | An integer value that starts the array as the first item |
-| <*count*> | Yes | Integer | The number of integers in the array |
+| <*object*> | Yes | Object | The JSON object from where you want to remove a property |
+| <*property*> | Yes | String | The name for the property to remove |
 |||||
 
 | Return value | Type | Description |
 | ------------ | ---- | ----------- |
-| [<*range-result*>] | Array | The array with integers starting from the specified index |
+| <*updated-object*> | Object | The updated JSON object without the specified property |
 ||||
 
 *Example*
 
-This example creates an integer array that starts from
-the specified index and has the specified number of integers:
+This example removes the `"timeOfDay"` property from a `"reservation"` object,
+which is converted to JSON with the [JSON()](#json) function, and returns the updated object:
 
 ```
-range(1, 4)
+removeProperty(json('reservation'), 'timeOfDay')
 ```
-
-And returns this result: `[1, 2, 3, 4]`
 
 <a name="replace"></a>
 
@@ -2856,36 +1590,40 @@ replace('the old string', 'old', 'new')
 
 And returns this result: `"the new string"`
 
-<a name="removeProperty"></a>
+<a name="replace"></a>
 
-### removeProperty
+### replaceIgnoreCase
 
-Remove a property from an object and return the updated object.
+Replace a substring with the specified string,
+and return the result string. This function
+is case-insensitive.
 
 ```
-removeProperty(<object>, '<property>')
+replaceIgnoreCase('<text>', '<oldText>', '<newText>')
 ```
 
 | Parameter | Required | Type | Description |
 | --------- | -------- | ---- | ----------- |
-| <*object*> | Yes | Object | The JSON object from where you want to remove a property |
-| <*property*> | Yes | String | The name for the property to remove |
+| <*text*> | Yes | String | The string that has the substring to replace |
+| <*oldText*> | Yes | String | The substring to replace |
+| <*newText*> | Yes | String | The replacement string |
 |||||
 
 | Return value | Type | Description |
 | ------------ | ---- | ----------- |
-| <*updated-object*> | Object | The updated JSON object without the specified property |
+| <*updated-text*> | String | The updated string after replacing the substring <p>If the substring is not found, return the original string. |
 ||||
 
 *Example*
 
-This example adds the `timeOfDay` property to the `reservation` object,
-which is converted to JSON with the [JSON()](#json) function.
-The function assigns a value `morning` and returns the updated object:
+This example finds the "old" substring in "the old string"
+and replaces "old" with "new":
 
 ```
-removeProperty(json('reservation'), 'reservation')
+replace('the old string', 'old', 'new')
 ```
+
+And returns this result: `"the new string"`
 
 <a name="setProperty"></a>
 
@@ -2921,39 +1659,6 @@ The function assigns an explicit value and returns the updated JSON object:
 setProperty(json('reservation'), 'timeOfDay', 'morning')
 ```
 
-<a name="skip"></a>
-
-### skip
-
-Remove items from the front of a collection,
-and return *all the other* items.
-
-```
-skip([<collection>], <count>)
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*collection*> | Yes | Array | The collection whose items you want to remove |
-| <*count*> | Yes | Integer | A positive integer for the number of items to remove at the front |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| [<*updated-collection*>] | Array | The updated collection after removing the specified items |
-||||
-
-*Example*
-
-This example removes one item, the number 0,
-from the front of the specified array:
-
-```
-skip(createArray(0, 1, 2, 3), 1)
-```
-
-And returns this array with the remaining items: `[1,2,3]`
-
 <a name="split"></a>
 
 ### split
@@ -2986,144 +1691,6 @@ split('a_b_c', '_')
 ```
 
 And returns this array as the result: `["a","b","c"]`
-
-<a name="startOfDay"></a>
-
-### startOfDay
-
-Return the start of the day for a timestamp.
-
-```
-startOfDay('<timestamp>', '<format>'?)
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*timestamp*> | Yes | String | The string that contains the timestamp |
-| <*format*> | No | String | Either a [single format specifier](https://docs.microsoft.com/dotnet/standard/base-types/standard-date-and-time-format-strings) or a [custom format pattern](https://docs.microsoft.com/dotnet/standard/base-types/custom-date-and-time-format-strings). The default format for the timestamp is ["o"](https://docs.microsoft.com/dotnet/standard/base-types/standard-date-and-time-format-strings) (yyyy-MM-ddTHH:mm:ss:fffffffK), which complies with [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) and preserves time zone information. |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*updated-timestamp*> | String | The specified timestamp but starting at the zero-hour mark for the day |
-||||
-
-*Example*
-
-This example finds the start of the day for this timestamp:
-
-```
-startOfDay('2018-03-15T13:30:30Z')
-```
-
-And returns this result: `"2018-03-15T00:00:00.0000000Z"`
-
-<a name="startOfHour"></a>
-
-### startOfHour
-
-Return the start of the hour for a timestamp.
-
-```
-startOfHour('<timestamp>', '<format>'?)
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*timestamp*> | Yes | String | The string that contains the timestamp |
-| <*format*> | No | String | Either a [single format specifier](https://docs.microsoft.com/dotnet/standard/base-types/standard-date-and-time-format-strings) or a [custom format pattern](https://docs.microsoft.com/dotnet/standard/base-types/custom-date-and-time-format-strings). The default format for the timestamp is ["o"](https://docs.microsoft.com/dotnet/standard/base-types/standard-date-and-time-format-strings) (yyyy-MM-ddTHH:mm:ss:fffffffK), which complies with [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) and preserves time zone information. |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*updated-timestamp*> | String | The specified timestamp but starting at the zero-minute mark for the hour |
-||||
-
-*Example*
-
-This example finds the start of the hour for this timestamp:
-
-```
-startOfHour('2018-03-15T13:30:30Z')
-```
-
-And returns this result: `"2018-03-15T13:00:00.0000000Z"`
-
-<a name="startOfMonth"></a>
-
-### startOfMonth
-
-Return the start of the month for a timestamp.
-
-```
-startOfMonth('<timestamp>', '<format>'?)
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*timestamp*> | Yes | String | The string that contains the timestamp |
-| <*format*> | No | String | Either a [single format specifier](https://docs.microsoft.com/dotnet/standard/base-types/standard-date-and-time-format-strings) or a [custom format pattern](https://docs.microsoft.com/dotnet/standard/base-types/custom-date-and-time-format-strings). The default format for the timestamp is ["o"](https://docs.microsoft.com/dotnet/standard/base-types/standard-date-and-time-format-strings) (yyyy-MM-ddTHH:mm:ss:fffffffK), which complies with [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) and preserves time zone information. |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*updated-timestamp*> | String | The specified timestamp but starting on the first day of the month at the zero-hour mark |
-||||
-
-*Example*
-
-This example returns the start of the month for this timestamp:
-
-```
-startOfMonth('2018-03-15T13:30:30Z')
-```
-
-And returns this result: `"2018-03-01T00:00:00.0000000Z"`
-
-<a name="startswith"></a>
-
-### startsWith
-
-Check whether a string starts with a specific substring.
-Return true when the substring is found, or return false when not found.
-This function is not case-sensitive.
-
-```
-startsWith('<text>', '<searchText>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*text*> | Yes | String | The string to check |
-| <*searchText*> | Yes | String | The starting string to find |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| true or false  | Boolean | Return true when the starting substring is found. Return false when not found. |
-||||
-
-*Example 1*
-
-This example checks whether the "hello world"
-string starts with the "hello" substring:
-
-```
-startsWith('hello world', 'hello')
-```
-
-And returns this result: `true`
-
-*Example 2*
-
-This example checks whether the "hello world"
-string starts with the "greetings" substring:
-
-```
-startsWith('hello world', 'greetings')
-```
-
-And returns this result: `false`
 
 <a name="string"></a>
 
@@ -3277,63 +1844,35 @@ subtractFromTime('2018-01-02T00:00:00Z', 1, 'Day', 'D')
 
 And returns this result using the optional "D" format: `"Monday, January, 1, 2018"`
 
-<a name="take"></a>
+<a name="sum"></a>
 
-### take
+### sum
 
-Return items from the front of a collection.
+Return the result from adding numbers in a list.
 
 ```
-take('<collection>', <count>)
-take([<collection>], <count>)
+add([<list of numbers>])
 ```
 
 | Parameter | Required | Type | Description |
 | --------- | -------- | ---- | ----------- |
-| <*collection*> | Yes | String or Array | The collection whose items you want |
-| <*count*> | Yes | Integer | A positive integer for the number of items that you want from the front |
+| [\<list of numbers\>] | Yes | List | The numbers to add |
 |||||
 
 | Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*subset*> or [<*subset*>] | String or Array, respectively | A string or array that has the specified number of items taken from the front of the original collection |
+| ------------ | -----| ----------- |
+| <*result-sum*> | Integer or Float | The result from adding the specified numbers |
 ||||
 
 *Example*
 
-These examples get the specified number of
-items from the front of these collections:
+This example adds the specified numbers:
 
 ```
-take('abcde', 3)
-take(createArray(0, 1, 2, 3, 4), 3)
+add([1, 1.5])
 ```
 
-And return these results:
-
-* First example: `"abc"`
-* Second example: `[0, 1, 2]`
-
-<a name="ticks"></a>
-
-### ticks
-
-Return the `ticks` property value for a specified timestamp.
-A *tick* is a 100-nanosecond interval.
-
-```
-ticks('<timestamp>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*timestamp*> | Yes | String | The string for a timestamp |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*ticks-number*> | Integer | The number of ticks since the specified timestamp |
-||||
+And returns this result: `2.5`
 
 <a name="toLower"></a>
 
@@ -3399,155 +1938,6 @@ toUpper('Hello World')
 
 And returns this result: `"HELLO WORLD"`
 
-<a name="trigger"></a>
-
-### trigger
-
-Return a trigger's output at runtime,
-or values from other JSON name-and-value pairs,
-which you can assign to an expression.
-
-* Inside a trigger's inputs, this function
-returns the output from the previous execution.
-
-* Inside a trigger's condition, this function
-returns the output from the current execution.
-
-By default, the function references the entire trigger object,
-but you can optionally specify a property whose value that you want.
-Also, this function has shorthand versions available,
-see [triggerOutputs()](#triggerOutputs) and [triggerBody()](#triggerBody).
-
-```
-trigger()
-```
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*trigger-output*> | String | The output from a trigger at runtime |
-||||
-
-<a name="triggerBody"></a>
-
-### triggerBody
-
-Return a trigger's `body` output at runtime.
-Shorthand for `trigger().outputs.body`.
-See [trigger()](#trigger).
-
-```
-triggerBody()
-```
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*trigger-body-output*> | String | The `body` output from the trigger |
-||||
-
-<a name="triggerFormDataMultiValues"></a>
-
-### triggerFormDataMultiValues
-
-Return an array with values that match a key name
-in a trigger's *form-data* or *form-encoded* output.
-
-```
-triggerFormDataMultiValues('<key>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*key*> | Yes | String | The name for the key whose value you want |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| [<*array-with-key-values*>] | Array | An array with all the values that match the specified key |
-||||
-
-*Example*
-
-This example creates an array from the "feedUrl" key value in
-an RSS trigger's form-data or form-encoded output:
-
-```
-triggerFormDataMultiValues('feedUrl')
-```
-
-And returns this array as an example result: `["http://feeds.reuters.com/reuters/topNews"]`
-
-<a name="triggerFormDataValue"></a>
-
-### triggerFormDataValue
-
-Return a string with a single value that matches a key
-name in a trigger's *form-data* or *form-encoded* output.
-If the function finds more than one match,
-the function throws an error.
-
-```
-triggerFormDataValue('<key>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*key*> | Yes | String | The name for the key whose value you want |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*key-value*> | String | The value in the specified key |
-||||
-
-*Example*
-
-This example creates a string from the "feedUrl" key value in
-an RSS trigger's form-data or form-encoded output:
-
-```
-triggerFormDataValue('feedUrl')
-```
-
-And returns this string as an example result: `"http://feeds.reuters.com/reuters/topNews"`
-
-<a name="triggerMultipartBody"></a>
-
-### triggerMultipartBody
-
-Return the body for a specific part in a trigger's output that has multiple parts.
-
-```
-triggerMultipartBody(<index>)
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*index*> | Yes | Integer | The index value for the part that you want |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*body*> | String | The body for the specified part in a trigger's multipart output |
-||||
-
-<a name="triggerOutputs"></a>
-
-### triggerOutputs
-
-Return a trigger's output at runtime,
-or values from other JSON name-and-value pairs.
-Shorthand for `trigger().outputs`.
-See [trigger()](#trigger).
-
-```
-triggerOutputs()
-```
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*trigger-output*> | String | The output from a trigger at runtime  |
-||||
-
 <a name="trim"></a>
 
 ### trim
@@ -3579,320 +1969,6 @@ trim(' Hello World  ')
 ```
 
 And returns this result: `"Hello World"`
-
-<a name="union"></a>
-
-### union
-
-Return a collection that has *all* the items from the specified collections.
-To appear in the result, an item can appear in any collection
-passed to this function. If one or more items have the same name,
-the last item with that name appears in the result.
-
-```
-union('<collection1>', '<collection2>', ...)
-union([<collection1>], [<collection2>], ...)
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*collection1*>, <*collection2*>, ...  | Yes | Array or Object, but not both | The collections from where you want *all* the items |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*updatedCollection*> | Array or Object, respectively | A collection with all the items from the specified collections - no duplicates |
-||||
-
-*Example*
-
-This example gets *all* the items from these collections:
-
-```
-union(createArray(1, 2, 3), createArray(1, 2, 10, 101))
-```
-
-And returns this result: `[1, 2, 3, 10, 101]`
-
-<a name="uriComponent"></a>
-
-### uriComponent
-
-Return a uniform resource identifier (URI) encoded version for a
-string by replacing URL-unsafe characters with escape characters.
-Use this function rather than [encodeUriComponent()](#encodeUriComponent).
-Although both functions work the same way,
-`uriComponent()` is preferred.
-
-```
-uriComponent('<value>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*value*> | Yes | String | The string to convert to URI-encoded format |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*encoded-uri*> | String | The URI-encoded string with escape characters |
-||||
-
-*Example*
-
-This example creates a URI-encoded version for this string:
-
-```
-uriComponent('https://contoso.com')
-```
-
-And returns this result: `"http%3A%2F%2Fcontoso.com"`
-
-<a name="uriComponentToBinary"></a>
-
-### uriComponentToBinary
-
-Return the binary version for a uniform resource identifier (URI) component.
-
-```
-uriComponentToBinary('<value>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*value*> | Yes | String | The URI-encoded string to convert |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*binary-for-encoded-uri*> | String | The binary version for the URI-encoded string. The binary content is base64-encoded and represented by `$content`. |
-||||
-
-*Example*
-
-This example creates the binary version for this URI-encoded string:
-
-```
-uriComponentToBinary('http%3A%2F%2Fcontoso.com')
-```
-
-And returns this result:
-
-`"001000100110100001110100011101000111000000100101001100
-11010000010010010100110010010001100010010100110010010001
-10011000110110111101101110011101000110111101110011011011
-110010111001100011011011110110110100100010"`
-
-<a name="uriComponentToString"></a>
-
-### uriComponentToString
-
-Return the string version for a uniform resource identifier (URI) encoded string,
-effectively decoding the URI-encoded string.
-
-```
-uriComponentToString('<value>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*value*> | Yes | String | The URI-encoded string to decode |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*decoded-uri*> | String | The decoded version for the URI-encoded string |
-||||
-
-*Example*
-
-This example creates the decoded string version for this URI-encoded string:
-
-```
-uriComponentToString('http%3A%2F%2Fcontoso.com')
-```
-
-And returns this result: `"https://contoso.com"`
-
-<a name="uriHost"></a>
-
-### uriHost
-
-Return the `host` value for a uniform resource identifier (URI).
-
-```
-uriHost('<uri>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*uri*> | Yes | String | The URI whose `host` value you want |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*host-value*> | String | The `host` value for the specified URI |
-||||
-
-*Example*
-
-This example finds the `host` value for this URI:
-
-```
-uriHost('https://www.localhost.com:8080')
-```
-
-And returns this result: `"www.localhost.com"`
-
-<a name="uriPath"></a>
-
-### uriPath
-
-Return the `path` value for a uniform resource identifier (URI).
-
-```
-uriPath('<uri>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*uri*> | Yes | String | The URI whose `path` value you want |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*path-value*> | String | The `path` value for the specified URI. If `path` doesn't have a value, return the "/" character. |
-||||
-
-*Example*
-
-This example finds the `path` value for this URI:
-
-```
-uriPath('http://www.contoso.com/catalog/shownew.htm?date=today')
-```
-
-And returns this result: `"/catalog/shownew.htm"`
-
-<a name="uriPathAndQuery"></a>
-
-### uriPathAndQuery
-
-Return the `path` and `query` values for a uniform resource identifier (URI).
-
-```
-uriPathAndQuery('<uri>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*uri*> | Yes | String | The URI whose `path` and `query` values you want |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*path-query-value*> | String | The `path` and `query` values for the specified URI. If `path` doesn't specify a value, return the "/" character. |
-||||
-
-*Example*
-
-This example finds the `path` and `query` values for this URI:
-
-```
-uriPathAndQuery('http://www.contoso.com/catalog/shownew.htm?date=today')
-```
-
-And returns this result: `"/catalog/shownew.htm?date=today"`
-
-<a name="uriPort"></a>
-
-### uriPort
-
-Return the `port` value for a uniform resource identifier (URI).
-
-```
-uriPort('<uri>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*uri*> | Yes | String | The URI whose `port` value you want |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*port-value*> | Integer | The `port` value for the specified URI. If `port` doesn't specify a value, return the default port for the protocol. |
-||||
-
-*Example*
-
-This example returns the `port` value for this URI:
-
-```
-uriPort('http://www.localhost:8080')
-```
-
-And returns this result: `8080`
-
-<a name="uriQuery"></a>
-
-### uriQuery
-
-Return the `query` value for a uniform resource identifier (URI).
-
-```
-uriQuery('<uri>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*uri*> | Yes | String | The URI whose `query` value you want |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*query-value*> | String | The `query` value for the specified URI |
-||||
-
-*Example*
-
-This example returns the `query` value for this URI:
-
-```
-uriQuery('http://www.contoso.com/catalog/shownew.htm?date=today')
-```
-
-And returns this result: `"?date=today"`
-
-<a name="uriScheme"></a>
-
-### uriScheme
-
-Return the `scheme` value for a uniform resource identifier (URI).
-
-```
-uriScheme('<uri>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*uri*> | Yes | String | The URI whose `scheme` value you want |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*scheme-value*> | String | The `scheme` value for the specified URI |
-||||
-
-*Example*
-
-This example returns the `scheme` value for this URI:
-
-```
-uriScheme('http://www.contoso.com/catalog/shownew.htm?date=today')
-```
-
-And returns this result: `"http"`
 
 <a name="utcNow"></a>
 
@@ -3939,223 +2015,5 @@ utcNow('D')
 
 And returns this result: `"Sunday, April 15, 2018"`
 
-<a name="variables"></a>
+<a name="year
 
-### variables
-
-Return the value for a specified variable.
-
-```
-variables('<variableName>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*variableName*> | Yes | String | The name for the variable whose value you want |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*variable-value*> | Any | The value for the specified variable |
-||||
-
-*Example*
-
-Suppose the current value for a "numItems" variable is 20.
-This example gets the integer value for this variable:
-
-```
-variables('numItems')
-```
-
-And returns this result: `20`
-
-<a name="workflow"></a>
-
-### workflow
-
-Return all the details about the workflow itself during run time.
-
-```
-workflow().<property>
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*property*> | No | String | The name for the workflow property whose value you want <p>A workflow object has these properties: **name**, **type**, **id**, **location**, and **run**. The **run** property value is also an object that has these properties: **name**, **type**, and **id**. |
-|||||
-
-*Example*
-
-This example returns the name for a workflow's current run:
-
-```
-workflow().run.name
-```
-
-<a name="xml"></a>
-
-### xml
-
-Return the XML version for a string that contains a JSON object.
-
-```
-xml('<value>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*value*> | Yes | String | The string with the JSON object to convert <p>The JSON object must have only one root property, which can't be an array. <br>Use the backslash character (\\) as an escape character for the double quotation mark ("). |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*xml-version*> | Object | The encoded XML for the specified string or JSON object |
-||||
-
-*Example 1*
-
-This example creates the XML version for this string,
-which contains a JSON object:
-
-`xml(json('{ \"name\": \"Sophia Owen\" }'))`
-
-And returns this result XML:
-
-```xml
-<name>Sophia Owen</name>
-```
-
-*Example 2*
-
-Suppose you have this JSON object:
-
-```json
-{
-  "person": {
-    "name": "Sophia Owen",
-    "city": "Seattle"
-  }
-}
-```
-
-This example creates XML for a string that contains this JSON object:
-
-`xml(json('{\"person\": {\"name\": \"Sophia Owen\", \"city\": \"Seattle\"}}'))`
-
-And returns this result XML:
-
-```xml
-<person>
-  <name>Sophia Owen</name>
-  <city>Seattle</city>
-<person>
-```
-
-<a name="xpath"></a>
-
-### xpath
-
-Check XML for nodes or values that match an XPath (XML Path Language) expression,
-and return the matching nodes or values. An XPath expression, or just "XPath",
-helps you navigate an XML document structure so that you can select nodes
-or compute values in the XML content.
-
-```
-xpath('<xml>', '<xpath>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*xml*> | Yes | Any | The XML string to search for nodes or values that match an XPath expression value |
-| <*xpath*> | Yes | Any | The XPath expression used to find matching XML nodes or values |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*xml-node*> | XML | An XML node when only a single node matches the specified XPath expression |
-| <*value*> | Any | The value from an XML node when only a single value matches the specified XPath expression |
-| [<*xml-node1*>, <*xml-node2*>, ...] </br>-or- </br>[<*value1*>, <*value2*>, ...] | Array | An array with XML nodes or values that match the specified XPath expression |
-||||
-
-*Example 1*
-
-This example finds nodes that match the `<name></name>` node
-in the specified arguments, and returns an array with those node values:
-
-`xpath(xml(parameters('items')), '/produce/item/name')`
-
-Here are the arguments:
-
-* The "items" string, which contains this XML:
-
-  `"<?xml version="1.0"?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>"`
-
-  The example uses the [parameters()](#parameters) function to get
-  the XML string from the "items" argument, but must also convert
-  the string to XML format by using the [xml()](#xml) function.
-
-* This XPath expression, which is passed as a string:
-
-  `"/produce/item/name"`
-
-Here is the result array with the nodes that match `<name></name`:
-
-`[ <name>Gala</name>, <name>Honeycrisp</name> ]`
-
-*Example 2*
-
-Following on Example 1, this example finds nodes that match the
-`<count></count>` node and adds those node values with the `sum()` function:
-
-`xpath(xml(parameters('items')), 'sum(/produce/item/count)')`
-
-And returns this result: `30`
-
-*Example 3*
-
-For this example, both expressions find nodes that match the
-`<location></location>` node, in the specified arguments,
-which include XML with a namespace. The expressions use the backslash
-character (\\) as an escape character for the double quotation mark (").
-
-* *Expression 1*
-
-  `xpath(xml(body('Http')), '/*[name()=\"file\"]/*[name()=\"location\"]')`
-
-* *Expression 2*
-
-  `xpath(xml(body('Http')), '/*[local-name=()=\"file\"] and namespace-uri()=\"http://contoso.com\"/*[local-name()]=\"location\" and namespace-uri()=\"\"]')`
-
-Here are the arguments:
-
-* This XML, which includes the XML document namespace, `xmlns="http://contoso.com"`:
-
-  ```xml
-  <?xml version="1.0"?> <file xmlns="http://contoso.com"> <location>Paris</location> </file>
-  ```
-
-* Either XPath expression here:
-
-  * `/*[name()=\"file\"]/*[name()=\"location\"]`
-
-  * `/*[local-name=()=\"file\"] and namespace-uri()=\"http://contoso.com\"/*[local-name()]=\"location\" and namespace-uri()=\"\"]`
-
-Here is the result node that matches the `<location></location` node:
-
-```xml
-<location xmlns="https://contoso.com">Paris</location>
-```
-
-*Example 4*
-
-Following on Example 3, this example finds the value in the
-`<location></location>` node:
-
-`xpath(xml(body('Http')), 'string(/*[name()=\"file\"]/*[name()=\"location\"])')`
-
-And returns this result: `"Paris"`
-
-## Next steps
-
-Learn about the [Workflow Definition Language](../logic-apps/logic-apps-workflow-definition-language.md)
