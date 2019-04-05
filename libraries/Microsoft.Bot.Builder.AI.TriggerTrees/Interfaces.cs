@@ -1,19 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Microsoft.Bot.Builder.Expressions;
 
 namespace Microsoft.Bot.Builder.AI.TriggerTrees
 {
-    /// <summary>
-    /// Delegate to test memory to see if a trigger expression is true.
-    /// </summary>
-    /// <param name="memory"></param>
-    /// <returns></returns>
-    public delegate bool Evaluator(IDictionary<string, object> memory);
-
     /// <summary>
     /// Optimize a clause by rewriting it.
     /// </summary>

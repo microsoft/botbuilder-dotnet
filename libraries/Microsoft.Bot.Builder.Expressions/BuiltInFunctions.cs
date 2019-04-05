@@ -284,7 +284,7 @@ namespace Microsoft.Bot.Builder.Expressions
         public static string VerifyBoolean(object value, Expression expression)
         {
             string error = null;
-            if (!(value is Boolean))
+            if (!(value is bool))
             {
                 error = $"{expression} is not a boolean.";
             }
@@ -430,7 +430,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <returns>Information about expression type.</returns>
         public static ExpressionEvaluator Lookup(string type)
         {
-            if (!_functions.TryGetValue(type, out ExpressionEvaluator eval))
+            if (!_functions.TryGetValue(type, out var eval))
             {
                 throw new ArgumentException($"{type} does not have a built-in expression evaluator.");
             }
@@ -460,7 +460,7 @@ namespace Microsoft.Bot.Builder.Expressions
         {
             object value = null;
             string error = null;
-            object instance = state;
+            var instance = state;
             var children = expression.Children;
             if (children.Length == 2)
             {
@@ -493,7 +493,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 {
                     if (idxValue is int idx)
                     {
-                        int count = -1;
+                        var count = -1;
                         if (inst is Array arr)
                         {
                             count = arr.Length;
@@ -547,7 +547,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 (result, error) = child.TryEvaluate(state);
                 if (error == null)
                 {
-                    if (!(result is Boolean bresult))
+                    if (!(result is bool bresult))
                     {
                         error = $"{child} is not boolean";
                         break;
@@ -575,7 +575,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 (result, error) = child.TryEvaluate(state);
                 if (error == null)
                 {
-                    if (!(result is Boolean bresult))
+                    if (!(result is bool bresult))
                     {
                         error = $"{child} is not boolean";
                         break;
@@ -687,7 +687,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 { ExpressionType.Divide,
                     new ExpressionEvaluator(ApplySequence(args => args[0] / args[1],
                     (value, expression) => {
-                        string error = VerifyNumber(value, expression);
+                        var error = VerifyNumber(value, expression);
                         if (error == null && Convert.ToDouble(value) == 0.0)
                         {
                             error = $"Cannot divide by 0 from {expression}";
@@ -719,7 +719,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 { ExpressionType.LessThanOrEqual, Comparison(args => args[0] <= args[1]) },
                 { ExpressionType.Equal,
                     new ExpressionEvaluator(Apply(args => args[0] == args[1]), ReturnType.Boolean, ValidateBinary) },
-                { ExpressionType.NotEqual, 
+                { ExpressionType.NotEqual,
                     new ExpressionEvaluator(Apply(args => args[0] != args[1]), ReturnType.Boolean, ValidateBinary) },
                 { ExpressionType.GreaterThan,Comparison(args => args[0] > args[1]) },
                 { ExpressionType.GreaterThanOrEqual, Comparison(args => args[0] >= args[1]) },
@@ -730,8 +730,6 @@ namespace Microsoft.Bot.Builder.Expressions
                     new ExpressionEvaluator((expression, state) => Or(expression, state), ReturnType.Boolean, ValidateBoolean) },
                 { ExpressionType.Not,
                     new ExpressionEvaluator(Apply(args => !args[0], VerifyBoolean), ReturnType.Boolean, ValidateUnaryBoolean) },
-                {ExpressionType.Optional,
-                    new ExpressionEvaluator((expr, state) => (true, null), ReturnType.Boolean, ValidateUnaryBoolean) },
                 { ExpressionType.Contains,
                     new ExpressionEvaluator(Apply(args =>
                     {

@@ -37,7 +37,6 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string And = "&&";
         public const string Or = "||";
         public const string Not = "!";
-        public const string Optional = "optional";
 
         // String
         public const string Concat = "&";
