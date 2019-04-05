@@ -174,7 +174,10 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             }
         }
 
-        private Expression MakeExpression(string type, Expression expression) => Expression.MakeExpression(type, null, expression.Children);
+        private Expression ReplaceExpression(string type, Expression expression) => Expression.MakeExpression(type, TriggerTree.LookupFunction(type), expression.Children);
+
+        private Expression MakeExpression(string type, Expression expression) => Expression.MakeExpression(type, TriggerTree.LookupFunction(type), expression);
+
 
         // Push not down to leaves using De Morgan's rule
         private Expression PushDownNot(Expression expression, bool inNot)
@@ -213,32 +216,36 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 case ExpressionType.LessThan:
                     if (inNot)
                     {
-                        newExpr = MakeExpression(ExpressionType.GreaterThanOrEqual, expression);
+                        newExpr = ReplaceExpression(ExpressionType.GreaterThanOrEqual, expression);
                     }
                     break;
                 case ExpressionType.LessThanOrEqual:
                     if (inNot)
                     {
-                        newExpr = MakeExpression(ExpressionType.GreaterThan, expression);
+                        newExpr = ReplaceExpression(ExpressionType.GreaterThan, expression);
                     }
                     break;
                 case ExpressionType.Equal:
                     if (inNot)
                     {
-                        newExpr = MakeExpression(ExpressionType.NotEqual, expression);
+                        newExpr = ReplaceExpression(ExpressionType.NotEqual, expression);
                     }
                     break;
                 case ExpressionType.GreaterThanOrEqual:
                     if (inNot)
                     {
-                        newExpr = MakeExpression(ExpressionType.LessThan, expression);
+                        newExpr = ReplaceExpression(ExpressionType.LessThan, expression);
                     }
                     break;
                 case ExpressionType.GreaterThan:
                     if (inNot)
                     {
-                        newExpr = MakeExpression(ExpressionType.LessThanOrEqual, expression);
+                        newExpr = ReplaceExpression(ExpressionType.LessThanOrEqual, expression);
                     }
+                    break;
+                case ExpressionType.Exists:
+                    // Rewrite exists(x) -> x != null
+                    newExpr = Expression.MakeExpression(inNot ? ExpressionType.Equal : ExpressionType.NotEqual, null, expression.Children[0], Expression.ConstantExpression(null));
                     break;
                 case TriggerTree.Optional:
                 case TriggerTree.Ignore:
@@ -385,6 +392,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                             if (reln == RelationshipType.Equal)
                             {
                                 _clauses.RemoveAt(j);
+                                --j;
                             }
                             else
                             {
@@ -441,8 +449,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 && cnst.Value is string str
                 && str == variable)
             {
-                cnst.Value = binding;
-                newExpr = cnst;
+                newExpr = Expression.Accessor(binding);
                 changed = true;
             }
             else
@@ -566,6 +573,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                         }
                     }
                 }
+                clause.Children = predicates.ToArray();
             }
         }
     }

@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 Evaluator.ReturnType =
                       (value is string ? ReturnType.String
                       : value.IsNumber() ? ReturnType.Number
-                      : value is Boolean ? ReturnType.Boolean
+                      : value is bool ? ReturnType.Boolean
                       : ReturnType.Object);
                 _value = value;
             }
@@ -44,7 +44,11 @@ namespace Microsoft.Bot.Builder.Expressions
 
         public override string ToString()
         {
-            if (Value is string str)
+            if (Value == null)
+            {
+                return "null";
+            }
+            else if (Value is string str)
             {
                 return $"'{Value}'";
             }

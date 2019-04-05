@@ -218,8 +218,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         {
             if (soFar == RelationshipType.Equal)
             {
-                var shortIgnores = shorterClause.Children.Where(p => p.Type != TriggerTree.Ignore);
-                var longIgnores = longerClause.Children.Where(p => p.Type != TriggerTree.Ignore);
+                var shortIgnores = shorterClause.Children.Where(p => p.Type == TriggerTree.Ignore);
+                var longIgnores = longerClause.Children.Where(p => p.Type == TriggerTree.Ignore);
                 var swapped = false;
                 if (longIgnores.Count() < shortIgnores.Count())
                 {

@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// <summary>
         /// All of the most specific triggers that contain the <see cref="Clause"/> in this node.
         /// </summary>
-        public IReadOnlyList<Trigger> Triggers => _triggers; 
+        public IReadOnlyList<Trigger> Triggers => _triggers;
 
         /// <summary>
         /// All triggers that contain the <see cref="Clause"/> in this node. 
@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// <summary>
         /// Specialized children of this node.
         /// </summary>
-        public IReadOnlyList<Node> Specializations => _specializations; 
+        public IReadOnlyList<Node> Specializations => _specializations;
 
         /// <summary>
         /// The logical conjunction this node represents.
@@ -71,6 +71,13 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
 
         internal Node(Clause clause, TriggerTree tree, Trigger trigger = null)
         {
+            // In order to debug:
+            // 1) Enable Count and VerifyTree
+            // 2) Run your scenario
+            // 3) You will most likely get a beak on the error.
+            // 4) Enable TraceTree and set it hear to get the trace before count
+            // Node._count has the global count for breakpointd
+            // ShowTrace = _count > 280000;
             Clause = clause;
             Tree = tree;
             if (trigger != null)
@@ -87,17 +94,17 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                         {
                             predicate = child.Children[0];
                         }
-                        children.Add(child);
+                        children.Add(predicate);
                     }
                     if (children.Any())
                     {
                         Expression = Expression.MakeExpression(ExpressionType.And, null, children.ToArray());
                     }
-                    else
-                    {
-                        Expression = Expression.ConstantExpression(true);
-                    }
                 }
+            }
+            if (Expression == null)
+            {
+                Expression = Expression.ConstantExpression(true);
             }
         }
 
@@ -108,7 +115,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             return builder.ToString();
         }
 
-        public void ToString(StringBuilder builder, int indent = 0) 
+        public void ToString(StringBuilder builder, int indent = 0)
             => Clause.ToString(builder, indent);
 
         /// <summary>
@@ -197,7 +204,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                             {
                                 _allTriggers.Add(trigger);
                                 var add = true;
-                                for (var i = 0; i < _triggers.Count(); )
+                                for (var i = 0; i < _triggers.Count();)
                                 {
                                     var existing = _triggers[i];
                                     var reln = trigger.Relationship(existing, Tree.Comparers);
@@ -246,9 +253,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     case RelationshipType.Specializes:
                         {
                             triggerNode.AddSpecialization(this);
-#if DEBUG
-                            Debug.Assert(triggerNode.CheckInvariants());
-#endif
                             op = Operation.Inserted;
                         }
                         break;
@@ -309,7 +313,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                             {
                                 _specializations.Add(triggerNode);
 #if DEBUG
-                                Debug.Assert(triggerNode.CheckInvariants());
+                                Debug.Assert(CheckInvariants());
 #endif
                                 op = Operation.Added;
                             }
@@ -332,6 +336,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 var reln = Relationship(child);
                 Debug.Assert(reln == RelationshipType.Generalizes);
             }
+
+            // Siblings should be incomparable
             for (var i = 0; i < _specializations.Count; ++i)
             {
                 var first = _specializations[i];
@@ -342,6 +348,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     Debug.Assert(reln == RelationshipType.Incomparable);
                 }
             }
+
             // Triggers should be incomparable
             for (var i = 0; i < _triggers.Count(); ++i)
             {
@@ -355,6 +362,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     }
                 }
             }
+
             // All triggers should all be found in triggers
             for (var i = 0; i < _allTriggers.Count(); ++i)
             {
@@ -437,6 +445,10 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 added = true;
 #if TraceTree
                 if (Node.ShowTrace) Debug.WriteLine("Added as specialization");
+
+#endif
+#if DEBUG
+                Debug.Assert(CheckInvariants());
 #endif
             }
             return added;
@@ -510,7 +522,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 if (!found)
                 {
                     var (value, error) = Expression.TryEvaluate(state);
-                    if (error != null && value is bool match && match && Triggers.Any())
+                    if (error == null && value is bool match && match && Triggers.Any())
                     {
                         matches.Add(this);
                         found = true;

@@ -16,19 +16,17 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="value">Value to check.</param>
         /// <returns>True if numeric type.</returns>
         public static bool IsNumber(this object value)
-        {
-            return value is sbyte
-                    || value is byte
-                    || value is short
-                    || value is ushort
-                    || value is int
-                    || value is uint
-                    || value is long
-                    || value is ulong
-                    || value is float
-                    || value is double
-                    || value is decimal;
-        }
+            => value is sbyte
+            || value is byte
+            || value is short
+            || value is ushort
+            || value is int
+            || value is uint
+            || value is long
+            || value is ulong
+            || value is float
+            || value is double
+            || value is decimal;
 
         /// <summary>
         /// Test an object to see if it is an integer type.
@@ -36,16 +34,14 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="value">Value to check.</param>
         /// <returns>True if numeric type.</returns>
         public static bool IsInteger(this object value)
-        {
-            return value is sbyte
-                    || value is byte
-                    || value is short
-                    || value is ushort
-                    || value is int
-                    || value is uint
-                    || value is long
-                    || value is ulong;
-        }
+            => value is sbyte
+            || value is byte
+            || value is short
+            || value is ushort
+            || value is int
+            || value is uint
+            || value is long
+            || value is ulong;
 
         /// <summary>
         /// Do a deep equality between expressions.
@@ -55,7 +51,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <returns>True if expressions are the same.</returns>
         public static bool DeepEquals(this Expression expr, Expression other)
         {
-            bool eq = true;
+            var eq = true;
             if (expr != null && other != null)
             {
                 eq = expr.Type == other.Type;
@@ -65,7 +61,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     {
                         var val = ((Constant)expr).Value;
                         var otherVal = ((Constant)other).Value;
-                        eq = val.Equals(otherVal);
+                        eq = val == otherVal || (val != null && val.Equals(otherVal));
                     }
                     else
                     {
@@ -186,7 +182,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 }
                 else if (instance is JObject jobj)
                 {
-                    if (jobj.TryGetValue(property, out JToken jtoken))
+                    if (jobj.TryGetValue(property, out var jtoken))
                     {
                         if (jtoken is JArray jarray)
                         {

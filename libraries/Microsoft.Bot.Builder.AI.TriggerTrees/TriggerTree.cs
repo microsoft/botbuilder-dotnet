@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             ExpressionEvaluator eval;
             if (type == Optional || type == Ignore)
             {
-                eval = new ExpressionEvaluator(null, ReturnType.Object, BuiltInFunctions.ValidateUnaryBoolean);
+                eval = new ExpressionEvaluator(null, ReturnType.Boolean, BuiltInFunctions.ValidateUnaryBoolean);
             }
             else 
             {

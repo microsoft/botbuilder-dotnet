@@ -133,6 +133,10 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                 {
                     result = Expression.ConstantExpression(true);
                 }
+                else if (symbol == "null")
+                {
+                    result = Expression.ConstantExpression(null);
+                }
                 else if (IsShortHandExpression(symbol))
                 {
                     result = MakeShortHandExpression(symbol);
