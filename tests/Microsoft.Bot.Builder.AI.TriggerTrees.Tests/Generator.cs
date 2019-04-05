@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.Bot.Builder.AI.TriggerTrees;
 using Microsoft.Bot.Builder.Expressions;
 
-namespace Microsoft.TriggerTreeTests
+namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
 {
     public class Comparison
     {

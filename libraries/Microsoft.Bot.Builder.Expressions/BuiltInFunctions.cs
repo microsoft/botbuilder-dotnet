@@ -730,8 +730,6 @@ namespace Microsoft.Bot.Builder.Expressions
                     new ExpressionEvaluator((expression, state) => Or(expression, state), ReturnType.Boolean, ValidateBoolean) },
                 { ExpressionType.Not,
                     new ExpressionEvaluator(Apply(args => !args[0], VerifyBoolean), ReturnType.Boolean, ValidateUnaryBoolean) },
-                {ExpressionType.Optional,
-                    new ExpressionEvaluator((expr, state) => (true, null), ReturnType.Boolean, ValidateUnaryBoolean) },
                 { ExpressionType.Contains,
                     new ExpressionEvaluator(Apply(args =>
                     {

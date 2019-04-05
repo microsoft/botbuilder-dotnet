@@ -6,7 +6,7 @@ using System.Diagnostics;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 
-namespace Microsoft.TriggerTreeTests
+namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
 {
     [TestClass]
     public class Tests
