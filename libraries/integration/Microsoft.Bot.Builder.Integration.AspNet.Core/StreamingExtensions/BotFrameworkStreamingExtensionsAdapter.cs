@@ -196,7 +196,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             var route = "/v3/conversations/";
             var request = Request.CreateGet(route);
 
-            return await SendRequestAsync<ConversationsResult>(request).ConfigureAwait(false);
+            return await SendRequestAsync<ConversationsResult>(request, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<ConversationResourceResponse> PostConversationAsync(ConversationParameters parameters, CancellationToken cancellationToken = default(CancellationToken))
@@ -205,7 +205,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             var request = Request.CreatePost(route);
             request.SetBody(parameters);
 
-            return await SendRequestAsync<ConversationResourceResponse>(request).ConfigureAwait(false);
+            return await SendRequestAsync<ConversationResourceResponse>(request, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<ResourceResponse> PostToConversationAsync(string conversationId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
@@ -219,7 +219,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             var request = Request.CreatePost(route);
             request.SetBody(activity);
 
-            return await SendRequestAsync<ResourceResponse>(request).ConfigureAwait(false);
+            return await SendRequestAsync<ResourceResponse>(request, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<ResourceResponse> PostConversationHistoryAsync(string conversationId, Transcript transcript, CancellationToken cancellationToken = default(CancellationToken))
@@ -228,7 +228,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             var request = Request.CreatePost(route);
             request.SetBody(transcript);
 
-            return await SendRequestAsync<ResourceResponse>(request).ConfigureAwait(false);
+            return await SendRequestAsync<ResourceResponse>(request, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<ResourceResponse> UpdateActivityAsync(string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
@@ -242,7 +242,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             var request = Request.CreatePut(route);
             request.SetBody(activity);
 
-            return await SendRequestAsync<ResourceResponse>(request).ConfigureAwait(false);
+            return await SendRequestAsync<ResourceResponse>(request, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<ResourceResponse> PostToActivityAsync(string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
@@ -256,7 +256,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             var request = Request.CreatePost(route);
             request.SetBody(activity);
 
-            return await SendRequestAsync<ResourceResponse>(request).ConfigureAwait(false);
+            return await SendRequestAsync<ResourceResponse>(request, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<HttpOperationResponse> DeleteActivityAsync(string conversationId, string activityId, CancellationToken cancellationToken = default(CancellationToken))
@@ -264,7 +264,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             var route = string.Format("/v3/conversations/{0}/activities/{1}", conversationId, activityId);
             var request = Request.CreateDelete(route);
 
-            return await SendRequestAsync<HttpOperationResponse>(request).ConfigureAwait(false);
+            return await SendRequestAsync<HttpOperationResponse>(request, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<IList<ChannelAccount>> GetConversationMembersAsync(string conversationId, CancellationToken cancellationToken = default(CancellationToken))
@@ -272,7 +272,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             var route = string.Format("/v3/conversations/{0}/members", conversationId);
             var request = Request.CreateGet(route);
 
-            return await SendRequestAsync<IList<ChannelAccount>>(request).ConfigureAwait(false);
+            return await SendRequestAsync<IList<ChannelAccount>>(request, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<PagedMembersResult> GetConversationPagedMembersAsync(string conversationId, int? pageSize = null, string continuationToken = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -280,7 +280,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             var route = string.Format("/v3/conversations/{0}/pagedmembers", conversationId);
             var request = Request.CreateGet(route);
 
-            return await SendRequestAsync<PagedMembersResult>(request).ConfigureAwait(false);
+            return await SendRequestAsync<PagedMembersResult>(request, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<HttpOperationResponse> DeleteConversationMemberAsync(string conversationId, string memberId, CancellationToken cancellationToken = default(CancellationToken))
@@ -288,7 +288,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             var route = string.Format("/v3/conversations/{0}/members/{1}", conversationId, memberId);
             var request = Request.CreateDelete(route);
 
-            return await SendRequestAsync<HttpOperationResponse>(request).ConfigureAwait(false);
+            return await SendRequestAsync<HttpOperationResponse>(request, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<IList<ChannelAccount>> GetActivityMembersAsync(string conversationId, string activityId, CancellationToken cancellationToken = default(CancellationToken))
@@ -296,14 +296,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             var route = string.Format("/v3/conversations/{0}/activities/{1}/members", conversationId, activityId);
             var request = Request.CreateGet(route);
 
-            return await SendRequestAsync<IList<ChannelAccount>>(request).ConfigureAwait(false);
+            return await SendRequestAsync<IList<ChannelAccount>>(request, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<T> SendRequestAsync<T>(Request request)
+        private async Task<T> SendRequestAsync<T>(Request request, CancellationToken cancellation = default(CancellationToken))
         {
             try
             {
-                var serverResponse = await _server.SendAsync(request).ConfigureAwait(false);
+                var serverResponse = await _server.SendAsync(request, cancellation).ConfigureAwait(false);
 
                 if (serverResponse.StatusCode == (int)HttpStatusCode.OK)
                 {
