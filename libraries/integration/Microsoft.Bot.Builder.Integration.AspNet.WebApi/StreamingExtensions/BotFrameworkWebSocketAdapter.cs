@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
         {
             var socket = new System.Net.WebSockets.ClientWebSocket();
             httpContext.DisposeOnPipelineCompleted(socket);
-            var handler = new StreamingExtensionRequestHandler();
+            var handler = new StreamingExtensionsRequestHandler();
             var server = new WebSocketServer(socket, handler);
             handler.Server = server;
             handler.Bot = bot;

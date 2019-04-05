@@ -13,9 +13,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
 {
-    internal class StreamingExtensionRequestHandler : RequestHandler
+    internal class StreamingExtensionsRequestHandler : RequestHandler
     {
-        public StreamingExtensionRequestHandler()
+        public StreamingExtensionsRequestHandler()
         {
         }
 
