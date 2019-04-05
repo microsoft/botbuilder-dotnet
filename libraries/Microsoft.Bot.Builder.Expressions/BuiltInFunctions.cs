@@ -212,6 +212,22 @@ namespace Microsoft.Bot.Builder.Expressions
         }
 
         /// <summary>
+        /// Verify value is list.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <param name="expression">Expression that led to value.</param>
+        /// <returns>Error or null if valid.</returns>
+        public static string VerifyList(object value, Expression expression)
+        {
+            string error = null;
+            if (!(value is IList))
+            {
+                error = $"{expression} is not a list.";
+            }
+            return error;
+        }
+
+        /// <summary>
         /// Verify value is an integer.
         /// </summary>
         /// <param name="value">Value to check.</param>
@@ -578,6 +594,9 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
+        
+
+
         private static (object value, string error) Substring(Expression expression, object state)
         {
             object result = null;
@@ -623,7 +642,7 @@ namespace Microsoft.Bot.Builder.Expressions
         {
             switch (timeUnit)
             {
-                //TODO support week and year
+                //TODO support month and year
                 case "Second":
                     return TimeSpan.FromSeconds(interval);
                 case "Minute":
@@ -682,8 +701,16 @@ namespace Microsoft.Bot.Builder.Expressions
                     new ExpressionEvaluator(Apply(args => args[0] % args[1], VerifyInteger),
                         ReturnType.Number, ValidateBinaryNumber) },
                 { ExpressionType.Average,
-                    new ExpressionEvaluator(Apply(args => args.Average(u => (double)u), VerifyNumber),
-                        ReturnType.Number, ValidateNumber) },
+                    new ExpressionEvaluator(Apply(args => ((IList<object>)args[0]).Average(u => Convert.ToDouble(u))),
+                        ReturnType.Number, ValidateUnary) },
+                { ExpressionType.Sum,
+                    new ExpressionEvaluator(Apply(args =>    {
+                        var operands = (IList<object>)args[0];
+                        if (operands.All(u => (u is int))) return operands.Sum(u => (int)u);
+                        if (operands.All(u => ((u is int) || (u is double)))) return operands.Sum(u => Convert.ToDouble(u));
+                        return 0;
+                    }, VerifyList),
+                        ReturnType.Number, ValidateUnary) },
                 { ExpressionType.Count,
                     new ExpressionEvaluator(Apply(args => ((IList<object>)args[0]).Count), ReturnType.Number, ValidateUnary)},
 
@@ -911,7 +938,18 @@ namespace Microsoft.Bot.Builder.Expressions
                         if (args[0] is string string0 && string0.Length > 0) return string0.Last().ToString();
                         if (args[0] is IList list && list.Count > 0) return list[list.Count - 1];
                         return null;
-                    }), ReturnType.Object, ValidateUnary) }
+                    }), ReturnType.Object, ValidateUnary) },
+
+                // Object manipulation and construction functions
+                // TODO
+                { ExpressionType.Json,
+                    new ExpressionEvaluator(Apply(args => JToken.Parse(args[0])), ReturnType.String, ValidateUnary) },
+                { ExpressionType.AddProperty,
+                    new ExpressionEvaluator(Apply(args => {var newJobj = (JObject)args[0]; newJobj[args[1].ToString()] = args[2];return newJobj; })) },
+                { ExpressionType.SetProperty,
+                    new ExpressionEvaluator(Apply(args => {var newJobj = (JObject)args[0]; newJobj[args[1].ToString()] = args[2];return newJobj; })) },
+                { ExpressionType.RemoveProperty,
+                    new ExpressionEvaluator(Apply(args => {var newJobj = (JObject)args[0]; newJobj.Property(args[1].ToString()).Remove();return newJobj; })) },
             };
 
             // Math aliases
@@ -920,7 +958,6 @@ namespace Microsoft.Bot.Builder.Expressions
             functions.Add("mul", functions[ExpressionType.Multiply]);
             functions.Add("sub", functions[ExpressionType.Subtract]);
             functions.Add("exp", functions[ExpressionType.Power]);
-            functions.Add("sum", functions[ExpressionType.Add]);
             functions.Add("mod", functions[ExpressionType.Mod]);
 
             // Comparison aliases

@@ -8,9 +8,9 @@
 - Your {bread} sandwich with {meat} is on its way. Thanks.
  
 #orderReadOut
-- CASE: {orderType == 'pizza'}
+- IF: {orderType == 'pizza'}
 - [wPhrase] [pizzaOrderConfirmation] 
-- CASE: {orderType == 'sandwich'}
+- ELSEIF: {orderType == 'sandwich'}
 - [sandwichOrderConfirmation] 
 
 # template1

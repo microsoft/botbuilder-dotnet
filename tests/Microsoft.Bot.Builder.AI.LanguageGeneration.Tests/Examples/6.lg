@@ -12,9 +12,9 @@
  
 > Using entity references
 # welcome
-- CASE: {userName}
+- IF: {userName}
     - [welcome-user(userName)]
-- DEFAULT:
+- ELSE:
     - [welcome-user('DongLei')]
 
 
@@ -23,43 +23,43 @@
 - {alarm.time} at {alarm.date}
 
 # ShowAlarms
-- CASE: {count(alarms) == 1}
+- IF: {count(alarms) == 1}
    - You have one alarm [ShowAlarm(alarms[0])]
-- CASE: {count(alarms) == 2}
+- ELSEIF: {count(alarms) == 2}
   - You have {count(alarms)} alarms, {join(alarms, ',', 'and')}
-- DEFAULT:
+- ELSE:
   - You don't have any alarms
 
 # ShowAlarmsWithForeach
-- CASE: {count(alarms) == 1}
+- IF: {count(alarms) == 1}
    - You have one alarm [ShowAlarm(alarms[0])]
-- CASE: {count(alarms) == 2}
+- ELSEIF: {count(alarms) == 2}
   - You have {count(alarms)} alarms, {join(foreach(alarms, '[ShowAlarm]'), ',', 'and')}
-- DEFAULT:
+- ELSE:
   - You don't have any alarms
 
 # ShowAlarmsWithMemberForeach
-- CASE: {count(alarms) == 1}
+- IF: {count(alarms) == 1}
    - You have one alarm [ShowAlarm(alarms[0])]
-- CASE: {count(alarms) == 2}
+- ELSEIF: {count(alarms) == 2}
   - You have {count(alarms)} alarms, {join(foreach(alarms, '[ShowAlarm]'), ',', 'and')}
-- DEFAULT:
+- ELSE:
   - You don't have any alarms
 
 
 # ShowAlarmsWithHumanize
-- CASE: {count(alarms) == 1}
+- IF: {count(alarms) == 1}
    - You have one alarm [ShowAlarm(alarms[0])]
-- CASE: {count(alarms) == 2}
+- ELSEIF: {count(alarms) == 2}
   - You have {count(alarms)} alarms, {humanize(alarms, '[ShowAlarm]', ',', 'and')}
-- DEFAULT:
+- ELSE:
   - You don't have any alarms
 
 
 # ShowAlarmsWithMemberHumanize
-- CASE: {count(alarms) == 1}
+- IF: {count(alarms) == 1}
    - You have one alarm [ShowAlarm(alarms[0])]
-- CASE: {count(alarms) == 2}
+- ELSEIF: {count(alarms) == 2}
   - You have {count(alarms)} alarms, {humanize(alarms, '[ShowAlarm]', ',', 'and')}
-- DEFAULT:
+- ELSE:
   - You don't have any alarms

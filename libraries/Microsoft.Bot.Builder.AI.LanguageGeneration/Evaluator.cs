@@ -10,8 +10,7 @@ using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
-{
-
+{ 
     class EvaluationTarget
     {
         public EvaluationTarget(string templateName, object scope)
@@ -82,26 +81,28 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
         public override string VisitConditionalBody([NotNull] LGFileParser.ConditionalBodyContext context)
         {
-            var caseRules = context.conditionalTemplateBody().caseRule();
-            foreach (var caseRule in caseRules)
+            var ifRules = context.conditionalTemplateBody().ifConditionRule();
+            foreach (var ifRule in ifRules)
             {
-                var conditionExpression = caseRule.caseCondition().EXPRESSION(0).GetText();
-                if (EvalCondition(conditionExpression))
+                if (EvalCondition(ifRule.ifCondition()))
                 {
-                    return Visit(caseRule.normalTemplateBody());
+                    return Visit(ifRule.normalTemplateBody());
                 }
             }
-
-            if (context?.conditionalTemplateBody()?.defaultRule() != null)
-            {
-                return Visit(context.conditionalTemplateBody().defaultRule().normalTemplateBody());
-            }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
+        private bool EvalCondition(LGFileParser.IfConditionContext condition)
+        {
+            var expression = condition.EXPRESSION(0);
+            if (expression == null ||                            // no expression means it's else
+                EvalExpressionInCondition(expression.GetText()))
+            {
+                return true;
+            }
+            
+            return false;
+        }
 
         public override string VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
         {
@@ -150,7 +151,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return validCharactersDict[exp];
         }
 
-        private bool EvalCondition(string exp)
+        private bool EvalExpressionInCondition(string exp)
         {
             try
             {
