@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
             var recognizerWithTimeout = new LuisRecognizer(endpoint, optionsWithTimeout);
 
-            Assert.AreEqual(expectedTimeout, LuisRecognizer.DefaultHttpClient.Timeout.TotalSeconds);
+            Assert.AreEqual(expectedTimeout, LuisRecognizer.DefaultHttpClient.Timeout.Milliseconds);
         }
 
         [TestMethod]
