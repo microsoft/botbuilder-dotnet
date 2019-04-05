@@ -333,7 +333,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (options.Timeout == 0.0D)
             {
-                options.Timeout = 100;
+                options.Timeout = 100000;
             }
 
             if (options.Top < 1)
