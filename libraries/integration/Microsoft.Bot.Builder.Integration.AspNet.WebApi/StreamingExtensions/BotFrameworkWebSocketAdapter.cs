@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
                     return;
                 }
 
-                await CreateWebSocketConnectionAsync(context, authHeader.FirstOrDefault(), channelId.FirstOrDefault(), bot).ConfigureAwait(false);
+                await CreateWebSocketConnectionAsync(context, bot).ConfigureAwait(false);
             }
             catch (Exception)
             {
@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
             }
         }
 
-        public async Task CreateWebSocketConnectionAsync(System.Web.HttpContext httpContext, string authHeader, string channelId, IBot bot)
+        public async Task CreateWebSocketConnectionAsync(System.Web.HttpContext httpContext, IBot bot)
         {
             var socket = new System.Net.WebSockets.ClientWebSocket();
             httpContext.DisposeOnPipelineCompleted(socket);

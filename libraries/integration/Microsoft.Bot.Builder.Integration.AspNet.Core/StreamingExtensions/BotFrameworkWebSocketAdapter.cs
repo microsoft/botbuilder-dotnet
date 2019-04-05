@@ -68,10 +68,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
                 return;
             }
 
-            await CreateWebSocketConnectionAsync(httpRequest.HttpContext, authHeader, channelId, bot).ConfigureAwait(false);
+            await CreateWebSocketConnectionAsync(httpRequest.HttpContext, bot).ConfigureAwait(false);
         }
 
-        public async Task CreateWebSocketConnectionAsync(HttpContext httpContext, string authHeader, string channelId, IBot bot)
+        public async Task CreateWebSocketConnectionAsync(HttpContext httpContext, IBot bot)
         {
             var socket = await httpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
             var handler = new StreamingExtensionRequestHandler();
