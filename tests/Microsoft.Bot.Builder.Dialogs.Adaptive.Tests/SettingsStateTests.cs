@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var planningDialog = new AdaptiveDialog();
             planningDialog.AddRules(new List<IRule>()
             {
-                new NoMatchRule(steps:
+                new NoneIntentRule(steps:
                     new List<IDialog>()
                     {
                         new SendActivity()

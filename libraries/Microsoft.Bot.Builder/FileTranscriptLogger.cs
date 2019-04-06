@@ -59,25 +59,19 @@ namespace Microsoft.Bot.Builder
         {
             if (activity != null)
             {
+                var json = JsonConvert.SerializeObject(activity, jsonSettings);
                 string transcriptFile = Path.Combine(folder, activity.Conversation.Id + ".transcript");
 
-                List<Activity> transcript = null;
-
-                if (this.unitTestMode == true && !started.Contains(transcriptFile))
+                if ((this.unitTestMode == true && !started.Contains(transcriptFile)) || !File.Exists(transcriptFile))
                 {
+                    System.Diagnostics.Trace.TraceInformation($"file://{transcriptFile.Replace("\\", "/")}");
                     started.Add(transcriptFile);
+                    json = $"[{json}]";
                     File.Delete(transcriptFile);
                 }
-
-                if (File.Exists(transcriptFile))
+                else
                 {
-                    transcript = JsonConvert.DeserializeObject<List<Activity>>(File.ReadAllText(transcriptFile));
-                }
-
-                if (transcript == null)
-                {
-                    transcript = new List<Activity>();
-                    System.Diagnostics.Trace.TraceInformation($"file://{transcriptFile.Replace("\\", "/")}");
+                    json = $",\n{json}]";
                 }
 
                 if (activity.Type == ActivityTypes.Message)
@@ -89,8 +83,31 @@ namespace Microsoft.Bot.Builder
                     System.Diagnostics.Trace.TraceInformation($"{activity.From.Name ?? activity.From.Id ?? activity.From.Role} [{activity.Type}]");
                 }
 
-                transcript.Add((Activity)activity);
-                File.WriteAllText(transcriptFile, JsonConvert.SerializeObject(transcript, jsonSettings));
+                // try 3 times
+                for (int i = 0; i < 3; i++)
+                {
+                    try
+                    {
+                        using (var stream = File.Open(transcriptFile, FileMode.OpenOrCreate))
+                        {
+                            if (stream.Length > 0)
+                            {
+                                stream.Seek(-1, SeekOrigin.End);
+                            }
+
+                            using (TextWriter writer = new StreamWriter(stream))
+                            {
+                                await writer.WriteAsync(json).ConfigureAwait(false);
+                            }
+                        }
+
+                        return;
+                    }
+                    catch (Exception)
+                    {
+                        // try again
+                    }
+                }
             }
         }
     }

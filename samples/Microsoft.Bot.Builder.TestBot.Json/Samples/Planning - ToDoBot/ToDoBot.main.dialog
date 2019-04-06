@@ -1,6 +1,7 @@
 {
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
+    "autoEndDialog": false,
     "recognizer": {
         "$type": "Microsoft.RegexRecognizer",
         "intents": {
@@ -14,21 +15,11 @@
     },
     "rules": [
         {
-            "$type": "Microsoft.NoMatchRule",
+            "$type": "Microsoft.NoneIntentRule",
             "steps": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "Hi! I'm a ToDo bot. Say \"add a todo named first\" to get started."
-                }
-            ]
-        },
-        {
-            "$type": "Microsoft.EventRule",
-            "events": [ "cancelDialog" ],
-            "steps": [
-                {
-                    "$type": "Microsoft.SendActivity",
-                    "activity": "ok."
                 }
             ]
         },
@@ -75,7 +66,11 @@
             "intent": "CancelIntent",
             "steps": [
                 {
-                    "$type": "Microsoft.CancelDialog"
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "ok."
+                },
+                {
+                    "$type": "Microsoft.EndDialog"
                 }
             ]
         }

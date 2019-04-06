@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -368,6 +369,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     {
                         dialogContext = dialogContext.Parent;
                     }
+
                     notify = true;
                 }
 
@@ -535,9 +537,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        public async Task DebuggerStepAsync(IDialog dialog, CancellationToken cancellationToken, [CallerMemberName]string memberName = null)
+        public async Task DebuggerStepAsync(object item, CancellationToken cancellationToken, [CallerMemberName]string memberName = null)
         {
-            await Context.GetDebugger().StepAsync(this, dialog, memberName, cancellationToken).ConfigureAwait(false);
+            await Context.GetDebugger().StepAsync(this, item, memberName, cancellationToken).ConfigureAwait(false);
         }
 
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))

@@ -4,11 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
 {
@@ -17,10 +20,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
     /// </summary>
     public abstract class Rule : IRule
     {
-        private Expression expression;
+        private Expression constraint;
 
-        public Rule(string constraint = null, List<IDialog> steps = null)
+        private List<Expression> extraConstraints = new List<Expression>();
+
+        [JsonConstructor]
+        public Rule(string constraint = null, List<IDialog> steps = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
+            this.RegisterSourceLocation(callerPath, callerLine);
+
             this.Constraint = constraint;
             this.Steps = steps;
         }
@@ -38,40 +46,50 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         /// <summary>
         /// Get the expression for this rule by calling GatherConstraints()
         /// </summary>
-        public virtual Expression GetExpression(PlanningContext planningContext, DialogEvent dialogEvent)
+        public Expression GetExpression()
         {
-            var expressionFactory = planningContext.Context.TurnState.Get<IExpressionParser>() ?? new ExpressionEngine();
-
-            if (this.expression == null)
+            if (this.constraint == null)
             {
-                List<String> expressions = new List<string>();
-
-                // get constraints from children
-                GatherConstraints(expressions);
-
-                if (expressions.Any())
-                {
-                    this.expression = expressionFactory.Parse($"({String.Join(") && (", expressions)})");
-                }
+                this.constraint = BuildExpression(new ExpressionEngine());
             }
 
-            return Expression.LambaExpression((expression, vars) =>
-            {
-                object value = null;
-                string error = null;
-                planningContext.State.Turn["DialogEvent"] = dialogEvent;
+            return this.constraint;
+        }
 
-                if (this.expression != null)
-                {
-                    (value, error) = this.expression.TryEvaluate(vars);
-                    if (error != null)
-                    {
-                        System.Diagnostics.Trace.TraceWarning(error);
-                        value = false;
-                    }
-                }
-                return ((bool)value, error);
-            });
+        /// <summary>
+        /// Override this method to define the expression which is evaluated to determine if this rule should fire
+        /// </summary>
+        /// <returns>Expression which will be cached and used to evaluate this rule</returns>
+        protected virtual Expression BuildExpression(IExpressionParser factory)
+        {
+            List<Expression> allExpressions = new List<Expression>();
+            if (!String.IsNullOrEmpty(this.Constraint))
+            {
+                allExpressions.Add(factory.Parse(this.Constraint));
+            }
+
+            if (this.extraConstraints.Any())
+            {
+                allExpressions.AddRange(this.extraConstraints);
+            }
+
+            if (allExpressions.Any())
+            {
+                return Expression.AndExpression(allExpressions.ToArray());
+            }
+            else
+            {
+                return Expression.ConstantExpression(true);
+            }
+        }
+
+        /// <summary>
+        /// Add external constraint to the rule (mostly used by RuleSet to apply external constraints to rule)
+        /// </summary>
+        /// <param name="constraint"></param>
+        public void AddConstraint(Expression constraint)
+        {
+            this.extraConstraints.Add(constraint);
         }
 
         /// <summary>
@@ -126,12 +144,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
             return changeList;
         }
 
-        protected virtual void GatherConstraints(List<string> constraints)
+        protected void RegisterSourceLocation(string path, int lineNumber)
         {
-            if (!String.IsNullOrEmpty(this.Constraint))
+            Debugger.SourceRegistry.Add(this, new Source.Range()
             {
-                constraints.Add(this.Constraint);
-            }
+                Path = path,
+                Start = new Source.Point() { LineIndex = lineNumber, CharIndex = 0 },
+                After = new Source.Point() { LineIndex = lineNumber + 1, CharIndex = 0 },
+            });
         }
+
     }
 }

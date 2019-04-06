@@ -13,7 +13,7 @@ using Microsoft.Bot.Schema;
 using System.Collections.Generic;
 using System;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Debugger;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 
@@ -35,13 +35,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         public TestContext TestContext { get; set; }
 
         [TestMethod]
-        public async Task JsonDialogLoad_NoMatchRule()
+        public async Task JsonDialogLoad_Steps()
         {
-            string path = Path.Combine(samplesDirectory, @"Planning 1 - NoMatchRule\NoMatchRule.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"Planning 1 - Steps\Steps.main.dialog");
 
             await BuildTestFlow(path)
-            .Send("hello")
-            .AssertReply("Hello planning!")
+            .SendConversationUpdate()
+                .AssertReply("Step 1")
+                .AssertReply("Step 2")
+                .AssertReply("Step 3")
             .StartTestAsync();
         }
 
@@ -52,9 +54,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
             await BuildTestFlow(path)
             .Send("hello")
-            .AssertReply("What's up?")
+                .AssertReply("What's up?")
             .Send("Nothing")
-            .AssertReply("Oh I see!")
+                .AssertReply("Oh I see!")
             .StartTestAsync();
         }
 
@@ -64,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             string path = Path.Combine(samplesDirectory, @"Planning 3 - IfCondition\IfCondition.main.dialog");
 
             await BuildTestFlow(path)
-            .Send("hello")
+            .SendConversationUpdate()
             .AssertReply("Hello, I'm Zoidberg. What is your name?")
             .Send("Carlos")
             .AssertReply("Hello Carlos, nice to talk to you!")
@@ -77,26 +79,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             string path = Path.Combine(samplesDirectory, @"Planning 4 - TextInput\TextInput.main.dialog");
 
             await BuildTestFlow(path)
-            .Send("hello")
-            .AssertReply("Hello, I'm Zoidberg. What is your name?")
+            .SendConversationUpdate()
+                .AssertReply("Hello, I'm Zoidberg. What is your name?")
             .Send("Carlos")
-            .AssertReply("Hello Carlos, nice to talk to you!")
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task JsonDialogLoad_WelcomePrompt()
-        {
-            string path = Path.Combine(samplesDirectory, @"Planning 5 - WelcomeRule\WelcomeRule.main.dialog");
-
-            await BuildTestFlow(path)
-            .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
-            .Send("hello")
-            .AssertReply("Welcome!")
-            .AssertReply("Hello, I'm Zoidberg. What is your name?")
-            .Send("Carlos")
-            .AssertReply("Hello Carlos, nice to talk to you!")
-            .StartTestAsync();
+                .AssertReply("Hello Carlos, nice to talk to you!")
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -106,19 +93,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
             await BuildTestFlow(path)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
-            .Send("hello")
-            .AssertReply("Welcome!")
-            .AssertReply("Hello, I'm Zoidberg. What is your name?")
+            .SendConversationUpdate()
+                .AssertReply("Hello, I'm Zoidberg. What is your name?")
             .Send("Carlos")
-            .AssertReply("Hello Carlos, nice to talk to you!")
+                .AssertReply("Hello Carlos, nice to talk to you!")
             .Send("Do you know a joke?")
-            .AssertReply("Why did the chicken cross the road?")
+                .AssertReply("Why did the chicken cross the road?")
             .Send("Why?")
-            .AssertReply("To get to the other side")
+                .AssertReply("To get to the other side")
             .Send("What happened in the future?")
-            .AssertReply("Seeing into the future...")
-            .AssertReply("I see great things happening...")
-            .AssertReply("Perhaps even a successful bot demo")
+                .AssertReply("Seeing into the future...")
+                .AssertReply("I see great things happening...")
+                .AssertReply("Perhaps even a successful bot demo")
             .StartTestAsync();
         }
 
@@ -129,19 +115,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
             await BuildTestFlow(path)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
-            .Send("hello")
-            .AssertReply("Welcome!")
-            .AssertReply("Hello, I'm Zoidberg. What is your name?")
+            .SendConversationUpdate()
+                .AssertReply("Hello, I'm Zoidberg. What is your name?")
             .Send("Carlos")
-            .AssertReply("Hello Carlos, nice to talk to you!")
+                .AssertReply("Hello Carlos, nice to talk to you!")
             .Send("Do you know a joke?")
-            .AssertReply("Why did the chicken cross the road?")
+                .AssertReply("Why did the chicken cross the road?")
             .Send("Why?")
-            .AssertReply("To get to the other side")
+                .AssertReply("To get to the other side")
             .Send("What happened in the future?")
-            .AssertReply("Seeing into the future...")
-            .AssertReply("I see great things in your future...")
-            .AssertReply("Potentially a successful demo")
+                .AssertReply("Seeing into the future...")
+                .AssertReply("I see great things in your future...")
+                .AssertReply("Potentially a successful demo")
             .StartTestAsync();
         }
 
@@ -151,35 +136,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             string path = Path.Combine(samplesDirectory, @"Planning 8 - ExternalLanguage\ExternalLanguage.main.dialog");
 
             await BuildTestFlow(path)
-            .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
-            .Send("hello")
-            .AssertReplyOneOf(new string[]
-            {
-                "Zoidberg here, welcome to my world!",
-                "Hello, my name is Zoidberg and I'll be your guide.",
-                "Hail Zoidberg!"
-            })
-            .AssertReplyOneOf(new string[]
-            {
-                "Hello. What is your name?",
-                "I would like to know you better, what's your name?"
-            })
+            .SendConversationUpdate()
+                .AssertReplyOneOf(new string[]
+                {
+                    "Zoidberg here, welcome to my world!",
+                    "Hello, my name is Zoidberg and I'll be your guide.",
+                    "Hail Zoidberg!"
+                })
+                .AssertReplyOneOf(new string[]
+                {
+                    "Hello. What is your name?",
+                    "I would like to know you better, what's your name?"
+                })
             .Send("Carlos")
-            .AssertReplyOneOf(new string[]
-            {
-                "Hello Carlos, nice to talk to you!",
-                "Hi Carlos, you seem nice!",
-                "Whassup Carlos?"
-            })
+                .AssertReplyOneOf(new string[]
+                {
+                    "Hello Carlos, nice to talk to you!",
+                    "Hi Carlos, you seem nice!",
+                    "Whassup Carlos?"
+                })
             .Send("Help")
-            .AssertReply("I can tell jokes and also forsee the future!\n")
+                .AssertReply("I can tell jokes and also forsee the future!\n")
             .Send("Do you know a joke?")
-            .AssertReply("Why did the chicken cross the road?")
+                .AssertReply("Why did the chicken cross the road?")
             .Send("Why?")
-            .AssertReply("To get to the other side")
+                .AssertReply("To get to the other side")
             .Send("What happened in the future?")
-            .AssertReply("I see great things in your future...")
-            .AssertReply("Potentially a successful demo")
+                .AssertReply("I see great things in your future...")
+                .AssertReply("Potentially a successful demo")
             .StartTestAsync();
         }
 
@@ -191,25 +175,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             await BuildTestFlow(path)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
             .Send("hello")
-            .AssertReply("Hi! I'm a ToDo bot. Say \"add a todo named first\" to get started.")
+                .AssertReply("Hi! I'm a ToDo bot. Say \"add a todo named first\" to get started.")
             .Send("add a todo named first")
-            .AssertReply("Successfully added a todo named \"first\"")
+                .AssertReply("Successfully added a todo named \"first\"")
             .Send("add a todo named second")
-            .AssertReply("Successfully added a todo named \"second\"")
+                .AssertReply("Successfully added a todo named \"second\"")
             .Send("add a todo")
-            .AssertReply("OK, please enter the title of your todo.")
+                .AssertReply("OK, please enter the title of your todo.")
             .Send("third")
-            .AssertReply("Successfully added a todo named \"third\"")
+                .AssertReply("Successfully added a todo named \"third\"")
             .Send("show todos")
-            .AssertReply("Your most recent 3 tasks are\n* first\n* second\n* third\n")
+                .AssertReply("Your most recent 3 tasks are\n* first\n* second\n* third\n")
             .Send("delete todo named second")
-            .AssertReply("Successfully removed a todo named \"second\"")
+                .AssertReply("Successfully removed a todo named \"second\"")
             .Send("show todos")
-            .AssertReply("Your most recent 2 tasks are\n* first\n* third\n")
+                .AssertReply("Your most recent 2 tasks are\n* first\n* third\n")
             .Send("add a todo")
-            .AssertReply("OK, please enter the title of your todo.")
+                .AssertReply("OK, please enter the title of your todo.")
             .Send("cancel")
-            .AssertReply("ok.")
+                .AssertReply("ok.")
             .StartTestAsync();
         }
 

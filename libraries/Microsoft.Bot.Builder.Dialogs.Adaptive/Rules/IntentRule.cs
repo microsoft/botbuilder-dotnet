@@ -4,10 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Builder.Expressions.Parser;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
 {
@@ -17,13 +20,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
     /// </summary>
     public class IntentRule : EventRule
     {
-        public IntentRule(string intent = null, List<string> entities = null, List<IDialog> steps = null, string constraint = null)
+        [JsonConstructor]
+        public IntentRule(string intent = null, List<string> entities = null, List<IDialog> steps = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(events: new List<string>()
             {
                 PlanningEvents.UtteranceRecognized.ToString()
             },
             steps: steps,
-            constraint: constraint)
+            constraint: constraint, 
+            callerPath: callerPath, callerLine: callerLine)
         {
             Intent = intent ?? null;
             Entities = entities ?? new List<string>();
@@ -40,20 +45,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         /// </summary>
         public List<string> Entities { get; set; }
 
-        protected override void GatherConstraints(List<string> constraints)
-        {
-            base.GatherConstraints(constraints);
 
+        protected override Expression BuildExpression(IExpressionParser factory)
+        {
+            List<Expression> expressions = new List<Expression>();
             // add constraints for the intents property
             if (!String.IsNullOrEmpty(this.Intent))
             {
-                constraints.Add($"turn.DialogEvent.Value.Intents.{this.Intent}.Score > 0.5");
+                expressions.Add(factory.Parse($"turn.DialogEvent.Value.Intents.{this.Intent}.Score > 0.0"));
             }
 
             //foreach (var entity in this.Entities)
             //{
             //    constraints.Add($"CONTAINS(DialogEvent.Entities, '{entity}')");
             //}
+            return Expression.AndExpression(Expression.AndExpression(expressions.ToArray()), base.BuildExpression(factory));
         }
 
         protected override PlanChangeList OnCreateChangeList(PlanningContext planning, object dialogOptions = null)

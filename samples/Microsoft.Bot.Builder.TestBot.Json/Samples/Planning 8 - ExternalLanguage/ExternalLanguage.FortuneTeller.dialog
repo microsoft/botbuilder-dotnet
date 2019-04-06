@@ -1,19 +1,14 @@
 {
   "$schema": "../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
-  "rules": [
+  "steps": [
     {
-      "$type": "Microsoft.NoMatchRule",
-      "steps": [
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "I see great things in your future..."
-        },
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "Potentially a successful demo"
-        }
-      ]
+      "$type": "Microsoft.SendActivity",
+      "activity": "I see great things in your future..."
+    },
+    {
+      "$type": "Microsoft.SendActivity",
+      "activity": "Potentially a successful demo"
     }
   ]
 }

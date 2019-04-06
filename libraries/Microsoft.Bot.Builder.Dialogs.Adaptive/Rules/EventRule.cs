@@ -1,10 +1,10 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Runtime.CompilerServices;
+using Microsoft.Bot.Builder.Expressions;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
 {
@@ -18,26 +18,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         /// </summary>
         public List<string> Events { get; set; }
 
-        public EventRule(List<string> events = null, List<IDialog> steps = null, string constraint = null)
-            : base(constraint: constraint, steps: steps)
+        [JsonConstructor]
+        public EventRule(List<string> events = null, List<IDialog> steps = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(constraint: constraint, steps: steps, callerPath: callerPath, callerLine: callerLine)
         {
             this.Events = events ?? new List<string>();
             this.Steps = steps ?? new List<IDialog>();
         }
 
-        protected override void GatherConstraints(List<string> constraints)
+        protected override Expression BuildExpression(IExpressionParser factory)
         {
-            base.GatherConstraints(constraints);
+            List<Expression> expressions = new List<Expression>();
 
-            // add in the constraints for Events property
-            StringBuilder sb = new StringBuilder();
-            string append = string.Empty;
             foreach (var evt in Events)
             {
-                sb.Append($"{append} (turn.DialogEvent.Name == '{evt}') ");
-                append = "||";
+                expressions.Add(factory.Parse($"turn.DialogEvent.Name == '{evt}'"));
             }
-            constraints.Add(sb.ToString());
+
+            return Expression.AndExpression(Expression.OrExpression(expressions.ToArray()), base.BuildExpression(factory));
         }
 
     }

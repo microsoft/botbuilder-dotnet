@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -13,12 +14,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     /// </summary>
     public class DeleteProperty : DialogCommand
     {
-        public DeleteProperty() : base()
-        { }
+        [JsonConstructor]
+        public DeleteProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0) : base()
+        {
+            this.RegisterSourceLocation(callerPath, callerLine);
+        }
 
-        public DeleteProperty(string property)
+        public DeleteProperty(string property, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
+            this.RegisterSourceLocation(callerPath, callerLine);
             if (!string.IsNullOrEmpty(property))
             {
                 this.Property = property;

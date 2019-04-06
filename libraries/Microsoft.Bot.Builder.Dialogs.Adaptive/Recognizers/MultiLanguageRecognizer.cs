@@ -13,10 +13,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// </summary>
     public class MultiLanguageRecognizer : IRecognizer
     {
-        public MultiLanguageRecognizer()
-        {
-
-        }
 
         /// <summary>
         /// Policy for languages fallback 
@@ -29,6 +25,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// </summary>
         [JsonProperty("recognizers")]
         public IDictionary<string, IRecognizer> Recognizers { get; set; } = new Dictionary<string, IRecognizer>();
+
+        public MultiLanguageRecognizer()
+        {
+
+        }
 
         public Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {

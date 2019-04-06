@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new NoMatchRule(
+                new NoneIntentRule(
                     new List<IDialog>()
                     {
                         new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"),  OutputProperty = "user.name" },
@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new NoMatchRule(
+                new NoneIntentRule(
                     new List<IDialog>()
                     {
                         new IfCondition()
@@ -154,7 +154,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new NoMatchRule(
+                new NoneIntentRule(
                     new List<IDialog>()
                     {
                         new IfCondition()
@@ -194,7 +194,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new NoMatchRule(
+                new NoneIntentRule(
                     new List<IDialog>()
                     {
                         new IfCondition()
@@ -244,7 +244,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new EndTurn(),
                         new SendActivity("To get to the other side")
                     }),
-                new NoMatchRule(
+                new NoneIntentRule(
                     new List<IDialog>()
                     {
                         new IfCondition()
@@ -284,13 +284,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var userState = new UserState(new MemoryStorage());
 
             var planningDialog = new AdaptiveDialog("planningTest");
+            planningDialog.AutoEndDialog = false;
 
             planningDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 
             var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
             tellJokeDialog.AddRules(new List<IRule>()
             {
-                new NoMatchRule(
+                new NoneIntentRule(
                     new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
@@ -300,59 +301,54 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                  )
             });
 
-            var askNameDialog = new AdaptiveDialog("AskNameDialog");
-            askNameDialog.AddRules(new List<IRule>()
+            var askNameDialog = new AdaptiveDialog("AskNameDialog")
             {
-                new NoMatchRule(
-                    new List<IDialog>()
+                Steps = new List<IDialog>()
+                {
+                    new IfCondition()
                     {
-                        new IfCondition()
+                        Condition = new ExpressionEngine().Parse("user.name == null"),
+                        Steps = new List<IDialog>()
                         {
-                            Condition = new ExpressionEngine().Parse("user.name == null"),
-                            Steps = new List<IDialog>()
+                            new TextInput()
                             {
-                                new TextInput()
-                                {
-                                    Prompt  = new ActivityTemplate("Hello, what is your name?"),
-                                    OutputProperty = "user.name"
-                                }
+                                Prompt  = new ActivityTemplate("Hello, what is your name?"),
+                                OutputProperty = "user.name"
                             }
-                        },
-                        new SendActivity("Hello {user.name}, nice to meet you!")
-                    })
-            });
+                        }
+                    },
+                    new SendActivity("Hello {user.name}, nice to meet you!")
+                }
+            };
 
             planningDialog.AddRules(new List<IRule>()
             {
+                new BeginDialogRule(
+                    new List<IDialog>()
+                    {
+                        new SendActivity("I'm a joke bot. To get started say 'tell me a joke'"),
+                        new BeginDialog() { Dialog = askNameDialog }
+                    }),
                 new IntentRule("JokeIntent",
                     steps: new List<IDialog>()
                     {
                         new BeginDialog() { Dialog = tellJokeDialog }
                     }),
-                new WelcomeRule(
+                new NoneIntentRule(
                     steps: new List<IDialog>()
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                     }),
-                new NoMatchRule(
-                    new List<IDialog>()
-                    {
-                        new BeginDialog() { Dialog = askNameDialog }
-                    })
             });
 
             await CreateFlow(planningDialog, convoState, userState)
-            .Send("hi")
+            .SendConversationUpdate()
                 .AssertReply("I'm a joke bot. To get started say 'tell me a joke'")
                 .AssertReply("Hello, what is your name?")
             .Send("Carlos")
                 .AssertReply("Hello Carlos, nice to meet you!")
-            .Send("Do you know a joke?")
-                .AssertReply("Why did the chicken cross the road?")
-            .Send("Why?")
-                .AssertReply("To get to the other side")
-            .Send("hi")
-                .AssertReply("Hello Carlos, nice to meet you!")
+            .Send("Cool")
+                .AssertReply("I'm a joke bot. To get started say 'tell me a joke'")
             .StartTestAsync();
         }
 
@@ -363,13 +359,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var userState = new UserState(new MemoryStorage());
 
             var planningDialog = new AdaptiveDialog("planningTest");
-
+            planningDialog.AutoEndDialog = false;
             planningDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 
             var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
             tellJokeDialog.AddRules(new List<IRule>()
             {
-                new NoMatchRule(
+                new NoneIntentRule(
                     new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
@@ -379,48 +375,42 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                  )
             });
 
-            var askNameDialog = new AdaptiveDialog("AskNameDialog");
-            askNameDialog.AddRules(new List<IRule>()
+            var askNameDialog = new AdaptiveDialog("AskNameDialog")
             {
-                new NoMatchRule(
-                    new List<IDialog>()
+                Steps = new List<IDialog>()
+                {
+                    new IfCondition()
                     {
-                        new IfCondition()
+                        Condition = new ExpressionEngine().Parse("user.name == null"),
+                        Steps = new List<IDialog>()
                         {
-                            Condition = new ExpressionEngine().Parse("user.name == null"),
-                            Steps = new List<IDialog>()
+                            new TextInput()
                             {
-                                new TextInput()
-                                {
-                                    Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                    RetryPrompt = new ActivityTemplate("How should I call you?"),
-                                    InvalidPrompt  = new ActivityTemplate("That does not soud like a name"),
-                                    Property = "user.name",
-                                    Pattern = @"(\s*(\S)\s*){3,}"
-                                }
+                                Prompt = new ActivityTemplate("Hello, what is your name?"),
+                                RetryPrompt = new ActivityTemplate("How should I call you?"),
+                                InvalidPrompt  = new ActivityTemplate("That does not soud like a name"),
+                                Property = "user.name",
+                                Pattern = @"(\s*(\S)\s*){3,}"
                             }
-                        },
-                        new SendActivity("Hello {user.name}, nice to meet you!")
-                    })
-            });
+                        }
+                    },
+                    new SendActivity("Hello {user.name}, nice to meet you!")
+                }
+            };
 
             planningDialog.AddRules(new List<IRule>()
             {
+                new BeginDialogRule(
+                    steps: new List<IDialog>()
+                    {
+                        new SendActivity("I'm a joke bot. To get started say 'tell me a joke'"),
+                        new ReplaceDialog("AskNameDialog")
+                    }),
                 new IntentRule("JokeIntent",
                     steps: new List<IDialog>()
                     {
                         new ReplaceDialog("TellJokeDialog")
                     }),
-                new WelcomeRule(
-                    steps: new List<IDialog>()
-                    {
-                        new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
-                    }),
-                new NoMatchRule(
-                    new List<IDialog>()
-                    {
-                        new ReplaceDialog("AskNameDialog")
-                    })
             });
 
             planningDialog.AddDialog(new List<IDialog>()
@@ -430,7 +420,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             });
 
             await CreateFlow(planningDialog, convoState, userState)
-            .Send("hi")
+            .SendConversationUpdate()
                 .AssertReply("I'm a joke bot. To get started say 'tell me a joke'")
                 .AssertReply("Hello, what is your name?")
             .Send("Carlos")
@@ -439,8 +429,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("Why did the chicken cross the road?")
             .Send("Why?")
                 .AssertReply("To get to the other side")
-            .Send("hi")
-                .AssertReply("Hello Carlos, nice to meet you!")
             .StartTestAsync();
         }
 
@@ -462,7 +450,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         new EndDialog()
                     }),
-                new NoMatchRule(
+                new NoneIntentRule(
                     new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
@@ -475,7 +463,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new NoMatchRule(
+                new NoneIntentRule(
                     new List<IDialog>()
                     {
                         new BeginDialog() { Dialog = tellJokeDialog },

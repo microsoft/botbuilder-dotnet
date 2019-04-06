@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Schema;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -154,7 +153,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             return new DialogConsultation()
             {
-                Desire = DialogConsultationDesires.CanProcess,
+                Desire = DialogConsultationDesire.CanProcess,
                 Processor = (dialogContext) => this.ContinueDialogAsync(dialogContext),
             };
         }
@@ -190,6 +189,19 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return string.Empty;
+        }
+
+        protected void RegisterSourceLocation(string path, int lineNumber)
+        {
+            if (!string.IsNullOrEmpty(path))
+            {
+                Debugger.SourceRegistry.Add(this, new Source.Range()
+                {
+                    Path = path,
+                    Start = new Source.Point() { LineIndex = lineNumber, CharIndex = 0 },
+                    After = new Source.Point() { LineIndex = lineNumber + 1, CharIndex = 0 },
+                });
+            }
         }
     }
 }

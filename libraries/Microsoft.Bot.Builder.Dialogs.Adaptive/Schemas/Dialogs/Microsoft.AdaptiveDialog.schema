@@ -6,8 +6,14 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
+        "autoEndDialog": {
+            "type": "boolean",
+            "title": "Auto End Dialog",
+            "description": "IF this is true the dialog will automatically end when there are no more steps to run.  If this is false it is the responsbility of the author to call EndDialog at an appropriate time."
+        },
         "property": {
             "type": "string",
+            "title": "Property",
             "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
             "examples": [
                 "value.birthday"
@@ -15,6 +21,7 @@
         },
         "inputProperties": {
             "type": "object",
+            "title": "Input Properties",
             "description": "This defines properties which be passed as arguments to this dialog",
             "additionalProperties": {
                 "type": "string"
@@ -25,13 +32,16 @@
         },
         "outputProperty": {
             "type": "string",
+            "title": "Output Property",
             "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
             "examples": [
                 "value.birthday"
             ]
         },
         "recognizer": {
-            "$type": "Microsoft.IRecognizer"
+            "$type": "Microsoft.IRecognizer",
+            "title": "Recognizer",
+            "decription": "Configured recognizer to generate intent and entites from user utterance"
         },
         "steps": {
             "type": "array",

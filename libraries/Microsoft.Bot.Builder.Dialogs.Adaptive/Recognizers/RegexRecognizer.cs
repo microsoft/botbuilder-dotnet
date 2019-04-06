@@ -22,6 +22,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// </summary>
         public Dictionary<string, string> Intents = new Dictionary<string, string>();
         
+        public RegexRecognizer()
+        {
+
+        }
+
         public async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             // Process only messages
@@ -62,6 +67,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                     }
                     result.Entities = JObject.FromObject(entities);
                 }
+            }
+
+            // if no match return None intent
+            if (!result.Intents.Keys.Any())
+            {
+                result.Intents.Add("None", new IntentScore() { Score = 0.0 });
+                result.Entities = new JObject();
             }
 
             return result;

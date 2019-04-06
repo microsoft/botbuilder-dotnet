@@ -4,10 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Expressions;
 using Newtonsoft.Json;
 
@@ -30,9 +30,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         [JsonProperty("elseSteps")]
         public List<IDialog> ElseSteps { get; set; } = new List<IDialog>();
 
-        public IfCondition()
+        [JsonConstructor]
+        public IfCondition([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()
         {
+            this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
         }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -78,12 +80,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         protected override string OnComputeId()
         {
             var idList = Steps.Select(s => s.Id);
-            return $"conditional({this.Condition}|{string.Join(",", idList)})";
+            return $"{nameof(IfCondition)}({this.Condition}|{string.Join(",", idList)})";
         }
 
         public override List<IDialog> ListDependencies()
         {
-            return Steps;
+            var combined = new List<IDialog>(Steps);
+            combined.AddRange(ElseSteps);
+            return combined;
         }
     }
 }

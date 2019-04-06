@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -44,10 +45,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             Clear
         }
 
-
-        public EditArray()
+        [JsonConstructor]
+        public EditArray([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
+            this.RegisterSourceLocation(callerPath, callerLine);
         }
 
         protected override string OnComputeId()

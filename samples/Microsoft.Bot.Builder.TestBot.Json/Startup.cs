@@ -14,8 +14,13 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.TestBot.Json.Recognizers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Debugger;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Bot.Schema;
+using System.Linq;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -89,7 +94,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                     var lg = new LGLanguageGenerator(resourceExplorer);
                     options.Middleware.Add(new RegisterClassMiddleware<ILanguageGenerator>(lg));
                     options.Middleware.Add(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)));
-
+                    options.Middleware.Add(new IgnoreConversationUpdateForBotMiddleware());
                     options.Middleware.Add(new AutoSaveStateMiddleware(conversationState));
                 });
         }
@@ -107,5 +112,22 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 .UseBotFramework();
             app.UseExceptionHandler();
         }
+    }
+}
+
+public class IgnoreConversationUpdateForBotMiddleware : IMiddleware
+{
+    public Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
+    {
+        if (turnContext.Activity.Type == ActivityTypes.ConversationUpdate)
+        {
+            var cu = turnContext.Activity.AsConversationUpdateActivity();
+            if (!cu.MembersAdded.Any(ma => ma.Id != cu.Recipient.Id))
+            {
+                // eat it if it is the bot
+                return Task.CompletedTask;
+            }
+        }
+        return next(cancellationToken);
     }
 }

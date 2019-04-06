@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Xml;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
@@ -16,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
     /// <summary>
     /// Class which gives standard access to file based resources
     /// </summary>
-    public class ResourceExplorer : IResourceExplorer
+    public class ResourceExplorer : IResourceExplorer, IDisposable
     {
         private List<FolderResource> folderResources = new List<FolderResource>();
 
@@ -47,13 +46,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         {
             var folderResource = new FolderResource(folder, monitorFiles);
 
-            folderResource.Watcher.Changed += (sender, e) =>
+            if (folderResource.Watcher != null)
             {
-                if (this.Changed != null)
+                folderResource.Watcher.Created += (sender, e) =>
                 {
-                    this.Changed(sender, e);
-                }
-            };
+                    if (this.Changed != null)
+                    {
+                        this.Changed(sender, e);
+                    }
+                };
+                folderResource.Watcher.Changed += (sender, e) =>
+                {
+                    if (this.Changed != null)
+                    {
+                        this.Changed(sender, e);
+                    }
+                };
+                folderResource.Watcher.Deleted += (sender, e) =>
+                {
+                    if (this.Changed != null)
+                    {
+                        this.Changed(sender, e);
+                    }
+                };
+
+            }
 
             this.folderResources.Add(folderResource);
         }
@@ -149,17 +166,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             return GetResources(Path.GetExtension(filename)).Where(fi => fi.Name == filename).SingleOrDefault();
         }
 
+        public void Dispose()
+        {
+            foreach(var folderResource in this.folderResources)
+            {
+                folderResource.Dispose();
+            }
+        }
+
         /// <summary>
         /// Folder/FileResources
         /// </summary>
-        internal class FolderResource
+        internal class FolderResource : IDisposable
         {
             internal FolderResource(string folder, bool monitorChanges = true)
             {
                 this.Directory = new DirectoryInfo(folder);
-                this.Watcher = new FileSystemWatcher(folder);
                 if (monitorChanges)
                 {
+                    this.Watcher = new FileSystemWatcher(folder);
                     this.Watcher.IncludeSubdirectories = true;
                     this.Watcher.EnableRaisingEvents = true;
                 }
@@ -171,6 +196,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             public DirectoryInfo Directory { get; set; }
 
             public FileSystemWatcher Watcher { get; private set; }
+
+            public void Dispose()
+            {
+                lock(Directory)
+                {
+                    if (Watcher != null)
+                    {
+                        Watcher.EnableRaisingEvents = false;
+                        Watcher.Dispose();
+                        Watcher = null;
+                    }
+                }
+            }
 
             /// <summary>
             /// id -> Resource object)
