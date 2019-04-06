@@ -6,12 +6,12 @@
 
 ## Remaining work
 - - [ ] Find new home for LanguageGenerationRenderer, LGLanguageGenerator
-- - [ ] Expression analyzer (CCI ask) – we will just provide parse tree + sample. Nothing baked into the library​
-- - [ ] Wrap up C# and JS libraries – improved library error and exception bubbling, actionable and informative exception messages.​
+- - [X] Expression analyzer (CCI ask) – we will just provide parse tree + sample. Nothing baked into the library​
+- - [X] Wrap up C# and JS libraries – improved library error and exception bubbling, actionable and informative exception messages.​
 - - [ ] Parse, collate and translate TS/ JS library that can be surfaced through a CLI tool (or consumed by an UI based authoring experience)
     - - [ ] Expose parse, collate and translate functionality through a CLI shell (snap to new one CLI spec from Eyal)
     - - [ ] Support evalauteLG that spits out a list of all templates with analyzeTemplate output for each Template in the given LG file content. 
-- - [ ] Update implementation to match IF .. ELSEIF instead of the current SWITCH label. [Spec](https://microsoft-my.sharepoint.com/:w:/p/vkannan/ERMS_VL3nEBIhNwlgYAmv-8BIUP3WCM3-XSY-fETqjFOxw?e=0f8zYA)
+- - [X] Update implementation to match IF .. ELSEIF instead of the current SWITCH label. [Spec](https://microsoft-my.sharepoint.com/:w:/p/vkannan/ERMS_VL3nEBIhNwlgYAmv-8BIUP3WCM3-XSY-fETqjFOxw?e=0f8zYA)
 - - [ ] Add support for SWITCH .. CASE construct in conditional response template. [Spec](https://microsoft-my.sharepoint.com/:w:/p/vkannan/ERMS_VL3nEBIhNwlgYAmv-8BIUP3WCM3-XSY-fETqjFOxw?e=0f8zYA)
 - - [ ] Final API shape review
 - - [ ] Final packaging, naming review
@@ -35,8 +35,8 @@
 | StaticChecker                |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>|
 | TemplateEngine               |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 | TemplateErrorListener        |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
-| LGFileParserVisitor          |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|
-| LGFileParserListener         |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|
+| LGFileParserVisitor          |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
+| LGFileParserListener         |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 
 ### Documentation
 - [ ] API reference doc
@@ -62,3 +62,8 @@
 |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| Multi-language	| Support multi-language	| Use bot resoure manager and languge fall back policy |	|	Bot |
 |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|Cafe bot | Full blown cafe bot that shows sohpisticated LG use, LG for QnA pairs | All LG concepts | | Bot |
 
+## Post BUILD backlog
+- - [ ] Support for SWITCH .. CASE .. DEFAULT in conditional response templates
+- - [ ] Support for file scoped template reference in evaluation/ expansion
+- - [ ] Support for external file references with json card definitions (Steve Ickman's suggestion)
+- - [ ] Plugin to telemetry pipeline for bot analytics.

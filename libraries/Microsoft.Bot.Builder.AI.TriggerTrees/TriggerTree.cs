@@ -2,9 +2,10 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.AI.TriggerTrees
 {
@@ -74,48 +75,42 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         }
 
         /// <summary>
-        /// Method to mark a trigger expression as optional. 
+        /// Mark a sub-expression as optional.
         /// </summary>
         /// <remarks>
         /// When an expression is being processed, optional creates a disjunction where the expression is both included and not
         /// included with the rest of the expression.  This is a simple way to express this common relationship.  By generating
         /// both clauses then matching the expression can be more specific when the optional expression is true.
         /// </remarks>
-        /// <param name="flag">Optional expression.</param>
-        /// <returns>True</returns>
-        public static bool Optional(bool flag)
-        {
-            return true;
-        }
-
-        private static readonly MethodInfo OPTIONAL = typeof(TriggerTree).GetMethod("Optional");
-        internal static bool IsOptional(Expression expression) => expression is MethodCallExpression call && call.Method == OPTIONAL;
-        internal static MethodCallExpression GetOptional(Expression expression)
-        {
-            return expression is MethodCallExpression call && call.Method == OPTIONAL ? call : null;
-        }
+        public const string Optional = "optional";
 
         /// <summary>
         /// Any predicate expression wrapped in this will be ignored for specialization.
         /// </summary>
-        /// <param name="flag">Boolean expression.</param>
-        /// <returns>Flag value.</returns>
         /// <remarks>
         /// This is useful for when you need to add expression to the trigger that are part of rule mechanics rather than of intent.
         /// For example, if you have a counter for how often a particular message is displayed, then that is part of the triggering condition, 
         /// but all such rules would be incomparable because they counter is per-rule. 
         /// </remarks>
-        public static bool Ignore(bool flag)
+        public const string Ignore = "ignore";
+
+        public static ExpressionEvaluator LookupFunction(string type)
         {
-            return flag;
+            ExpressionEvaluator eval;
+            if (type == Optional || type == Ignore)
+            {
+                eval = new ExpressionEvaluator(null, ReturnType.Boolean, BuiltInFunctions.ValidateUnaryBoolean);
+            }
+            else 
+            {
+                eval = BuiltInFunctions.Lookup(type);
+            }
+            return eval;
         }
 
-        private static readonly MethodInfo IGNORE = typeof(TriggerTree).GetMethod("Ignore");
-        internal static bool IsIgnore(Expression expression) => expression is MethodCallExpression call && call.Method == IGNORE;
-        internal static MethodCallExpression GetIgnore(Expression expression)
-        {
-            return expression is MethodCallExpression call && call.Method == IGNORE ? call : null;
-        }
+        private static IExpressionParser _parser = new ExpressionEngine(LookupFunction);
+
+        public static Expression Parse(string expr) => _parser.Parse(expr);
 
         /// <summary>
         /// Construct an empty trigger tree.
@@ -125,19 +120,26 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             Root = new Node(new Clause(), this);
         }
 
-        public override string ToString()
-        {
-            return $"TriggerTree with {TotalTriggers} triggers";
-        }
+        public override string ToString() => $"TriggerTree with {TotalTriggers} triggers";
 
         /// <summary>
         /// Add a trigger expression to the tree.
         /// </summary>
-        /// <param name="expression">Trigger to add</param>
+        /// <param name="expression">Trigger to add.</param>
         /// <param name="action">Action when triggered.</param>
         /// <param name="quantifiers">Quantifiers to use when expanding expressions.</param>
         /// <returns>New trigger.</returns>
         public Trigger AddTrigger(string expression, object action, params Quantifier[] quantifiers)
+                    => AddTrigger(_parser.Parse(expression), action, quantifiers);
+
+        /// <summary>
+        /// Add a trigger expression to the tree.
+        /// </summary>
+        /// <param name="expression">Trigger to add.</param>
+        /// <param name="action">Action when triggered.</param>
+        /// <param name="quantifiers">Quantifiers to use when expanding expressions.</param>
+        /// <returns>New trigger.</returns>
+        public Trigger AddTrigger(Expression expression, object action, params Quantifier[] quantifiers)
         {
             var trigger = new Trigger(this, expression, action, quantifiers);
             var added = false;
@@ -211,10 +213,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             }
         }
 
-        private string NameNode(Node node)
-        {
-            return '"' + node.ToString().Replace("\"", "\\\"") + '"';
-        }
+        private string NameNode(Node node) => '"' + node.ToString().Replace("\"", "\\\"") + '"';
 
         private void GenerateGraph(StreamWriter output, Node node, int indent)
         {
@@ -255,19 +254,13 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// <remarks>
         /// Most predicates work on the current frame, but predicates are free to access other frames or use other sources of knowledge.
         /// </remarks>
-        public IEnumerable<Node> Matches(IDictionary<string, object> frame)
-        {
-            return Root.Matches(frame);
-        }
+        public IEnumerable<Node> Matches(IDictionary<string, object> frame) => Root.Matches(frame);
 
         /// <summary>
         /// Verify the tree meets speicalization/generalization invariants. 
         /// </summary>
         /// <returns></returns>
-        public Node VerifyTree()
-        {
-            return VerifyTree(Root, new HashSet<Node>());
-        }
+        public Node VerifyTree() => VerifyTree(Root, new HashSet<Node>());
 
         private Node VerifyTree(Node node, HashSet<Node> visited)
         {
@@ -298,62 +291,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 }
             }
             return badNode;
-        }
-
-        /// <summary>
-        /// Merge together evaluator expressions.
-        /// </summary>
-        /// <param name="combination">How to combine expressions.</param>
-        /// <param name="allExpressions">Lambda expressions to combine.</param>
-        /// <returns>New evaluator lambda expression.</returns>
-        static public Expression<Evaluator> MergeEvaluators(ExpressionType combination, params Expression<Evaluator>[] allExpressions)
-        {
-            Expression<Evaluator> result = null;
-            var expressions = allExpressions.ToList();
-            expressions.RemoveAll(e => e == null);
-            if (expressions.Any())
-            {
-                if (expressions.Count == 1)
-                {
-                    result = expressions.First();
-                }
-                else
-                {
-                    var parameter = expressions.First().Parameters.First();
-                    var replacer = new ReplaceParameter();
-                    Expression body = null;
-                    foreach (var expr in expressions)
-                    {
-                        var newBody = replacer.Modify(expr.Body, parameter);
-                        if (body == null)
-                        {
-                            body = newBody;
-                        }
-                        else
-                        {
-                            body = Expression.MakeBinary(combination, body, newBody);
-                        }
-                    }
-                    result = Expression.Lambda<Evaluator>(body, parameter);
-                }
-            }
-            return result;
-        }
-
-        private class ReplaceParameter : ExpressionVisitor
-        {
-            private ParameterExpression _parameter;
-
-            public Expression Modify(Expression expression, ParameterExpression parameter)
-            {
-                _parameter = parameter;
-                return Visit(expression);
-            }
-
-            protected override Expression VisitParameter(ParameterExpression node)
-            {
-                return _parameter;
-            }
         }
     }
 }

@@ -89,28 +89,16 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         {
             var result = new List<string>();
 
-            var caseRules = context.conditionalTemplateBody().caseRule();
-            foreach (var caseRule in caseRules)
+            var ifRules = context.conditionalTemplateBody().ifConditionRule();
+            foreach (var ifRule in ifRules)
             {
-                if (caseRule.caseCondition().EXPRESSION() != null
-                    && caseRule.caseCondition().EXPRESSION().Length >= 0)
+                var expression = ifRule.ifCondition().EXPRESSION(0);
+                if (expression != null)
                 {
-                    var conditionExpression = caseRule.caseCondition().EXPRESSION(0).GetText();
-                    var childConditionResult = AnalyzeExpression(conditionExpression);
-                    result.AddRange(childConditionResult);
+                    result.AddRange(AnalyzeExpression(expression.GetText()));
                 }
 
-                if (caseRule.normalTemplateBody() != null)
-                {
-                    var childTemplateBodyResult = Visit(caseRule.normalTemplateBody());
-                    result.AddRange(childTemplateBodyResult);
-                }
-            }
-
-            if (context?.conditionalTemplateBody()?.defaultRule() != null)
-            {
-                var childDefaultRuleResult = Visit(context.conditionalTemplateBody().defaultRule().normalTemplateBody());
-                result.AddRange(childDefaultRuleResult);
+                result.AddRange(Visit(ifRule.normalTemplateBody()));
             }
 
             return result;

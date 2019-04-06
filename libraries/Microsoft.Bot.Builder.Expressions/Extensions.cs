@@ -16,19 +16,17 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="value">Value to check.</param>
         /// <returns>True if numeric type.</returns>
         public static bool IsNumber(this object value)
-        {
-            return value is sbyte
-                    || value is byte
-                    || value is short
-                    || value is ushort
-                    || value is int
-                    || value is uint
-                    || value is long
-                    || value is ulong
-                    || value is float
-                    || value is double
-                    || value is decimal;
-        }
+            => value is sbyte
+            || value is byte
+            || value is short
+            || value is ushort
+            || value is int
+            || value is uint
+            || value is long
+            || value is ulong
+            || value is float
+            || value is double
+            || value is decimal;
 
         /// <summary>
         /// Test an object to see if it is an integer type.
@@ -36,15 +34,46 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="value">Value to check.</param>
         /// <returns>True if numeric type.</returns>
         public static bool IsInteger(this object value)
+            => value is sbyte
+            || value is byte
+            || value is short
+            || value is ushort
+            || value is int
+            || value is uint
+            || value is long
+            || value is ulong;
+
+        /// <summary>
+        /// Do a deep equality between expressions.
+        /// </summary>
+        /// <param name="expr">Base expression.</param>
+        /// <param name="other">Other expression.</param>
+        /// <returns>True if expressions are the same.</returns>
+        public static bool DeepEquals(this Expression expr, Expression other)
         {
-            return value is sbyte
-                    || value is byte
-                    || value is short
-                    || value is ushort
-                    || value is int
-                    || value is uint
-                    || value is long
-                    || value is ulong;
+            var eq = true;
+            if (expr != null && other != null)
+            {
+                eq = expr.Type == other.Type;
+                if (eq)
+                {
+                    if (expr.Type == ExpressionType.Constant)
+                    {
+                        var val = ((Constant)expr).Value;
+                        var otherVal = ((Constant)other).Value;
+                        eq = val == otherVal || (val != null && val.Equals(otherVal));
+                    }
+                    else
+                    {
+                        eq = expr.Children.Count() == other.Children.Count();
+                        for (var i = 0; eq && i < expr.Children.Count(); ++i)
+                        {
+                            eq = expr.Children[i].DeepEquals(other.Children[i]);
+                        }
+                    }
+                }
+            }
+            return eq;
         }
 
         /// <summary>
@@ -153,7 +182,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 }
                 else if (instance is JObject jobj)
                 {
-                    if (jobj.TryGetValue(property, out JToken jtoken))
+                    if (jobj.TryGetValue(property, out var jtoken))
                     {
                         if (jtoken is JArray jarray)
                         {
