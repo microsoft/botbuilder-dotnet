@@ -181,7 +181,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(emptyEngine.Evaluate("Hi", null), "Hi");
             Assert.AreEqual(emptyEngine.Evaluate("Hi {name}", new { name = "DL" }), "Hi DL");
             Assert.AreEqual(emptyEngine.Evaluate("Hi {name.FirstName}{name.LastName}", new { name = new { FirstName = "D", LastName = "L" } }), "Hi DL");
-            Assert.AreEqual(TemplateEngine.EmptyEngine().Evaluate("Hi", null), "Hi");
+            Assert.AreEqual(new TemplateEngine().Evaluate("Hi", null), "Hi");
         }
 
         [TestMethod]

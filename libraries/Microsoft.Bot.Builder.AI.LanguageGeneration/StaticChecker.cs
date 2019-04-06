@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
@@ -34,11 +35,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
     public class StaticChecker : LGFileParserBaseVisitor<List<ReportEntry>>
     {
-        public readonly EvaluationContext Context;
+        public readonly List<LGTemplate> Templates;
 
-        public StaticChecker(EvaluationContext context)
+        private Dictionary<string, LGTemplate> TemplateMap = new Dictionary<string, LGTemplate>();
+
+        public StaticChecker(List<LGTemplate> templates)
         {
-            Context = context;
+            Templates = templates;
         }
 
         /// <summary>
@@ -49,20 +52,39 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         {
             var result = new List<ReportEntry>();
 
-            if(Context.TemplateContexts == null 
-                || Context.TemplateContexts.Count == 0)
+            // check dup first
+            var duplicatedTemplates = Templates
+                                      .GroupBy(t => t.Name)
+                                      .Where(g => g.Count() > 1)
+                                      .ToList();
+
+            if (duplicatedTemplates.Count > 0)
+            {
+                duplicatedTemplates.ForEach(g =>
+                {
+                    var name = g.Key;
+                    var sources = string.Join(":", g.Select(x => x.Source));
+
+                    var msg = $"Duplicated definitions found for template: {name} in {sources}";
+                    result.Add(new ReportEntry(msg));
+                });
+
+                return result;
+            }
+
+            // Covert to dict should be fine after checking dup
+            TemplateMap = Templates.ToDictionary(t => t.Name);
+
+            if (Templates.Count == 0)
             {
                 result.Add(new ReportEntry("File must have at least one template definition ",
                                                 ReportEntryType.WARN));
             }
-            else
+
+            Templates.ForEach(t =>
             {
-                foreach (var template in Context.TemplateContexts)
-                {
-                    result.AddRange(Visit(template.Value));
-                }
-            }
-            
+                result.AddRange(Visit(t.ParseTree));
+            });
 
             return result;
         }
@@ -220,9 +242,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 else
                 {
                     var templateName = exp.Substring(0, argsStartPos);
-                    if (!Context.TemplateContexts.ContainsKey(templateName))
+                    if (!TemplateMap.ContainsKey(templateName))
                     {
-                        result.Add(new ReportEntry($"No such template: {templateName}"));
+                        result.Add(new ReportEntry($"No such template: {templateName} to ref"));
                     }
                     else
                     {
@@ -233,7 +255,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             }
             else
             {
-                if (!Context.TemplateContexts.ContainsKey(exp))
+                if (!TemplateMap.ContainsKey(exp))
                 {
                     result.Add(new ReportEntry($"No such template: {exp}"));
                 }
@@ -272,8 +294,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         private List<ReportEntry> CheckTemplateParameters(string templateName, int argsNumber)
         {
             var result = new List<ReportEntry>();
-            var parametersNumber = Context.TemplateParameters.TryGetValue(templateName, out var parameters) ?
-                parameters.Count : 0;
+            var parametersNumber = TemplateMap[templateName].Paramters.Count;
 
             if (argsNumber != parametersNumber)
             {
