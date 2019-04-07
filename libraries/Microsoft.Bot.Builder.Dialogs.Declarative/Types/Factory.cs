@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
         public static string NameFromType(Type type)
         {
             string name;
-            return names.TryGetValue(type, out name) ? name: default(string);
+            return names.TryGetValue(type, out name) ? name : default(string);
         }
 
         public static void Reset()
@@ -121,6 +121,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.EndTurn", typeof(EndTurn));
             Register("Microsoft.HttpRequest", typeof(HttpRequest));
             Register("Microsoft.IfCondition", typeof(IfCondition));
+            Register("Microsoft.InitProperty", typeof(InitProperty));
             Register("Microsoft.RepeatDialog", typeof(RepeatDialog));
             Register("Microsoft.ReplaceDialog", typeof(ReplaceDialog));
             Register("Microsoft.SaveEntity", typeof(SaveEntity));
