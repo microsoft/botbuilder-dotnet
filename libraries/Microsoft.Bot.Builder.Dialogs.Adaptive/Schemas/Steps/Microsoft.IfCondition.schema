@@ -1,0 +1,52 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "If Condition Step",
+    "description": "Step which conditionally decides which step to execute next.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "condition": {
+            "$type": "Microsoft.IExpression",
+            "title": "Condition",
+            "description": "Expression to evaluate.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
+        "ifTrue": {
+            "oneOf": [
+                {
+                    "$type": "Microsoft.IDialog"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "$type": "Microsoft.IDialog"
+                    }
+                }
+            ],
+            "title": "If True",
+            "description": "Step to execute if expression is true."
+        },
+        "ifFalse": {
+            "oneOf": [
+                {
+                    "$type": "Microsoft.IDialog"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "$type": "Microsoft.IDialog"
+                    }
+                }
+            ],
+            "title": "If False",
+            "description": "Step to execute if expression is false."
+        }
+    },
+    "required": [
+        "expression",
+        "ifTrue"
+    ]
+}

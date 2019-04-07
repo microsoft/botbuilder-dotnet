@@ -1,0 +1,106 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Version Condition=" '$(PackageVersion)' == '' ">4.5.0-local</Version>
+    <Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
+    <PackageVersion Condition=" '$(PackageVersion)' == '' ">4.5.0-local</PackageVersion>
+    <PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
+    <Configurations>Debug;Release;Documentation;Debug - NuGet Packages;</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>true</DelaySign>
+    <AssemblyOriginatorKeyFile>..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Microsoft.Bot.Builder.Dialogs.Rules</PackageId>
+    <Description>This library implements .NET support for rule based dialogs</Description>
+    <Summary>This library implements .NET support for rule based dialogs</Summary>
+    <ContentTargetFolders>content</ContentTargetFolders>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Company>Microsoft</Company>
+    <Authors>microsoft,BotFramework,nugetbotbuilder</Authors>
+    <Product>Microsoft Bot Builder SDK</Product>
+    <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
+    <PackageProjectUrl>https://github.com/Microsoft/botbuilder-dotnet</PackageProjectUrl>
+    <PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
+    <PackageLicenseUrl>https://github.com/Microsoft/BotBuilder/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <RepositoryUrl>https://github.com/Microsoft/botbuilder-dotnet</RepositoryUrl>
+    <LicenseUrl>https://github.com/Microsoft/BotBuilder-dotnet/blob/master/LICENSE</LicenseUrl>
+    <RepositoryType />
+    <PackageTags>bots;ai;botframework;botbuilder</PackageTags>
+    <NeutralLanguage />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
+    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Dialogs.Rules.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Dialogs.Rules.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Schemas\Dialogs\Microsoft.AdaptiveDialog.schema" />
+    <None Remove="Schemas\Recognizers\Microsoft.MultiLanguageRecognizers.schema" />
+    <None Remove="Schemas\Recognizers\Microsoft.RegexRecognizer.schema" />
+    <None Remove="Schemas\Rules\Microsoft.EventRule.schema" />
+    <None Remove="Schemas\Rules\Microsoft.IfPropertyRule.schema" />
+    <None Remove="Schemas\Rules\Microsoft.IntentRule.schema" />
+    <None Remove="Schemas\Rules\Microsoft.Rule.schema" />
+    <None Remove="Schemas\Rules\Microsoft.WelcomeRule.schema" />
+    <None Remove="Schemas\Steps\Microsoft.BeginDialog.schema" />
+    <None Remove="Schemas\Steps\Microsoft.CancelDialog.schema" />
+    <None Remove="Schemas\Steps\Microsoft.EditArray.schema" />
+    <None Remove="Schemas\Steps\Microsoft.EndDialog.schema" />
+    <None Remove="Schemas\Steps\Microsoft.EndTurn.schema" />
+    <None Remove="Schemas\Steps\Microsoft.HttpRequest.schema" />
+    <None Remove="Schemas\Steps\Microsoft.IfProperty.schema" />
+    <None Remove="Schemas\Steps\Microsoft.ReplaceWithDialog.schema" />
+    <None Remove="Schemas\Steps\Microsoft.SaveEntity.schema" />
+    <None Remove="Schemas\Steps\Microsoft.SendActivity.schema" />
+    <None Remove="Schemas\Steps\Microsoft.SendList.schema" />
+    <None Remove="Schemas\Steps\Microsoft.SwitchCondition.schema" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Content Include="Schemas\Dialogs\Microsoft.AdaptiveDialog.schema" />
+    <Content Include="Schemas\Microsoft.IRule.schema" />
+    <Content Include="Schemas\Recognizers\Microsoft.MultiLanguageRecognizers.schema" />
+    <Content Include="Schemas\Recognizers\Microsoft.RegexRecognizer.schema" />
+    <Content Include="Schemas\Rules\Microsoft.Rule.schema" />
+    <Content Include="Schemas\Rules\Microsoft.EventRule.schema" />
+    <Content Include="Schemas\Rules\Microsoft.IfPropertyRule.schema" />
+    <Content Include="Schemas\Rules\Microsoft.IntentRule.schema" />
+    <Content Include="Schemas\Rules\Microsoft.WelcomeRule.schema" />
+    <Content Include="Schemas\Steps\Microsoft.SwitchCondition.schema" />
+    <Content Include="Schemas\Steps\Microsoft.HttpRequest.schema" />
+    <Content Include="Schemas\Steps\Microsoft.SendList.schema" />
+    <Content Include="Schemas\Steps\Microsoft.SaveEntity.schema" />
+    <Content Include="Schemas\Steps\Microsoft.EditArray.schema" />
+    <Content Include="Schemas\Steps\Microsoft.BeginDialog.schema" />
+    <Content Include="Schemas\Steps\Microsoft.CancelDialog.schema" />
+    <Content Include="Schemas\Steps\Microsoft.EndDialog.schema" />
+    <Content Include="Schemas\Steps\Microsoft.ReplaceWithDialog.schema" />
+    <Content Include="Schemas\Steps\Microsoft.SendActivity.schema" />
+    <Content Include="Schemas\Steps\Microsoft.EndTurn.schema" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Builder.Expressions.Parser\Microsoft.Bot.Builder.Expressions.Parser.csproj" />
+  </ItemGroup>
+
+</Project>

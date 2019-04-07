@@ -181,7 +181,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(emptyEngine.Evaluate("Hi", null), "Hi");
             Assert.AreEqual(emptyEngine.Evaluate("Hi {name}", new { name = "DL" }), "Hi DL");
             Assert.AreEqual(emptyEngine.Evaluate("Hi {name.FirstName}{name.LastName}", new { name = new { FirstName = "D", LastName = "L" } }), "Hi DL");
-            Assert.AreEqual(TemplateEngine.EmptyEngine().Evaluate("Hi", null), "Hi");
+            Assert.AreEqual(new TemplateEngine().Evaluate("Hi", null), "Hi");
         }
 
         [TestMethod]
@@ -221,17 +221,17 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var engine = TemplateEngine.FromFile(GetExampleFilePath("MultilineTextForAdaptiveCard.lg"));
             var evaled1 = engine.EvaluateTemplate("wPhrase", "");
-            var options1 = new List<string> { "\ncardContent\n", "hello" };
+            var options1 = new List<string> { "\r\ncardContent\r\n", "hello", "\ncardContent\n" };
             Assert.IsTrue(options1.Contains(evaled1), $"Evaled is {evaled1}");
 
             var evaled2 = engine.EvaluateTemplate("nameTemplate", new { name = "N" });
-            var options2 = new List<string> { "\nN\n", "N" };
+            var options2 = new List<string> { "\r\nN\r\n", "N", "\nN\n" };
             Assert.IsTrue(options2.Contains(evaled2), $"Evaled is {evaled2}");
 
             var evaled3 = engine.EvaluateTemplate("adaptivecardsTemplate", "");
 
             var evaled4 = engine.EvaluateTemplate("refTemplate", "");
-            var options4 = new List<string> { "\nhi\n" };
+            var options4 = new List<string> { "\r\nhi\r\n", "\nhi\n" };
             Assert.IsTrue(options4.Contains(evaled4), $"Evaled is {evaled4}");
         }
 
@@ -289,7 +289,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             }
             catch (Exception e)
             {
-                Assert.IsInstanceOfType(e, typeof(ExpressionEvaluationException));
                 TestContext.WriteLine(e.Message);
             }
         }

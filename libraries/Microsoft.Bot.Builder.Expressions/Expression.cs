@@ -51,11 +51,16 @@ namespace Microsoft.Bot.Builder.Expressions
         public Expression(string type, ExpressionEvaluator evaluator = null, params Expression[] children)
         {
             Type = type;
-            _evaluator = evaluator ?? BuiltInFunctions.Lookup(type);
+            Evaluator = evaluator ?? BuiltInFunctions.Lookup(type);
             Children = children;
         }
 
+        /// <summary>
+        /// Type of expression.
+        /// </summary>
         public string Type { get; }
+
+        public ExpressionEvaluator Evaluator { get; }
 
         /// <summary>
         /// Children expressions.
@@ -65,15 +70,12 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <summary>
         /// Expected result of evaluating expression.
         /// </summary>
-        public ReturnType ReturnType { get { return _evaluator.ReturnType; } }
+        public ReturnType ReturnType => Evaluator.ReturnType;
 
         /// <summary>
         /// Validate immediate expression.
         /// </summary>
-        public void Validate()
-        {
-            _evaluator.ValidateExpression(this);
-        }
+        public void Validate() => Evaluator.ValidateExpression(this);
 
         /// <summary>
         /// Recursively validate the expression tree.
@@ -95,37 +97,68 @@ namespace Microsoft.Bot.Builder.Expressions
         /// </param>
         /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
         public (object value, string error) TryEvaluate(object state)
-            => _evaluator.TryEvaluate(this, state);
+            => Evaluator.TryEvaluate(this, state);
 
         public override string ToString()
         {
-            return ToString(Type);
-        }
-
-        protected string ToString(string name)
-        {
             var builder = new StringBuilder();
-            builder.Append(Type);
-            builder.Append('(');
-            var first = true;
-            foreach (var child in Children)
+            // Special support for memory paths
+            if (Type == ExpressionType.Accessor)
             {
-                if (first)
+                var prop = (Children[0] as Constant).Value;
+                if (Children.Count() == 1)
                 {
-                    first = false;
+                    builder.Append(prop);
                 }
                 else
                 {
-                    builder.Append(", ");
+                    builder.Append(Children[1].ToString());
+                    builder.Append('.');
+                    builder.Append(prop);
                 }
-
-                builder.Append(child.ToString());
             }
-            builder.Append(')');
+            else if (Type == ExpressionType.Element)
+            {
+                builder.Append(Children[0].ToString());
+                builder.Append('[');
+                builder.Append(Children[1].ToString());
+                builder.Append(']');
+            }
+            else
+            {
+                var infix = Type.Length > 0 && !char.IsLetter(Type[0]) && Children.Count() >= 2;
+                if (!infix)
+                {
+                    builder.Append(Type);
+                }
+                builder.Append('(');
+                var first = true;
+                foreach (var child in Children)
+                {
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        if (infix)
+                        {
+                            builder.Append(' ');
+                            builder.Append(Type);
+                            builder.Append(' ');
+                        }
+                        else
+                        {
+                            builder.Append(", ");
+                        }
+                    }
+
+                    builder.Append(child.ToString());
+                }
+                builder.Append(')');
+            }
             return builder.ToString();
         }
-
-        protected ExpressionEvaluator _evaluator { get; }
 
         /// <summary>
         /// Make an expression and validate it.

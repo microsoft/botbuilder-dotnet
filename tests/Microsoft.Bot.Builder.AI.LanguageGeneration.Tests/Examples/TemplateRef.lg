@@ -2,9 +2,9 @@
 - [Welcome(time)] {name}
 
 # Welcome(time)
-- CASE: {time == 'morning'}
+- IF: {time == 'morning'}
  - Good morning
-- CASE: {time == 'evening'}
+- ELSEIF: {time == 'evening'}
  - Good evening
-- DEFAULT:
+- ELSE:
  - How are you doing, 

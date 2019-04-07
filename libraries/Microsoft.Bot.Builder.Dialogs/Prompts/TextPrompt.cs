@@ -10,14 +10,8 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public class TextPromptOptions : PromptOptions
+    public class TextPrompt : Prompt<string>
     {
-    }
-
-    public class TextPrompt : Prompt<string, TextPromptOptions>
-    {
-        private Regex _patternMatcher;
-
         public TextPrompt() : base() { }
 
         public TextPrompt(string dialogId = nameof(TextPrompt), PromptValidator<string> validator = null)
@@ -25,18 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
         }
 
-        /// <summary>
-        /// Regex Match expression to match.
-        /// </summary>
-        public string Pattern { get { return _patternMatcher?.ToString(); } set { _patternMatcher = new Regex(value); } }
-
-        protected override async Task OnBeforePromptAsync(DialogContext dc, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            // TODO: Parametrize to which state to bind.
-            await base.OnBeforePromptAsync(dc, isRetry, cancellationToken).ConfigureAwait(false);
-        }
-
-        protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, TextPromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
+        protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -48,65 +31,17 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(options));
             }
 
-            if (_validator == null)
-            {
-                _validator = new PromptValidator<string>(async (promptContext, cancel) =>
-                {
-                    if (!promptContext.Recognized.Succeeded)
-                    {
-                        return false;
-                    }
-
-                    if (_patternMatcher == null)
-                    {
-                        return true;
-                    }
-
-                    var value = promptContext.Recognized.Value;
-
-                    if (!_patternMatcher.IsMatch(value))
-                    {
-                        var notMatched = await this.NoMatchResponse.BindToData(turnContext, state).ConfigureAwait(false);
-                        if (notMatched != null)
-                        {
-                            await promptContext.Context.SendActivityAsync(notMatched).ConfigureAwait(false);
-                        }
-
-                        return false;
-                    }
-
-                    return true;
-                });
-            }
-
-            // Retry for template model
             if (isRetry && options.RetryPrompt != null)
             {
                 await turnContext.SendActivityAsync(options.RetryPrompt, cancellationToken).ConfigureAwait(false);
             }
-            else if (isRetry)
-            {
-                var retryPrompt = await this.RetryPrompt.BindToData(turnContext, state).ConfigureAwait(false);
-                if (retryPrompt != null)
-                {
-                    await turnContext.SendActivityAsync(retryPrompt, cancellationToken).ConfigureAwait(false);
-                }
-            }
             else if (options.Prompt != null)
             {
-                // Backward compatible initial prompt for Options model
                 await turnContext.SendActivityAsync(options.Prompt, cancellationToken).ConfigureAwait(false);
             }
-            else
-            {
-                // Initial prompt for template model
-                var initialPrompt = await this.InitialPrompt.BindToData(turnContext, state).ConfigureAwait(false);
-                await turnContext.SendActivityAsync(initialPrompt, cancellationToken).ConfigureAwait(false);
-            }
-
         }
 
-        protected override Task<PromptRecognizerResult<string>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, TextPromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
+        protected override Task<PromptRecognizerResult<string>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {

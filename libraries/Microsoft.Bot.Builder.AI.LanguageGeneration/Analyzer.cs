@@ -11,7 +11,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
     public class Analyzer : LGFileParserBaseVisitor<List<string>>
     {
-        public readonly EvaluationContext Context;
+        public readonly List<LGTemplate> Templates;
+        private readonly Dictionary<string, LGTemplate> TemplateMap;
 
         private readonly IExpressionParser _expressionParser;
 
@@ -22,15 +23,16 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return evaluationTargetStack.Peek();
         }
 
-        public Analyzer(EvaluationContext context)
+        public Analyzer(List<LGTemplate> templates)
         {
-            Context = context;
+            Templates = templates;
+            TemplateMap = templates.ToDictionary(t => t.Name);
             _expressionParser = new ExpressionEngine(new GetMethodExtensions(null).GetMethodX);
         }
 
         public List<string> AnalyzeTemplate(string templateName)
         {
-            if (!Context.TemplateContexts.ContainsKey(templateName))
+            if (!TemplateMap.ContainsKey(templateName))
             {
                 throw new Exception($"No such template: {templateName}");
             }
@@ -42,9 +44,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
             // Using a stack to track the evalution trace
             evaluationTargetStack.Push(new EvaluationTarget(templateName, null));
-            var rawDependencies = Visit(Context.TemplateContexts[templateName]);
+            var rawDependencies = Visit(TemplateMap[templateName].ParseTree);
 
-            var parameters = ExtractParameters(templateName);
+            var parameters = TemplateMap[templateName].Paramters;
 
             // we need to exclude parameters from raw dependencies
             var dependencies = rawDependencies.Except(parameters).Distinct().ToList();
@@ -89,28 +91,16 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         {
             var result = new List<string>();
 
-            var caseRules = context.conditionalTemplateBody().caseRule();
-            foreach (var caseRule in caseRules)
+            var ifRules = context.conditionalTemplateBody().ifConditionRule();
+            foreach (var ifRule in ifRules)
             {
-                if (caseRule.caseCondition().EXPRESSION() != null
-                    && caseRule.caseCondition().EXPRESSION().Length >= 0)
+                var expression = ifRule.ifCondition().EXPRESSION(0);
+                if (expression != null)
                 {
-                    var conditionExpression = caseRule.caseCondition().EXPRESSION(0).GetText();
-                    var childConditionResult = AnalyzeExpression(conditionExpression);
-                    result.AddRange(childConditionResult);
+                    result.AddRange(AnalyzeExpression(expression.GetText()));
                 }
 
-                if (caseRule.normalTemplateBody() != null)
-                {
-                    var childTemplateBodyResult = Visit(caseRule.normalTemplateBody());
-                    result.AddRange(childTemplateBodyResult);
-                }
-            }
-
-            if (context?.conditionalTemplateBody()?.defaultRule() != null)
-            {
-                var childDefaultRuleResult = Visit(context.conditionalTemplateBody().defaultRule().normalTemplateBody());
-                result.AddRange(childDefaultRuleResult);
+                result.AddRange(Visit(ifRule.normalTemplateBody()));
             }
 
             return result;
@@ -164,7 +154,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                                 end = str.Length - 1;
                             }
                             var template = str.Substring(1, end - 1);
-                            var analyzer = new Analyzer(Context);
+                            var analyzer = new Analyzer(Templates);
                             foreach (var reference in analyzer.AnalyzeTemplate(template))
                             {
                                 references.Add(reference);
@@ -232,12 +222,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             }
 
             return result;
-        }
-
-        private List<string> ExtractParameters(string templateName)
-        {
-            var hasParameters = Context.TemplateParameters.TryGetValue(templateName, out var parameters);
-            return hasParameters ? parameters : new List<string>();
         }
     }
 }

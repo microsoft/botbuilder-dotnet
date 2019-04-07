@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
@@ -11,9 +14,11 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using System.Collections.Generic;
-using Microsoft.Bot.Builder.Dialogs.Rules;
 using System;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Debugger;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 
 namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 {

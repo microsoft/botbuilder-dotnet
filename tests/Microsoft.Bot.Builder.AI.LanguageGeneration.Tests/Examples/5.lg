@@ -20,26 +20,26 @@
 > Conditional response template
 > Outer list is condition expression; L2 list is one-of collection
 # time-of-day-readout
-- CASE: {timeOfDay == 'morning'}
+- IF: {timeOfDay == 'morning'}
     - Good morning
     - Morning! 
-- DEFAULT:
+- ELSE:
     - Good evening
     - Evening! 
 
 > Conditional response template
 > Outer list is condition expression; L2 list is one-of collection
 # time-of-day-readout-without-default
-- CASE: {timeOfDay == 'morning'}
+- IF: {timeOfDay == 'morning'}
     - Good morning
     - Morning! 
-- CASE: {timeOfDay != 'morning'}
+- ELSEIF: {timeOfDay != 'morning'}
     - Good evening
     - Evening! 
 
 > Conditional response template
 > Outer list is condition expression; L2 list is one-of collection
 # time-of-day-readout-without-default2
-- CASE: {timeOfDay == 'morning'}
+- IF: {timeOfDay == 'morning'}
     - Good morning
     - Morning! 
