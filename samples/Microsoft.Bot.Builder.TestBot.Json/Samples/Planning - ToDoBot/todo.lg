@@ -1,8 +1,8 @@
 ﻿# ShowTodo
 - CASE: {count(user.todos) > 0}
     - ```
-Your most recent @{count(user.todos)} tasks are 
- @{humanize(user.todos, '[showSingleTodo]', '\n')}
+    Your most recent @{count(user.todos)} tasks are 
+    @{humanize(user.todos, '[showSingleTodo]', '\n')}
       ```
 - DEFAULT:
     - You don't have any tasks.
