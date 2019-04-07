@@ -29,6 +29,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("fun(a, b, c"),
             Test("func(A,b,b,)"),
             Test("a.#title"),
+            Test("\"hello'"),
         };
 
 

@@ -180,7 +180,21 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
 
             public override Expression VisitParenthesisExp([NotNull] ExpressionParser.ParenthesisExpContext context) => Visit(context.expression());
 
-            public override Expression VisitStringAtom([NotNull] ExpressionParser.StringAtomContext context) => Expression.ConstantExpression(Regex.Unescape(context.GetText().Trim('\'')));
+            public override Expression VisitStringAtom([NotNull] ExpressionParser.StringAtomContext context) 
+            {
+                var text = context.GetText();
+                if (text.StartsWith("'"))
+                {
+                    return Expression.ConstantExpression(Regex.Unescape(text.Trim('\'')));
+                }
+                else
+                {
+                    // start with "
+                    return Expression.ConstantExpression(Regex.Unescape(text.Trim('"')));
+                }
+                    
+            }
+
 
             
 
