@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder
     /// <remarks>
     /// TODO: add more details on what kind of values can/should be stored here, by whom and what the lifetime semantics are, etc.
     /// </remarks>
-    public class TurnContextStateCollection : Dictionary<string, object>
+    public class TurnContextStateCollection : Dictionary<string, object>, IDisposable
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TurnContextStateCollection"/> class.
@@ -98,6 +98,25 @@ namespace Microsoft.Bot.Builder
             where T : class
         {
             Add(typeof(T).FullName, value);
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            foreach (var entry in Values)
+            {
+                if (entry is IDisposable disposableService)
+                {
+                    // Don't dispose the ConnectorClient, since this is cached in the adapter (singleton).
+                    // Disposing will release the HttpClient causing Response Sends to fail.
+                    if (entry is IConnectorClient)
+                    {
+                        continue;
+                    }
+
+                    disposableService.Dispose();
+                }
+            }
         }
     }
 }
