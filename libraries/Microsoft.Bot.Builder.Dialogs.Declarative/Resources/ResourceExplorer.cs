@@ -3,15 +3,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Xml;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.Versioning;
-using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 {
@@ -40,10 +37,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
         IEnumerable<DirectoryInfo> IResourceExplorer.Folders { get => folderResources.Select(s => s.Directory); set => throw new NotImplementedException(); }
 
-        public event ResourceChangedEventHandler Changed;
-
-        private CancellationTokenSource CancelReloadToken = new CancellationTokenSource();
-        private ConcurrentBag<string> changedPaths = new ConcurrentBag<string>();
+        /// <summary>
+        /// Occurs when a file or directory in the specified System.IO.FileSystemWatcher.Path is changed.
+        /// </summary>
+        public event FileSystemEventHandler Changed;
 
         public void AddFolder(string folder, bool monitorFiles = true)
         {
@@ -51,33 +48,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
             if (folderResource.Watcher != null)
             {
-                folderResource.Watcher.Created += Watcher_Changed;
-                folderResource.Watcher.Changed += Watcher_Changed;
-                folderResource.Watcher.Deleted += Watcher_Changed;
+                folderResource.Watcher.Created += (sender, e) =>
+                {
+                    if (this.Changed != null)
+                    {
+                        this.Changed(sender, e);
+                    }
+                };
+                folderResource.Watcher.Changed += (sender, e) =>
+                {
+                    if (this.Changed != null)
+                    {
+                        this.Changed(sender, e);
+                    }
+                };
+                folderResource.Watcher.Deleted += (sender, e) =>
+                {
+                    if (this.Changed != null)
+                    {
+                        this.Changed(sender, e);
+                    }
+                };
+
             }
 
             this.folderResources.Add(folderResource);
-        }
-
-        private void Watcher_Changed(object sender, FileSystemEventArgs e)
-        {
-            if (this.Changed != null)
-            {
-                changedPaths.Add(e.FullPath);
-                lock (CancelReloadToken)
-                {
-                    CancelReloadToken.Cancel();
-                    CancelReloadToken = new CancellationTokenSource();
-                    Task.Delay(1000, CancelReloadToken.Token)
-                        .ContinueWith(t =>
-                        {
-                            if (t.IsCanceled)
-                                return;
-
-                            this.Changed(changedPaths.ToArray());
-                        }).ContinueWith(t => t.Status);
-                }
-            }
         }
 
         /// <summary>
@@ -173,7 +168,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
         public void Dispose()
         {
-            foreach (var folderResource in this.folderResources)
+            foreach(var folderResource in this.folderResources)
             {
                 folderResource.Dispose();
             }
@@ -204,7 +199,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
             public void Dispose()
             {
-                lock (Directory)
+                lock(Directory)
                 {
                     if (Watcher != null)
                     {

@@ -6,8 +6,6 @@ using System.IO;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 {
-    public delegate void ResourceChangedEventHandler(string[] paths);
-
     public interface IResourceExplorer
     {
         void AddFolder(string path, bool monitorFiles = true);
@@ -20,6 +18,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <summary>
         /// Occurs when a file or directory in the specified System.IO.FileSystemWatcher.Path is changed.
         /// </summary>
-        event ResourceChangedEventHandler Changed;
+        event FileSystemEventHandler Changed;
     }
 }
