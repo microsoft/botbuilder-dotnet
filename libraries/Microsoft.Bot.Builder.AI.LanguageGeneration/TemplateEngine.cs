@@ -8,98 +8,97 @@ using System;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
-
     /// <summary>
-    /// Helper info which help boost the evaluation process
-    /// </summary>
-    public class EvaluationContext
-    {
-        public EvaluationContext()
-        {
-            TemplateContexts = new Dictionary<string, LGFileParser.TemplateDefinitionContext>();
-            TemplateParameters = new Dictionary<string, List<string>>();
-        }
-
-        public EvaluationContext(Dictionary<string, LGFileParser.TemplateDefinitionContext> templateContexts, Dictionary<string, List<string>> templateParameters)
-        {
-            TemplateContexts = templateContexts;
-            TemplateParameters = templateParameters;
-        }
-
-        public EvaluationContext(EvaluationContext context)
-        {
-            TemplateContexts = new Dictionary<string, LGFileParser.TemplateDefinitionContext>(context.TemplateContexts);
-            TemplateParameters = new Dictionary<string, List<string>>(context.TemplateParameters);
-        }
-
-        /// <summary>
-        /// templateName => templateContext (parseTree) mapping
-        /// </summary>
-        public Dictionary<string, LGFileParser.TemplateDefinitionContext> TemplateContexts { get; set; }
-        
-        /// <summary>
-        /// templateName => paramaterList mapping (if has parameters)
-        /// </summary>
-        public Dictionary<string, List<string>> TemplateParameters { get; set; }
-    }
-
-
-    /// <summary>
-    /// The template engine that loads .lg file and eval based on memory/scope
+    /// The template engine that loads .lg file and eval template based on memory/scope
     /// </summary>
     public class TemplateEngine
     {
         /// <summary>
-        /// This is ensentially an index for the parse tree, used to accelerate the evalution process
+        /// Parsed LG templates
         /// </summary>
-        private readonly EvaluationContext evaluationContext = null;
+        public List<LGTemplate> Templates = new List<LGTemplate>();
 
         /// <summary>
-        /// Use for create an empty engine
+        /// Return an empty engine, you can use AddFiles to add files to it, 
+        /// or you can just use this empty engine to evaluate inline template
         /// </summary>
-        private TemplateEngine()
+        public TemplateEngine()
         {
-            evaluationContext = new EvaluationContext();
         }
 
-
-        private TemplateEngine(LGFileParser.FileContext context)
+        /// <summary>
+        /// Add a file to a template engine
+        /// </summary>
+        /// <param name="filePath">the path to the file</param>
+        /// <returns>template engine with the parsed content of this file</returns>
+        public TemplateEngine AddFile(string filePath)
         {
-            // Pre-compute some information to help the evalution process later
-            var templateContexts = new Dictionary<string, LGFileParser.TemplateDefinitionContext>();
-            var templateParameters = new Dictionary<string, List<string>>();
+            var text = File.ReadAllText(filePath);
+            Templates.AddRange(ToTemplates(Parse(text), filePath));
 
-            // Iterate template parse tree
-            var templates = context.paragraph().Select(x => x.templateDefinition()).Where(x => x != null);
-            foreach (var template in templates)
+            RunStaticCheck();
+            return this;
+        }
+
+        /// <summary>
+        /// Add text as lg file content to template engine
+        /// </summary>
+        /// <param name="text">the text content contains lg templates</param>
+        /// <returns>template engine with the parsed content</returns>
+        public TemplateEngine AddText(string text)
+        {
+            Templates.AddRange(ToTemplates(Parse(text), "text"));
+
+            RunStaticCheck();
+            return this;
+        }
+
+        /// <summary>
+        /// Parse text as a LG file using antlr
+        /// </summary>
+        /// <param name="text">text to parse</param>
+        /// <returns>ParseTree of the LG file</returns>
+        private LGFileParser.FileContext Parse(string text)
+        {
+            if (string.IsNullOrEmpty(text))
             {
-                // Extact name
-                var templateName = template.templateNameLine().templateName().GetText();
-                if (!templateContexts.ContainsKey(templateName))
-                {
-                    templateContexts[templateName] = template;
-                }
-                else
-                {
-                    //TODO: Understand why this reports duplicate items when there are actually no duplicates
-                    //throw new Exception($"Duplicated template definition with name: {templateName}");
-                }
-
-                // Extract parameter list
-                var parameters = template.templateNameLine().parameters();
-                if (parameters != null)
-                {
-                    templateParameters[templateName] = parameters.IDENTIFIER().Select(x => x.GetText()).ToList();
-                }
+                return null;
             }
-            evaluationContext = new EvaluationContext(templateContexts, templateParameters);
 
-            RunStaticCheck(evaluationContext);
+            var input = new AntlrInputStream(text);
+            var lexer = new LGFileLexer(input);
+            var tokens = new CommonTokenStream(lexer);
+            var parser = new LGFileParser(tokens);
+            parser.RemoveErrorListeners();
+            var listener = new ErrorListener();
+
+            parser.AddErrorListener(listener);
+            parser.BuildParseTree = true;
+
+            return parser.file();
         }
 
-        public void RunStaticCheck(EvaluationContext evaluationContext)
+        /// <summary>
+        /// Convert a file parse tree to a list of LG templates
+        /// </summary>
+        /// <returns></returns>
+        private List<LGTemplate> ToTemplates(LGFileParser.FileContext file, string source = "")
         {
-            var checker = new StaticChecker(evaluationContext);
+            if (file == null)
+            {
+                return new List<LGTemplate>();
+            }
+
+            var templates = file.paragraph().Select(x => x.templateDefinition()).Where(x => x != null);
+            return templates.Select(t => new LGTemplate(t, source)).ToList();
+        }
+
+
+
+        public void RunStaticCheck(List<LGTemplate> templates = null)
+        {
+            var teamplatesToCheck = templates ?? Templates;
+            var checker = new StaticChecker(teamplatesToCheck);
             var report = checker.Check();
 
             var errors = report.Where(u => u.Type == ReportEntryType.ERROR).ToList();
@@ -112,13 +111,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         public string EvaluateTemplate(string templateName, object scope, IGetMethod methodBinder = null)
         {
 
-            var evaluator = new Evaluator(evaluationContext, methodBinder);
+            var evaluator = new Evaluator(Templates, methodBinder);
             return evaluator.EvaluateTemplate(templateName, scope);
         }
 
         public List<string> AnalyzeTemplate(string templateName)
         {
-            var analyzer = new Analyzer(evaluationContext);
+            var analyzer = new Analyzer(Templates);
             return analyzer.AnalyzeTemplate(templateName);
         }
 
@@ -131,74 +130,42 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         /// <returns></returns>
         public string Evaluate(string inlineStr, object scope, IGetMethod methodBinder = null)
         {
-            // TODO: maybe we can directly ref the templateBody without giving a name, but that means
-            // we needs to make a little changes in the evalutor, especially the loop detection part
-            
-            var fakeTemplateId = "__temp__";
             // wrap inline string with "# name and -" to align the evaluation process
+            var fakeTemplateId = "__temp__";
             var wrappedStr = $"# {fakeTemplateId} \r\n - {inlineStr}";
+      
+            var parsedTemplates = ToTemplates(Parse(wrappedStr), "inline");
+            // merge the existing templates and this new template as a whole for evaluation
+            var mergedTemplates = Templates.Concat(parsedTemplates).ToList();
 
-            // Step 1: parse input, construct parse tree
-            var input = new AntlrInputStream(wrappedStr);
-            var lexer = new LGFileLexer(input);
-            var tokens = new CommonTokenStream(lexer);
-            var parser = new LGFileParser(tokens);
-            parser.RemoveErrorListeners();
-            var listener = new ErrorListener();
+            RunStaticCheck(mergedTemplates);
 
-            parser.AddErrorListener(listener);
-            parser.BuildParseTree = true;
-            // the only difference here is that we parse as templateBody, not as the whole file
-            var context = parser.templateDefinition();
-
-            // Step 2: constuct a new evalution context on top of the current one
-            var evaluationContext = new EvaluationContext(this.evaluationContext);
-            evaluationContext.TemplateContexts[fakeTemplateId] = context;
-            var evaluator = new Evaluator(evaluationContext, methodBinder);
-
-            RunStaticCheck(evaluationContext);
-
-            // Step 3: evaluate
+            var evaluator = new Evaluator(mergedTemplates, methodBinder);
             return evaluator.EvaluateTemplate(fakeTemplateId, scope);
 
         }
 
 
         /// <summary>
-        /// Make this a signleton ? or give a better name
+        /// Create a template engine from a file, equivalent to 
+        ///    new TemplateEngine.AddFile(filePath)
         /// </summary>
+        /// <param name="filePath"></param>
         /// <returns></returns>
-        public static TemplateEngine EmptyEngine()
-        {
-            return FromText("");
-        }
-
         public static TemplateEngine FromFile(string filePath)
         {
-            return FromText(File.ReadAllText(filePath));
+            return new TemplateEngine().AddFile(filePath);
         }
 
-        public static TemplateEngine FromText(string lgFileContent)
+        /// <summary>
+        /// Create a template engine from text, equivalent to 
+        ///    new TemplateEngine.AddText(text)
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static TemplateEngine FromText(string text)
         {
-            // Short cut for empty engine
-            if (string.IsNullOrEmpty(lgFileContent))
-            {
-                return new TemplateEngine();
-            }
-
-            var input = new AntlrInputStream(lgFileContent);
-            var lexer = new LGFileLexer(input);
-            var tokens = new CommonTokenStream(lexer);
-            var parser = new LGFileParser(tokens);
-            parser.RemoveErrorListeners();
-            var listener = new ErrorListener();
-
-            parser.AddErrorListener(listener);
-            parser.BuildParseTree = true;
-
-            var context = parser.file();
-
-            return new TemplateEngine(context);
+            return new TemplateEngine().AddText(text);
         }
     }
 }

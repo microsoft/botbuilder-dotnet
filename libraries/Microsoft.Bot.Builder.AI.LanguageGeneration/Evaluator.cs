@@ -25,21 +25,24 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
     class Evaluator : LGFileParserBaseVisitor<string>
     {
-        public readonly EvaluationContext Context;
+        public readonly List<LGTemplate> Templates;
+        public readonly Dictionary<string, LGTemplate> TemplateMap;
 
         private readonly IGetMethod GetMethodX;
 
         private Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
-        public Evaluator(EvaluationContext context, IGetMethod getMethod)
+        public Evaluator(List<LGTemplate> templates, IGetMethod getMethod)
         {
-            Context = context;
+            Templates = templates;
+            TemplateMap = templates.ToDictionary(x => x.Name);
             GetMethodX = getMethod ?? new GetMethodExtensions(this);
+
         }
 
         public string EvaluateTemplate(string templateName, object scope)
         {
-            if (!Context.TemplateContexts.ContainsKey(templateName))
+            if (!TemplateMap.ContainsKey(templateName))
             {
                 throw new Exception($"No such template: {templateName}");
             }
@@ -51,7 +54,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
             // Using a stack to track the evalution trace
             evaluationTargetStack.Push(new EvaluationTarget(templateName, scope));
-            string result = Visit(Context.TemplateContexts[templateName]);
+            string result = Visit(TemplateMap[templateName].ParseTree);
             evaluationTargetStack.Pop();
 
             return result;
@@ -244,11 +247,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
             return Regex.Replace(exp, reg, evalutor);
         }
-        private List<string> ExtractParameters(string templateName)
-        {
-            bool hasParameters = Context.TemplateParameters.TryGetValue(templateName, out List<string> parameters);
-            return hasParameters ? parameters : new List<string>();
-        }
 
         private (object value, string error) EvalByExpressionEngine(string exp, object scope)
         {
@@ -258,18 +256,17 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
         public object ConstructScope(string templateName, List<object> args)
         {
-            if (args.Count == 1 &&
-                !Context.TemplateParameters.ContainsKey(templateName))
+            var paramters = TemplateMap[templateName].Paramters;
+
+            if (args.Count == 1 && paramters.Count == 0)
             {
                 // Special case, if no parameters defined, and only one arg, don't wrap
+                // this is for directly calling an paramterized template
                 return args[0];
             }
 
-            var paramters = ExtractParameters(templateName);
-
             var newScope = paramters.Zip(args, (k, v) => new { k, v })
                                     .ToDictionary(x => x.k, x => x.v);
-
             return newScope;
         }
 
