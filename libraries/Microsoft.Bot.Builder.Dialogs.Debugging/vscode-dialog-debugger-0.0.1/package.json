@@ -1,10 +1,19 @@
 {
-  "name": "dialog-debugger",
-  "version": "0.0.1",
+  "name": "vscode-dialog-debugger",
+  "displayName": "Debugger for Dialogs",
+  "description": "This extension provides the ability to debug Microsoft Bot Framework declarative dialog flows.",
+  "author": "Microsoft",
+  "categories": [ "debuggers" ],
+  "keywords": [ "debuggers", "bot" ],
+  "icon": "icon.png",
+  "preview": true,
+  "version": "0.0.2",
   "publisher": "Microsoft",
+  "license": "SEE LICENSE file",
   "engines": {
     "vscode": "^1.0.0"
   },
+  "repository": "https://github.com/microsoft/botbuilder",
   "contributes": {
     "languages": [
       {
@@ -29,7 +38,7 @@
     "debuggers": [
       {
         "type": "dialog",
-        "label": "Dialog Debugger",
+        "label": "Bot Framework Dialog Debugger",
         "languages": [
           "dialog"
         ]
