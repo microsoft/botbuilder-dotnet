@@ -333,7 +333,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         protected override string OnComputeId()
         {
-            return $"planning[{this.BindingPath()}]";
+            return $"AdaptiveDialog[{this.BindingPath()}]";
         }
 
         public async Task<BotTurnResult> OnTurnAsync(ITurnContext context, StoredBotState storedState, CancellationToken cancellationToken = default(CancellationToken))

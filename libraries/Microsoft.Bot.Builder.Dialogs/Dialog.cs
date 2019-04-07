@@ -187,6 +187,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 return OutputProperty;
             }
+            else if (!string.IsNullOrEmpty(Property))
+            {
+                return Property;
+            }
 
             return string.Empty;
         }

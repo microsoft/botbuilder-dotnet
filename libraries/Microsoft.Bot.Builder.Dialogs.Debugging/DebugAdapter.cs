@@ -150,6 +150,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
             try
             {
+                if (item is Dialog)
+                {
+                    System.Diagnostics.Trace.TraceInformation($"{Policy.NameFor(item)} {((Dialog)item).Id} {more}");
+                }
                 await OutputAsync($"Step: {Policy.NameFor(item)} {more}", item, cancellationToken).ConfigureAwait(false);
 
                 await UpdateBreakpointsAsync(cancellationToken).ConfigureAwait(false);
