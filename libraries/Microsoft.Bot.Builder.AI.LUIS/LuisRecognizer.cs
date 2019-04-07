@@ -288,8 +288,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             {
                 Text = utterance,
                 AlteredText = luisResult.AlteredQuery,
-                //Intents = LuisUtil.GetIntents(luisResult), return only top intent
-                Intents = new Dictionary<string, IntentScore>() { { luisResult.TopScoringIntent.Intent, new IntentScore() { Score = luisResult.TopScoringIntent.Score } } },
+                Intents = LuisUtil.GetIntents(luisResult), 
                 Entities = LuisUtil.ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, _options.IncludeInstanceData ?? true),
             };
             LuisUtil.AddProperties(luisResult, recognizerResult);
