@@ -1,65 +1,19 @@
 {
-  "$schema": "../../app.schema",
-  "$type": "Microsoft.AdaptiveDialog",
-  "recognizer": {
-    "$type": "Microsoft.RegexRecognizer",
-    "intents": {
-        "JokeIntent": "(?i)joke",
-        "FortuneTellerIntent": "(?i)fortune|future"
-    }
-  },
-  "rules": [
-    {
-      "$type": "Microsoft.IntentRule",
-      "intent": "JokeIntent",
-      "steps": [
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "Why did the chicken cross the road?"
-        },
-        {
-          "$type": "Microsoft.EndTurn"
-        },
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "To get to the other side"
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "autoEndDialog": false,
+    "recognizer": {
+        "$type": "Microsoft.RegexRecognizer",
+        "intents": {
+            "JokeIntent": "(?i)joke",
+            "FortuneTellerIntent": "(?i)fortune|future"
         }
-      ]
     },
-    {
-      "$type": "Microsoft.IntentRule",
-      "intent": "FortuneTellerIntent",
-      "steps": [
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "Seeing into the future..."
-        },
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "I see great things happening..."
-        },
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "Perhaps even a successful bot demo"
-        }
-      ]
-    },
-    {
-      "$type": "Microsoft.WelcomeRule",
-      "steps": [
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "Welcome!"
-        }
-      ]
-    },
-    {
-      "$type": "Microsoft.NoMatchRule",
-      "steps": [
+    "steps": [
         {
             "$type": "Microsoft.IfCondition",
             "condition": "user.name == null",
-            "ifTrue": [
+            "steps": [
                 {
                     "$type": "Microsoft.TextInput",
                     "property": "user.name",
@@ -68,10 +22,45 @@
             ]
         },
         {
-          "$type": "Microsoft.SendActivity",
-          "activity": "Hello {user.name}, nice to talk to you!"
+            "$type": "Microsoft.SendActivity",
+            "activity": "Hello {user.name}, nice to talk to you!"
         }
-      ]
-    }
-  ]
+    ],
+    "rules": [
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "JokeIntent",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Why did the chicken cross the road?"
+                },
+                {
+                    "$type": "Microsoft.EndTurn"
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "To get to the other side"
+                }
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "FortuneTellerIntent",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Seeing into the future..."
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "I see great things happening..."
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Perhaps even a successful bot demo"
+                }
+            ]
+        }
+    ]
 }

@@ -3,11 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 {
@@ -16,9 +18,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     /// </summary>
     public class EndTurn : Dialog
     {
-        public EndTurn() : base()
+        [JsonConstructor]
+        public EndTurn([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base()
         {
             this.Id = OnComputeId();
+            this.RegisterSourceLocation(callerPath, callerLine);
         }
 
         protected override string OnComputeId()
@@ -35,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         {
             return new DialogConsultation()
             {
-                Desire = DialogConsultationDesires.CanProcess,
+                Desire = DialogConsultationDesire.CanProcess,
                 Processor = async (ctx) =>
                 {
                     var activity = ctx.Context.Activity;

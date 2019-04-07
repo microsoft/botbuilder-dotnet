@@ -1,26 +1,21 @@
 {
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
-    "rules": [
+    "steps": [
         {
-            "$type": "Microsoft.NoMatchRule",
+            "$type": "Microsoft.IfCondition",
+            "condition": "user.name == null",
             "steps": [
                 {
-                    "$type": "Microsoft.IfCondition",
-                    "condition": "user.name == null",
-                    "ifTrue": [
-                        {
-                            "$type": "Microsoft.TextInput",
-                            "prompt": "Hello, I'm Zoidberg. What is your name?",
-                            "property": "user.name"
-                        }
-                    ]
-                },
-                {
-                    "$type": "Microsoft.SendActivity",
-                    "activity": "Hello {user.name}, nice to talk to you!"
+                    "$type": "Microsoft.TextInput",
+                    "prompt": "Hello, I'm Zoidberg. What is your name?",
+                    "property": "user.name"
                 }
             ]
+        },
+        {
+            "$type": "Microsoft.SendActivity",
+            "activity": "Hello {user.name}, nice to talk to you!"
         }
     ]
 }

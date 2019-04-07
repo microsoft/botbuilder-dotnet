@@ -74,4 +74,8 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Debugger\" />
+  </ItemGroup>
+
 </Project>

@@ -1,6 +1,7 @@
 {
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
+    "autoEndDialog": false,
     "recognizer": {
         "$type": "Microsoft.RegexRecognizer",
         "intents": {
@@ -10,6 +11,13 @@
             "FortuneTellerIntent": "(?i)fortune|future"
         }
     },
+    "steps": [
+        {
+            "$type": "Microsoft.SendActivity",
+            "activity": "[welcome]"
+        },
+        "ExternalLanguage.Greeting"
+    ],
     "rules": [
         {
             "$type": "Microsoft.IntentRule",
@@ -23,15 +31,6 @@
             "intent": "FortuneTellerIntent",
             "steps": [
                 "ExternalLanguage.FortuneTeller"
-            ]
-        },
-        {
-            "$type": "Microsoft.WelcomeRule",
-            "steps": [
-                {
-                    "$type": "Microsoft.SendActivity",
-                    "activity": "[welcome]"
-                }
             ]
         },
         {
@@ -52,7 +51,7 @@
             ]
         },
         {
-            "$type": "Microsoft.NoMatchRule",
+            "$type": "Microsoft.NoneIntentRule",
             "steps": [
                 {
                     "$type": "Microsoft.SendActivity",

@@ -3,31 +3,8 @@
     "$type": "Microsoft.AdaptiveDialog",
     "steps": [
         {
-            "$type": "Microsoft.IfCondition",
-            "condition": "user.todos == null",
-            "ifTrue": [
-                {
-                    "$type": "Microsoft.SendActivity",
-                    "activity": "You have no todos."
-                }
-            ],
-            "ifFalse": [
-                {
-                    "$type": "Microsoft.SendActivity",
-                    "activity": "[ShowTodo]"
-                }
-            ]
-        }
-    ],
-    "rules": [
-        {
-            "$type": "Microsoft.IntentRule",
-            "intent": "CancelIntent",
-            "steps": [
-                {
-                    "$type": "Microsoft.CancelDialog"
-                }
-            ]
+            "$type": "Microsoft.SendActivity",
+            "activity": "[ShowTodo]"
         }
     ]
 }

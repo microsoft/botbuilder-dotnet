@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public enum DialogConsultationDesires
+    public enum DialogConsultationDesire
     {
         /// <summary>
         /// The dialog can process the utterance but if parent dialogs should process it they can.
@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Expresses the desire of the dialog to process the current utterance.
         /// </summary>
-        public DialogConsultationDesires Desire { get; set; }
+        public DialogConsultationDesire Desire { get; set; }
 
         /// <summary>
         /// Function that should be invoked to process the utterance.

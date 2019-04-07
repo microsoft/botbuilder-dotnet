@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Declarative.Debugger
+namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
     public static class Source
     {
@@ -33,31 +33,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Debugger
 
                 return item;
             }
+
             public int LineIndex { get; set; }
+
             public int CharIndex { get; set; }
+
             public override string ToString() => $"{LineIndex}:{CharIndex}";
         }
 
         public sealed class Range
         {
             public string Path { get; set; }
+
             public Point Start { get; set; }
+
             public Point After { get; set; }
+
             public override string ToString() => $"{System.IO.Path.GetFileName(Path)}:{Start}->{After}";
         }
 
         public interface IRegistry
         {
             void Add(object item, Range range);
+
             bool TryGetValue(object item, out Range range);
         }
 
         public sealed class NullRegistry : IRegistry
         {
             public static readonly IRegistry Instance = new NullRegistry();
-            private NullRegistry()
+
+            public NullRegistry()
             {
             }
+
             void IRegistry.Add(object item, Range range)
             {
             }

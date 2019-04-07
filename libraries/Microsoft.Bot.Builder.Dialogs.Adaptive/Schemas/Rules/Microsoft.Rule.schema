@@ -6,7 +6,7 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
-        "expression": {
+        "constraint": {
             "type": "string",
             "title": "Constraint",
             "description": "Optional constraint to which must be met for this rule to fire",
@@ -23,7 +23,6 @@
         }
     },
     "required": [
-        "events",
         "steps"
     ]
 }

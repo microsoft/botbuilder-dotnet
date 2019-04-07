@@ -161,7 +161,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             return new DialogConsultation()
             {
-                Desire = DialogConsultationDesires.CanProcess,
+                Desire = DialogConsultationDesire.CanProcess,
                 Processor = async (dialogContext) =>
                 {
                     // Don't do anything for non-message activities

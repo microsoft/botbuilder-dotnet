@@ -1,0 +1,39 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "Emit Event Step",
+    "description": "This is a step which allows you to emit an event",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "eventName": {
+            "type": "string",
+            "title": "Event Name",
+            "description": "The name of event to emit",
+            "enum": [
+                "BeginDialog",
+                "ConsultDialog",
+                "ActivityReceived",
+                "UtteranceRecognized",
+                "Fallback",
+                "PlanStarted",
+                "PlanSaved",
+                "PlanEnded",
+                "PlanResumed"
+            ]
+        },
+        "eventValue": {
+            "type": "object",
+            "title": "Event Value",
+            "description": "optional value to emit along with the event"
+        },
+        "bubbleEvent": {
+            "type": "boolean",
+            "title": "Bubble Event",
+            "description": "if true this event should propagate to parent dialogs"
+        }
+    },
+    "required": [
+        "eventName"
+    ]
+}

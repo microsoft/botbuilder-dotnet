@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         new SendActivity("goodbye intent"),
                     }),
-                new NoMatchRule(steps:
+                new NoneIntentRule(steps:
                     new List<IDialog>()
                     {
                         new SendActivity("default rule"),

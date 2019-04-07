@@ -4,11 +4,14 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static Microsoft.Bot.Builder.Dialogs.Debugging.Source;
 
-namespace Microsoft.Bot.Builder.Dialogs
+namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
     public static partial class Debugger
     {
+        public static Source.IRegistry SourceRegistry { get; set; } = new NullRegistry();
+
         public interface IDebugger
         {
             Task StepAsync(DialogContext context, object item, string more, CancellationToken cancellationToken);

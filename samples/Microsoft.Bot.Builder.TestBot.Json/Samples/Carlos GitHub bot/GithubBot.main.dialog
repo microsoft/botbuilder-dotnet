@@ -1,6 +1,7 @@
 {
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
+    "autoEndDialog": false,
     "recognizer": {
         "$type": "Microsoft.RegexRecognizer",
         "intents": {
@@ -9,16 +10,14 @@
             "HelpIntent": "(?i)help"
         }
     },
-    "rules": [
+
+    "steps": [
         {
-            "$type": "Microsoft.NoMatchRule",
-            "steps": [
-                {
-                    "$type": "Microsoft.SendActivity",
-                    "activity": "Hi, I'm a github bot. I can show users or issues!"
-                }
-            ]
-        },
+            "$type": "Microsoft.SendActivity",
+            "activity": "Hi, I'm a github bot. I can show users or issues!"
+        }
+    ],
+    "rules": [
         {
             "$type": "Microsoft.IntentRule",
             "intent": "GetIssueIntent",
@@ -41,7 +40,7 @@
                     "$type": "Microsoft.SendActivity",
                     "activity": "I can show users or issues!\n"
                 }
-           ]
+            ]
         }
     ]
 }

@@ -8,11 +8,10 @@
             "WaitForInputIntent": "(?i)wait|input",
             "IfConditionIntent": "(?i)property|ifproperty",
             "TextInputIntent": "(?i)text|textprompt",
-            "WelcomeRuleIntent": "(?i)welcome",
             "DoStepsIntent": "(?i)steps|intent",
             "BeginDialogIntent": "(?i)call",
             "ExternalLanguageIntent": "(?i)external|lg",
-            "CancelDialogIntent": "(?i)cancel"
+            "EndDialogIntent": "(?i)end"
         }
     },
     "rules": [
@@ -46,13 +45,6 @@
         },
         {
             "$type": "Microsoft.IntentRule",
-            "intent": "WelcomeRuleIntent",
-            "steps": [
-                "WelcomeRule.main"
-            ]
-        },
-        {
-            "$type": "Microsoft.IntentRule",
             "intent": "DoStepsIntent",
             "steps": [
                 "DoSteps.main"
@@ -74,9 +66,9 @@
         },
         {
             "$type": "Microsoft.IntentRule",
-            "intent": "CancelDialogIntent",
+            "intent": "EndDialogIntent",
             "steps": [
-                "CancelDialog.main"
+                "EndDialog.main"
             ]
         },
         {
@@ -90,7 +82,7 @@
             ]
         },
         {
-            "$type": "Microsoft.NoMatchRule",
+            "$type": "Microsoft.NoneIntentRule",
             "steps": [
                 {
                     "$type": "Microsoft.SendActivity",

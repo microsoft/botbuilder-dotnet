@@ -4,11 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Expressions;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 {
@@ -32,8 +34,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         /// </summary>
         public List<IDialog> Default { get; set; } = new List<IDialog>();
 
-        public SwitchCondition() : base()
+        [JsonConstructor]
+        public SwitchCondition([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0) : base()
         {
+            this.RegisterSourceLocation(callerPath, callerLine);
         }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -49,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
                 List<IDialog> stepsToRun = this.Default;
 
-                if (this.Cases.TryGetValue(value?.ToString(), out List<IDialog> steps))
+                if (value != null && this.Cases.TryGetValue(value.ToString(), out List<IDialog> steps))
                 {
                     stepsToRun = steps;
                 }

@@ -16,9 +16,19 @@
             "$ref": "#/definitions/Microsoft.BeginDialog"
         },
         {
-            "title": "Microsoft.CancelDialog",
-            "description": "Command to cancel the current dialog, trigging a cancelation event",
-            "$ref": "#/definitions/Microsoft.CancelDialog"
+            "title": "Microsoft.BeginDialogRule",
+            "description": "When the being dialog event is triggered this will add steps to the execution plan",
+            "$ref": "#/definitions/Microsoft.BeginDialogRule"
+        },
+        {
+            "title": "Microsoft.CancelAllDialogs",
+            "description": "Command to cancel all of the current dialogs by emitting an event which must be caught to prevent cancelation from propagating.",
+            "$ref": "#/definitions/Microsoft.CancelAllDialogs"
+        },
+        {
+            "title": "Microsoft.ChoiceInput",
+            "description": "This represents a dialog which gathers a choice responses",
+            "$ref": "#/definitions/Microsoft.ChoiceInput"
         },
         {
             "title": "Microsoft.ConfirmInput",
@@ -34,6 +44,11 @@
             "title": "Microsoft.EditArray",
             "description": "This is a step which allows you to modify an array in memory",
             "$ref": "#/definitions/Microsoft.EditArray"
+        },
+        {
+            "title": "Microsoft.EmitEvent",
+            "description": "This is a step which allows you to emit an event",
+            "$ref": "#/definitions/Microsoft.EmitEvent"
         },
         {
             "title": "Microsoft.EndDialog",
@@ -66,9 +81,9 @@
             "$ref": "#/definitions/Microsoft.IfCondition"
         },
         {
-            "title": "Microsoft.IfPropertyRule",
-            "description": "",
-            "$ref": "#/definitions/Microsoft.IfPropertyRule"
+            "title": "Microsoft.InitProperty",
+            "description": "This step allows you to innitial a property to either an object or array",
+            "$ref": "#/definitions/Microsoft.InitProperty"
         },
         {
             "title": "Microsoft.IntegerInput",
@@ -91,14 +106,19 @@
             "$ref": "#/definitions/Microsoft.LuisRecognizer"
         },
         {
-            "title": "Microsoft.MultiLanguageRecognizers",
+            "title": "Microsoft.MultiLanguageRecognizer",
             "description": "Recognizer which allows you to configure the recognizer per language, and to define the policy for using them",
-            "$ref": "#/definitions/Microsoft.MultiLanguageRecognizers"
+            "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
         },
         {
-            "title": "Microsoft.NoMatchRule",
+            "title": "Microsoft.NoneIntentRule",
             "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
-            "$ref": "#/definitions/Microsoft.NoMatchRule"
+            "$ref": "#/definitions/Microsoft.NoneIntentRule"
+        },
+        {
+            "title": "Microsoft.NumberInput",
+            "description": "This represents a dialog which gathers a decimal number in a specified range",
+            "$ref": "#/definitions/Microsoft.NumberInput"
         },
         {
             "title": "Microsoft.QnaMakerRecognizer",
@@ -111,9 +131,9 @@
             "$ref": "#/definitions/Microsoft.RegexRecognizer"
         },
         {
-            "title": "Microsoft.ReplaceWithDialog",
+            "title": "Microsoft.ReplaceDialog",
             "description": "This is a step which replaces the current dialog with the target dialog",
-            "$ref": "#/definitions/Microsoft.ReplaceWithDialog"
+            "$ref": "#/definitions/Microsoft.ReplaceDialog"
         },
         {
             "title": "Microsoft.Rule",
@@ -131,9 +151,9 @@
             "$ref": "#/definitions/Microsoft.SendActivity"
         },
         {
-            "title": "Microsoft.SendList",
-            "description": "TEMPORARY, THIS SHOULD BE REPLACED WITH LG TEMPLATE",
-            "$ref": "#/definitions/Microsoft.SendList"
+            "title": "Microsoft.SetProperty",
+            "description": "This step allows you to set memory to the value of an expression",
+            "$ref": "#/definitions/Microsoft.SetProperty"
         },
         {
             "title": "Microsoft.SwitchCondition",
@@ -144,11 +164,6 @@
             "title": "Microsoft.TextInput",
             "description": "This represents a dialog which gathers a text from the user",
             "$ref": "#/definitions/Microsoft.TextInput"
-        },
-        {
-            "title": "Microsoft.WelcomeRule",
-            "description": "Defines a sequence of steps to take if the user is a new user",
-            "$ref": "#/definitions/Microsoft.WelcomeRule"
         }
     ],
     "definitions": {
@@ -178,8 +193,14 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "autoEndDialog": {
+                    "type": "boolean",
+                    "title": "Auto End Dialog",
+                    "description": "IF this is true the dialog will automatically end when there are no more steps to run.  If this is false it is the responsbility of the author to call EndDialog at an appropriate time."
+                },
                 "property": {
                     "type": "string",
+                    "title": "Property",
                     "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
                     "examples": [
                         "value.birthday"
@@ -187,6 +208,7 @@
                 },
                 "inputProperties": {
                     "type": "object",
+                    "title": "Input Properties",
                     "description": "This defines properties which be passed as arguments to this dialog",
                     "examples": [
                         "value.birthday"
@@ -197,6 +219,7 @@
                 },
                 "outputProperty": {
                     "type": "string",
+                    "title": "Output Property",
                     "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
                     "examples": [
                         "value.birthday"
@@ -204,6 +227,8 @@
                 },
                 "recognizer": {
                     "$type": "Microsoft.IRecognizer",
+                    "title": "Recognizer",
+                    "decription": "Configured recognizer to generate intent and entites from user utterance",
                     "$ref": "#/definitions/Microsoft.IRecognizer"
                 },
                 "steps": {
@@ -223,9 +248,6 @@
                     }
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -240,7 +262,9 @@
                 },
                 {
                     "title": "Type",
-                    "required": []
+                    "required": [
+                        "$type"
+                    ]
                 }
             ]
         },
@@ -296,14 +320,25 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "$type"
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
             ]
         },
-        "Microsoft.CancelDialog": {
-            "$role": "unionType(Microsoft.IDialog)",
-            "title": "Cancel Dialog",
-            "description": "Command to cancel the current dialog, trigging a cancelation event",
+        "Microsoft.BeginDialogRule": {
+            "$role": "unionType(Microsoft.IRule)",
+            "title": "Begin Dialog",
+            "description": "When the being dialog event is triggered this will add steps to the execution plan",
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -312,7 +347,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.CancelDialog"
+                    "const": "Microsoft.BeginDialogRule"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -325,6 +360,40 @@
                     "description": "Inline id for reuse of an inline definition",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "events": {
+                    "type": "array",
+                    "description": "Events to trigger this rule for",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "BeginDialog",
+                            "ConsultDialog",
+                            "ActivityReceived",
+                            "UtteranceRecognized",
+                            "Fallback",
+                            "PlanStarted",
+                            "PlanSaved",
+                            "PlanEnded",
+                            "PlanResumed"
+                        ]
+                    }
+                },
+                "constraint": {
+                    "type": "string",
+                    "title": "Constraint",
+                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "examples": [
+                        "user.vip == true"
+                    ]
+                },
+                "steps": {
+                    "type": "array",
+                    "description": "Sequence of steps or dialogs to execute",
+                    "items": {
+                        "$type": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
                 }
             },
             "patternProperties": {
@@ -332,8 +401,249 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "$type"
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "steps",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.CancelAllDialogs": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Cancel All Dialogs",
+            "description": "Command to cancel all of the current dialogs by emitting an event which must be caught to prevent cancelation from propagating.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.CancelAllDialogs"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "eventName": {
+                    "type": "string",
+                    "title": "Event Name",
+                    "description": "Name of the event which is emitted"
+                },
+                "eventValue": {
+                    "type": "object",
+                    "title": "Event Value",
+                    "description": "object value which is a payload to communicate to the parent dialogs so that they can decide how to process it"
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.ChoiceInput": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "ChoiceInput Dialog",
+            "description": "This represents a dialog which gathers a choice responses",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.ChoiceInput"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "property": {
+                    "type": "string",
+                    "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
+                    "examples": [
+                        "user.confirmed"
+                    ]
+                },
+                "inputProperties": {
+                    "type": "object",
+                    "description": "This defines properties which be passed as arguments to this dialog",
+                    "examples": [
+                        "user.confirmed"
+                    ],
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "outputProperty": {
+                    "type": "string",
+                    "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
+                    "examples": [
+                        "user.confirmed"
+                    ]
+                },
+                "prompt": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Initial Prompt",
+                    "description": "The message to send to as prompt for this input.",
+                    "examples": [
+                        "Are you sure?"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "retryPrompt": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Retry Prompt",
+                    "description": "The message to send to prompt again.",
+                    "examples": [
+                        "Let's try again."
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "invalidPrompt": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Invalid Prompt",
+                    "description": "The message to send to when then input was not recognized or not valid for the input type.",
+                    "examples": [
+                        "I didn't recognize a yes/no response"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "style": {
+                    "type": "string",
+                    "enum": [
+                        "None",
+                        "Auto",
+                        "Inline",
+                        "List",
+                        "SuggestedAction",
+                        "HeroCard"
+                    ],
+                    "title": "List Style",
+                    "description": "The kind of choice list style to generate"
+                },
+                "choicesProperty": {
+                    "type": "string",
+                    "title": "Choices Property",
+                    "decription": "unknown ??? "
+                },
+                "choices": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "value": {
+                                    "type": "string",
+                                    "title": "Value",
+                                    "description": "the value to return when selected."
+                                },
+                                "action": {
+                                    "title": "Action",
+                                    "description": "Card action for the choice",
+                                    "type": "object"
+                                },
+                                "synonyms": {
+                                    "type": "array",
+                                    "title": "Synonyms",
+                                    "description": "the list of synonyms to recognize in addition to the value. This is optional.",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "definitions": {
+                "choice": {
+                    "type": "object",
+                    "properties": {
+                        "value": {
+                            "type": "string",
+                            "title": "Value",
+                            "description": "the value to return when selected."
+                        },
+                        "action": {
+                            "title": "Action",
+                            "description": "Card action for the choice",
+                            "type": "object"
+                        },
+                        "synonyms": {
+                            "type": "array",
+                            "title": "Synonyms",
+                            "description": "the list of synonyms to recognize in addition to the value. This is optional.",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "CardAction": {
+                    "type": "object"
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
             ]
         },
         "Microsoft.ConfirmInput": {
@@ -419,8 +729,19 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "$type"
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
             ]
         },
         "Microsoft.DeleteProperty": {
@@ -455,9 +776,6 @@
                     "description": "The Memory property path to delete"
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -473,7 +791,8 @@
                 {
                     "title": "Type",
                     "required": [
-                        "property"
+                        "property",
+                        "$type"
                     ]
                 }
             ]
@@ -527,9 +846,6 @@
                     "description": "Memory expression for the item"
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -546,7 +862,82 @@
                     "title": "Type",
                     "required": [
                         "changeType",
-                        "listProperty"
+                        "listProperty",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.EmitEvent": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Emit Event Step",
+            "description": "This is a step which allows you to emit an event",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.EmitEvent"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "eventName": {
+                    "type": "string",
+                    "title": "Event Name",
+                    "description": "The name of event to emit",
+                    "enum": [
+                        "BeginDialog",
+                        "ConsultDialog",
+                        "ActivityReceived",
+                        "UtteranceRecognized",
+                        "Fallback",
+                        "PlanStarted",
+                        "PlanSaved",
+                        "PlanEnded",
+                        "PlanResumed"
+                    ]
+                },
+                "eventValue": {
+                    "type": "object",
+                    "title": "Event Value",
+                    "description": "optional value to emit along with the event"
+                },
+                "bubbleEvent": {
+                    "type": "boolean",
+                    "title": "Bubble Event",
+                    "description": "if true this event should propagate to parent dialogs"
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "eventName",
+                        "$type"
                     ]
                 }
             ]
@@ -590,8 +981,19 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "$type"
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
             ]
         },
         "Microsoft.EndTurn": {
@@ -626,8 +1028,19 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "$type"
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
             ]
         },
         "Microsoft.EventRule": {
@@ -659,10 +1072,21 @@
                     "type": "array",
                     "description": "Events to trigger this rule for",
                     "items": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "BeginDialog",
+                            "ConsultDialog",
+                            "ActivityReceived",
+                            "UtteranceRecognized",
+                            "Fallback",
+                            "PlanStarted",
+                            "PlanSaved",
+                            "PlanEnded",
+                            "PlanResumed"
+                        ]
                     }
                 },
-                "expression": {
+                "constraint": {
                     "type": "string",
                     "title": "Constraint",
                     "description": "Optional constraint to which must be met for this rule to fire",
@@ -679,9 +1103,6 @@
                     }
                 }
             },
-            "required": [
-                "$type"
-            ],
             "$role": "unionType(Microsoft.IRule)",
             "patternProperties": {
                 "^\\$": {
@@ -699,7 +1120,8 @@
                     "title": "Type",
                     "required": [
                         "events",
-                        "steps"
+                        "steps",
+                        "$type"
                     ]
                 }
             ]
@@ -803,8 +1225,19 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "$type"
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
             ]
         },
         "Microsoft.HttpRequest": {
@@ -875,9 +1308,6 @@
                     "description": "Http headers to include with the HTTP request (supports data binding)"
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -894,7 +1324,8 @@
                     "title": "Type",
                     "required": [
                         "url",
-                        "entity"
+                        "entity",
+                        "$type"
                     ]
                 }
             ]
@@ -926,9 +1357,14 @@
                     "$ref": "#/definitions/Microsoft.BeginDialog"
                 },
                 {
-                    "title": "Microsoft.CancelDialog",
-                    "description": "Command to cancel the current dialog, trigging a cancelation event",
-                    "$ref": "#/definitions/Microsoft.CancelDialog"
+                    "title": "Microsoft.CancelAllDialogs",
+                    "description": "Command to cancel all of the current dialogs by emitting an event which must be caught to prevent cancelation from propagating.",
+                    "$ref": "#/definitions/Microsoft.CancelAllDialogs"
+                },
+                {
+                    "title": "Microsoft.ChoiceInput",
+                    "description": "This represents a dialog which gathers a choice responses",
+                    "$ref": "#/definitions/Microsoft.ChoiceInput"
                 },
                 {
                     "title": "Microsoft.ConfirmInput",
@@ -944,6 +1380,11 @@
                     "title": "Microsoft.EditArray",
                     "description": "This is a step which allows you to modify an array in memory",
                     "$ref": "#/definitions/Microsoft.EditArray"
+                },
+                {
+                    "title": "Microsoft.EmitEvent",
+                    "description": "This is a step which allows you to emit an event",
+                    "$ref": "#/definitions/Microsoft.EmitEvent"
                 },
                 {
                     "title": "Microsoft.EndDialog",
@@ -971,14 +1412,24 @@
                     "$ref": "#/definitions/Microsoft.IfCondition"
                 },
                 {
+                    "title": "Microsoft.InitProperty",
+                    "description": "This step allows you to innitial a property to either an object or array",
+                    "$ref": "#/definitions/Microsoft.InitProperty"
+                },
+                {
                     "title": "Microsoft.IntegerInput",
                     "description": "This represents a dialog which gathers a number in a specified range",
                     "$ref": "#/definitions/Microsoft.IntegerInput"
                 },
                 {
-                    "title": "Microsoft.ReplaceWithDialog",
+                    "title": "Microsoft.NumberInput",
+                    "description": "This represents a dialog which gathers a decimal number in a specified range",
+                    "$ref": "#/definitions/Microsoft.NumberInput"
+                },
+                {
+                    "title": "Microsoft.ReplaceDialog",
                     "description": "This is a step which replaces the current dialog with the target dialog",
-                    "$ref": "#/definitions/Microsoft.ReplaceWithDialog"
+                    "$ref": "#/definitions/Microsoft.ReplaceDialog"
                 },
                 {
                     "title": "Microsoft.SaveEntity",
@@ -991,9 +1442,9 @@
                     "$ref": "#/definitions/Microsoft.SendActivity"
                 },
                 {
-                    "title": "Microsoft.SendList",
-                    "description": "TEMPORARY, THIS SHOULD BE REPLACED WITH LG TEMPLATE",
-                    "$ref": "#/definitions/Microsoft.SendList"
+                    "title": "Microsoft.SetProperty",
+                    "description": "This step allows you to set memory to the value of an expression",
+                    "$ref": "#/definitions/Microsoft.SetProperty"
                 },
                 {
                     "title": "Microsoft.SwitchCondition",
@@ -1023,7 +1474,7 @@
             ]
         },
         "Microsoft.ILanguagePolicy": {
-            "title": "Microsoft Language Policy",
+            "title": "Microsoft ILanguagePolicy",
             "description": "Union of components which implement the ILanguagePolicy interface",
             "$role": "unionType",
             "oneOf": [
@@ -1031,10 +1482,6 @@
                     "title": "Microsoft.LanguagePolicy",
                     "description": "This represents a dialog which gathers a DateTime in a specified range",
                     "$ref": "#/definitions/Microsoft.LanguagePolicy"
-                },
-                {
-                    "type": "string",
-                    "title": "string"
                 }
             ]
         },
@@ -1049,9 +1496,9 @@
                     "$ref": "#/definitions/Microsoft.LuisRecognizer"
                 },
                 {
-                    "title": "Microsoft.MultiLanguageRecognizers",
+                    "title": "Microsoft.MultiLanguageRecognizer",
                     "description": "Recognizer which allows you to configure the recognizer per language, and to define the policy for using them",
-                    "$ref": "#/definitions/Microsoft.MultiLanguageRecognizers"
+                    "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
                 },
                 {
                     "title": "Microsoft.QnaMakerRecognizer",
@@ -1071,14 +1518,14 @@
             "$role": "unionType",
             "oneOf": [
                 {
+                    "title": "Microsoft.BeginDialogRule",
+                    "description": "When the being dialog event is triggered this will add steps to the execution plan",
+                    "$ref": "#/definitions/Microsoft.BeginDialogRule"
+                },
+                {
                     "title": "Microsoft.EventRule",
                     "description": "Defines a rule for an event which is triggered by some sourcy",
                     "$ref": "#/definitions/Microsoft.EventRule"
-                },
-                {
-                    "title": "Microsoft.IfPropertyRule",
-                    "description": "",
-                    "$ref": "#/definitions/Microsoft.IfPropertyRule"
                 },
                 {
                     "title": "Microsoft.IntentRule",
@@ -1086,19 +1533,14 @@
                     "$ref": "#/definitions/Microsoft.IntentRule"
                 },
                 {
-                    "title": "Microsoft.NoMatchRule",
+                    "title": "Microsoft.NoneIntentRule",
                     "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
-                    "$ref": "#/definitions/Microsoft.NoMatchRule"
+                    "$ref": "#/definitions/Microsoft.NoneIntentRule"
                 },
                 {
                     "title": "Microsoft.Rule",
                     "description": "Defines a rule for an event which is triggered by some sourcy",
                     "$ref": "#/definitions/Microsoft.Rule"
-                },
-                {
-                    "title": "Microsoft.WelcomeRule",
-                    "description": "Defines a sequence of steps to take if the user is a new user",
-                    "$ref": "#/definitions/Microsoft.WelcomeRule"
                 }
             ]
         },
@@ -1148,7 +1590,7 @@
                     ],
                     "$ref": "#/definitions/Microsoft.IExpression"
                 },
-                "ifTrue": {
+                "steps": {
                     "oneOf": [
                         {
                             "$type": "Microsoft.IDialog",
@@ -1163,10 +1605,10 @@
                             "title": "array"
                         }
                     ],
-                    "title": "If True",
-                    "description": "Step to execute if expression is true."
+                    "title": "Steps",
+                    "description": "Step to execute if condition is true."
                 },
-                "ifFalse": {
+                "elseSteps": {
                     "oneOf": [
                         {
                             "$type": "Microsoft.IDialog",
@@ -1181,13 +1623,10 @@
                             "title": "array"
                         }
                     ],
-                    "title": "If False",
-                    "description": "Step to execute if expression is false."
+                    "title": "Else Steps",
+                    "description": "Step to execute if condition is false."
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -1204,15 +1643,16 @@
                     "title": "Type",
                     "required": [
                         "expression",
-                        "ifTrue"
+                        "steps",
+                        "$type"
                     ]
                 }
             ]
         },
-        "Microsoft.IfPropertyRule": {
-            "$role": "unionType(Microsoft.IRule)",
-            "title": "",
-            "description": "",
+        "Microsoft.InitProperty": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Init Property Step",
+            "description": "This step allows you to innitial a property to either an object or array",
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -1221,7 +1661,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.IfPropertyRule"
+                    "const": "Microsoft.InitProperty"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -1235,34 +1675,24 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
-                "conditionals": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "expression": {
-                            "$type": "Microsoft.IExpression",
-                            "$ref": "#/definitions/Microsoft.IExpression"
-                        },
-                        "rules": {
-                            "type": "array",
-                            "items": {
-                                "$type": "Microsoft.IRule",
-                                "$ref": "#/definitions/Microsoft.IRule"
-                            }
-                        }
-                    }
+                "property": {
+                    "type": "string",
+                    "title": "Property",
+                    "description": "The property to set the value of",
+                    "examples": [
+                        "user.age"
+                    ]
                 },
-                "else": {
-                    "type": "array",
-                    "items": {
-                        "$type": "Microsoft.IRule",
-                        "$ref": "#/definitions/Microsoft.IRule"
-                    }
+                "type": {
+                    "type": "string",
+                    "title": "type",
+                    "description": "type of value to set the property to, object or array.",
+                    "enum": [
+                        "object",
+                        "array"
+                    ]
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -1278,7 +1708,9 @@
                 {
                     "title": "Type",
                     "required": [
-                        "conditionals"
+                        "property",
+                        "type",
+                        "$type"
                     ]
                 }
             ]
@@ -1382,8 +1814,19 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "$type"
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
             ]
         },
         "Microsoft.IntentRule": {
@@ -1426,10 +1869,21 @@
                     "type": "array",
                     "description": "Events to trigger this rule for",
                     "items": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "BeginDialog",
+                            "ConsultDialog",
+                            "ActivityReceived",
+                            "UtteranceRecognized",
+                            "Fallback",
+                            "PlanStarted",
+                            "PlanSaved",
+                            "PlanEnded",
+                            "PlanResumed"
+                        ]
                     }
                 },
-                "expression": {
+                "constraint": {
                     "type": "string",
                     "title": "Constraint",
                     "description": "Optional constraint to which must be met for this rule to fire",
@@ -1446,9 +1900,6 @@
                     }
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -1465,7 +1916,8 @@
                     "title": "Type",
                     "required": [
                         "intent",
-                        "steps"
+                        "steps",
+                        "$type"
                     ]
                 }
             ]
@@ -1502,8 +1954,19 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "$type"
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
             ]
         },
         "Microsoft.LuisRecognizer": {
@@ -1545,9 +2008,6 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -1565,12 +2025,13 @@
                     "required": [
                         "applicationId",
                         "endpoint",
-                        "endpointKey"
+                        "endpointKey",
+                        "$type"
                     ]
                 }
             ]
         },
-        "Microsoft.MultiLanguageRecognizers": {
+        "Microsoft.MultiLanguageRecognizer": {
             "$role": "unionType(Microsoft.IRecognizer)",
             "title": "Multi Language Recognizer",
             "description": "Recognizer which allows you to configure the recognizer per language, and to define the policy for using them",
@@ -1581,7 +2042,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.MultiLanguageRecognizers"
+                    "const": "Microsoft.MultiLanguageRecognizer"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -1612,9 +2073,6 @@
                     }
                 }
             },
-            "required": [
-                "$type"
-            ],
             "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
@@ -1631,17 +2089,15 @@
                 {
                     "title": "Type",
                     "required": [
-                        "recognizers"
+                        "recognizers",
+                        "$type"
                     ]
                 }
             ]
         },
-        "Microsoft.NoMatchRule": {
-            "title": "No Match Rule",
+        "Microsoft.NoneIntentRule": {
+            "title": "This defines the steps to take when an utterence is not recognized (aka, the None Intent). NOTE: NoneIntent will defer to any specific intent that fires in a parent dialog",
             "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
-            "required": [
-                "$type"
-            ],
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -1650,7 +2106,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.NoMatchRule"
+                    "const": "Microsoft.NoneIntentRule"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -1668,10 +2124,21 @@
                     "type": "array",
                     "description": "Events to trigger this rule for",
                     "items": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "BeginDialog",
+                            "ConsultDialog",
+                            "ActivityReceived",
+                            "UtteranceRecognized",
+                            "Fallback",
+                            "PlanStarted",
+                            "PlanSaved",
+                            "PlanEnded",
+                            "PlanResumed"
+                        ]
                     }
                 },
-                "expression": {
+                "constraint": {
                     "type": "string",
                     "title": "Constraint",
                     "description": "Optional constraint to which must be met for this rule to fire",
@@ -1704,7 +2171,122 @@
                 {
                     "title": "Type",
                     "required": [
-                        "steps"
+                        "steps",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.NumberInput": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Number prompt",
+            "description": "This represents a dialog which gathers a decimal number in a specified range",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.NumberInput"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "property": {
+                    "type": "string",
+                    "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
+                    "examples": [
+                        "value.birthday"
+                    ]
+                },
+                "inputProperties": {
+                    "type": "object",
+                    "description": "This defines properties which be passed as arguments to this dialog",
+                    "examples": [
+                        "value.birthday"
+                    ],
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "outputProperty": {
+                    "type": "string",
+                    "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
+                    "examples": [
+                        "value.birthday"
+                    ]
+                },
+                "prompt": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Initial Prompt",
+                    "description": "The message to send to as prompt for this input.",
+                    "examples": [
+                        "What is your birth date?"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "retryPrompt": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Retry Prompt",
+                    "description": "The message to send to prompt again.",
+                    "examples": [
+                        "Let's try again. What is your birth date?"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "invalidPrompt": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Invalid Prompt",
+                    "description": "The message to send to when then input was not recognized or not valid for the input type.",
+                    "examples": [
+                        "No date was recognized"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "minValue": {
+                    "type": "number",
+                    "title": "Mininum value",
+                    "description": "The minimum value that is acceptable.  ",
+                    "examples": [
+                        "0.1"
+                    ]
+                },
+                "maxValue": {
+                    "type": "number",
+                    "title": "Maximum value",
+                    "description": "The maximum value that is acceptable.  ",
+                    "examples": [
+                        "12.5"
+                    ]
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
                     ]
                 }
             ]
@@ -1750,9 +2332,6 @@
                     ]
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -1769,7 +2348,8 @@
                     "title": "Type",
                     "required": [
                         "applicationId",
-                        "endpoint"
+                        "endpoint",
+                        "$type"
                     ]
                 }
             ]
@@ -1808,9 +2388,6 @@
                     }
                 }
             },
-            "required": [
-                "$type"
-            ],
             "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
@@ -1827,12 +2404,13 @@
                 {
                     "title": "Type",
                     "required": [
-                        "intents"
+                        "intents",
+                        "$type"
                     ]
                 }
             ]
         },
-        "Microsoft.ReplaceWithDialog": {
+        "Microsoft.ReplaceDialog": {
             "$role": "unionType(Microsoft.IDialog)",
             "type": "object",
             "title": "Replace Dialog",
@@ -1844,7 +2422,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.ReplaceWithDialog"
+                    "const": "Microsoft.ReplaceDialog"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -1883,8 +2461,19 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "$type"
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
             ]
         },
         "Microsoft.Rule": {
@@ -1913,7 +2502,7 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
-                "expression": {
+                "constraint": {
                     "type": "string",
                     "title": "Constraint",
                     "description": "Optional constraint to which must be met for this rule to fire",
@@ -1930,9 +2519,6 @@
                     }
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -1948,8 +2534,8 @@
                 {
                     "title": "Type",
                     "required": [
-                        "events",
-                        "steps"
+                        "steps",
+                        "$type"
                     ]
                 }
             ]
@@ -1991,9 +2577,6 @@
                     "description": "Memory expression of the property to save as an entity."
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -2010,7 +2593,8 @@
                     "title": "Type",
                     "required": [
                         "property",
-                        "entity"
+                        "entity",
+                        "$type"
                     ]
                 }
             ]
@@ -2053,14 +2637,25 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "$type"
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
             ]
         },
-        "Microsoft.SendList": {
+        "Microsoft.SetProperty": {
             "$role": "unionType(Microsoft.IDialog)",
-            "title": "SendList Step",
-            "description": "TEMPORARY, THIS SHOULD BE REPLACED WITH LG TEMPLATE",
+            "title": "Set Property Step",
+            "description": "This step allows you to set memory to the value of an expression",
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -2069,7 +2664,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.SendList"
+                    "const": "Microsoft.SetProperty"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -2083,25 +2678,24 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
-                "listProperty": {
+                "property": {
                     "type": "string",
-                    "title": "List Property",
-                    "description": "Memory expression of the list to manipulate."
+                    "title": "Property",
+                    "description": "The property to set the value of",
+                    "examples": [
+                        "user.age"
+                    ]
                 },
-                "messageTemplate": {
-                    "type": "string",
-                    "title": "List Property",
-                    "description": "Memory expression for the item"
-                },
-                "itemTemplate": {
-                    "type": "string",
-                    "title": "List Property",
-                    "description": "Memory expression for the item"
+                "value": {
+                    "$type": "Microsoft.IExpression",
+                    "title": "Value",
+                    "description": "Expression against memory to use to get the value.",
+                    "examples": [
+                        "dialog.result"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IExpression"
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -2117,9 +2711,9 @@
                 {
                     "title": "Type",
                     "required": [
-                        "listProperty",
-                        "messageTemplate",
-                        "itemTemplate"
+                        "property",
+                        "value",
+                        "$type"
                     ]
                 }
             ]
@@ -2199,9 +2793,6 @@
                     "description": "Step to execute if expression is true."
                 }
             },
-            "required": [
-                "$type"
-            ],
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -2218,7 +2809,8 @@
                     "title": "Type",
                     "required": [
                         "expression",
-                        "ifTrue"
+                        "ifTrue",
+                        "$type"
                     ]
                 }
             ]
@@ -2314,68 +2906,6 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "$type"
-            ]
-        },
-        "Microsoft.WelcomeRule": {
-            "$role": "unionType(Microsoft.IRule)",
-            "title": "Welcome Rule",
-            "description": "Defines a sequence of steps to take if the user is a new user",
-            "type": "object",
-            "required": [
-                "$type"
-            ],
-            "additionalProperties": false,
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.WelcomeRule"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "events": {
-                    "type": "array",
-                    "description": "Events to trigger this rule for",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "expression": {
-                    "type": "string",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
-                    "examples": [
-                        "user.vip == true"
-                    ]
-                },
-                "steps": {
-                    "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
-                    "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
-                    }
-                }
-            },
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
             "anyOf": [
                 {
                     "title": "Reference",
@@ -2386,7 +2916,7 @@
                 {
                     "title": "Type",
                     "required": [
-                        "steps"
+                        "$type"
                     ]
                 }
             ]

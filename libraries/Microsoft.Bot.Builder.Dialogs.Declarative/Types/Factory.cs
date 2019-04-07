@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
         public static string NameFromType(Type type)
         {
             string name;
-            return names.TryGetValue(type, out name) ? name: default(string);
+            return names.TryGetValue(type, out name) ? name : default(string);
         }
 
         public static void Reset()
@@ -106,41 +106,43 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             // while things are changing rapidly still
 
             // Rules
-            Register("Microsoft.IntentRule", typeof(IntentRule));
+            Register("Microsoft.BeginDialogRule", typeof(BeginDialogRule));
             Register("Microsoft.EventRule", typeof(EventRule));
-            Register("Microsoft.NoMatchRule", typeof(NoMatchRule));
-            Register("Microsoft.WelcomeRule", typeof(WelcomeRule));
+            Register("Microsoft.IntentRule", typeof(IntentRule));
+            Register("Microsoft.NoneIntentRule", typeof(NoneIntentRule));
 
             // Steps
             Register("Microsoft.BeginDialog", typeof(BeginDialog));
-            Register("Microsoft.CancelDialog", typeof(CancelDialog));
-            Register("Microsoft.EndDialog", typeof(EndDialog));
-            Register("Microsoft.ReplaceWithDialog", typeof(ReplaceWithDialog));
-            Register("Microsoft.IfCondition", typeof(IfCondition));
-            Register("Microsoft.SwitchCondition", typeof(SwitchCondition));
-            Register("Microsoft.SendActivity", typeof(SendActivity));
-            Register("Microsoft.EndTurn", typeof(EndTurn));
-            Register("Microsoft.SaveEntity", typeof(SaveEntity));
-            Register("Microsoft.EditArray", typeof(EditArray));
+            Register("Microsoft.CancelAllDialog", typeof(CancelAllDialogs));
             Register("Microsoft.DeleteProperty", typeof(DeleteProperty));
+            Register("Microsoft.EditArray", typeof(EditArray));
+            Register("Microsoft.EmitEvent", typeof(EmitEvent));
+            Register("Microsoft.EndDialog", typeof(EndDialog));
+            Register("Microsoft.EndTurn", typeof(EndTurn));
             Register("Microsoft.HttpRequest", typeof(HttpRequest));
+            Register("Microsoft.IfCondition", typeof(IfCondition));
+            Register("Microsoft.InitProperty", typeof(InitProperty));
+            Register("Microsoft.RepeatDialog", typeof(RepeatDialog));
+            Register("Microsoft.ReplaceDialog", typeof(ReplaceDialog));
+            Register("Microsoft.SaveEntity", typeof(SaveEntity));
+            Register("Microsoft.SendActivity", typeof(SendActivity));
+            Register("Microsoft.SetProperty", typeof(SetProperty));
+            Register("Microsoft.SwitchCondition", typeof(SwitchCondition));
 
             // Dialogs
             Register("Microsoft.AdaptiveDialog", typeof(AdaptiveDialog));
 
             // Inputs
-            Register("Microsoft.TextInput", typeof(TextInput));
-            Register("Microsoft.IntegerInput", typeof(IntegerInput));
+            Register("Microsoft.ConfirmInput", typeof(ConfirmInput));
             Register("Microsoft.FloatInput", typeof(FloatInput));
-            Register("Microsoft.BoolInput", typeof(ConfirmInput));
+            Register("Microsoft.IntegerInput", typeof(IntegerInput));
+            Register("Microsoft.TextInput", typeof(TextInput));
             Register("Microsoft.ChoiceInput", typeof(ChoiceInput));
 
             // Recognizers
             Register("Microsoft.LuisRecognizer", typeof(LuisRecognizer), new LuisRecognizerLoader(TypeFactory.Configuration));
             Register("Microsoft.RegexRecognizer", typeof(RegexRecognizer));
-
-            // Storage
-            Register("Microsoft.MemoryStorage", typeof(MemoryStorage));
+            Register("Microsoft.MultiLanguageRecognizer", typeof(MultiLanguageRecognizer));
         }
 
         private static void EnsureConfig()

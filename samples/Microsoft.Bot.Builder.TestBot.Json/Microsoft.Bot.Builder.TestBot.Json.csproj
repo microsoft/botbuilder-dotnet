@@ -19,12 +19,11 @@
     <None Remove="Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.lg" />
     <None Remove="Samples\Planning 8 - ExternalLanguage\FortuneTellerDialog.dialog" />
     <None Remove="Samples\Planning 8 - ExternalLanguage\TellJokeDialog.dialog" />
-    <None Remove="Samples\Planning 9 - CancelDialog\CancelDialog.main.dialog" />
+    <None Remove="Samples\Planning 9 - EndDialog\EndDialog.main.dialog" />
     <None Remove="Samples\RootDialog\RootDialog.lg" />
   </ItemGroup>
 
   <ItemGroup>
-    <_ContentIncludedByDefault Remove="Samples\Planning 1 - NoMatchRule\NoMatchRule.main.dialog" />
     <_ContentIncludedByDefault Remove="Samples\Planning 4 - TextInput\TextInput.main.dialog" />
   </ItemGroup>
 
@@ -40,7 +39,7 @@
     <Content Include="Samples\Planning 5 - WelcomeRule\WelcomeRule.main.dialog" />
     <Content Include="Samples\Planning 3 - IfCondition\IfCondition.main.dialog" />
     <Content Include="Samples\Planning 2 - EndTurn\EndTurn.main.dialog" />
-    <Content Include="Samples\Planning 9 - CancelDialog\CancelDialog.main.dialog" />
+    <Content Include="Samples\Planning 9 - EndDialog\EndDialog.main.dialog" />
 
   </ItemGroup>
 

@@ -3,15 +3,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
-using System.Text;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
@@ -44,6 +42,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </summary>
         public virtual List<IRule> Rules { get; set; } = new List<IRule>();
 
+        /// <summary>
+        /// Gets or sets the policty to Automatically end the dialog when there are no steps to execute
+        /// </summary>
+        /// <remarks>
+        /// If true, when there are no steps to execute the current dialog will end
+        /// If false, when there are no steps to execute the current dialog will simply end the turn and still be active
+        /// </remarks>
+        public bool AutoEndDialog { get; set; } = true;
+
         public override IBotTelemetryClient TelemetryClient
         {
             get
@@ -58,20 +65,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        public AdaptiveDialog(string dialogId = null)
+        public AdaptiveDialog(string dialogId = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(dialogId)
         {
+            this.RegisterSourceLocation(callerPath, callerLine);
         }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            AddDialog(this.Steps.ToArray());
-
             if (!installedDependencies)
             {
                 installedDependencies = true;
 
-                Rules.ForEach(r => AddDialog(r.Steps.ToArray()));
+                AddDialog(this.Steps.ToArray());
+
+                foreach (var rule in this.Rules)
+                {
+                    AddDialog(rule.Steps.ToArray());
+                }
             }
 
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
@@ -94,7 +105,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 // use this.Steps as initial plan
                 var changeList = new PlanChangeList();
-                foreach(var step in this.Steps)
+                foreach (var step in this.Steps)
                 {
                     changeList.Steps.Add(new PlanStepState(step.Id, options));
                 }
@@ -116,24 +127,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Create a new planning context
             var activeStateMap = (dc.ActiveDialog.State as Dictionary<string, object>);
             var state = activeStateMap["planningState"] as PlanningState;
+            state.Changes = new List<PlanChangeList>();
 
             var planning = PlanningContext.Create(dc, state);
 
             // First consult plan
             var consultation = await ConsultPlanAsync(planning, cancellationToken).ConfigureAwait(false);
 
-            if (consultation == null || consultation.Desire != DialogConsultationDesires.ShouldProcess)
+            if (consultation == null || consultation.Desire != DialogConsultationDesire.ShouldProcess)
             {
                 // Next evaluate rules
                 var changesQueued = await EvaluateRulesAsync(planning, new DialogEvent() { Name = PlanningEvents.ConsultDialog.ToString(), Value = null, Bubble = false }, cancellationToken).ConfigureAwait(false);
-
                 if (changesQueued)
                 {
-                    consultation = new DialogConsultation()
+                    if (consultation == null || planning.Changes[0].Desire == DialogConsultationDesire.ShouldProcess)
                     {
-                        Desire = DialogConsultationDesires.ShouldProcess,
-                        Processor = (ctx) => this.ContinuePlanAsync(planning, cancellationToken)
-                    };
+                        consultation = new DialogConsultation()
+                        {
+                            Desire = planning.Changes[0].Desire,
+                            Processor = (ctx) => this.ContinuePlanAsync(planning, cancellationToken)
+                        };
+                    }
+                    else
+                    {
+                        state.Changes = new List<PlanChangeList>();
+                    }
                 }
 
                 // Fallback to just continuing the plan
@@ -141,7 +159,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     consultation = new DialogConsultation()
                     {
-                        Desire = DialogConsultationDesires.CanProcess,
+                        Desire = DialogConsultationDesire.CanProcess,
                         Processor = (ctx) => this.ContinuePlanAsync(planning, cancellationToken)
                     };
                 }
@@ -198,6 +216,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 throw new Exception("PlanningDialog: unable to load the bots state.The users ID couldn't be found.");
             }
+
             if (conversationId == null)
             {
                 throw new Exception("PlanningDialog: unable to load the bots state. The conversations ID couldn't be found.");
@@ -459,14 +478,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             // Delegate consultation to any active planning step
             var step = PlanningContext.CreateForStep(planning, dialogs);
-            var consultation = step != null ? await step.ConsultDialogAsync() : null;
-
-            return new DialogConsultation()
+            if (step != null)
             {
-                Desire = consultation?.Desire ?? DialogConsultationDesires.CanProcess,
-                Processor = async (dc) =>
+                var consultation = await step.ConsultDialogAsync();
+                return new DialogConsultation()
                 {
-                    if (step != null)
+                    Desire = consultation?.Desire ?? DialogConsultationDesire.CanProcess,
+                    Processor = async (dc) =>
                     {
                         // Continue current step
                         var result = consultation != null ? await consultation.Processor(step).ConfigureAwait(false) : new DialogTurnResult(DialogTurnStatus.Empty);
@@ -519,26 +537,48 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             return result;
                         }
                     }
-                    else
-                    {
-                        // End dialog and return default result
-                        if (planning.ActiveDialog != null)
-                        {
-                            var state = (planning.ActiveDialog.State as Dictionary<string, object>)["planningState"] as PlanningState;
-                            return await planning.EndDialogAsync(state?.Result).ConfigureAwait(false);
-                        }
+                };
 
-                        return await planning.EndDialogAsync().ConfigureAwait(false);
-                    }
-                }
-            };
+            }
+            else
+            {
+                return null;
+            }
         }
 
         protected async Task<DialogTurnResult> ContinuePlanAsync(PlanningContext planning, CancellationToken cancellationToken)
         {
             // Consult plan and execute returned processor
             var consultation = await this.ConsultPlanAsync(planning, cancellationToken).ConfigureAwait(false);
-            return await consultation.Processor(planning).ConfigureAwait(false);
+            if (consultation != null)
+            {
+                return await consultation.Processor(planning).ConfigureAwait(false);
+            }
+            else
+            {
+                return await OnEndOfPlan(planning);
+            }
+        }
+
+        protected virtual async Task<DialogTurnResult> OnEndOfPlan(PlanningContext planning)
+        {
+            // End dialog and return default result
+            if (planning.ActiveDialog != null)
+            {
+                if (this.AutoEndDialog)
+                {
+                    var state = (planning.ActiveDialog.State as Dictionary<string, object>)["planningState"] as PlanningState;
+                    return await planning.EndDialogAsync(state?.Result).ConfigureAwait(false);
+                }
+                else
+                {
+                    return Dialog.EndOfTurn;
+                }
+            }
+            else
+            {
+                return new DialogTurnResult(DialogTurnStatus.Cancelled);
+            }
         }
 
         protected async Task<RecognizerResult> OnRecognize(PlanningContext planning, CancellationToken cancellationToken = default(CancellationToken))
@@ -567,12 +607,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         protected virtual async Task<bool> EvaluateRulesAsync(PlanningContext planning, DialogEvent dialogEvent, CancellationToken cancellationToken)
         {
+            planning.State.Turn["DialogEvent"] = dialogEvent;
+
             var handled = false;
 
             if (!handled)
             {
-                if (dialogEvent.Name == PlanningEvents.BeginDialog.ToString() ||
-                    dialogEvent.Name == PlanningEvents.ConsultDialog.ToString())
+                if (dialogEvent.Name == PlanningEvents.BeginDialog.ToString())
+                {
+                    // Emit event
+                    handled = await QueueFirstMatchAsync(planning, dialogEvent, cancellationToken).ConfigureAwait(false);
+
+                    if (!handled)
+                    {
+                        // Process activityReceived event
+                        handled = await EvaluateRulesAsync(planning, new DialogEvent() { Name = PlanningEvents.ActivityReceived.ToString(), Value = null, Bubble = false }, cancellationToken).ConfigureAwait(false);
+                    }
+                }
+                else if (dialogEvent.Name == PlanningEvents.ConsultDialog.ToString())
                 {
                     // Emit event
                     handled = await QueueFirstMatchAsync(planning, dialogEvent, cancellationToken).ConfigureAwait(false);
@@ -618,6 +670,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         handled = await EvaluateRulesAsync(planning, new DialogEvent() { Name = PlanningEvents.Fallback.ToString(), Value = dialogEvent.Value, Bubble = false }, cancellationToken).ConfigureAwait(false);
                     }
                 }
+                else if (dialogEvent.Name == PlanningEvents.PlanStarted.ToString())
+                {
+                    handled = await QueueFirstMatchAsync(planning, dialogEvent, cancellationToken).ConfigureAwait(false);
+                }
+                else if (dialogEvent.Name == PlanningEvents.PlanEnded.ToString())
+                {
+                    handled = await QueueFirstMatchAsync(planning, dialogEvent, cancellationToken).ConfigureAwait(false);
+                }
                 else if (dialogEvent.Name == PlanningEvents.Fallback.ToString())
                 {
                     if (planning.Plan == null)
@@ -639,7 +699,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             for (int i = 0; i < Rules.Count; i++)
             {
                 await planning.DebuggerStepAsync(Rules[i], dialogEvent, cancellationToken).ConfigureAwait(false);
-                var expression = Rules[i].GetExpression(planning, dialogEvent);
+                var expression = Rules[i].GetExpression();
                 var (value, error) = expression.TryEvaluate(planning.State);
                 var result = error == null && (bool)value;
                 if (result == true)
@@ -666,7 +726,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             for (int i = 0; i < Rules.Count; i++)
             {
                 await planning.DebuggerStepAsync(Rules[i], dialogEvent, cancellationToken).ConfigureAwait(false);
-                var expression = Rules[i].GetExpression(planning, dialogEvent);
+                var expression = Rules[i].GetExpression();
                 var (value, error) = expression.TryEvaluate(planning.State);
                 var result = error == null && (bool)value;
                 if (result == true)

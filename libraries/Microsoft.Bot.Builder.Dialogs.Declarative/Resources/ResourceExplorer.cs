@@ -3,20 +3,22 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Xml;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.Versioning;
+using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 {
     /// <summary>
     /// Class which gives standard access to file based resources
     /// </summary>
-    public class ResourceExplorer : IResourceExplorer
+    public class ResourceExplorer : IResourceExplorer, IDisposable
     {
         private List<FolderResource> folderResources = new List<FolderResource>();
 
@@ -38,24 +40,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
         IEnumerable<DirectoryInfo> IResourceExplorer.Folders { get => folderResources.Select(s => s.Directory); set => throw new NotImplementedException(); }
 
-        /// <summary>
-        /// Occurs when a file or directory in the specified System.IO.FileSystemWatcher.Path is changed.
-        /// </summary>
-        public event FileSystemEventHandler Changed;
+        public event ResourceChangedEventHandler Changed;
+
+        private CancellationTokenSource CancelReloadToken = new CancellationTokenSource();
+        private ConcurrentBag<string> changedPaths = new ConcurrentBag<string>();
 
         public void AddFolder(string folder, bool monitorFiles = true)
         {
             var folderResource = new FolderResource(folder, monitorFiles);
 
-            folderResource.Watcher.Changed += (sender, e) =>
+            if (folderResource.Watcher != null)
             {
-                if (this.Changed != null)
-                {
-                    this.Changed(sender, e);
-                }
-            };
+                folderResource.Watcher.Created += Watcher_Changed;
+                folderResource.Watcher.Changed += Watcher_Changed;
+                folderResource.Watcher.Deleted += Watcher_Changed;
+            }
 
             this.folderResources.Add(folderResource);
+        }
+
+        private void Watcher_Changed(object sender, FileSystemEventArgs e)
+        {
+            if (this.Changed != null)
+            {
+                changedPaths.Add(e.FullPath);
+                lock (CancelReloadToken)
+                {
+                    CancelReloadToken.Cancel();
+                    CancelReloadToken = new CancellationTokenSource();
+                    Task.Delay(1000, CancelReloadToken.Token)
+                        .ContinueWith(t =>
+                        {
+                            if (t.IsCanceled)
+                                return;
+
+                            this.Changed(changedPaths.ToArray());
+                        }).ContinueWith(t => t.Status);
+                }
+            }
         }
 
         /// <summary>
@@ -149,17 +171,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             return GetResources(Path.GetExtension(filename)).Where(fi => fi.Name == filename).SingleOrDefault();
         }
 
+        public void Dispose()
+        {
+            foreach (var folderResource in this.folderResources)
+            {
+                folderResource.Dispose();
+            }
+        }
+
         /// <summary>
         /// Folder/FileResources
         /// </summary>
-        internal class FolderResource
+        internal class FolderResource : IDisposable
         {
             internal FolderResource(string folder, bool monitorChanges = true)
             {
                 this.Directory = new DirectoryInfo(folder);
-                this.Watcher = new FileSystemWatcher(folder);
                 if (monitorChanges)
                 {
+                    this.Watcher = new FileSystemWatcher(folder);
                     this.Watcher.IncludeSubdirectories = true;
                     this.Watcher.EnableRaisingEvents = true;
                 }
@@ -171,6 +201,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             public DirectoryInfo Directory { get; set; }
 
             public FileSystemWatcher Watcher { get; private set; }
+
+            public void Dispose()
+            {
+                lock (Directory)
+                {
+                    if (Watcher != null)
+                    {
+                        Watcher.EnableRaisingEvents = false;
+                        Watcher.Dispose();
+                        Watcher = null;
+                    }
+                }
+            }
 
             /// <summary>
             /// id -> Resource object)

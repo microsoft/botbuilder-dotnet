@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,9 +26,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             POST
         }
 
-        public HttpRequest()
+        [JsonConstructor]
+        public HttpRequest([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
+            this.RegisterSourceLocation(callerPath, callerLine);
         }
 
         protected override string OnComputeId()
@@ -50,8 +53,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
         private static readonly HttpClient client = new HttpClient();
 
-        public HttpRequest(HttpMethod method, string url, string property, Dictionary<string, string> header = null, JObject body = null)
+        public HttpRequest(HttpMethod method, string url, string property, Dictionary<string, string> header = null, JObject body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
+            this.RegisterSourceLocation(callerPath, callerLine);
             this.Method = method;
             this.Url = url ?? throw new ArgumentNullException(nameof(url));
             this.Property = property;

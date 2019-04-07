@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <summary>
         /// Get the expression for this rule
         /// </summary>
-        Expression GetExpression(PlanningContext context, DialogEvent dialogEvent);
+        Expression GetExpression();
 
         /// <summary>
         /// Execute the action for this rule

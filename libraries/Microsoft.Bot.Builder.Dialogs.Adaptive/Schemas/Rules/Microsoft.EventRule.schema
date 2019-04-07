@@ -11,7 +11,18 @@
             "type": "array",
             "description": "Events to trigger this rule for",
             "items": {
-                "type": "string"
+                "type": "string",
+                "enum": [
+                    "BeginDialog",
+                    "ConsultDialog",
+                    "ActivityReceived",
+                    "UtteranceRecognized",
+                    "Fallback",
+                    "PlanStarted",
+                    "PlanSaved",
+                    "PlanEnded",
+                    "PlanResumed"
+                ]
             }
         }
     },

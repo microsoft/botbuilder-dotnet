@@ -19,6 +19,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </summary>
         public PlanState Plan => Plans.Plan;
 
+        public List<PlanChangeList> Changes { get { return this.Plans.Changes; } }
+
         /// <summary>
         /// Returns true if there are saved plans.
         /// </summary>
@@ -47,7 +49,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 Plans.Changes = new List<PlanChangeList>();
             }
 
-            Plans.Changes.Add(changes);
+            if (this.Plans.Changes.Count > 0 && this.Plans.Changes[0].Desire != changes.Desire)
+            {
+                // A shouldProcess outweighs any canProcess changes
+                if (changes.Desire == DialogConsultationDesire.ShouldProcess)
+                {
+                    this.Plans.Changes = new List<PlanChangeList>() { changes };
+                }
+                else
+                {
+
+                }
+            }
+            else
+            {
+                this.Plans.Changes.Add(changes);
+            }
         }
 
         /// <summary>
@@ -424,5 +441,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public List<string> EntitiesMatched { get; set; } = new List<string>();
         public List<string> IntentsMatched { get; set; } = new List<string>();
         public Dictionary<string, object> EntitiesRecognized { get; set; } = new Dictionary<string, object>();
+        public DialogConsultationDesire Desire { get; set; } = DialogConsultationDesire.ShouldProcess;
+
     }
 }

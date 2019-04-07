@@ -288,7 +288,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             {
                 Text = utterance,
                 AlteredText = luisResult.AlteredQuery,
-                Intents = LuisUtil.GetIntents(luisResult),
+                Intents = LuisUtil.GetIntents(luisResult), 
                 Entities = LuisUtil.ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, _options.IncludeInstanceData ?? true),
             };
             LuisUtil.AddProperties(luisResult, recognizerResult);

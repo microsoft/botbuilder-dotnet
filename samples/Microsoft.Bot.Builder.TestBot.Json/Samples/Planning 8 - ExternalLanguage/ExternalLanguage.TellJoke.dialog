@@ -1,22 +1,17 @@
 {
   "$schema": "../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
-  "rules": [
+  "steps": [
     {
-      "$type": "Microsoft.NoMatchRule",
-      "steps": [
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "Why did the chicken cross the road?"
-        },
-        {
-          "$type": "Microsoft.EndTurn"
-        },
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "To get to the other side"
-        }
-      ]
+      "$type": "Microsoft.SendActivity",
+      "activity": "Why did the chicken cross the road?"
+    },
+    {
+      "$type": "Microsoft.EndTurn"
+    },
+    {
+      "$type": "Microsoft.SendActivity",
+      "activity": "To get to the other side"
     }
   ]
 }
