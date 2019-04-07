@@ -285,3 +285,4 @@ Documentation/docs/
 PublishProfiles/
 
 appsettings.local.json
+samples/Microsoft.Bot.Builder.TestBot.Json/.luisrc
