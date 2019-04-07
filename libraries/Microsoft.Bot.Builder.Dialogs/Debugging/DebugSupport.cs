@@ -43,6 +43,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
             Task IDebugger.StepAsync(DialogContext context, object item, string more, CancellationToken cancellationToken)
             {
+                if (item is Dialog)
+                {
+                    System.Diagnostics.Trace.TraceInformation($"{item.GetType().Name} {((Dialog)item).Id} {more}");
+                }
+
                 return Task.CompletedTask;
             }
         }
