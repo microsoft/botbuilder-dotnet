@@ -15,6 +15,8 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 {
+    public delegate void ResourceChangedEventHandler(string[] paths);
+
     /// <summary>
     /// Class which gives standard access to file based resources
     /// </summary>
