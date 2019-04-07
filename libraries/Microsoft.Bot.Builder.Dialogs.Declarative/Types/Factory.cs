@@ -137,6 +137,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.FloatInput", typeof(FloatInput));
             Register("Microsoft.IntegerInput", typeof(IntegerInput));
             Register("Microsoft.TextInput", typeof(TextInput));
+            Register("Microsoft.ChoiceInput", typeof(ChoiceInput));
 
             // Recognizers
             Register("Microsoft.LuisRecognizer", typeof(LuisRecognizer), new LuisRecognizerLoader(TypeFactory.Configuration));
