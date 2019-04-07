@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/CogSchema/src/cogSchema.schema",
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "title": "Text prompt",
     "description": "This represents a dialog which gathers a text from the user",
@@ -54,7 +54,7 @@
                 "No date was recognized"
             ]
         },
-         "pattern": {
+        "pattern": {
             "type": "string",
             "title": "Pattern",
             "description": "A regular expression pattern which must match",

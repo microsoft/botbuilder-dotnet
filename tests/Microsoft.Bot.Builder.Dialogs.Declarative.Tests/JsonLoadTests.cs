@@ -136,11 +136,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             string path = Path.Combine(samplesDirectory, @"Planning 10 - ChoiceInput\ChoiceInput.main.dialog");
 
             await BuildTestFlow(path)
-            .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
-            .Send("hello")
-            .AssertReply("Please select a value from below:\n\n   1. Test1\n   2. Test2\n   3. Test3")
+            .SendConversationUpdate()
+                .AssertReply("Please select a value from below:\n\n   1. Test1\n   2. Test2\n   3. Test3")
             .Send("Test1")
-            .AssertReply("You select: Test1")
+                .AssertReply("You select: Test1")
             .StartTestAsync();
         }
 

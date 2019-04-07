@@ -1,8 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "ConfirmInput Dialog",
-    "description": "This represents a dialog which gathers a yes/no style responses",
+    "title": "ChoiceInput Dialog",
+    "description": "This represents a dialog which gathers a choice responses",
     "type": "object",
     "additionalProperties": false,
     "properties": {
@@ -53,6 +53,60 @@
             "examples": [
                 "I didn't recognize a yes/no response"
             ]
+        },
+        "style": {
+            "type": "string",
+            "enum": [
+                "None",
+                "Auto",
+                "Inline",
+                "List",
+                "SuggestedAction",
+                "HeroCard"
+            ],
+            "title": "List Style",
+            "description": "The kind of choice list style to generate"
+        },
+        "choicesProperty": {
+            "type": "string",
+            "title": "Choices Property",
+            "decription": "unknown ??? "
+        },
+        "choices": {
+            "type": "array",
+            "items": [
+                {
+                    "$ref":"#/definitions/choice"
+                }
+            ]
+        }
+    },
+    "definitions": {
+        "choice": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "string",
+                    "title": "Value",
+                    "description": "the value to return when selected."
+                },
+                "action": {
+                    "$ref":"#/definitions/CardAction",
+                    "title": "Action",
+                    "description": "Card action for the choice"
+                },
+                "synonyms": {
+                    "type": "array",
+                    "title": "Synonyms",
+                    "description": "the list of synonyms to recognize in addition to the value. This is optional.",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "CardAction": {
+            "type":"object"
         }
     }
 }

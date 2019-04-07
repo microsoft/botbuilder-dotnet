@@ -26,6 +26,11 @@
             "$ref": "#/definitions/Microsoft.CancelAllDialogs"
         },
         {
+            "title": "Microsoft.ChoiceInput",
+            "description": "This represents a dialog which gathers a choice responses",
+            "$ref": "#/definitions/Microsoft.ChoiceInput"
+        },
+        {
             "title": "Microsoft.ConfirmInput",
             "description": "This represents a dialog which gathers a yes/no style responses",
             "$ref": "#/definitions/Microsoft.ConfirmInput"
@@ -447,6 +452,178 @@
                     "type": "object",
                     "title": "Event Value",
                     "description": "object value which is a payload to communicate to the parent dialogs so that they can decide how to process it"
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.ChoiceInput": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "ChoiceInput Dialog",
+            "description": "This represents a dialog which gathers a choice responses",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.ChoiceInput"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "property": {
+                    "type": "string",
+                    "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
+                    "examples": [
+                        "user.confirmed"
+                    ]
+                },
+                "inputProperties": {
+                    "type": "object",
+                    "description": "This defines properties which be passed as arguments to this dialog",
+                    "examples": [
+                        "user.confirmed"
+                    ],
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "outputProperty": {
+                    "type": "string",
+                    "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
+                    "examples": [
+                        "user.confirmed"
+                    ]
+                },
+                "prompt": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Initial Prompt",
+                    "description": "The message to send to as prompt for this input.",
+                    "examples": [
+                        "Are you sure?"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "retryPrompt": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Retry Prompt",
+                    "description": "The message to send to prompt again.",
+                    "examples": [
+                        "Let's try again."
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "invalidPrompt": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Invalid Prompt",
+                    "description": "The message to send to when then input was not recognized or not valid for the input type.",
+                    "examples": [
+                        "I didn't recognize a yes/no response"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "style": {
+                    "type": "string",
+                    "enum": [
+                        "None",
+                        "Auto",
+                        "Inline",
+                        "List",
+                        "SuggestedAction",
+                        "HeroCard"
+                    ],
+                    "title": "List Style",
+                    "description": "The kind of choice list style to generate"
+                },
+                "choicesProperty": {
+                    "type": "string",
+                    "title": "Choices Property",
+                    "decription": "unknown ??? "
+                },
+                "choices": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "value": {
+                                    "type": "string",
+                                    "title": "Value",
+                                    "description": "the value to return when selected."
+                                },
+                                "action": {
+                                    "title": "Action",
+                                    "description": "Card action for the choice",
+                                    "type": "object"
+                                },
+                                "synonyms": {
+                                    "type": "array",
+                                    "title": "Synonyms",
+                                    "description": "the list of synonyms to recognize in addition to the value. This is optional.",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "definitions": {
+                "choice": {
+                    "type": "object",
+                    "properties": {
+                        "value": {
+                            "type": "string",
+                            "title": "Value",
+                            "description": "the value to return when selected."
+                        },
+                        "action": {
+                            "title": "Action",
+                            "description": "Card action for the choice",
+                            "type": "object"
+                        },
+                        "synonyms": {
+                            "type": "array",
+                            "title": "Synonyms",
+                            "description": "the list of synonyms to recognize in addition to the value. This is optional.",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "CardAction": {
+                    "type": "object"
                 }
             },
             "patternProperties": {
@@ -1183,6 +1360,11 @@
                     "title": "Microsoft.CancelAllDialogs",
                     "description": "Command to cancel all of the current dialogs by emitting an event which must be caught to prevent cancelation from propagating.",
                     "$ref": "#/definitions/Microsoft.CancelAllDialogs"
+                },
+                {
+                    "title": "Microsoft.ChoiceInput",
+                    "description": "This represents a dialog which gathers a choice responses",
+                    "$ref": "#/definitions/Microsoft.ChoiceInput"
                 },
                 {
                     "title": "Microsoft.ConfirmInput",
