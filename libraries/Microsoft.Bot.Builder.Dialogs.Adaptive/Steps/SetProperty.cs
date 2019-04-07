@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 var (value, error) = Value.TryEvaluate(dc.State);
                 // what to do with error
 
-                return await planning.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+                return await planning.EndDialogAsync(value, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else
             {

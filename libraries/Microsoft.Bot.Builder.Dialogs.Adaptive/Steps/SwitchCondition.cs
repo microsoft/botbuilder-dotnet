@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
                 List<IDialog> stepsToRun = this.Default;
 
-                if (this.Cases.TryGetValue(value?.ToString(), out List<IDialog> steps))
+                if (value != null && this.Cases.TryGetValue(value.ToString(), out List<IDialog> steps))
                 {
                     stepsToRun = steps;
                 }
