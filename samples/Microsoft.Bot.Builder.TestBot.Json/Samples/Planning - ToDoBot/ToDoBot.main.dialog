@@ -13,13 +13,16 @@
             "CancelIntent": "(?i)cancel|never mind"
         }
     },
-    "steps": [
-        {
-            "$type": "Microsoft.SendActivity",
-            "activity": "Hi! I'm a ToDo bot. Say \"add a todo named first\" to get started."
-        }
-    ],
     "rules": [
+        {
+            "$type": "Microsoft.NoneIntentRule",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Hi! I'm a ToDo bot. Say \"add a todo named first\" to get started."
+                }
+            ]
+        },
         {
             "$type": "Microsoft.IntentRule",
             "intent": "AddIntent",
@@ -68,15 +71,6 @@
                 },
                 {
                     "$type": "Microsoft.EndDialog"
-                }
-            ]
-        },
-        {
-            "$type": "Microsoft.NoneIntentRule",
-            "steps": [
-                {
-                    "$type": "Microsoft.SendActivity",
-                    "activity": "Hi! I'm a ToDo bot. Say \"add a todo named first\" to get started."
                 }
             ]
         }
