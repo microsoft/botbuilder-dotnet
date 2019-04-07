@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
     /// <summary>
     /// Class which gives standard access to file based resources
     /// </summary>
-    public class ResourceExplorer : IResourceExplorer, IDisposable
+    public class ResourceExplorer : IDisposable
     {
         private List<FolderResource> folderResources = new List<FolderResource>();
 
@@ -38,14 +38,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             }
         }
 
-        IEnumerable<DirectoryInfo> IResourceExplorer.Folders { get => folderResources.Select(s => s.Directory); set => throw new NotImplementedException(); }
-
         public event ResourceChangedEventHandler Changed;
 
         private CancellationTokenSource CancelReloadToken = new CancellationTokenSource();
         private ConcurrentBag<string> changedPaths = new ConcurrentBag<string>();
 
-        public void AddFolder(string folder, bool monitorFiles = true)
+        public ResourceExplorer AddFolder(string folder, bool monitorFiles = true)
         {
             var folderResource = new FolderResource(folder, monitorFiles);
 
@@ -57,6 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             }
 
             this.folderResources.Add(folderResource);
+            return this;
         }
 
         private void Watcher_Changed(object sender, FileSystemEventArgs e)
