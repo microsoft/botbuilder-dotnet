@@ -5,7 +5,6 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Expressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -14,39 +13,45 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     /// <summary>
     /// Sets a property with the result of evaluating a value expression
     /// </summary>
-    public class SetProperty : DialogCommand
+    public class InitProperty : DialogCommand
     {
         [JsonConstructor]
-        public SetProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0) : base()
+        public InitProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0) : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
-        /// Value expression
+        ///  Type, either Array or Object
         /// </summary>
-        public Expression Value { get; set; }
+        public string Type { get; set; }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Ensure planning context
             if (dc is PlanningContext planning)
             {
-                // SetProperty evaluates the "Value" expression and returns it as the result of the dialog
-                var (value, error) = Value.TryEvaluate(dc.State);
-                // what to do with error
+                switch (Type.ToLower())
+                {
+                    case "array":
+                        dc.State.SetValue(this.Property, new JArray());
+                        break;
+                    case "object":
+                        dc.State.SetValue(this.Property, new JObject());
+                        break;
+                }
 
                 return await planning.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                throw new Exception("`SetProperty` should only be used in the context of an adaptive dialog.");
+                throw new Exception("`InitProperty` should only be used in the context of an adaptive dialog.");
             }
         }
 
         protected override string OnComputeId()
         {
-            return $"SetProperty[${this.Property.ToString() ?? string.Empty}]";
+            return $"InitProperty[${this.Property.ToString() ?? string.Empty}]";
         }
     }
 }

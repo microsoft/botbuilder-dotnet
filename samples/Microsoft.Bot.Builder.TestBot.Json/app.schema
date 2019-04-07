@@ -21,9 +21,9 @@
             "$ref": "#/definitions/Microsoft.BeginDialogRule"
         },
         {
-            "title": "Microsoft.CancelDialog",
-            "description": "Command to cancel the current dialog, trigging a cancelation event",
-            "$ref": "#/definitions/Microsoft.CancelDialog"
+            "title": "Microsoft.CancelAllDialogs",
+            "description": "Command to cancel all of the current dialogs by emitting an event which must be caught to prevent cancelation from propagating.",
+            "$ref": "#/definitions/Microsoft.CancelAllDialogs"
         },
         {
             "title": "Microsoft.ConfirmInput",
@@ -74,6 +74,11 @@
             "title": "Microsoft.IfCondition",
             "description": "Step which conditionally decides which step to execute next.",
             "$ref": "#/definitions/Microsoft.IfCondition"
+        },
+        {
+            "title": "Microsoft.InitProperty",
+            "description": "This step allows you to innitial a property to either an object or array",
+            "$ref": "#/definitions/Microsoft.InitProperty"
         },
         {
             "title": "Microsoft.IntegerInput",
@@ -407,10 +412,10 @@
                 }
             ]
         },
-        "Microsoft.CancelDialog": {
+        "Microsoft.CancelAllDialogs": {
             "$role": "unionType(Microsoft.IDialog)",
-            "title": "Cancel Dialog",
-            "description": "Command to cancel the current dialog, trigging a cancelation event",
+            "title": "Cancel All Dialogs",
+            "description": "Command to cancel all of the current dialogs by emitting an event which must be caught to prevent cancelation from propagating.",
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -419,7 +424,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.CancelDialog"
+                    "const": "Microsoft.CancelAllDialogs"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -432,6 +437,16 @@
                     "description": "Inline id for reuse of an inline definition",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "eventName": {
+                    "type": "string",
+                    "title": "Event Name",
+                    "description": "Name of the event which is emitted"
+                },
+                "eventValue": {
+                    "type": "object",
+                    "title": "Event Value",
+                    "description": "object value which is a payload to communicate to the parent dialogs so that they can decide how to process it"
                 }
             },
             "patternProperties": {
@@ -1165,9 +1180,9 @@
                     "$ref": "#/definitions/Microsoft.BeginDialog"
                 },
                 {
-                    "title": "Microsoft.CancelDialog",
-                    "description": "Command to cancel the current dialog, trigging a cancelation event",
-                    "$ref": "#/definitions/Microsoft.CancelDialog"
+                    "title": "Microsoft.CancelAllDialogs",
+                    "description": "Command to cancel all of the current dialogs by emitting an event which must be caught to prevent cancelation from propagating.",
+                    "$ref": "#/definitions/Microsoft.CancelAllDialogs"
                 },
                 {
                     "title": "Microsoft.ConfirmInput",
@@ -1213,6 +1228,11 @@
                     "title": "Microsoft.IfCondition",
                     "description": "Step which conditionally decides which step to execute next.",
                     "$ref": "#/definitions/Microsoft.IfCondition"
+                },
+                {
+                    "title": "Microsoft.InitProperty",
+                    "description": "This step allows you to innitial a property to either an object or array",
+                    "$ref": "#/definitions/Microsoft.InitProperty"
                 },
                 {
                     "title": "Microsoft.IntegerInput",
@@ -1442,6 +1462,72 @@
                     "required": [
                         "expression",
                         "steps",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.InitProperty": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Init Property Step",
+            "description": "This step allows you to innitial a property to either an object or array",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.InitProperty"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "property": {
+                    "type": "string",
+                    "title": "Property",
+                    "description": "The property to set the value of",
+                    "examples": [
+                        "user.age"
+                    ]
+                },
+                "type": {
+                    "type": "string",
+                    "title": "type",
+                    "description": "type of value to set the property to, object or array.",
+                    "enum": [
+                        "object",
+                        "array"
+                    ]
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "property",
+                        "type",
                         "$type"
                     ]
                 }

@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder
         /// Mapping from intent to information about the intent.
         /// </value>
         [JsonProperty("intents")]
-        public IDictionary<string, IntentScore> Intents { get; set; }
+        public IDictionary<string, IntentScore> Intents { get; set; } = new Dictionary<string, IntentScore>();
 
         /// <summary>
         /// Gets or sets the recognized top-level entities.
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder
         /// Object with each top-level recognized entity as a key.
         /// </value>
         [JsonProperty("entities")]
-        public JObject Entities { get; set; }
+        public JObject Entities { get; set; } = new JObject();
 
         /// <summary>
         /// Gets or sets properties that are not otherwise defined by the <see cref="RecognizerResult"/> type but that

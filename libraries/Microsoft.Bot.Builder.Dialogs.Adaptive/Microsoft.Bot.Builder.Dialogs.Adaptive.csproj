@@ -69,6 +69,7 @@
     <None Remove="Schemas\Steps\Microsoft.EndTurn.schema" />
     <None Remove="Schemas\Steps\Microsoft.HttpRequest.schema" />
     <None Remove="Schemas\Steps\Microsoft.IfProperty.schema" />
+    <None Remove="Schemas\Steps\Microsoft.InitProperty.schema" />
     <None Remove="Schemas\Steps\Microsoft.ReplaceDialog.schema" />
     <None Remove="Schemas\Steps\Microsoft.SaveEntity.schema" />
     <None Remove="Schemas\Steps\Microsoft.SendActivity.schema" />
@@ -86,6 +87,7 @@
     <Content Include="Schemas\Rules\Microsoft.Rule.schema" />
     <Content Include="Schemas\Rules\Microsoft.EventRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.IntentRule.schema" />
+    <Content Include="Schemas\Steps\Microsoft.InitProperty.schema" />
     <Content Include="Schemas\Steps\Microsoft.SetProperty.schema" />
     <Content Include="Schemas\Steps\Microsoft.EmitEvent.schema" />
     <Content Include="Schemas\Steps\Microsoft.SwitchCondition.schema" />

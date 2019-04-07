@@ -1,0 +1,3 @@
+RecognizedUtterance -> RecognizedIntent
+Fallback -> UnrecognizedIntent
+NoneIntentRule -> UnrecognizedIntentRule

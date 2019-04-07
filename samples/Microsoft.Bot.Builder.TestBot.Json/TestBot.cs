@@ -2,19 +2,16 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Schema;
-using Microsoft.Recognizers.Text;
-using Newtonsoft.Json;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -40,16 +37,18 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             LoadRootDialog();
         }
 
-        private void ResourceExplorer_Changed(object sender, FileSystemEventArgs e)
+        private void ResourceExplorer_Changed(string[] paths)
         {
-            if (Path.GetExtension(e.FullPath) == ".dialog")
+            if (paths.Any(p => Path.GetExtension(p) == ".dialog"))
             {
-                LoadRootDialog();
+                this.LoadRootDialog();
             }
         }
 
+        
         private void LoadRootDialog()
         {
+            System.Diagnostics.Trace.TraceInformation("Loading resources...");
             var rootFile = resourceExplorer.GetResource(@"ToDoBot.main.dialog");
             //var rootFile = resourceExplorer.GetResource("ToDoLuisBot.main.dialog");
             //var rootFile = resourceExplorer.GetResource("NoMatchRule.main.dialog");
@@ -64,6 +63,8 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             rootDialog = DeclarativeTypeLoader.Load<IDialog>(rootFile.FullName, resourceExplorer, registry);
             _dialogs = new DialogSet(accessors.ConversationDialogState);
             _dialogs.Add(rootDialog);
+
+            System.Diagnostics.Trace.TraceInformation("Done loading resources.");
         }
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))

@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
             await BuildTestFlow(path)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
-            .Send("hello")
+            .SendConversationUpdate()
                 .AssertReply("Hi! I'm a ToDo bot. Say \"add a todo named first\" to get started.")
             .Send("add a todo named first")
                 .AssertReply("Successfully added a todo named \"first\"")

@@ -21,6 +21,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using System.Linq;
+using Microsoft.ApplicationInsights.Extensibility;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -55,6 +56,10 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                TelemetryConfiguration.Active.DisableTelemetry = true;
+            }
             services.AddSingleton<IConfiguration>(this.Configuration);
 
             IStorage dataStore = new MemoryStorage();
