@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var isFail = false;
             try
             {
-                TemplateEngine.FromFile(GetExampleFilePath(input));
+                TemplateEngine.FromFiles(GetExampleFilePath(input));
                 isFail = true;
             }
             catch (Exception e)
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [DynamicData(nameof(WariningData))]
         public void WariningTest(string input)
         {
-            var engine = TemplateEngine.FromFile(GetExampleFilePath(input));
+            var engine = TemplateEngine.FromFiles(GetExampleFilePath(input));
         }
     }
 }

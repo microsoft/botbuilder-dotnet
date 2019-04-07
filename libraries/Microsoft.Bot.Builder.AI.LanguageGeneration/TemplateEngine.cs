@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         public List<LGTemplate> Templates = new List<LGTemplate>();
 
         /// <summary>
-        /// Return an empty engine, you can use AddFiles to add files to it, 
+        /// Return an empty engine, you can then use AddFile\AddFiles to add files to it, 
         /// or you can just use this empty engine to evaluate inline template
         /// </summary>
         public TemplateEngine()
@@ -27,16 +27,29 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         }
 
         /// <summary>
-        /// Add a file to a template engine
+        /// Load .lg files into template engine
+        /// 
+        /// You can add one file, or mutlple file as once
+        /// 
+        /// If you have multiple files referencing each other, make sure you add them all at once,
+        /// otherwise static checking won't allow you to add it one by one
         /// </summary>
-        /// <param name="filePath">the path to the file</param>
-        /// <returns>template engine with the parsed content of this file</returns>
-        public TemplateEngine AddFile(string filePath)
+        /// <param name="filePaths">Paths to .lg files</param>
+        /// <returns>Teamplate engine with parsed files</returns>
+        public TemplateEngine AddFiles(params string[] filePaths)
         {
-            var text = File.ReadAllText(filePath);
-            Templates.AddRange(ToTemplates(Parse(text), filePath));
+            var newTemplates = filePaths.Select(filePath =>
+            {
+                var text = File.ReadAllText(filePath);
+                return ToTemplates(Parse(text), filePath);
+            }).SelectMany(x => x);
 
-            RunStaticCheck();
+            var mergedTemplates = Templates.Concat(newTemplates).ToList();
+
+            RunStaticCheck(mergedTemplates);
+
+            Templates = mergedTemplates; // only set value after static checking is passed
+
             return this;
         }
 
@@ -145,16 +158,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
         }
 
-
         /// <summary>
-        /// Create a template engine from a file, equivalent to 
-        ///    new TemplateEngine.AddFile(filePath)
+        /// Create a template engine from files, a shorthand for 
+        ///    new TemplateEngine().AddFiles(filePath)
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
-        public static TemplateEngine FromFile(string filePath)
+        public static TemplateEngine FromFiles(params string[] filePaths)
         {
-            return new TemplateEngine().AddFile(filePath);
+            return new TemplateEngine().AddFiles(filePaths);
         }
 
         /// <summary>

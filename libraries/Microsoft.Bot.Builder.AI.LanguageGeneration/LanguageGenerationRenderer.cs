@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 throw new ArgumentException(nameof(lgFilePath));
             }
 
-            this.templateEngine = TemplateEngine.FromFile(lgFilePath);
+            this.templateEngine = TemplateEngine.FromFiles(lgFilePath);
         }
 
         public LanguageGenerationRenderer(TemplateEngine templateEngine)
