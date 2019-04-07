@@ -5,11 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Expressions;
-using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
@@ -27,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
                 PlanningEvents.UtteranceRecognized.ToString()
             },
             steps: steps,
-            constraint: constraint, 
+            constraint: constraint,
             callerPath: callerPath, callerLine: callerLine)
         {
             Intent = intent ?? null;
@@ -38,28 +34,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         /// <summary>
         /// Intent to match on
         /// </summary>
+        [JsonProperty("intent")]
         public string Intent { get; set; }
 
         /// <summary>
         /// Entities which must be recognized for this rule to trigger
         /// </summary>
+        [JsonProperty("entities")]
         public List<string> Entities { get; set; }
-
 
         protected override Expression BuildExpression(IExpressionParser factory)
         {
-            List<Expression> expressions = new List<Expression>();
+            List<Expression> constraints = new List<Expression>();
+
             // add constraints for the intents property
             if (!String.IsNullOrEmpty(this.Intent))
             {
-                expressions.Add(factory.Parse($"turn.DialogEvent.Value.Intents.{this.Intent}.Score > 0.0"));
+                constraints.Add(factory.Parse($"turn.DialogEvent.Value.Intents.{this.Intent}.Score > 0.0"));
             }
 
+            //TODO
             //foreach (var entity in this.Entities)
             //{
             //    constraints.Add($"CONTAINS(DialogEvent.Entities, '{entity}')");
             //}
-            return Expression.AndExpression(Expression.AndExpression(expressions.ToArray()), base.BuildExpression(factory));
+
+            var baseExpression = base.BuildExpression(factory);
+            if (baseExpression != null)
+            {
+                constraints.Add(baseExpression);
+            }
+
+            return Expression.AndExpression(constraints.ToArray());
+
         }
 
         protected override PlanChangeList OnCreateChangeList(PlanningContext planning, object dialogOptions = null)
