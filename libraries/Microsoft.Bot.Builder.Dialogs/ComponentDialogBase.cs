@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // - This lets legacy components that have added custom interruption logic to continue to operate as designed.
             return new DialogConsultation()
             {
-                Desire = innerConsultation != null ? innerConsultation.Desire : DialogConsultationDesires.CanProcess,
+                Desire = innerConsultation != null ? innerConsultation.Desire : DialogConsultationDesire.CanProcess,
                 Processor = (dc) => OnContinueDialogAsync(innerDc, innerConsultation),
             };
         }

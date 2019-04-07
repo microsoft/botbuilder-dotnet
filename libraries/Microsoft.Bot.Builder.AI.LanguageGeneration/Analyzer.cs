@@ -4,48 +4,54 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
-using Microsoft.Expressions;
+using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
     public class Analyzer : LGFileParserBaseVisitor<List<string>>
     {
-        public readonly EvaluationContext Context;
+        public readonly List<LGTemplate> Templates;
+        private readonly Dictionary<string, LGTemplate> TemplateMap;
 
-        private Stack<EvaluationTarget> evalutationTargetStack = new Stack<EvaluationTarget>();
+        private readonly IExpressionParser _expressionParser;
+
+        private Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
         private EvaluationTarget CurrentTarget()
         {
             // just don't want to write evaluationTargetStack.Peek() everywhere
-            return evalutationTargetStack.Peek();
+            return evaluationTargetStack.Peek();
         }
-                 
-        public Analyzer(EvaluationContext context)
+
+        public Analyzer(List<LGTemplate> templates)
         {
-            Context = context;
+            Templates = templates;
+            TemplateMap = templates.ToDictionary(t => t.Name);
+            _expressionParser = new ExpressionEngine(new GetMethodExtensions(null).GetMethodX);
         }
 
         public List<string> AnalyzeTemplate(string templateName)
         {
-            if (!Context.TemplateContexts.ContainsKey(templateName))
+            if (!TemplateMap.ContainsKey(templateName))
             {
                 throw new Exception($"No such template: {templateName}");
             }
 
-            if (evalutationTargetStack.Any(e => e.TemplateName == templateName))
+            if (evaluationTargetStack.Any(e => e.TemplateName == templateName))
             {
-                throw new Exception($"Loop detected: {String.Join(" => ", evalutationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                throw new Exception($"Loop detected: {String.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
             // Using a stack to track the evalution trace
-            evalutationTargetStack.Push(new EvaluationTarget(templateName, null));
-            var rawDependencies = Visit(Context.TemplateContexts[templateName]);
+            evaluationTargetStack.Push(new EvaluationTarget(templateName, null));
+            var rawDependencies = Visit(TemplateMap[templateName].ParseTree);
 
-            var parameters = ExtractParameters(templateName);
+            var parameters = TemplateMap[templateName].Paramters;
 
             // we need to exclude parameters from raw dependencies
             var dependencies = rawDependencies.Except(parameters).Distinct().ToList();
 
-            evalutationTargetStack.Pop();
+            evaluationTargetStack.Pop();
 
             return dependencies;
         }
@@ -85,28 +91,16 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         {
             var result = new List<string>();
 
-            var caseRules = context.conditionalTemplateBody().caseRule();
-            foreach (var caseRule in caseRules)
+            var ifRules = context.conditionalTemplateBody().ifConditionRule();
+            foreach (var ifRule in ifRules)
             {
-                if (caseRule.caseCondition().EXPRESSION() != null
-                    && caseRule.caseCondition().EXPRESSION().Length >= 0)
+                var expression = ifRule.ifCondition().EXPRESSION(0);
+                if (expression != null)
                 {
-                    var conditionExpression = caseRule.caseCondition().EXPRESSION(0).GetText();
-                    var childConditionResult = AnalyzeExpression(conditionExpression);
-                    result.AddRange(childConditionResult);
+                    result.AddRange(AnalyzeExpression(expression.GetText()));
                 }
 
-                if (caseRule.normalTemplateBody() != null)
-                {
-                    var childTemplateBodyResult = Visit(caseRule.normalTemplateBody());
-                    result.AddRange(childTemplateBodyResult);
-                }
-            }
-
-            if (context?.conditionalTemplateBody()?.defaultRule() != null)
-            {
-                var childDefaultRuleResult = Visit(context.conditionalTemplateBody().defaultRule().normalTemplateBody());
-                result.AddRange(childDefaultRuleResult);
+                result.AddRange(Visit(ifRule.normalTemplateBody()));
             }
 
             return result;
@@ -141,17 +135,47 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         private List<string> AnalyzeExpression(string exp)
         {
             exp = exp.TrimStart('{').TrimEnd('}');
-            var parseTree = ExpressionEngine.Parse(exp);
-            return AnalyzeParserTree(parseTree);
-        }
-
-        private List<string> AnalyzeParserTree(IParseTree parserTree)
-        {
-            var result = new List<string>();
-            
-            var visitor = new ExpressionAnalyzerVisitor(Context);
-
-            return visitor.Analyzer(parserTree);
+            var parse = _expressionParser.Parse(exp);
+            var references = new HashSet<string>();
+            // Extend the expression reference walk so that when a string is encountered it is evaluated as
+            // a {expression} or [template] and expanded.
+            var path = Microsoft.Bot.Builder.Expressions.Extensions.ReferenceWalk(parse, references,
+                (expression) =>
+                {
+                    var found = false;
+                    if (expression is Constant cnst && cnst.Value is string str)
+                    {
+                        if (str.StartsWith("[") && str.EndsWith("]"))
+                        {
+                            found = true;
+                            var end = str.IndexOf('(');
+                            if (end == -1)
+                            {
+                                end = str.Length - 1;
+                            }
+                            var template = str.Substring(1, end - 1);
+                            var analyzer = new Analyzer(Templates);
+                            foreach (var reference in analyzer.AnalyzeTemplate(template))
+                            {
+                                references.Add(reference);
+                            }
+                        }
+                        else if (str.StartsWith("{") && str.EndsWith("}"))
+                        {
+                            found = true;
+                            foreach (var childRef in AnalyzeExpression(str))
+                            {
+                                references.Add(childRef);
+                            }
+                        }
+                    }
+                    return found;
+                });
+            if (path != null)
+            {
+                references.Add(path);
+            }
+            return references.ToList();
         }
 
         private List<string> AnalyzeTemplateRef(string exp)
@@ -163,7 +187,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             {
                 // EvaluateTemplate all arguments using ExpressoinEngine
                 var argsEndPos = exp.LastIndexOf(')');
-              
+
                 var templateName = exp.Substring(0, argsStartPos);
 
                 return AnalyzeTemplate(templateName);
@@ -198,12 +222,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             }
 
             return result;
-        }
-
-        private List<string> ExtractParameters(string templateName)
-        {
-            var hasParameters = Context.TemplateParameters.TryGetValue(templateName, out var parameters);
-            return hasParameters ? parameters : new List<string>();
         }
     }
 }

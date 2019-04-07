@@ -8,13 +8,14 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Plugins;
-using Microsoft.Bot.Builder.Dialogs.Rules;
-using Microsoft.Bot.Builder.Dialogs.Rules.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Rules.Rules;
-using Microsoft.Bot.Builder.Dialogs.Rules.Steps;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
 {
@@ -85,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
         public static string NameFromType(Type type)
         {
             string name;
-            return names.TryGetValue(type, out name) ? name: default(string);
+            return names.TryGetValue(type, out name) ? name : default(string);
         }
 
         public static void Reset()
@@ -106,42 +107,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
 
             // Rules
             Register("Microsoft.BeginDialogRule", typeof(BeginDialogRule));
-            Register("Microsoft.IntentRule", typeof(IntentRule));
             Register("Microsoft.EventRule", typeof(EventRule));
-            Register("Microsoft.DefaultRule", typeof(DefaultRule));
-            //Register("Microsoft.IfPropertyRule", typeof(IfPropertyRule));
-            Register("Microsoft.ReplacePlanRule", typeof(ReplacePlanRule));
-            //Register("Microsoft.UtteranceRecognizeRule", typeof(UtteranceRecognizeRule));
-            Register("Microsoft.WelcomeRule", typeof(WelcomeRule));
+            Register("Microsoft.IntentRule", typeof(IntentRule));
+            Register("Microsoft.NoneIntentRule", typeof(NoneIntentRule));
 
             // Steps
-            Register("Microsoft.CallDialog", typeof(CallDialog));
-            Register("Microsoft.CancelDialog", typeof(CancelDialog));
+            Register("Microsoft.BeginDialog", typeof(BeginDialog));
+            Register("Microsoft.CancelAllDialog", typeof(CancelAllDialogs));
+            Register("Microsoft.DeleteProperty", typeof(DeleteProperty));
+            Register("Microsoft.EditArray", typeof(EditArray));
+            Register("Microsoft.EmitEvent", typeof(EmitEvent));
             Register("Microsoft.EndDialog", typeof(EndDialog));
-            Register("Microsoft.GotoDialog", typeof(GotoDialog));
-            Register("Microsoft.IfProperty", typeof(IfProperty));
-            Register("Microsoft.SendActivity", typeof(SendActivity));
-            Register("Microsoft.WaitForInput", typeof(WaitForInput));
-            Register("Microsoft.SaveEntity", typeof(SaveEntity));
-            Register("Microsoft.ChangeList", typeof(ChangeList));
-            Register("Microsoft.SendList", typeof(SendList));
-            Register("Microsoft.ClearProperty", typeof(ClearProperty));
+            Register("Microsoft.EndTurn", typeof(EndTurn));
             Register("Microsoft.HttpRequest", typeof(HttpRequest));
+            Register("Microsoft.IfCondition", typeof(IfCondition));
+            Register("Microsoft.InitProperty", typeof(InitProperty));
+            Register("Microsoft.RepeatDialog", typeof(RepeatDialog));
+            Register("Microsoft.ReplaceDialog", typeof(ReplaceDialog));
+            Register("Microsoft.SaveEntity", typeof(SaveEntity));
+            Register("Microsoft.SendActivity", typeof(SendActivity));
+            Register("Microsoft.SetProperty", typeof(SetProperty));
+            Register("Microsoft.SwitchCondition", typeof(SwitchCondition));
 
-            // Dialogs
-            Register("Microsoft.ComponentDialog", typeof(ComponentDialog), new ComponentDialogLoader());
-            Register("Microsoft.AdaptiveDialog", typeof(AdaptiveDialog));
-            Register("Microsoft.TextPrompt", typeof(TextPrompt));
-            Register("Microsoft.IntegerPrompt", typeof(IntegerPrompt));
-            Register("Microsoft.FloatPrompt", typeof(FloatPrompt));
+            // Inputs
+            Register("Microsoft.ConfirmInput", typeof(ConfirmInput));
+            Register("Microsoft.FloatInput", typeof(FloatInput));
+            Register("Microsoft.IntegerInput", typeof(IntegerInput));
+            Register("Microsoft.TextInput", typeof(TextInput));
+            Register("Microsoft.ChoiceInput", typeof(ChoiceInput));
             Register("Microsoft.OAuthPrompt", typeof(OAuthPrompt), new OAuthPromptLoader());
 
             // Recognizers
             Register("Microsoft.LuisRecognizer", typeof(LuisRecognizer), new LuisRecognizerLoader(TypeFactory.Configuration));
             Register("Microsoft.RegexRecognizer", typeof(RegexRecognizer));
-
-            // Storage
-            Register("Microsoft.MemoryStorage", typeof(MemoryStorage));
+            Register("Microsoft.MultiLanguageRecognizer", typeof(MultiLanguageRecognizer));
         }
 
         private static void EnsureConfig()

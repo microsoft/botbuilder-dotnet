@@ -1,8 +1,0 @@
-{
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
-    "$role": "unionType(Microsoft.IDialog)",
-    "title": "Cancel Dialog",
-    "description": "Command to cancel the current dialog, trigging a cancelation event",
-    "type": "object",
-    "additionalProperties": false
-}

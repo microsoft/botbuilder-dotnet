@@ -19,8 +19,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public BindingTestDialog(string dialogId, string inputBinding, string outputBinding)
             : base(dialogId)
         {
-            this.InputBindings["value"] = inputBinding;
-            this.OutputBinding = outputBinding;
+            this.InputProperties["value"] = inputBinding;
+            this.OutputProperty = outputBinding;
         }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -639,7 +639,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         private static async Task<DialogTurnResult> Waterfall5_Step2(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             await stepContext.Context.SendActivityAsync(MessageFactory.Text("step2.2"), cancellationToken);
-            return await stepContext.EndDialogAsync(cancellationToken);
+            return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
         }
 
     }

@@ -11,8 +11,8 @@ lexer grammar LGFileLexer;
 //    so it would be very little effort to translate to other languages
 
 @lexer::members {
-  bool ignoreWS = true;             // usually we ignore whitespace, but inside template, whitespace is significant
-  bool expectCaseOrDefault = false; // whethe we are expecting CASE: or DEFAULT:
+  bool ignoreWS = true;      // usually we ignore whitespace, but inside template, whitespace is significant
+  bool expectIfElse = false; // whether we are expecting IF/ELSEIF/ELSE
 }
 
 fragment LETTER: 'a'..'z' | 'A'..'Z';
@@ -35,7 +35,7 @@ HASH
   ;
 
 DASH
-  : '-' {expectCaseOrDefault = true;} -> pushMode(TEMPLATE_BODY_MODE)
+  : '-' {expectIfElse = true;} -> pushMode(TEMPLATE_BODY_MODE)
   ;
 
 mode TEMPLATE_NAME_MODE;
@@ -87,21 +87,18 @@ NEWLINE_IN_BODY
   : '\r'? '\n' {ignoreWS = true;} -> type(NEWLINE), popMode
   ;
 
-// only CASE and DEFAULT makes ignoreWS = true
-CASE
-  : ('case:' | 'CASE:') {expectCaseOrDefault}? { ignoreWS = true;}
+// only if/else makes ignoreWS = true
+IFELSE
+  : ('if:' | 'IF:' | 'elseif:' | 'ELSEIF:' | 'else:' | 'ELSE:') {expectIfElse}? { ignoreWS = true;}
   ;
 
-DEFAULT
-  : ('default:' | 'DEFAULT:') {expectCaseOrDefault}? { ignoreWS = true;}
-  ;
 
 MULTI_LINE_TEXT
-  : '```' .*? '```' { ignoreWS = false; expectCaseOrDefault = false;}
+  : '```' .*? '```' { ignoreWS = false; expectIfElse = false;}
   ;
 
 ESCAPE_CHARACTER
-  : '\\{' | '\\[' | '\\\\' | '\\'[rtn\]}]  { ignoreWS = false; expectCaseOrDefault = false;}
+  : '\\{' | '\\[' | '\\\\' | '\\'[rtn\]}]  { ignoreWS = false; expectIfElse = false;}
   ;
 
 INVALID_ESCAPE
@@ -109,17 +106,17 @@ INVALID_ESCAPE
   ;
 
 EXPRESSION
-  : '{' ~[\r\n{}]* '}'  { ignoreWS = false; expectCaseOrDefault = false;}
+  : '{' ~[\r\n{}]* '}'  { ignoreWS = false; expectIfElse = false;}
   ;
 
 TEMPLATE_REF
-  : '[' (~[\r\n\]] | TEMPLATE_REF)* ']'  { ignoreWS = false; expectCaseOrDefault = false;}
+  : '[' (~[\r\n\]] | TEMPLATE_REF)* ']'  { ignoreWS = false; expectIfElse = false;}
   ;
 
 TEXT_SEPARATOR
-  : [ \t\r\n{}[\]()]  { ignoreWS = false; expectCaseOrDefault = false;}
+  : [ \t\r\n{}[\]()]  { ignoreWS = false; expectIfElse = false;}
   ;
 
 TEXT
-  : ~[ \\\t\r\n{}[\]()]+  { ignoreWS = false; expectCaseOrDefault = false;}
+  : ~[ \\\t\r\n{}[\]()]+  { ignoreWS = false; expectIfElse = false;}
   ;

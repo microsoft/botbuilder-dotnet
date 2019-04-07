@@ -1,6 +1,7 @@
 {
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
+    "autoEndDialog": false,
     "recognizer": {
         "$type": "Microsoft.RegexRecognizer",
         "intents": {
@@ -10,38 +11,33 @@
             "FortuneTellerIntent": "(?i)fortune|future"
         }
     },
+    "steps": [
+        {
+            "$type": "Microsoft.SendActivity",
+            "activity": "[welcome]"
+        },
+        "ExternalLanguage.Greeting"
+    ],
     "rules": [
         {
             "$type": "Microsoft.IntentRule",
             "intent": "JokeIntent",
             "steps": [
-              "ExternalLanguage.TellJoke"
+                "ExternalLanguage.TellJoke"
             ]
         },
         {
             "$type": "Microsoft.IntentRule",
             "intent": "FortuneTellerIntent",
             "steps": [
-              "ExternalLanguage.FortuneTeller"
-            ]
-        },
-        {
-            "$type": "Microsoft.WelcomeRule",
-            "steps": [
-                {
-                    "$type": "Microsoft.SendActivity",
-                    "activity": "[welcome]"
-                }
+                "ExternalLanguage.FortuneTeller"
             ]
         },
         {
             "$type": "Microsoft.IntentRule",
             "intent": "GreetingIntent",
             "steps": [
-              {
-                "$type": "Microsoft.CallDialog",
-                "dialog": "ExternalLanguage.Greeting"
-              }
+                "ExternalLanguage.Greeting"
             ]
         },
         {
@@ -55,7 +51,7 @@
             ]
         },
         {
-            "$type": "Microsoft.DefaultRule",
+            "$type": "Microsoft.NoneIntentRule",
             "steps": [
                 {
                     "$type": "Microsoft.SendActivity",

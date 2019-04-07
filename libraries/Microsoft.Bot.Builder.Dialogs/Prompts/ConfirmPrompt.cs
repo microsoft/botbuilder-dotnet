@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// callers next waterfall step
     /// </remarks>
     /// </summary>
-    public class ConfirmPrompt : Prompt<bool, ConfirmPromptOptions>
+    public class ConfirmPrompt : Prompt<bool>
     {
         private static readonly Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> ChoiceDefaults = new Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)>()
         {
@@ -41,6 +41,14 @@ namespace Microsoft.Bot.Builder.Dialogs
             { Portuguese, (new Choice("Sim"), new Choice("Não"), new ChoiceFactoryOptions(", ", " ou ", ", ou ", true)) },
             { Chinese, (new Choice("是的"), new Choice("不"), new ChoiceFactoryOptions("， ", " 要么 ",  "， 要么 ", true)) },
         };
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfirmPrompt"/> class.
+        /// </summary>
+        public ConfirmPrompt()
+            : base()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfirmPrompt"/> class.
@@ -81,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public Tuple<Choice, Choice> ConfirmChoices { get; set; }
 
-        protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, ConfirmPromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
+        protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -101,43 +109,21 @@ namespace Microsoft.Bot.Builder.Dialogs
             var choiceOptions = ChoiceOptions ?? defaults.Item3;
             var confirmChoices = ConfirmChoices ?? Tuple.Create(defaults.Item1, defaults.Item2);
             var choices = new List<Choice> { confirmChoices.Item1, confirmChoices.Item2 };
-            if (isRetry)
-            {
-                if (options.RetryPrompt != null)
-                {
-                    prompt = AppendChoices(options.RetryPrompt, channelId, choices, Style, choiceOptions);
-                }
-                else
-                {
-                    var retry = await this.RetryPrompt.BindToData(turnContext, state).ConfigureAwait(false);
-                    if (retry == null)
-                    {
-                        retry = (Activity)Activity.CreateMessageActivity();
-                    }
 
-                    prompt = AppendChoices(retry.AsMessageActivity(), channelId, choices, Style, choiceOptions);
-                }
-            }
-            else if (options.Prompt != null)
+            if (isRetry && options.RetryPrompt != null)
             {
-                prompt = AppendChoices(options.Prompt, channelId, choices, Style, choiceOptions);
+                prompt = AppendChoices(options.RetryPrompt, channelId, choices, Style, choiceOptions);
             }
             else
             {
-                var initialPrompt = await this.InitialPrompt.BindToData(turnContext, state).ConfigureAwait(false);
-                if (initialPrompt == null)
-                {
-                    initialPrompt = (Activity)Activity.CreateMessageActivity();
-                }
-
-                prompt = AppendChoices(initialPrompt, channelId, choices, Style, choiceOptions);
+                prompt = AppendChoices(options.Prompt, channelId, choices, Style, choiceOptions);
             }
 
             // Send prompt
             await turnContext.SendActivityAsync(prompt, cancellationToken).ConfigureAwait(false);
         }
 
-        protected override Task<PromptRecognizerResult<bool>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, ConfirmPromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
+        protected override Task<PromptRecognizerResult<bool>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {

@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Schema;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -19,12 +18,12 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public Dialog(string dialogId = null)
         {
-            Id = dialogId;// ?? OnComputeId();
+            Id = dialogId;
             _telemetryClient = NullBotTelemetryClient.Instance;
         }
 
         private string id;
-        
+
         /// <summary>
         /// Unique id for the dialog.
         /// </summary>
@@ -35,6 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 id = id ?? OnComputeId();
                 return id;
             }
+
             set
             {
                 id = value;
@@ -47,19 +47,22 @@ namespace Microsoft.Bot.Builder.Dialogs
         public List<string> Tags { get; private set; } = new List<string>();
 
         /// <summary>
-        /// JSONPath expression for the memory slots to bind the dialogs options to on a call to `beginDialog()`.
+        /// Gets or sets jSONPath expression for the memory slots to bind the dialogs options to on a call to `beginDialog()`.
         /// </summary>
-        public Dictionary<string, string> InputBindings { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> InputProperties { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
-        /// JSONPath expression for the memory slot to bind the dialogs result to when `endDialog()` is called.
+        /// Gets or sets jSONPath expression for the memory slot to bind the dialogs result to when `endDialog()` is called.
         /// </summary>
-        public string OutputBinding { get; set; }
+        public string OutputProperty { get; set; }
 
+        /// <summary>
+        /// Property which is bidirectional property for input and output.  Example: user.age will be passed in, and user.age will be set when the dialog completes
+        /// </summary>
         public virtual string Property
         {
-            get { return OutputBinding; }
-            set { OutputBinding = value; }
+            get { return OutputProperty; }
+            set { OutputProperty = value; }
         }
 
         /// <summary>
@@ -150,7 +153,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             return new DialogConsultation()
             {
-                Desire = DialogConsultationDesires.CanProcess,
+                Desire = DialogConsultationDesire.CanProcess,
                 Processor = (dialogContext) => this.ContinueDialogAsync(dialogContext),
             };
         }
@@ -176,16 +179,29 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             const string valueKey = "value";
 
-            if (InputBindings.ContainsKey(valueKey))
+            if (InputProperties.ContainsKey(valueKey))
             {
-                return InputBindings[valueKey];
+                return InputProperties[valueKey];
             }
-            else if (!string.IsNullOrEmpty(OutputBinding))
+            else if (!string.IsNullOrEmpty(OutputProperty))
             {
-                return OutputBinding;
+                return OutputProperty;
             }
 
             return string.Empty;
+        }
+
+        protected void RegisterSourceLocation(string path, int lineNumber)
+        {
+            if (!string.IsNullOrEmpty(path))
+            {
+                Debugger.SourceRegistry.Add(this, new Source.Range()
+                {
+                    Path = path,
+                    Start = new Source.Point() { LineIndex = lineNumber, CharIndex = 0 },
+                    After = new Source.Point() { LineIndex = lineNumber + 1, CharIndex = 0 },
+                });
+            }
         }
     }
 }

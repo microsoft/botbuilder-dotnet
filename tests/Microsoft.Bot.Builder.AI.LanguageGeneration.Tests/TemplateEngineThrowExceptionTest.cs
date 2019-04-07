@@ -20,8 +20,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         public static object[] Test(string input) => new object[] { input };
 
-        public static IEnumerable<object[]> Data => new[]
-       {
+        public static IEnumerable<object[]> ExceptionData => new[]
+        {
             Test("EmptyTemplate.lg"),
             Test("ErrorTemplateParameters.lg"),
             Test("NoNormalTemplateBody.lg"),
@@ -29,28 +29,47 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Test("ErrorEscapeCharacter.lg"),
             Test("NoTemplateRef.lg"),
             Test("TemplateParamsNotMatchArgsNum.lg"),
-            Test("EmptyLGFile.lg"),
             Test("ErrorSeperateChar.lg"),
+            Test("ErrorSeperateChar2.lg"),
             Test("MultilineVariation.lg"),
-            Test("OnlyDefaultRule.lg"),
-            Test("NoDefaultRule.lg")
+            Test("InvalidTemplateName.lg"),
+            Test("InvalidTemplateName2.lg"),
+        };
 
+        public static IEnumerable<object[]> WariningData => new[]
+        {
+            Test("EmptyLGFile.lg"),
+            Test("OnlyNoMatchRule.lg"),
+            Test("NoMatchRule.lg")
         };
 
 
         [DataTestMethod]
-        [DynamicData(nameof(Data))]
+        [DynamicData(nameof(ExceptionData))]
         public void ThrowExceptionTest(string input)
         {
+            var isFail = false;
             try
             {
-                TemplateEngine.FromFile(GetExampleFilePath(input));
+                TemplateEngine.FromFiles(GetExampleFilePath(input));
+                isFail = true;
             }
             catch (Exception e)
             {
-                Assert.IsInstanceOfType(e, typeof(LGParsingException));
                 TestContext.WriteLine(e.Message);
             }
+
+            if (isFail)
+            {
+                Assert.Fail("No exception is thrown.");
+            }    
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(WariningData))]
+        public void WariningTest(string input)
+        {
+            var engine = TemplateEngine.FromFiles(GetExampleFilePath(input));
         }
     }
 }

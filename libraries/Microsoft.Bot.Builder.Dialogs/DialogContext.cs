@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -176,7 +177,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // TODO: reevaluate assumptions here, breaking options with this approach
             if (options?.GetType() == typeof(Dictionary<string, object>))
             {
-                foreach (var option in dialog.InputBindings)
+                foreach (var option in dialog.InputProperties)
                 {
                     var bindingKey = option.Key;
                     var bindingValue = option.Value;
@@ -297,6 +298,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<DialogTurnResult> EndDialogAsync(object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (result is CancellationToken token)
+            {
+                new ArgumentException($"{this.ActiveDialog.Id}.EndDialogAsync() You can't pass a cancellation token as the result of a dialog when calling EndDialog.");
+            }
+
             // End the active dialog
             await EndActiveDialogAsync(DialogReason.EndCalled, result).ConfigureAwait(false);
             activeTags = null;
@@ -363,6 +369,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     {
                         dialogContext = dialogContext.Parent;
                     }
+
                     notify = true;
                 }
 
@@ -457,7 +464,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="bubble">Flag to control whether the event should be bubbled to its parent if not handled locally. Defaults to a value of `true`.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>True if the event was handled.</returns>
-        public async Task<bool> EmitEventAsync(string name, object value, bool bubble, CancellationToken cancellationToken)
+        public async Task<bool> EmitEventAsync(string name, object value = null, bool bubble = true, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Initialize event
             var dialogEvent = new DialogEvent()
@@ -530,9 +537,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        public async Task DebuggerStepAsync(IDialog dialog, CancellationToken cancellationToken, [CallerMemberName]string memberName = null)
+        public async Task DebuggerStepAsync(object item, CancellationToken cancellationToken, [CallerMemberName]string memberName = null)
         {
-            await Context.GetDebugger().StepAsync(this, dialog, memberName, cancellationToken).ConfigureAwait(false);
+            await Context.GetDebugger().StepAsync(this, item, memberName, cancellationToken).ConfigureAwait(false);
         }
 
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -553,9 +560,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 Stack.RemoveAt(0);
 
                 // Process dialogs output binding
-                if (!string.IsNullOrEmpty(dialog?.OutputBinding) && result != null)
+                if (!string.IsNullOrEmpty(dialog?.OutputProperty) && result != null)
                 {
-                    this.State.SetValue(dialog.OutputBinding, result);
+                    this.State.SetValue(dialog.OutputProperty, result);
                 }
             }
         }

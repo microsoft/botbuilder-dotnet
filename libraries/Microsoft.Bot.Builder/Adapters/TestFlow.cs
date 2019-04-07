@@ -108,6 +108,31 @@ namespace Microsoft.Bot.Builder.Adapters
                 this);
         }
 
+        public TestFlow SendConversationUpdate()
+        {
+            return new TestFlow(
+                _testTask.ContinueWith((task) =>
+                {
+                    // NOTE: we need to .Wait() on the original Task to properly observe any exceptions that might have occurred
+                    // and to have them propagate correctly up through the chain to whomever is waiting on the parent task
+                    // The following StackOverflow answer provides some more details on why you want to do this:
+                    // https://stackoverflow.com/questions/11904821/proper-way-to-use-continuewith-for-tasks/11906865#11906865
+                    //
+                    // From the Docs:
+                    //  https://docs.microsoft.com/dotnet/standard/parallel-programming/exception-handling-task-parallel-library
+                    //  Exceptions are propagated when you use one of the static or instance Task.Wait or Wait
+                    //  methods, and you handle them by enclosing the call in a try/catch statement. If a task is the
+                    //  parent of attached child tasks, or if you are waiting on multiple tasks, multiple exceptions
+                    //  could be thrown.
+                    task.Wait();
+
+                    var cu = Activity.CreateConversationUpdateActivity();
+                    cu.MembersAdded.Add(this._adapter.Conversation.User);
+                    return _adapter.ProcessActivityAsync((Activity)cu, _callback, default(CancellationToken));
+                }).Unwrap(),
+                this);
+        }
+
         /// <summary>
         /// Adds an activity from the user to the bot.
         /// </summary>
@@ -162,7 +187,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <exception cref="Exception">The bot did not respond as expected.</exception>
         public TestFlow AssertReply(string expected, string description = null, uint timeout = 3000)
         {
-            return AssertReply(_adapter.MakeActivity(expected), description, timeout);
+            return AssertReply(_adapter.MakeActivity(expected), description ?? expected, timeout);
         }
 
         /// <summary>
@@ -179,6 +204,7 @@ namespace Microsoft.Bot.Builder.Adapters
             return AssertReply(
                 (reply) =>
                 {
+                    description = description ?? expected.AsMessageActivity()?.Text.Trim();
                     if (expected.Type != reply.Type)
                     {
                         throw new Exception($"{description}: Type should match");
@@ -389,6 +415,8 @@ namespace Microsoft.Bot.Builder.Adapters
             return AssertReply(
                 (reply) =>
                 {
+                    var text = reply.AsMessageActivity().Text;
+
                     foreach (var candidate in candidates)
                     {
                         if (reply.AsMessageActivity().Text == candidate)
@@ -396,8 +424,8 @@ namespace Microsoft.Bot.Builder.Adapters
                             return;
                         }
                     }
-
-                    throw new Exception(description ?? $"Not one of candidates: {string.Join("\n", candidates)}");
+                    
+                    throw new Exception(description ?? $"Text \"{text}\" does not one of candidates: {string.Join("\n", candidates)}");
                 },
                 description,
                 timeout);

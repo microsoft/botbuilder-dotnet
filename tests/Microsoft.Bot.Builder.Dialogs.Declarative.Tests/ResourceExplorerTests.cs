@@ -1,9 +1,13 @@
-﻿using System;
+﻿// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
@@ -36,39 +40,74 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         }
 
         [TestMethod]
-        public async Task TestFolderSource_Watcher()
+        public async Task TestFolderSource_NewFiresChanged()
         {
             File.Delete(testDialogFile);
-            TaskCompletionSource<bool> changeFired = new TaskCompletionSource<bool>();
-            TaskCompletionSource<bool> deletedFired = new TaskCompletionSource<bool>();
 
             var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"..\..\.."));
             var explorer = new ResourceExplorer();
             explorer.AddFolder(path);
 
-            explorer.Changed += (src, resource) =>
+            TaskCompletionSource<bool> changeFired = new TaskCompletionSource<bool>();
+
+            explorer.Changed += (paths) =>
             {
-                if (Path.GetFileName(resource.Name) == "foo.dialog")
+                if (paths.Any(p => Path.GetFileName(p) == "foo.dialog"))
                 {
                     changeFired.SetResult(true);
-                    changeFired = new TaskCompletionSource<bool>();
                 }
             };
-
-            // make sure we are loaded and listening...
-            var resources = explorer.GetResources("dialog").ToArray();
-            Assert.AreEqual(1, resources.Length);
-            Assert.AreEqual(".dialog", resources[0].Extension);
 
             // new file
             File.WriteAllText(testDialogFile, "{}");
             await changeFired.Task.ConfigureAwait(false);
+        }
+
+        [TestMethod]
+        public async Task TestFolderSource_WriteFiresChanged()
+        {
+            File.Delete(testDialogFile);
+            File.WriteAllText(testDialogFile, "{}");
+
+            var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"..\..\.."));
+            var explorer = new ResourceExplorer();
+            explorer.AddFolder(path);
+
+            TaskCompletionSource<bool> changeFired = new TaskCompletionSource<bool>();
+
+            explorer.Changed += (paths) =>
+            {
+                if (paths.Any(p => Path.GetFileName(p) == "foo.dialog"))
+                {
+                    changeFired.SetResult(true);
+                }
+            };
 
             // changed file
-            File.WriteAllText(testDialogFile, "{}");
+            File.WriteAllText(testDialogFile, "{'foo':123 }");
             await changeFired.Task.ConfigureAwait(false);
+        }
 
-            // delete file
+        [TestMethod]
+        public async Task TestFolderSource_DeleteFiresChanged()
+        {
+            File.Delete(testDialogFile);
+            File.WriteAllText(testDialogFile, "{}");
+
+            var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"..\..\.."));
+            var explorer = new ResourceExplorer();
+            explorer.AddFolder(path);
+
+            TaskCompletionSource<bool> changeFired = new TaskCompletionSource<bool>();
+
+            explorer.Changed += (paths) =>
+            {
+                if (paths.Any(p => Path.GetFileName(p) == "foo.dialog"))
+                {
+                    changeFired.SetResult(true);
+                }
+            };
+            // changed file
             File.Delete(testDialogFile);
             await changeFired.Task.ConfigureAwait(false);
         }

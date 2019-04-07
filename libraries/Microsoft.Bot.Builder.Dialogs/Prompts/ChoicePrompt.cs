@@ -11,13 +11,12 @@ using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-
     public class ChoicePromptOptions : PromptOptions
     {
         public IList<Choice> Choices { get; set; }
     }
 
-    public class ChoicePrompt : Prompt<FoundChoice, ChoicePromptOptions>
+    public class ChoicePrompt : Prompt<FoundChoice>
     {
         private static readonly Dictionary<string, ChoiceFactoryOptions> DefaultChoiceOptions = new Dictionary<string, ChoiceFactoryOptions>()
         {
@@ -31,14 +30,17 @@ namespace Microsoft.Bot.Builder.Dialogs
             { Chinese, new ChoiceFactoryOptions { InlineSeparator = "， ", InlineOr = " 要么 ", InlineOrMore = "， 要么 ", IncludeNumbers = true } },
         };
 
-        public ChoicePrompt(string dialogId, PromptValidator<FoundChoice> validator = null, string defaultLocale = null)
+        public ChoicePrompt()
+            : base()
+        {
+        }
+
+        public ChoicePrompt(string dialogId = nameof(ChoicePrompt), PromptValidator<FoundChoice> validator = null, string defaultLocale = null)
             : base(dialogId, validator)
         {
             Style = ListStyle.Auto;
             DefaultLocale = defaultLocale;
         }
-
-        public IList<Choice> Choices { get; set; }
 
         public ListStyle Style { get; set; }
 
@@ -48,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public FindChoicesOptions RecognizerOptions { get; set; }
 
-        protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, ChoicePromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
+        protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -69,7 +71,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Format prompt to send
             IMessageActivity prompt;
-            var choices = options.Choices ?? new List<Choice>();
+            var choices = (options as ChoicePromptOptions)?.Choices ?? new List<Choice>();
             var channelId = turnContext.Activity.ChannelId;
             var choiceOptions = ChoiceOptions ?? DefaultChoiceOptions[culture];
             if (isRetry && options.RetryPrompt != null)
@@ -85,14 +87,14 @@ namespace Microsoft.Bot.Builder.Dialogs
             await turnContext.SendActivityAsync(prompt, cancellationToken).ConfigureAwait(false);
         }
 
-        protected override Task<PromptRecognizerResult<FoundChoice>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, ChoicePromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
+        protected override Task<PromptRecognizerResult<FoundChoice>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
                 throw new ArgumentNullException(nameof(turnContext));
             }
 
-            var choices = options.Choices ?? new List<Choice>();
+            var choices = (options as ChoicePromptOptions)?.Choices ?? new List<Choice>();
 
             var result = new PromptRecognizerResult<FoundChoice>();
             if (turnContext.Activity.Type == ActivityTypes.Message)

@@ -2,48 +2,48 @@
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
     "$id": "root",
+    "autoEndDialog": false,
     "recognizer": {
         "$type": "Microsoft.LuisRecognizer",
         "applicationId": "{settings.ToDoLuisBot.LuisRecognizer.applicationId}",
         "endpointKey": "{settings.ToDoLuisBot.LuisRecognizer.endpointKey}",
         "endpoint": "{settings.ToDoLuisBot.LuisRecognizer.endpoint}"
     },
+    "steps": [
+        {
+            "$type": "Microsoft.SendActivity",
+            "activity": "Hi"
+        }
+    ],
     "rules": [
         {
-            "$type": "Microsoft.WelcomeRule",
-            "steps": [
-                {
-                    "$type": "Microsoft.SendActivity",
-                    "activity": "Hi! I'm a ToDo bot. Say \"add a todo called first one\" to get started."
-                }
-            ]
-        },
-        {
             "$type": "Microsoft.IntentRule",
-            "intent": "AddToDo",
+            "intent": "AddItem",
             "steps": [
-                "ToDoLuisBot.AddToDo"
+                "ToDoLuisBot.AddItem"
             ]
         },
         {
             "$type": "Microsoft.IntentRule",
             "intent": "DeleteToDo",
             "steps": [
-                "ToDoLuisBot.DeleteToDo"
+                "ToDoLuisBot.DeleteItem"
             ]
         },
         {
             "$type": "Microsoft.IntentRule",
             "intent": "ShowToDo",
             "steps": [
-                "ToDoLuisBot.ShowToDos"
+                "ToDoLuisBot.ShowItems"
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
-            "intent": "ClearToDo",
+            "$type": "Microsoft.NoneIntentRule",
             "steps": [
-                "ToDoLuisBot.ClearToDos"
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "[LuisToDoHelp]"
+                }
             ]
         }
     ]

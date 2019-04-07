@@ -1,0 +1,28 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "Set Property Step",
+    "description": "This step allows you to set memory to the value of an expression",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "property": {
+            "type": "string",
+            "title": "Property",
+            "description": "The property to set the value of",
+            "examples": [ "user.age" ]
+        },
+        "value": {
+            "$type": "Microsoft.IExpression",
+            "title": "Value",
+            "description": "Expression against memory to use to get the value.",
+            "examples": [
+                "dialog.result"
+            ]
+        }
+    },
+    "required": [
+        "property",
+        "value"
+    ]
+}

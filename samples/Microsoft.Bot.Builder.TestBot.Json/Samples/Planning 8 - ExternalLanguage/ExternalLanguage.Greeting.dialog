@@ -1,29 +1,24 @@
 ﻿{
   "$schema": "../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
-  "rules": [
+  "steps": [
     {
-      "$type": "Microsoft.DefaultRule",
+      "$type": "Microsoft.IfCondition",
+      "condition": "user.name == null",
       "steps": [
         {
-          "$type": "Microsoft.IfProperty",
-          "expression": "user.name == null",
-          "ifTrue": [
-            {
-              "$type": "Microsoft.TextPrompt",
-              "pattern": "\\w{3,50}",
-              "property": "user.name",
-              "initialPrompt": "[Greeting.Name.initialPrompt]",
-              "retryPrompt": "[Greeting.Name.retryPrompt]",
-              "noMatchResponse": "[Greeting.Name.notMatched]"
-            }
-          ]
-        },
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "[Greeting.GreetUser]"
+          "$type": "Microsoft.TextInput",
+          "pattern": "\\w{3,50}",
+          "property": "user.name",
+          "prompt": "[Greeting.Name.initialPrompt]",
+          "retryPrompt": "[Greeting.Name.retryPrompt]",
+          "invalidPrompt": "[Greeting.Name.notMatched]"
         }
       ]
+    },
+    {
+      "$type": "Microsoft.SendActivity",
+      "activity": "[Greeting.GreetUser]"
     }
   ]
 }

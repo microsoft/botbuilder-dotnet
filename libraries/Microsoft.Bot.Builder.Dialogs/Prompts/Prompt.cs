@@ -13,57 +13,22 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-
-    public abstract class Prompt<TValue> : Prompt<TValue, PromptOptions>
-    {
-        public Prompt(string dialogId = null, PromptValidator<TValue> validator = null)
-            : base(dialogId)
-        {
-        }
-    }
-
     /// <summary>
     /// Basic configuration options supported by all prompts.
     /// </summary>
-    /// <typeparam name="TValue">The type of the <see cref="Prompt{T}"/>.</typeparam>
-    public abstract class Prompt<TValue, TPromptOptions> : Dialog
-        where TPromptOptions : PromptOptions, new()
+    /// <typeparam name="T">The type of the <see cref="Prompt{T}"/>.</typeparam>
+    public abstract class Prompt<T> : Dialog
     {
         private const string PersistedOptions = "options";
         private const string PersistedState = "state";
 
-        protected PromptValidator<TValue> _validator = null;
+        protected PromptValidator<T> _validator = null;
 
-        public Prompt(string dialogId = null, PromptValidator<TValue> validator = null)
+        public Prompt(string dialogId = null, PromptValidator<T> validator = null)
             : base(dialogId)
         {
             _validator = validator;
-
-            this.InitialPrompt = this.DefineActivityProperty(nameof(InitialPrompt));
-            this.RetryPrompt = this.DefineActivityProperty(nameof(RetryPrompt));
-            this.NoMatchResponse = this.DefineActivityProperty(nameof(NoMatchResponse));
         }
-
-        /// <summary>
-        /// Gets or sets the initial prompt to send the user as <seealso cref="Activity"/>Activity.
-        /// </summary>
-        /// <value>
-        /// The initial prompt to send the user as <seealso cref="Activity"/>Activity.
-        /// </value>
-        public ITemplate<Activity> InitialPrompt { get; set; }
-
-        /// <summary>
-        /// Gets or sets the retry prompt to send the user as <seealso cref="Activity"/>Activity.
-        /// </summary>
-        /// <value>
-        /// The retry prompt to send the user as <seealso cref="Activity"/>Activity.
-        /// </value>
-        public ITemplate<Activity> RetryPrompt { get; set; }
-
-        /// <summary>
-        /// Gets or sets the activity to send when the input didn't match at all
-        /// </summary>
-        public ITemplate<Activity> NoMatchResponse { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -72,9 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            var promptOptions = new TPromptOptions();
-
-            promptOptions = Object.Assign<TPromptOptions>(promptOptions, options);
+            var promptOptions = (PromptOptions)options;
 
             // Ensure prompts have input hint set
             if (promptOptions.Prompt != null && string.IsNullOrEmpty(promptOptions.Prompt.InputHint))
@@ -97,10 +60,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var tokens = dc.State.Query(Property);
                 if (tokens.Any())
                 {
-                    var value = dc.State.GetValue<TValue>(Property);
+                    var value = dc.State.GetValue<T>(Property);
                     if (_validator != null)
                     {
-                        var promptContext = new PromptValidatorContext<TValue>(dc.Context, new PromptRecognizerResult<TValue>() { Succeeded = true, Value = value }, state, promptOptions);
+                        var promptContext = new PromptValidatorContext<T>(dc.Context, new PromptRecognizerResult<T>() { Succeeded = true, Value = value }, state, promptOptions);
                         var isValid = await _validator(promptContext, cancellationToken).ConfigureAwait(false);
                         if (isValid)
                         {
@@ -115,8 +78,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Send initial prompt
-            await OnBeforePromptAsync(dc, false, cancellationToken).ConfigureAwait(false);
-            await OnPromptAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (TPromptOptions)state[PersistedOptions], false, cancellationToken).ConfigureAwait(false);
+            await OnPromptAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions], false, cancellationToken).ConfigureAwait(false);
+
             return Dialog.EndOfTurn;
         }
 
@@ -135,14 +98,14 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Perform base recognition
             var state = (IDictionary<string, object>)dc.DialogState[PersistedState];
-            var options = (TPromptOptions)dc.DialogState[PersistedOptions];
+            var options = (PromptOptions)dc.DialogState[PersistedOptions];
             var recognized = await OnRecognizeAsync(dc.Context, state, options, cancellationToken).ConfigureAwait(false);
 
             // Validate the return value
             var isValid = false;
             if (_validator != null)
             {
-                var promptContext = new PromptValidatorContext<TValue>(dc.Context, recognized, state, options);
+                var promptContext = new PromptValidatorContext<T>(dc.Context, recognized, state, options);
                 isValid = await _validator(promptContext, cancellationToken).ConfigureAwait(false);
             }
             else if (recognized.Succeeded)
@@ -164,7 +127,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 if (!dc.Context.Responded)
                 {
-                    await OnBeforePromptAsync(dc, true, cancellationToken).ConfigureAwait(false);
                     await OnPromptAsync(dc.Context, state, options, true, cancellationToken).ConfigureAwait(false);
                 }
 
@@ -186,17 +148,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
             var state = (IDictionary<string, object>)((Dictionary<string, object>)instance.State)[PersistedState];
-            var options = (TPromptOptions)((Dictionary<string, object>)instance.State)[PersistedOptions];
+            var options = (PromptOptions)((Dictionary<string, object>)instance.State)[PersistedOptions];
             await OnPromptAsync(turnContext, state, options, false).ConfigureAwait(false);
         }
 
-        protected abstract Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, TPromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken));
+        protected abstract Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken));
 
-        protected virtual async Task OnBeforePromptAsync(DialogContext dc, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
-        {
-        }
-
-        protected abstract Task<PromptRecognizerResult<TValue>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, TPromptOptions options, CancellationToken cancellationToken = default(CancellationToken));
+        protected abstract Task<PromptRecognizerResult<T>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken));
 
         protected IMessageActivity AppendChoices(IMessageActivity prompt, string channelId, IList<Choice> choices, ListStyle style, ChoiceFactoryOptions options = null, CancellationToken cancellationToken = default(CancellationToken))
         {

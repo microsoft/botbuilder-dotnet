@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 throw new ArgumentException(nameof(lgFilePath));
             }
 
-            this.templateEngine = TemplateEngine.FromFile(lgFilePath);
+            this.templateEngine = TemplateEngine.FromFiles(lgFilePath);
         }
 
         public LanguageGenerationRenderer(TemplateEngine templateEngine)
@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 
         public async Task<object> RenderTemplate(ITurnContext turnContext, string language, string templateId, object data)
         {
-            return await Task.Run(() => templateEngine.EvaluateTemplate(templateId, data, null, null));
+            return await Task.Run(() => templateEngine.EvaluateTemplate(templateId, data, null));
         }
     }
 }

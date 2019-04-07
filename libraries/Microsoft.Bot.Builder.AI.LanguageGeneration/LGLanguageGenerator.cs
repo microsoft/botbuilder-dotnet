@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration
 {
@@ -171,7 +172,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             try
             {
                 // do inline evaluation first
-                return engine.Evaluate(text, data, valueBinder != null ? new FuncParameterGetValue(valueBinder) : null, null);
+                return engine.Evaluate(text, data, null);
             }
             catch (Exception)
             {

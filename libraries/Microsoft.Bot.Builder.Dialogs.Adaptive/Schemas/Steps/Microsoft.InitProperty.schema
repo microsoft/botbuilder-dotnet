@@ -1,0 +1,29 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "Init Property Step",
+    "description": "This step allows you to innitial a property to either an object or array",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "property": {
+            "type": "string",
+            "title": "Property",
+            "description": "The property to set the value of",
+            "examples": [ "user.age" ]
+        },
+        "type": {
+            "type": "string",
+            "title": "type",
+            "description": "type of value to set the property to, object or array.",
+            "enum": [
+                "object",
+                "array"
+            ]
+        }
+    },
+    "required": [
+        "property",
+        "type"
+    ]
+}

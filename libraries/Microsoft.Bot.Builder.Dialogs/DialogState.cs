@@ -19,10 +19,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             UserState = new Dictionary<string, object>();
         }
 
-        public List<DialogInstance> DialogStack { get; set; }
+        public List<DialogInstance> DialogStack { get; set; } = new List<DialogInstance>();
 
-        public Dictionary<string, object> ConversationState { get; set; }
+        public Dictionary<string, object> ConversationState { get; set; } = new Dictionary<string, object>();
 
-        public Dictionary<string, object> UserState { get; set; }
+        public Dictionary<string, object> UserState { get; set; } = new Dictionary<string, object>();
     }
 }

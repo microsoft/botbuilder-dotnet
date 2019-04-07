@@ -6,13 +6,12 @@
         "intents": {
             "DefaultIntent": "(?i)default|defaultrule",
             "WaitForInputIntent": "(?i)wait|input",
-            "IfPropertyIntent": "(?i)property|ifproperty",
-            "TextPromptIntent": "(?i)text|textprompt",
-            "WelcomeRuleIntent": "(?i)welcome",
+            "IfConditionIntent": "(?i)property|ifproperty",
+            "TextInputIntent": "(?i)text|textprompt",
             "DoStepsIntent": "(?i)steps|intent",
-            "CallDialogIntent": "(?i)call",
+            "BeginDialogIntent": "(?i)call",
             "ExternalLanguageIntent": "(?i)external|lg",
-            "CancelDialogIntent": "(?i)cancel"
+            "EndDialogIntent": "(?i)end"
         }
     },
     "rules": [
@@ -20,7 +19,7 @@
             "$type": "Microsoft.IntentRule",
             "intent": "DefaultIntent",
             "steps": [
-                "DefaultRule.main"
+                "NoMatchRule.main"
             ]
         },
         {
@@ -32,23 +31,16 @@
         },
         {
             "$type": "Microsoft.IntentRule",
-            "intent": "IfPropertyIntent",
+            "intent": "IfConditionIntent",
             "steps": [
-                "IfProperty.main"
+                "IfCondition.main"
             ]
         },
         {
             "$type": "Microsoft.IntentRule",
-            "intent": "TextPromptIntent",
+            "intent": "TextInputIntent",
             "steps": [
-                "TextPrompt.main"
-            ]
-        },
-        {
-            "$type": "Microsoft.IntentRule",
-            "intent": "WelcomeRuleIntent",
-            "steps": [
-                "WelcomeRule.main"
+                "TextInput.main"
             ]
         },
         {
@@ -60,9 +52,9 @@
         },
         {
             "$type": "Microsoft.IntentRule",
-            "intent": "CallDialogIntent",
+            "intent": "BeginDialogIntent",
             "steps": [
-                "CallDialog.main"
+                "BeginDialog.main"
             ]
         },
         {
@@ -74,9 +66,9 @@
         },
         {
             "$type": "Microsoft.IntentRule",
-            "intent": "CancelDialogIntent",
+            "intent": "EndDialogIntent",
             "steps": [
-                "CancelDialog.main"
+                "EndDialog.main"
             ]
         },
         {
@@ -90,7 +82,7 @@
             ]
         },
         {
-            "$type": "Microsoft.DefaultRule",
+            "$type": "Microsoft.NoneIntentRule",
             "steps": [
                 {
                     "$type": "Microsoft.SendActivity",
