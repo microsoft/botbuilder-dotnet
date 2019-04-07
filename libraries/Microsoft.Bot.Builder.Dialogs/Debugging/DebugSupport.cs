@@ -8,7 +8,7 @@ using static Microsoft.Bot.Builder.Dialogs.Debugging.Source;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public static partial class Debugger
+    public static partial class DebugSupport
     {
         public static Source.IRegistry SourceRegistry { get; set; } = new NullRegistry();
 
