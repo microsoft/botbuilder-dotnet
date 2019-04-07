@@ -286,7 +286,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                     var predicate = predicates[choice];
                     if (j == 0)
                     {
-                        var optional = Expression.MakeExpression(TriggerTree.Optional, null, predicate.Expression);
+                        var optional = Expression.MakeExpression(TriggerTree.Optional, TriggerTree.LookupFunction(TriggerTree.Optional), predicate.Expression);
                         if (Rand.NextDouble() < 0.25)
                         {
                             optional = Expression.NotExpression(optional);
