@@ -4,6 +4,7 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
             "name": ".NET Core Launch (web)",
             "type": "coreclr",
@@ -28,6 +29,13 @@
             "type": "coreclr",
             "request": "attach",
             "processId": "${command:pickProcess}"
+        },
+        {
+            "type": "dialog",
+            "request": "attach",
+            "trace": true,
+            "name": "Attach to Dialog",
+            "debugServer": 4712
         }
     ]
 }

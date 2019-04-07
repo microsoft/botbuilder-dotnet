@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
         protected override string OnComputeId()
         {
-            return $"SendActivity()";
+            return $"SendActivity({Activity?.ToString()})";
         }
     }
 }

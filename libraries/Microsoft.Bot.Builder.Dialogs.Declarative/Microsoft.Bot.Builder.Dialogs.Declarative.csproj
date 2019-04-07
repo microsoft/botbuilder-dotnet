@@ -50,6 +50,12 @@
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Debugger\**" />
+    <EmbeddedResource Remove="Debugger\**" />
+    <None Remove="Debugger\**" />
+  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="Microsoft.Json.Pointer" Version="0.61.0" />
@@ -72,10 +78,6 @@
     <Reference Include="System">
       <HintPath>System</HintPath>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Debugger\" />
   </ItemGroup>
 
 </Project>

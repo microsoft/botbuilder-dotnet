@@ -1,0 +1,44 @@
+{
+  "name": "dialog-debugger",
+  "version": "0.0.1",
+  "publisher": "Microsoft",
+  "engines": {
+    "vscode": "^1.0.0"
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "dialog",
+        "aliases": [
+          "dialog",
+          "DIALOG"
+        ],
+        "extensions": [
+          ".dialog"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "dialog",
+        "scopeName": "source.json",
+        "path": "./syntaxes/JSON.tmLanguage.json"
+      }
+    ],
+    "debuggers": [
+      {
+        "type": "dialog",
+        "label": "Dialog Debugger",
+        "languages": [
+          "dialog"
+        ]
+      }
+    ],
+    "breakpoints": [
+      {
+        "language": "dialog"
+      }
+    ]
+  }
+}

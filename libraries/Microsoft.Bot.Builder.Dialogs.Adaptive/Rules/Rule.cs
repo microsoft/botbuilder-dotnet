@@ -146,7 +146,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
 
         protected void RegisterSourceLocation(string path, int lineNumber)
         {
-            Debugger.SourceRegistry.Add(this, new Source.Range()
+            DebugSupport.SourceRegistry.Add(this, new Source.Range()
             {
                 Path = path,
                 Start = new Source.Point() { LineIndex = lineNumber, CharIndex = 0 },

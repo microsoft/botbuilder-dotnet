@@ -234,7 +234,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, $@"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj"));
             var resourceExplorer = ResourceExplorer.LoadProject(projPath);
 
-            var dialog = DeclarativeTypeLoader.Load<IDialog>(path, resourceExplorer, Source.NullRegistry.Instance);
+            var dialog = DeclarativeTypeLoader.Load<IDialog>(path, resourceExplorer, DebugSupport.SourceRegistry);
 
             IStorage dataStore = new MemoryStorage();
 

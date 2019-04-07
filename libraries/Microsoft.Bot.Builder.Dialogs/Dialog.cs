@@ -187,6 +187,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 return OutputProperty;
             }
+            else if (!string.IsNullOrEmpty(Property))
+            {
+                return Property;
+            }
 
             return string.Empty;
         }
@@ -195,7 +199,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             if (!string.IsNullOrEmpty(path))
             {
-                Debugger.SourceRegistry.Add(this, new Source.Range()
+                DebugSupport.SourceRegistry.Add(this, new Source.Range()
                 {
                     Path = path,
                     Start = new Source.Point() { LineIndex = lineNumber, CharIndex = 0 },
