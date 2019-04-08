@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
             if (string.IsNullOrWhiteSpace(endpoint))
             {
-                throw new ArgumentException($"\"{endpoint}\" is not a valid LUIS endpoint.");
+                endpoint = "https://westus.api.cognitive.microsoft.com";
             }
 
             if (!Uri.IsWellFormedUriString(endpoint, UriKind.Absolute))

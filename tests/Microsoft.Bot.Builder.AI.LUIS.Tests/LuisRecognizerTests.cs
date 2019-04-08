@@ -90,6 +90,36 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
             Assert.AreEqual(expectedTimeout, LuisRecognizer.DefaultHttpClient.Timeout.Milliseconds);
         }
+        
+        [TestMethod]
+        public void NullEndpoint()
+        {
+            // Arrange
+            var fieldInfo = typeof(LuisRecognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            // Act
+            var myappNull = new LuisApplication(_luisAppId, _subscriptionKey, null);
+            var recognizerNull = new LuisRecognizer(myappNull, null);
+
+            // Assert
+            var app = (LuisApplication)fieldInfo.GetValue(recognizerNull);
+            Assert.AreEqual("https://westus.api.cognitive.microsoft.com", app.Endpoint);
+        }
+
+        [TestMethod]
+        public void EmptyEndpoint()
+        {
+            // Arrange
+            var fieldInfo = typeof(LuisRecognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            // Act
+            var myappEmpty = new LuisApplication(_luisAppId, _subscriptionKey, string.Empty);
+            var recognizerEmpty = new LuisRecognizer(myappEmpty, null);
+
+            // Assert
+            var app = (LuisApplication)fieldInfo.GetValue(recognizerEmpty);
+            Assert.AreEqual("https://westus.api.cognitive.microsoft.com", app.Endpoint);
+        }
 
         [TestMethod]
         public async Task LuisRecognizer_Configuration()
