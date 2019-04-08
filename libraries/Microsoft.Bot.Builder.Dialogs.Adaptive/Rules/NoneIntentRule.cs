@@ -27,18 +27,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         public NoneIntentRule(List<IDialog> steps = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(events: new List<string>()
             {
-                PlanningEvents.UtteranceRecognized.ToString()
+                PlanningEvents.UnrecognizedIntent.ToString()
             },
             steps: steps,
             constraint: constraint,
             callerPath: callerPath, callerLine: callerLine)
         {
-        }
-
-
-        protected override Expression BuildExpression(IExpressionParser factory)
-        {
-            return Expression.AndExpression(factory.Parse($"turn.DialogEvent.Value.Intents.None.Score >= 0.0"), base.BuildExpression(factory));
         }
 
         protected override PlanChangeList OnCreateChangeList(PlanningContext planning, object dialogOptions = null)

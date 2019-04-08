@@ -650,7 +650,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             var recognized = await this.OnRecognize(planning).ConfigureAwait(false);
 
                             // Emit UtteranceRecognized evnet
-                            handled = await EvaluateRulesAsync(planning, new DialogEvent() { Name = PlanningEvents.UtteranceRecognized.ToString(), Value = recognized, Bubble = false }, cancellationToken).ConfigureAwait(false);
+                            handled = await EvaluateRulesAsync(planning, new DialogEvent() { Name = PlanningEvents.RecognizedIntent.ToString(), Value = recognized, Bubble = false }, cancellationToken).ConfigureAwait(false);
                         }
                         else if (activity.Type == ActivityTypes.Event)
                         {
@@ -660,14 +660,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     }
                     return handled;
                 }
-                else if (dialogEvent.Name == PlanningEvents.UtteranceRecognized.ToString())
+                else if (dialogEvent.Name == PlanningEvents.RecognizedIntent.ToString())
                 {
                     handled = await QueueBestMatches(planning, dialogEvent, cancellationToken).ConfigureAwait(false);
 
                     if (!handled)
                     {
                         // Dispatch fallback event
-                        handled = await EvaluateRulesAsync(planning, new DialogEvent() { Name = PlanningEvents.Fallback.ToString(), Value = dialogEvent.Value, Bubble = false }, cancellationToken).ConfigureAwait(false);
+                        handled = await EvaluateRulesAsync(planning, new DialogEvent() { Name = PlanningEvents.UnrecognizedIntent.ToString(), Value = dialogEvent.Value, Bubble = false }, cancellationToken).ConfigureAwait(false);
                     }
                 }
                 else if (dialogEvent.Name == PlanningEvents.PlanStarted.ToString())
@@ -678,7 +678,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     handled = await QueueFirstMatchAsync(planning, dialogEvent, cancellationToken).ConfigureAwait(false);
                 }
-                else if (dialogEvent.Name == PlanningEvents.Fallback.ToString())
+                else if (dialogEvent.Name == PlanningEvents.UnrecognizedIntent.ToString())
                 {
                     if (planning.Plan == null)
                     {
