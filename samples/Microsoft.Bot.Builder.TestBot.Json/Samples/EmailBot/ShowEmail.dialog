@@ -3,12 +3,12 @@
     "$type": "Microsoft.AdaptiveDialog",
     "rules": [
         {
-            "$type": "Microsoft.DefaultRule",
+            "$type": "Microsoft.NoneIntentRule",
             "steps": [
                 {
-                    "$type": "Microsoft.IfProperty",
-                    "expression": "user.token == null",
-                    "ifTrue": [
+                    "$type": "Microsoft.IfCondition",
+                    "condition": "dialog.token == null",
+                    "steps": [
                         {
                             "$type": "Microsoft.OAuthPrompt",
                             "ConnectionName": "msgraph",
@@ -23,7 +23,7 @@
                     "url": "https://graph.microsoft.com/v1.0/me/messages",
                     "method": "GET",
                     "header": {
-                        "Authorization": "Bearer {dialog.token.token}"
+                        "Authorization": "Bearer {dialog.token.Token}"
                     },
                     "Property": "dialog.getResponse"
                 },

@@ -3,25 +3,25 @@
     "$type": "Microsoft.AdaptiveDialog",
     "rules": [
         {
-            "$type": "Microsoft.DefaultRule",
+            "$type": "Microsoft.NoneIntentRule",
             "steps": [
                 {
-                    "$type": "Microsoft.IfProperty",
-                    "expression": "dialog.subject == null",
-                    "ifTrue": [
+                    "$type": "Microsoft.IfCondition",
+                    "condition": "dialog.subject == null",
+                    "steps": [
                         {
-                            "$type": "Microsoft.TextPrompt",
+                            "$type": "Microsoft.TextInput",
                             "initialPrompt": "OK, please enter the subject of your email.",
                             "property": "dialog.subject"
                         }
                     ]
                 },
                 {
-                    "$type": "Microsoft.IfProperty",
-                    "expression": "dialog.body == null",
-                    "ifTrue": [
+                    "$type": "Microsoft.IfCondition",
+                    "condition": "dialog.body == null",
+                    "steps": [
                         {
-                            "$type": "Microsoft.TextPrompt",
+                            "$type": "Microsoft.TextInput",
                             "initialPrompt": "OK, please enter the body of your email.",
                             "property": "dialog.body"
                         }
@@ -29,11 +29,11 @@
                 },
 
                 {
-                    "$type": "Microsoft.IfProperty",
-                    "expression": "dialog.email == null",
-                    "ifTrue": [
+                    "$type": "Microsoft.IfCondition",
+                    "condition": "dialog.email == null",
+                    "steps": [
                         {
-                            "$type": "Microsoft.TextPrompt",
+                            "$type": "Microsoft.TextInput",
                             "initialPrompt": "OK, please enter the recipient email address.",
                             "property": "dialog.email"
                         }
@@ -41,9 +41,9 @@
                 },
 
                 {
-                    "$type": "Microsoft.IfProperty",
-                    "expression": "dialog.token == null",
-                    "ifTrue": [
+                    "$type": "Microsoft.IfCondition",
+                    "condition": "dialog.token == null",
+                    "steps": [
                         {
                             "$type": "Microsoft.OAuthPrompt",
                             "ConnectionName": "msgraph",
@@ -59,7 +59,7 @@
                     "url": "https://graph.microsoft.com/v1.0/me/sendMail",
                     "method": "POST",
                     "header": {
-                        "Authorization": "Bearer {dialog.token.token}"
+                        "Authorization": "Bearer {dialog.token.Token}"
                     },
                     "body": {
                         "message": {

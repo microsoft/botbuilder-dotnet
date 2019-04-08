@@ -4,16 +4,14 @@
     "recognizer": {
         "$type": "Microsoft.RegexRecognizer",
         "intents": {
-            "ShowEmailIntent": "show email",
-            "SendEmailIntent": "send email",
-            "ShowIntent": "(?i)(?:show|see|view) .*(?:to-do|todo|task)|(?i)(?:show|see|view)",
-            "ClearIntent": "(?i)(?:delete|remove|clear) (?:all|every) (?:to-dos|todos|tasks)",
+            "ShowEmailIntent": "(?i)show email",
+            "SendEmailIntent": "(?i)send email",
             "HelpIntent": "(?i)help"
         }
     },
   "rules": [
     {
-      "$type": "Microsoft.DefaultRule",
+      "$type": "Microsoft.NoneIntentRule",
       "steps": [
         {
           "$type": "Microsoft.SendActivity",
@@ -41,7 +39,7 @@
       "steps": [
         {
           "$type": "Microsoft.SendActivity",
-          "activity": "I can add a todo, show todos, remove a todo, and clear all todos\n"
+          "activity": "I am an email bot, Please try show email to get started."
         }
       ]
     }
