@@ -185,7 +185,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     }
                 }
 
-                result.AddRange(Visit(ifRules[idx].normalTemplateBody()));
+                if(ifRules[idx].normalTemplateBody() != null)
+                {
+                    result.AddRange(Visit(ifRules[idx].normalTemplateBody()));
+                }
+                else
+                {
+                    result.Add(new ReportEntry($"no normal template body in condition block: '{ifRules[idx].GetText()}'"));
+                }
             }
 
             return result;

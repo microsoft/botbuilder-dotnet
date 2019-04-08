@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var ifRules = context.conditionalTemplateBody().ifConditionRule();
             foreach (var ifRule in ifRules)
             {
-                if (EvalCondition(ifRule.ifCondition()))
+                if (EvalCondition(ifRule.ifCondition()) && ifRule.normalTemplateBody() != null)
                 {
                     return Visit(ifRule.normalTemplateBody());
                 }

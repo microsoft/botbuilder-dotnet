@@ -99,8 +99,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 {
                     result.AddRange(AnalyzeExpression(expression.GetText()));
                 }
-
-                result.AddRange(Visit(ifRule.normalTemplateBody()));
+                if(ifRule.normalTemplateBody() != null)
+                {
+                    result.AddRange(Visit(ifRule.normalTemplateBody()));
+                }
             }
 
             return result;
