@@ -92,6 +92,8 @@ namespace Microsoft.Bot.Builder
             {
                 Use(middleware);
             }
+
+            ConnectorClient.AddDefaultRequestHeaders(_httpClient);
         }
 
         /// <summary>
