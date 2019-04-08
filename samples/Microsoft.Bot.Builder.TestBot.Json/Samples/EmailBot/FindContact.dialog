@@ -1,0 +1,42 @@
+﻿{
+  "$schema": "../../app.schema",
+  "$type": "Microsoft.AdaptiveDialog",
+  "rules": [
+    {
+      "$type": "Microsoft.NoneIntentRule",
+      "steps": [
+        {
+          "$type": "Microsoft.TextInput",
+          "prompt": "OK, please enter the contact you want to search.",
+          "property": "dialog.contact"
+        },
+        {
+          "$type": "Microsoft.OAuthPrompt",
+          "ConnectionName": "msgraph",
+          "Title": "Log in",
+          "Text": "Please log in to your email account",
+          "Property": "dialog.token"
+        },
+        {
+          "$type": "Microsoft.HttpRequest",
+          "url": "https://graph.microsoft.com/v1.0/me/contacts?$filter=startswith(displayName,'{dialog.contact}')",
+          "method": "GET",
+          "header": {
+            "Authorization": "Bearer {dialog.token.Token}"
+          },
+          "Property": "dialog.getResponse"
+        },
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "The contact you find is {dialog.getResponse.value[0].displayName}"
+        },
+        {
+          "$type": "Microsoft.EditArray",
+          "changeType": "Push",
+          "arrayProperty": "user.email",
+          "itemProperty": "dialog.getResponse.value[0].emailAddresses[0].address"
+        }
+      ]
+    }
+  ]
+}

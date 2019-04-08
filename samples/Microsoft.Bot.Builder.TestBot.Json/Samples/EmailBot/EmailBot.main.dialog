@@ -1,14 +1,15 @@
 {
-    "$schema": "../../app.schema",
-    "$type": "Microsoft.AdaptiveDialog",
-    "recognizer": {
-        "$type": "Microsoft.RegexRecognizer",
-        "intents": {
-            "ShowEmailIntent": "(?i)show email",
-            "SendEmailIntent": "(?i)send email",
-            "HelpIntent": "(?i)help"
-        }
-    },
+  "$schema": "../../app.schema",
+  "$type": "Microsoft.AdaptiveDialog",
+  "recognizer": {
+    "$type": "Microsoft.RegexRecognizer",
+    "intents": {
+      "ShowEmailIntent": "(?i)show email",
+      "SendEmailIntent": "(?i)send email",
+      "HelpIntent": "(?i)help",
+      "FindContactIntent": "(?i)find email contact"
+    }
+  },
   "rules": [
     {
       "$type": "Microsoft.NoneIntentRule",
@@ -31,6 +32,13 @@
       "intent": "SendEmailIntent",
       "steps": [
         "SendEmail"
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "FindContactIntent",
+      "steps": [
+        "FindContact"
       ]
     },
     {
