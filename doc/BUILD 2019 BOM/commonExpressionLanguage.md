@@ -14,6 +14,9 @@
 - - [X] Wire up expression language in LG subsystem
 - - [X] Wire up expression language support in Adaptive dialog rules and steps
 - - [ ] Add support for explicit values with both 'value' and "value". [Spec](https://microsoft.sharepoint.com/:w:/t/ConversationalAI785/EfIx5-gPhE5HlAGhvNEoKLIBo0AeoWmq1ITRhai2q2trLA?e=zX8HSY)
+- - [ ] New pre-built functions ask
+    - - [ ] forEach(collection, iterator, expression)
+    - - [ ] match(regExp)
 - - [ ] Final API shape review
 - - [ ] Final packaging, naming review
 - - [ ] On board to build and release DevOps pipeline
