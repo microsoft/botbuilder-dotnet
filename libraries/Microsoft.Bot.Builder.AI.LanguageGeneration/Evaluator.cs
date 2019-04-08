@@ -201,7 +201,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var argsStartPos = exp.IndexOf('(');
             if (argsStartPos > 0) // Do have args
             {
-                // EvaluateTemplate all arguments using ExpressoinEngine
+                // Evaluate all arguments using ExpressoinEngine
                 var argsEndPos = exp.LastIndexOf(')');
                 if (argsEndPos < 0 || argsEndPos < argsStartPos + 1)
                 {

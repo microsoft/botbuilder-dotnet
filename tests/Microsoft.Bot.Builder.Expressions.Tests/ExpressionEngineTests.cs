@@ -16,6 +16,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
        {
+            Test("!bag.three", true),
             // operators test
             Test("1 + 2", 3),
             Test("1 - 2", -1),
