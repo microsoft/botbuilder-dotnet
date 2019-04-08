@@ -584,24 +584,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         protected async Task<RecognizerResult> OnRecognize(PlanningContext planning, CancellationToken cancellationToken = default(CancellationToken))
         {
             var context = planning.Context;
-            var noneIntent = new RecognizerResult()
-            {
-                Text = context.Activity.Text ?? string.Empty,
-                Intents = new Dictionary<string, IntentScore>()
-                {
-                    { "None", new IntentScore() { Score = 0.0} }
-                },
-                Entities = JObject.Parse("{}")
-            };
-
             if (Recognizer != null)
             {
                 await planning.DebuggerStepAsync(Recognizer, cancellationToken).ConfigureAwait(false);
-                return await Recognizer.RecognizeAsync(context, cancellationToken).ConfigureAwait(false);
+                var result = await Recognizer.RecognizeAsync(context, cancellationToken).ConfigureAwait(false);
+                // only allow one intent 
+                var topIntent = result.GetTopScoringIntent();
+                result.Intents.Clear();
+                result.Intents.Add(topIntent.intent, new IntentScore() { Score = topIntent.score });
+                return result;
             }
             else
             {
-                return noneIntent;
+                return new RecognizerResult()
+                {
+                    Text = context.Activity.Text ?? string.Empty,
+                    Intents = new Dictionary<string, IntentScore>()
+                    {
+                        { "None", new IntentScore() { Score = 0.0} }
+                    },
+                    Entities = JObject.Parse("{}")
+                };
+
             }
         }
 
