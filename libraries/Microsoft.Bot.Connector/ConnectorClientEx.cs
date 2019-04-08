@@ -27,6 +27,7 @@ namespace Microsoft.Bot.Connector
         public ConnectorClient(Uri baseUri, string microsoftAppId = null, string microsoftAppPassword = null, params DelegatingHandler[] handlers)
             : this(baseUri, new MicrosoftAppCredentials(microsoftAppId, microsoftAppPassword), handlers: handlers)
         {
+            AddDefaultRequestHeaders(HttpClient);
         }
 
         /// <summary>
@@ -39,6 +40,7 @@ namespace Microsoft.Bot.Connector
         public ConnectorClient(Uri baseUri, MicrosoftAppCredentials credentials, bool addJwtTokenRefresher = true, params DelegatingHandler[] handlers)
             : this(baseUri, credentials, null, addJwtTokenRefresher, handlers)
         {
+            AddDefaultRequestHeaders(HttpClient);
         }
 
         /// <summary>
@@ -56,6 +58,10 @@ namespace Microsoft.Bot.Connector
             if (customHttpClient != null)
             {
                 this.HttpClient = customHttpClient;
+
+                // Note don't call AddDefaultRequestHeaders(HttpClient) here because the BotFrameworkAdapter
+                // called it. Updating DefaultRequestHeaders is not thread safe this is OK because the
+                // adapter should be a singleton.
             }
         }
 
@@ -75,6 +81,7 @@ namespace Microsoft.Bot.Connector
             if (customHttpClient != null)
             {
                 this.HttpClient = customHttpClient;
+                AddDefaultRequestHeaders(HttpClient);
             }
         }
 
@@ -117,31 +124,43 @@ namespace Microsoft.Bot.Connector
         public static void AddDefaultRequestHeaders(HttpClient httpClient)
         {
             // The Schema version is 3.1, put into the Microsoft-BotFramework header
-            // https://github.com/Microsoft/botbuilder-dotnet/issues/471
-            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Microsoft-BotFramework", "3.1"));
+            var botFwkProductInfo = new ProductInfoHeaderValue("Microsoft-BotFramework", "3.1");
+            if (!httpClient.DefaultRequestHeaders.UserAgent.Contains(botFwkProductInfo))
+            {
+                httpClient.DefaultRequestHeaders.UserAgent.Add(botFwkProductInfo);
+            }
 
             // The Client SDK Version
             //  https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md
-            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("BotBuilder", GetClientVersion()));
+            var botBuilderProductInfo = new ProductInfoHeaderValue("BotBuilder", GetClientVersion());
+            if (!httpClient.DefaultRequestHeaders.UserAgent.Contains(botBuilderProductInfo))
+            {
+                httpClient.DefaultRequestHeaders.UserAgent.Add(botBuilderProductInfo);
+            }
 
             // Additional Info.
             // https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md
             var userAgent = $"({GetASPNetVersion()}; {GetOsVersion()}; {GetArchitecture()})";
-            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(userAgent));
+            if (ProductInfoHeaderValue.TryParse(userAgent, out var additionalProductInfo))
+            {
+                if (!httpClient.DefaultRequestHeaders.UserAgent.Contains(additionalProductInfo))
+                {
+                    httpClient.DefaultRequestHeaders.UserAgent.Add(additionalProductInfo);
+                }
+            }
 
             httpClient.DefaultRequestHeaders.ExpectContinue = false;
         }
 
         private static string GetClientVersion()
         {
-            var assembly = typeof(ConnectorClient).GetTypeInfo().Assembly;
+            var type = typeof(ConnectorClient).GetType();
+            var assembly = type.GetTypeInfo().Assembly;
             return assembly.GetName().Version.ToString();
         }
 
         partial void CustomInitialize()
         {
-            AddDefaultRequestHeaders(HttpClient);
-
             // Override the contract resolver with the Default because we want to be able to serialize annonymous types
             SerializationSettings.ContractResolver = new DefaultContractResolver();
             DeserializationSettings.ContractResolver = new DefaultContractResolver();
