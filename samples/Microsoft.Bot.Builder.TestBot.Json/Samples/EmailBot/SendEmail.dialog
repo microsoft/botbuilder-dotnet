@@ -15,16 +15,6 @@
           "prompt": "OK, please enter the body of your email.",
           "property": "dialog.body"
         },
-        //{
-        //  "$type": "Microsoft.TextInput",
-        //  "prompt": "OK, please enter the recipient email address.",
-        //  "property": "dialog.email"
-        //},
-        //{
-        //  "$type": "Microsoft.TextInput",
-        //  "prompt": "OK, please enter the recipient name.",
-        //  "property": "dialog.contact"
-        //},
         "FindContact",
         {
           "$type": "Microsoft.OAuthPrompt",
@@ -33,36 +23,52 @@
           "Text": "Please log in to your email account",
           "Property": "dialog.token"
         },
-
         {
-          "$type": "Microsoft.HttpRequest",
-          "url": "https://graph.microsoft.com/v1.0/me/sendMail",
-          "method": "POST",
-          "header": {
-            "Authorization": "Bearer {dialog.token.Token}"
-          },
-          "body": {
-            "message": {
-              "body": {
-                "content": "{dialog.body}",
-                "contentType": "Text"
-              },
-              "subject": "{dialog.subject}",
-              "toRecipients": [
-                {
-                  "emailAddress": {
-                    "address": "{user.email}"
-                  }
-                }
-              ]
-            }
-          },
-          "Property": "dialog.postResponse"
+          "$type": "Microsoft.ConfirmInput",
+          "property": "dialog.confirmed",
+          "prompt": "Are you sure to send this email?",
+          "alwaysPrompt": true
         },
-
         {
-          "$type": "Microsoft.SendActivity",
-          "activity": "Your email has been sent succsessfully"
+          "$type": "Microsoft.IfCondition",
+          "condition": "dialog.confirmed",
+          "steps": [
+            {
+              "$type": "Microsoft.HttpRequest",
+              "url": "https://graph.microsoft.com/v1.0/me/sendMail",
+              "method": "POST",
+              "header": {
+                "Authorization": "Bearer {dialog.token.Token}"
+              },
+              "body": {
+                "message": {
+                  "body": {
+                    "content": "{dialog.body}",
+                    "contentType": "Text"
+                  },
+                  "subject": "{dialog.subject}",
+                  "toRecipients": [
+                    {
+                      "emailAddress": {
+                        "address": "{user.email}"
+                      }
+                    }
+                  ]
+                }
+              },
+              "Property": "dialog.postResponse"
+            },
+            {
+              "$type": "Microsoft.SendActivity",
+              "activity": "Your email has been sent succsessfully"
+            }
+          ],
+          "elseSteps": [
+            {
+              "$type": "Microsoft.SendActivity",
+              "activity": "OK, let's do it next time."
+            }
+          ]
         }
       ]
     }

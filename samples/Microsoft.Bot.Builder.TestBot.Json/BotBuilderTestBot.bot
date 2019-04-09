@@ -4,16 +4,16 @@
     "services": [
         {
             "type": "endpoint",
-            "appId": "",
-            "appPassword": "",
-            "endpoint": "http://localhost:54082/api/messages",
+            "appId": "d5f49c73-a220-433d-855f-70047cc36446",
+            "appPassword": "bhounYAF981{jnFMOC06%#-",
+            "endpoint": "http://localhost:54199/api/messages",
             "id": "98fd9150-a278-11e8-90fe-f92f88ed2f78",
-            "name": "http://localhost:54082/api/messages"
+            "name": "http://localhost:54199/api/messages"
         }
     ],
     "padlock": "",
     "version": "2.0",
-    "path": "C:\\source\\GitHub\\botbuilder-dotnet\\samples\\Microsoft.Bot.Builder.TestBot.Json\\BotBuilderTestBot.bot",
+    "path": "F:\\GitHub\\botbuilder-dotnet\\samples\\Microsoft.Bot.Builder.TestBot.Json\\BotBuilderTestBot.bot",
     "overrides": null,
     "secretKey": ""
 }
