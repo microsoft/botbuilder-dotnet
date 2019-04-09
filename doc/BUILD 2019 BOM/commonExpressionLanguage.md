@@ -7,9 +7,9 @@
 ## Remaining work
 - - [ ] Implement Common Expression Language [Spec](https://microsoft.sharepoint.com/:w:/t/ConversationalAI785/EfIx5-gPhE5HlAGhvNEoKLIBo0AeoWmq1ITRhai2q2trLA?e=x9uKyb)
 - - [X] Rewrite parser using ANTLR
-- - [ ] Implement R0 set of pre-built functions for C# and JS
+- - [X] Implement R0 set of pre-built functions for C# and JS
     - - [X] Migrate to new style C#
-    - - [ ] Migrate to new style JS
+    - - [X] Migrate to new style JS
 - - [X] Implement support for short hand entity resolution - $entityName, #entityName, @entityName
 - - [X] Close on JSON .vs. native object support in expression language
 - - [X] Pick up new changes from Chris McConnell on expression evaluate, parse tree walk
@@ -19,6 +19,7 @@
 - - [ ] New pre-built functions ask
     - - [ ] forEach(collection, iterator, expression)
     - - [ ] match(regExp)
+    - - [ ] lgTemplate(templateName, arg1, arg2,...)
 - - [ ] Final API shape review
 - - [ ] Final packaging, naming review
 - - [ ] On board to build and release DevOps pipeline
@@ -44,11 +45,11 @@
 ### Documentation
 - [ ] API reference doc
     - [ ] List all API signatures with example invocation code snippets for C# and TS
-- [ ] Conceptual document
-    - [ ] Introduces common expression language
-    - [ ] Lists use cases for common expression language in Bot Builder
-- [ ] Expression language specification
-- [ ] Pre-built functions documentation with examples, function signatures
+- [x] Conceptual document
+    - [x] Introduces common expression language
+    - [x] Lists use cases for common expression language in Bot Builder
+- [x] Expression language specification
+- [x] Pre-built functions documentation with examples, function signatures
 
 ### Samples
 No samples are planned that are specific to expression language library since this by preview is not intended to be used as a standalone library. 

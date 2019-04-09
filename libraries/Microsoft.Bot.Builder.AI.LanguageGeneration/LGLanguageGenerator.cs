@@ -89,12 +89,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         private string FileLocale(string filename)
         {
             var locale = "";
-            var start = filename.IndexOf('-');
-            if (start != -1)
-            {
-                ++start;
-                locale = filename.Substring(start, filename.LastIndexOf('.') - start).Trim().ToLower();
-            }
+            filename = Path.GetFileNameWithoutExtension(filename);
+            var start = filename.LastIndexOf('.');
+            if (start == -1)
+                // default
+                return "";
+            ++start;
+            locale = filename.Substring(start, filename.Length - start).Trim().ToLower();
             return locale;
         }
 

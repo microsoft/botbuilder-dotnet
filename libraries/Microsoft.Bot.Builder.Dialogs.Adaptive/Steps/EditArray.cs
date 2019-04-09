@@ -94,6 +94,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (options is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+            }
+
             if (string.IsNullOrEmpty(ArrayProperty))
             {
                 throw new Exception($"EditArray: \"{ ChangeType }\" operation couldn't be performed because the arrayProperty wasn't specified.");

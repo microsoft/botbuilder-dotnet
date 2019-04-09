@@ -830,7 +830,7 @@ namespace Microsoft.Bot.Builder.Expressions
                    Apply(args => ParseTimestamp(args[0]).Year, VerifyString), ReturnType.Number, ValidateUnaryString) },
                 { ExpressionType.UtcNow, new ExpressionEvaluator(
                    Apply(args => DateTime.UtcNow.ToString(args.Count() == 1 ? args[0] : DefaultDateTimeFormat), VerifyString),
-                   ReturnType.String, ValidateString) },
+                   ReturnType.String) },
                 { ExpressionType.FormatDateTime, new ExpressionEvaluator(
                    Apply(args => ParseTimestamp(args[0]).ToString(args.Count() == 2 ? args[1] : DefaultDateTimeFormat), VerifyString),
                    ReturnType.String, (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String)) },

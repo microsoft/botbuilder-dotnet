@@ -29,30 +29,29 @@
 | TextMessageActivityGenerator |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 | Analyzer                     |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 | Evaluator                    |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
-| Exceptions                   |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>|
 | ExpressionAnalyzerVisitor    |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 | GetMethodExtension           |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
-| GetValueExtensions           |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 | LanguageGenerationRenderer   |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>|
 | LGLanguageGenerator          |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>|
-| StaticChecker                |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>|
+| StaticChecker                |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 | TemplateEngine               |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
-| TemplateErrorListener        |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
+| ErrorListener                |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
+| LGTemplate                   |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 | LGFileParserVisitor          |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 | LGFileParserListener         |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 
 ### Documentation
 - [ ] API reference doc
     - [ ] List all API signatures with example invocation code snippets for C# and TS
-- [ ] Conceptual document
-    - - [ ] Language Generation concepts overview
-    - - [ ] List scenarios based use cases for Language Generation
-    - - [ ] Ability to specify cards via Language Generation
-    - - [ ] Ability to specify speak .vs. display variation via Languge Generation
-    - - [ ] Resoure manager and langauge fall back policies
-    - - [ ] Grammar correction and other generation capabilites
-- [ ] .LG file format specification
-    - - [ ] Include inline .LG file snippets as example for each concept
+- [x] Conceptual document
+    - - [x] Language Generation concepts overview
+    - - [x] List scenarios based use cases for Language Generation
+    - - [x] Ability to specify cards via Language Generation
+    - - [x] Ability to specify speak .vs. display variation via Languge Generation
+    - - [x] Resoure manager and langauge fall back policies
+    - - [x] Grammar correction and other generation capabilites
+- [x] .LG file format specification
+    - - [x] Include inline .LG file snippets as example for each concept
 ### Samples
 
 |C#|TS| Sample bot	| Scenarios	 | LG capabilities to demo	| Notes	| Bot/LG Template |
