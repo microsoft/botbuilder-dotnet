@@ -14,8 +14,10 @@ namespace Microsoft.BotBuilderSamples
 {
     public class MainDialog : ComponentDialog
     {
+#pragma warning disable SA1401 // Fields should be private
         protected readonly IConfiguration _configuration;
         protected readonly ILogger _logger;
+#pragma warning restore SA1401 // Fields should be private
 
         public MainDialog(IConfiguration configuration, ILogger<MainDialog> logger)
             : base(nameof(MainDialog))
@@ -25,12 +27,13 @@ namespace Microsoft.BotBuilderSamples
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new BookingDialog());
-            AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
+            var steps = new WaterfallStep[]
             {
                 IntroStepAsync,
                 ActStepAsync,
                 FinalStepAsync,
-            }));
+            };
+            AddDialog(new WaterfallDialog(nameof(WaterfallDialog), steps));
 
             // The initial child Dialog to run.
             InitialDialogId = nameof(WaterfallDialog);
@@ -75,9 +78,7 @@ namespace Microsoft.BotBuilderSamples
                 var result = (BookingDetails)stepContext.Result;
 
                 // Now we have all the booking details call the booking service.
-
                 // If the call to the booking service was successful tell the user.
-
                 var timeProperty = new TimexProperty(result.TravelDate);
                 var travelDateMsg = timeProperty.ToNaturalLanguage(DateTime.Now);
                 var msg = $"I have you booked to {result.Destination} from {result.Origin} on {travelDateMsg}";
@@ -87,6 +88,7 @@ namespace Microsoft.BotBuilderSamples
             {
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text("Thank you."), cancellationToken);
             }
+
             return await stepContext.EndDialogAsync();
         }
     }
