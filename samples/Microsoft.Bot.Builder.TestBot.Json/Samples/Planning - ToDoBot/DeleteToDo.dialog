@@ -18,19 +18,34 @@
                 }
             ]
         },
+        "GetListType",
         {
-            "$type": "Microsoft.EditArray",
-            "changeType": "Remove",
-            "arrayProperty": "user.todos",
-            "itemProperty": "dialog.todo"
+            "$type": "Microsoft.IfCondition",
+            "condition": "dialog.listType.Value == 'GroceryList'",
+            "steps": [
+                {
+                    "$type": "Microsoft.EditArray",
+                    "changeType": "Remove",
+                    "arrayProperty": "user.groceryList",
+                    "itemProperty": "dialog.todo"
+                }
+            ],
+            "elseSteps": [
+                {
+                    "$type": "Microsoft.EditArray",
+                    "changeType": "Remove",
+                    "arrayProperty": "user.todos",
+                    "itemProperty": "dialog.todo"
+                }
+            ]
         },
         {
             "$type": "Microsoft.SendActivity",
-            "activity": "Successfully removed a todo named \"{dialog.todo}\""
+            "activity": "Successfully removed a todo named \"{dialog.todo}\" in {user.listType.Value}"
         },
         {
             "$type": "Microsoft.DeleteProperty",
-            "property": "dialog.todo"
+            "property": "user.listType"
         }
     ],
     "rules": [

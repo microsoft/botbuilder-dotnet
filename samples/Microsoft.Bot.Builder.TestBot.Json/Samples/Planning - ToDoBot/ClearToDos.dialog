@@ -2,25 +2,32 @@
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
     "steps": [
+        "GetListType",
         {
-            "$type": "Microsoft.EditArray",
-            "changeType": "Clear",
-            "arrayProperty": "user.todos"
+            "$type": "Microsoft.IfCondition",
+            "condition": "dialog.listType.Value == 'GroceryList'",
+            "steps": [
+                {
+                    "$type": "Microsoft.EditArray",
+                    "changeType": "Clear",
+                    "arrayProperty": "user.groceryList"
+                }
+            ],
+            "elseSteps": [
+                {
+                    "$type": "Microsoft.EditArray",
+                    "changeType": "Clear",
+                    "arrayProperty": "user.groceryList"
+                }
+            ]
         },
         {
             "$type": "Microsoft.SendActivity",
-            "activity": "Successfully clear the todo list."
-        }
-    ],
-    "rules": [
+            "activity": "Successfully clear the {user.listType.Value} list."
+        },
         {
-            "$type": "Microsoft.IntentRule",
-            "intent": "CancelIntent",
-            "steps": [
-                {
-                    "$type": "Microsoft.EndDialog"
-                }
-            ]
+            "$type": "Microsoft.DeleteProperty",
+            "property": "user.listType"
         }
     ]
 }
