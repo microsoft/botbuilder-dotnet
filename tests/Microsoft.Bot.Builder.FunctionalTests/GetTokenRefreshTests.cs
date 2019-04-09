@@ -5,10 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.FunctionalTests
 {
+    [TestClass]
+    #if !FUNCTIONALTESTS
+    [Ignore("These integration tests run only when FUNCTIONALTESTS is defined")]
+    #endif
     public class GetTokenRefreshTests
     {
         private string testAppId = null;
@@ -18,30 +22,30 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         {
         }
 
-        [Fact]
+        [TestMethod]
         public async Task TokenTests_GetCredentialsWorks()
         {
             GetEnvironmentVarsTestAppIdPassword();
             MicrosoftAppCredentials credentials = new MicrosoftAppCredentials(testAppId, testPassword);
             var result = await credentials.GetTokenAsync();
-            Assert.NotNull(result);
+            Assert.IsNotNull(result);
         }
 
-        [Fact]
+        [TestMethod]
         public async Task TokenTests_RefreshTokenWorks()
         {
             GetEnvironmentVarsTestAppIdPassword();
             MicrosoftAppCredentials credentials = new MicrosoftAppCredentials(testAppId, testPassword);
             var result = await credentials.GetTokenAsync();
-            Assert.NotNull(result);
+            Assert.IsNotNull(result);
             var result2 = await credentials.GetTokenAsync();
-            Assert.Equal(result, result2);
+            Assert.Equals(result, result2);
             var result3 = await credentials.GetTokenAsync(true);
-            Assert.NotNull(result3);
-            Assert.NotEqual(result2, result3);
+            Assert.IsNotNull(result3);
+            Assert.IsNotNull(result2, result3);
         }
 
-        [Fact]
+        [TestMethod]
         public async Task TokenTests_RefreshTestLoad()
         {
             GetEnvironmentVarsTestAppIdPassword();
@@ -56,10 +60,10 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             foreach (var item in tasks)
             {
                 string result = await item;
-                Assert.NotNull(result);
+                Assert.IsNotNull(result);
                 if (prevResult != null)
                 {
-                    Assert.Equal(prevResult, result);
+                    Assert.Equals(prevResult, result);
                 }
 
                 prevResult = result;
@@ -85,19 +89,20 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 if (i == 0)
                 {
                     results.Add(result);
-                    Assert.NotNull(result);
+                    Assert.IsNotNull(result);
                 }
 
                 if (prevResult != null)
                 {
                     if (i % 100 == 50)
                     {
-                        Assert.True(!results.Contains(result));
+                        Assert.IsTrue(!results.Contains(result));
                         results.Add(result);
                     }
                     else
                     {
-                        Assert.Contains(result, results);
+                        // Xunit.Assert.Contains(result, results);
+                        Assert.IsTrue(results.Contains(result));
                     }
                 }
             }
