@@ -34,37 +34,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 var engs = new Dictionary<string, TemplateEngine>(StringComparer.CurrentCultureIgnoreCase);
 
                 var lgs = this.resourceManager.GetResources("lg").ToArray();
-                var contents = lgs.Select(resource => File.ReadAllText(resource.FullName));
+                var contents = lgs.Select(resource => (FileLocale(resource.Name), File.ReadAllText(resource.FullName)));
 
-                Dictionary<string, StringBuilder> languageResources = new Dictionary<string, StringBuilder>();
+                Dictionary<string, string> languageResources = new Dictionary<string, string>();
                 foreach (var result in contents)
                 {
-                    var lgText = result;
-                    // get lang (HACK)
-                    var iEnd = lgText.IndexOf("\r\n");
-                    var firstLine = (iEnd > 0) ? lgText.Substring(0, iEnd) : lgText;
-
-                    string lang = String.Empty;
-                    iEnd = firstLine.IndexOf("]");
-                    if (iEnd > 0)
-                    {
-                        lang = firstLine.Substring(0, iEnd).Trim('[', ']').ToLower();
-                        if (!LanguagePolicy.ContainsKey(lang))
-                        {
-                            lang = String.Empty;
-                        }
-                        lgText = lgText.Substring(iEnd);
-                    }
-
-                    StringBuilder sb;
-                    if (!languageResources.TryGetValue(lang, out sb))
-                    {
-                        sb = new StringBuilder();
-                        languageResources.Add(lang, sb);
-                    }
-
-                    // add in the lg file text
-                    sb.AppendLine(lgText);
+                    var (locale, text) = result;
+                    languageResources[locale] = text;
                 }
 
                 foreach (var lang in languageResources.Keys)
@@ -110,6 +86,17 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return null;
         }
 
+        private string FileLocale(string filename)
+        {
+            var locale = "";
+            var start = filename.IndexOf('-');
+            if (start != -1)
+            {
+                ++start;
+                locale = filename.Substring(start, filename.LastIndexOf('.') - start);
+            }
+            return locale;
+        }
 
         private string BindToTemplate(TemplateEngine engine, string inline, string id, object data, string[] types, string[] tags, Func<string, object, object> valueBinder)
         {
