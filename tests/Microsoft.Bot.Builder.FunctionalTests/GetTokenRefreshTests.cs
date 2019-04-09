@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             var result = await credentials.GetTokenAsync();
             Assert.IsNotNull(result);
             var result2 = await credentials.GetTokenAsync();
-            Assert.Equals(result, result2);
+            Assert.AreEqual(result, result2);
             var result3 = await credentials.GetTokenAsync(true);
             Assert.IsNotNull(result3);
             Assert.IsNotNull(result2, result3);
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 Assert.IsNotNull(result);
                 if (prevResult != null)
                 {
-                    Assert.Equals(prevResult, result);
+                    Assert.AreEqual(prevResult, result);
                 }
 
                 prevResult = result;

@@ -420,6 +420,8 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             var expectedPath = GetFilePath(file);
             var newPath = expectedPath + ".new";
 
+            GetEnvironmentVarsLuis();
+
             using (var expectedJsonReader = new JsonTextReader(new StreamReader(expectedPath)))
             {
                 var expectedJson = await JToken.ReadFromAsync(expectedJsonReader);
