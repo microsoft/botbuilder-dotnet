@@ -247,14 +247,11 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         }
 
         /// <summary>
-        /// Return the possible matches given the current frame.
+        /// Return the possible matches given the current state.
         /// </summary>
         /// <param name="frame">Frame to evaluate against.</param>
         /// <returns>Enumeration of possible matches.</returns>
-        /// <remarks>
-        /// Most predicates work on the current frame, but predicates are free to access other frames or use other sources of knowledge.
-        /// </remarks>
-        public IEnumerable<Node> Matches(IDictionary<string, object> frame) => Root.Matches(frame);
+        public IEnumerable<Node> Matches(object state) => Root.Matches(state);
 
         /// <summary>
         /// Verify the tree meets speicalization/generalization invariants. 

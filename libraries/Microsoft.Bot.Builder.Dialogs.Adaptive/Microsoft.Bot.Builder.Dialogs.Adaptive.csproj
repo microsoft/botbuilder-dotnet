@@ -55,6 +55,7 @@
   <ItemGroup>
     <None Remove="Schemas\Dialogs\Microsoft.AdaptiveDialog.schema" />
     <None Remove="Schemas\Microsoft.ILanguagePolicy.schema" />
+    <None Remove="Schemas\Microsoft.IRuleSelector.schema" />
     <None Remove="Schemas\Recognizers\Microsoft.MultiLanguageRecognizer.schema" />
     <None Remove="Schemas\Recognizers\Microsoft.RegexRecognizer.schema" />
     <None Remove="Schemas\Rules\Microsoft.BeginDialogRule.schema" />
@@ -81,6 +82,7 @@
     <Content Include="Schemas\Dialogs\Microsoft.AdaptiveDialog.schema" />
     <Content Include="Schemas\Microsoft.ILanguagePolicy.schema" />
     <Content Include="Schemas\Microsoft.IRule.schema" />
+    <Content Include="Schemas\Microsoft.IRuleSelector.schema" />
     <Content Include="Schemas\Recognizers\Microsoft.MultiLanguageRecognizer.schema" />
     <Content Include="Schemas\Recognizers\Microsoft.RegexRecognizer.schema" />
     <Content Include="Schemas\Rules\Microsoft.BeginDialogRule.schema" />
@@ -105,6 +107,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Expressions.Parser\Microsoft.Bot.Builder.Expressions.Parser.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Schemas\Selectors\" />
   </ItemGroup>
 
 </Project>
