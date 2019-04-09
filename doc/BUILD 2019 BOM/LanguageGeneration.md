@@ -43,15 +43,15 @@
 ### Documentation
 - [ ] API reference doc
     - [ ] List all API signatures with example invocation code snippets for C# and TS
-- [ ] Conceptual document
-    - - [ ] Language Generation concepts overview
-    - - [ ] List scenarios based use cases for Language Generation
-    - - [ ] Ability to specify cards via Language Generation
-    - - [ ] Ability to specify speak .vs. display variation via Languge Generation
-    - - [ ] Resoure manager and langauge fall back policies
-    - - [ ] Grammar correction and other generation capabilites
-- [ ] .LG file format specification
-    - - [ ] Include inline .LG file snippets as example for each concept
+- [x] Conceptual document
+    - - [x] Language Generation concepts overview
+    - - [x] List scenarios based use cases for Language Generation
+    - - [x] Ability to specify cards via Language Generation
+    - - [x] Ability to specify speak .vs. display variation via Languge Generation
+    - - [x] Resoure manager and langauge fall back policies
+    - - [x] Grammar correction and other generation capabilites
+- [x] .LG file format specification
+    - - [x] Include inline .LG file snippets as example for each concept
 ### Samples
 
 |C#|TS| Sample bot	| Scenarios	 | LG capabilities to demo	| Notes	| Bot/LG Template |
