@@ -11,6 +11,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.AI.Luis;
+using Microsoft.Bot.Builder.AI.Luis.Tests;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -19,9 +21,12 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RichardSzalay.MockHttp;
 
-namespace Microsoft.Bot.Builder.AI.Luis.Tests
+namespace Microsoft.Bot.Builder.FunctionalTests
 {
     [TestClass]
+    #if !FUNCTIONALTESTS
+    [Ignore("These integration tests run only when FUNCTIONALTESTS is defined")]
+    #endif
 
     // The LUIS application used in these unit tests is in TestData/TestLuistApp.json
     public class LuisRecognizerTests
@@ -29,12 +34,11 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         // Access the checked-in oracles so that if they are changed you can compare the changes and easily modify them.
         private const string _testData = @"..\..\..\TestData\";
 
-        private readonly string _luisAppId = TestUtilities.GetKey("LUISAPPID", "38330cad-f768-4619-96f9-69ea333e594b");
-
         // By default (when the Mocks are being used), the subscription key used can be any GUID. Only if the tests
         // are connecting to LUIS is an actual key needed.
-        private readonly string _subscriptionKey = TestUtilities.GetKey("LUISAPPKEY", "00000000-1111-2222-3333-444444444444");
-        private readonly string _endpoint = TestUtilities.GetKey("LUISENDPOINT", "https://westus.api.cognitive.microsoft.com");
+        private string _luisAppId = null;
+        private string _subscriptionKey = null;
+        private string _endpoint = null;
 
         private readonly RecognizerResult _mockedResults = new RecognizerResult
         {
@@ -62,6 +66,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             // Arrange
             // Note this is NOT a real LUIS application ID nor a real LUIS subscription-key
             // theses are GUIDs edited to look right to the parsing and validation code.
+            GetEnvironmentVarsLuis();
             var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
             var fieldInfo = typeof(LuisRecognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -79,6 +84,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         public void NullEndpoint()
         {
             // Arrange
+            GetEnvironmentVarsLuis();
             var fieldInfo = typeof(LuisRecognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
 
             // Act
@@ -94,6 +100,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         public void EmptyEndpoint()
         {
             // Arrange
+            GetEnvironmentVarsLuis();
             var fieldInfo = typeof(LuisRecognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
 
             // Act
@@ -108,6 +115,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         [TestMethod]
         public async Task LuisRecognizer_Configuration()
         {
+            GetEnvironmentVarsLuis();
             var service = new LuisService
             {
                 AppId = _luisAppId,
@@ -149,6 +157,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             const string utterance = "My name is Emad";
             const string responsePath = "SingleIntent_SimplyEntity.json";
 
+            GetEnvironmentVarsLuis();
             var mockHttp = GetMockHttpClientHandlerObject(utterance, responsePath);
             var luisRecognizer = GetLuisRecognizer(mockHttp, verbose: true);
             var context = GetContext(utterance);
@@ -177,6 +186,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             const string utterance = null;
             const string responsePath = "SingleIntent_SimplyEntity.json";   // The path is irrelevant in this case
 
+            GetEnvironmentVarsLuis();
             var mockHttp = GetMockHttpClientHandlerObject(utterance, responsePath);
             var luisRecognizer = GetLuisRecognizer(mockHttp, verbose: true);
             var context = GetContext(utterance);
@@ -199,6 +209,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             const string utterance = "Please deliver February 2nd 2001";
             const string responsePath = "MultipleIntents_PrebuiltEntity.json";
 
+            GetEnvironmentVarsLuis();
             var mockHttp = GetMockHttpClientHandlerObject(utterance, responsePath);
             var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true });
             var context = GetContext(utterance);
@@ -235,6 +246,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             const string utterance = "Please deliver February 2nd 2001 in room 201";
             const string responsePath = "MultipleIntents_PrebuiltEntitiesWithMultiValues.json";
 
+            GetEnvironmentVarsLuis();
             var mockHttp = GetMockHttpClientHandlerObject(utterance, responsePath);
             var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true });
             var context = GetContext(utterance);
@@ -260,6 +272,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             const string utterance = "I want to travel on united";
             const string responsePath = "MultipleIntents_ListEntityWithSingleValue.json";
 
+            GetEnvironmentVarsLuis();
             var mockHttp = GetMockHttpClientHandlerObject(utterance, responsePath);
             var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true });
             var context = GetContext(utterance);
@@ -286,6 +299,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             const string utterance = "I want to travel on DL";
             const string responsePath = "MultipleIntents_ListEntityWithMultiValues.json";
 
+            GetEnvironmentVarsLuis();
             var mockHttp = GetMockHttpClientHandlerObject(utterance, responsePath);
             var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true });
             var context = GetContext(utterance);
@@ -314,6 +328,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             const string utterance = "Please deliver it to 98033 WA";
             const string responsePath = "MultipleIntents_CompositeEntityModel.json";
 
+            GetEnvironmentVarsLuis();
             var mockHttp = GetMockHttpClientHandlerObject(utterance, responsePath);
             var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true });
             var context = GetContext(utterance);
@@ -356,6 +371,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             const string utterance = "Book a table on Friday or tomorrow at 5 or tomorrow at 4";
             const string responsePath = "MultipleDateTimeEntities.json";
 
+            GetEnvironmentVarsLuis();
             var mockHttp = GetMockHttpClientHandlerObject(utterance, responsePath);
             var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true });
             var context = GetContext(utterance);
@@ -381,6 +397,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             const string utterance = "at 4";
             const string responsePath = "V1DatetimeResolution.json";
 
+            GetEnvironmentVarsLuis();
             var mockHttp = GetMockHttpClientHandler(utterance, responsePath);
             var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true });
             var context = GetContext(utterance);
@@ -402,6 +419,8 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         {
             var expectedPath = GetFilePath(file);
             var newPath = expectedPath + ".new";
+
+            GetEnvironmentVarsLuis();
 
             using (var expectedJsonReader = new JsonTextReader(new StreamReader(expectedPath)))
             {
@@ -441,6 +460,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             const string botResponse = @"Hi Emad";
             const string responsePath = "TraceActivity.json";
 
+            GetEnvironmentVarsLuis();
             var mockHttp = GetMockHttpClientHandlerObject(utterance, responsePath);
             var adapter = new TestAdapter(null, true);
             await new TestFlow(adapter, async (context, cancellationToken) =>
@@ -1129,6 +1149,31 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         {
             var path = Path.Combine(_testData, fileName);
             return path;
+        }
+
+        private void GetEnvironmentVarsLuis()
+        {
+            if (string.IsNullOrWhiteSpace(_luisAppId) || string.IsNullOrWhiteSpace(_subscriptionKey))
+            {
+                _luisAppId = Environment.GetEnvironmentVariable("LuisAppId");
+                if (string.IsNullOrWhiteSpace(_luisAppId))
+                {
+                    throw new Exception("Environment variable 'LuisAppId' not found.");
+                }
+
+                _subscriptionKey = Environment.GetEnvironmentVariable("LuisSubscriptionKey");
+
+                if (string.IsNullOrWhiteSpace(_subscriptionKey))
+                {
+                    throw new Exception("Environment variable 'LuisSubscriptionKey' not found.");
+                }
+
+                _endpoint = Environment.GetEnvironmentVariable("LuisEndPoint");
+                if (string.IsNullOrWhiteSpace(_endpoint))
+                {
+                    throw new Exception("Environment variable 'LuisEndPoint' not found.");
+                }
+            }
         }
     }
 }
