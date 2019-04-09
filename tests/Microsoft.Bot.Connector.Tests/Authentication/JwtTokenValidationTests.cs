@@ -6,11 +6,10 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Xunit;
 
-namespace Microsoft.Bot.Connector.Tests
+namespace Microsoft.Bot.Connector.Authentication.Tests
 {
     public class JwtTokenValidationTests
     {

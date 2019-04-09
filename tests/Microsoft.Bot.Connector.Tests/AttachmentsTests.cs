@@ -5,12 +5,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.Rest;
 using Xunit;
 
-namespace Connector.Tests
+namespace Microsoft.Bot.Connector.Tests
 {
     public class AttachmentsTests : BaseTest
     {

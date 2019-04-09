@@ -1,17 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-namespace Connector.Tests
-{
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Bot.Connector;
-    using Microsoft.Bot.Schema;
-    using Microsoft.Rest;
-    using Xunit;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Bot.Schema;
+using Microsoft.Rest;
+using Xunit;
 
+namespace Microsoft.Bot.Connector.Tests
+{
     public class ConversationsTest : BaseTest
     {
         [Fact]

@@ -1,11 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Connector.Authentication;
-using Microsoft.Bot.Schema;
 using Xunit;
 
-namespace Microsoft.Bot.Connector.Tests
+namespace Microsoft.Bot.Connector.Authentication.Tests
 {
     public class MicrosoftGovernmentAppCredentialsTests
     {
