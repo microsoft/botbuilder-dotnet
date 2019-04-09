@@ -71,12 +71,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
                         var options = new PromptOptions()
                         {
-                            Choices = new List<Choice> {choice},
+                            Choices = new List<Choice> { choice },
                         };
                         await dc.PromptAsync(
-                            "ChoicePrompt",
-                            options,
-                            cancellationToken);
+                        "ChoicePrompt",
+                        options,
+                        cancellationToken);
                     }
                 })
                 .Send("hello")

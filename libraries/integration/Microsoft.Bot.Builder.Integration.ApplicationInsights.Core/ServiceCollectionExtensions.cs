@@ -78,8 +78,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
                 throw new ArgumentNullException(nameof(config));
             }
 
-            string instrumentationKey = config.GetValue<string>("ApplicationInsights:instrumentationKey"); 
-
+            string instrumentationKey = config.GetValue<string>("ApplicationInsights:instrumentationKey");
 
             CreateBotTelemetry(services);
 
@@ -98,7 +97,6 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
 
             return services;
         }
-
 
         /// <summary>
         /// Adds and configures services for Application Insights to the <see cref="IServiceCollection" />.

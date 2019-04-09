@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     StepTwoAsync,
                     ReplaceStepAsync,
                     StepThreeAsync,
-                    LastStepAsync
+                    LastStepAsync,
                 };
 
                 AddDialog(new TextPrompt(nameof(TextPrompt)));
@@ -140,7 +140,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     StepFourAsync,
                     StepFiveAsync,
-                    LastStepAsync
+                    LastStepAsync,
                 };
 
                 AddDialog(new TextPrompt(nameof(TextPrompt)));
