@@ -13,9 +13,10 @@ _The new Adaptive dialog and the event model simplify sophisticated conversation
     - ~~C# implementation introduces properties on existing prompts. TS does not have any implementation of the new properties~~
     - ~~TS added new prompt++ (suffix input) that does binding to memory as well as existential check before prompting. C# does not appear to do any existential checks~~
     - ~~C# has float prompt added while TS does not have this.~~
-- - [ ] Alignment on Bot + Run method
-- - [ ] Close on support for Switch...Case..Default step
-- - [ ] Move dialog internal state to a dialog_internal or dialogInternal scope and not have this under 'dialog' scope. 
+- - [ ] Alignment on Bot + Run method. C# needs DialogManager [Tom]
+- - [ ] Close on support for Switch...Case..Default step. Exists in C# but not in TS. [Tom and Steve]
+- - [ ] Move dialog internal state to a dialog_internal or dialogInternal scope and not have this under 'dialog' scope. Deferred to post //BUILD.
+- - [ ] make sure card recognizer is part of adaptive on C# side.
 - - [ ] Functional parity across C# and TS for planned set of steps, rules, interruption handling and prompt wrappers
     - - [ ] Class level consistency
     - - [ ] Property, Methods and method signatures are consistent
@@ -32,7 +33,8 @@ We will support the following recognizers in Adaptive dialogs
 | RegexRecognizer          |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 | MultiLanguageRecognizer  |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>|
 | LuisRecognizer           |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
-| QnARecognizer            |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
+| ~~QnARecognizer~~        |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|
+
 
 ### Rules 
 
@@ -40,11 +42,11 @@ We will support the following recognizers in Adaptive dialogs
 
 |          Rule name            |         C#             |          TS            |                                             Comments                                                    |
 |-------------------------------|------------------------|------------------------|---------------------------------------------------------------------------------------------------------|
-| NoMatchRule                   |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| rename DefaultRule -> NoMatchRule                                                                       |
+| unrecognizedIntentRule        |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| rename DefaultRule -> NoMatchRule -> noneIntentRule -> unrecognizedIntentRule                                          |
 | EventRule                     |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|                                                                                                         |
 | IfPropertyRule                |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| Table this - follow up; command?                                                                        |
 | IntentRule                    |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|                                                                                                         |
-| WelcomeRule                   |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|                                                                                                         |
+| ~~WelcomeRule~~               |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|                                                                                                         |
 | AdaptiveRule (base class)     |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>| rename rule -> AdaptiveRule and get rid of IRule                                                        |
 | ~~BeginDialogRule~~           |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| achieve via top level property as peer to rule that covers the initial set of steps when dialog begins. |
 | ~~StateTransitionRule~~       |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|                                                                                                         |
@@ -64,16 +66,18 @@ We will support the following recognizers in Adaptive dialogs
 | CancelDialog          |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|                                                                     |
 | RepeatDialog          |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|                                                                     |
 | CodeStep              |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|                                                                     |
-| EditArray             |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| ChangeList -> EditArray                                             |
+| EditArray             |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| ChangeList -> EditArray; move to functions in expression language|
 | SetProperty           |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|                                                                     |
-| DeleteProperty        |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>| ClearProperty -> DeleteProperty                                     |
+| DeleteProperty        |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| ClearProperty -> DeleteProperty                                     |
 | IfCondition           |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| IfProperty -> IfCondition                                           |
-| HttpRequest           |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>|                                                                     |
+| SwitchCondition       |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>|                                            |
+| HttpRequest           |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>| Post //BUILD - Ability for service to return activity json; logic for automatically sending typing activity after Xms                                                                         |
 | SendActivity          |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|                                                                     |
 | EmitEvent             |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| EmitEvents -> EmitEvent                                             |
 | EndTurn               |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| WaitForInput -> EndTurn                                             |
-| EditPlan              |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| Should allow plan push, pop, insert at position                     |
-| ReplacePlan           |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|                                                                     |
+| EditSteps              |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| Should allow plan push, pop, insert at position                     |
+| ReplaceSteps           |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|                                                                     |
+| QnADialog              |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|                                                                     |
 | ~~EditPlanTitle~~     |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>| SetPlanTitle -> EditPlanTitle                                       |
 | ~~SaveEntity~~        |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| SetProperty - '@EntityName' resolves to turn.entities.EntityName[0] |
 | ~~OnCatch~~           |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|                                                                     |
@@ -97,7 +101,7 @@ We will add new \<entityType\>Input class that does the follwing -
 |      Input type       |         C#             |          TS            | Comments                            |
 |-----------------------|------------------------|------------------------|-------------------------------------|
 | confirmInput          |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| boolInput -> confirmInput           |
-| choiceInput           |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|                                     |
+| choiceInput           |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|                                     |
 | numberInput           |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|                                     |
 | textInput             |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|                                     |
 | dateInput             |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|                                     |
