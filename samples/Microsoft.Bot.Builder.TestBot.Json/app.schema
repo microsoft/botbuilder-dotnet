@@ -164,6 +164,16 @@
             "title": "Microsoft.TextInput",
             "description": "This represents a dialog which gathers a text from the user",
             "$ref": "#/definitions/Microsoft.TextInput"
+        },
+        {
+            "title": "Testbot.CalculateDogYears",
+            "description": "This will take the property and return as the dialog result ",
+            "$ref": "#/definitions/Testbot.CalculateDogYears"
+        },
+        {
+            "title": "Testbot.JavascriptStep",
+            "description": "This gives you the ability to execute javascript to manipulate memory",
+            "$ref": "#/definitions/Testbot.JavascriptStep"
         }
     ],
     "definitions": {
@@ -1459,6 +1469,16 @@
                 {
                     "type": "string",
                     "title": "string"
+                },
+                {
+                    "title": "Testbot.CalculateDogYears",
+                    "description": "This will take the property and return as the dialog result ",
+                    "$ref": "#/definitions/Testbot.CalculateDogYears"
+                },
+                {
+                    "title": "Testbot.JavascriptStep",
+                    "description": "This gives you the ability to execute javascript to manipulate memory",
+                    "$ref": "#/definitions/Testbot.JavascriptStep"
                 }
             ]
         },
@@ -1591,40 +1611,22 @@
                     "$ref": "#/definitions/Microsoft.IExpression"
                 },
                 "steps": {
-                    "oneOf": [
-                        {
-                            "$type": "Microsoft.IDialog",
-                            "$ref": "#/definitions/Microsoft.IDialog"
-                        },
-                        {
-                            "type": "array",
-                            "items": {
-                                "$type": "Microsoft.IDialog",
-                                "$ref": "#/definitions/Microsoft.IDialog"
-                            },
-                            "title": "array"
-                        }
-                    ],
+                    "type": "array",
                     "title": "Steps",
-                    "description": "Step to execute if condition is true."
+                    "description": "Step to execute if condition is true.",
+                    "items": {
+                        "$type": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
                 },
                 "elseSteps": {
-                    "oneOf": [
-                        {
-                            "$type": "Microsoft.IDialog",
-                            "$ref": "#/definitions/Microsoft.IDialog"
-                        },
-                        {
-                            "type": "array",
-                            "items": {
-                                "$type": "Microsoft.IDialog",
-                                "$ref": "#/definitions/Microsoft.IDialog"
-                            },
-                            "title": "array"
-                        }
-                    ],
+                    "type": "array",
                     "title": "Else Steps",
-                    "description": "Step to execute if condition is false."
+                    "description": "Step to execute if condition is false.",
+                    "items": {
+                        "$type": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
                 }
             },
             "patternProperties": {
@@ -2899,6 +2901,131 @@
                     "examples": [
                         "\\w{3,30}"
                     ]
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Testbot.CalculateDogYears": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Calculate Dog Years",
+            "description": "This will take the property and return as the dialog result ",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Testbot.CalculateDogYears"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "property": {
+                    "type": "string",
+                    "title": "Input Property",
+                    "description": "This will be the property passed in "
+                },
+                "outputProperty": {
+                    "type": "string",
+                    "title": "Output Property",
+                    "description": "Property to put the result into"
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Testbot.JavascriptStep": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Javascript Step",
+            "description": "This gives you the ability to execute javascript to manipulate memory",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Testbot.JavascriptStep"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "property": {
+                    "type": "string",
+                    "title": "Property",
+                    "description": "This will be the property passed in",
+                    "examples": [
+                        "value.birthday"
+                    ]
+                },
+                "outputProperty": {
+                    "type": "string",
+                    "title": "Output Property",
+                    "description": "This will be the property which the result will be put into",
+                    "examples": [
+                        "value.birthday"
+                    ]
+                },
+                "script": {
+                    "type": "string",
+                    "title": "Script",
+                    "description": "name of the script file"
                 }
             },
             "patternProperties": {

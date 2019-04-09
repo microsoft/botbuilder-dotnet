@@ -23,6 +23,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (options is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+            }
+
             object originalOptions;
             bool originalOptionsFound = dc.State.Dialog.TryGetValue("options", out originalOptions);
 

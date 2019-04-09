@@ -27,6 +27,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (options is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+            }
+
             Options = Options.Merge(options ?? new object());
             var dialog = this.resolveDialog(dc);
             return await dc.BeginDialogAsync(dialog.Id, Options, cancellationToken).ConfigureAwait(false);

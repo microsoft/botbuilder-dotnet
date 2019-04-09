@@ -27,6 +27,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         // Override the base method since we need to pass choices to the prompt options
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (options is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+            }
+
             // Check value in state and only call if missing or required by AlwaysPrompt
             var value = dc.State.GetValue<FoundChoice>(Property);
 

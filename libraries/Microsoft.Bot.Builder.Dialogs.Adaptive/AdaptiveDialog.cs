@@ -73,6 +73,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (options is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(options)} should not ever be a cancealltion token");
+            }
+
             if (!installedDependencies)
             {
                 installedDependencies = true;
@@ -243,6 +248,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (result is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(result)} cannot be a cancellation token");
+            }
+
             // Containers are typically leaf nodes on the stack but the dev is free to push other dialogs
             // on top of the stack which will result in the container receiving an unexpected call to
             // resumeDialog() when the pushed on dialog ends.
@@ -375,7 +385,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             if (result.Status == DialogTurnStatus.Empty)
             {
-                result = await dc.BeginDialogAsync(this.Id, cancellationToken).ConfigureAwait(false);
+                result = await dc.BeginDialogAsync(this.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             if (saveState)
