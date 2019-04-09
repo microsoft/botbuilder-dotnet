@@ -45,11 +45,11 @@
 ### Documentation
 - [ ] API reference doc
     - [ ] List all API signatures with example invocation code snippets for C# and TS
-- [ ] Conceptual document
-    - [ ] Introduces common expression language
-    - [ ] Lists use cases for common expression language in Bot Builder
-- [ ] Expression language specification
-- [ ] Pre-built functions documentation with examples, function signatures
+- [x] Conceptual document
+    - [x] Introduces common expression language
+    - [x] Lists use cases for common expression language in Bot Builder
+- [x] Expression language specification
+- [x] Pre-built functions documentation with examples, function signatures
 
 ### Samples
 No samples are planned that are specific to expression language library since this by preview is not intended to be used as a standalone library. 
