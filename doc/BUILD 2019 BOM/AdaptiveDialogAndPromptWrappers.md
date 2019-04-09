@@ -78,8 +78,8 @@ We will support the following recognizers in Adaptive dialogs
 | EditSteps              |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| Should allow plan push, pop, insert at position                     |
 | ReplaceSteps           |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|                                                                     |
 | QnADialog              |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|                                                                     |
+| SaveEntity      |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| SetProperty - '@EntityName' resolves to turn.entities.EntityName[0] |
 | ~~EditPlanTitle~~     |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>| SetPlanTitle -> EditPlanTitle                                       |
-| ~~SaveEntity~~        |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| SetProperty - '@EntityName' resolves to turn.entities.EntityName[0] |
 | ~~OnCatch~~           |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|                                                                     |
 | ~~ChangeCollection~~  |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>| use setproperty for objects/map                                     |
 | ~~IfNotProperty~~     |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|                                                                     |
