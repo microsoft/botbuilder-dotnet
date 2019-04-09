@@ -25,8 +25,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             this._channelProvider = channelProvider;
         }
 
-        public ConcurrentDictionary<string, WebSocketServer> Connections { get; set; }
-
         public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default(CancellationToken))
          {
             if (httpRequest == null)
@@ -71,7 +69,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             await CreateWebSocketConnectionAsync(httpRequest.HttpContext, bot).ConfigureAwait(false);
         }
 
-        public async Task CreateWebSocketConnectionAsync(HttpContext httpContext, IBot bot)
+        private async Task CreateWebSocketConnectionAsync(HttpContext httpContext, IBot bot)
         {
             var socket = await httpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
             var handler = new StreamingExtensionRequestHandler();
