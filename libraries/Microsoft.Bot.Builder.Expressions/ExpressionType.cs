@@ -20,7 +20,6 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string Mod = "%";
         public const string Average = "average";
         public const string Sum = "sum";
-        public const string Count = "count";
 
         // Comparisons
         public const string LessThan = "<";
@@ -30,9 +29,7 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string GreaterThan = ">";
         public const string GreaterThanOrEqual = ">=";
         public const string Exists = "exists";
-        public const string Contains = "contains";
-        public const string Empty = "empty";
-
+       
         // Logic
         public const string And = "&&";
         public const string Or = "||";
@@ -48,7 +45,14 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string ToLower = "toLower";
         public const string ToUpper = "toUpper";
         public const string Trim = "trim";
+        
+        // Collection
+        public const string Count = "count";
+        public const string Contains = "contains";
+        public const string Empty = "empty";
         public const string Join = "join";
+        public const string First = "first";
+        public const string Last = "last";
 
         // DateTime
         public const string AddDays = "addDays";
@@ -77,8 +81,7 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string Accessor = "Accessor";
         public const string Element = "Element";
         public const string CreateArray = "createArray";
-        public const string First = "first";
-        public const string Last = "last";
+     
 
         // Misc
         public const string Constant = "Constant";
