@@ -19,7 +19,7 @@
 - - [ ] New pre-built functions ask
     - - [ ] forEach(collection, iterator, expression)
     - - [ ] match(regExp)
-    - - [ ] lgTemplate(templateName, scope)
+    - - [ ] evaluateTemplate(templateName, arg1, arg2,...)
 - - [ ] Final API shape review
 - - [ ] Final packaging, naming review
 - - [ ] On board to build and release DevOps pipeline
