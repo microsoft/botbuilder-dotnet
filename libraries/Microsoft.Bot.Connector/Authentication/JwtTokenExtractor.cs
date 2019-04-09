@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             _openIdMetadata = _openIdMetadataCache.GetOrAdd(metadataUrl, key =>
             {
-                return new ConfigurationManager<OpenIdConnectConfiguration>(metadataUrl, new OpenIdConnectConfigurationRetriever());
+                return new ConfigurationManager<OpenIdConnectConfiguration>(metadataUrl, new OpenIdConnectConfigurationRetriever(), httpClient);
             });
 
             _endorsementsData = _endorsementsCache.GetOrAdd(metadataUrl, key =>
