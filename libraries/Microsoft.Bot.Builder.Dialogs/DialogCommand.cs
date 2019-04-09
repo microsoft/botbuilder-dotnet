@@ -10,6 +10,11 @@ namespace Microsoft.Bot.Builder.Dialogs
     {
         public override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (options is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+            }
+
             return OnRunCommandAsync(dc, options);
         }
 
@@ -22,6 +27,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         protected async Task<DialogTurnResult> EndParentDialogAsync(DialogContext dc, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (result is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(result)} cannot be a cancellation token");
+            }
+
             PopCommands(dc);
 
             if (dc.Stack.Count > 1 || dc.Parent == null)
@@ -38,6 +48,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         protected async Task<DialogTurnResult> ReplaceParentDialogAsync(DialogContext dc, string dialogId, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (options is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+            }
+
             PopCommands(dc);
 
             if (dc.Stack.Count > 0 || dc.Parent == null)
@@ -54,6 +69,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         protected async Task<DialogTurnResult> RepeatParentDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (options is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+            }
+
             PopCommands(dc);
 
             if (dc.Stack.Count > 0 || dc.Parent == null)
@@ -70,6 +90,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         protected async Task<DialogTurnResult> CancelAllParentDialogsAsync(DialogContext dc, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (result is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(result)} cannot be a cancellation token");
+            }
+
             PopCommands(dc);
 
             if (dc.Stack.Count > 0 || dc.Parent == null)

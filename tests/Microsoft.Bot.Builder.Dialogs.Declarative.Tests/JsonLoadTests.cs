@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_Steps()
         {
-            string path = Path.Combine(samplesDirectory, @"Planning 1 - Steps\Steps.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"01 - Steps\Steps.main.dialog");
 
             await BuildTestFlow(path)
             .SendConversationUpdate()
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_EndTurn()
         {
-            string path = Path.Combine(samplesDirectory, @"Planning 2 - EndTurn\EndTurn.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"02 - EndTurn\EndTurn.main.dialog");
 
             await BuildTestFlow(path)
             .Send("hello")
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_IfProperty()
         {
-            string path = Path.Combine(samplesDirectory, @"Planning 3 - IfCondition\IfCondition.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"03 - IfCondition\IfCondition.main.dialog");
 
             await BuildTestFlow(path)
             .SendConversationUpdate()
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_TextInput()
         {
-            string path = Path.Combine(samplesDirectory, @"Planning 4 - TextInput\TextInput.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"04 - TextInput\TextInput.main.dialog");
 
             await BuildTestFlow(path)
             .SendConversationUpdate()
@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_DoSteps()
         {
-            string path = Path.Combine(samplesDirectory, @"Planning 6 - DoSteps\DoSteps.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"06 - DoSteps\DoSteps.main.dialog");
 
             await BuildTestFlow(path)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_BeginDialog()
         {
-            string path = Path.Combine(samplesDirectory, @"Planning 7 - BeginDialog\BeginDialog.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"07 - BeginDialog\BeginDialog.main.dialog");
 
             await BuildTestFlow(path)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
@@ -133,7 +133,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_ChoiceInputDialog()
         {
-            string path = Path.Combine(samplesDirectory, @"Planning 10 - ChoiceInput\ChoiceInput.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"10 - ChoiceInput\ChoiceInput.main.dialog");
 
             await BuildTestFlow(path)
             .SendConversationUpdate()
@@ -146,7 +146,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_ExternalLanguage()
         {
-            string path = Path.Combine(samplesDirectory, @"Planning 8 - ExternalLanguage\ExternalLanguage.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"08 - ExternalLanguage\ExternalLanguage.main.dialog");
 
             await BuildTestFlow(path)
             .SendConversationUpdate()
@@ -183,7 +183,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_ToDoBot()
         {
-            string path = Path.Combine(samplesDirectory, @"Planning - ToDoBot\TodoBot.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"ToDoBot\TodoBot.main.dialog");
 
             await BuildTestFlow(path)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
@@ -213,7 +213,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_HttpRequest()
         {
-            string path = Path.Combine(samplesDirectory, @"Planning 11 - HttpRequest\HttpRequest.main.dialog");
+            string path = Path.Combine(samplesDirectory, @"11 - HttpRequest\HttpRequest.main.dialog");
 
             await BuildTestFlow(path)
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))

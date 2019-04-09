@@ -58,6 +58,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (options is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+            }
+
             // Check value in state and only call if missing or required by AlwaysPrompt
             var value = dc.State.GetValue<TValue>(Property);
 

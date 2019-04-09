@@ -154,6 +154,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<DialogTurnResult> BeginDialogAsync(string dialogId, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (options is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+            }
+
             if (string.IsNullOrEmpty(dialogId))
             {
                 throw new ArgumentNullException(nameof(dialogId));
@@ -233,7 +238,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Call dialogs BeginAsync() method.
             await DebuggerStepAsync(dialog, cancellationToken).ConfigureAwait(false);
-            return await dialog.BeginDialogAsync(this, options, cancellationToken).ConfigureAwait(false);
+            return await dialog.BeginDialogAsync(this, options: options, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -339,6 +344,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public async Task<DialogTurnResult> CancelAllDialogsAsync(string eventName = "cancelDialog", object eventValue = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (eventValue is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(eventValue)} cannot be a cancellation token");
+            }
+
             activeTags = null;
 
             if (Stack.Any() || Parent != null)
@@ -392,6 +402,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<DialogTurnResult> ReplaceDialogAsync(string dialogId, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (options is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+            }
+
             // Pop stack
             if (Stack.Any())
             {
@@ -544,6 +559,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (result is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(result)} cannot be a cancellation token");
+            }
+
             var instance = ActiveDialog;
             if (instance != null)
             {

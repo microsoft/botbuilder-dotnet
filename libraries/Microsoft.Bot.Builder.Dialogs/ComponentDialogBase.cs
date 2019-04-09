@@ -48,6 +48,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (options is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+            }
+
             if (outerDc == null)
             {
                 throw new ArgumentNullException(nameof(outerDc));
@@ -110,6 +115,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext outerDc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (result is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(result)} cannot be a cancellation token");
+            }
+
             await EnsureInitialized(outerDc).ConfigureAwait(false);
 
             // Containers are typically leaf nodes on the stack but the dev is free to push other dialogs

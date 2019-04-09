@@ -8,6 +8,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     /// </summary>
     public class FloatInput : NumberInput<float>
     {
+        public FloatInput()
+        {
+            this.MinValue = float.MinValue;
+            this.MaxValue = float.MaxValue;
+        }
+
         protected override string OnComputeId()
         {
             return $"FloatInput[{BindingPath()}]";

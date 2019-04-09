@@ -47,6 +47,8 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
             // register custom types
             TypeFactory.Register("Testbot.RuleRecognizer", typeof(RuleRecognizer));
+            TypeFactory.Register("Testbot.CalculateDogYears", typeof(CalculateDogYears));
+            TypeFactory.Register("Testbot.JavascriptStep", typeof(JavascriptStep));
         }
 
         public IHostingEnvironment HostingEnvironment { get; }
