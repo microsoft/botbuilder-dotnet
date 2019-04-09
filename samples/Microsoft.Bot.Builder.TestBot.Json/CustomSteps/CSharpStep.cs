@@ -83,40 +83,5 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                             .AddImports("System.Dynamic"),
                 globalsType: typeof(DialogContextState));
         }
-
-        //public class DynamicDialogContextState
-        //{
-        //    private dynamic state;
-        //    private DialogContextState original;
-
-        //    public DynamicDialogContextState(DialogContextState original)
-        //    {
-        //        this.original = original;
-        //        this.state = JObject.FromObject(original);
-        //    }
-
-        //    public dynamic user { get { return state.user; } }
-        //    public dynamic conversation { get { return state.conversation; } }
-        //    public dynamic dialog { get { return state.dialog; } }
-        //    public dynamic turn { get { return state.turn; } }
-
-        //    public void ApplyChanges()
-        //    {
-        //        Merge(this.original.User, state.user);
-        //        Merge(this.original.Conversation, state.conversation);
-        //        Merge(this.original.Dialog, state.dialog);
-        //        Merge(this.original.Turn, state.turn);
-        //    }
-
-        //    private void Merge(IDictionary<string, object> dictionary, object obj)
-        //    {
-        //        JObject job = (JObject)obj;
-        //        foreach (var key in job)
-        //        {
-        //            dictionary[key.Key] = key.Value;
-        //        }
-        //    }
-        //}
-
     }
 }
