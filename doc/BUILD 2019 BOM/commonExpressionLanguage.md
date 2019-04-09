@@ -9,7 +9,7 @@
 - - [X] Rewrite parser using ANTLR
 - - [X] Implement R0 set of pre-built functions for C# and JS
     - - [X] Migrate to new style C#
-    - - [ ] Migrate to new style JS
+    - - [X] Migrate to new style JS
 - - [X] Implement support for short hand entity resolution - $entityName, #entityName, @entityName
 - - [X] Close on JSON .vs. native object support in expression language
 - - [X] Pick up new changes from Chris McConnell on expression evaluate, parse tree walk
