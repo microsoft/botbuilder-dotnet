@@ -944,25 +944,16 @@ namespace Microsoft.Bot.Builder
         {
             try
             {
-                var interfaces = this._credentialProvider.GetType().GetInterfaces();
+                var asAppId = this._credentialProvider as IAppId;
 
-                if (!interfaces.Any(x => x.Name == "IAppId"))
+                if (asAppId == null)
                 {
-                    throw new ArgumentNullException("BotFrameworkAdapter.ContinueConversationAsync(): Interface IAppId is missing");
+                    throw new InvalidOperationException("BotFrameworkAdapter.ContinueConversationAsync(): Interface IAppId is missing");
                 }
 
-                var interf = this._credentialProvider.GetType().GetInterface("IAppId");
+                string appId = asAppId.AppId;
 
-                var property = interf.GetProperty("AppId");
-
-                if (property is null)
-                {
-                    return string.Empty;
-                }
-
-                var value = property.GetValue(this._credentialProvider);
-
-                return value != null ? value.ToString() : string.Empty;
+                return appId;
             }
             catch (Exception ex)
             {

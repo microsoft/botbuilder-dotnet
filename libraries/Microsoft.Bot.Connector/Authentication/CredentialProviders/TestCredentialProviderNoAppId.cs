@@ -5,23 +5,23 @@ namespace Microsoft.Bot.Connector.Authentication.CredentialProviders
     /// <summary>
     /// A test implementation of the <see cref="ICredentialProvider"/> interface that doesn't implements IAppId interface.
     /// </summary>
-    public class TestCredentialProvider : ICredentialProvider
+    public class TestCredentialProviderNoAppId : ICredentialProvider
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TestCredentialProvider"/> class.
+        /// Initializes a new instance of the <see cref="TestCredentialProviderNoAppId"/> class.
         /// with empty credentials.
         /// </summary>
-        public TestCredentialProvider()
+        public TestCredentialProviderNoAppId()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TestCredentialProvider"/> class.
+        /// Initializes a new instance of the <see cref="TestCredentialProviderNoAppId"/> class.
         /// with the provided credentials.
         /// </summary>
         /// <param name="appId">The app ID.</param>
         /// <param name="password">The app password.</param>
-        public TestCredentialProvider(string appId, string password)
+        public TestCredentialProviderNoAppId(string appId, string password)
         {
             this.AppId = appId;
             this.Password = password;

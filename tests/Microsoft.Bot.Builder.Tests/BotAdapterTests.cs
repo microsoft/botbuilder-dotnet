@@ -218,12 +218,12 @@ namespace Microsoft.Bot.Builder.Tests
 
         [TestMethod]
         [ExpectedException(
-            typeof(ArgumentNullException),
-            "An AppId of null was inappropriately allowed.")]
+            typeof(InvalidOperationException),
+            "The credentialProvider does not implements IAppId interface.")]
         public async Task ContinueConversation_IAppIdMissing()
         {
             bool callbackInvoked = false;
-            var adapter = new BotFrameworkAdapter(new TestCredentialProvider("AppId", "AppSecret"));
+            var adapter = new BotFrameworkAdapter(new TestCredentialProviderNoAppId("AppId", "AppSecret"));
             ConversationReference cr = new ConversationReference
             {
                 ActivityId = "activityId",
