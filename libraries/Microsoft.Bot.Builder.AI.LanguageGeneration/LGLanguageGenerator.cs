@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             if (start != -1)
             {
                 ++start;
-                locale = filename.Substring(start, filename.LastIndexOf('.') - start);
+                locale = filename.Substring(start, filename.LastIndexOf('.') - start).Trim().ToLower();
             }
             return locale;
         }
