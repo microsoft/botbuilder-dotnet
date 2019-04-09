@@ -1,0 +1,28 @@
+﻿{
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "steps": [
+        {
+            "$type": "Microsoft.ChoiceInput",
+            "property": "user.listType",
+            "choices": [
+                {
+                    "value": "DefaultList",
+                    "Synonyms": [
+                        "default",
+                        "todo"
+                    ]
+
+                },
+                {
+                    "value": "GroceryList",
+                    "Synonyms": [
+                        "shopping"
+                    ]
+                }
+            ],
+            "prompt": "Please choose the your todo list type",
+            "style": "SuggestedAction"
+        }
+    ]
+}

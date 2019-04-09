@@ -1,11 +1,21 @@
 ﻿# ShowTodo
-- CASE: {count(user.todos) > 0}
+- IF: {count(user.todos) > 0}
     - ```
     Your most recent @{count(user.todos)} tasks are 
     @{humanize(user.todos, '[showSingleTodo]', '\n')}
       ```
-- DEFAULT:
-    - You don't have any tasks.
+- ELSE:
+    - You don't have any todos.
 
 # showSingleTodo(x)
 - * {x}
+
+# ShowGrocery
+- IF: {count(user.groceryList) > 0}
+    - ```
+    Your most recent @{count(user.groceryList)} tasks are 
+    @{humanize(user.groceryList, '[showSingleTodo]', '\n')}
+      ```
+- ELSE:
+    - You don't have any todos in grocery.
+
