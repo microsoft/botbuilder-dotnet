@@ -24,6 +24,18 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public float ScoreThreshold { get; set; }
 
         /// <summary>
+        /// Gets or sets the time in milliseconds to wait before the request times out.
+        /// </summary>
+        /// <value>
+        /// The time in milliseconds to wait before the request times out. Default is 100000 milliseconds.
+        /// </value>
+        /// <remarks>
+        /// This property allows users to set Timeout without having to pass in a custom HttpClient to QnAMaker class constructor.
+        /// If using custom HttpClient, then set Timeout value in HttpClient instead of QnAMakerOptions.Timeout.
+        /// </remarks>
+        public double Timeout { get; set; }
+
+        /// <summary>
         /// Gets or sets the number of ranked results you want in the output.
         /// </summary>
         /// <value>

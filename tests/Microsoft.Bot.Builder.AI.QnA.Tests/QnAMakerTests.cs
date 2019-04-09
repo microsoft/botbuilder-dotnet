@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             // Invoke flow which uses mock
             var transcriptStore = new MemoryTranscriptStore();
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(new TranscriptLoggerMiddleware(transcriptStore));
             string conversationId = null;
 
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             Assert.AreEqual(7, pagedResult.Items.Length);
             Assert.AreEqual("how do I clean the stove?", pagedResult.Items[0].AsMessageActivity().Text);
             Assert.IsTrue(pagedResult.Items[1].Type.CompareTo(ActivityTypes.Trace) == 0);
-            QnAMakerTraceInfo traceInfo = ((JObject)((ITraceActivity)pagedResult.Items[1]).Value).ToObject<QnAMakerTraceInfo>();
+            var traceInfo = ((JObject)((ITraceActivity)pagedResult.Items[1]).Value).ToObject<QnAMakerTraceInfo>();
             Assert.IsNotNull(traceInfo);
             Assert.IsNotNull(pagedResult.Items[2].AsTypingActivity());
             Assert.AreEqual("echo:how do I clean the stove?", pagedResult.Items[3].AsMessageActivity().Text);
@@ -1023,6 +1023,37 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).Count, 1);
             Assert.IsTrue(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).ContainsKey("score"));
             Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2])["score"], 3.14159);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        public void QnaMaker_Timeout()
+        {
+            var endpoint = new QnAMakerEndpoint
+            {
+                KnowledgeBaseId = _knowlegeBaseId,
+                EndpointKey = _endpointKey,
+                Host = _hostname,
+            };
+
+            var optionsWithTimeout = new QnAMakerOptions()
+            {
+                Timeout = 300000,
+            };
+            var qna = new QnAMaker(endpoint, optionsWithTimeout);
+            var expectedTimeout = 300000;
+
+            Assert.AreEqual(expectedTimeout, QnAMaker.DefaultHttpClient.Timeout.TotalMilliseconds);
+
+            var optionsWithNewTimeout = new QnAMakerOptions()
+            {
+                Timeout = 200000,
+            };
+            var qnaWithOverwrittenTimeout = new QnAMaker(endpoint, optionsWithNewTimeout);
+            var newExpectedTimeout = 200000;
+
+            Assert.AreEqual(newExpectedTimeout, QnAMaker.DefaultHttpClient.Timeout.TotalMilliseconds);
         }
 
         private static TurnContext GetContext(string utterance)

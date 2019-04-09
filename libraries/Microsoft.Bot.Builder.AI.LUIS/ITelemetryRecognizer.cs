@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <summary>
         /// Gets the currently configured <see cref="IBotTelemetryClient"/> that logs the LuisResult event.
         /// </summary>
-        /// <value>The <see cref=IBotTelemetryClient"/> being used to log events.</value>
+        /// <value>The <see cref="IBotTelemetryClient"/> being used to log events.</value>
         IBotTelemetryClient TelemetryClient { get; }
 
         /// <summary>
