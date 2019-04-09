@@ -756,7 +756,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 Text = "please book from May 5 to June 6",
                 Recipient = new ChannelAccount(),           // to no where
                 From = new ChannelAccount(),                // from no one
-                Conversation = new ConversationAccount(),   // on no conversation
+                Conversation = new ConversationAccount(),    // on no conversation
             };
 
             var turnContext = new TurnContext(adapter, activity);
@@ -807,7 +807,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 Text = "please book from May 5 to June 6",
                 Recipient = new ChannelAccount(),           // to no where
                 From = new ChannelAccount(),                // from no one
-                Conversation = new ConversationAccount(),   // on no conversation
+                Conversation = new ConversationAccount(),    // on no conversation
             };
 
             var turnContext = new TurnContext(adapter, activity);
@@ -869,7 +869,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 Text = "please book from May 5 to June 6",
                 Recipient = new ChannelAccount(),           // to no where
                 From = new ChannelAccount(),                // from no one
-                Conversation = new ConversationAccount(),   // on no conversation
+                Conversation = new ConversationAccount(),    // on no conversation
             };
 
             var turnContext = new TurnContext(adapter, activity);
@@ -912,7 +912,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 Text = "please book from May 5 to June 6",
                 Recipient = new ChannelAccount(),           // to no where
                 From = new ChannelAccount(),                // from no one
-                Conversation = new ConversationAccount(),   // on no conversation
+                Conversation = new ConversationAccount(),    // on no conversation
             };
 
             var turnContext = new TurnContext(adapter, activity);
@@ -955,7 +955,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 Text = "please book from May 5 to June 6",
                 Recipient = new ChannelAccount(),           // to no where
                 From = new ChannelAccount(),                // from no one
-                Conversation = new ConversationAccount(),   // on no conversation
+                Conversation = new ConversationAccount(),    // on no conversation
             };
 
             var turnContext = new TurnContext(adapter, activity);
@@ -1001,8 +1001,8 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
         private static TurnContext GetContext(string utterance)
         {
-            var b = new TestAdapter();
-            var a = new Activity
+            var testAdapter = new TestAdapter();
+            var activity = new Activity
             {
                 Type = ActivityTypes.Message,
                 Text = utterance,
@@ -1010,7 +1010,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 Recipient = new ChannelAccount(),
                 From = new ChannelAccount(),
             };
-            return new TurnContext(b, a);
+            return new TurnContext(testAdapter, activity);
         }
 
         // Compare two JSON structures and ensure entity and intent scores are within delta
@@ -1129,85 +1129,6 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         {
             var path = Path.Combine(_testData, fileName);
             return path;
-        }
-    }
-
-    public class TelemetryOverrideRecognizer : LuisRecognizer
-    {
-        public TelemetryOverrideRecognizer(IBotTelemetryClient telemetryClient, LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, bool logPersonalInformation = false, HttpClientHandler clientHandler = null)
-           : base(application, predictionOptions, includeApiResults, clientHandler)
-        {
-            LogPersonalInformation = logPersonalInformation;
-        }
-
-        protected override Task OnRecognizerResultAsync(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> properties = null, Dictionary<string, double> metrics = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            properties.TryAdd("MyImportantProperty", "myImportantValue");
-
-            // Log event
-            TelemetryClient.TrackEvent(
-                            LuisTelemetryConstants.LuisResult,
-                            properties,
-                            metrics);
-
-            // Create second event.
-            var secondEventProperties = new Dictionary<string, string>();
-            secondEventProperties.Add(
-                "MyImportantProperty2",
-                "myImportantValue2");
-            TelemetryClient.TrackEvent(
-                            "MySecondEvent",
-                            secondEventProperties);
-            return Task.CompletedTask;
-        }
-    }
-
-    public class OverrideFillRecognizer : LuisRecognizer
-    {
-        public OverrideFillRecognizer(IBotTelemetryClient telemetryClient, LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, bool logPersonalInformation = false, HttpClientHandler clientHandler = null)
-           : base(application, predictionOptions, includeApiResults, clientHandler)
-        {
-            LogPersonalInformation = logPersonalInformation;
-        }
-
-        protected override async Task OnRecognizerResultAsync(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var properties = await FillLuisEventPropertiesAsync(recognizerResult, turnContext, telemetryProperties, cancellationToken).ConfigureAwait(false);
-
-            properties.TryAdd("MyImportantProperty", "myImportantValue");
-
-            // Log event
-            TelemetryClient.TrackEvent(
-                            LuisTelemetryConstants.LuisResult,
-                            properties,
-                            telemetryMetrics);
-
-            // Create second event.
-            var secondEventProperties = new Dictionary<string, string>();
-            secondEventProperties.Add(
-                "MyImportantProperty2",
-                "myImportantValue2");
-            TelemetryClient.TrackEvent(
-                            "MySecondEvent",
-                            secondEventProperties);
-        }
-    }
-
-    public class TelemetryConvertResult : IRecognizerConvert
-    {
-        private RecognizerResult _result;
-
-        public TelemetryConvertResult()
-        {
-        }
-
-        /// <summary>
-        /// Convert recognizer result.
-        /// </summary>
-        /// <param name="result">Result to convert.</param>
-        public void Convert(dynamic result)
-        {
-            _result = result as RecognizerResult;
         }
     }
 }
