@@ -29,15 +29,14 @@
 | TextMessageActivityGenerator |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 | Analyzer                     |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 | Evaluator                    |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
-| Exceptions                   |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>|
 | ExpressionAnalyzerVisitor    |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 | GetMethodExtension           |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
-| GetValueExtensions           |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 | LanguageGenerationRenderer   |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>|
 | LGLanguageGenerator          |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>|
-| StaticChecker                |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>|
+| StaticChecker                |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 | TemplateEngine               |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
-| TemplateErrorListener        |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
+| ErrorListener                |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
+| LGTemplate                   |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 | LGFileParserVisitor          |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 | LGFileParserListener         |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 
