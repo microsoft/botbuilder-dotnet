@@ -20,12 +20,12 @@ namespace Microsoft.Bot.Builder.Azure
     /// </summary>
     public class CosmosDbStorage : IStorage
     {
-        private static readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
-
         // When setting up the database, calls are made to CosmosDB. If multiple calls are made, we'll end up setting the
         // collectionLink member variable more than once. The semaphore is for making sure the initialization of the
         // database is done only once.
         private static SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+
+        private readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
 
         private readonly string _databaseId;
         private readonly string _collectionId;
@@ -78,6 +78,27 @@ namespace Microsoft.Bot.Builder.Azure
             // Invoke CollectionPolicy delegate to further customize settings
             cosmosDbStorageOptions.ConnectionPolicyConfigurator?.Invoke(connectionPolicy);
             _client = new DocumentClient(cosmosDbStorageOptions.CosmosDBEndpoint, cosmosDbStorageOptions.AuthKey, connectionPolicy);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CosmosDbStorage"/> class.
+        /// using the provided CosmosDB credentials, database ID, and collection ID.
+        /// </summary>
+        /// <param name="cosmosDbStorageOptions">Cosmos DB storage configuration options.</param>
+        /// <param name="jsonSerializer">If passing in a custom JsonSerializer, we recommend the following settings: 
+        /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.All;</para>
+        /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include;</para>
+        /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver();</para>
+        /// </param>
+        public CosmosDbStorage(CosmosDbStorageOptions cosmosDbStorageOptions, JsonSerializer jsonSerializer)
+            : this(cosmosDbStorageOptions)
+        {
+            if (jsonSerializer == null)
+            {
+                throw new ArgumentNullException(nameof(jsonSerializer));
+            }
+
+            _jsonSerializer = jsonSerializer;
         }
 
         /// <summary>
