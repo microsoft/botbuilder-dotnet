@@ -166,6 +166,11 @@
             "$ref": "#/definitions/Microsoft.TextInput"
         },
         {
+            "title": "Testbot.CSharpStep",
+            "description": "This gives you the ability to define a CSharp function to manipulate memory.  State variables are global",
+            "$ref": "#/definitions/Testbot.CSharpStep"
+        },
+        {
             "title": "Testbot.CalculateDogYears",
             "description": "This will take the property and return as the dialog result ",
             "$ref": "#/definitions/Testbot.CalculateDogYears"
@@ -1474,6 +1479,11 @@
                     "title": "Testbot.CalculateDogYears",
                     "description": "This will take the property and return as the dialog result ",
                     "$ref": "#/definitions/Testbot.CalculateDogYears"
+                },
+                {
+                    "title": "Testbot.CSharpStep",
+                    "description": "This gives you the ability to define a CSharp function to manipulate memory.  State variables are global",
+                    "$ref": "#/definitions/Testbot.CSharpStep"
                 },
                 {
                     "title": "Testbot.JavascriptStep",
@@ -2923,6 +2933,74 @@
                 }
             ]
         },
+        "Testbot.CSharpStep": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "CSharp Step",
+            "description": "This gives you the ability to define a CSharp function to manipulate memory.  State variables are global",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Testbot.CSharpStep"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "property": {
+                    "type": "string",
+                    "title": "Property",
+                    "description": "This will be the property passed in",
+                    "examples": [
+                        "value.birthday"
+                    ]
+                },
+                "outputProperty": {
+                    "type": "string",
+                    "title": "Output Property",
+                    "description": "This will be the property which the result will be put into",
+                    "examples": [
+                        "value.birthday"
+                    ]
+                },
+                "script": {
+                    "type": "string",
+                    "title": "Script",
+                    "description": "name of the script file"
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Testbot.CalculateDogYears": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Calculate Dog Years",
@@ -2949,10 +3027,10 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
-                "property": {
+                "inputProperty": {
                     "type": "string",
                     "title": "Input Property",
-                    "description": "This will be the property passed in "
+                    "description": "This will be the property passed in"
                 },
                 "outputProperty": {
                     "type": "string",
