@@ -16,6 +16,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
 {
     public class BotFrameworkWebSocketAdapter : IBotFrameworkHttpAdapter
     {
+        // These headers are used to send the required values for validation of an incoming connection request from an ABS channel.
+        // TODO: We must document this somewhere, right? Find it and put a reference link here.
+        private const string AuthHeaderName = "authorization";
+        private const string ChannelIdHeaderName = "channelid";
         private readonly IChannelProvider _channelProvider;
         private readonly ICredentialProvider _credentialProvider;
 
@@ -42,8 +46,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
                 throw new ArgumentNullException(nameof(bot));
             }
 
-            var authHeader = httpRequest.Headers.Where(x => x.Key.ToLower() == "authorization").FirstOrDefault().Value;
-            var channelId = httpRequest.Headers.Where(x => x.Key.ToLower() == "channelid").FirstOrDefault().Value;
+            var authHeader = httpRequest.Headers.Where(x => x.Key.ToLower() == AuthHeaderName).FirstOrDefault().Value;
+            var channelId = httpRequest.Headers.Where(x => x.Key.ToLower() == ChannelIdHeaderName).FirstOrDefault().Value;
             try
             {
                 var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialProvider, _channelProvider, channelId).ConfigureAwait(false);
