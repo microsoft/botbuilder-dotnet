@@ -125,5 +125,72 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("John is a great name!")
             .StartTestAsync();
         }
+
+        [TestMethod]
+        public async Task PromptValidatorNumberOfAttempts()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            TestAdapter adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            DialogSet dialogs = new DialogSet(dialogState);
+
+            // Create TextPrompt with dialogId "namePrompt" and custom validator
+            dialogs.Add(new TextPrompt("namePrompt", async (promptContext, cancellationToken) =>
+            {
+                string result = promptContext.Recognized.Value;
+                if (result.Length > 3)
+                {
+                    return true;
+                }
+                else
+                {
+                    var reply = MessageFactory.Text($"Please send a name that is longer than 3 characters. {promptContext.Options.NumberOfAttempts}");
+                    await promptContext.Context.SendActivityAsync(reply, cancellationToken);
+                }
+
+                return false;
+            }));
+
+            var steps = new WaterfallStep[]
+                    {
+                        async (stepContext, cancellationToken) =>
+                        {
+                            return await stepContext.PromptAsync("namePrompt", new PromptOptions { Prompt = new Activity { Text = "Please type your name.", Type = ActivityTypes.Message } }, cancellationToken);
+                        },
+                        async (stepContext, cancellationToken) =>
+                        {
+                            var name = (string)stepContext.Result;
+                            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"{name} is a great name!"), cancellationToken);
+                            return await stepContext.EndDialogAsync();
+                        },
+                    };
+            dialogs.Add(new WaterfallDialog(
+                "nameDialog",
+                steps));
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                await dc.ContinueDialogAsync(cancellationToken);
+                if (!turnContext.Responded)
+                {
+                    await dc.BeginDialogAsync("nameDialog", null, cancellationToken);
+                }
+            })
+            .Send("hello")
+            .AssertReply("Please type your name.")
+            .Send("hi")
+            .AssertReply("Please send a name that is longer than 3 characters. 0")
+            .Send("hi")
+            .AssertReply("Please send a name that is longer than 3 characters. 1")
+            .Send("hi")
+            .AssertReply("Please send a name that is longer than 3 characters. 2")
+            .Send("John")
+            .AssertReply("John is a great name!")
+            .StartTestAsync();
+        }
     }
 }
