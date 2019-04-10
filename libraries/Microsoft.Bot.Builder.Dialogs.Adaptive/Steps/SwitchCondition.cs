@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
@@ -19,10 +20,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     /// </summary>
     public class SwitchCondition : DialogCommand, IDialogDependencies
     {
+        private Dictionary<Expression, List<IDialog>> cases = null;
+
         /// <summary>
         /// Condition expression against memory Example: "user.age"
         /// </summary>
-        public Expression Condition { get; set; }
+        public string Condition { get; set; }
 
         /// <summary>
         /// Cases
@@ -50,19 +53,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             // Ensure planning context
             if (dc is PlanningContext planning)
             {
-                var (value, error) = Condition.TryEvaluate(dc.State);
-                if (error != null)
+                lock (this.Condition)
                 {
-                    // Do what? 
+                    var engine = new ExpressionEngine();
+                    Expression condition = engine.Parse(this.Condition);
+                    if (this.cases == null)
+                    {
+                        this.cases = new Dictionary<Expression, List<IDialog>>();
+                        foreach (var c in this.Cases)
+                        {
+                            var caseCondition = Expression.EqualsExpression(condition, engine.Parse(c.Key));
+                            // map of expression to steps
+                            this.cases[caseCondition] = c.Value;
+                        }
+                    }
                 }
 
                 List<IDialog> stepsToRun = this.Default;
 
-                if (value != null && this.Cases.TryGetValue(value.ToString(), out List<IDialog> steps))
+                foreach (var caseCondition in this.cases)
                 {
-                    stepsToRun = steps;
+
+                    var (value, error) = caseCondition.Key.TryEvaluate(dc.State);
+                    if (error != null)
+                    {
+                        // Do what? 
+                    }
+                    else if (((bool)value) == true)
+                    {
+                        stepsToRun = caseCondition.Value;
+                        break;
+                    }
                 }
 
+                // run condition or default steps
                 var planSteps = stepsToRun.Select(s => new PlanStepState()
                 {
                     DialogStack = new List<DialogInstance>(),
@@ -100,7 +124,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
             if (this.Cases != null)
             {
-                foreach(var steps in this.Cases.Values)
+                foreach (var steps in this.Cases.Values)
                 {
                     dialogs.AddRange(steps);
                 }

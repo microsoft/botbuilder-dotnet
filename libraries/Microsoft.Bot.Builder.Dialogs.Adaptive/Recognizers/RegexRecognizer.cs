@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
@@ -20,6 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// <summary>
         /// Dictionary of patterns -> Intent names
         /// </summary>
+        [JsonProperty("intents")]
         public Dictionary<string, string> Intents = new Dictionary<string, string>();
         
         public RegexRecognizer()
