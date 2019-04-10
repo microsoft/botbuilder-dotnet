@@ -93,7 +93,22 @@ namespace Microsoft.Bot.Builder.Expressions
             {
                 references.Add(path);
             }
-            return references.ToList();
+
+            var filteredReferences = new HashSet<string>();
+
+            references.Where(x => !x.StartsWith("$local.")).ToList().ForEach(x =>
+            {
+                if (x.StartsWith("$global."))
+                {
+                    filteredReferences.Add(x.Substring(8));
+                }
+                else
+                {
+                    filteredReferences.Add(x);
+                }
+            });
+
+            return filteredReferences.ToList();
         }
 
         /// <summary>
@@ -111,12 +126,23 @@ namespace Microsoft.Bot.Builder.Expressions
                 var children = expression.Children;
                 if (expression.Type == ExpressionType.Accessor)
                 {
+                    var prop = (string)((Constant)children[0]).Value;
+
+                    if (children.Length == 1)
+                    {
+                        path = prop;
+                    }
+
                     if (children.Length == 2)
                     {
                         path = ReferenceWalk(children[1], references, extension);
+                        if (path != null)
+                        {
+                            path = path + "." + prop;
+                        }
+                        // if path is null we still keep it null, won't append prop
+                        // because for example, first(items).x should not return x as refs
                     }
-                    var prop = (string)((Constant)children[0]).Value;
-                    path = (path == null ? prop : path + "." + prop);
                 }
                 else if (expression.Type == ExpressionType.Element)
                 {
@@ -192,6 +218,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         {
                             value = jvalue.Value;
                         }
+                        else value = jtoken;
                     }
                 }
                 else

@@ -286,3 +286,4 @@ PublishProfiles/
 
 appsettings.local.json
 **/*/.luisrc
+/.vscode/launch.json

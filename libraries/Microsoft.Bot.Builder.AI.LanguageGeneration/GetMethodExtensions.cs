@@ -32,8 +32,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             // TODO: Should add verifiers and validators
             switch (name)
             {
-                case "count":
-                    return new ExpressionEvaluator(BuiltInFunctions.Apply(this.Count));
                 case "join":
                     return new ExpressionEvaluator(BuiltInFunctions.Apply(this.Join));
                 case "foreach":

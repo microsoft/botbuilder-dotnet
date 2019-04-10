@@ -91,6 +91,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (result is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(result)} cannot be a cancellation token");
+            }
+
             // Prompts are typically leaf nodes on the stack but the dev is free to push other dialogs
             // on top of the stack which will result in the prompt receiving an unexpected call to
             // dialogResume() when the pushed on dialog ends.

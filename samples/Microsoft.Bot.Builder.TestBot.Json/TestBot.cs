@@ -63,6 +63,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             //var rootFile = resourceExplorer.GetResource("DoSteps.main.dialog");
             //var rootFile = resourceExplorer.GetResource("BeginDialog.main.dialog");
             //var rootFile = resourceExplorer.GetResource("ExternalLanguage.main.dialog");
+            //var rootFile = resourceExplorer.GetResource("CustomStep.dialog");
 
             rootDialog = DeclarativeTypeLoader.Load<IDialog>(rootFile.FullName, resourceExplorer, registry);
             _dialogs = new DialogSet(accessors.ConversationDialogState);

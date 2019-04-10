@@ -12,7 +12,6 @@ using Antlr4.Runtime.Tree;
 namespace Microsoft.Bot.Builder.Expressions.Parser
 {
 
-
     /// <summary>
     /// Parser to turn strings into an <see cref="Expression"/>.
     /// </summary>

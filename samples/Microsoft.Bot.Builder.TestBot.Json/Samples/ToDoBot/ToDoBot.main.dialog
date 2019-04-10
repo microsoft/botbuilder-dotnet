@@ -72,7 +72,7 @@
             ]
         },
         {
-            "$type": "Microsoft.NoneIntentRule",
+            "$type": "Microsoft.UnknownIntentRule",
             "steps": [
                 {
                     "$type": "Microsoft.SendActivity",

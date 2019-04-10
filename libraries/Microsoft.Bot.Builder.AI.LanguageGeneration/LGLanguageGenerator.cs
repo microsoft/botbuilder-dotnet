@@ -34,42 +34,25 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 var engs = new Dictionary<string, TemplateEngine>(StringComparer.CurrentCultureIgnoreCase);
 
                 var lgs = this.resourceManager.GetResources("lg").ToArray();
-                var contents = lgs.Select(resource => File.ReadAllText(resource.FullName));
+                var contents = lgs.Select(resource => (FileLocale(resource.Name), File.ReadAllText(resource.FullName)));
 
-                Dictionary<string, StringBuilder> languageResources = new Dictionary<string, StringBuilder>();
+                Dictionary<string, string> languageResources = new Dictionary<string, string>();
                 foreach (var result in contents)
                 {
-                    var lgText = result;
-                    // get lang (HACK)
-                    var iEnd = lgText.IndexOf("\r\n");
-                    var firstLine = (iEnd > 0) ? lgText.Substring(0, iEnd) : lgText;
-
-                    string lang = String.Empty;
-                    iEnd = firstLine.IndexOf("]");
-                    if (iEnd > 0)
+                    var (locale, text) = result;
+                    if (!languageResources.ContainsKey(locale))
                     {
-                        lang = firstLine.Substring(0, iEnd).Trim('[', ']').ToLower();
-                        if (!LanguagePolicy.ContainsKey(lang))
-                        {
-                            lang = String.Empty;
-                        }
-                        lgText = lgText.Substring(iEnd);
+                        languageResources[locale] = text;
                     }
-
-                    StringBuilder sb;
-                    if (!languageResources.TryGetValue(lang, out sb))
+                    else
                     {
-                        sb = new StringBuilder();
-                        languageResources.Add(lang, sb);
+                        languageResources[locale] += $"\n\n{text}";
                     }
-
-                    // add in the lg file text
-                    sb.AppendLine(lgText);
                 }
 
                 foreach (var lang in languageResources.Keys)
                 {
-                    engs.Add(lang, TemplateEngine.FromText(languageResources[lang].ToString()));
+                    engs.Add(lang, TemplateEngine.FromText(languageResources[lang]));
                 }
 
                 if (!engs.ContainsKey(""))
@@ -110,6 +93,23 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return null;
         }
 
+        private string FileLocale(string filename)
+        {
+            var locale = "";
+            filename = Path.GetFileNameWithoutExtension(filename);
+            var start = filename.LastIndexOf('.');
+            if (start == -1)
+                // default
+                return "";
+            ++start;
+            locale = filename.Substring(start, filename.Length - start).Trim().ToLower();
+            if (CultureInfo.GetCultures(CultureTypes.AllCultures).Where(c => String.Compare(c.IetfLanguageTag, locale, ignoreCase: true) == 0).Any())
+            {
+                return locale;
+            }
+
+            return "";
+        }
 
         private string BindToTemplate(TemplateEngine engine, string inline, string id, object data, string[] types, string[] tags, Func<string, object, object> valueBinder)
         {

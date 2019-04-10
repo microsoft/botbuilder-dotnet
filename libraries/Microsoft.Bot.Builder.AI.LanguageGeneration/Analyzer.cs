@@ -46,10 +46,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             evaluationTargetStack.Push(new EvaluationTarget(templateName, null));
             var rawDependencies = Visit(TemplateMap[templateName].ParseTree);
 
-            var parameters = TemplateMap[templateName].Paramters;
 
-            // we need to exclude parameters from raw dependencies
-            var dependencies = rawDependencies.Except(parameters).Distinct().ToList();
+            // we don't exclude paratemters any more
+            // because given we don't track down for templates have paramters
+            // the only scenario that we are still analyzing an paramterized template is 
+            // this template is root template to anaylze, in this we also don't have exclude paramters
+
+            var dependencies = rawDependencies.Distinct().ToList();
 
             evaluationTargetStack.Pop();
 
@@ -99,8 +102,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 {
                     result.AddRange(AnalyzeExpression(expression.GetText()));
                 }
-
-                result.AddRange(Visit(ifRule.normalTemplateBody()));
+                if(ifRule.normalTemplateBody() != null)
+                {
+                    result.AddRange(Visit(ifRule.normalTemplateBody()));
+                }
             }
 
             return result;
@@ -148,17 +153,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                         if (str.StartsWith("[") && str.EndsWith("]"))
                         {
                             found = true;
-                            var end = str.IndexOf('(');
-                            if (end == -1)
-                            {
-                                end = str.Length - 1;
-                            }
-                            var template = str.Substring(1, end - 1);
-                            var analyzer = new Analyzer(Templates);
-                            foreach (var reference in analyzer.AnalyzeTemplate(template))
-                            {
-                                references.Add(reference);
-                            }
+                            references.UnionWith(AnalyzeTemplateRef(str));
                         }
                         else if (str.StartsWith("{") && str.EndsWith("}"))
                         {
@@ -185,12 +180,17 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var argsStartPos = exp.IndexOf('(');
             if (argsStartPos > 0) // Do have args
             {
-                // EvaluateTemplate all arguments using ExpressoinEngine
+                // Analyze all arguments using ExpressoinEngine
                 var argsEndPos = exp.LastIndexOf(')');
 
-                var templateName = exp.Substring(0, argsStartPos);
+                var args = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(',');
+                var refs = args.Select(arg => AnalyzeExpression(arg)).SelectMany(x => x).ToList();
 
-                return AnalyzeTemplate(templateName);
+                // Before we have a matural solution to analyze paramterized template, we stop digging into 
+                // templates with paramters, we just analyze it's args.
+                // With this approach we may not get a very fine-grained result
+                // but the result will still be accurate
+                return refs;
             }
             else
             {

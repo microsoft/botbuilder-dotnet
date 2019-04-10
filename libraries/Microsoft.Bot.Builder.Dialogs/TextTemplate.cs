@@ -43,5 +43,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             return null;
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(TextTemplate)}({this.Template})";
+        }
+
     }
 }
