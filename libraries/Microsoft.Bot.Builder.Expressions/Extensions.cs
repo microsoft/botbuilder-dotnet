@@ -207,6 +207,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         {
                             value = jvalue.Value;
                         }
+                        else value = jtoken;
                     }
                 }
                 else
