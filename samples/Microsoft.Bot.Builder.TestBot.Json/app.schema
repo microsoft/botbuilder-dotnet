@@ -1230,6 +1230,17 @@
                     "additionProperties": true,
                     "title": "Http headers",
                     "description": "Http headers to include with the HTTP request (supports data binding)"
+                },
+                "responseTypes": {
+                    "type": "object",
+                    "title": "Response Types",
+                    "description": "Describes how to parse the response from the http request. If Activity or Activities, then the they will be sent to the user.",
+                    "enum": [
+                        "none",
+                        "json",
+                        "activity",
+                        "activities"
+                    ]
                 }
             },
             "patternProperties": {
