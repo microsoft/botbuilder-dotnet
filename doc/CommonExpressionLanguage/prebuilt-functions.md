@@ -27,7 +27,6 @@ or you can browse the functions based on [alphabetical order](#alphabetical-list
 |Function	|Explanation|
 |-----------|-----------|
 |[contains](#contains)	|Works to find an item in a string or to find an item in an array or to find a parameter in a complex object. E.g. contains(‘hello world, ‘hello); contains([‘1’, ‘2’], ‘1’); contains({“foo”:”bar”}, “foo”)	|
-|[parameters](#parameters)	|Returns the value of the specified parameter. Can be nested to walk through complex objects. Can include array index if parameter value is an array. e.g. for {‘foo’:’bar’}, parameters(‘foo’) will return ‘bar’; for {‘foo’: [‘bar’, ‘bar2’]}, parameters(‘foo’)[0] will return ‘bar’; for {‘foo’: {‘bar’ : ‘bar2’}}, parameters(‘foo’).bar will return ‘bar2’	|
 |[empty](#empty)	|Check if the collection is empty	|
 |[first](#first)	|Returns the first item from the collection	|
 |[join](#join) 	|Return a string that has all the items from an array and has each character separated by a delimiter. Join(collection, delimiter). Join(createArray(‘a’,’b’), ‘.’) = “a.b”	|
@@ -1453,45 +1452,6 @@ And return these results:
 
 * First example: At least one expression is true, so the function returns `true`.
 * Second example: Both expressions are false, so the function returns `false`.
-
-<a name="parameters"></a>
-
-### parameters
-
-Return the value for a parameter that is
-described in your logic app definition.
-
-```
-parameters('<parameterName>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*parameterName*> | Yes | String | The name for the parameter whose value you want |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*parameter-value*> | Any | The value for the specified parameter |
-||||
-
-*Example*
-
-Suppose that you have this JSON value:
-
-```json
-{
-  "fullName": "Sophia Owen"
-}
-```
-
-This example gets the value for the specified parameter:
-
-```
-parameters('fullName')
-```
-
-And returns this result: `"Sophia Owen"`
 
 <a name="rand"></a>
 

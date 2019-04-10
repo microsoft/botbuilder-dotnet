@@ -101,8 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
             this.breakpoints = breakpoints ?? throw new ArgumentNullException(nameof(breakpoints));
             this.task = ListenAsync(new IPEndPoint(IPAddress.Any, port: 4712), cancellationToken.Token);
-
-            threads.Add(new BotThreadModel());
+            //threads.Add(new BotThreadModel());
         }
 
         public async Task DisposeAsync()

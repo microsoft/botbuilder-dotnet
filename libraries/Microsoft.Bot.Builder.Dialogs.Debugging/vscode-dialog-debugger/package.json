@@ -7,7 +7,7 @@
   "keywords": [ "debuggers", "bot" ],
   "icon": "icon.png",
   "preview": true,
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "Microsoft",
   "license": "SEE LICENSE file",
   "engines": {
@@ -41,7 +41,15 @@
         "label": "Bot Framework Dialog Debugger",
         "languages": [
           "dialog"
-        ]
+        ],
+        "initialConfigurations": [
+					{
+						"type": "dialog",
+						"request": "attach",
+            "name": "Attach to Dialog",
+            "debugServer": 4712
+					}
+				]
       }
     ],
     "breakpoints": [

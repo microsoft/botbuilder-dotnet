@@ -13,15 +13,16 @@
             "items": {
                 "type": "string",
                 "enum": [
-                    "BeginDialog",
-                    "ConsultDialog",
-                    "ActivityReceived",
-                    "UtteranceRecognized",
-                    "Fallback",
-                    "PlanStarted",
-                    "PlanSaved",
-                    "PlanEnded",
-                    "PlanResumed"
+                    "beginDialog",
+                    "consultDialog",
+                    "cancelDialog",
+                    "activityReceived",
+                    "recognizedIntent",
+                    "unknownIntent",
+                    "stepsStarted",
+                    "stepsSaved",
+                    "stepsEnded",
+                    "stepsResumed"
                 ]
             }
         }
