@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <param name="context">Dialog context.</param>
         /// <param name="cancel">Cancellation token.</param>
         /// <param name="rules">Possible rules to match.</param>
-        Task Initialize(DialogContext context, IEnumerable<IRule> rules, CancellationToken cancel = default(CancellationToken));
+        Task Initialize(DialogContext context, IEnumerable<IRule> rules, bool evaluate = true, CancellationToken cancel = default(CancellationToken));
 
         /// <summary>
         /// Return the set of rules that are candidates to run.

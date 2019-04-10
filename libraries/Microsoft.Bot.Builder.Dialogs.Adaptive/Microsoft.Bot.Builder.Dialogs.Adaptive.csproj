@@ -62,6 +62,9 @@
     <None Remove="Schemas\Rules\Microsoft.EventRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.IntentRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.Rule.schema" />
+    <None Remove="Schemas\Selectors\Microsoft.FirstSelector.schema" />
+    <None Remove="Schemas\Selectors\Microsoft.MostSpecificSelector.schema" />
+    <None Remove="Schemas\Selectors\Microsoft.RandomSelector.schema" />
     <None Remove="Schemas\Steps\Microsoft.BeginDialog.schema" />
     <None Remove="Schemas\Steps\Microsoft.CancelAllDialogs.schema" />
     <None Remove="Schemas\Steps\Microsoft.EditArray.schema" />
@@ -89,6 +92,9 @@
     <Content Include="Schemas\Rules\Microsoft.Rule.schema" />
     <Content Include="Schemas\Rules\Microsoft.EventRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.IntentRule.schema" />
+    <Content Include="Schemas\Selectors\Microsoft.FirstSelector.schema" />
+    <Content Include="Schemas\Selectors\Microsoft.MostSpecificSelector.schema" />
+    <Content Include="Schemas\Selectors\Microsoft.RandomSelector.schema" />
     <Content Include="Schemas\Steps\Microsoft.InitProperty.schema" />
     <Content Include="Schemas\Steps\Microsoft.SetProperty.schema" />
     <Content Include="Schemas\Steps\Microsoft.EmitEvent.schema" />
@@ -105,12 +111,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Bot.Builder.AI.TriggerTrees\Microsoft.Bot.Builder.AI.TriggerTrees.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Expressions.Parser\Microsoft.Bot.Builder.Expressions.Parser.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Schemas\Selectors\" />
   </ItemGroup>
 
 </Project>

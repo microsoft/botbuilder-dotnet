@@ -97,9 +97,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
             if (this.Selector == null)
             {
-                this.Selector = new FirstMatchSelector();
+                this.Selector = new FirstSelector();
             }
-            await this.Selector.Initialize(dc, this.Rules, cancellationToken).ConfigureAwait(false);
+            await this.Selector.Initialize(dc, this.Rules, true, cancellationToken).ConfigureAwait(false);
 
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
             activeDialogState["planningState"] = new PlanningState();

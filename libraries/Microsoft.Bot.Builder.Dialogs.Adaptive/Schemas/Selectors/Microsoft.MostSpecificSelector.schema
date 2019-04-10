@@ -1,0 +1,12 @@
+﻿{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IRuleSelector)",
+    "title": "Select most specific true rule to execute",
+    "description": "Select most specific true rule to execute",
+    "type": "object",
+    "properties": {
+        "selector": {
+            "$type": "IRuleSelector"
+        }
+    }
+}
