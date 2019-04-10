@@ -21,13 +21,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
     /// * none of the parent dialogs handle the event 
     /// This provides the parent dialogs the opportunity to handle global commands as fallback interruption
     /// </summary>
-    public class NoneIntentRule : EventRule
+    public class UnknownIntentRule : EventRule
     {
         [JsonConstructor]
-        public NoneIntentRule(List<IDialog> steps = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public UnknownIntentRule(List<IDialog> steps = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(events: new List<string>()
             {
-                PlanningEvents.UnrecognizedIntent.ToString()
+                AdaptiveEvents.UnknownIntent
             },
             steps: steps,
             constraint: constraint,

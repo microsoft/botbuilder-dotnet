@@ -106,10 +106,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             // while things are changing rapidly still
 
             // Rules
-            Register("Microsoft.BeginDialogRule", typeof(BeginDialogRule));
             Register("Microsoft.EventRule", typeof(EventRule));
             Register("Microsoft.IntentRule", typeof(IntentRule));
-            Register("Microsoft.NoneIntentRule", typeof(NoneIntentRule));
+            Register("Microsoft.UnknownIntentRule", typeof(UnknownIntentRule));
 
             // Steps
             Register("Microsoft.BeginDialog", typeof(BeginDialog));

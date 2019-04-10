@@ -16,11 +16,6 @@
             "$ref": "#/definitions/Microsoft.BeginDialog"
         },
         {
-            "title": "Microsoft.BeginDialogRule",
-            "description": "When the being dialog event is triggered this will add steps to the execution plan",
-            "$ref": "#/definitions/Microsoft.BeginDialogRule"
-        },
-        {
             "title": "Microsoft.CancelAllDialogs",
             "description": "Command to cancel all of the current dialogs by emitting an event which must be caught to prevent cancelation from propagating.",
             "$ref": "#/definitions/Microsoft.CancelAllDialogs"
@@ -111,11 +106,6 @@
             "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
         },
         {
-            "title": "Microsoft.NoneIntentRule",
-            "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
-            "$ref": "#/definitions/Microsoft.NoneIntentRule"
-        },
-        {
             "title": "Microsoft.NumberInput",
             "description": "This represents a dialog which gathers a decimal number in a specified range",
             "$ref": "#/definitions/Microsoft.NumberInput"
@@ -164,6 +154,11 @@
             "title": "Microsoft.TextInput",
             "description": "This represents a dialog which gathers a text from the user",
             "$ref": "#/definitions/Microsoft.TextInput"
+        },
+        {
+            "title": "Microsoft.UnknownIntentRule",
+            "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
+            "$ref": "#/definitions/Microsoft.UnknownIntentRule"
         },
         {
             "title": "Testbot.CalculateDogYears",
@@ -340,88 +335,6 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
-                    ]
-                }
-            ]
-        },
-        "Microsoft.BeginDialogRule": {
-            "$role": "unionType(Microsoft.IRule)",
-            "title": "Begin Dialog",
-            "description": "When the being dialog event is triggered this will add steps to the execution plan",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.BeginDialogRule"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "events": {
-                    "type": "array",
-                    "description": "Events to trigger this rule for",
-                    "items": {
-                        "type": "string",
-                        "enum": [
-                            "BeginDialog",
-                            "ConsultDialog",
-                            "ActivityReceived",
-                            "UtteranceRecognized",
-                            "Fallback",
-                            "PlanStarted",
-                            "PlanSaved",
-                            "PlanEnded",
-                            "PlanResumed"
-                        ]
-                    }
-                },
-                "constraint": {
-                    "type": "string",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
-                    "examples": [
-                        "user.vip == true"
-                    ]
-                },
-                "steps": {
-                    "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
-                    "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
-                    }
-                }
-            },
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "steps",
                         "$type"
                     ]
                 }
@@ -1084,15 +997,16 @@
                     "items": {
                         "type": "string",
                         "enum": [
-                            "BeginDialog",
-                            "ConsultDialog",
-                            "ActivityReceived",
-                            "UtteranceRecognized",
-                            "Fallback",
-                            "PlanStarted",
-                            "PlanSaved",
-                            "PlanEnded",
-                            "PlanResumed"
+                            "beginDialog",
+                            "consultDialog",
+                            "cancelDialog",
+                            "activityReceived",
+                            "recognizedIntent",
+                            "unknownIntent",
+                            "stepsStarted",
+                            "stepsSaved",
+                            "stepsEnded",
+                            "stepsResumed"
                         ]
                     }
                 },
@@ -1538,11 +1452,6 @@
             "$role": "unionType",
             "oneOf": [
                 {
-                    "title": "Microsoft.BeginDialogRule",
-                    "description": "When the being dialog event is triggered this will add steps to the execution plan",
-                    "$ref": "#/definitions/Microsoft.BeginDialogRule"
-                },
-                {
                     "title": "Microsoft.EventRule",
                     "description": "Defines a rule for an event which is triggered by some sourcy",
                     "$ref": "#/definitions/Microsoft.EventRule"
@@ -1553,14 +1462,14 @@
                     "$ref": "#/definitions/Microsoft.IntentRule"
                 },
                 {
-                    "title": "Microsoft.NoneIntentRule",
-                    "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
-                    "$ref": "#/definitions/Microsoft.NoneIntentRule"
-                },
-                {
                     "title": "Microsoft.Rule",
                     "description": "Defines a rule for an event which is triggered by some sourcy",
                     "$ref": "#/definitions/Microsoft.Rule"
+                },
+                {
+                    "title": "Microsoft.UnknownIntentRule",
+                    "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
+                    "$ref": "#/definitions/Microsoft.UnknownIntentRule"
                 }
             ]
         },
@@ -1873,15 +1782,16 @@
                     "items": {
                         "type": "string",
                         "enum": [
-                            "BeginDialog",
-                            "ConsultDialog",
-                            "ActivityReceived",
-                            "UtteranceRecognized",
-                            "Fallback",
-                            "PlanStarted",
-                            "PlanSaved",
-                            "PlanEnded",
-                            "PlanResumed"
+                            "beginDialog",
+                            "consultDialog",
+                            "cancelDialog",
+                            "activityReceived",
+                            "recognizedIntent",
+                            "unknownIntent",
+                            "stepsStarted",
+                            "stepsSaved",
+                            "stepsEnded",
+                            "stepsResumed"
                         ]
                     }
                 },
@@ -2092,88 +2002,6 @@
                     "title": "Type",
                     "required": [
                         "recognizers",
-                        "$type"
-                    ]
-                }
-            ]
-        },
-        "Microsoft.NoneIntentRule": {
-            "title": "This defines the steps to take when an utterence is not recognized (aka, the None Intent). NOTE: NoneIntent will defer to any specific intent that fires in a parent dialog",
-            "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.NoneIntentRule"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "events": {
-                    "type": "array",
-                    "description": "Events to trigger this rule for",
-                    "items": {
-                        "type": "string",
-                        "enum": [
-                            "BeginDialog",
-                            "ConsultDialog",
-                            "ActivityReceived",
-                            "UtteranceRecognized",
-                            "Fallback",
-                            "PlanStarted",
-                            "PlanSaved",
-                            "PlanEnded",
-                            "PlanResumed"
-                        ]
-                    }
-                },
-                "constraint": {
-                    "type": "string",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
-                    "examples": [
-                        "user.vip == true"
-                    ]
-                },
-                "steps": {
-                    "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
-                    "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
-                    }
-                }
-            },
-            "$role": "unionType(Microsoft.IRule)",
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "steps",
                         "$type"
                     ]
                 }
@@ -2923,6 +2751,89 @@
                 }
             ]
         },
+        "Microsoft.UnknownIntentRule": {
+            "title": "This defines the steps to take when an utterence is not recognized (aka, the None Intent). NOTE: NoneIntent will defer to any specific intent that fires in a parent dialog",
+            "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.UnknownIntentRule"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "events": {
+                    "type": "array",
+                    "description": "Events to trigger this rule for",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "beginDialog",
+                            "consultDialog",
+                            "cancelDialog",
+                            "activityReceived",
+                            "recognizedIntent",
+                            "unknownIntent",
+                            "stepsStarted",
+                            "stepsSaved",
+                            "stepsEnded",
+                            "stepsResumed"
+                        ]
+                    }
+                },
+                "constraint": {
+                    "type": "string",
+                    "title": "Constraint",
+                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "examples": [
+                        "user.vip == true"
+                    ]
+                },
+                "steps": {
+                    "type": "array",
+                    "description": "Sequence of steps or dialogs to execute",
+                    "items": {
+                        "$type": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                }
+            },
+            "$role": "unionType(Microsoft.IRule)",
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "steps",
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Testbot.CalculateDogYears": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Calculate Dog Years",
@@ -2949,10 +2860,10 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
-                "property": {
+                "inputProperty": {
                     "type": "string",
                     "title": "Input Property",
-                    "description": "This will be the property passed in "
+                    "description": "This will be the property passed in"
                 },
                 "outputProperty": {
                     "type": "string",
