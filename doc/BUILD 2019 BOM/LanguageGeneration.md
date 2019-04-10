@@ -15,7 +15,7 @@
 - - [X] Support get all parsedTemplate and combine with AnalyzeTemplate API, user can get all template analyzing results
 - - [X] Support handle multiple files in TemplateEngine
 - - [X] Update implementation to match IF .. ELSEIF instead of the current SWITCH label. [Spec](https://microsoft-my.sharepoint.com/:w:/p/vkannan/ERMS_VL3nEBIhNwlgYAmv-8BIUP3WCM3-XSY-fETqjFOxw?e=0f8zYA)
-- - [ ] Add support for SWITCH .. CASE construct in conditional response template. [Spec](https://microsoft-my.sharepoint.com/:w:/p/vkannan/ERMS_VL3nEBIhNwlgYAmv-8BIUP3WCM3-XSY-fETqjFOxw?e=0f8zYA)
+- - [ ] [Post //BUILD] ~~Add support for SWITCH .. CASE construct in conditional response template. [Spec](https://microsoft-my.sharepoint.com/:w:/p/vkannan/ERMS_VL3nEBIhNwlgYAmv-8BIUP3WCM3-XSY-fETqjFOxw?e=0f8zYA)~~
 - - [ ] Final API shape review
 - - [ ] Final packaging, naming review
 - - [ ] On board to build and release DevOps pipeline
