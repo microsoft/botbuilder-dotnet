@@ -40,12 +40,19 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 foreach (var result in contents)
                 {
                     var (locale, text) = result;
-                    languageResources[locale] = text;
+                    if (!languageResources.ContainsKey(locale))
+                    {
+                        languageResources[locale] = text;
+                    }
+                    else
+                    {
+                        languageResources[locale] += $"\n\n{text}";
+                    }
                 }
 
                 foreach (var lang in languageResources.Keys)
                 {
-                    engs.Add(lang, TemplateEngine.FromText(languageResources[lang].ToString()));
+                    engs.Add(lang, TemplateEngine.FromText(languageResources[lang]));
                 }
 
                 if (!engs.ContainsKey(""))
