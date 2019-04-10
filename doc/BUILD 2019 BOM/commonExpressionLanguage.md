@@ -21,6 +21,7 @@
     - - [ ] match(regExp)
     - - [ ] lgTemplate(templateName, arg1, arg2,...)
 - - [ ] Drop support for object manipulation functions (json, addProperty, setProperty, removeProperty) from expression library 
+- - [ ] Support for truthiness on a property - e.g. '#HaveUserName' should evaluate to true if turn.intents.HaveUserName exists.
 - - [ ] Final API shape review
 - - [ ] Final packaging, naming review
 - - [ ] On board to build and release DevOps pipeline
