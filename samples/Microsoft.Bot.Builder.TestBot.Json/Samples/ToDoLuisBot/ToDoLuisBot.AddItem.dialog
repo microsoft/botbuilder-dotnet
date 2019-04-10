@@ -12,47 +12,76 @@
             "entity": "ListType",
             "property": "dialog.listName"
         },
-        {
-            "$type": "Microsoft.IfCondition",
-            "condition": "user.lists == null",
-            "steps": [
-                {
-                    "$type": "Microsoft.InitProperty",
-                    "property": "user.lists",
-                    "type": "object"
-                }
-            ]
-        },
-        {
+      {
+        "$type": "Microsoft.IfCondition",
+        "condition": "user.lists == null",
+        "steps": [
+          {
+            "$type": "Microsoft.InitProperty",
+            "property": "user.lists",
+            "type": "object"
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.IfCondition",
+        "condition": "dialog.listName == null",
+        "steps": [
+          {
+            "$type": "Microsoft.ChoiceInput",
+            "property": "dialog.listName",
+            "choices": [
+              {
+                "value": "ShoppingList"
+              },
+              {
+                "value": "GroceryList"
+              },
+              {
+                "value": "ToDoList"
+              }
+            ],
+            "prompt": "Which list do you want?",
+            "style": "List",
+            "alwaysPrompt": true
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.IfCondition",
+        "condition": "dialog.item == null",
+        "steps": [
+          {
             "$type": "Microsoft.TextInput",
-            "prompt": "[PromptForList(user.lists)]",
-            "property": "dialog.listName"
-        },
-        {
-            "$type": "Microsoft.TextInput",
-            "prompt": "[PromptForItem(user.lists.{dialog.listName})]",
+            "prompt": "Please enter the title of your item.",
             "property": "dialog.item"
-        },
-        {
-            "$type": "Microsoft.IfCondition",
-            "condition": "user.lists.{dialog.listName} == null",
-            "steps": [
-                {
-                    "$type": "Microsoft.InitProperty",
-                    "property": "user.lists.{dialog.listName}",
-                    "type": "array"
-                }
-            ]
-        },
-        {
-            "$type": "Microsoft.EditArray",
-            "changeType": "Push",
-            "arrayProperty": "user.lists.{dialog.listName}",
-            "itemProperty": "dialog.item"
-        },
-        {
-            "$type": "Microsoft.SendActivity",
-            "activity": "Successfully added {dialog.item} to {dialog.listName} list."
-        }
+          }
+        ]
+      },
+      {
+        "$type": "Microsoft.SendActivity",
+        "activity": "You choose {dialog.listName.Value}"
+      },
+      {
+          "$type": "Microsoft.IfCondition",
+          "condition": "user.lists.{dialog.listName.Value} == null",
+          "steps": [
+              {
+                  "$type": "Microsoft.InitProperty",
+                  "property": "user.lists.{dialog.listName.Value}",
+                  "type": "array"
+              }
+          ]
+      },
+      {
+          "$type": "Microsoft.EditArray",
+          "changeType": "Push",
+          "arrayProperty": "user.lists.{dialog.listName.Value}",
+          "itemProperty": "dialog.item"
+      },
+      {
+          "$type": "Microsoft.SendActivity",
+          "activity": "Successfully added {dialog.item} to {dialog.listName.Value} list."
+      }
     ]
 }

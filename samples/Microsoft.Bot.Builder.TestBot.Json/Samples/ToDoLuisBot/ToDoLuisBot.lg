@@ -1,0 +1,57 @@
+# LuisToDoGreeting
+- Welcome!  I'm a list bot [LuisToDoHelp]
+
+# LuisToDoHelp
+- ```
+    You can add and remove items from any list
+    - Add bananna to shopping list
+    - Remove hat from packing list
+  ```
+
+# showSingleList(x)
+- * {x} list
+
+# showSingleItem(x)
+- * {x}
+
+# ShowItems(listName)
+- IF: {listName == "ShoppingList"}
+    - ```
+    You most recent {count(user.lists.ShoppingList)} shopping items are
+
+     @{humanize(user.lists.ShoppingList, '[showSingleItem]', '\n')}
+
+     ```
+- ELSEIF: {listName == "GroceryList"}
+    - ```
+    You most recent {count(user.lists.GroceryList)} grocery items are
+
+     @{humanize(user.lists.GroceryList, '[showSingleItem]', '\n')}
+
+     ```
+- ELSEIF: {listName == "ToDoList"}
+    - ```
+    You most recent {count(user.lists.ToDoList)} todo items are
+
+     @{humanize(user.lists.ToDoList, '[showSingleItem]', '\n')}
+
+     ```
+
+
+
+# ShowLists
+- IF: {count(lists) > 0}
+    - ```
+ @{humanize(list, '[showSingleList]', '\n')}
+      ```
+- ELSE:
+    - The list is empty.
+
+
+
+# PromptForList(lists)
+- What list did you want?\n\n[ShowLists]
+
+# PromptForItem(list)
+- What item did you want?\n\n[ShowItems]
+

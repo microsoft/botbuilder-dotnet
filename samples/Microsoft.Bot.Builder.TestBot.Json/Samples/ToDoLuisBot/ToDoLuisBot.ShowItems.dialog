@@ -1,31 +1,54 @@
 {
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
-    "steps": [
+  "steps": [
+    {
+      "$type": "Microsoft.SaveEntity",
+      "entity": "ListType",
+      "property": "dialog.listName"
+    },
+    {
+      "$type": "Microsoft.IfCondition",
+      "condition": "user.lists == null",
+      "steps": [
         {
-            "$type": "Microsoft.SaveEntity",
-            "entity": "ListType",
-            "property": "dialog.listName"
-        },
-        {
-            "$type": "Microsoft.IfCondition",
-            "condition": "user.lists == null",
-            "steps": [
-                {
-                    "$type": "Microsoft.InitProperty",
-                    "property": "user.lists",
-                    "type": "object"
-                }
-            ]
-        },
-        {
-            "$type": "Microsoft.TextInput",
-            "prompt": "[PromptForList(user.lists)]",
-            "property": "dialog.listName"
-        },
-        {
-            "$type": "Microsoft.SendActivity",
-            "activity": "[ShowItems(dialog.listNme)]"
+          "$type": "Microsoft.InitProperty",
+          "property": "user.lists",
+          "type": "object"
         }
-    ]
+      ]
+    },
+    {
+      "$type": "Microsoft.IfCondition",
+      "condition": "dialog.listName == null",
+      "steps": [
+        {
+          "$type": "Microsoft.ChoiceInput",
+          "property": "dialog.listName",
+          "choices": [
+            {
+              "value": "ShoppingList"
+            },
+            {
+              "value": "GroceryList"
+            },
+            {
+              "value": "ToDoList"
+            }
+          ],
+          "prompt": "Which list do you want?",
+          "style": "List",
+          "alwaysPrompt": true
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.SendActivity",
+      "activity": "Test"
+    },
+    {
+      "$type": "Microsoft.SendActivity",
+      "activity": "[ShowItems(dialog.listName.Value)]"
+    }
+  ]
 }

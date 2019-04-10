@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 {
@@ -104,7 +105,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 throw new Exception($"EditArray: \"{ ChangeType }\" operation couldn't be performed because the arrayProperty wasn't specified.");
             }
 
-            var array = dc.State.GetValue(ArrayProperty, new List<object>());
+            var array = dc.State.GetValue(ArrayProperty, new JArray());
 
             object item = null;
             string serialized = string.Empty;
@@ -149,7 +150,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     if (item != null)
                     {
                         lastResult = false;
-                        array.Remove(item);
+                        array.Remove(new JObject(item));
                     }
                     break;
                 case ArrayChangeType.Clear:
@@ -158,8 +159,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     break;
             }
 
-            dc.State.SetValue(ArrayProperty, array);
-            dc.State.SetValue("dialog.lastResult", lastResult);
+            var prop = await new TextTemplate(this.ArrayProperty).BindToData(dc.Context, dc.State, (property, data) => dc.State.GetValue<object>(data, property)).ConfigureAwait(false);
+
+            dc.State.SetValue(prop, array);
             return await dc.EndDialogAsync();
         }
 
