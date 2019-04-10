@@ -1,0 +1,41 @@
+{
+  "$schema": "../../app.schema",
+  "$type": "Microsoft.AdaptiveDialog",
+  "rules": [
+    {
+      "$type": "Microsoft.NoneIntentRule",
+      "steps": [
+        // Reset data
+        {
+          "$type": "Microsoft.SetProperty",
+          "value": "3",
+          "property": "user.pageSize"
+        },
+        {
+          "$type": "Microsoft.SetProperty",
+          "value": "0",
+          "property": "user.showIndex"
+        },
+        {
+          "$type": "Microsoft.SetProperty",
+          "property": "user.emailCount",
+          "value": "0"
+        },
+        {
+          "$type": "Microsoft.EditArray",
+          "changeType": "Clear",
+          "arrayProperty": "user.emails"
+        },
+        {
+          "$type": "Microsoft.EditArray",
+          "changeType": "Clear",
+          "arrayProperty": "user.recipients"
+        },
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "Clear done!"
+        }
+      ]
+    }
+  ]
+}

@@ -7,7 +7,8 @@
       "ShowEmailIntent": "(?i)show email",
       "SendEmailIntent": "(?i)send email",
       "HelpIntent": "(?i)help",
-      "FindContactIntent": "(?i)find email contact"
+      "FindContactIntent": "(?i)find email contact",
+      "ShowNextPageIntent": "(?i)next page email"
     }
   },
   "rules": [
@@ -23,6 +24,14 @@
     {
       "$type": "Microsoft.IntentRule",
       "intent": "ShowEmailIntent",
+      "steps": [
+        "ClearUserData",
+        "ShowEmail"
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "ShowNextPageIntent",
       "steps": [
         "ShowEmail"
       ]
