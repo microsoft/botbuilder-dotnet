@@ -17,9 +17,9 @@
 # ShowItems(listName)
 - IF: {listName == "ShoppingList"}
     - ```
-    You most recent {count(user.lists.ShoppingList)} shopping items are
+    You most recent @{count(User.lists.ShoppingList)} shopping items are
 
-     @{humanize(user.lists.ShoppingList, '[showSingleItem]', '\n')}
+     
 
      ```
 - ELSEIF: {listName == "GroceryList"}
