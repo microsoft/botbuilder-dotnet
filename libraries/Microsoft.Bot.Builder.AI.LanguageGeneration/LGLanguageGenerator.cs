@@ -40,12 +40,19 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 foreach (var result in contents)
                 {
                     var (locale, text) = result;
-                    languageResources[locale] = text;
+                    if (!languageResources.ContainsKey(locale))
+                    {
+                        languageResources[locale] = text;
+                    }
+                    else
+                    {
+                        languageResources[locale] += $"\n\n{text}";
+                    }
                 }
 
                 foreach (var lang in languageResources.Keys)
                 {
-                    engs.Add(lang, TemplateEngine.FromText(languageResources[lang].ToString()));
+                    engs.Add(lang, TemplateEngine.FromText(languageResources[lang]));
                 }
 
                 if (!engs.ContainsKey(""))
@@ -96,7 +103,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 return "";
             ++start;
             locale = filename.Substring(start, filename.Length - start).Trim().ToLower();
-            return locale;
+            if (CultureInfo.GetCultures(CultureTypes.AllCultures).Where(c => String.Compare(c.IetfLanguageTag, locale, ignoreCase: true) == 0).Any())
+            {
+                return locale;
+            }
+
+            return "";
         }
 
         private string BindToTemplate(TemplateEngine engine, string inline, string id, object data, string[] types, string[] tags, Func<string, object, object> valueBinder)

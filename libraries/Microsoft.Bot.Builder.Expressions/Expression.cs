@@ -206,6 +206,15 @@ namespace Microsoft.Bot.Builder.Expressions
                 }));
 
         /// <summary>
+        /// Construct and validate an Equals expression.
+        /// </summary>
+        /// <param name="children">Child clauses.</param>
+        /// <returns>New expression.</returns>
+        public static Expression EqualsExpression(params Expression[] children)
+            => Expression.MakeExpression(ExpressionType.Equal, null, children);
+
+
+        /// <summary>
         /// Construct and validate an And expression.
         /// </summary>
         /// <param name="children">Child clauses.</param>
