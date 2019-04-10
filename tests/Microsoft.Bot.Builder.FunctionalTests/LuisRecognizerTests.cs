@@ -81,6 +81,22 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         }
 
         [TestMethod]
+        public void LuisRecognizer_Timeout()
+        {
+            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
+            var fieldInfo = typeof(LuisRecognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
+            var optionsWithTimeout = new LuisPredictionOptions()
+            {
+                Timeout = 300,
+            };
+            var expectedTimeout = 300;
+
+            var recognizerWithTimeout = new LuisRecognizer(endpoint, optionsWithTimeout);
+
+            Assert.AreEqual(expectedTimeout, LuisRecognizer.DefaultHttpClient.Timeout.Milliseconds);
+        }
+        
+        [TestMethod]
         public void NullEndpoint()
         {
             // Arrange
@@ -149,6 +165,13 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             Assert.AreEqual(11, (int)result.Entities["$instance"]["Name"].First["startIndex"]);
             Assert.AreEqual(15, (int)result.Entities["$instance"]["Name"].First["endIndex"]);
             AssertScore(result.Entities["$instance"]["Name"].First["score"]);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void LuisRecognizer_NullLuisAppArg()
+        {
+            var recognizerWithNullLuisApplication = new LuisRecognizer(application: null);
         }
 
         [TestMethod]
@@ -1135,6 +1158,20 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 .Respond("application/json", response);
 
             return new MockedHttpClientHandler(mockMessageHandler.ToHttpClient());
+        }
+
+        private static TurnContext GetNonMessageContext(string utterance)
+        {
+            var b = new TestAdapter();
+            var a = new Activity
+            {
+                Type = ActivityTypes.ConversationUpdate,
+                Text = utterance,
+                Conversation = new ConversationAccount(),
+                Recipient = new ChannelAccount(),
+                From = new ChannelAccount(),
+            };
+            return new TurnContext(b, a);
         }
 
         private string GetRequestUrl() => $"{_endpoint}/luis/v2.0/apps/{_luisAppId}";
