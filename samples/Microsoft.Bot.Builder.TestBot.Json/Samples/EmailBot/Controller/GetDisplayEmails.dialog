@@ -75,10 +75,10 @@
             }
           ]
         },
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "Get email model done"
-        }
+        //{
+        //  "$type": "Microsoft.SendActivity",
+        //  "activity": "Get email model done"
+        //}
       ]
     }
   ]

@@ -43,9 +43,24 @@
           "arrayProperty": "user.recipients"
         },
         {
-          "$type": "Microsoft.SendActivity",
-          "activity": "Clear done!"
+          "$type": "Microsoft.SetProperty",
+          "value": "null",
+          "property": "user.email"
+        },
+        {
+          "$type": "Microsoft.SetProperty",
+          "value": "null",
+          "property": "user.subject"
+        },
+        {
+          "$type": "Microsoft.SetProperty",
+          "value": "null",
+          "property": "user.body"
         }
+        //{
+        //  "$type": "Microsoft.SendActivity",
+        //  "activity": "Clear done!"
+        //}
       ]
     }
   ]

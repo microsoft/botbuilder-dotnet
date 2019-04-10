@@ -6,58 +6,44 @@
       "$type": "Microsoft.NoneIntentRule",
       "steps": [
         {
+          "$type": "Microsoft.SetProperty",
+          "value": "null",
+          "property": "user.email"
+        },
+        {
+          "$type": "Microsoft.SetProperty",
+          "value": "null",
+          "property": "user.subject"
+        },
+        {
+          "$type": "Microsoft.SetProperty",
+          "value": "null",
+          "property": "user.body"
+        },
+        {
           "$type": "Microsoft.TextInput",
           "prompt": "OK, please enter the subject of your email.",
-          "property": "dialog.subject"
+          "property": "user.subject"
         },
         {
           "$type": "Microsoft.TextInput",
           "prompt": "OK, please enter the body of your email.",
-          "property": "dialog.body"
+          "property": "user.body"
         },
         "FindContact",
-        {
-          "$type": "Microsoft.OAuthPrompt",
-          "ConnectionName": "msgraph",
-          "Title": "Log in",
-          "Text": "Please log in to your email account",
-          "Property": "dialog.token"
-        },
         {
           "$type": "Microsoft.ConfirmInput",
           "property": "dialog.confirmed",
           "prompt": "Are you sure to send this email?",
+          "retryPrompt": "Please try again.",
+          "invalidPrompt": "Please input yes/no.",
           "alwaysPrompt": true
         },
         {
           "$type": "Microsoft.IfCondition",
           "condition": "dialog.confirmed",
           "steps": [
-            {
-              "$type": "Microsoft.HttpRequest",
-              "url": "https://graph.microsoft.com/v1.0/me/sendMail",
-              "method": "POST",
-              "header": {
-                "Authorization": "Bearer {dialog.token.Token}"
-              },
-              "body": {
-                "message": {
-                  "body": {
-                    "content": "{dialog.body}",
-                    "contentType": "Text"
-                  },
-                  "subject": "{dialog.subject}",
-                  "toRecipients": [
-                    {
-                      "emailAddress": {
-                        "address": "{user.email}"
-                      }
-                    }
-                  ]
-                }
-              },
-              "Property": "dialog.postResponse"
-            },
+            "SendEmails",
             {
               "$type": "Microsoft.SendActivity",
               "activity": "Your email has been sent succsessfully"

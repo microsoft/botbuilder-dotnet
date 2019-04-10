@@ -7,6 +7,7 @@
   <ItemGroup>
     <None Remove="en-us.lg" />
     <None Remove="main.dialog" />
+    <None Remove="Samples\EmailBot\Service\MSGraph\SendEmails.dialog" />
     <None Remove="Samples\Planning 2 - EndTurn\EndTurn.main.dialog" />
     <None Remove="Samples\Planning 3 - IfCondition\IfCondition.main.dialog" />
     <None Remove="Samples\Planning 5 - WelcomeRule\WelcomeRule.main.dialog" />
@@ -28,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Samples\EmailBot\Service\MSGraph\SendEmails.dialog" />
     <Content Include="Samples\RootDialog\RootDialog.lg" />
     <Content Include="Samples\RootDialog\RootDialog.main.dialog" />
     <Content Include="Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.lg" />
@@ -48,7 +50,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Samples\EmailBot\Dialogs\Shared\" />
     <Folder Include="Samples\EmailBot\Service\Google\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>

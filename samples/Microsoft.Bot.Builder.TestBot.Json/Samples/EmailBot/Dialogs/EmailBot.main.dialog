@@ -41,6 +41,7 @@
       "$type": "Microsoft.IntentRule",
       "intent": "SendEmailIntent",
       "steps": [
+        "ClearUserData",
         "SendEmail"
       ]
     },
@@ -48,6 +49,7 @@
       "$type": "Microsoft.IntentRule",
       "intent": "FindContactIntent",
       "steps": [
+        "ClearUserData",
         "FindContact"
       ]
     },

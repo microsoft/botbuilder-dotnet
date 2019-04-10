@@ -8,20 +8,12 @@
         {
           "$type": "Microsoft.TextInput",
           "prompt": "OK, please enter the contact you want to search. You can input both email address and contact name.",
-          "property": "user.contact"
+          "property": "user.email"
         },
         {
           "$type": "Microsoft.IfCondition",
-          "condition": "contains({user.contact}, '@')",
+          "condition": "!contains({user.email}, '@')",
           "steps": [
-            {
-              "$type": "Microsoft.EditArray",
-              "changeType": "Push",
-              "arrayProperty": "user.recipients",
-              "itemProperty": "user.contact"
-            }
-          ],
-          "elseSteps": [
             "FindSingleContact"
           ]
         }

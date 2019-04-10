@@ -34,10 +34,6 @@
               "condition": "dialog.choice == '1'",
               "steps": [
                 {
-                  "$type": "Microsoft.SendActivity",
-                  "activity": "You select: 1"
-                },
-                {
                   "$type": "Microsoft.SetProperty",
                   "property": "user.focusedEmail",
                   "value": "user.emails[0]"
@@ -48,10 +44,6 @@
               "$type": "Microsoft.IfCondition",
               "condition": "dialog.choice == '2'",
               "steps": [
-                {
-                  "$type": "Microsoft.SendActivity",
-                  "activity": "You select: 2"
-                },
                 {
                   "$type": "Microsoft.SetProperty",
                   "property": "user.focusedEmail",
@@ -64,16 +56,13 @@
               "condition": "dialog.choice == '3'",
               "steps": [
                 {
-                  "$type": "Microsoft.SendActivity",
-                  "activity": "You select: 3"
-                },
-                {
                   "$type": "Microsoft.SetProperty",
                   "property": "user.focusedEmail",
                   "value": "user.emails[2]"
                 }
               ]
             },
+
             // Read focused email
             {
               "$type": "Microsoft.SendActivity",
@@ -82,7 +71,39 @@
             {
               "$type": "Microsoft.SendActivity",
               "activity": "[ShowEmailCard(user.focusedEmail)]"
+            },
+            {
+              "$type": "Microsoft.SendActivity",
+              "activity": "OK, have a good time. You can also say 'next page email' to go to next page."
             }
+
+            // Display overview again
+            // Question: How to build a dialog which can repeat itself: show email->read email->show again?->show email… Do we need to use Microsoft.RepeatDialog? How to use it?
+            //{
+            //  "$type": "Microsoft.ConfirmInput",
+            //  "property": "dialog.confirmed",
+            //  "prompt": "Do you want to see current email overview again?",
+            //  "retryPrompt": "Please try again.",
+            //  "invalidPrompt": "Please input yes/no.",
+            //  "alwaysPrompt": true
+            //},
+            //{
+            //  "$type": "Microsoft.IfCondition",
+            //  "condition": "dialog.confirmed",
+            //  "steps": [
+            //    //"ShowEmail",
+            //    {
+            //      "$type": "Microsoft.SendActivity",
+            //      "activity": "Show email again."
+            //    }
+            //  ],
+            //  "elseSteps": [
+            //    {
+            //      "$type": "Microsoft.SendActivity",
+            //      "activity": "OK, have a good time. You can also say 'next page email' to go to next page."
+            //    }
+            //  ]
+            //}
           ]
         }
       ]
