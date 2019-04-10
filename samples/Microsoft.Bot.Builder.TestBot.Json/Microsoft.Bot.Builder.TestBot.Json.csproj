@@ -48,6 +48,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Samples\EmailBot\Dialogs\Shared\" />
+    <Folder Include="Samples\EmailBot\Service\Google\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

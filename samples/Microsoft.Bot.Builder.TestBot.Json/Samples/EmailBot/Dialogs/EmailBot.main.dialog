@@ -33,6 +33,7 @@
       "$type": "Microsoft.IntentRule",
       "intent": "ShowNextPageIntent",
       "steps": [
+        "NextPage",
         "ShowEmail"
       ]
     },

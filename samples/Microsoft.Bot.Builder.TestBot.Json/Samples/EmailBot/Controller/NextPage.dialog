@@ -1,0 +1,17 @@
+{
+  "$schema": "../../app.schema",
+  "$type": "Microsoft.AdaptiveDialog",
+  "rules": [
+    {
+      "$type": "Microsoft.NoneIntentRule",
+      "steps": [
+        // [Fixed in parent branch] Bug : Cannot support "value": "user.showIndex+1". Set to 1 as a hack.
+        {
+          "$type": "Microsoft.SetProperty",
+          "value": "1",
+          "property": "user.showIndex"
+        }
+      ]
+    }
+  ]
+}
