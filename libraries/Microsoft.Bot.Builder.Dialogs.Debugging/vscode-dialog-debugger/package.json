@@ -41,7 +41,15 @@
         "label": "Bot Framework Dialog Debugger",
         "languages": [
           "dialog"
-        ]
+        ],
+        "initialConfigurations": [
+					{
+						"type": "dialog",
+						"request": "attach",
+            "name": "Attach to Dialog",
+            "debugServer": 4712
+					}
+				]
       }
     ],
     "breakpoints": [
