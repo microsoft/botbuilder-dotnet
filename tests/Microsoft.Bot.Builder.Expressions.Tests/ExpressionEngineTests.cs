@@ -17,6 +17,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         public static IEnumerable<object[]> Data => new[]
        {
             // operators test
+            Test("first(nestedItems).x", 1, new HashSet<string> { "one", "two"}),
             Test("1 + 2", 3),
             Test("1 - 2", -1),
             Test("1.0 + 2.0", 3.0),
@@ -255,7 +256,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("$subTitle", "Dialog Sub Title", new HashSet<string> {"dialog.result.subTitle"}),
 
             Test("join(foreach(items, item, item), ',')", "zero,one,two"),
-            Test("join(foreach(nestedItems, i, i.x), ',')", "1,2,3"),
+            Test("join(foreach(nestedItems, i, i.x + first(nestedItems).x), ',')", "2,3,4", new HashSet<string>{ "items"}),
             Test("join(foreach(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3", new HashSet<string>{ "items"}),
 
         };

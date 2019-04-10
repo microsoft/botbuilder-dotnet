@@ -711,22 +711,23 @@ namespace Microsoft.Bot.Builder.Expressions
         {
             if (expression.Type == ExpressionType.Accessor)
             {
-                var str = expression.ToString();
-                var prefix = "$global";
-                if (str == localVarName || str.StartsWith(localVarName+"."))
+                if (expression.Children.Count() == 2)
                 {
-                    prefix = "$local";
+                    expression.Children[1] = RewriteAccessor(expression.Children[1], localVarName);
                 }
-
-                // trace down the lowest level
-                var exp = expression;
-                while (exp.Children.Count() > 1)
+                else
                 {
-                    exp = exp.Children[1];
-                }
+                    var str = expression.ToString();
+                    var prefix = "$global";
+                    if (str == localVarName || str.StartsWith(localVarName + "."))
+                    {
+                        prefix = "$local";
+                    }
 
-                exp.Children = new Expression[] { exp.Children[0],
+                    expression.Children = new Expression[] { expression.Children[0],
                                                   Expression.MakeExpression(ExpressionType.Accessor, null, new Constant(prefix)) };
+
+                }
 
                 return expression;
             }
