@@ -126,12 +126,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         },
                         new SwitchCondition()
                         {
-                            Condition = new ExpressionEngine().Parse("user.name"),
+                            Condition = "user.name",
                             Cases = new Dictionary<string, List<IDialog>>()
                             {
-                                { "susan", new List<IDialog>() { new SendActivity("hi susan") } },
-                                { "bob", new List<IDialog>() { new SendActivity("hi bob") } },
-                                { "frank", new List<IDialog>() { new SendActivity("hi frank") } }
+                                { "'susan'", new List<IDialog>() { new SendActivity("hi susan") } },
+                                { "'bob'", new List<IDialog>() { new SendActivity("hi bob") } },
+                                { "'frank'", new List<IDialog>() { new SendActivity("hi frank") } }
                             },
                             Default = new List<IDialog>() { new SendActivity("Who are you?") }
                         },
