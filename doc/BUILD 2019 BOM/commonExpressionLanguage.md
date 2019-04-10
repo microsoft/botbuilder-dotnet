@@ -5,7 +5,7 @@
 **Story arc**: _As a developer, I understand the value the common expression language provides and can use it across the Bot Builder Core SDK components including language generation & declarative dialogs._
 
 ## Remaining work
-- - [ ] Implement Common Expression Language [Spec](https://microsoft.sharepoint.com/:w:/t/ConversationalAI785/EfIx5-gPhE5HlAGhvNEoKLIBo0AeoWmq1ITRhai2q2trLA?e=x9uKyb)
+- - [X] Implement Common Expression Language [Spec](https://microsoft.sharepoint.com/:w:/t/ConversationalAI785/EfIx5-gPhE5HlAGhvNEoKLIBo0AeoWmq1ITRhai2q2trLA?e=x9uKyb)
 - - [X] Rewrite parser using ANTLR
 - - [X] Implement R0 set of pre-built functions for C# and JS
     - - [X] Migrate to new style C#
@@ -15,7 +15,7 @@
 - - [X] Pick up new changes from Chris McConnell on expression evaluate, parse tree walk
 - - [X] Wire up expression language in LG subsystem
 - - [X] Wire up expression language support in Adaptive dialog rules and steps
-- - [ ] Add support for explicit values with both 'value' and "value". [Spec](https://microsoft.sharepoint.com/:w:/t/ConversationalAI785/EfIx5-gPhE5HlAGhvNEoKLIBo0AeoWmq1ITRhai2q2trLA?e=zX8HSY)
+- - [X] Add support for explicit values with both 'value' and "value". [Spec](https://microsoft.sharepoint.com/:w:/t/ConversationalAI785/EfIx5-gPhE5HlAGhvNEoKLIBo0AeoWmq1ITRhai2q2trLA?e=zX8HSY)
 - - [ ] New pre-built functions ask
     - - [ ] forEach(collection, iterator, expression)
     - - [ ] match(regExp)
