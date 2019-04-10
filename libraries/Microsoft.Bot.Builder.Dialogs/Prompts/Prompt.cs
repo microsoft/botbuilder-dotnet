@@ -88,6 +88,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 var promptContext = new PromptValidatorContext<T>(dc.Context, recognized, state, options);
                 isValid = await _validator(promptContext, cancellationToken).ConfigureAwait(false);
+                options.NumberOfAttempts++;
             }
             else if (recognized.Succeeded)
             {
