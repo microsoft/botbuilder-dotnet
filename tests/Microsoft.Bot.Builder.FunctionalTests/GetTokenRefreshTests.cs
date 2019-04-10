@@ -112,13 +112,13 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         {
             if (string.IsNullOrWhiteSpace(testAppId) || string.IsNullOrWhiteSpace(testPassword))
             {
-                testAppId = Environment.GetEnvironmentVariable("TestAppId");
+                testAppId = Environment.GetEnvironmentVariable("TESTAPPID");
                 if (string.IsNullOrWhiteSpace(testAppId))
                 {
                     throw new Exception("Environment variable 'TestAppId' not found.");
                 }
 
-                testPassword = Environment.GetEnvironmentVariable("TestPassword");
+                testPassword = Environment.GetEnvironmentVariable("TESTPASSWORD");
 
                 if (string.IsNullOrWhiteSpace(testPassword))
                 {

@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
             Assert.AreEqual(expectedTimeout, LuisRecognizer.DefaultHttpClient.Timeout.Milliseconds);
         }
-        
+
         [TestMethod]
         public void NullEndpoint()
         {
@@ -1192,20 +1192,20 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         {
             if (string.IsNullOrWhiteSpace(_luisAppId) || string.IsNullOrWhiteSpace(_subscriptionKey))
             {
-                _luisAppId = Environment.GetEnvironmentVariable("LuisAppId");
+                _luisAppId = Environment.GetEnvironmentVariable("LUISAPPID");
                 if (string.IsNullOrWhiteSpace(_luisAppId))
                 {
                     throw new Exception("Environment variable 'LuisAppId' not found.");
                 }
 
-                _subscriptionKey = Environment.GetEnvironmentVariable("LuisSubscriptionKey");
+                _subscriptionKey = Environment.GetEnvironmentVariable("LUISSUBSCRIPTIONKEY");
 
                 if (string.IsNullOrWhiteSpace(_subscriptionKey))
                 {
                     throw new Exception("Environment variable 'LuisSubscriptionKey' not found.");
                 }
 
-                _endpoint = Environment.GetEnvironmentVariable("LuisEndPoint");
+                _endpoint = Environment.GetEnvironmentVariable("LUISENDPOINT");
                 if (string.IsNullOrWhiteSpace(_endpoint))
                 {
                     throw new Exception("Environment variable 'LuisEndPoint' not found.");
