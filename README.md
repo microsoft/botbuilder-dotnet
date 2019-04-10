@@ -19,6 +19,10 @@ To get started see the [Azure Bot Service Documentation](https://docs.microsoft.
 
 A rich set of samples are available at [BotBuilder-Samples](https://github.com/microsoft/botbuilder-samples) repository.
 
+## Functional Tests Status
+
+[![Build Status](https://dev.azure.com/Southworks-Manx/BotBuilder-dotnet/_apis/build/status/Nightly-Build-Test?branchName=fix/southworks/functional-test)](https://dev.azure.com/Southworks-Manx/BotBuilder-dotnet/_build/latest?definitionId=46&branchName=fix/southworks/functional-test)
+
 ## Packages
 | Name                                  | Released Package | Daily Build                                                                                                                                                                  |
 |---------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|--|
