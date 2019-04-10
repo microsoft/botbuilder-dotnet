@@ -19,7 +19,6 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
         {
         }
 
-
         [TestMethod]
         public void AppSettings_NoBot_NoAppSettings()
         {
@@ -33,6 +32,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             var telemetryClient = server.Host.Services.GetService(typeof(IBotTelemetryClient));
             Assert.IsNotNull(telemetryClient);
             Assert.IsTrue(typeof(NullBotTelemetryClient).Equals(telemetryClient.GetType()));
+
             // App Insights Telemetry obviously can't work.
             Assert.IsTrue(server.Host.Services.GetService(typeof(TelemetryClient)) == null);
         }
@@ -50,6 +50,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             var telemetryClient = server.Host.Services.GetService(typeof(IBotTelemetryClient));
             Assert.IsNotNull(telemetryClient);
             Assert.IsTrue(typeof(NullBotTelemetryClient).Equals(telemetryClient.GetType()));
+
             // App Insights Telemetry obviously can't work.
             Assert.IsTrue(server.Host.Services.GetService(typeof(TelemetryClient)) == null);
         }
@@ -82,10 +83,10 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             var telemetryClient = server.Host.Services.GetService(typeof(IBotTelemetryClient));
             Assert.IsNotNull(telemetryClient);
             Assert.IsTrue(typeof(BotTelemetryClient).Equals(telemetryClient.GetType()));
+
             // App Insights just rolls with it.  It's technically invalid, but App Insights doesn't (currently) error even when logging.
             Assert.IsFalse(server.Host.Services.GetService(typeof(TelemetryClient)) == null);
         }
-
 
         [TestMethod]
         public void Botfile_NoAppSettings()
@@ -100,7 +101,6 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             var telemetryClient = new TelemetryClient();
             Assert.IsTrue(string.IsNullOrWhiteSpace(telemetryClient.InstrumentationKey));
         }
-
 
         [TestMethod]
         public void Botfile_NoAppInsights()

@@ -92,6 +92,9 @@ namespace Microsoft.Bot.Builder
             {
                 Use(middleware);
             }
+
+            // DefaultRequestHeaders are not thread safe so set them up here because this adapter should be a singleton.
+            ConnectorClient.AddDefaultRequestHeaders(_httpClient);
         }
 
         /// <summary>

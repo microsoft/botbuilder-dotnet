@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
         {
             services.AddBotApplicationInsights(this.Configuration);
 
-            // Adding IConfiguration in sample test server.  Otherwise this appears to be 
+            // Adding IConfiguration in sample test server.  Otherwise this appears to be
             // registered.
             services.AddSingleton<IConfiguration>(this.Configuration);
         }
@@ -38,6 +38,5 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
         {
             app.UseBotApplicationInsights();
         }
-
     }
 }

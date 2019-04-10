@@ -18,13 +18,14 @@ namespace Microsoft.Bot.Builder.Tests
     {
         [TestMethod]
         [TestCategory("Telemetry")]
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task Telemetry_NullTelemetryClient()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             // Arrange / Act
             //
             // Note: The TelemetryClient will most likely be DI'd in, and handling a null
             // TelemetryClient should be handled by placing the NullBotTelemetryClient().
-            //
             var logger = new TelemetryLoggerMiddleware(null, logPersonalInformation: true);
 
             // Assert
@@ -41,7 +42,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .Use(new TelemetryLoggerMiddleware(mockTelemetryClient.Object, logPersonalInformation: true));
             string conversationId = null;
 
-            // Act 
+            // Act
             // Default case logging Send/Receive Activities
             await new TestFlow(adapter, async (context, cancellationToken) =>
             {
@@ -49,7 +50,7 @@ namespace Microsoft.Bot.Builder.Tests
                 var typingActivity = new Activity
                 {
                     Type = ActivityTypes.Typing,
-                    RelatesTo = context.Activity.RelatesTo
+                    RelatesTo = context.Activity.RelatesTo,
                 };
                 await context.SendActivityAsync(typingActivity);
                 await Task.Delay(500);
@@ -124,7 +125,7 @@ namespace Microsoft.Bot.Builder.Tests
                 var typingActivity = new Activity
                 {
                     Type = ActivityTypes.Typing,
-                    RelatesTo = context.Activity.RelatesTo
+                    RelatesTo = context.Activity.RelatesTo,
                 };
                 await context.SendActivityAsync(typingActivity);
                 await Task.Delay(500);
@@ -178,7 +179,6 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.IsFalse(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("text"));
         }
 
-
         [TestMethod]
         [TestCategory("Telemetry")]
         public async Task Transcript_LogUpdateActivities()
@@ -226,7 +226,6 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.IsTrue(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("text"));
             Assert.IsTrue(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1])["text"] == "new response");
         }
-
 
         [TestMethod]
         [TestCategory("Middleware")]
@@ -287,7 +286,7 @@ namespace Microsoft.Bot.Builder.Tests
                 var typingActivity = new Activity
                 {
                     Type = ActivityTypes.Typing,
-                    RelatesTo = context.Activity.RelatesTo
+                    RelatesTo = context.Activity.RelatesTo,
                 };
                 await context.SendActivityAsync(typingActivity);
                 await Task.Delay(500);
@@ -310,7 +309,7 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.IsTrue(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("ImportantProperty"));
             Assert.IsTrue(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1])["ImportantProperty"] == "ImportantValue");
 
-            Assert.AreEqual(mockTelemetryClient.Invocations[1].Arguments[0], "MyReceive" ); // Check my message
+            Assert.AreEqual(mockTelemetryClient.Invocations[1].Arguments[0], "MyReceive"); // Check my message
             Assert.IsTrue(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).ContainsKey("fromId"));
             Assert.IsTrue(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).ContainsKey("conversationName"));
             Assert.IsTrue(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).ContainsKey("locale"));
@@ -357,7 +356,7 @@ namespace Microsoft.Bot.Builder.Tests
                 var typingActivity = new Activity
                 {
                     Type = ActivityTypes.Typing,
-                    RelatesTo = context.Activity.RelatesTo
+                    RelatesTo = context.Activity.RelatesTo,
                 };
                 await context.SendActivityAsync(typingActivity);
                 await Task.Delay(500);
@@ -463,6 +462,7 @@ namespace Microsoft.Bot.Builder.Tests
                 if (context.Activity.Text == "update")
                 {
                     activityToUpdate.Text = "new response";
+
                     // Perform Update Delete
                     await context.UpdateActivityAsync(activityToUpdate);
                     await context.DeleteActivityAsync(context.Activity.Id);
@@ -482,8 +482,6 @@ namespace Microsoft.Bot.Builder.Tests
                 .Send("update")
                     .AssertReply("new response")
                 .StartTestAsync();
-
-
 
             Assert.AreEqual(mockTelemetryClient.Invocations[0].Arguments[0], TelemetryLoggerConstants.BotMsgReceiveEvent); // Check Receive message
             Assert.IsTrue(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("fromId"));
@@ -529,7 +527,6 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.IsTrue(((Dictionary<string, string>)mockTelemetryClient.Invocations[4].Arguments[1])["ImportantProperty"] == "ImportantValue");
         }
 
-
         public class OverrideReceiveLogger : TelemetryLoggerMiddleware
         {
             public OverrideReceiveLogger(IBotTelemetryClient telemetryClient, bool logPersonalInformation = false)
@@ -541,8 +538,8 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 var properties = new Dictionary<string, string>
                 {
-                    { "foo" , "bar" },
-                    { "ImportantProperty" , "ImportantValue" },
+                    { "foo", "bar" },
+                    { "ImportantProperty", "ImportantValue" },
                 };
                 TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgReceiveEvent, properties);
 
@@ -562,8 +559,8 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 var properties = new Dictionary<string, string>
                 {
-                    { "foo" , "bar" },
-                    { "ImportantProperty" , "ImportantValue" },
+                    { "foo", "bar" },
+                    { "ImportantProperty", "ImportantValue" },
                 };
                 TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgSendEvent, properties);
 
@@ -571,6 +568,7 @@ namespace Microsoft.Bot.Builder.Tests
                 return;
             }
         }
+
         public class OverrideUpdateDeleteLogger : TelemetryLoggerMiddleware
         {
             public OverrideUpdateDeleteLogger(IBotTelemetryClient telemetryClient, bool logPersonalInformation = false)
@@ -578,23 +576,27 @@ namespace Microsoft.Bot.Builder.Tests
             {
             }
 
-
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
             protected override async Task OnUpdateActivityAsync(Activity activity, CancellationToken cancellation)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             {
                 var properties = new Dictionary<string, string>
                 {
-                    { "foo" , "bar" },
-                    { "ImportantProperty" , "ImportantValue" },
+                    { "foo", "bar" },
+                    { "ImportantProperty", "ImportantValue" },
                 };
                 TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgUpdateEvent, properties);
                 return;
             }
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
             protected override async Task OnDeleteActivityAsync(Activity activity, CancellationToken cancellation)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             {
                 var properties = new Dictionary<string, string>
                 {
-                    { "foo" , "bar" },
-                    { "ImportantProperty" , "ImportantValue" },
+                    { "foo", "bar" },
+                    { "ImportantProperty", "ImportantValue" },
                 };
                 TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgDeleteEvent, properties);
                 return;
@@ -612,49 +614,45 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 var properties = new Dictionary<string, string>
                 {
-                    { "foo" , "bar" },
-                    { "ImportantProperty" , "ImportantValue" },
+                    { "foo", "bar" },
+                    { "ImportantProperty", "ImportantValue" },
                 };
                 TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgReceiveEvent, await this.FillReceiveEventPropertiesAsync(activity, properties));
                 return;
             }
 
-
             protected override async Task OnSendActivityAsync(Activity activity, CancellationToken cancellation)
             {
                 var properties = new Dictionary<string, string>
                 {
-                    { "foo" , "bar" },
-                    { "ImportantProperty" , "ImportantValue" },
+                    { "foo", "bar" },
+                    { "ImportantProperty", "ImportantValue" },
                 };
                 TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgSendEvent, await this.FillSendEventPropertiesAsync(activity, properties));
                 return;
             }
 
-
             protected override async Task OnUpdateActivityAsync(Activity activity, CancellationToken cancellation)
             {
                 var properties = new Dictionary<string, string>
                 {
-                    { "foo" , "bar" },
-                    { "ImportantProperty" , "ImportantValue" },
+                    { "foo", "bar" },
+                    { "ImportantProperty", "ImportantValue" },
                 };
                 TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgUpdateEvent, await this.FillUpdateEventPropertiesAsync(activity, properties));
                 return;
             }
+
             protected override async Task OnDeleteActivityAsync(Activity activity, CancellationToken cancellation)
             {
                 var properties = new Dictionary<string, string>
                 {
-                    { "foo" , "bar" },
-                    { "ImportantProperty" , "ImportantValue" },
+                    { "foo", "bar" },
+                    { "ImportantProperty", "ImportantValue" },
                 };
                 TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgDeleteEvent, await FillDeleteEventPropertiesAsync(activity, properties));
                 return;
             }
         }
-
-
     }
 }
-

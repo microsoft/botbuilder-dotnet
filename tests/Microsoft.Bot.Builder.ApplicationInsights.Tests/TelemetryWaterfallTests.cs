@@ -63,7 +63,6 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var waterfallDialog = new WaterfallDialog("test", NewWaterfall());
 
-
             dialogs.Add(waterfallDialog);
             dialogs.TelemetryClient = telemetryClient.Object;
 

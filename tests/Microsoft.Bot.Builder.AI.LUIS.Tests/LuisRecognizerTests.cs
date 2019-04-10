@@ -76,6 +76,22 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         }
 
         [TestMethod]
+        public void LuisRecognizer_Timeout()
+        {
+            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
+            var fieldInfo = typeof(LuisRecognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
+            var optionsWithTimeout = new LuisPredictionOptions()
+            {
+                Timeout = 300,
+            };
+            var expectedTimeout = 300;
+
+            var recognizerWithTimeout = new LuisRecognizer(endpoint, optionsWithTimeout);
+
+            Assert.AreEqual(expectedTimeout, LuisRecognizer.DefaultHttpClient.Timeout.Milliseconds);
+        }
+        
+        [TestMethod]
         public void NullEndpoint()
         {
             // Arrange
@@ -141,6 +157,13 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             Assert.AreEqual(11, (int)result.Entities["$instance"]["Name"].First["startIndex"]);
             Assert.AreEqual(15, (int)result.Entities["$instance"]["Name"].First["endIndex"]);
             AssertScore(result.Entities["$instance"]["Name"].First["score"]);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void LuisRecognizer_NullLuisAppArg()
+        {
+            var recognizerWithNullLuisApplication = new LuisRecognizer(application: null);
         }
 
         [TestMethod]
@@ -756,7 +779,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 Text = "please book from May 5 to June 6",
                 Recipient = new ChannelAccount(),           // to no where
                 From = new ChannelAccount(),                // from no one
-                Conversation = new ConversationAccount(),   // on no conversation
+                Conversation = new ConversationAccount(),    // on no conversation
             };
 
             var turnContext = new TurnContext(adapter, activity);
@@ -807,7 +830,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 Text = "please book from May 5 to June 6",
                 Recipient = new ChannelAccount(),           // to no where
                 From = new ChannelAccount(),                // from no one
-                Conversation = new ConversationAccount(),   // on no conversation
+                Conversation = new ConversationAccount(),    // on no conversation
             };
 
             var turnContext = new TurnContext(adapter, activity);
@@ -869,7 +892,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 Text = "please book from May 5 to June 6",
                 Recipient = new ChannelAccount(),           // to no where
                 From = new ChannelAccount(),                // from no one
-                Conversation = new ConversationAccount(),   // on no conversation
+                Conversation = new ConversationAccount(),    // on no conversation
             };
 
             var turnContext = new TurnContext(adapter, activity);
@@ -912,7 +935,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 Text = "please book from May 5 to June 6",
                 Recipient = new ChannelAccount(),           // to no where
                 From = new ChannelAccount(),                // from no one
-                Conversation = new ConversationAccount(),   // on no conversation
+                Conversation = new ConversationAccount(),    // on no conversation
             };
 
             var turnContext = new TurnContext(adapter, activity);
@@ -955,7 +978,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 Text = "please book from May 5 to June 6",
                 Recipient = new ChannelAccount(),           // to no where
                 From = new ChannelAccount(),                // from no one
-                Conversation = new ConversationAccount(),   // on no conversation
+                Conversation = new ConversationAccount(),    // on no conversation
             };
 
             var turnContext = new TurnContext(adapter, activity);
@@ -1001,8 +1024,8 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
         private static TurnContext GetContext(string utterance)
         {
-            var b = new TestAdapter();
-            var a = new Activity
+            var testAdapter = new TestAdapter();
+            var activity = new Activity
             {
                 Type = ActivityTypes.Message,
                 Text = utterance,
@@ -1010,7 +1033,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 Recipient = new ChannelAccount(),
                 From = new ChannelAccount(),
             };
-            return new TurnContext(b, a);
+            return new TurnContext(testAdapter, activity);
         }
 
         // Compare two JSON structures and ensure entity and intent scores are within delta
@@ -1117,6 +1140,20 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             return new MockedHttpClientHandler(mockMessageHandler.ToHttpClient());
         }
 
+        private static TurnContext GetNonMessageContext(string utterance)
+        {
+            var b = new TestAdapter();
+            var a = new Activity
+            {
+                Type = ActivityTypes.ConversationUpdate,
+                Text = utterance,
+                Conversation = new ConversationAccount(),
+                Recipient = new ChannelAccount(),
+                From = new ChannelAccount(),
+            };
+            return new TurnContext(b, a);
+        }
+
         private string GetRequestUrl() => $"{_endpoint}/luis/v2.0/apps/{_luisAppId}";
 
         private Stream GetResponse(string fileName)
@@ -1129,85 +1166,6 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         {
             var path = Path.Combine(_testData, fileName);
             return path;
-        }
-    }
-
-    public class TelemetryOverrideRecognizer : LuisRecognizer
-    {
-        public TelemetryOverrideRecognizer(IBotTelemetryClient telemetryClient, LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, bool logPersonalInformation = false, HttpClientHandler clientHandler = null)
-           : base(application, predictionOptions, includeApiResults, clientHandler)
-        {
-            LogPersonalInformation = logPersonalInformation;
-        }
-
-        protected override Task OnRecognizerResultAsync(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> properties = null, Dictionary<string, double> metrics = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            properties.TryAdd("MyImportantProperty", "myImportantValue");
-
-            // Log event
-            TelemetryClient.TrackEvent(
-                            LuisTelemetryConstants.LuisResult,
-                            properties,
-                            metrics);
-
-            // Create second event.
-            var secondEventProperties = new Dictionary<string, string>();
-            secondEventProperties.Add(
-                "MyImportantProperty2",
-                "myImportantValue2");
-            TelemetryClient.TrackEvent(
-                            "MySecondEvent",
-                            secondEventProperties);
-            return Task.CompletedTask;
-        }
-    }
-
-    public class OverrideFillRecognizer : LuisRecognizer
-    {
-        public OverrideFillRecognizer(IBotTelemetryClient telemetryClient, LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, bool logPersonalInformation = false, HttpClientHandler clientHandler = null)
-           : base(application, predictionOptions, includeApiResults, clientHandler)
-        {
-            LogPersonalInformation = logPersonalInformation;
-        }
-
-        protected override async Task OnRecognizerResultAsync(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var properties = await FillLuisEventPropertiesAsync(recognizerResult, turnContext, telemetryProperties, cancellationToken).ConfigureAwait(false);
-
-            properties.TryAdd("MyImportantProperty", "myImportantValue");
-
-            // Log event
-            TelemetryClient.TrackEvent(
-                            LuisTelemetryConstants.LuisResult,
-                            properties,
-                            telemetryMetrics);
-
-            // Create second event.
-            var secondEventProperties = new Dictionary<string, string>();
-            secondEventProperties.Add(
-                "MyImportantProperty2",
-                "myImportantValue2");
-            TelemetryClient.TrackEvent(
-                            "MySecondEvent",
-                            secondEventProperties);
-        }
-    }
-
-    public class TelemetryConvertResult : IRecognizerConvert
-    {
-        private RecognizerResult _result;
-
-        public TelemetryConvertResult()
-        {
-        }
-
-        /// <summary>
-        /// Convert recognizer result.
-        /// </summary>
-        /// <param name="result">Result to convert.</param>
-        public void Convert(dynamic result)
-        {
-            _result = result as RecognizerResult;
         }
     }
 }

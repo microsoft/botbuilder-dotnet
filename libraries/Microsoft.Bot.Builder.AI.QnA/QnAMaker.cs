@@ -26,7 +26,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public const string QnAMakerTraceType = "https://www.qnamaker.ai/schemas/trace";
         public const string QnAMakerTraceLabel = "QnAMaker Trace";
 
-        private static readonly HttpClient DefaultHttpClient = new HttpClient();
         private readonly HttpClient _httpClient;
 
         private readonly QnAMakerEndpoint _endpoint;
@@ -45,8 +44,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="logPersonalInformation">Set to true to include personally indentifiable information in telemetry events.</param>
         public QnAMaker(QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient, IBotTelemetryClient telemetryClient, bool logPersonalInformation = false)
         {
-            _httpClient = httpClient ?? DefaultHttpClient;
-
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
 
             if (string.IsNullOrEmpty(endpoint.KnowledgeBaseId))
@@ -69,10 +66,22 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new NotSupportedException("v2.0 of QnA Maker service is no longer supported in the Bot Framework. Please upgrade your QnA Maker service at www.qnamaker.ai.");
             }
 
-            _isLegacyProtocol = _endpoint.Host.EndsWith("v3.0");
-
             _options = options ?? new QnAMakerOptions();
             ValidateOptions(_options);
+
+            if (httpClient == null)
+            {
+                // assign DefaultHttpClient to _httpClient to expose Timeout in unit tests
+                // and keep HttpClient usage as a singleton by default
+                DefaultHttpClient.Timeout = TimeSpan.FromMilliseconds(_options.Timeout);
+                _httpClient = DefaultHttpClient;
+            }
+            else
+            {
+                _httpClient = httpClient;
+            }
+
+            _isLegacyProtocol = _endpoint.Host.EndsWith("v3.0");
 
             TelemetryClient = telemetryClient ?? new NullBotTelemetryClient();
             LogPersonalInformation = logPersonalInformation;
@@ -113,6 +122,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
             : this(new QnAMakerEndpoint(service), options, httpClient, null)
         {
         }
+
+        public static HttpClient DefaultHttpClient { get; } = new HttpClient();
 
         /// <summary>
         /// Gets a value indicating whether determines whether to log personal information that came from the user.
@@ -318,6 +329,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
             if (options.ScoreThreshold < 0 || options.ScoreThreshold > 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(options.ScoreThreshold), "Score threshold should be a value between 0 and 1");
+            }
+
+            if (options.Timeout == 0.0D)
+            {
+                options.Timeout = 100000;
             }
 
             if (options.Top < 1)

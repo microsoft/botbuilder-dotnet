@@ -3,9 +3,8 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.Bot.Connector.Authentication;
 
-namespace Microsoft.Bot.Connector.Tests
+namespace Microsoft.Bot.Connector.Authentication.Tests
 {
     public class FaultyClass
     {

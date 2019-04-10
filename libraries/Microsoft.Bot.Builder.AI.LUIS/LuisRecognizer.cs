@@ -12,6 +12,7 @@ using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
+using Microsoft.Rest;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.AI.Luis
@@ -36,6 +37,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         private readonly LuisApplication _application;
         private readonly LuisPredictionOptions _options;
         private readonly bool _includeApiResults;
+        private readonly HttpClient _httpClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LuisRecognizer"/> class.
@@ -55,15 +57,22 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
             var credentials = new ApiKeyServiceClientCredentials(application.EndpointKey);
             var delegatingHandler = new LuisDelegatingHandler();
+            var httpClientHandler = clientHandler ?? CreateRootHandler();
+            var currentHandler = CreateHttpHandlerPipeline(httpClientHandler, delegatingHandler);
 
-            // LUISRuntimeClient requires that we explicitly bind to the appropriate constructor.
-            _runtime = clientHandler == null
-                    ?
-                new LUISRuntimeClient(credentials, delegatingHandler)
-                    :
-                new LUISRuntimeClient(credentials, clientHandler, delegatingHandler);
+            DefaultHttpClient = new HttpClient(currentHandler, false)
+            {
+                Timeout = TimeSpan.FromMilliseconds(_options.Timeout),
+            };
 
-            _runtime.Endpoint = application.Endpoint;
+            // assign DefaultHttpClient to _httpClient to expose Timeout in unit tests
+            // and keep HttpClient usage as a singleton
+            _httpClient = DefaultHttpClient;
+
+            _runtime = new LUISRuntimeClient(credentials, _httpClient, false)
+            {
+                Endpoint = application.Endpoint,
+            };
         }
 
         /// <summary>
@@ -90,6 +99,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
         {
         }
 
+        public static HttpClient DefaultHttpClient { get; private set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether to log personal information that came from the user to telemetry.
         /// </summary>
@@ -99,7 +110,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <summary>
         /// Gets the currently configured <see cref="IBotTelemetryClient"/> that logs the LuisResult event.
         /// </summary>
-        /// <value>The <see cref=IBotTelemetryClient"/> being used to log events.</value>
+        /// <value>The <see cref="IBotTelemetryClient"/> being used to log events.</value>
         public IBotTelemetryClient TelemetryClient { get; }
 
         /// <summary>
@@ -169,6 +180,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>The LUIS results of the analysis of the current message text in the current turn's context activity.</returns>
+        /// <typeparam name="T">Generic type parameter.</typeparam>
         public async Task<T> RecognizeAsync<T>(ITurnContext turnContext, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
             where T : IRecognizerConvert, new()
         {
@@ -323,5 +335,42 @@ namespace Microsoft.Bot.Builder.AI.Luis
             await turnContext.TraceActivityAsync("LuisRecognizer", traceInfo, LuisTraceType, LuisTraceLabel, cancellationToken).ConfigureAwait(false);
             return recognizerResult;
         }
+
+        private DelegatingHandler CreateHttpHandlerPipeline(HttpClientHandler httpClientHandler, params DelegatingHandler[] handlers)
+        {
+            // Now, the RetryAfterDelegatingHandler should be the absoulte outermost handler
+            // because it's extremely lightweight and non-interfering
+            DelegatingHandler currentHandler =
+                new RetryDelegatingHandler(new RetryAfterDelegatingHandler { InnerHandler = httpClientHandler });
+
+            if (handlers != null)
+            {
+                for (var i = handlers.Length - 1; i >= 0; --i)
+                {
+                    var handler = handlers[i];
+
+                    // Non-delegating handlers are ignored since we always
+                    // have RetryDelegatingHandler as the outer-most handler
+                    while (handler.InnerHandler is DelegatingHandler)
+                    {
+                        handler = handler.InnerHandler as DelegatingHandler;
+                    }
+
+                    handler.InnerHandler = currentHandler;
+                    currentHandler = handlers[i];
+                }
+            }
+
+            return currentHandler;
+        }
+
+        private HttpClientHandler CreateRootHandler() =>
+
+            // Create our root handler
+#if FullNetFx
+            return new WebRequestHandler();
+#else
+            new HttpClientHandler();
+#endif
     }
 }
