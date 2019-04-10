@@ -253,6 +253,11 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("exists(#BookFlight)", true, new HashSet<string> {"turn.intents.BookFlight"}),
             Test("$title", "Dialog Title", new HashSet<string> {"dialog.result.title"}),
             Test("$subTitle", "Dialog Sub Title", new HashSet<string> {"dialog.result.subTitle"}),
+
+            Test("join(foreach(items, item, item), ',')", "zero,one,two"),
+            Test("join(foreach(nestedItems, i, i.x), ',')", "1,2,3"),
+            Test("join(foreach(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3"),
+
         };
 
         [DataTestMethod]
@@ -276,6 +281,21 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     index = 3
                 },
                 items = new string[] { "zero", "one", "two" },
+                nestedItems = new []
+                {
+                    new
+                    {
+                        x = 1
+                    },
+                    new
+                    {
+                        x = 2,
+                    },
+                    new
+                    {
+                        x = 3,
+                    }
+                },
                 timestamp = "2018-03-15T13:00:00Z",
                 turn = new
                 {

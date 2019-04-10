@@ -638,6 +638,109 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
+        private static (object value, string error) Foreach(Expression expression, object state)
+        {
+            object result = null;
+            string error = null;
+
+            dynamic collection;
+            (collection, error) = expression.Children[0].TryEvaluate(state);
+            if (error == null)
+            {
+                // 2nd parameter has been rewrite to $local.item
+                var iteratorName = (string)(expression.Children[1].Children[0] as Constant).Value;
+                
+                if (collection is IList ilist)
+                {
+                    result = new List<object>();
+                    for (int idx = 0; idx < ilist.Count; idx++)
+                    {
+                        var local = new Dictionary<string, object>
+                        {
+                            {iteratorName, ilist[idx]},
+                        };
+                        var newScope = new Dictionary<string, object>
+                        {
+                            {"$global", state},
+                            {"$local", local}
+                        };
+
+                        (var r, var e) = expression.Children[2].TryEvaluate(newScope);
+                        if (e != null)
+                        {
+                            return (null, e);
+                        }
+
+                        ((List<object>)result).Add(r);
+                    }
+                }
+                
+                else
+                {
+                    error = $"{expression.Children[0]} is not a collection to run foreach";
+                }
+            }
+            return (result, error);
+        }
+
+
+        //
+        private static void ValidateForeach(Expression expression)
+        {
+            if (expression.Children.Count() != 3)
+            {
+                throw new Exception($"foreach expect 3 parameters, acutal {expression.Children.Count()}");
+            }
+
+            var second = expression.Children[1];
+
+            if (!(second.Type == ExpressionType.Accessor && second.Children.Count() == 1))
+            {
+                throw new Exception($"Second paramter of foreach is not an identifier : {second}");
+            }
+
+            var iteratorName = second.ToString();
+
+            // rewrite the 2nd, 3rd paramater
+            expression.Children[1] = RewriteAccessor(expression.Children[1], iteratorName);
+            expression.Children[2] = RewriteAccessor(expression.Children[2], iteratorName);
+
+        }
+
+        private static Expression RewriteAccessor(Expression expression, string localVarName)
+        {
+            if (expression.Type == ExpressionType.Accessor)
+            {
+                var str = expression.ToString();
+                var prefix = "$global";
+                if (str == localVarName || str.StartsWith(localVarName+"."))
+                {
+                    prefix = "$local";
+                }
+
+                // trace down the lowest level
+                var exp = expression;
+                while (exp.Children.Count() > 1)
+                {
+                    exp = exp.Children[1];
+                }
+
+                exp.Children = new Expression[] { exp.Children[0],
+                                                  Expression.MakeExpression(ExpressionType.Accessor, null, new Constant(prefix)) };
+
+                return expression;
+            }
+            else
+            {
+                // rewite children if have any
+                for (int idx = 0; idx < expression.Children.Count(); idx++)
+                {
+                    expression.Children[idx] = RewriteAccessor(expression.Children[idx], localVarName);
+                }
+                return expression;
+            }
+        }
+
         private static TimeSpan GetTimeSpan(long interval, string timeUnit)
         {
             switch (timeUnit)
@@ -673,6 +776,8 @@ namespace Microsoft.Bot.Builder.Expressions
         }
 
         private static bool IsSameDay(DateTime date1, DateTime date2) => date1.Year == date2.Year && date1.Month == date2.Month && date1.Day == date2.Day;
+
+
 
         private static Dictionary<string, ExpressionEvaluator> BuildFunctionLookup()
         {
@@ -948,6 +1053,8 @@ namespace Microsoft.Bot.Builder.Expressions
                     new ExpressionEvaluator(Apply(args => {var newJobj = (JObject)args[0]; newJobj[args[1].ToString()] = args[2];return newJobj; })) },
                 { ExpressionType.RemoveProperty,
                     new ExpressionEvaluator(Apply(args => {var newJobj = (JObject)args[0]; newJobj.Property(args[1].ToString()).Remove();return newJobj; })) },
+
+                { ExpressionType.Foreach, new ExpressionEvaluator(Foreach, ReturnType.Object, ValidateForeach)},
             };
 
             // Math aliases
