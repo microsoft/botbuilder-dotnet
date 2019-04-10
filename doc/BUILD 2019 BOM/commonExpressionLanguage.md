@@ -20,6 +20,7 @@
     - - [ ] forEach(collection, iterator, expression)
     - - [ ] match(regExp)
     - - [ ] lgTemplate(templateName, arg1, arg2,...)
+- - [ ] Drop support for object manipulation functions (json, addProperty, setProperty, removeProperty) from expression library 
 - - [ ] Final API shape review
 - - [ ] Final packaging, naming review
 - - [ ] On board to build and release DevOps pipeline
