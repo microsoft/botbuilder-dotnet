@@ -1,4 +1,6 @@
-﻿// also compute this and return it
-var age = System.Convert.ToSingle(User["age"]);
-Conversation["cat"] = age / 5;
-return age * 5;
+﻿dynamic DoStep(dynamic user, dynamic conversation, dynamic dialog, dynamic turn)
+{
+    var age = System.Convert.ToSingle(user["age"]);
+    conversation["cat"] = age / 5;
+    return age * 5;
+}

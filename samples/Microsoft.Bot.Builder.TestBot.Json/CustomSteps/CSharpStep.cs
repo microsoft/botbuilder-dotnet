@@ -32,9 +32,18 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         /// Javascript bound to memory run function(user, conversation, dialog, turn)
         /// </summary>
         /// <example>
+        /// Example: inline
         /// if (user.age > 18)
         ///     return dialog.lastResult;
         /// return null;
+        /// 
+        /// Example: filename -> step.csx
+        /// dynamic DoStep(dynamic user, dynamic conversation, dynamic dialog, dynamic turn)
+        /// {
+        ///     var age = System.Convert.ToSingle(user["age"]);
+        ///     conversation["cat"] = age / 5;
+        ///     return age * 5;
+        /// }
         /// </example>
         public string Script { get { return script; } set { LoadScript(value); } }
 
@@ -69,16 +78,24 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
         private void LoadScript(string value)
         {
+            StringBuilder sb = new StringBuilder();
             if (File.Exists(value))
             {
                 this.script = File.ReadAllText(value);
+                sb.AppendLine(script);
             }
             else
             {
                 this.script = value;
+                sb.AppendLine("dynamic DoStep(dynamic user, dynamic conversation, dynamic dialog, dynamic turn)");
+                sb.AppendLine("{");
+                sb.AppendLine(script);
+                sb.AppendLine("}");
             }
 
-            this.compiledScript = CSharpScript.Create(this.script,
+            sb.AppendLine("return DoStep(User, Conversation, Dialog, Turn);");
+
+            this.compiledScript = CSharpScript.Create(sb.ToString(),
                 options: ScriptOptions.Default.AddReferences(refs)
                             .AddImports("System.Dynamic"),
                 globalsType: typeof(DialogContextState));

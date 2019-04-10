@@ -81,9 +81,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
             // define the function
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine(@"function doStep(user, conversation, dialog, turn, property) {");
             sb.AppendLine(script);
-            sb.AppendLine("}");
             sb.AppendLine(@"function callStep(payloadJson) { 
 	                var payload = JSON.parse(payloadJson);
 
@@ -91,8 +89,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 	                payload.result = doStep(payload.state.user, 
                         payload.state.conversation, 
                         payload.state.dialog, 
-                        payload.state.turn, 
-                        payload.property);
+                        payload.state.turn);
 	                
                     return JSON.stringify(payload, null, 4);
                 }");
