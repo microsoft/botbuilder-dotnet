@@ -256,7 +256,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
             Test("join(foreach(items, item, item), ',')", "zero,one,two"),
             Test("join(foreach(nestedItems, i, i.x), ',')", "1,2,3"),
-            Test("join(foreach(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3"),
+            Test("join(foreach(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3", new HashSet<string>{ "items"}),
 
         };
 
@@ -325,9 +325,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             if (expectedRefs != null)
             {
                 var actualRefs = parsed.References();
-                Assert.IsTrue(expectedRefs.SetEquals(actualRefs), "References do not match");
+                Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
             }
         }
+        
 
         public static IEnumerable<object[]> JsonData => new[]
         {

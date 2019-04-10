@@ -93,7 +93,22 @@ namespace Microsoft.Bot.Builder.Expressions
             {
                 references.Add(path);
             }
-            return references.ToList();
+
+            var filteredReferences = new HashSet<string>();
+
+            references.Where(x => !x.StartsWith("$local.")).ToList().ForEach(x =>
+            {
+                if (x.StartsWith("$global."))
+                {
+                    filteredReferences.Add(x.Substring(8));
+                }
+                else
+                {
+                    filteredReferences.Add(x);
+                }
+            });
+
+            return filteredReferences.ToList();
         }
 
         /// <summary>
