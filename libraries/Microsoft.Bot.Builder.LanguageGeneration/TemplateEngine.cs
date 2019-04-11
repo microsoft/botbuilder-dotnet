@@ -6,7 +6,7 @@ using Antlr4.Runtime;
 using Newtonsoft.Json;
 using System;
 
-namespace Microsoft.Bot.Builder.AI.LanguageGeneration
+namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     /// <summary>
     /// The template engine that loads .lg file and eval template based on memory/scope

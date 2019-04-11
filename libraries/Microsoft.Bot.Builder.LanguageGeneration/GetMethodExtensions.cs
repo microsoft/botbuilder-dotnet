@@ -6,7 +6,7 @@ using Microsoft.Bot.Builder.Expressions;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.AI.LanguageGeneration
+namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public interface IGetMethod
     {

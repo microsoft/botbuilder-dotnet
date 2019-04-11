@@ -9,7 +9,7 @@ using Antlr4.Runtime.Tree;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 
-namespace Microsoft.Bot.Builder.AI.LanguageGeneration
+namespace Microsoft.Bot.Builder.LanguageGeneration
 { 
     class EvaluationTarget
     {

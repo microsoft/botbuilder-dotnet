@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 
-namespace Microsoft.Bot.Builder.AI.LanguageGeneration
+namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class ErrorListener : BaseErrorListener
     {
