@@ -48,7 +48,7 @@
     },
     {
       "$type": "Microsoft.SendActivity",
-      "activity": "[ShowItems(dialog.listName.Value)]"
+      "activity": "[ShowItems(user, dialog.listName.Value)]"
     }
   ]
 }
