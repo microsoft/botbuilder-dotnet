@@ -4,7 +4,7 @@
 # ShowEmailListItem(email)
 - $ {email.subject}
 
-# ShowEmailSummary
+# ShowEmailSummary(user)
 - IF: {count(user.emails) == 1}
   - You have {user.emailCount} email. This email is [ShowEmail(user.emails[0])].
 - ELSEIF: {count(user.emails) >= 2}
@@ -14,15 +14,15 @@
 - ELSE:
   - You should not be here.
 
-# ShowEmailList
+# ShowEmailList(user)
 - IF: {count(user.emails) == 1}
   - [ShowEmail(user.emails[0])]
 - ELSEIF: {count(user.emails) >= 2}
-  - {humanize(user.emails, '[ShowEmailListItem]', '\n', '\n')}
+  - {join(foreach(user.emails, x,  lgTemplate('ShowEmailListItem', x)), '\n', '\n')}
 - ELSE:
   - You should not be here.
 
-# ChooseEmailList
+# ChooseEmailList(user)
 - IF: {count(user.emails) == 1}
   - Do you want to read this one?
 - ELSEIF: {count(user.emails) >= 1}
@@ -33,7 +33,7 @@
 # ReshowOverview
 - Do you want to see your overview again? You can reply yes or no.
 
-# ReadFocusedEmail
+# ReadFocusedEmail(user)
 - Here is the detail for {user.focusedEmail.subject}:
 
 # ShowEmailCard(x)

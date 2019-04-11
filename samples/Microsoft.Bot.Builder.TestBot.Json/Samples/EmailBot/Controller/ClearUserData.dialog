@@ -1,67 +1,61 @@
 {
   "$schema": "../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
-  "rules": [
+  "steps": [
+    // Reset data
     {
-      "$type": "Microsoft.NoneIntentRule",
-      "steps": [
-        // Reset data
-        // Bug: Microsoft.SetProperty cannot set string
-        {
-          "$type": "Microsoft.SetProperty",
-          "value": "'msgraph'", // Can be 0 for msgraph /1 for google
-          "property": "user.mailType"
-        },
-        {
-          "$type": "Microsoft.SetProperty",
-          "value": "3",
-          "property": "user.pageSize"
-        },
-        {
-          "$type": "Microsoft.SetProperty",
-          "value": "0",
-          "property": "user.showIndex"
-        },
-        {
-          "$type": "Microsoft.SetProperty",
-          "property": "user.emailCount",
-          "value": "0"
-        },
-        {
-          "$type": "Microsoft.SetProperty",
-          "property": "user.focusedEmail",
-          "value": "null"
-        },
-        {
-          "$type": "Microsoft.EditArray",
-          "changeType": "Clear",
-          "arrayProperty": "user.emails"
-        },
-        {
-          "$type": "Microsoft.EditArray",
-          "changeType": "Clear",
-          "arrayProperty": "user.recipients"
-        },
-        {
-          "$type": "Microsoft.SetProperty",
-          "value": "null",
-          "property": "user.email"
-        },
-        {
-          "$type": "Microsoft.SetProperty",
-          "value": "null",
-          "property": "user.subject"
-        },
-        {
-          "$type": "Microsoft.SetProperty",
-          "value": "null",
-          "property": "user.body"
-        }
-        //{
-        //  "$type": "Microsoft.SendActivity",
-        //  "activity": "Clear done!"
-        //}
-      ]
+      "$type": "Microsoft.SetProperty",
+      "value": "'msgraph'",
+      "property": "user.mailType"
+    },
+    {
+      "$type": "Microsoft.SetProperty",
+      "value": "3",
+      "property": "user.pageSize"
+    },
+    {
+      "$type": "Microsoft.SetProperty",
+      "value": "0",
+      "property": "user.showIndex"
+    },
+    {
+      "$type": "Microsoft.SetProperty",
+      "property": "user.emailCount",
+      "value": "0"
+    },
+    {
+      "$type": "Microsoft.SetProperty",
+      "property": "user.focusedEmail",
+      "value": "null"
+    },
+    {
+      "$type": "Microsoft.EditArray",
+      "changeType": "Clear",
+      "arrayProperty": "user.emails"
+    },
+    {
+      "$type": "Microsoft.EditArray",
+      "changeType": "Clear",
+      "arrayProperty": "user.recipients"
+    },
+    {
+      "$type": "Microsoft.SetProperty",
+      "value": "null",
+      "property": "user.email"
+    },
+    {
+      "$type": "Microsoft.SetProperty",
+      "value": "null",
+      "property": "user.subject"
+    },
+    {
+      "$type": "Microsoft.SetProperty",
+      "value": "null",
+      "property": "user.body"
     }
+    //{
+    //  "$type": "Microsoft.SendActivity",
+    //  "activity": "Clear done!"
+    //}
   ]
 }
