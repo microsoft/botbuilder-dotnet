@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 {
@@ -12,39 +14,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     {
         private List<IRule> _rules;
         private bool _evaluate;
+        private readonly IExpressionParser _parser = new ExpressionEngine();
 
-        public Task<IReadOnlyList<int>> Candidates(DialogContext context, CancellationToken cancel)
-        {
-            var rules = new List<int>();
-            for (var i = 0; i < _rules.Count; i++)
-            {
-                if (_evaluate)
-                {
-                    var rule = _rules[i];
-                    var expression = _rules[i].GetExpression();
-                    var (value, error) = expression.TryEvaluate(context.State);
-                    var result = error == null && (bool)value;
-                    if (result == true)
-                    {
-                        rules.Add(i);
-                    }
-                }
-                else
-                {
-                    rules.Add(i);
-                }
-            }
-            return Task.FromResult((IReadOnlyList<int>)rules);
-        }
-
-        public Task Initialize(DialogContext context, IEnumerable<IRule> rules, bool evaluate, CancellationToken cancel)
+        public Task Initialize(PlanningContext context, IEnumerable<IRule> rules, bool evaluate, CancellationToken cancel)
         {
             _rules = rules.ToList();
             _evaluate = evaluate;
             return Task.CompletedTask;
         }
 
-        public Task<int> Select(DialogContext context, CancellationToken cancel)
+        public Task<IReadOnlyList<int>> Select(PlanningContext context, CancellationToken cancel)
         {
             var selection = -1;
             if (_evaluate)
@@ -52,10 +31,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 for (var i = 0; i < _rules.Count; i++)
                 {
                     var rule = _rules[i];
-                    var expression = _rules[i].GetExpression();
+                    var expression = rule.GetExpression(_parser);
                     var (value, error) = expression.TryEvaluate(context.State);
-                    var result = error == null && (bool)value;
-                    if (result == true)
+                    var eval = error == null && (bool)value;
+                    if (eval == true)
                     {
                         selection = i;
                         break;
@@ -69,7 +48,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                     selection = 0;
                 }
             }
-            return Task.FromResult(selection);
+            var result = new List<int>();
+            if (selection != -1)
+            {
+                result.Add(selection);
+            }
+            return Task.FromResult((IReadOnlyList<int>)result);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.TriggerTrees;
+using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 {
@@ -19,64 +20,52 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// </summary>
         public IRuleSelector Selector { get; set; }
 
-        public Task<IReadOnlyList<int>> Candidates(DialogContext context, CancellationToken cancel)
-        {
-            var nodes = _tree.Matches(context.State);
-            var rules = new List<int>();
-            foreach(var node in nodes)
-            {
-                foreach(var trigger in node.AllTriggers)
-                {
-                    var (pos, _rule) = (ValueTuple<int, IRule>) trigger.Action;
-                    rules.Add(pos);
-                }
-            }
-            return Task.FromResult((IReadOnlyList<int>)rules);
-        }
-
-        public Task Initialize(DialogContext context, IEnumerable<IRule> rules, bool evaluate, CancellationToken cancel)
+        public Task Initialize(PlanningContext context, IEnumerable<IRule> rules, bool evaluate, CancellationToken cancel)
         {
             var i = 0;
+            var parser = new ExpressionEngine(TriggerTree.LookupFunction);
             foreach (var rule in rules)
             {
-                _tree.AddTrigger(rule.GetExpression(), (i, rule));
+                _tree.AddTrigger(rule.GetExpression(parser), (i, rule));
                 ++i;
             }
             return Task.CompletedTask;
         }
 
-        public async Task<int> Select(DialogContext context, CancellationToken cancel)
+        public async Task<IReadOnlyList<int>> Select(PlanningContext context, CancellationToken cancel)
         {
-            var selection = -1;
             var nodes = _tree.Matches(context.State);
-            var candidates = new List<ValueTuple<int, IRule>>();
-            foreach (var node in nodes)
-            {
-                foreach (var trigger in node.AllTriggers)
-                {
-                    candidates.Add((ValueTuple<int, IRule>)trigger.Action);
-                }
-            }
+            IReadOnlyList<int> selections;
             if (Selector == null)
             {
-                // Pick rules by order defined
-                foreach(var candidate in candidates)
+                // Return all matches
+                var matches = new List<int>();
+                foreach (var node in nodes)
                 {
-                    var (pos, rule) = candidate;
-                    if (pos < selection || selection == -1)
+                    foreach (var trigger in node.AllTriggers)
                     {
-                        selection = pos;
+                        var (pos, rule) = (ValueTuple<int, IRule>)trigger.Action;
+                        matches.Add(pos);
                     }
                 }
+                selections = matches;
             }
             else
             {
+                var matches = new List<ValueTuple<int, IRule>>();
+                foreach (var node in nodes)
+                {
+                    foreach (var trigger in node.AllTriggers)
+                    {
+                        matches.Add((ValueTuple<int, IRule>)trigger.Action);
+                    }
+                }
                 // Sort rules by original order and then pass to child selector
-                var rules = (from candidate in candidates orderby candidate.Item1 ascending select candidate.Item2);
-                await Selector.Initialize(context, rules, false, cancel).ConfigureAwait(false);
-                selection = await Selector.Select(context, cancel).ConfigureAwait(false);
+                matches = (from candidate in matches orderby candidate.Item1 ascending select candidate).ToList();
+                await Selector.Initialize(context, matches.Select(m => m.Item2), false, cancel).ConfigureAwait(false);
+                selections = (from match in await Selector.Select(context, cancel).ConfigureAwait(false) select matches[match].Item1).ToList();
             }
-            return selection;
+            return selections;
         }
     }
 }

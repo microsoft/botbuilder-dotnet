@@ -292,6 +292,12 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                         foreach (var child in expression.Children)
                         {
                             var clauses = GenerateClauses(child);
+                            if (clauses.Count() == 0)
+                            {
+                                // Encountered false
+                                soFar.Clear();
+                                break;
+                            }
                             if (first)
                             {
                                 soFar.AddRange(clauses);
@@ -340,7 +346,18 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     }
                     break;
                 default:
-                    yield return new Clause(expression);
+                    // True becomes empty expression and false drops clause
+                    if (expression is Constant cnst && cnst.Value is bool val)
+                    {
+                        if (val == true)
+                        {
+                            yield return new Clause();
+                        }
+                    }
+                    else
+                    {
+                        yield return new Clause(expression);
+                    }
                     break;
             }
         }

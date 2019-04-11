@@ -154,10 +154,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     }
                 }
             }
-            else
-            {
-                added = Root.AddNode(new Node(new Clause(), this, trigger));
-            }
             if (added)
             {
                 ++TotalTriggers;

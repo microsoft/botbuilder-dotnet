@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
+using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
@@ -53,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public bool AutoEndDialog { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets the selector for picking the rule to execute.
+        /// Gets or sets the selector for picking the possible rules to execute.
         /// </summary>
         public IRuleSelector Selector { get; set; }
 
@@ -81,7 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             if (options is CancellationToken)
             {
-                throw new ArgumentException($"{nameof(options)} should not ever be a cancealltion token");
+                throw new ArgumentException($"{nameof(options)} should not ever be a cancellation token");
             }
 
             if (!installedDependencies)
@@ -95,11 +96,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     AddDialog(rule.Steps.ToArray());
                 }
             }
-            if (this.Selector == null)
-            {
-                this.Selector = new FirstSelector();
-            }
-            await this.Selector.Initialize(dc, this.Rules, true, cancellationToken).ConfigureAwait(false);
+
 
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
             activeDialogState["planningState"] = new PlanningState();
@@ -116,6 +113,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             // Create a new planning context
             var planning = PlanningContext.Create(dc, state);
+
+            if (this.Selector == null)
+            {
+                // Default to most specific then first
+                this.Selector = new MostSpecificSelector
+                {
+                    Selector = new FirstSelector()
+                };
+            }
+            await this.Selector.Initialize(planning, this.Rules, true, cancellationToken).ConfigureAwait(false);
 
             if (this.Steps.Any())
             {
@@ -713,11 +720,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private async Task<bool> QueueFirstMatchAsync(PlanningContext planning, DialogEvent dialogEvent, CancellationToken cancellationToken)
         {
             var selection = await Selector.Select(planning, cancellationToken).ConfigureAwait(false);
-            if (selection != -1)
+            if (selection.Any())
             {
-                var rule = Rules[selection];
+                var rule = Rules[selection.First()];
                 await planning.DebuggerStepAsync(rule, dialogEvent, cancellationToken).ConfigureAwait(false);
-                System.Diagnostics.Trace.TraceInformation($"Executing Dialog: {this.Id} Rule[{selection}]: {rule.GetType().Name}: {rule.GetExpression()}");
+                System.Diagnostics.Trace.TraceInformation($"Executing Dialog: {this.Id} Rule[{selection}]: {rule.GetType().Name}: {rule.GetExpression(null)}");
                 var changes = await rule.ExecuteAsync(planning).ConfigureAwait(false);
 
                 if (changes != null && changes.Count > 0)
@@ -733,12 +740,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             // Get list of proposed changes
             var allChanges = new List<PlanChangeList>();
-            var possibleRules = await Selector.Candidates(planning, cancellationToken).ConfigureAwait(false);
+            var possibleRules = await Selector.Select(planning, cancellationToken).ConfigureAwait(false);
             foreach (var selection in possibleRules)
             {
                 var rule = Rules[selection];
                 await planning.DebuggerStepAsync(rule, dialogEvent, cancellationToken).ConfigureAwait(false);
-                System.Diagnostics.Trace.TraceInformation($"Executing Dialog: {this.Id} Rule[{selection}]: {rule.GetType().Name}: {rule.GetExpression()}");
+                System.Diagnostics.Trace.TraceInformation($"Executing Dialog: {this.Id} Rule[{selection}]: {rule.GetType().Name}: {rule.GetExpression(null)}");
                 var changes = await rule.ExecuteAsync(planning).ConfigureAwait(false);
                 if (changes != null)
                 {
