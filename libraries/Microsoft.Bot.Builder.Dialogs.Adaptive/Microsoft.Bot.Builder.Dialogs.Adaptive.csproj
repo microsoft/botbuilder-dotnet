@@ -68,9 +68,11 @@
     <None Remove="Schemas\Rules\Microsoft.IntentRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.Rule.schema" />
     <None Remove="Schemas\Rules\Microsoft.UnknownIntentRule.schema" />
+    <None Remove="Schemas\Selectors\Microsoft.ConditionalSelector.schema" />
     <None Remove="Schemas\Selectors\Microsoft.FirstSelector.schema" />
     <None Remove="Schemas\Selectors\Microsoft.MostSpecificSelector.schema" />
     <None Remove="Schemas\Selectors\Microsoft.RandomSelector.schema" />
+    <None Remove="Schemas\Selectors\Microsoft.TrueSelector.schema" />
     <None Remove="Schemas\Steps\Microsoft.BeginDialog.schema" />
     <None Remove="Schemas\Steps\Microsoft.CancelAllDialogs.schema" />
     <None Remove="Schemas\Steps\Microsoft.DeleteProperty.schema" />
@@ -108,6 +110,8 @@
     <Content Include="Schemas\Rules\Microsoft.EventRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.IntentRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.UnknownIntentRule.schema" />
+    <Content Include="Schemas\Selectors\Microsoft.ConditionalSelector.schema" />
+    <Content Include="Schemas\Selectors\Microsoft.TrueSelector.schema" />
     <Content Include="Schemas\Steps\Microsoft.DeleteProperty.schema" />
     <Content Include="Schemas\Steps\Microsoft.IfCondition.schema" />
     <Content Include="Schemas\Steps\Microsoft.LogStep.schema" />
