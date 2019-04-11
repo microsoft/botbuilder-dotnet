@@ -70,6 +70,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void WariningTest(string input)
         {
             var engine = TemplateEngine.FromFiles(GetExampleFilePath(input));
+         
+            var report = new StaticChecker(engine.Templates).Check();
+
+            TestContext.WriteLine(string.Join("\n", report));
         }
     }
 }

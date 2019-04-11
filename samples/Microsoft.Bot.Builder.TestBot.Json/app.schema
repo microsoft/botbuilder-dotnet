@@ -156,6 +156,11 @@
             "$ref": "#/definitions/Microsoft.TextInput"
         },
         {
+            "title": "Microsoft.TraceActivity",
+            "description": "This is a step which sends an TraceActivity to the transcript",
+            "$ref": "#/definitions/Microsoft.TraceActivity"
+        },
+        {
             "title": "Microsoft.UnknownIntentRule",
             "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
             "$ref": "#/definitions/Microsoft.UnknownIntentRule"
@@ -1400,6 +1405,11 @@
                     "title": "Microsoft.TextInput",
                     "description": "This represents a dialog which gathers a text from the user",
                     "$ref": "#/definitions/Microsoft.TextInput"
+                },
+                {
+                    "title": "Microsoft.TraceActivity",
+                    "description": "This is a step which sends an TraceActivity to the transcript",
+                    "$ref": "#/definitions/Microsoft.TraceActivity"
                 },
                 {
                     "type": "string",
@@ -2776,6 +2786,68 @@
                     "examples": [
                         "\\w{3,30}"
                     ]
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.TraceActivity": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Trace Activity Step",
+            "description": "This is a step which sends an TraceActivity to the transcript",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.TraceActivity"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "name": {
+                    "type": "string",
+                    "title": "Name",
+                    "description": "Name of the trace activity"
+                },
+                "valueType": {
+                    "type": "string",
+                    "title": "Value Type",
+                    "description": "Value type of the trace activity"
+                },
+                "valueProperty": {
+                    "type": "string",
+                    "title": "Value Property",
+                    "description": "Property path to memory object to send as the value of the trace activity"
                 }
             },
             "patternProperties": {
