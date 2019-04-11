@@ -17,7 +17,7 @@
 - [template2] {age}
 
 # template2
-- {humanize(alarms, '[template3(customer)]', ',', 'and')} {tasks[0]}
+- {join(foreach(alarms, x, lgTemplate('template3', customer)), ',', 'and')} {tasks[0]}
 
 #template3(input)
 - {input.property}
