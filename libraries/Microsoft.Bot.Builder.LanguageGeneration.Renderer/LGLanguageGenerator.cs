@@ -9,7 +9,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 
-namespace Microsoft.Bot.Builder.LanguageGeneration
+namespace Microsoft.Bot.Builder.LanguageGeneration.Renderer
 {
     public class LGLanguageGenerator : ILanguageGenerator
     {

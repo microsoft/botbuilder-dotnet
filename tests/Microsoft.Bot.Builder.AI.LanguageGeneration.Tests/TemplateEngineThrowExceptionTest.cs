@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Bot.Builder.LanguageGeneration;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 {
