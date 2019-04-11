@@ -1,6 +1,33 @@
 {
   "$schema": "../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
+  "recognizer": {
+    "$type": "Microsoft.RegexRecognizer",
+    "intents": {
+      "ForwardEmailIntent": "(?i)forward email",
+      "ReplyEmailIntent": "(?i)reply email"
+    }
+  },
+  "rules": [
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "ForwardEmailIntent",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "Hello ForwardEmailIntent"
+        },
+        "ForwardEmail"
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "ReplyEmailIntent",
+      "steps": [
+        "ReplyEmail"
+      ]
+    }
+  ],
   "steps": [
     "GetDisplayEmails",
     {

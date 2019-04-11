@@ -20,6 +20,8 @@
     <None Remove="Samples\08 - ExternalLanguage\FortuneTellerDialog.dialog" />
     <None Remove="Samples\08 - ExternalLanguage\TellJokeDialog.dialog" />
     <None Remove="Samples\09 - EndDialog\EndDialog.main.dialog" />
+    <None Remove="Samples\EmailBot\Service\MSGraph\ForwardEmails.dialog" />
+    <None Remove="Samples\EmailBot\Service\MSGraph\ReplyEmails.dialog" />
     <None Remove="Samples\RootDialog\RootDialog.lg" />
   </ItemGroup>
 
@@ -28,6 +30,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Samples\EmailBot\Service\MSGraph\ReplyEmails.dialog" />
+    <Content Include="Samples\EmailBot\Service\MSGraph\ForwardEmails.dialog" />
     <Content Include="Samples\EmailBot\Service\MSGraph\SendEmails.dialog" />
     <Content Include="Samples\RootDialog\RootDialog.lg" />
     <Content Include="Samples\RootDialog\RootDialog.main.dialog" />

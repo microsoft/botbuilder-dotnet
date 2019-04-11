@@ -17,12 +17,15 @@
     },
     {
       "$type": "Microsoft.HttpRequest",
-      "url": "https://graph.microsoft.com/beta/me/mailFolders/inbox/messages",
-      "method": "GET",
+      "url": "https://graph.microsoft.com/v1.0/me/messages/{user.focusedEmail.id}/reply",
+      "method": "POST",
       "header": {
         "Authorization": "Bearer {dialog.token.Token}"
       },
-      "Property": "user.getGraphEmails"
+      "body": {
+        "comment": "{user.toContent}"
+      },
+      "Property": "dialog.postResponse"
     }
   ]
 }

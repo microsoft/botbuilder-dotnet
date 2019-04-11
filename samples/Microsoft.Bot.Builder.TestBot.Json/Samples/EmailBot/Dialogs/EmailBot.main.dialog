@@ -8,7 +8,9 @@
       "SendEmailIntent": "(?i)send email",
       "HelpIntent": "(?i)help",
       "FindContactIntent": "(?i)find email contact",
-      "ShowNextPageIntent": "(?i)next page email"
+      "ShowNextPageIntent": "(?i)next page email",
+      "ForwardEmailIntent": "(?i)forward email",
+      "ReplyEmailIntent": "(?i)reply email"
     }
   },
   "rules": [
@@ -51,6 +53,22 @@
       "steps": [
         "ClearUserData",
         "FindContact"
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "ForwardEmailIntent",
+      "steps": [
+        "ClearUserData",
+        "ForwardEmail"
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "ReplyEmailIntent",
+      "steps": [
+        "ClearUserData",
+        "ReplyEmail"
       ]
     },
     {

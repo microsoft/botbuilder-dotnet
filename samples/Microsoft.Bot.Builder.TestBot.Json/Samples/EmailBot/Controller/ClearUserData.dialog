@@ -52,6 +52,26 @@
       "$type": "Microsoft.SetProperty",
       "value": "null",
       "property": "user.body"
+    },
+    {
+      "$type": "Microsoft.SetProperty",
+      "value": "null",
+      "property": "user.fwContent"
+    },
+    {
+      "$type": "Microsoft.SetProperty",
+      "value": "null",
+      "property": "user.fwSubject"
+    },
+    {
+      "$type": "Microsoft.SetProperty",
+      "value": "null",
+      "property": "user.toContent"
+    },
+    {
+      "$type": "Microsoft.SetProperty",
+      "value": "null",
+      "property": "user.toSubject"
     }
     //{
     //  "$type": "Microsoft.SendActivity",
