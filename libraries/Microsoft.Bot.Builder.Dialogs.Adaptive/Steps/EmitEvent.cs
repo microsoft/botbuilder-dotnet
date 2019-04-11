@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 {
+#if EMIT
     public class EmitEvent : DialogCommand
     {
         private const string eventValueProperty = "eventValue";
@@ -73,4 +74,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             return $"EmitEvent[{EventName ?? string.Empty}]";
         }
     }
+#endif
 }

@@ -519,6 +519,78 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             .StartTestAsync();
         }
 
+#if EMIT
+        [TestMethod]
+        public async Task Step_EmitEvent()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var rootDialog = new AdaptiveDialog("root")
+            {
+                Steps = new List<IDialog>()
+                {
+                    new BeginDialog()
+                    {
+                        Dialog = new AdaptiveDialog("outer")
+                        {
+                            AutoEndDialog = false,
+                            Recognizer = new RegexRecognizer()
+                            {
+                                Intents = new Dictionary<string, string>()
+                                {
+                                    { "EmitIntent" , "emit" },
+                                    { "CowboyIntent" , "moo" }
+                                }
+                            },
+                            Rules = new List<IRule>()
+                            {
+                                new IntentRule(intent: "CowboyIntent")
+                                {
+                                    Steps = new List<IDialog>()
+                                    {
+                                        new SendActivity("Yippee ki-yay!")
+                                    }
+                                },
+                                new IntentRule(intent: "EmitIntent")
+                                {
+                                    Steps = new List<IDialog>()
+                                    {
+                                        new EmitEvent()
+                                        {
+                                            EventName = "CustomEvent",
+                                            BubbleEvent = true,
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                Rules = new List<IRule>()
+                {
+                    new EventRule()
+                    {
+                        Events = new List<string>() { "CustomEvent"},
+                        Steps = new List<IDialog>()
+                        {
+                            new SendActivity("CustomEventFired")
+                        }
+                    }
+                }
+            };
+
+
+            await CreateFlow(rootDialog, convoState, userState)
+            .Send("moo")
+                .AssertReply("Yippee ki-yay!")
+            .Send("emit")
+                .AssertReply("CustomEventFired")
+            .Send("moo")
+                .AssertReply("Yippee ki-yay!")
+            .StartTestAsync();
+        }
+#endif
 
     }
 }
