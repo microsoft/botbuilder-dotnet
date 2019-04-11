@@ -36,6 +36,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     return new ExpressionEvaluator(BuiltInFunctions.Apply(this.LgTemplate), ReturnType.String, this.ValidLgTemplate);
                 case "join":
                     return new ExpressionEvaluator(BuiltInFunctions.Apply(this.Join));
+                case "foreach":
+                case "map":
+                    return new ExpressionEvaluator(BuiltInFunctions.Apply(this.Foreach));
+                case "mapjoin":
+                case "humanize":
+                    return new ExpressionEvaluator(BuiltInFunctions.Apply(this.ForeachThenJoin));
             }
             return BuiltInFunctions.Lookup(name);
         }
