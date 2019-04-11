@@ -27,28 +27,48 @@
           "property": "dialog.listName",
           "choices": [
             {
-              "value": "ShoppingList"
+              "value": "ShoppingList",
+              "synonyms": [
+                "1",
+                "first",
+                "shopping",
+                "first one"
+              ]
             },
             {
-              "value": "GroceryList"
+              "value": "GroceryList",
+              "synonyms": [
+                "2",
+                "second",
+                "grocery",
+                "second one"
+              ]
             },
             {
-              "value": "ToDoList"
+              "value": "ToDoList",
+              "synonyms": [
+                "3",
+                "third",
+                "todo",
+                "third one",
+                "to do"
+              ]
             }
           ],
-          "prompt": "Which list do you want?",
-          "style": "List",
+          "prompt": "Which list do you want to show?",
+          "style": "SuggestedAction",
           "alwaysPrompt": true
+        },
+        {
+          "$type": "Microsoft.SetProperty",
+          "property": "dialog.listName",
+          "value": "dialog.listName.Value"
         }
       ]
     },
     {
       "$type": "Microsoft.SendActivity",
-      "activity": "Test"
-    },
-    {
-      "$type": "Microsoft.SendActivity",
-      "activity": "[ShowItems(user, dialog.listName.Value)]"
+      "activity": "[ShowItems(user, dialog.listName)]"
     }
   ]
 }

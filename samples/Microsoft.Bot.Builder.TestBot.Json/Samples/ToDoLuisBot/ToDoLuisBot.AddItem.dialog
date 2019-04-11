@@ -32,18 +32,42 @@
             "property": "dialog.listName",
             "choices": [
               {
-                "value": "ShoppingList"
+                "value": "ShoppingList",
+                "synonyms": [
+                  "1",
+                  "first",
+                  "shopping",
+                  "first one"
+                ]
               },
               {
-                "value": "GroceryList"
+                "value": "GroceryList",
+                "synonyms": [
+                  "2",
+                  "second",
+                  "grocery",
+                  "second one"
+                ]
               },
               {
-                "value": "ToDoList"
+                "value": "ToDoList",
+                "synonyms": [
+                  "3",
+                  "third",
+                  "todo",
+                  "third one",
+                  "to do"
+                ]
               }
             ],
-            "prompt": "Which list do you want?",
-            "style": "List",
+            "prompt": "Which list do you want to expand?",
+            "style": "SuggestedAction",
             "alwaysPrompt": true
+          },
+          {
+            "$type": "Microsoft.SetProperty",
+            "property": "dialog.listName",
+            "value": "dialog.listName.Value"
           }
         ]
       },
@@ -59,29 +83,25 @@
         ]
       },
       {
-        "$type": "Microsoft.SendActivity",
-        "activity": "You choose {dialog.listName.Value}"
-      },
-      {
-          "$type": "Microsoft.IfCondition",
-          "condition": "user.lists.{dialog.listName.Value} == null",
-          "steps": [
-              {
-                  "$type": "Microsoft.InitProperty",
-                  "property": "user.lists.{dialog.listName.Value}",
-                  "type": "array"
-              }
-          ]
+        "$type": "Microsoft.IfCondition",
+        "condition": "(dialog.listName == \"ShoppingList\" && user.lists.ShoppingList == null) || (dialog.listName == \"GroceryList\" && user.lists.GroceryList == null) || (dialog.listName == \"ToDoList\" && user.lists.ToDoList == null)",
+        "steps": [
+          {
+            "$type": "Microsoft.InitProperty",
+            "property": "user.lists.{dialog.listName}",
+            "type": "array"
+          }
+        ]
       },
       {
           "$type": "Microsoft.EditArray",
           "changeType": "Push",
-          "arrayProperty": "user.lists.{dialog.listName.Value}",
+          "arrayProperty": "user.lists.{dialog.listName}",
           "itemProperty": "dialog.item"
       },
       {
           "$type": "Microsoft.SendActivity",
-          "activity": "Successfully added {dialog.item} to {dialog.listName.Value} list."
+          "activity": "Successfully added {dialog.item} to {dialog.listName} list."
       }
     ]
 }

@@ -17,7 +17,9 @@
 # ShowItems(user, listName)
 - IF: {listName == "ShoppingList"}
     - ```
-    You most recent @{count(User.lists.ShoppingList)} shopping items are
+    You most recent @{count(user.lists.ShoppingList)} shopping items are
+    
+    @{join(foreach(user.lists.ShoppingList, x, lgTemplate('showSingleItem', x)), '\n')}
 
      
 
@@ -26,14 +28,14 @@
     - ```
     You most recent {count(user.lists.GroceryList)} grocery items are
 
-     @{humanize(user.lists.GroceryList, '[showSingleItem]', '\n')}
+    @{join(foreach(user.lists.GroceryList, x, lgTemplate('showSingleItem', x)), '\n')}
 
      ```
 - ELSEIF: {listName == "ToDoList"}
     - ```
     You most recent {count(user.lists.ToDoList)} todo items are
 
-     @{humanize(user.lists.ToDoList, '[showSingleItem]', '\n')}
+    @{join(foreach(user.lists.ToDoList, x, lgTemplate('showSingleItem', x)), '\n')}
 
      ```
 
@@ -42,7 +44,6 @@
 # ShowLists
 - IF: {count(lists) > 0}
     - ```
- @{humanize(list, '[showSingleList]', '\n')}
       ```
 - ELSE:
     - The list is empty.

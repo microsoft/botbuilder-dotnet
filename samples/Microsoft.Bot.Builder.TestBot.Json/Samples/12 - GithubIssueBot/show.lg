@@ -1,5 +1,5 @@
 ﻿# Show
-- You have following issues : \n {humanize(dialog.getResponse, '[showSingleUrl]', '\n')}
+- You have following issues : \n 
 
 # showSingleUrl(x)
 - ```

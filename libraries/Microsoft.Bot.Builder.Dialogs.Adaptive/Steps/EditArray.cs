@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
@@ -105,7 +106,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 throw new Exception($"EditArray: \"{ ChangeType }\" operation couldn't be performed because the arrayProperty wasn't specified.");
             }
 
-            var array = dc.State.GetValue(ArrayProperty, new JArray());
+            var prop = await new TextTemplate(this.ArrayProperty).BindToData(dc.Context, dc.State, (property, data) => dc.State.GetValue<object>(data, property)).ConfigureAwait(false);
+            var array = dc.State.GetValue(prop, new JArray());
 
             object item = null;
             string serialized = string.Empty;
@@ -150,7 +152,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     if (item != null)
                     {
                         lastResult = false;
-                        array.Remove(new JObject(item));
+                        array.Where(x => x.Value<string>() == item.ToString()).First().Remove();
                     }
                     break;
                 case ArrayChangeType.Clear:
@@ -158,8 +160,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     array.Clear();
                     break;
             }
-
-            var prop = await new TextTemplate(this.ArrayProperty).BindToData(dc.Context, dc.State, (property, data) => dc.State.GetValue<object>(data, property)).ConfigureAwait(false);
 
             dc.State.SetValue(prop, array);
             return await dc.EndDialogAsync();
