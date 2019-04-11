@@ -5,6 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="CustomSteps\Testbot.CalculateDogYears.schema" />
+    <None Remove="CustomSteps\Testbot.CSharpStep.schema" />
+    <None Remove="CustomSteps\Testbot.JavascriptStep.schema" />
     <None Remove="en-us.lg" />
     <None Remove="main.dialog" />
     <None Remove="Samples\02 - EndTurn\EndTurn.main.dialog" />
@@ -28,6 +31,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="CustomSteps\Testbot.CalculateDogYears.schema" />
+    <Content Include="CustomSteps\Testbot.CSharpStep.schema" />
+    <Content Include="CustomSteps\Testbot.JavascriptStep.schema" />
     <Content Include="Samples\RootDialog\RootDialog.lg" />
     <Content Include="Samples\RootDialog\RootDialog.main.dialog" />
     <Content Include="Samples\08 - ExternalLanguage\ExternalLanguage.main.lg" />

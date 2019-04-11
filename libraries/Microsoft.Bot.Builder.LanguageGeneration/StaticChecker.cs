@@ -281,15 +281,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             foreach (Match match in mc)
             {
                 var newExp = match.Value.Substring(1); // remove @
-                if (newExp.StartsWith("{[") && newExp.EndsWith("]}"))
-                {
-                    result.AddRange(CheckTemplateRef(newExp.Substring(2, newExp.Length - 4)));//[ ]	
-                }
-                else
-                {
-                    result.AddRange(CheckExpression(newExp));
-                }
-
+                result.AddRange(CheckExpression(newExp));
             }
             return result;
         }
