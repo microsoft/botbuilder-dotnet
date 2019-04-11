@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Newtonsoft.Json;
+
 namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
@@ -21,6 +23,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <value>
         /// The minimum score threshold, used to filter returned results.
         /// </value>
+        [JsonProperty("scoreThreshold")]
         public float ScoreThreshold { get; set; }
 
         /// <summary>
@@ -29,10 +32,13 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <value>
         /// The number of ranked results you want in the output.
         /// </value>
+        [JsonProperty("top")]
         public int Top { get; set; }
 
+        [JsonProperty("strictFilters")]
         public Metadata[] StrictFilters { get; set; }
 
+        [JsonProperty("metadataBoost")]
         public Metadata[] MetadataBoost { get; set; }
     }
 }

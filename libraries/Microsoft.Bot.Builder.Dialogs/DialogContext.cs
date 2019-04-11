@@ -508,9 +508,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
 
                 // Break out if not bubbling or no parent
-                if (!handled && dialogEvent.Bubble && Parent != null)
+                if (!handled && dialogEvent.Bubble && dc.Parent != null)
                 {
-                    dc = Parent;
+                    dc = dc.Parent;
                 }
                 else
                 {
