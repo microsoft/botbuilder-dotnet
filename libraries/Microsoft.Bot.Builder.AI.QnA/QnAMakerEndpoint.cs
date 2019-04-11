@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Configuration;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA
 {
@@ -31,6 +32,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <value>
         /// The knowledge base ID.
         /// </value>
+        [JsonProperty("knowledgeBaseId")]
         public string KnowledgeBaseId { get; set; }
 
         /// <summary>
@@ -39,6 +41,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <value>
         /// The endpoint key for the knowledge base.
         /// </value>
+        [JsonProperty("endpointKey")]
         public string EndpointKey { get; set; }
 
         /// <summary>
@@ -47,6 +50,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <value>
         /// The host path.
         /// </value>
+        [JsonProperty("host")]
         public string Host { get; set; }
     }
 }

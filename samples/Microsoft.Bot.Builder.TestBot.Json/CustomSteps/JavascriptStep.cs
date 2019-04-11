@@ -15,7 +15,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
     public class JavascriptStep : DialogCommand
     {
         private ScriptEngine scriptEngine;
-        private DateTime lastModified;
         private string script;
 
         /// <summary>
@@ -26,50 +25,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         ///     return dialog.lastResult;
         /// return null;
         /// </example>
-        public string Script
-        {
-            get
-            {
-                return script;
-            }
-            set
-            {
-                LoadScript(value);
-            }
-        }
-
-        private void LoadScript(string value)
-        {
-            if (File.Exists(value))
-            {
-                this.lastModified = File.GetLastWriteTimeUtc(value);
-                this.script = File.ReadAllText(value);
-            }
-            else
-            {
-                this.script = value;
-            }
-
-            // define the function
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine(@"function doStep(user, conversation, dialog, turn, property) {");
-            sb.AppendLine(script);
-            sb.AppendLine("}");
-            sb.AppendLine(@"function callStep(payloadJson) { 
-	                var payload = JSON.parse(payloadJson);
-
-                    // run script
-	                payload.result = doStep(payload.state.user, 
-                        payload.state.conversation, 
-                        payload.state.dialog, 
-                        payload.state.turn, 
-                        payload.property);
-	                
-                    return JSON.stringify(payload, null, 4);
-                }");
-
-            scriptEngine.Evaluate(sb.ToString());
-        }
+        public string Script { get { return script; } set { LoadScript(value); } }
 
         [JsonConstructor]
         public JavascriptStep([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
@@ -83,11 +39,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
         protected override Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (options is CancellationToken)
-            {
-                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
-            }
-
             // map state into json
             dynamic payload = new JObject();
             payload.state = new JObject();
@@ -116,5 +67,36 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         {
             return $"{nameof(JavascriptStep)}({this.script.GetHashCode()})";
         }
+
+        private void LoadScript(string value)
+        {
+            if (File.Exists(value))
+            {
+                this.script = File.ReadAllText(value);
+            }
+            else
+            {
+                this.script = value;
+            }
+
+            // define the function
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine(script);
+            sb.AppendLine(@"function callStep(payloadJson) { 
+	                var payload = JSON.parse(payloadJson);
+
+                    // run script
+	                payload.result = doStep(payload.state.user, 
+                        payload.state.conversation, 
+                        payload.state.dialog, 
+                        payload.state.turn);
+	                
+                    return JSON.stringify(payload, null, 4);
+                }");
+
+            scriptEngine.Evaluate(sb.ToString());
+        }
+
+
     }
 }

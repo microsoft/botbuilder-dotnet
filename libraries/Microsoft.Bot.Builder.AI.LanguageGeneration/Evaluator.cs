@@ -234,15 +234,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var evalutor = new MatchEvaluator(m =>
             {
                 var newExp = m.Value.Substring(1); // remove @
-                if (newExp.StartsWith("{[") && newExp.EndsWith("]}"))
-                {
-                    return EvalTemplateRef(newExp.Substring(2, newExp.Length - 4))?
-                            .Replace("\"", "\'"); ;//[ ]
-                }
-                else
-                {
-                    return EvalExpression(newExp)?.Replace("\"","\'");//{ }
-                }
+
+                // why replace " to ' ?
+                return EvalExpression(newExp)?.Replace("\"","\'");//{ }
+                
             });
 
             return Regex.Replace(exp, reg, evalutor);

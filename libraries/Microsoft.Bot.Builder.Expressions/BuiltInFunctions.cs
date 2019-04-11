@@ -517,6 +517,22 @@ namespace Microsoft.Bot.Builder.Expressions
                                 else if (value is JValue jvalue)
                                 {
                                     value = jvalue.Value;
+                                    if (jvalue.Type == JTokenType.Integer)
+                                    {
+                                        value = jvalue.ToObject<int>();
+                                    }
+                                    else if (jvalue.Type == JTokenType.String)
+                                    {
+                                        value = jvalue.ToObject<string>();
+                                    }
+                                    else if (jvalue.Type == JTokenType.Boolean)
+                                    {
+                                        value = jvalue.ToObject<bool>();
+                                    }
+                                    else if (jvalue.Type == JTokenType.Float)
+                                    {
+                                        value = jvalue.ToObject<double>();
+                                    }
                                 }
                             }
                             else

@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         {
             Templates = templates;
             TemplateMap = templates.ToDictionary(t => t.Name);
-            _expressionParser = new ExpressionEngine(new GetMethodExtensions(null).GetMethodX);
+            _expressionParser = new ExpressionEngine(new GetMethodExtensions(new Evaluator(Templates, null)).GetMethodX);
         }
 
         public List<string> AnalyzeTemplate(string templateName)
@@ -137,10 +137,39 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             return result;
         }
 
+        /// <summary>
+        /// Extract the templates ref out from an expression
+        /// return only those without paramaters
+        /// </summary>
+        /// <param name="exp"></param>
+        /// <returns></returns>
+        private List<string> GetDirectTemplateRefs(Expression exp)
+        {
+            if (exp.Type == "lgTemplate" && exp.Children.Length == 1)
+            {
+                return new List<string> { (string)(exp.Children[0] as Constant).Value };
+            }
+            else
+            {
+                return exp.Children.Select(x => GetDirectTemplateRefs(x)).SelectMany(x => x).ToList();
+            }
+        }
+
         private List<string> AnalyzeExpression(string exp)
         {
             exp = exp.TrimStart('{').TrimEnd('}');
-            var parse = _expressionParser.Parse(exp);
+            var parsed = _expressionParser.Parse(exp);
+
+            var references = parsed.References();
+
+            var referencesInTemplates = GetDirectTemplateRefs(parsed)
+                                            .Select(x => AnalyzeTemplate(x))
+                                            .SelectMany(x => x)
+                                            .ToList();
+
+            return references.Concat(referencesInTemplates).ToList();
+
+            /*
             var references = new HashSet<string>();
             // Extend the expression reference walk so that when a string is encountered it is evaluated as
             // a {expression} or [template] and expanded.
@@ -171,6 +200,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 references.Add(path);
             }
             return references.ToList();
+            */
         }
 
         private List<string> AnalyzeTemplateRef(string exp)

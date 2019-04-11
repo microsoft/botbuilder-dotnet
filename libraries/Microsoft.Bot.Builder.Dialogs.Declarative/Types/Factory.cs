@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.CancelAllDialog", typeof(CancelAllDialogs));
             Register("Microsoft.DeleteProperty", typeof(DeleteProperty));
             Register("Microsoft.EditArray", typeof(EditArray));
-            Register("Microsoft.EmitEvent", typeof(EmitEvent));
+            // Register("Microsoft.EmitEvent", typeof(EmitEvent));
             Register("Microsoft.EndDialog", typeof(EndDialog));
             Register("Microsoft.EndTurn", typeof(EndTurn));
             Register("Microsoft.HttpRequest", typeof(HttpRequest));
