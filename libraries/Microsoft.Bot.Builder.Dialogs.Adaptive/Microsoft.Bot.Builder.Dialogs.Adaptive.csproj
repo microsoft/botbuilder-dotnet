@@ -74,6 +74,7 @@
     <None Remove="Schemas\Steps\Microsoft.SendActivity.schema" />
     <None Remove="Schemas\Steps\Microsoft.SetProperty.schema" />
     <None Remove="Schemas\Steps\Microsoft.SwitchCondition.schema" />
+    <None Remove="Schemas\Steps\Microsoft.TraceActivity.schema" />
   </ItemGroup>
   
   <ItemGroup>
@@ -85,6 +86,7 @@
     <Content Include="Schemas\Rules\Microsoft.Rule.schema" />
     <Content Include="Schemas\Rules\Microsoft.EventRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.IntentRule.schema" />
+    <Content Include="Schemas\Steps\Microsoft.TraceActivity.schema" />
     <Content Include="Schemas\Steps\Microsoft.InitProperty.schema" />
     <Content Include="Schemas\Steps\Microsoft.SetProperty.schema" />
     <Content Include="Schemas\Steps\Microsoft.EmitEvent.schema" />
