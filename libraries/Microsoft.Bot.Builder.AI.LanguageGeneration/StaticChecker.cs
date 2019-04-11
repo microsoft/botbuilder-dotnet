@@ -185,7 +185,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     }
                 }
 
-                result.AddRange(Visit(ifRules[idx].normalTemplateBody()));
+                if(ifRules[idx].normalTemplateBody() != null)
+                {
+                    result.AddRange(Visit(ifRules[idx].normalTemplateBody()));
+                }
+                else
+                {
+                    result.Add(new ReportEntry($"no normal template body in condition block: '{ifRules[idx].GetText()}'"));
+                }
             }
 
             return result;
@@ -310,11 +317,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             exp = exp.TrimStart('{').TrimEnd('}');
             try
             {
-                new ExpressionEngine(new GetMethodExtensions(null).GetMethodX).Parse(exp);
+                new ExpressionEngine(new GetMethodExtensions(new Evaluator(this.Templates, null)).GetMethodX).Parse(exp);
             }
             catch(Exception e)
             {
-                result.Add(new ReportEntry(e.Message));
+                result.Add(new ReportEntry(e.Message + $" in expression `{exp}`"));
                 return result;
             }
 

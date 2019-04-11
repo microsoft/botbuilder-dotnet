@@ -3,26 +3,26 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.AI.LanguageGeneration;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.TestBot.Json.Recognizers;
+using Microsoft.Bot.Schema;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Bot.Schema;
-using System.Linq;
-using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.Extensions.Logging.Debug;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -48,6 +48,9 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
             // register custom types
             TypeFactory.Register("Testbot.RuleRecognizer", typeof(RuleRecognizer));
+            TypeFactory.Register("Testbot.CalculateDogYears", typeof(CalculateDogYears));
+            TypeFactory.Register("Testbot.JavascriptStep", typeof(JavascriptStep));
+            TypeFactory.Register("Testbot.CSharpStep", typeof(CSharpStep));
         }
 
         public IHostingEnvironment HostingEnvironment { get; }
@@ -61,6 +64,19 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             {
                 TelemetryConfiguration.Active.DisableTelemetry = true;
             }
+
+            // hook up debugging support
+            var sourceMap = new SourceMap();
+            DebugAdapter debugAdapter = null;
+            bool enableDebugger = true;
+            if (enableDebugger)
+            {
+                // by setting the source registry all dialogs will register themselves to be debugged as execution flows
+                DebugSupport.SourceRegistry = sourceMap;
+                debugAdapter = new DebugAdapter(sourceMap, sourceMap, new DebugLogger(nameof(DebugAdapter)));
+            }
+
+            // m
             services.AddSingleton<IConfiguration>(this.Configuration);
 
             IStorage dataStore = new MemoryStorage();
@@ -81,7 +97,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 (IServiceProvider sp) =>
                 {
                     // declarative Adaptive dialogs bot sample
-                    return new TestBot(accessors, resourceExplorer, Source.NullRegistry.Instance);
+                    return new TestBot(accessors, resourceExplorer, DebugSupport.SourceRegistry);
 
                     // LG bot sample
                     // return new TestBotLG(accessors);
@@ -97,6 +113,11 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                     options.CredentialProvider = new SimpleCredentialProvider(this.Configuration["AppId"], this.Configuration["AppPassword"]);
                     options.Middleware.Add(new RegisterClassMiddleware<IStorage>(dataStore));
                     options.Middleware.Add(new RegisterClassMiddleware<ResourceExplorer>(resourceExplorer));
+
+                    if (debugAdapter != null)
+                    {
+                        options.Middleware.Add(debugAdapter);
+                    }
 
                     var lg = new LGLanguageGenerator(resourceExplorer);
                     options.Middleware.Add(new RegisterClassMiddleware<ILanguageGenerator>(lg));

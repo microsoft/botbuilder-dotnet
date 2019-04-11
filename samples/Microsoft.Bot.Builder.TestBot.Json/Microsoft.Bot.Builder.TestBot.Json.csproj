@@ -7,50 +7,50 @@
   <ItemGroup>
     <None Remove="en-us.lg" />
     <None Remove="main.dialog" />
-    <None Remove="Samples\EmailBot\Service\MSGraph\SendEmails.dialog" />
-    <None Remove="Samples\Planning 2 - EndTurn\EndTurn.main.dialog" />
-    <None Remove="Samples\Planning 3 - IfCondition\IfCondition.main.dialog" />
-    <None Remove="Samples\Planning 5 - WelcomeRule\WelcomeRule.main.dialog" />
-    <None Remove="Samples\Planning 6 - DoSteps\DoSteps.main.dialog" />
-    <None Remove="Samples\Planning 7 - BeginDialog\BeginDialog.FortuneTellerDialog.dialog" />
-    <None Remove="Samples\Planning 7 - BeginDialog\BeginDialog.main.dialog" />
-    <None Remove="Samples\Planning 7 - BeginDialog\BeginDialog.TellJokeDialog.dialog" />
-    <None Remove="Samples\Planning 8 - ExternalLanguage\ExternalLanguage - Copy.main.lg" />
-    <None Remove="Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.dialog" />
-    <None Remove="Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.lg" />
-    <None Remove="Samples\Planning 8 - ExternalLanguage\FortuneTellerDialog.dialog" />
-    <None Remove="Samples\Planning 8 - ExternalLanguage\TellJokeDialog.dialog" />
-    <None Remove="Samples\Planning 9 - EndDialog\EndDialog.main.dialog" />
+    <None Remove="Samples\02 - EndTurn\EndTurn.main.dialog" />
+    <None Remove="Samples\03 - IfCondition\IfCondition.main.dialog" />
+    <None Remove="Samples\05 - WelcomeRule\WelcomeRule.main.dialog" />
+    <None Remove="Samples\06 - DoSteps\DoSteps.main.dialog" />
+    <None Remove="Samples\07 - BeginDialog\BeginDialog.FortuneTellerDialog.dialog" />
+    <None Remove="Samples\07 - BeginDialog\BeginDialog.main.dialog" />
+    <None Remove="Samples\07 - BeginDialog\BeginDialog.TellJokeDialog.dialog" />
+    <None Remove="Samples\08 - ExternalLanguage\ExternalLanguage - Copy.main.lg" />
+    <None Remove="Samples\08 - ExternalLanguage\ExternalLanguage.main.dialog" />
+    <None Remove="Samples\08 - ExternalLanguage\ExternalLanguage.main.lg" />
+    <None Remove="Samples\08 - ExternalLanguage\FortuneTellerDialog.dialog" />
+    <None Remove="Samples\08 - ExternalLanguage\TellJokeDialog.dialog" />
+    <None Remove="Samples\09 - EndDialog\EndDialog.main.dialog" />
     <None Remove="Samples\RootDialog\RootDialog.lg" />
   </ItemGroup>
 
   <ItemGroup>
-    <_ContentIncludedByDefault Remove="Samples\Planning 4 - TextInput\TextInput.main.dialog" />
+    <_ContentIncludedByDefault Remove="Samples\04 - TextInput\TextInput.main.dialog" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Samples\EmailBot\Service\MSGraph\SendEmails.dialog" />
     <Content Include="Samples\RootDialog\RootDialog.lg" />
     <Content Include="Samples\RootDialog\RootDialog.main.dialog" />
-    <Content Include="Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.lg" />
-    <Content Include="Samples\Planning 8 - ExternalLanguage\ExternalLanguage.main.dialog" />
-    <Content Include="Samples\Planning 7 - BeginDialog\BeginDialog.FortuneTellerDialog.dialog" />
-    <Content Include="Samples\Planning 7 - BeginDialog\BeginDialog.TellJokeDialog.dialog" />
-    <Content Include="Samples\Planning 7 - BeginDialog\BeginDialog.main.dialog" />
-    <Content Include="Samples\Planning 6 - DoSteps\DoSteps.main.dialog" />
-    <Content Include="Samples\Planning 5 - WelcomeRule\WelcomeRule.main.dialog" />
-    <Content Include="Samples\Planning 3 - IfCondition\IfCondition.main.dialog" />
-    <Content Include="Samples\Planning 2 - EndTurn\EndTurn.main.dialog" />
-    <Content Include="Samples\Planning 9 - EndDialog\EndDialog.main.dialog" />
+    <Content Include="Samples\08 - ExternalLanguage\ExternalLanguage.main.lg" />
+    <Content Include="Samples\08 - ExternalLanguage\ExternalLanguage.main.dialog" />
+    <Content Include="Samples\07 - BeginDialog\BeginDialog.FortuneTellerDialog.dialog" />
+    <Content Include="Samples\07 - BeginDialog\BeginDialog.TellJokeDialog.dialog" />
+    <Content Include="Samples\07 - BeginDialog\BeginDialog.main.dialog" />
+    <Content Include="Samples\06 - DoSteps\DoSteps.main.dialog" />
+    <Content Include="Samples\05 - WelcomeRule\WelcomeRule.main.dialog" />
+    <Content Include="Samples\03 - IfCondition\IfCondition.main.dialog" />
+    <Content Include="Samples\02 - EndTurn\EndTurn.main.dialog" />
+    <Content Include="Samples\09 - EndDialog\EndDialog.main.dialog" />
 
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Jurassic" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Samples\EmailBot\Service\Google\" />
+    <Folder Include="CustomDialogs\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
@@ -63,22 +63,11 @@
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.AI.LanguageGeneration\Microsoft.Bot.Builder.AI.LanguageGeneration.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Composition\Microsoft.Bot.Builder.Dialogs.Composition.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Debugging\Microsoft.Bot.Builder.Dialogs.Debugging.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Declarative\Microsoft.Bot.Builder.Dialogs.Declarative.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="Samples\Planning - ToDoBot\DeleteToDo.dialog">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Samples\Planning - ToDoBot\ClearToDos.dialog">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Samples\Planning - ToDoBot\ShowToDos.dialog">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
 </Project>

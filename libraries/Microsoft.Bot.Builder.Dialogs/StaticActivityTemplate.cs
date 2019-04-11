@@ -26,5 +26,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             return Task.FromResult(Activity);
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(ActivityPropertyTemplate)}({this.Activity.Text})";
+        }
     }
 }

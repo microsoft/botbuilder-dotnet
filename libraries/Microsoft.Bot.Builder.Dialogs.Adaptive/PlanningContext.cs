@@ -158,7 +158,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Emit new plan event
             if (isNewPlan)
             {
-                await this.EmitEventAsync(PlanningEvents.PlanStarted.ToString(), null, false, cancellationToken).ConfigureAwait(false);
+                await this.EmitEventAsync(AdaptiveEvents.StepsStarted.ToString(), null, false, cancellationToken).ConfigureAwait(false);
             }
 
             return isNewPlan;
@@ -213,7 +213,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Emit new plan event
             if (isNewPlan)
             {
-                await this.EmitEventAsync(PlanningEvents.PlanStarted.ToString(), null, false, cancellationToken).ConfigureAwait(false);
+                await this.EmitEventAsync(AdaptiveEvents.StepsStarted.ToString(), null, false, cancellationToken).ConfigureAwait(false);
             }
 
             return isNewPlan;
@@ -236,7 +236,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Emit new plan event
             if (isNewPlan)
             {
-                await this.EmitEventAsync(PlanningEvents.PlanStarted.ToString(), null, false, cancellationToken);
+                await this.EmitEventAsync(AdaptiveEvents.StepsStarted.ToString(), null, false, cancellationToken);
             }
 
             return isNewPlan;
@@ -265,14 +265,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 }
 
                 // Emit resumption event
-                await this.EmitEventAsync(PlanningEvents.PlanResumed.ToString(), null, true, cancellationToken).ConfigureAwait(false);
+                await this.EmitEventAsync(AdaptiveEvents.StepsResumed.ToString(), null, true, cancellationToken).ConfigureAwait(false);
             }
             else if (Plans.Plan != null)
             {
                 this.Plans.Plan = null;
 
                 // Emit planning ended event
-                await this.EmitEventAsync(PlanningEvents.PlanEnded.ToString(), null, false, cancellationToken).ConfigureAwait(false);
+                await this.EmitEventAsync(AdaptiveEvents.StepsEnded.ToString(), null, false, cancellationToken).ConfigureAwait(false);
             }
 
             return resumePlan;
@@ -320,10 +320,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             if (savePlan)
             {
-                await this.EmitEventAsync(PlanningEvents.PlanSaved.ToString(), null, false, cancellationToken).ConfigureAwait(false);
+                await this.EmitEventAsync(AdaptiveEvents.StepsSaved.ToString(), null, false, cancellationToken).ConfigureAwait(false);
             }
 
-            await this.EmitEventAsync(PlanningEvents.PlanStarted.ToString(), null, false, cancellationToken).ConfigureAwait(false);
+            await this.EmitEventAsync(AdaptiveEvents.StepsStarted.ToString(), null, false, cancellationToken).ConfigureAwait(false);
 
             return savePlan;
         }
@@ -339,7 +339,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             };
 
             // Emit plan started event
-            await this.EmitEventAsync(PlanningEvents.PlanStarted.ToString(), null, false, cancellationToken);
+            await this.EmitEventAsync(AdaptiveEvents.StepsStarted.ToString(), null, false, cancellationToken);
 
             return planReplaced;
         }
@@ -375,17 +375,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         }
     }
 
-    public enum PlanningEvents
+    public class AdaptiveEvents
     {
-        BeginDialog,
-        ConsultDialog,
-        ActivityReceived,
-        UtteranceRecognized,
-        Fallback,
-        PlanStarted,
-        PlanSaved,
-        PlanEnded,
-        PlanResumed
+        public const string BeginDialog = "beginDialog";
+        public const string ConsultDialog = "consultDialog";
+        public const string CancelDialog = "cancelDialog";
+        public const string ActivityReceived = "activityReceived";
+        public const string RecognizedIntent = "recognizedIntent";
+        public const string UnknownIntent = "unknownIntent";
+        public const string StepsStarted = "stepsStarted";
+        public const string StepsSaved = "stepsSaved";
+        public const string StepsEnded = "stepsEnded";
+        public const string StepsResumed = "stepsResumed";
     }
 
     public class PlanningState

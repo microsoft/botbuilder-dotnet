@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 {
+#if EMIT
     public class EmitEvent : DialogCommand
     {
         private const string eventValueProperty = "eventValue";
@@ -59,6 +60,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (options is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+            }
+
             var handled = await dc.EmitEventAsync(EventName, EventValue, BubbleEvent, cancellationToken).ConfigureAwait(false);
             return await dc.EndDialogAsync(handled, cancellationToken).ConfigureAwait(false);
         }
@@ -68,4 +74,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             return $"EmitEvent[{EventName ?? string.Empty}]";
         }
     }
+#endif
 }

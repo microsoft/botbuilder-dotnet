@@ -9,10 +9,13 @@
 - - [X] Expression analyzer (CCI ask) – we will just provide parse tree + sample. Nothing baked into the library​
 - - [X] Wrap up C# and JS libraries – improved library error and exception bubbling, actionable and informative exception messages.​
 - - [ ] Parse, collate and translate TS/ JS library that can be surfaced through a CLI tool (or consumed by an UI based authoring experience)
-    - - [ ] Expose parse, collate and translate functionality through a CLI shell (snap to new one CLI spec from Eyal)
-    - - [ ] Support evalauteLG that spits out a list of all templates with analyzeTemplate output for each Template in the given LG file content. 
+    - - [X] Expose parse functionality through a CLI shell (snap to new one CLI spec from Eyal)
+    - - [X] Expose collate
+    - - [ ] Expose translate [P1]
+- - [X] Support get all parsedTemplate and combine with AnalyzeTemplate API, user can get all template analyzing results
+- - [X] Support handle multiple files in TemplateEngine
 - - [X] Update implementation to match IF .. ELSEIF instead of the current SWITCH label. [Spec](https://microsoft-my.sharepoint.com/:w:/p/vkannan/ERMS_VL3nEBIhNwlgYAmv-8BIUP3WCM3-XSY-fETqjFOxw?e=0f8zYA)
-- - [ ] Add support for SWITCH .. CASE construct in conditional response template. [Spec](https://microsoft-my.sharepoint.com/:w:/p/vkannan/ERMS_VL3nEBIhNwlgYAmv-8BIUP3WCM3-XSY-fETqjFOxw?e=0f8zYA)
+- - [ ] [Post //BUILD] ~~Add support for SWITCH .. CASE construct in conditional response template. [Spec](https://microsoft-my.sharepoint.com/:w:/p/vkannan/ERMS_VL3nEBIhNwlgYAmv-8BIUP3WCM3-XSY-fETqjFOxw?e=0f8zYA)~~
 - - [ ] Final API shape review
 - - [ ] Final packaging, naming review
 - - [ ] On board to build and release DevOps pipeline
@@ -26,30 +29,29 @@
 | TextMessageActivityGenerator |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 | Analyzer                     |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 | Evaluator                    |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
-| Exceptions                   |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>|
 | ExpressionAnalyzerVisitor    |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 | GetMethodExtension           |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
-| GetValueExtensions           |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 | LanguageGenerationRenderer   |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>|
 | LGLanguageGenerator          |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>|
-| StaticChecker                |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>|
+| StaticChecker                |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 | TemplateEngine               |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
-| TemplateErrorListener        |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
+| ErrorListener                |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
+| LGTemplate                   |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 | LGFileParserVisitor          |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 | LGFileParserListener         |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|
 
 ### Documentation
 - [ ] API reference doc
     - [ ] List all API signatures with example invocation code snippets for C# and TS
-- [ ] Conceptual document
-    - - [ ] Language Generation concepts overview
-    - - [ ] List scenarios based use cases for Language Generation
-    - - [ ] Ability to specify cards via Language Generation
-    - - [ ] Ability to specify speak .vs. display variation via Languge Generation
-    - - [ ] Resoure manager and langauge fall back policies
-    - - [ ] Grammar correction and other generation capabilites
-- [ ] .LG file format specification
-    - - [ ] Include inline .LG file snippets as example for each concept
+- [x] Conceptual document
+    - - [x] Language Generation concepts overview
+    - - [x] List scenarios based use cases for Language Generation
+    - - [x] Ability to specify cards via Language Generation
+    - - [x] Ability to specify speak .vs. display variation via Languge Generation
+    - - [x] Resoure manager and langauge fall back policies
+    - - [x] Grammar correction and other generation capabilites
+- [x] .LG file format specification
+    - - [x] Include inline .LG file snippets as example for each concept
 ### Samples
 
 |C#|TS| Sample bot	| Scenarios	 | LG capabilities to demo	| Notes	| Bot/LG Template |

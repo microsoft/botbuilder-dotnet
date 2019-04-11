@@ -69,5 +69,10 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             return null;
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(ActivityTemplate)}({this.Template})";
+        }
     }
 }

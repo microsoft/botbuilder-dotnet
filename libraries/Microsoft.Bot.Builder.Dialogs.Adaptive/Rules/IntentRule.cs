@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         public IntentRule(string intent = null, List<string> entities = null, List<IDialog> steps = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(events: new List<string>()
             {
-                PlanningEvents.UtteranceRecognized.ToString()
+                AdaptiveEvents.RecognizedIntent
             },
             steps: steps,
             constraint: constraint,

@@ -34,7 +34,7 @@
 - IF: {count(alarms) == 1}
    - You have one alarm [ShowAlarm(alarms[0])]
 - ELSEIF: {count(alarms) == 2}
-  - You have {count(alarms)} alarms, {join(foreach(alarms, '[ShowAlarm]'), ',', 'and')}
+  - You have {count(alarms)} alarms, {join(foreach(alarms, x, lgTemplate('ShowAlarm', x)), ',', 'and')}
 - ELSE:
   - You don't have any alarms
 
@@ -42,24 +42,6 @@
 - IF: {count(alarms) == 1}
    - You have one alarm [ShowAlarm(alarms[0])]
 - ELSEIF: {count(alarms) == 2}
-  - You have {count(alarms)} alarms, {join(foreach(alarms, '[ShowAlarm]'), ',', 'and')}
-- ELSE:
-  - You don't have any alarms
-
-
-# ShowAlarmsWithHumanize
-- IF: {count(alarms) == 1}
-   - You have one alarm [ShowAlarm(alarms[0])]
-- ELSEIF: {count(alarms) == 2}
-  - You have {count(alarms)} alarms, {humanize(alarms, '[ShowAlarm]', ',', 'and')}
-- ELSE:
-  - You don't have any alarms
-
-
-# ShowAlarmsWithMemberHumanize
-- IF: {count(alarms) == 1}
-   - You have one alarm [ShowAlarm(alarms[0])]
-- ELSEIF: {count(alarms) == 2}
-  - You have {count(alarms)} alarms, {humanize(alarms, '[ShowAlarm]', ',', 'and')}
+  - You have {count(alarms)} alarms, {join(foreach(alarms, x, lgTemplate('ShowAlarm', x)), ',', 'and')}
 - ELSE:
   - You don't have any alarms

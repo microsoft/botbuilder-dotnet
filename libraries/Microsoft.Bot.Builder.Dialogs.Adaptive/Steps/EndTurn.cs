@@ -33,6 +33,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (options is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+            }
+
+
             return Dialog.EndOfTurn;
         }
 

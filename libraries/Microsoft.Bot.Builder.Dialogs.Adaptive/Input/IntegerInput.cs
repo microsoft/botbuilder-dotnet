@@ -8,6 +8,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     /// </summary>
     public class IntegerInput : NumberInput<int>
     {
+        public IntegerInput()
+        {
+            this.MinValue = int.MinValue;
+            this.MaxValue = int.MaxValue;
+        }
+
         protected override string OnComputeId()
         {
             return $"IntegerInput[{BindingPath()}]";

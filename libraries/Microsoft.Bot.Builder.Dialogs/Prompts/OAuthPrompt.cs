@@ -77,6 +77,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(dc));
             }
 
+            if (options is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+            }
+
             PromptOptions opt = null;
             if (options != null)
             {
