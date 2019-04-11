@@ -9,6 +9,7 @@ or you can browse the functions based on [alphabetical order](#alphabetical-list
 - [Conversion functions](#Conversion-functions)
 - [Math functions](#Math-functions)
 - [Date and time functions](#Date-and-time-functions)
+- [Other functions](#Other-functions)
 
 ### String functions
 |Function	|Explanation|
@@ -31,6 +32,7 @@ or you can browse the functions based on [alphabetical order](#alphabetical-list
 |[join](#join) 	|Return a string that has all the items from an array and has each character separated by a delimiter. Join(collection, delimiter). Join(createArray(‘a’,’b’), ‘.’) = “a.b”	|
 |[last](#last) 	|Returns the last item from the collection	|
 |[count](#count)	|Returns the number of items in the collection	|
+|[forEach](#forEach) |Iterates and applies an expression over each item in a collection. |
 
 
 ### Logical comparison functions
@@ -88,6 +90,11 @@ or you can browse the functions based on [alphabetical order](#alphabetical-list
 |date	|Returns date for a given timestamp	|
 |year	|Returns year for the given timestamp	|
 |getTimeOfDay	|Returns time of day for a given timestamp (midnight = 12AM, morning = 12:01AM – 11:59PM, noon = 12PM, afternoon = 12:01PM -05:59PM, evening = 06:00PM – 10:00PM, night = 10:01PM – 11:59PM) 	|
+
+### Other functions
+|Function	|Explanation|
+|-----------|-----------|
+|[lgTemplate](#lgTemplate) | Expand a language generation template |
 
 <a name="alphabetical-list"></a>
 

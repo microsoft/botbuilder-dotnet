@@ -54,6 +54,12 @@
 
   <ItemGroup>
     <None Remove="Schemas\Dialogs\Microsoft.AdaptiveDialog.schema" />
+    <None Remove="Schemas\Dialogs\Microsoft.ChoiceInput.schema" />
+    <None Remove="Schemas\Dialogs\Microsoft.ConfirmInput.schema" />
+    <None Remove="Schemas\Dialogs\Microsoft.FloatInput.schema" />
+    <None Remove="Schemas\Dialogs\Microsoft.IntegerInput.schema" />
+    <None Remove="Schemas\Dialogs\Microsoft.NumberInput.schema" />
+    <None Remove="Schemas\Dialogs\Microsoft.TextInput.schema" />
     <None Remove="Schemas\Microsoft.ILanguagePolicy.schema" />
     <None Remove="Schemas\Microsoft.IRuleSelector.schema" />
     <None Remove="Schemas\Recognizers\Microsoft.MultiLanguageRecognizer.schema" />
@@ -61,18 +67,22 @@
     <None Remove="Schemas\Rules\Microsoft.EventRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.IntentRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.Rule.schema" />
+    <None Remove="Schemas\Rules\Microsoft.UnknownIntentRule.schema" />
     <None Remove="Schemas\Selectors\Microsoft.FirstSelector.schema" />
     <None Remove="Schemas\Selectors\Microsoft.MostSpecificSelector.schema" />
     <None Remove="Schemas\Selectors\Microsoft.RandomSelector.schema" />
     <None Remove="Schemas\Steps\Microsoft.BeginDialog.schema" />
     <None Remove="Schemas\Steps\Microsoft.CancelAllDialogs.schema" />
+    <None Remove="Schemas\Steps\Microsoft.DeleteProperty.schema" />
     <None Remove="Schemas\Steps\Microsoft.EditArray.schema" />
     <None Remove="Schemas\Steps\Microsoft.EmitEvent.schema" />
     <None Remove="Schemas\Steps\Microsoft.EndDialog.schema" />
     <None Remove="Schemas\Steps\Microsoft.EndTurn.schema" />
     <None Remove="Schemas\Steps\Microsoft.HttpRequest.schema" />
+    <None Remove="Schemas\Steps\Microsoft.IfCondition.schema" />
     <None Remove="Schemas\Steps\Microsoft.IfProperty.schema" />
     <None Remove="Schemas\Steps\Microsoft.InitProperty.schema" />
+    <None Remove="Schemas\Steps\Microsoft.LogStep.schema" />
     <None Remove="Schemas\Steps\Microsoft.ReplaceDialog.schema" />
     <None Remove="Schemas\Steps\Microsoft.SaveEntity.schema" />
     <None Remove="Schemas\Steps\Microsoft.SendActivity.schema" />
@@ -83,6 +93,12 @@
   
   <ItemGroup>
     <Content Include="Schemas\Dialogs\Microsoft.AdaptiveDialog.schema" />
+    <Content Include="Schemas\Dialogs\Microsoft.ChoiceInput.schema" />
+    <Content Include="Schemas\Dialogs\Microsoft.ConfirmInput.schema" />
+    <Content Include="Schemas\Dialogs\Microsoft.FloatInput.schema" />
+    <Content Include="Schemas\Dialogs\Microsoft.IntegerInput.schema" />
+    <Content Include="Schemas\Dialogs\Microsoft.NumberInput.schema" />
+    <Content Include="Schemas\Dialogs\Microsoft.TextInput.schema" />
     <Content Include="Schemas\Microsoft.ILanguagePolicy.schema" />
     <Content Include="Schemas\Microsoft.IRule.schema" />
     <Content Include="Schemas\Microsoft.IRuleSelector.schema" />
@@ -91,6 +107,10 @@
     <Content Include="Schemas\Rules\Microsoft.Rule.schema" />
     <Content Include="Schemas\Rules\Microsoft.EventRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.IntentRule.schema" />
+    <Content Include="Schemas\Rules\Microsoft.UnknownIntentRule.schema" />
+    <Content Include="Schemas\Steps\Microsoft.DeleteProperty.schema" />
+    <Content Include="Schemas\Steps\Microsoft.IfCondition.schema" />
+    <Content Include="Schemas\Steps\Microsoft.LogStep.schema" />
     <Content Include="Schemas\Steps\Microsoft.TraceActivity.schema" />
     <Content Include="Schemas\Selectors\Microsoft.FirstSelector.schema" />
     <Content Include="Schemas\Selectors\Microsoft.MostSpecificSelector.schema" />
