@@ -17,6 +17,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         public static IEnumerable<object[]> Data => new[]
        {
             // operators test
+            Test("first(nestedItems).x", 1, new HashSet<string> { "nestedItems"}),
             Test("1 + 2", 3),
             Test("1 - 2", -1),
             Test("1.0 + 2.0", 3.0),
@@ -253,6 +254,11 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("exists(#BookFlight)", true, new HashSet<string> {"turn.intents.BookFlight"}),
             Test("$title", "Dialog Title", new HashSet<string> {"dialog.result.title"}),
             Test("$subTitle", "Dialog Sub Title", new HashSet<string> {"dialog.result.subTitle"}),
+
+            Test("join(foreach(items, item, item), ',')", "zero,one,two"),
+            Test("join(foreach(nestedItems, i, i.x + first(nestedItems).x), ',')", "2,3,4", new HashSet<string>{ "nestedItems"}),
+            Test("join(foreach(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3", new HashSet<string>{ "items"}),
+
         };
 
         [DataTestMethod]
@@ -276,6 +282,21 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     index = 3
                 },
                 items = new string[] { "zero", "one", "two" },
+                nestedItems = new []
+                {
+                    new
+                    {
+                        x = 1
+                    },
+                    new
+                    {
+                        x = 2,
+                    },
+                    new
+                    {
+                        x = 3,
+                    }
+                },
                 timestamp = "2018-03-15T13:00:00Z",
                 turn = new
                 {
@@ -305,9 +326,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             if (expectedRefs != null)
             {
                 var actualRefs = parsed.References();
-                Assert.IsTrue(expectedRefs.SetEquals(actualRefs), "References do not match");
+                Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
             }
         }
+        
 
         public static IEnumerable<object[]> JsonData => new[]
         {

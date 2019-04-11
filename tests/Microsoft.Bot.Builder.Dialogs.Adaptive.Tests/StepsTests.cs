@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.AI.LanguageGeneration;
+using Microsoft.Bot.Builder.LanguageGeneration.Renderer;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
@@ -14,6 +14,7 @@ using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -22,12 +23,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     {
         public TestContext TestContext { get; set; }
 
-        private TestFlow CreateFlow(AdaptiveDialog planningDialog, ConversationState convoState, UserState userState)
+        private TestFlow CreateFlow(AdaptiveDialog planningDialog, ConversationState convoState, UserState userState, bool sendTrace = false)
         {
             var botResourceManager = new ResourceExplorer();
             var lg = new LGLanguageGenerator(botResourceManager);
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace)
                 .Use(new RegisterClassMiddleware<ResourceExplorer>(botResourceManager))
                 .Use(new RegisterClassMiddleware<ILanguageGenerator>(lg))
                 .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
@@ -59,7 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new NoneIntentRule(
+                new UnknownIntentRule(
                     new List<IDialog>()
                     {
                         new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"),  OutputProperty = "user.name" },
@@ -74,6 +75,45 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             .StartTestAsync();
         }
 
+
+        [TestMethod]
+        public async Task Step_TraceActivity()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var dialog = new AdaptiveDialog("traceActivity");
+
+            dialog.AddRules(new List<IRule>()
+            {
+                new UnknownIntentRule(
+                    new List<IDialog>()
+                    {
+                        new SetProperty()
+                        {
+                             Property = "user.name",
+                             Value = new ExpressionEngine().Parse("'frank'")
+                        },
+                        new TraceActivity()
+                        {
+                            Name = "test",
+                            ValueType = "user.name",
+                            ValueProperty = "user.name"
+                        }
+                    })});
+
+            await CreateFlow(dialog, convoState, userState, sendTrace: true)
+            .Send("hi")
+                .AssertReply((activity) =>
+                {
+                    var traceActivity = (ITraceActivity)activity;
+                    Assert.AreEqual(ActivityTypes.Trace, traceActivity.Type, "type doesn't match");
+                    Assert.AreEqual("user.name", traceActivity.ValueType, "ValueType doesn't match");
+                    Assert.AreEqual("frank", traceActivity.Value, "Value doesn't match");
+                })
+                .StartTestAsync();
+        }
+
         [TestMethod]
         public async Task Step_IfCondition()
         {
@@ -84,7 +124,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new NoneIntentRule(
+                new UnknownIntentRule(
                     new List<IDialog>()
                     {
                         new IfCondition()
@@ -126,12 +166,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         },
                         new SwitchCondition()
                         {
-                            Condition = new ExpressionEngine().Parse("user.name"),
+                            Condition = "user.name",
                             Cases = new Dictionary<string, List<IDialog>>()
                             {
-                                { "susan", new List<IDialog>() { new SendActivity("hi susan") } },
-                                { "bob", new List<IDialog>() { new SendActivity("hi bob") } },
-                                { "frank", new List<IDialog>() { new SendActivity("hi frank") } }
+                                { "'susan'", new List<IDialog>() { new SendActivity("hi susan") } },
+                                { "'bob'", new List<IDialog>() { new SendActivity("hi bob") } },
+                                { "'frank'", new List<IDialog>() { new SendActivity("hi frank") } }
                             },
                             Default = new List<IDialog>() { new SendActivity("Who are you?") }
                         },
@@ -154,7 +194,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new NoneIntentRule(
+                new UnknownIntentRule(
                     new List<IDialog>()
                     {
                         new IfCondition()
@@ -194,7 +234,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new NoneIntentRule(
+                new UnknownIntentRule(
                     new List<IDialog>()
                     {
                         new IfCondition()
@@ -244,7 +284,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new EndTurn(),
                         new SendActivity("To get to the other side")
                     }),
-                new NoneIntentRule(
+                new UnknownIntentRule(
                     new List<IDialog>()
                     {
                         new IfCondition()
@@ -283,15 +323,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var planningDialog = new AdaptiveDialog("planningTest");
-            planningDialog.AutoEndDialog = false;
-
-            planningDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
-
             var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
             tellJokeDialog.AddRules(new List<IRule>()
             {
-                new NoneIntentRule(
+                new UnknownIntentRule(
                     new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
@@ -321,20 +356,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
 
-            planningDialog.AddRules(new List<IRule>()
-            {
-                new BeginDialogRule(
-                    new List<IDialog>()
+
+            var planningDialog = new AdaptiveDialog("planningTest");
+            planningDialog.AutoEndDialog = false;
+
+            planningDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
+
+            planningDialog.Steps = new List<IDialog>()
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'"),
                         new BeginDialog() { Dialog = askNameDialog }
-                    }),
+                    };
+
+            planningDialog.AddRules(new List<IRule>()
+            {
                 new IntentRule("JokeIntent",
                     steps: new List<IDialog>()
                     {
                         new BeginDialog() { Dialog = tellJokeDialog }
                     }),
-                new NoneIntentRule(
+                new UnknownIntentRule(
                     steps: new List<IDialog>()
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
@@ -358,14 +399,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var planningDialog = new AdaptiveDialog("planningTest");
-            planningDialog.AutoEndDialog = false;
-            planningDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
-
             var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
             tellJokeDialog.AddRules(new List<IRule>()
             {
-                new NoneIntentRule(
+                new UnknownIntentRule(
                     new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
@@ -398,14 +435,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
 
+            var planningDialog = new AdaptiveDialog("planningTest");
+            planningDialog.AutoEndDialog = false;
+            planningDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
+            planningDialog.Steps = new List<IDialog>()
+            {
+                new SendActivity("I'm a joke bot. To get started say 'tell me a joke'"),
+                new ReplaceDialog("AskNameDialog")
+            };
+
             planningDialog.AddRules(new List<IRule>()
             {
-                new BeginDialogRule(
-                    steps: new List<IDialog>()
-                    {
-                        new SendActivity("I'm a joke bot. To get started say 'tell me a joke'"),
-                        new ReplaceDialog("AskNameDialog")
-                    }),
                 new IntentRule("JokeIntent",
                     steps: new List<IDialog>()
                     {
@@ -450,7 +490,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         new EndDialog()
                     }),
-                new NoneIntentRule(
+                new UnknownIntentRule(
                     new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
@@ -463,7 +503,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             planningDialog.AddRules(new List<IRule>()
             {
-                new NoneIntentRule(
+                new UnknownIntentRule(
                     new List<IDialog>()
                     {
                         new BeginDialog() { Dialog = tellJokeDialog },
@@ -479,6 +519,78 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             .StartTestAsync();
         }
 
+#if EMIT
+        [TestMethod]
+        public async Task Step_EmitEvent()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var rootDialog = new AdaptiveDialog("root")
+            {
+                Steps = new List<IDialog>()
+                {
+                    new BeginDialog()
+                    {
+                        Dialog = new AdaptiveDialog("outer")
+                        {
+                            AutoEndDialog = false,
+                            Recognizer = new RegexRecognizer()
+                            {
+                                Intents = new Dictionary<string, string>()
+                                {
+                                    { "EmitIntent" , "emit" },
+                                    { "CowboyIntent" , "moo" }
+                                }
+                            },
+                            Rules = new List<IRule>()
+                            {
+                                new IntentRule(intent: "CowboyIntent")
+                                {
+                                    Steps = new List<IDialog>()
+                                    {
+                                        new SendActivity("Yippee ki-yay!")
+                                    }
+                                },
+                                new IntentRule(intent: "EmitIntent")
+                                {
+                                    Steps = new List<IDialog>()
+                                    {
+                                        new EmitEvent()
+                                        {
+                                            EventName = "CustomEvent",
+                                            BubbleEvent = true,
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                Rules = new List<IRule>()
+                {
+                    new EventRule()
+                    {
+                        Events = new List<string>() { "CustomEvent"},
+                        Steps = new List<IDialog>()
+                        {
+                            new SendActivity("CustomEventFired")
+                        }
+                    }
+                }
+            };
+
+
+            await CreateFlow(rootDialog, convoState, userState)
+            .Send("moo")
+                .AssertReply("Yippee ki-yay!")
+            .Send("emit")
+                .AssertReply("CustomEventFired")
+            .Send("moo")
+                .AssertReply("Yippee ki-yay!")
+            .StartTestAsync();
+        }
+#endif
 
     }
 }

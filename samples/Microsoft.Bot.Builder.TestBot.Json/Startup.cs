@@ -10,7 +10,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.AI.LanguageGeneration;
+using Microsoft.Bot.Builder.LanguageGeneration.Renderer;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -49,6 +49,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             TypeFactory.Register("Testbot.RuleRecognizer", typeof(RuleRecognizer));
             TypeFactory.Register("Testbot.CalculateDogYears", typeof(CalculateDogYears));
             TypeFactory.Register("Testbot.JavascriptStep", typeof(JavascriptStep));
+            TypeFactory.Register("Testbot.CSharpStep", typeof(CSharpStep));
         }
 
         public IHostingEnvironment HostingEnvironment { get; }

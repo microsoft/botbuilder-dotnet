@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.AI.LanguageGeneration;
+using Microsoft.Bot.Builder.LanguageGeneration.Renderer;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var ruleDialog = new AdaptiveDialog("planningTest");
 
-            ruleDialog.AddRule(new NoneIntentRule(
+            ruleDialog.AddRule(new UnknownIntentRule(
                     new List<IDialog>()
                     {
                         new SendActivity("Hello Planning!")
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var ruleDialog = new AdaptiveDialog("planningTest");
 
-            ruleDialog.AddRule(new NoneIntentRule(new List<IDialog>()
+            ruleDialog.AddRule(new UnknownIntentRule(new List<IDialog>()
                     {
                         new SendActivity("Hello Planning!"),
                         new SendActivity("Howdy awain")
@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.AddRule(
-                new NoneIntentRule(
+                new UnknownIntentRule(
                     new List<IDialog>()
                     {
                         new TextInput()
@@ -213,7 +213,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var ruleDialog = new AdaptiveDialog("planningTest");
 
-            ruleDialog.AddRule(new NoneIntentRule(
+            ruleDialog.AddRule(new UnknownIntentRule(
                     new List<IDialog>()
                     {
                         new IfCondition()
@@ -285,7 +285,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false,
                 Rules = new List<IRule>()
                 {
-                    new NoneIntentRule()
+                    new UnknownIntentRule()
                     {
                         Steps = new List<IDialog>()
                         {
@@ -413,11 +413,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     { "GreetingIntent", "(?i)greeting|hi|hello" }
                 }
             };
-
-            ruleDialog.AddRules(new List<IRule>()
-            {
-                new BeginDialogRule(
-                    new List<IDialog>()
+            ruleDialog.Steps = new List<IDialog>()
                     {
                         new IfCondition()
                         {
@@ -432,7 +428,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             }
                         },
                         new SendActivity("Hello {user.name}, nice to meet you!")
-                    }),
+                    };
+
+            ruleDialog.AddRules(new List<IRule>()
+            {
                 new IntentRule()
                 {
                     Intent= "GreetingIntent",
@@ -448,7 +447,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new EndTurn(),
                         new SendActivity("To get to the other side")
                     }),
-                new NoneIntentRule(
+                new UnknownIntentRule(
                     steps: new List<IDialog>()
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
@@ -523,7 +522,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new SendActivity("See you later aligator!"),
                             new EndDialog()
                         }),
-                    new NoneIntentRule(
+                    new UnknownIntentRule(
                         new List<IDialog>()
                         {
                             new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
@@ -567,17 +566,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         { "GoodbyeIntent", "(?i)bye|goodbye|seeya|see ya"}
                     }
                 },
+                Steps = new List<IDialog>()
+                {
+                    new BeginDialog("Greeting"),
+                    new SendActivity("I'm a joke bot. To get started say 'tell me a joke'"),
+                },
                 Rules = new List<IRule>()
                 {
-                    new BeginDialogRule()
-                    {
-                        Steps = new List<IDialog>()
-                        {
-                            new BeginDialog("Greeting"),
-                            new SendActivity("I'm a joke bot. To get started say 'tell me a joke'"),
-                        }
-                    },
-
                     new IntentRule("JokeIntent",
                         steps: new List<IDialog>()
                         {
@@ -597,7 +592,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new EndDialog()
                         }),
 
-                    new NoneIntentRule(steps: new List<IDialog>()
+                    new UnknownIntentRule(steps: new List<IDialog>()
                         {
                             new SendActivity("Like I said, I'm a joke bot. To get started say 'tell me a joke'"),
                         }),
@@ -673,7 +668,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new SendActivity("help is coming")
                         }
                     },
-                    new NoneIntentRule()
+                    new UnknownIntentRule()
                     {
                         Steps = new List<IDialog>()
                         {

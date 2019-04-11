@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private StreamWriter writer;
 
         private const string Prefix = @"Content-Length: ";
-        private static readonly Encoding Encoding = Encoding.UTF8;
+        private static readonly Encoding Encoding = Encoding.ASCII;
 
         protected readonly ILogger logger;
 
@@ -142,13 +142,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             {
                 using (await writable.WithWaitAsync(cancellationToken).ConfigureAwait(false))
                 {
-                    logger.LogTrace($"SEND: {token.ToString(Formatting.None)}");
-                    var json = token.ToString();
+                    var json = token.ToString(Formatting.None);
+                    logger.LogTrace($"SEND: {json}");
                     var buffer = Encoding.GetBytes(json);
-                    var length = buffer.Length + writer.NewLine.Length;
-                    await writer.WriteLineAsync(Prefix + length).ConfigureAwait(false);
+                    await writer.WriteAsync(Prefix + buffer.Length).ConfigureAwait(false);
                     await writer.WriteLineAsync().ConfigureAwait(false);
-                    await writer.WriteLineAsync(json).ConfigureAwait(false);
+                    await writer.WriteLineAsync().ConfigureAwait(false);
+                    await writer.WriteAsync(json).ConfigureAwait(false);
                     await writer.FlushAsync().ConfigureAwait(false);
                 }
             }

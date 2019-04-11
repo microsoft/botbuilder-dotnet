@@ -127,7 +127,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             public int request_seq { get; set; }
             public bool success { get; set; }
             public string command { get; set; }
-            public string message { get; set; }
             public static Response<Body> From<Body>(int seq, Request request, Body body) => new Response<Body>(seq, request) { body = body };
         }
 

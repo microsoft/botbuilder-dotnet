@@ -53,6 +53,7 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string Join = "join";
         public const string First = "first";
         public const string Last = "last";
+        public const string Foreach = "foreach";
 
         // DateTime
         public const string AddDays = "addDays";

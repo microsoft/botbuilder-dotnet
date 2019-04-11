@@ -22,13 +22,26 @@
             "activity": "Your age in dog years is: {user.dogyears}"
         },
         {
-            "$type": "Testbot.CalculateDogYears",
-            "inputProperty": "user.age",
-            "outputProperty": "dialog.dog"
+            "$type": "Testbot.CSharpStep",
+            "script": "Samples/13 - CustomStep/catyears.csx",
+            "outputProperty": "user.catyears"
         },
         {
             "$type": "Microsoft.SendActivity",
-            "activity": "A dogs equivelent to your age is: {dialog.dog}"
-        }
+            "activity": "Your age in cat years is: {user.catyears}"
+        },
+        {
+            "$type": "Testbot.CalculateDogYears",
+            "inputProperty": "user.age",
+            "outputProperty": "conversation.dog"
+        },
+        {
+            "$type": "Microsoft.SendActivity",
+            "activity": "A dog that is {conversation.dog} years old is the same age as you"
+        },
+        {
+            "$type": "Microsoft.SendActivity",
+            "activity": "A cat that is {conversation.cat} years old is the same age as you"
+        },
     ]
 }

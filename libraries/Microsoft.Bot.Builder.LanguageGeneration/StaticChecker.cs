@@ -7,7 +7,7 @@ using Antlr4.Runtime.Tree;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 
-namespace Microsoft.Bot.Builder.AI.LanguageGeneration
+namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class ReportEntry
     {
@@ -281,10 +281,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             foreach (Match match in mc)
             {
                 var newExp = match.Value.Substring(1); // remove @
-                if (newExp.StartsWith("{[") && newExp.EndsWith("]}"))
-                {
-                    result.AddRange(CheckTemplateRef(newExp.Substring(2, newExp.Length - 4)));//[ ]
-                }
+                result.AddRange(CheckExpression(newExp));
             }
             return result;
         }
@@ -317,11 +314,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             exp = exp.TrimStart('{').TrimEnd('}');
             try
             {
-                new ExpressionEngine(new GetMethodExtensions(null).GetMethodX).Parse(exp);
+                new ExpressionEngine(new GetMethodExtensions(new Evaluator(this.Templates, null)).GetMethodX).Parse(exp);
             }
             catch(Exception e)
             {
-                result.Add(new ReportEntry(e.Message));
+                result.Add(new ReportEntry(e.Message + $" in expression `{exp}`"));
                 return result;
             }
 

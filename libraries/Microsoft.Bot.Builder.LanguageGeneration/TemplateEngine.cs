@@ -6,7 +6,7 @@ using Antlr4.Runtime;
 using Newtonsoft.Json;
 using System;
 
-namespace Microsoft.Bot.Builder.AI.LanguageGeneration
+namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     /// <summary>
     /// The template engine that loads .lg file and eval template based on memory/scope
@@ -56,8 +56,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         /// <summary>
         /// Add text as lg file content to template engine
         /// </summary>
-        /// <param name="text">the text content contains lg templates</param>
-        /// <returns>template engine with the parsed content</returns>
+        /// <param name="text">Text content contains lg templates</param>
+        /// <returns>Template engine with the parsed content</returns>
         public TemplateEngine AddText(string text)
         {
             Templates.AddRange(ToTemplates(Parse(text), "text"));
@@ -120,7 +120,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 throw new Exception(string.Join("\n", errors));
             }
         }
-        
+
+        /// <summary>
+        /// Evaluate a template with given name and scope
+        /// </summary>
+        /// <param name="templateName">Template name to be evaluated</param>
+        /// <param name="scope">The state visible in the evaluation</param>
+        /// <param name="methodBinder">Optional methodBinder to extend or override functions</param>
+        /// <returns></returns>
         public string EvaluateTemplate(string templateName, object scope, IGetMethod methodBinder = null)
         {
 
@@ -162,8 +169,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         /// Create a template engine from files, a shorthand for 
         ///    new TemplateEngine().AddFiles(filePath)
         /// </summary>
-        /// <param name="filePath"></param>
-        /// <returns></returns>
+        /// <param name="filePaths">paths to LG files</param>
+        /// <returns>Engine created</returns>
         public static TemplateEngine FromFiles(params string[] filePaths)
         {
             return new TemplateEngine().AddFiles(filePaths);
@@ -173,8 +180,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
         /// Create a template engine from text, equivalent to 
         ///    new TemplateEngine.AddText(text)
         /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
+        /// <param name="text">Content of lg file</param>
+        /// <returns>Engine created</returns>
         public static TemplateEngine FromText(string text)
         {
             return new TemplateEngine().AddText(text);

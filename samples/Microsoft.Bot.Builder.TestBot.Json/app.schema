@@ -16,11 +16,6 @@
             "$ref": "#/definitions/Microsoft.BeginDialog"
         },
         {
-            "title": "Microsoft.BeginDialogRule",
-            "description": "When the being dialog event is triggered this will add steps to the execution plan",
-            "$ref": "#/definitions/Microsoft.BeginDialogRule"
-        },
-        {
             "title": "Microsoft.CancelAllDialogs",
             "description": "Command to cancel all of the current dialogs by emitting an event which must be caught to prevent cancelation from propagating.",
             "$ref": "#/definitions/Microsoft.CancelAllDialogs"
@@ -111,19 +106,14 @@
             "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
         },
         {
-            "title": "Microsoft.NoneIntentRule",
-            "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
-            "$ref": "#/definitions/Microsoft.NoneIntentRule"
-        },
-        {
             "title": "Microsoft.NumberInput",
             "description": "This represents a dialog which gathers a decimal number in a specified range",
             "$ref": "#/definitions/Microsoft.NumberInput"
         },
         {
-            "title": "Microsoft.QnaMakerRecognizer",
-            "description": "This represents a configuration of the QNAMaker as a recognizer",
-            "$ref": "#/definitions/Microsoft.QnaMakerRecognizer"
+            "title": "Microsoft.QnAMakerDialog",
+            "description": "This represents a dialog which is driven by a call to QnAMaker.ai knowledge base",
+            "$ref": "#/definitions/Microsoft.QnAMakerDialog"
         },
         {
             "title": "Microsoft.RegexRecognizer",
@@ -164,6 +154,21 @@
             "title": "Microsoft.TextInput",
             "description": "This represents a dialog which gathers a text from the user",
             "$ref": "#/definitions/Microsoft.TextInput"
+        },
+        {
+            "title": "Microsoft.TraceActivity",
+            "description": "This is a step which sends an TraceActivity to the transcript",
+            "$ref": "#/definitions/Microsoft.TraceActivity"
+        },
+        {
+            "title": "Microsoft.UnknownIntentRule",
+            "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
+            "$ref": "#/definitions/Microsoft.UnknownIntentRule"
+        },
+        {
+            "title": "Testbot.CSharpStep",
+            "description": "This gives you the ability to define a CSharp function to manipulate memory.  State variables are global",
+            "$ref": "#/definitions/Testbot.CSharpStep"
         },
         {
             "title": "Testbot.CalculateDogYears",
@@ -340,88 +345,6 @@
                 {
                     "title": "Type",
                     "required": [
-                        "$type"
-                    ]
-                }
-            ]
-        },
-        "Microsoft.BeginDialogRule": {
-            "$role": "unionType(Microsoft.IRule)",
-            "title": "Begin Dialog",
-            "description": "When the being dialog event is triggered this will add steps to the execution plan",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.BeginDialogRule"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "events": {
-                    "type": "array",
-                    "description": "Events to trigger this rule for",
-                    "items": {
-                        "type": "string",
-                        "enum": [
-                            "BeginDialog",
-                            "ConsultDialog",
-                            "ActivityReceived",
-                            "UtteranceRecognized",
-                            "Fallback",
-                            "PlanStarted",
-                            "PlanSaved",
-                            "PlanEnded",
-                            "PlanResumed"
-                        ]
-                    }
-                },
-                "constraint": {
-                    "type": "string",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
-                    "examples": [
-                        "user.vip == true"
-                    ]
-                },
-                "steps": {
-                    "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
-                    "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
-                    }
-                }
-            },
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "steps",
                         "$type"
                     ]
                 }
@@ -1084,15 +1007,16 @@
                     "items": {
                         "type": "string",
                         "enum": [
-                            "BeginDialog",
-                            "ConsultDialog",
-                            "ActivityReceived",
-                            "UtteranceRecognized",
-                            "Fallback",
-                            "PlanStarted",
-                            "PlanSaved",
-                            "PlanEnded",
-                            "PlanResumed"
+                            "beginDialog",
+                            "consultDialog",
+                            "cancelDialog",
+                            "activityReceived",
+                            "recognizedIntent",
+                            "unknownIntent",
+                            "stepsStarted",
+                            "stepsSaved",
+                            "stepsEnded",
+                            "stepsResumed"
                         ]
                     }
                 },
@@ -1316,6 +1240,17 @@
                     "additionProperties": true,
                     "title": "Http headers",
                     "description": "Http headers to include with the HTTP request (supports data binding)"
+                },
+                "responseTypes": {
+                    "type": "object",
+                    "title": "Response Types",
+                    "description": "Describes how to parse the response from the http request. If Activity or Activities, then the they will be sent to the user.",
+                    "enum": [
+                        "none",
+                        "json",
+                        "activity",
+                        "activities"
+                    ]
                 }
             },
             "patternProperties": {
@@ -1437,6 +1372,11 @@
                     "$ref": "#/definitions/Microsoft.NumberInput"
                 },
                 {
+                    "title": "Microsoft.QnAMakerDialog",
+                    "description": "This represents a dialog which is driven by a call to QnAMaker.ai knowledge base",
+                    "$ref": "#/definitions/Microsoft.QnAMakerDialog"
+                },
+                {
                     "title": "Microsoft.ReplaceDialog",
                     "description": "This is a step which replaces the current dialog with the target dialog",
                     "$ref": "#/definitions/Microsoft.ReplaceDialog"
@@ -1467,6 +1407,11 @@
                     "$ref": "#/definitions/Microsoft.TextInput"
                 },
                 {
+                    "title": "Microsoft.TraceActivity",
+                    "description": "This is a step which sends an TraceActivity to the transcript",
+                    "$ref": "#/definitions/Microsoft.TraceActivity"
+                },
+                {
                     "type": "string",
                     "title": "string"
                 },
@@ -1474,6 +1419,11 @@
                     "title": "Testbot.CalculateDogYears",
                     "description": "This will take the property and return as the dialog result ",
                     "$ref": "#/definitions/Testbot.CalculateDogYears"
+                },
+                {
+                    "title": "Testbot.CSharpStep",
+                    "description": "This gives you the ability to define a CSharp function to manipulate memory.  State variables are global",
+                    "$ref": "#/definitions/Testbot.CSharpStep"
                 },
                 {
                     "title": "Testbot.JavascriptStep",
@@ -1521,11 +1471,6 @@
                     "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
                 },
                 {
-                    "title": "Microsoft.QnaMakerRecognizer",
-                    "description": "This represents a configuration of the QNAMaker as a recognizer",
-                    "$ref": "#/definitions/Microsoft.QnaMakerRecognizer"
-                },
-                {
                     "title": "Microsoft.RegexRecognizer",
                     "description": "Recognizer which uses regex expressions to generate intents and entities.",
                     "$ref": "#/definitions/Microsoft.RegexRecognizer"
@@ -1538,11 +1483,6 @@
             "$role": "unionType",
             "oneOf": [
                 {
-                    "title": "Microsoft.BeginDialogRule",
-                    "description": "When the being dialog event is triggered this will add steps to the execution plan",
-                    "$ref": "#/definitions/Microsoft.BeginDialogRule"
-                },
-                {
                     "title": "Microsoft.EventRule",
                     "description": "Defines a rule for an event which is triggered by some sourcy",
                     "$ref": "#/definitions/Microsoft.EventRule"
@@ -1553,14 +1493,14 @@
                     "$ref": "#/definitions/Microsoft.IntentRule"
                 },
                 {
-                    "title": "Microsoft.NoneIntentRule",
-                    "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
-                    "$ref": "#/definitions/Microsoft.NoneIntentRule"
-                },
-                {
                     "title": "Microsoft.Rule",
                     "description": "Defines a rule for an event which is triggered by some sourcy",
                     "$ref": "#/definitions/Microsoft.Rule"
+                },
+                {
+                    "title": "Microsoft.UnknownIntentRule",
+                    "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
+                    "$ref": "#/definitions/Microsoft.UnknownIntentRule"
                 }
             ]
         },
@@ -1873,15 +1813,16 @@
                     "items": {
                         "type": "string",
                         "enum": [
-                            "BeginDialog",
-                            "ConsultDialog",
-                            "ActivityReceived",
-                            "UtteranceRecognized",
-                            "Fallback",
-                            "PlanStarted",
-                            "PlanSaved",
-                            "PlanEnded",
-                            "PlanResumed"
+                            "beginDialog",
+                            "consultDialog",
+                            "cancelDialog",
+                            "activityReceived",
+                            "recognizedIntent",
+                            "unknownIntent",
+                            "stepsStarted",
+                            "stepsSaved",
+                            "stepsEnded",
+                            "stepsResumed"
                         ]
                     }
                 },
@@ -2097,88 +2038,6 @@
                 }
             ]
         },
-        "Microsoft.NoneIntentRule": {
-            "title": "This defines the steps to take when an utterence is not recognized (aka, the None Intent). NOTE: NoneIntent will defer to any specific intent that fires in a parent dialog",
-            "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.NoneIntentRule"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "events": {
-                    "type": "array",
-                    "description": "Events to trigger this rule for",
-                    "items": {
-                        "type": "string",
-                        "enum": [
-                            "BeginDialog",
-                            "ConsultDialog",
-                            "ActivityReceived",
-                            "UtteranceRecognized",
-                            "Fallback",
-                            "PlanStarted",
-                            "PlanSaved",
-                            "PlanEnded",
-                            "PlanResumed"
-                        ]
-                    }
-                },
-                "constraint": {
-                    "type": "string",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
-                    "examples": [
-                        "user.vip == true"
-                    ]
-                },
-                "steps": {
-                    "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
-                    "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
-                    }
-                }
-            },
-            "$role": "unionType(Microsoft.IRule)",
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "steps",
-                        "$type"
-                    ]
-                }
-            ]
-        },
         "Microsoft.NumberInput": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Number prompt",
@@ -2293,10 +2152,10 @@
                 }
             ]
         },
-        "Microsoft.QnaMakerRecognizer": {
-            "$role": "unionType(Microsoft.IRecognizer)",
-            "title": "QnAMaker.ai Recognizer",
-            "description": "This represents a configuration of the QNAMaker as a recognizer",
+        "Microsoft.QnAMakerDialog": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "QnAMaker Dialog",
+            "description": "This represents a dialog which is driven by a call to QnAMaker.ai knowledge base",
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -2305,7 +2164,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.QnaMakerRecognizer"
+                    "const": "Microsoft.QnAMakerDialog"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -2319,19 +2178,46 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
-                "applicationId": {
-                    "type": "string",
-                    "description": "This is the QnAMaker appId to use",
-                    "examples": [
-                        "123123123"
-                    ]
-                },
                 "endpoint": {
-                    "type": "string",
+                    "type": "object",
+                    "title": "Endpoint",
                     "description": "This is the QnAMaker endpoint to use",
-                    "examples": [
-                        "http://westus.qnamaker.ai"
-                    ]
+                    "required": [
+                        "knowledgeBaseId",
+                        "endpointKey",
+                        "host"
+                    ],
+                    "properties": {
+                        "knowledgeBaseId": {
+                            "type": "string",
+                            "title": "Knowledgebase Id",
+                            "description": "the knowledge base ID."
+                        },
+                        "endpointKey": {
+                            "type": "string",
+                            "title": "Endpoint Key",
+                            "description": "sets the endpoint key for the knowledge base"
+                        },
+                        "host": {
+                            "type": "string",
+                            "title": "Host",
+                            "description": "sets the host path",
+                            "examples": [
+                                "https://yourserver.azurewebsites.net/qnamaker"
+                            ]
+                        }
+                    }
+                },
+                "options": {
+                    "type": "object",
+                    "title": "Options",
+                    "properties": {
+                        "scoreThreshold": {
+                            "type": "number",
+                            "title": "Score Threshold",
+                            "description": "\"sets the minimum score threshold, used to filter returned results. Scores are normalized to the range of 0.0 to 1.0"
+                        }
+                    }
                 }
             },
             "patternProperties": {
@@ -2349,7 +2235,6 @@
                 {
                     "title": "Type",
                     "required": [
-                        "applicationId",
                         "endpoint",
                         "$type"
                     ]
@@ -2923,6 +2808,219 @@
                 }
             ]
         },
+        "Microsoft.TraceActivity": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Trace Activity Step",
+            "description": "This is a step which sends an TraceActivity to the transcript",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.TraceActivity"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "name": {
+                    "type": "string",
+                    "title": "Name",
+                    "description": "Name of the trace activity"
+                },
+                "valueType": {
+                    "type": "string",
+                    "title": "Value Type",
+                    "description": "Value type of the trace activity"
+                },
+                "valueProperty": {
+                    "type": "string",
+                    "title": "Value Property",
+                    "description": "Property path to memory object to send as the value of the trace activity"
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.UnknownIntentRule": {
+            "title": "This defines the steps to take when an utterence is not recognized (aka, the None Intent). NOTE: UnknownIntent will defer to any specific intent that fires in a parent dialog",
+            "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.UnknownIntentRule"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "events": {
+                    "type": "array",
+                    "description": "Events to trigger this rule for",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "beginDialog",
+                            "consultDialog",
+                            "cancelDialog",
+                            "activityReceived",
+                            "recognizedIntent",
+                            "unknownIntent",
+                            "stepsStarted",
+                            "stepsSaved",
+                            "stepsEnded",
+                            "stepsResumed"
+                        ]
+                    }
+                },
+                "constraint": {
+                    "type": "string",
+                    "title": "Constraint",
+                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "examples": [
+                        "user.vip == true"
+                    ]
+                },
+                "steps": {
+                    "type": "array",
+                    "description": "Sequence of steps or dialogs to execute",
+                    "items": {
+                        "$type": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                }
+            },
+            "$role": "unionType(Microsoft.IRule)",
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "steps",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Testbot.CSharpStep": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "CSharp Step",
+            "description": "This gives you the ability to define a CSharp function to manipulate memory.  State variables are global",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Testbot.CSharpStep"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "property": {
+                    "type": "string",
+                    "title": "Property",
+                    "description": "This will be the property passed in",
+                    "examples": [
+                        "value.birthday"
+                    ]
+                },
+                "outputProperty": {
+                    "type": "string",
+                    "title": "Output Property",
+                    "description": "This will be the property which the result will be put into",
+                    "examples": [
+                        "value.birthday"
+                    ]
+                },
+                "script": {
+                    "type": "string",
+                    "title": "Script",
+                    "description": "name of the script file"
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Testbot.CalculateDogYears": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Calculate Dog Years",
@@ -2949,10 +3047,10 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
-                "property": {
+                "inputProperty": {
                     "type": "string",
                     "title": "Input Property",
-                    "description": "This will be the property passed in "
+                    "description": "This will be the property passed in"
                 },
                 "outputProperty": {
                     "type": "string",

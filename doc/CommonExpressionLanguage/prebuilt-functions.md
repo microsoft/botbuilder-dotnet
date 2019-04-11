@@ -9,7 +9,6 @@ or you can browse the functions based on [alphabetical order](#alphabetical-list
 - [Conversion functions](#Conversion-functions)
 - [Math functions](#Math-functions)
 - [Date and time functions](#Date-and-time-functions)
-- [Object manipulation and construction functions](#Object-manipulation-and-construction-functions)
 
 ### String functions
 |Function	|Explanation|
@@ -46,13 +45,13 @@ or you can browse the functions based on [alphabetical order](#alphabetical-list
 |[lessOrEquals](#lessOrEquals)	|	Comparison less than or equal operation|
 |[not](#not)	|	Logical not opearator|
 |[or](#or)	| Logical OR opearation.	|
+|[exists](#exists) | Evaluates an expression for truthiness |
 
 ### Conversion functions
 |Function	|Explanation|
 |-----------|-----------|
 |[float](#float)	|Return floating point representation of the specified string or the string itself if conversion is not possible	|
 |[int](#int)	|Return integer representation of the specified string or the string itself if conversion is not possible	|
-|[json](#json)	|Return JSON type value for a string	|
 |[string](#string)	|Return string version of the specified value	|
 |[bool](#bool)	|Return Boolean representation of the specified string. Bool(‘true’), bool(1)	|
 |[createArray](#createArray)	|Create an array from multiple inputs	|
@@ -89,15 +88,6 @@ or you can browse the functions based on [alphabetical order](#alphabetical-list
 |date	|Returns date for a given timestamp	|
 |year	|Returns year for the given timestamp	|
 |getTimeOfDay	|Returns time of day for a given timestamp (midnight = 12AM, morning = 12:01AM – 11:59PM, noon = 12PM, afternoon = 12:01PM -05:59PM, evening = 06:00PM – 10:00PM, night = 10:01PM – 11:59PM) 	|
-
-
-### Object manipulation and construction functions
-|Function	|Explanation|
-|-----------|-----------|
-|[json](#json)	|Convert a given string JSON notation into a JSON object	R0|
-|[addProperty](#addProperty)	|Add a new property to a given json object	R0|
-|[removeProperty](#removeProperty)	|Remove a property from given json object	R0|
-|[setProperty](#setProperty)	|Set the value for a given property in a given json object	R0|
 
 <a name="alphabetical-list"></a>
 
@@ -256,40 +246,6 @@ addMinutes('2018-03-15T00:20:00Z', -5)
 ```
 
 And returns this result: `"2018-03-15T00:15:00.0000000Z"`
-
-<a name="addProperty"></a>
-
-### addProperty
-
-Add a property and its value, or name-value pair, to a JSON object,
-and return the updated object. If the object already exists at runtime,
-the function throws an error.
-
-```
-addProperty(<object>, '<property>', <value>)
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*object*> | Yes | Object | The JSON object where you want to add a property |
-| <*property*> | Yes | String | The name for the property to add |
-| <*value*> | Yes | Any | The value for the property |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*updated-object*> | Object | The updated JSON object with the specified property |
-||||
-
-*Example*
-
-This example adds the `timeOfDay` property to the `reservation` object,
-which is converted to JSON with the [JSON()](#json) function.
-The function assigns an explicit value and returns the updated object:
-
-```
-addProperty(json('reservation'), 'timeOfDay', 'morning')
-```
 
 <a name="addSeconds"></a>
 
@@ -731,6 +687,36 @@ And returns these results:
 * First example: Both values are equivalent, so the function returns `true`.
 * Second example: Both values aren't equivalent, so the function returns `false`.
 
+<a name="exists"></a>
+
+### exists
+
+Evaluates an expression for truthfulness.
+
+```
+exists(expression)
+```
+
+| Parameter | Required | Type | Description |
+|-----------|----------|------|-------------|
+| expression | Yes | expression | expression to evaluate for truthiness |
+|||||
+
+| Return value | Type | Description |
+|--------------|------|-------------|
+| <*true or false*> | Boolean | Result of evaluating the expression | 
+
+*Example*
+
+```
+exists(foo.bar)
+exists(foo.bar2)
+```
+With foo = {"bar":"value"}
+
+The first example returns TRUE 
+The second example returns FALSE
+
 <a name="exp"></a>
 
 ### exp
@@ -1036,76 +1022,6 @@ join(createArray('a', 'b', 'c'), '.')
 ```
 
 And returns this result: `"a.b.c"`
-
-<a name="json"></a>
-
-### json
-
-Return the JavaScript Object Notation (JSON)
-type value or object for a string or XML.
-
-```
-json('<value>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*value*> | Yes | String or XML | The string or XML to convert |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*JSON-result*> | JSON native type or object | The JSON native type value or object for the specified string or XML. If the string is null, the function returns an empty object. |
-||||
-
-*Example 1*
-
-This example converts this string to the JSON value:
-
-```
-json('[1, 2, 3]')
-```
-
-And returns this result: `[1, 2, 3]`
-
-*Example 2*
-
-This example converts this string to JSON:
-
-```
-json('{"fullName": "Sophia Owen"}')
-```
-
-And returns this result:
-
-```
-{
-  "fullName": "Sophia Owen"
-}
-```
-
-*Example 3*
-
-This example converts this XML to JSON:
-
-```
-json(xml('<?xml version="1.0"?> <root> <person id='1'> <name>Sophia Owen</name> <occupation>Engineer</occupation> </person> </root>'))
-```
-
-And returns this result:
-
-```json
-{
-   "?xml": { "@version": "1.0" },
-   "root": {
-      "person": [ {
-         "@id": "1",
-         "name": "Sophia Owen",
-         "occupation": "Engineer"
-      } ]
-   }
-}
-```
 
 <a name="last"></a>
 
@@ -1485,36 +1401,6 @@ rand(1, 5)
 
 And returns one of these numbers as the result: `1`, `2`, `3`, or `4`
 
-<a name="removeProperty"></a>
-
-### removeProperty
-
-Remove a property from an object and return the updated object.
-
-```
-removeProperty(<object>, '<property>')
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*object*> | Yes | Object | The JSON object from where you want to remove a property |
-| <*property*> | Yes | String | The name for the property to remove |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*updated-object*> | Object | The updated JSON object without the specified property |
-||||
-
-*Example*
-
-This example removes the `"timeOfDay"` property from a `"reservation"` object,
-which is converted to JSON with the [JSON()](#json) function, and returns the updated object:
-
-```
-removeProperty(json('reservation'), 'timeOfDay')
-```
-
 <a name="replace"></a>
 
 ### replace
@@ -1584,40 +1470,6 @@ replace('the old string', 'old', 'new')
 ```
 
 And returns this result: `"the new string"`
-
-<a name="setProperty"></a>
-
-### setProperty
-
-Set the value for an object's property and return the updated object.
-To add a new property, you can use this function
-or the [addProperty()](#addProperty) function.
-
-```
-setProperty(<object>, '<property>', <value>)
-```
-
-| Parameter | Required | Type | Description |
-| --------- | -------- | ---- | ----------- |
-| <*object*> | Yes | Object | The JSON object whose property you want to set |
-| <*property*> | Yes | String | The name for the existing or new property to set |
-| <*value*> | Yes | Any | The value to set for the specified property |
-|||||
-
-| Return value | Type | Description |
-| ------------ | ---- | ----------- |
-| <*updated-object*> | Object | The updated JSON object whose property you set |
-||||
-
-*Example*
-
-This example sets the `"timeOfDay"` property on a `"reservation"` object,
-which is converted to JSON with the [JSON()](#json) function.
-The function assigns an explicit value and returns the updated JSON object:
-
-```
-setProperty(json('reservation'), 'timeOfDay', 'morning')
-```
 
 <a name="split"></a>
 

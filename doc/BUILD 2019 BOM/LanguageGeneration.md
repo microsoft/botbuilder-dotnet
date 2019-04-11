@@ -5,17 +5,17 @@
 **Story arc**: _As a bot developer, I’ve been used to hard coding bot responses and related resources. With .LG file format, MSLG CLI tool, LG resolver runtime, common expression library I can completely de-couple language resources for my bot and manage them in separate files like I have been doing for LU. With that I can now make my bot sound more natural and lively.​_
 
 ## Remaining work
-- - [ ] Find new home for LanguageGenerationRenderer, LGLanguageGenerator
+- - [X] Find new home for LanguageGenerationRenderer, LGLanguageGenerator
 - - [X] Expression analyzer (CCI ask) – we will just provide parse tree + sample. Nothing baked into the library​
 - - [X] Wrap up C# and JS libraries – improved library error and exception bubbling, actionable and informative exception messages.​
 - - [ ] Parse, collate and translate TS/ JS library that can be surfaced through a CLI tool (or consumed by an UI based authoring experience)
     - - [X] Expose parse functionality through a CLI shell (snap to new one CLI spec from Eyal)
     - - [X] Expose collate
     - - [ ] Expose translate [P1]
-- - [ ] Support get all parsedTemplate and combine with AnalyzeTemplate API, user can get all template analyzing results
-- - [ ] Support handle multiple files in TemplateEngine
+- - [X] Support get all parsedTemplate and combine with AnalyzeTemplate API, user can get all template analyzing results
+- - [X] Support handle multiple files in TemplateEngine
 - - [X] Update implementation to match IF .. ELSEIF instead of the current SWITCH label. [Spec](https://microsoft-my.sharepoint.com/:w:/p/vkannan/ERMS_VL3nEBIhNwlgYAmv-8BIUP3WCM3-XSY-fETqjFOxw?e=0f8zYA)
-- - [ ] Add support for SWITCH .. CASE construct in conditional response template. [Spec](https://microsoft-my.sharepoint.com/:w:/p/vkannan/ERMS_VL3nEBIhNwlgYAmv-8BIUP3WCM3-XSY-fETqjFOxw?e=0f8zYA)
+- - [ ] [Post //BUILD] ~~Add support for SWITCH .. CASE construct in conditional response template. [Spec](https://microsoft-my.sharepoint.com/:w:/p/vkannan/ERMS_VL3nEBIhNwlgYAmv-8BIUP3WCM3-XSY-fETqjFOxw?e=0f8zYA)~~
 - - [ ] Final API shape review
 - - [ ] Final packaging, naming review
 - - [ ] On board to build and release DevOps pipeline
