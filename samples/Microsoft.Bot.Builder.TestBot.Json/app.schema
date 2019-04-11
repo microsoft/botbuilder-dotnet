@@ -96,6 +96,11 @@
             "$ref": "#/definitions/Microsoft.LanguagePolicy"
         },
         {
+            "title": "Microsoft.LogStep",
+            "description": "This is a step which writes to console.log and optional creates a TraceActivity around a text binding",
+            "$ref": "#/definitions/Microsoft.LogStep"
+        },
+        {
             "title": "Microsoft.LuisRecognizer",
             "description": "LUIS recognizer.",
             "$ref": "#/definitions/Microsoft.LuisRecognizer"
@@ -1367,6 +1372,11 @@
                     "$ref": "#/definitions/Microsoft.IntegerInput"
                 },
                 {
+                    "title": "Microsoft.LogStep",
+                    "description": "This is a step which writes to console.log and optional creates a TraceActivity around a text binding",
+                    "$ref": "#/definitions/Microsoft.LogStep"
+                },
+                {
                     "title": "Microsoft.NumberInput",
                     "description": "This represents a dialog which gathers a decimal number in a specified range",
                     "$ref": "#/definitions/Microsoft.NumberInput"
@@ -1907,6 +1917,64 @@
                 {
                     "title": "Type",
                     "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.LogStep": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Log Step",
+            "description": "This is a step which writes to console.log and optional creates a TraceActivity around a text binding",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.LogStep"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "text": {
+                    "type": "string",
+                    "title": "Text",
+                    "description": "LG Expression to write to the log"
+                },
+                "traceActivity": {
+                    "type": "boolean",
+                    "title": "Send Trace Activity",
+                    "description": "Set to true to also create a TraceActivity with the log text"
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "text",
                         "$type"
                     ]
                 }
