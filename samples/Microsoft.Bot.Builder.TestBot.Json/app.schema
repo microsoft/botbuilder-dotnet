@@ -36,6 +36,11 @@
             "$ref": "#/definitions/Microsoft.ConfirmInput"
         },
         {
+            "title": "Microsoft.DebugBreak",
+            "description": "If debugger is attached, do a debugger break at this point",
+            "$ref": "#/definitions/Microsoft.DebugBreak"
+        },
+        {
             "title": "Microsoft.DeleteProperty",
             "description": "This is a step which allows you to remove a property from memory",
             "$ref": "#/definitions/Microsoft.DeleteProperty"
@@ -773,6 +778,53 @@
                 }
             ]
         },
+        "Microsoft.DebugBreak": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Debugger Break Step",
+            "description": "If debugger is attached, do a debugger break at this point",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.DebugBreak"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Microsoft.DeleteProperty": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Delete PropertyS",
@@ -1459,6 +1511,11 @@
                     "title": "Microsoft.ConfirmInput",
                     "description": "This represents a dialog which gathers a yes/no style responses",
                     "$ref": "#/definitions/Microsoft.ConfirmInput"
+                },
+                {
+                    "title": "Microsoft.DebugBreak",
+                    "description": "If debugger is attached, do a debugger break at this point",
+                    "$ref": "#/definitions/Microsoft.DebugBreak"
                 },
                 {
                     "title": "Microsoft.DeleteProperty",
