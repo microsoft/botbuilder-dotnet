@@ -17,7 +17,6 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Builder.TestBot.Json.Recognizers;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,7 +45,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             TypeFactory.RegisterAdaptiveTypes();
 
             // register custom types
-            TypeFactory.Register("Testbot.RuleRecognizer", typeof(RuleRecognizer));
             TypeFactory.Register("Testbot.CalculateDogYears", typeof(CalculateDogYears));
             TypeFactory.Register("Testbot.JavascriptStep", typeof(JavascriptStep));
             TypeFactory.Register("Testbot.CSharpStep", typeof(CSharpStep));
@@ -75,7 +73,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 debugAdapter = new DebugAdapter(sourceMap, sourceMap, new DebugLogger(nameof(DebugAdapter)));
             }
 
-            // m
             services.AddSingleton<IConfiguration>(this.Configuration);
 
             IStorage dataStore = new MemoryStorage();
