@@ -76,15 +76,8 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             services.AddSingleton<IConfiguration>(this.Configuration);
 
             IStorage dataStore = new MemoryStorage();
-            var conversationState = new ConversationState(dataStore);
             var userState = new UserState(dataStore);
-            var userStateMap = userState.CreateProperty<Dictionary<string, object>>("user");
-            var accessors = new TestBotAccessors
-            {
-                ConversationDialogState = conversationState.CreateProperty<DialogState>("DialogState"),
-                ConversationState = conversationState,
-                UserState = userState
-            };
+            var conversationState = new ConversationState(dataStore);
 
             // manage all bot resources
             var resourceExplorer = ResourceExplorer.LoadProject(HostingEnvironment.ContentRootPath);
@@ -93,7 +86,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 (IServiceProvider sp) =>
                 {
                     // declarative Adaptive dialogs bot sample
-                    return new TestBot(accessors, resourceExplorer, DebugSupport.SourceRegistry);
+                    return new TestBot(userState, conversationState, resourceExplorer, DebugSupport.SourceRegistry);
 
                     // LG bot sample
                     // return new TestBotLG(accessors);
