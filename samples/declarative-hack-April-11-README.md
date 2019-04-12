@@ -16,7 +16,7 @@ For the purpose of this hack you will use the C# version of the SDK. To particip
 
 ## Samples 
 Currently, we are light on documentation. However, there are few samples to help you bootstrap and get started using the new dialogs, LG, memory, and decelrative. 
--	The main [samples](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog/samples) folder include basic documentation for Memory, Input prompts and dialogs, and Rule base dialog system. 
+-	The csharp [samples](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog/samples) folder include basic documentation for Memory, Input prompts and dialogs, and Rule base dialog system. 
 - We also created a version of the samples that uses packaged nuget pckages. [TestBot.Json as sample based on nuget packages called 60-AdaptiveBot](https://github.com/Microsoft/BotBuilder-Samples/blob/4.next/samples/csharp_dotnetcore/60.AdaptiveBot/README.md).  [Here](https://botbuilder.myget.org/F/botbuilder-declarative/api/v3/index.json )  the nuget feed for C# packages. 
 -	The [Microsoft.Bot.Bbuilder.Testbot.Json](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog/samples/Microsoft.Bot.Builder.TestBot.Json) folder include samples for LG and declarative dialogs.
 -	In Microsoft.Bot.Bbuilder.Testbot.Json , the [samples](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog/samples/Microsoft.Bot.Builder.TestBot.Json/Samples) folder includes a series of bots defined declaratively, showing the different dialog/ prompts and available steps. 
