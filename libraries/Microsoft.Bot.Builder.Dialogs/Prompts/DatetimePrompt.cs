@@ -21,6 +21,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             DefaultLocale = defaultLocale;
         }
 
+        public DateTimePrompt()
+            : base()
+        {
+        }
+
         public string DefaultLocale { get; set; }
 
         protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))

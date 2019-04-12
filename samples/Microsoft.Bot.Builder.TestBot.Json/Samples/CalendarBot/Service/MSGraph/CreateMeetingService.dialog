@@ -1,0 +1,52 @@
+{
+  "$schema": "../../app.schema",
+  "$type": "Microsoft.AdaptiveDialog",
+  "steps": [
+
+    {
+      "$type": "Microsoft.IfCondition",
+      "condition": "dialog.token == null",
+      "steps": [
+        {
+          "$type": "Microsoft.OAuthPrompt",
+          "ConnectionName": "msgraph",
+          "Title": "Log in",
+          "Text": "Please log in to your calendar account",
+          "Property": "dialog.token"
+        }
+      ]
+    },
+
+    {
+      "$type": "Microsoft.HttpRequest",
+      "url": "https://graph.microsoft.com/v1.0/me/events",
+      "method": "POST",
+      "header": {
+        "Authorization": "Bearer {dialog.token.Token}"
+      },
+      "body": {
+        "body": {
+          "content": "{user.body}",
+          "contentType": "Text"
+        },
+        "subject": "{user.subject}",
+        "attendees": [
+          {
+            "emailAddress": {
+              "address": "{user.email}"
+            }
+          }
+        ],
+        "start": {
+          "dateTime": "2019-04-10T13:00:00Z",
+          "timeZone": "UTC"
+        },
+        "end": {
+          "dateTime": "2019-04-10T14:00:00Z",
+          "timeZone": "UTC"
+        }
+      },
+      "Property": "user.createResponse"
+    }
+  ]
+}

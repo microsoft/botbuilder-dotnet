@@ -19,7 +19,7 @@
 > - CASE: {count(dialog.list) > 0}
 >     - ```
 > Your most recent @{count(dialog.list)} tasks are 
->  @{humanize(list, '[showSingleItem]', '\n')}
+>  @{join(list, '[showSingleItem]', '\n')}
 >       ```
 > - DEFAULT:
 >     - The list is empty.
@@ -29,7 +29,7 @@
 > # ShowLists(lists)
 > - CASE: @{count(lists}) > 0}
 >     - ```
->  @{humanize(list, '[showSingleItem]', '\n')}
+>  @{join(list, '[showSingleItem]', '\n')}
 >       ```
 > - DEFAULT:
 >     - The list is empty.
