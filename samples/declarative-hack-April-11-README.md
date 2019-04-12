@@ -35,7 +35,7 @@ Currently, we are light on documentation. However, there are few samples to help
 
 
 ## What bot should I build?
-We like you to try either using the Adaptice Dialog using code or using JSON. While using these dialog, feel free to explorer and follow any scenario you want. If you are looking for insperation, we like you to pick one of the skills in the [Viertual Assistent solution](https://github.com/Microsoft/AI/tree/master/solutions/Virtual-Assistant/src), identify one or two dialogs, and try to convert these dialogs to the new Adaptive Dialog. All VA skills includes full LUIS models that you can use and code (using Waterfall) 
+We would like you to try either using the Adaptive Dialog using code or using JSON. While using these dialogs, feel free to explore and follow any scenario you want. If you are looking for inspiration, we would like you to pick one of the skills in the [Virtual Assistent solution](https://github.com/Microsoft/AI/tree/master/solutions/Virtual-Assistant/src), identify one or two dialogs, and try to convert these dialogs to the new Adaptive Dialog. All VA skills includes full LUIS models that you can use and code (using Waterfall) 
 
 
 ## How to use AdaptiveDialog in NodeJs
