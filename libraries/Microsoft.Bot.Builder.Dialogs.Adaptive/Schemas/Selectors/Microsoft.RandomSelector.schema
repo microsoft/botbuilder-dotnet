@@ -1,7 +1,7 @@
 ﻿{
     "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
     "$role": "unionType(Microsoft.IRuleSelector)",
-    "title": "Select a random true rule",
+    "title": "Random rule selector",
     "description": "Select most specific true rule",
     "type": "object",
     "properties": {
