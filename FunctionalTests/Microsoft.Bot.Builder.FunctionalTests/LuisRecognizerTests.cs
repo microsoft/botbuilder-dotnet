@@ -1056,6 +1056,20 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             return new TurnContext(testAdapter, activity);
         }
 
+        private static TurnContext GetNonMessageContext(string utterance)
+        {
+            var b = new TestAdapter();
+            var a = new Activity
+            {
+                Type = ActivityTypes.ConversationUpdate,
+                Text = utterance,
+                Conversation = new ConversationAccount(),
+                Recipient = new ChannelAccount(),
+                From = new ChannelAccount(),
+            };
+            return new TurnContext(b, a);
+        }
+
         // Compare two JSON structures and ensure entity and intent scores are within delta
         private bool WithinDelta(JToken token1, JToken token2, double delta, bool compare = false)
         {
@@ -1158,20 +1172,6 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 .Respond("application/json", response);
 
             return new MockedHttpClientHandler(mockMessageHandler.ToHttpClient());
-        }
-
-        private static TurnContext GetNonMessageContext(string utterance)
-        {
-            var b = new TestAdapter();
-            var a = new Activity
-            {
-                Type = ActivityTypes.ConversationUpdate,
-                Text = utterance,
-                Conversation = new ConversationAccount(),
-                Recipient = new ChannelAccount(),
-                From = new ChannelAccount(),
-            };
-            return new TurnContext(b, a);
         }
 
         private string GetRequestUrl() => $"{_endpoint}/luis/v2.0/apps/{_luisAppId}";

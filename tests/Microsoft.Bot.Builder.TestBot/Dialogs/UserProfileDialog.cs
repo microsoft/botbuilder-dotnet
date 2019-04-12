@@ -45,7 +45,8 @@ namespace Microsoft.BotBuilderSamples
         {
             // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
             // Running a prompt here means the next WaterfallStep will be run when the users response is received.
-            return await stepContext.PromptAsync(nameof(ChoicePrompt),
+            return await stepContext.PromptAsync(
+                nameof(ChoicePrompt),
                 new PromptOptions
                 {
                     Prompt = MessageFactory.Text("Please enter your mode of transport."),
@@ -58,6 +59,12 @@ namespace Microsoft.BotBuilderSamples
             stepContext.Values["transport"] = ((FoundChoice)stepContext.Result).Value;
 
             return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Please enter your name.") }, cancellationToken);
+        }
+
+        private static Task<bool> AgePromptValidatorAsync(PromptValidatorContext<int> promptContext, CancellationToken cancellationToken)
+        {
+            // This condition is our validation rule. You can also change the value at this point.
+            return Task.FromResult(promptContext.Recognized.Value >= 0 && promptContext.Recognized.Value < 150);
         }
 
         private async Task<DialogTurnResult> NameConfirmStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -97,7 +104,7 @@ namespace Microsoft.BotBuilderSamples
             stepContext.Values["age"] = (int)stepContext.Result;
 
             // We can send messages to the user at any point in the WaterfallStep.
-            //var msg = userProfile.Age == -1 ? "No age given." : $"I have your age as {userProfile.Age}.";
+            // var msg = userProfile.Age == -1 ? "No age given." : $"I have your age as {userProfile.Age}.";
             var msg = (int)stepContext.Values["age"] == -1 ? "No age given." : $"I have your age as {stepContext.Values["age"]}.";
 
             // We can send messages to the user at any point in the WaterfallStep.
@@ -133,12 +140,6 @@ namespace Microsoft.BotBuilderSamples
 
             // WaterfallStep always finishes with the end of the Waterfall or with another dialog, here it is the end.
             return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
-        }
-
-        private static Task<bool> AgePromptValidatorAsync(PromptValidatorContext<int> promptContext, CancellationToken cancellationToken)
-        {
-            // This condition is our validation rule. You can also change the value at this point.
-            return Task.FromResult(promptContext.Recognized.Value >= 0 && promptContext.Recognized.Value < 150);
         }
     }
 }

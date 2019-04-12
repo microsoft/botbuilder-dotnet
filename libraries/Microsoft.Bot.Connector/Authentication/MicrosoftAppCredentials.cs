@@ -45,6 +45,14 @@ namespace Microsoft.Bot.Connector.Authentication
         };
 
         /// <summary>
+        /// Sets the channel auth token tenant for this credential.
+        /// </summary>
+        /// <value>
+        /// The channel auth token tenant for this credential.
+        /// </value>
+        private string _channelAuthTenant;
+
+        /// <summary>
         /// Authenticator abstraction used to obtain tokens through the Client Credentials OAuth 2.0 flow.
         /// </summary>
         private readonly Lazy<AdalAuthenticator> authenticator;
@@ -107,14 +115,6 @@ namespace Microsoft.Bot.Connector.Authentication
         /// The Microsoft app password for this credential.
         /// </value>
         public string MicrosoftAppPassword { get; set; }
-
-        /// <summary>
-        /// Sets the channel auth token tenant for this credential.
-        /// </summary>
-        /// <value>
-        /// The channel auth token tenant for this credential.
-        /// </value>
-        private string _channelAuthTenant;
 
         public string ChannelAuthTenant
         {
