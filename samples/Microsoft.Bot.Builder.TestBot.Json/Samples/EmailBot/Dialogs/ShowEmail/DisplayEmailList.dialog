@@ -50,42 +50,6 @@
           }
         },
 
-
-        //{
-        //  "$type": "Microsoft.IfCondition",
-        //  "condition": "dialog.choice == '1'",
-        //  "steps": [
-        //    {
-        //      "$type": "Microsoft.SetProperty",
-        //      "property": "user.focusedEmail",
-        //      "value": "user.emails[0]"
-        //    }
-        //  ]
-        //},
-        //{
-        //  "$type": "Microsoft.IfCondition",
-        //  "condition": "dialog.choice == '2'",
-        //  "steps": [
-        //    {
-        //      "$type": "Microsoft.SetProperty",
-        //      "property": "user.focusedEmail",
-        //      "value": "user.emails[1]"
-        //    }
-        //  ]
-        //},
-        //{
-        //  "$type": "Microsoft.IfCondition",
-        //  "condition": "dialog.choice == '3'",
-        //  "steps": [
-        //    {
-        //      "$type": "Microsoft.SetProperty",
-        //      "property": "user.focusedEmail",
-        //      "value": "user.emails[2]"
-        //    }
-        //  ]
-        //},
-
-        // Read focused email
         {
           "$type": "Microsoft.SendActivity",
           "activity": "[ReadFocusedEmail(user)]"

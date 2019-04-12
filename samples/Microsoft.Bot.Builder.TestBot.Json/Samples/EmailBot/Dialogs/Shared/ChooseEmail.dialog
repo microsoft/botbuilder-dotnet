@@ -12,11 +12,6 @@
       "prompt": "[SelectEmail]",
       "property": "dialog.choice"
     },
-    // Question: how to use SwitchCondition
-    //{
-    //  "$type": "Microsoft.SwitchCondition",
-    //  "condition": "dialog.choice"
-    //},
     {
       "$type": "Microsoft.IfCondition",
       "condition": "dialog.choice == '1'",
