@@ -1,4 +1,6 @@
 # Bot Builder SDK v4
+End-To-End Functional Test Status: [![Build status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/DotNet/BotBuilder-DotNet%20master%20Functional%20Tests?branchName=master)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=484&branchName=master)
+
  | Branch | Description        | Build Status | Coverage Status |
  |----|---------------|--------------|-----------------|
  |Master | 4.3.* Preview Builds |[![Build status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/Bot.Builder-DotNet?branchName=master)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=215&branchName=master) |[![Coverage Status](https://coveralls.io/repos/github/Microsoft/botbuilder-dotnet/badge.svg?branch=master)](https://coveralls.io/github/Microsoft/botbuilder-dotnet?branch=master)
