@@ -3,8 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
@@ -14,6 +16,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
@@ -27,9 +30,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private const string CosmosAuthKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
         private const string CosmosDatabaseName = "test-db";
         private const string CosmosCollectionName = "bot-storage";
+        private const string DocumentId = "UtteranceLog-001";
 
         private const string _noEmulatorMessage = "This test requires CosmosDB Emulator! go to https://aka.ms/documentdb-emulator-docs to download and install.";
-        private static string _emulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe");
+        private static readonly string _emulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe");
         private static Lazy<bool> _hasEmulator = new Lazy<bool>(() =>
         {
             if (File.Exists(_emulatorPath))
@@ -46,6 +50,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
             return false;
         });
+
+        // Item used to test delete cases
+        private readonly StoreItem itemToTest = new StoreItem { MessageList = new string[] { "hi", "how are u" }, City = "Contoso" };
 
         private IStorage _storage;
 
@@ -387,6 +394,123 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
+        public async Task DeleteAsyncFromSingleCollection()
+        {
+            if (CheckEmulator())
+            {
+                var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions());
+                var changes = new Dictionary<string, object>();
+                changes.Add(DocumentId, itemToTest);
+
+                await storage.WriteAsync(changes, CancellationToken.None);
+
+                var result = await Task.WhenAny(storage.DeleteAsync(new string[] { DocumentId }, CancellationToken.None)).ConfigureAwait(false);
+                Assert.IsTrue(result.IsCompletedSuccessfully);
+            }
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
+        public async Task DeleteAsyncFromPartitionedCollection()
+        {
+            if (CheckEmulator())
+            {
+                /// The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
+                /// The partitionKeyPath must have the "document" value to properly route the values as partitionKey
+                /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
+                string partitionKeyPath = "document/city";
+
+                await CreateCosmosDbWithPartitionedCollection(partitionKeyPath);
+
+                // Connect to the comosDb created before with "Contoso" as partitionKey
+                var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions("Contoso"));
+                var changes = new Dictionary<string, object>();
+                changes.Add(DocumentId, itemToTest);
+
+                await storage.WriteAsync(changes, CancellationToken.None);
+
+                var result = await Task.WhenAny(storage.DeleteAsync(new string[] { DocumentId }, CancellationToken.None)).ConfigureAwait(false);
+                Assert.IsTrue(result.IsCompletedSuccessfully);
+            }
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
+        public async Task DeleteAsyncFromPartitionedCollectionWithoutPartitionKey()
+        {
+            if (CheckEmulator())
+            {
+                /// The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
+                /// The partitionKeyPath must have the "document" value to properly route the values as partitionKey
+                /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
+                string partitionKeyPath = "document/city";
+
+                await CreateCosmosDbWithPartitionedCollection(partitionKeyPath);
+
+                // Connect to the comosDb created before
+                var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions());
+                var changes = new Dictionary<string, object>();
+                changes.Add(DocumentId, itemToTest);
+
+                await storage.WriteAsync(changes, CancellationToken.None);
+
+                // Should throw InvalidOperationException: PartitionKey value must be supplied for this operation.
+                await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await storage.DeleteAsync(new string[] { DocumentId }, CancellationToken.None));
+            }
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
+        public async Task ReadAsyncWithPartitionKey()
+        {
+            if (CheckEmulator())
+            {
+                /// The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
+                /// The partitionKeyPath must have the "document" value to properly route the values as partitionKey
+                /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
+                string partitionKeyPath = "document/city";
+
+                await CreateCosmosDbWithPartitionedCollection(partitionKeyPath);
+
+                // Connect to the comosDb created before with "Contoso" as partitionKey
+                var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions("Contoso"));
+                var changes = new Dictionary<string, object>();
+                changes.Add(DocumentId, itemToTest);
+
+                await storage.WriteAsync(changes, CancellationToken.None);
+
+                var result = await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None);
+                Assert.AreEqual(itemToTest.City, result[DocumentId].City);
+            }
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
+        public async Task ReadAsyncWithoutPartitionKey()
+        {
+            if (CheckEmulator())
+            {
+                /// The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
+                /// The partitionKeyPath must have the "document" value to properly route the values as partitionKey
+                /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
+                string partitionKeyPath = "document/city";
+
+                await CreateCosmosDbWithPartitionedCollection(partitionKeyPath);
+
+                // Connect to the comosDb created before without partitionKey
+                var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions());
+                var changes = new Dictionary<string, object>();
+                changes.Add(DocumentId, itemToTest);
+
+                await storage.WriteAsync(changes, CancellationToken.None);
+
+                // Should throw DocumentClientException: Cross partition query is required but disabled
+                await Assert.ThrowsExceptionAsync<DocumentClientException>(async () => await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None));
+            }
+        }
+
         public bool CheckEmulator()
         {
             if (!_hasEmulator.Value)
@@ -400,6 +524,30 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
 
             return _hasEmulator.Value;
+        }
+
+        private static async Task CreateCosmosDbWithPartitionedCollection(string partitionKey)
+        {
+            using (var client = new DocumentClient(new Uri(CosmosServiceEndpoint), CosmosAuthKey))
+            {
+                Database database = await client.CreateDatabaseIfNotExistsAsync(new Database { Id = CosmosDatabaseName });
+                var partitionKeyDefinition = new PartitionKeyDefinition { Paths = new Collection<string> { $"/{partitionKey}" } };
+                var collectionDefinition = new DocumentCollection { Id = CosmosCollectionName, PartitionKey = partitionKeyDefinition };
+
+                await client.CreateDocumentCollectionIfNotExistsAsync(database.SelfLink, collectionDefinition);
+            }
+        }
+
+        private static CosmosDbStorageOptions CreateCosmosDbStorageOptions(string partitionKey = "")
+        {
+            return new CosmosDbStorageOptions()
+            {
+                PartitionKey = partitionKey,
+                AuthKey = CosmosAuthKey,
+                CollectionId = CosmosCollectionName,
+                CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
+                DatabaseId = CosmosDatabaseName,
+            };
         }
 
         private Mock<IDocumentClient> GetDocumentClient()
@@ -425,6 +573,17 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             mock.Setup(client => client.ConnectionPolicy).Returns(new ConnectionPolicy());
 
             return mock;
+        }
+
+        internal class StoreItem : IStoreItem
+        {
+            [JsonProperty(PropertyName = "messageList")]
+            public string[] MessageList { get; set; }
+
+            [JsonProperty(PropertyName = "city")]
+            public string City { get; set; }
+
+            public string ETag { get; set; }
         }
     }
 }
