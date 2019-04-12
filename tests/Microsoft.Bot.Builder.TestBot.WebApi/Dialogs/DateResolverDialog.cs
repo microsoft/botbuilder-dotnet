@@ -26,26 +26,6 @@ namespace Microsoft.BotBuilderSamples
             InitialDialogId = nameof(WaterfallDialog);
         }
 
-        private static Task<bool> DateTimePromptValidator(PromptValidatorContext<IList<DateTimeResolution>> promptContext, CancellationToken cancellationToken)
-        {
-            if (promptContext.Recognized.Succeeded)
-            {
-                // This value will be a TIMEX. And we are only interested in a Date so grab the first result and drop the Time part.
-                // TIMEX is a format that represents DateTime expressions that include some ambiguity. e.g. missing a Year.
-                var timex = promptContext.Recognized.Value[0].Timex.Split('T')[0];
-
-                // If this is a definite Date including year, month and day we are good otherwise reprompt.
-                // A better solution might be to let the user know what part is actually missing.
-                var isDefinite = new TimexProperty(timex).Types.Contains(Constants.TimexTypes.Definite);
-
-                return Task.FromResult(isDefinite);
-            }
-            else
-            {
-                return Task.FromResult(false);
-            }
-        }
-
         private async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var timex = (string)stepContext.Options;
@@ -89,6 +69,26 @@ namespace Microsoft.BotBuilderSamples
         {
             var timex = ((List<DateTimeResolution>)stepContext.Result)[0].Timex;
             return await stepContext.EndDialogAsync(timex);
+        }
+
+        private static Task<bool> DateTimePromptValidator(PromptValidatorContext<IList<DateTimeResolution>> promptContext, CancellationToken cancellationToken)
+        {
+            if (promptContext.Recognized.Succeeded)
+            {
+                // This value will be a TIMEX. And we are only interested in a Date so grab the first result and drop the Time part.
+                // TIMEX is a format that represents DateTime expressions that include some ambiguity. e.g. missing a Year.
+                var timex = promptContext.Recognized.Value[0].Timex.Split('T')[0];
+
+                // If this is a definite Date including year, month and day we are good otherwise reprompt.
+                // A better solution might be to let the user know what part is actually missing.
+                var isDefinite = new TimexProperty(timex).Types.Contains(Constants.TimexTypes.Definite);
+
+                return Task.FromResult(isDefinite);
+            }
+            else
+            {
+                return Task.FromResult(false);
+            }
         }
     }
 }
