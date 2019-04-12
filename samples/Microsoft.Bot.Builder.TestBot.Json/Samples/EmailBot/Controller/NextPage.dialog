@@ -2,10 +2,10 @@
   "$schema": "../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
   "steps": [
-    // [Fixed in parent branch] Bug : Cannot support "value": "user.showIndex+1". Set to 1 as a hack.
+    // Todo: check page boundary.
     {
       "$type": "Microsoft.SetProperty",
-      "value": "1",
+      "value": "user.showIndex+1",
       "property": "user.showIndex"
     }
   ]

@@ -2,8 +2,14 @@
   "$schema": "../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
   "steps": [
-    "ClearUserData",
-    "ChooseEmail",
+    "ClearReplyData",
+    {
+      "$type": "Microsoft.IfCondition",
+      "condition": "user.focusedEmail==null",
+      "steps": [
+        "ChooseEmail"
+      ]
+    },
     {
       "$type": "Microsoft.SetProperty",
       "value": "concat('Re:',user.focusedEmail.subject)",

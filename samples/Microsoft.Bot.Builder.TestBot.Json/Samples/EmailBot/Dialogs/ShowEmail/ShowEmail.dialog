@@ -4,8 +4,10 @@
   "recognizer": {
     "$type": "Microsoft.RegexRecognizer",
     "intents": {
-      "ForwardEmailIntent": "(?i)forward email",
-      "ReplyEmailIntent": "(?i)reply email"
+      "ForwardEmailIntent": "(?i)forward",
+      "ReplyEmailIntent": "(?i)reply",
+      "ShowNextPageIntent": "(?i)next page",
+      "ShowEmailIntent": "(?i)show"
     }
   },
   "rules": [
@@ -26,109 +28,74 @@
       "steps": [
         "ReplyEmail"
       ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "ShowNextPageIntent",
+      "steps": [
+        "NextPage",
+        "DisplayEmailList"
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "ShowEmailIntent",
+      "steps": [
+        "DisplayEmailList"
+      ]
     }
   ],
   "steps": [
-    "GetDisplayEmails",
+    "DisplayEmailList",
+    // Display overview again
+    // Question: How to build a dialog which can repeat itself: show email->read email->show again?->show email… Do we need to use Microsoft.RepeatDialog? How to use it?
     {
-      "$type": "Microsoft.SendActivity",
-      "activity": "[ShowEmailSummary(user)]"
+      "$type": "Microsoft.ConfirmInput",
+      "property": "dialog.confirmed",
+      "prompt": "You can say next page, show email again, forward this email, reply this email, etc, or say no to cancel the flow.",
+      "retryPrompt": "Please try again.",
+      "invalidPrompt": "Please input yes/no.",
+      "alwaysPrompt": true
     },
     {
       "$type": "Microsoft.IfCondition",
-      "condition": "count(user.emails)>0",
+      "condition": "dialog.confirmed",
       "steps": [
-        // Bug: Choice input cannot accept expression as value
+      ],
+      "elseSteps": [
         {
           "$type": "Microsoft.SendActivity",
-          "activity": "[ShowEmailList(user)]"
-        },
-        {
-          "$type": "Microsoft.TextInput",
-          "prompt": "[ChooseEmailList(user)]",
-          "property": "dialog.choice"
-        },
-        // Question: how to use SwitchCondition
-        //{
-        //  "$type": "Microsoft.SwitchCondition",
-        //  "condition": "dialog.choice"
-        //},
-        {
-          "$type": "Microsoft.IfCondition",
-          "condition": "dialog.choice == '1'",
-          "steps": [
-            {
-              "$type": "Microsoft.SetProperty",
-              "property": "user.focusedEmail",
-              "value": "user.emails[0]"
-            }
-          ]
-        },
-        {
-          "$type": "Microsoft.IfCondition",
-          "condition": "dialog.choice == '2'",
-          "steps": [
-            {
-              "$type": "Microsoft.SetProperty",
-              "property": "user.focusedEmail",
-              "value": "user.emails[1]"
-            }
-          ]
-        },
-        {
-          "$type": "Microsoft.IfCondition",
-          "condition": "dialog.choice == '3'",
-          "steps": [
-            {
-              "$type": "Microsoft.SetProperty",
-              "property": "user.focusedEmail",
-              "value": "user.emails[2]"
-            }
-          ]
-        },
-
-        // Read focused email
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "[ReadFocusedEmail(user)]"
-        },
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "[ShowEmailCard(user.focusedEmail)]"
-        },
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "OK, have a good time. You can also say 'next page email' to go to next page."
+          "activity": "OK, have a good time."
         }
-
-        // Display overview again
-        // Question: How to build a dialog which can repeat itself: show email->read email->show again?->show email… Do we need to use Microsoft.RepeatDialog? How to use it?
-        //{
-        //  "$type": "Microsoft.ConfirmInput",
-        //  "property": "dialog.confirmed",
-        //  "prompt": "Do you want to see current email overview again?",
-        //  "retryPrompt": "Please try again.",
-        //  "invalidPrompt": "Please input yes/no.",
-        //  "alwaysPrompt": true
-        //},
-        //{
-        //  "$type": "Microsoft.IfCondition",
-        //  "condition": "dialog.confirmed",
-        //  "steps": [
-        //    //"ShowEmail",
-        //    {
-        //      "$type": "Microsoft.SendActivity",
-        //      "activity": "Show email again."
-        //    }
-        //  ],
-        //  "elseSteps": [
-        //    {
-        //      "$type": "Microsoft.SendActivity",
-        //      "activity": "OK, have a good time. You can also say 'next page email' to go to next page."
-        //    }
-        //  ]
-        //}
       ]
-    }
+    },
+
+    //// Display overview again
+    //// Question: How to build a dialog which can repeat itself: show email->read email->show again?->show email… Do we need to use Microsoft.RepeatDialog? How to use it?
+    //{
+    //  "$type": "Microsoft.ConfirmInput",
+    //  "property": "dialog.confirmed",
+    //  "prompt": "Do you want to see current email overview again?",
+    //  "retryPrompt": "Please try again.",
+    //  "invalidPrompt": "Please input yes/no.",
+    //  "alwaysPrompt": true
+    //},
+    //{
+    //  "$type": "Microsoft.IfCondition",
+    //  "condition": "dialog.confirmed",
+    //  "steps": [
+    //    //"ShowEmail",
+    //    {
+    //      "$type": "Microsoft.SendActivity",
+    //      "activity": "Show email again."
+    //    }
+    //  ],
+    //  "elseSteps": [
+    //    {
+    //      "$type": "Microsoft.SendActivity",
+    //      "activity": "OK, have a good time. You can also say 'next page email' to go to next page."
+    //    }
+    //  ]
+    //}
   ]
 }

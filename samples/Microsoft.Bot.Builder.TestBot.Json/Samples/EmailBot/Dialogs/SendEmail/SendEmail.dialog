@@ -3,21 +3,6 @@
   "$type": "Microsoft.AdaptiveDialog",
   "steps": [
     {
-      "$type": "Microsoft.SetProperty",
-      "value": "null",
-      "property": "user.email"
-    },
-    {
-      "$type": "Microsoft.SetProperty",
-      "value": "null",
-      "property": "user.subject"
-    },
-    {
-      "$type": "Microsoft.SetProperty",
-      "value": "null",
-      "property": "user.body"
-    },
-    {
       "$type": "Microsoft.TextInput",
       "prompt": "OK, please enter the subject of your email.",
       "property": "user.subject"

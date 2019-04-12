@@ -24,9 +24,8 @@
       "value": "0"
     },
     {
-      "$type": "Microsoft.SetProperty",
-      "property": "user.focusedEmail",
-      "value": "null"
+      "$type": "Microsoft.DeleteProperty",
+      "property": "user.focusedEmail"
     },
     {
       "$type": "Microsoft.EditArray",
@@ -44,33 +43,27 @@
       "property": "user.email"
     },
     {
-      "$type": "Microsoft.SetProperty",
-      "value": "null",
+      "$type": "Microsoft.DeleteProperty",
       "property": "user.subject"
     },
     {
-      "$type": "Microsoft.SetProperty",
-      "value": "null",
+      "$type": "Microsoft.DeleteProperty",
       "property": "user.body"
     },
     {
-      "$type": "Microsoft.SetProperty",
-      "value": "null",
+      "$type": "Microsoft.DeleteProperty",
       "property": "user.fwContent"
     },
     {
-      "$type": "Microsoft.SetProperty",
-      "value": "null",
+      "$type": "Microsoft.DeleteProperty",
       "property": "user.fwSubject"
     },
     {
-      "$type": "Microsoft.SetProperty",
-      "value": "null",
+      "$type": "Microsoft.DeleteProperty",
       "property": "user.toContent"
     },
     {
-      "$type": "Microsoft.SetProperty",
-      "value": "null",
+      "$type": "Microsoft.DeleteProperty",
       "property": "user.toSubject"
     }
     //{
