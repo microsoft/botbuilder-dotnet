@@ -24,20 +24,20 @@
 
 > Templates can include expressions as conditions and inline variations
 # WordGameReply
-- CASE: {GameName == 'MarcoPolo'}
+- IF: {GameName == 'MarcoPolo'}
     - [WelcomeTemplate] Polo
     - Welcome back Polo!
-- CASE: {GameName == 'HipHip'}
+- ELSEIF: {GameName == 'HipHip'}
     - [WelcomeTemplate] Hurray
-- DEFAULT:
+- ELSE:
     - [WelcomeTemplate]
 
 > Templates can be parametrized
 # TimeOfDayReadOut(parameter1)
-- CASE: {parameter1 == 'morning'}
+- IF: {parameter1 == 'morning'}
     - Good morning
     - Its a wonderful morning!
-- DEFAULT:
+- ELSE:
     - Good evening
 
 # TimeOfDayExmple

@@ -26,9 +26,19 @@
             "$ref": "#/definitions/Microsoft.ChoiceInput"
         },
         {
+            "title": "Microsoft.ConditionalSelector",
+            "description": "Use a rule selector based on a condition",
+            "$ref": "#/definitions/Microsoft.ConditionalSelector"
+        },
+        {
             "title": "Microsoft.ConfirmInput",
             "description": "This represents a dialog which gathers a yes/no style responses",
             "$ref": "#/definitions/Microsoft.ConfirmInput"
+        },
+        {
+            "title": "Microsoft.DebugBreak",
+            "description": "If debugger is attached, do a debugger break at this point",
+            "$ref": "#/definitions/Microsoft.DebugBreak"
         },
         {
             "title": "Microsoft.DeleteProperty",
@@ -59,6 +69,11 @@
             "title": "Microsoft.EventRule",
             "description": "Defines a rule for an event which is triggered by some sourcy",
             "$ref": "#/definitions/Microsoft.EventRule"
+        },
+        {
+            "title": "Microsoft.FirstSelector",
+            "description": "Selector for first true rule",
+            "$ref": "#/definitions/Microsoft.FirstSelector"
         },
         {
             "title": "Microsoft.FloatInput",
@@ -106,6 +121,11 @@
             "$ref": "#/definitions/Microsoft.LuisRecognizer"
         },
         {
+            "title": "Microsoft.MostSpecificSelector",
+            "description": "Select most specific true rules with optional additional selector",
+            "$ref": "#/definitions/Microsoft.MostSpecificSelector"
+        },
+        {
             "title": "Microsoft.MultiLanguageRecognizer",
             "description": "Recognizer which allows you to configure the recognizer per language, and to define the policy for using them",
             "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
@@ -119,6 +139,11 @@
             "title": "Microsoft.QnAMakerDialog",
             "description": "This represents a dialog which is driven by a call to QnAMaker.ai knowledge base",
             "$ref": "#/definitions/Microsoft.QnAMakerDialog"
+        },
+        {
+            "title": "Microsoft.RandomSelector",
+            "description": "Select most specific true rule",
+            "$ref": "#/definitions/Microsoft.RandomSelector"
         },
         {
             "title": "Microsoft.RegexRecognizer",
@@ -164,6 +189,11 @@
             "title": "Microsoft.TraceActivity",
             "description": "This is a step which sends an TraceActivity to the transcript",
             "$ref": "#/definitions/Microsoft.TraceActivity"
+        },
+        {
+            "title": "Microsoft.TrueSelector",
+            "description": "Selector for all true rules",
+            "$ref": "#/definitions/Microsoft.TrueSelector"
         },
         {
             "title": "Microsoft.UnknownIntentRule",
@@ -250,6 +280,12 @@
                     "title": "Recognizer",
                     "decription": "Configured recognizer to generate intent and entites from user utterance",
                     "$ref": "#/definitions/Microsoft.IRecognizer"
+                },
+                "selector": {
+                    "$type": "Microsoft.IRuleSelector",
+                    "title": "Selector",
+                    "description": "Policy for how to select rule to execute next",
+                    "$ref": "#/definitions/Microsoft.IRuleSelector"
                 },
                 "steps": {
                     "type": "array",
@@ -584,6 +620,66 @@
                 }
             ]
         },
+        "Microsoft.ConditionalSelector": {
+            "$role": "unionType(Microsoft.IRuleSelector)",
+            "title": "Condtional Rule Selector",
+            "description": "Use a rule selector based on a condition",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.ConditionalSelector"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "condition": {
+                    "$type": "Microsoft.IExpression",
+                    "$ref": "#/definitions/Microsoft.IExpression"
+                },
+                "ifTrue": {
+                    "$type": "Microsoft.IRuleSelector",
+                    "$ref": "#/definitions/Microsoft.IRuleSelector"
+                },
+                "ifFalse": {
+                    "$type": "Microsoft.IRuleSelector",
+                    "$ref": "#/definitions/Microsoft.IRuleSelector"
+                },
+                "required": {}
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Microsoft.ConfirmInput": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "ConfirmInput Dialog",
@@ -662,6 +758,53 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 }
             },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.DebugBreak": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Debugger Break Step",
+            "description": "If debugger is attached, do a debugger break at this point",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.DebugBreak"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                }
+            },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -1026,12 +1169,13 @@
                     }
                 },
                 "constraint": {
-                    "type": "string",
+                    "$type": "Microsoft.IExpression",
                     "title": "Constraint",
                     "description": "Optional constraint to which must be met for this rule to fire",
                     "examples": [
                         "user.vip == true"
-                    ]
+                    ],
+                    "$ref": "#/definitions/Microsoft.IExpression"
                 },
                 "steps": {
                     "type": "array",
@@ -1060,6 +1204,53 @@
                     "required": [
                         "events",
                         "steps",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.FirstSelector": {
+            "$role": "unionType(Microsoft.IRuleSelector)",
+            "title": "First Rule Selector",
+            "description": "Selector for first true rule",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.FirstSelector"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
                         "$type"
                     ]
                 }
@@ -1322,6 +1513,11 @@
                     "$ref": "#/definitions/Microsoft.ConfirmInput"
                 },
                 {
+                    "title": "Microsoft.DebugBreak",
+                    "description": "If debugger is attached, do a debugger break at this point",
+                    "$ref": "#/definitions/Microsoft.DebugBreak"
+                },
+                {
                     "title": "Microsoft.DeleteProperty",
                     "description": "This is a step which allows you to remove a property from memory",
                     "$ref": "#/definitions/Microsoft.DeleteProperty"
@@ -1511,6 +1707,38 @@
                     "title": "Microsoft.UnknownIntentRule",
                     "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
                     "$ref": "#/definitions/Microsoft.UnknownIntentRule"
+                }
+            ]
+        },
+        "Microsoft.IRuleSelector": {
+            "title": "Microsoft IRuleSelector",
+            "description": "Union of components which implement the IRuleSelector interface",
+            "$role": "unionType",
+            "oneOf": [
+                {
+                    "title": "Microsoft.ConditionalSelector",
+                    "description": "Use a rule selector based on a condition",
+                    "$ref": "#/definitions/Microsoft.ConditionalSelector"
+                },
+                {
+                    "title": "Microsoft.FirstSelector",
+                    "description": "Selector for first true rule",
+                    "$ref": "#/definitions/Microsoft.FirstSelector"
+                },
+                {
+                    "title": "Microsoft.MostSpecificSelector",
+                    "description": "Select most specific true rules with optional additional selector",
+                    "$ref": "#/definitions/Microsoft.MostSpecificSelector"
+                },
+                {
+                    "title": "Microsoft.RandomSelector",
+                    "description": "Select most specific true rule",
+                    "$ref": "#/definitions/Microsoft.RandomSelector"
+                },
+                {
+                    "title": "Microsoft.TrueSelector",
+                    "description": "Selector for all true rules",
+                    "$ref": "#/definitions/Microsoft.TrueSelector"
                 }
             ]
         },
@@ -1837,12 +2065,13 @@
                     }
                 },
                 "constraint": {
-                    "type": "string",
+                    "$type": "Microsoft.IExpression",
                     "title": "Constraint",
                     "description": "Optional constraint to which must be met for this rule to fire",
                     "examples": [
                         "user.vip == true"
-                    ]
+                    ],
+                    "$ref": "#/definitions/Microsoft.IExpression"
                 },
                 "steps": {
                     "type": "array",
@@ -2037,6 +2266,57 @@
                         "applicationId",
                         "endpoint",
                         "endpointKey",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.MostSpecificSelector": {
+            "$role": "unionType(Microsoft.IRuleSelector)",
+            "title": "Most Specific Rule Selector",
+            "description": "Select most specific true rules with optional additional selector",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.MostSpecificSelector"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "selector": {
+                    "$type": "Microsoft.IRuleSelector",
+                    "$ref": "#/definitions/Microsoft.IRuleSelector"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
                         "$type"
                     ]
                 }
@@ -2309,6 +2589,56 @@
                 }
             ]
         },
+        "Microsoft.RandomSelector": {
+            "$role": "unionType(Microsoft.IRuleSelector)",
+            "title": "Random rule selector",
+            "description": "Select most specific true rule",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RandomSelector"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "seed": {
+                    "type": "integer"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Microsoft.RegexRecognizer": {
             "$role": "unionType(Microsoft.IRecognizer)",
             "title": "Regex Recognizer",
@@ -2458,12 +2788,13 @@
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
                 "constraint": {
-                    "type": "string",
+                    "$type": "Microsoft.IExpression",
                     "title": "Constraint",
                     "description": "Optional constraint to which must be met for this rule to fire",
                     "examples": [
                         "user.vip == true"
-                    ]
+                    ],
+                    "$ref": "#/definitions/Microsoft.IExpression"
                 },
                 "steps": {
                     "type": "array",
@@ -2711,41 +3042,23 @@
                 "cases": {
                     "type": "object",
                     "additionalProperties": {
-                        "oneOf": [
-                            {
-                                "$type": "Microsoft.IDialog",
-                                "$ref": "#/definitions/Microsoft.IDialog"
-                            },
-                            {
-                                "type": "array",
-                                "items": {
-                                    "$type": "Microsoft.IDialog",
-                                    "$ref": "#/definitions/Microsoft.IDialog"
-                                },
-                                "title": "array"
-                            }
-                        ],
+                        "type": "array",
                         "title": "If False",
-                        "description": "Step to execute if case is true"
+                        "description": "Step to execute if case is true",
+                        "items": {
+                            "$type": "Microsoft.IDialog",
+                            "$ref": "#/definitions/Microsoft.IDialog"
+                        }
                     }
                 },
                 "default": {
-                    "oneOf": [
-                        {
-                            "$type": "Microsoft.IDialog",
-                            "$ref": "#/definitions/Microsoft.IDialog"
-                        },
-                        {
-                            "type": "array",
-                            "items": {
-                                "$type": "Microsoft.IDialog",
-                                "$ref": "#/definitions/Microsoft.IDialog"
-                            },
-                            "title": "array"
-                        }
-                    ],
+                    "type": "array",
                     "title": "If True",
-                    "description": "Step to execute if expression is true."
+                    "description": "Step to execute if expression is true.",
+                    "items": {
+                        "$type": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
                 }
             },
             "patternProperties": {
@@ -2938,6 +3251,53 @@
                 }
             ]
         },
+        "Microsoft.TrueSelector": {
+            "$role": "unionType(Microsoft.IRuleSelector)",
+            "title": "True Rule Selector",
+            "description": "Selector for all true rules",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.TrueSelector"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Microsoft.UnknownIntentRule": {
             "title": "This defines the steps to take when an utterence is not recognized (aka, the None Intent). NOTE: UnknownIntent will defer to any specific intent that fires in a parent dialog",
             "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
@@ -2983,12 +3343,13 @@
                     }
                 },
                 "constraint": {
-                    "type": "string",
+                    "$type": "Microsoft.IExpression",
                     "title": "Constraint",
                     "description": "Optional constraint to which must be met for this rule to fire",
                     "examples": [
                         "user.vip == true"
-                    ]
+                    ],
+                    "$ref": "#/definitions/Microsoft.IExpression"
                 },
                 "steps": {
                     "type": "array",
