@@ -27,7 +27,7 @@
           "property": "dialog.listName",
           "choices": [
             {
-              "value": "ShoppingList",
+              "value": "shopping",
               "synonyms": [
                 "1",
                 "first",
@@ -36,7 +36,7 @@
               ]
             },
             {
-              "value": "GroceryList",
+              "value": "grocery",
               "synonyms": [
                 "2",
                 "second",
@@ -45,7 +45,7 @@
               ]
             },
             {
-              "value": "ToDoList",
+              "value": "todo",
               "synonyms": [
                 "3",
                 "third",

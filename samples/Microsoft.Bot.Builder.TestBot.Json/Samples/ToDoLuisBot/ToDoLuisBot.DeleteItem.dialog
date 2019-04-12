@@ -21,7 +21,7 @@
           "property": "dialog.listName",
           "choices": [
             {
-              "value": "ShoppingList",
+              "value": "shopping",
               "synonyms": [
                 "1",
                 "first",
@@ -30,7 +30,7 @@
               ]
             },
             {
-              "value": "GroceryList",
+              "value": "grocery",
               "synonyms": [
                 "2",
                 "second",
@@ -39,7 +39,7 @@
               ]
             },
             {
-              "value": "ToDoList",
+              "value": "todo",
               "synonyms": [
                 "3",
                 "third",
@@ -84,7 +84,7 @@
     },
     {
         "$type": "Microsoft.IfCondition",
-        "condition": "(dialog.listName == \"ShoppingList\" && user.lists.ShoppingList == null) || (dialog.listName == \"GroceryList\" && user.lists.GroceryList == null) || (dialog.listName == \"ToDoList\" && user.lists.ToDoList == null)",
+        "condition": "(dialog.listName == \"shopping\" && user.lists.shopping == null) || (dialog.listName == \"grocery\" && user.lists.grocery == null) || (dialog.listName == \"todo\" && user.lists.todo == null)",
         "steps": [
           {
             "$type": "Microsoft.InitProperty",
