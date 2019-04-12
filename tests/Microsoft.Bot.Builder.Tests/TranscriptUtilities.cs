@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Builder.Tests
                 return TranscriptsLocalPath;
             }
 
-            var transcriptsLocation = TestUtilities.GetKey(BotBuilderTranscriptsLocationKey) ?? DefaultTranscriptRepositoryZipLocation;
+            var transcriptsLocation = DefaultTranscriptRepositoryZipLocation;
 
             var tempPath = Path.GetTempPath();
             var zipFilePath = Path.Combine(tempPath, Path.GetFileName(transcriptsLocation));
