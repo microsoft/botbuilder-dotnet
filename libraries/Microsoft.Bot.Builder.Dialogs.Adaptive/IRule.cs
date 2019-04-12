@@ -10,9 +10,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     public interface IRule
     {
         /// <summary>
-        /// Get the expression for this rule
+        /// Get the expression for this rule.
         /// </summary>
-        Expression GetExpression();
+        /// <param name="parser">Expression parser to use.</param>
+        Expression GetExpression(IExpressionParser parser);
 
         /// <summary>
         /// Execute the action for this rule

@@ -58,6 +58,32 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
         }
 
         [TestMethod]
+        public void TestTrueFalse()
+        {
+            var tree = new TriggerTree();
+            tree.AddTrigger("exists(blah) && true", 1);
+            tree.AddTrigger("exists(blah) && false", 2);
+            tree.AddTrigger("exists(blah)", 3);
+            tree.AddTrigger("true", 4);
+            tree.AddTrigger("false", 5);
+            var memory = new Dictionary<string, object>();
+
+            var matches = tree.Matches(memory).ToList();
+            Assert.AreEqual(1, matches.Count);
+            var triggers = matches[0].Triggers;
+            Assert.AreEqual(1, triggers.Count);
+            Assert.AreEqual(4, triggers[0].Action);
+
+            memory.Add("blah", 1);
+            matches = tree.Matches(memory).ToList();
+            Assert.AreEqual(1, matches.Count());
+            triggers = matches[0].Triggers;
+            Assert.AreEqual(2, triggers.Count);
+            Assert.AreEqual(1, triggers[0].Action);
+            Assert.AreEqual(3, triggers[1].Action);
+        }
+
+        [TestMethod]
         public void TestTree()
         {
             var numPredicates = 100;

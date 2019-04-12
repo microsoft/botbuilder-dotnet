@@ -61,12 +61,18 @@
     <None Remove="Schemas\Dialogs\Microsoft.NumberInput.schema" />
     <None Remove="Schemas\Dialogs\Microsoft.TextInput.schema" />
     <None Remove="Schemas\Microsoft.ILanguagePolicy.schema" />
+    <None Remove="Schemas\Microsoft.IRuleSelector.schema" />
     <None Remove="Schemas\Recognizers\Microsoft.MultiLanguageRecognizer.schema" />
     <None Remove="Schemas\Recognizers\Microsoft.RegexRecognizer.schema" />
     <None Remove="Schemas\Rules\Microsoft.EventRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.IntentRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.Rule.schema" />
     <None Remove="Schemas\Rules\Microsoft.UnknownIntentRule.schema" />
+    <None Remove="Schemas\Selectors\Microsoft.ConditionalSelector.schema" />
+    <None Remove="Schemas\Selectors\Microsoft.FirstSelector.schema" />
+    <None Remove="Schemas\Selectors\Microsoft.MostSpecificSelector.schema" />
+    <None Remove="Schemas\Selectors\Microsoft.RandomSelector.schema" />
+    <None Remove="Schemas\Selectors\Microsoft.TrueSelector.schema" />
     <None Remove="Schemas\Steps\Microsoft.BeginDialog.schema" />
     <None Remove="Schemas\Steps\Microsoft.CancelAllDialogs.schema" />
     <None Remove="Schemas\Steps\Microsoft.DeleteProperty.schema" />
@@ -97,15 +103,22 @@
     <Content Include="Schemas\Dialogs\Microsoft.TextInput.schema" />
     <Content Include="Schemas\Microsoft.ILanguagePolicy.schema" />
     <Content Include="Schemas\Microsoft.IRule.schema" />
+    <Content Include="Schemas\Microsoft.IRuleSelector.schema" />
     <Content Include="Schemas\Recognizers\Microsoft.MultiLanguageRecognizer.schema" />
     <Content Include="Schemas\Recognizers\Microsoft.RegexRecognizer.schema" />
     <Content Include="Schemas\Rules\Microsoft.Rule.schema" />
     <Content Include="Schemas\Rules\Microsoft.EventRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.IntentRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.UnknownIntentRule.schema" />
+    <Content Include="Schemas\Selectors\Microsoft.ConditionalSelector.schema" />
+    <Content Include="Schemas\Selectors\Microsoft.TrueSelector.schema" />
     <Content Include="Schemas\Steps\Microsoft.DeleteProperty.schema" />
     <Content Include="Schemas\Steps\Microsoft.IfCondition.schema" />
     <Content Include="Schemas\Steps\Microsoft.LogStep.schema" />
+    <Content Include="Schemas\Steps\Microsoft.TraceActivity.schema" />
+    <Content Include="Schemas\Selectors\Microsoft.FirstSelector.schema" />
+    <Content Include="Schemas\Selectors\Microsoft.MostSpecificSelector.schema" />
+    <Content Include="Schemas\Selectors\Microsoft.RandomSelector.schema" />
     <Content Include="Schemas\Steps\Microsoft.TraceActivity.schema" />
     <Content Include="Schemas\Steps\Microsoft.InitProperty.schema" />
     <Content Include="Schemas\Steps\Microsoft.SetProperty.schema" />
@@ -123,6 +136,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Bot.Builder.AI.TriggerTrees\Microsoft.Bot.Builder.AI.TriggerTrees.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Expressions.Parser\Microsoft.Bot.Builder.Expressions.Parser.csproj" />
   </ItemGroup>
