@@ -52,12 +52,12 @@
     This is a multi-line list
     - one
     - two
-    - Greeting: @{[WelcomeTemplate]}
+    - Greeting: @{lgTemplate('WelcomeTemplate')}
 ```
 - ```
     This a variation
     - three
-    - Greeting: @{[WelcomeTemplate]}
+    - Greeting: @{lgTemplate('WelcomeTemplate')}
 ```
 > Several additional features -
 > - Ability to apply templates to cards
