@@ -17,6 +17,7 @@
             "description": "Set to true to also create a TraceActivity with the log text"
         }
     },
-    "required":["text"
-]
+    "required": [
+        "text"
+    ]
 }

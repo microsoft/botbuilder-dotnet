@@ -17,33 +17,19 @@
         "cases": {
             "type": "object",
             "additionalProperties": {
-                "oneOf": [
-                    {
-                        "$type": "Microsoft.IDialog"
-                    },
-                    {
-                        "type": "array",
-                        "items": {
-                            "$type": "Microsoft.IDialog"
-                        }
-                    }
-                ],
+                "type": "array",
+                "items": {
+                    "$type": "Microsoft.IDialog"
+                },
                 "title": "If False",
                 "description": "Step to execute if case is true"
             }
         },
         "default": {
-            "oneOf": [
-                {
-                    "$type": "Microsoft.IDialog"
-                },
-                {
-                    "type": "array",
-                    "items": {
-                        "$type": "Microsoft.IDialog"
-                    }
-                }
-            ],
+            "type": "array",
+            "items": {
+                "$type": "Microsoft.IDialog"
+            },
             "title": "If True",
             "description": "Step to execute if expression is true."
         }
