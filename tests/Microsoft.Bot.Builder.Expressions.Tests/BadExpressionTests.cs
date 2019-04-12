@@ -37,6 +37,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
         [DataTestMethod]
         [DynamicData(nameof(InvalidExpressions))]
+        [ExpectedException(typeof(Exception))]
         public void Parse(string exp)
         {
             try
@@ -46,6 +47,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             catch (Exception e)
             {
                 TestContext.WriteLine(e.Message);
+                throw e;
             }
         }
 
@@ -98,6 +100,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         [DynamicData(nameof(BadExpressions))]
         public void Evaluate(string exp)
         {
+            var isFail = false;
             var scope = new
             {
                 one = 1.0,
@@ -121,46 +124,23 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             try
             {
                 var (value, error) = new ExpressionEngine().Parse(exp).TryEvaluate(scope);
-                Assert.IsFalse(error == null);
-            }
-            catch (Exception e)
-            {
-                TestContext.WriteLine(e.Message);
-            }
-        }
-
-
-        [DataTestMethod]
-        [DynamicData(nameof(BadExpressions))]
-        public void TryEvaluate(string exp)
-        {
-            var scope = new
-            {
-                one = 1.0,
-                two = 2.0,
-                hello = "hello",
-                world = "world",
-                bag = new
+                if(error == null)
                 {
-                    three = 3.0,
-                    set = new
-                    {
-                        four = 4.0,
-                    },
-                    index = 3,
-                    list = new[] { "red", "blue" }
-                },
-                items = new string[] { "zero", "one", "two" }
-            };
-            try
-            {
-                var (value, error) = new ExpressionEngine().Parse(exp).TryEvaluate(scope);
-                Assert.IsTrue(error != null);
-                TestContext.WriteLine(error);
+                    isFail = true;
+                }
+                else
+                {
+                    TestContext.WriteLine(error);
+                }
             }
             catch (Exception e)
             {
                 TestContext.WriteLine(e.Message);
+            }
+
+            if (isFail)
+            {
+                Assert.Fail("Test method did not throw expected exception");
             }
         }
     }
