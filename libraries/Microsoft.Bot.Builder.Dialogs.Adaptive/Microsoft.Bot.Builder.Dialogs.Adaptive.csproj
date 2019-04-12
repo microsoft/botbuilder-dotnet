@@ -17,9 +17,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>Microsoft.Bot.Builder.Dialogs.Rules</PackageId>
-    <Description>This library implements .NET support for rule based dialogs</Description>
-    <Summary>This library implements .NET support for rule based dialogs</Summary>
+    <PackageId>Microsoft.Bot.Builder.Dialogs.Adaptive</PackageId>
+    <Description>This library implements .NET support for adaptive dialogs</Description>
+    <Summary>This library implements .NET support for adaptive dialogs</Summary>
     <ContentTargetFolders>content</ContentTargetFolders>
   </PropertyGroup>
 
