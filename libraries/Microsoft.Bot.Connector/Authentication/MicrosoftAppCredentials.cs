@@ -65,10 +65,13 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="appId">The Microsoft app ID.</param>
         /// <param name="password">The Microsoft app password.</param>
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
-        public MicrosoftAppCredentials(string appId, string password, HttpClient customHttpClient) : this(appId, password, null, customHttpClient) { }
+        public MicrosoftAppCredentials(string appId, string password, HttpClient customHttpClient)
+            : this(appId, password, null, customHttpClient)
+        {
+        }
 
         /// <summary>
-        /// Creates a new instance of the <see cref="MicrosoftAppCredentials"/> class.
+        /// Initializes a new instance of the <see cref="MicrosoftAppCredentials"/> class.
         /// </summary>
         /// <param name="appId">The Microsoft app ID.</param>
         /// <param name="password">The Microsoft app password.</param>
