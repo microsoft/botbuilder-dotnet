@@ -223,13 +223,15 @@ Here are the events we have defined so far.
 |---------------------|---------------------------------------------------|
 | BeginDialog         | Fired when a dialog is start                      |
 | ActivityReceived    | Fired when a new activity comes in                |
-| UtteranceRecognized | Fired when an intent is recognized                |
-| Fallback            | Fired when nobody else has handled an event       |
-| PlanStarted         | Fired when a plan is started                      |
-| PlanSaved           | Fires when a plan is saved                        |
-| PlanEnded           | Fires when a plan successful ends                 |
-| PlanResumed         | Fires when a plan is resumed from an interruption |
+| RecognizedIntent    | Fired when an intent is recognized                |
+| UnknownIntent       | Fired when an intent is not handled or recognized |
+| StepsStarted         | Fired when a plan is started                      |
+| StepsSaved           | Fires when a plan is saved                        |
+| StepsEnded           | Fires when a plan successful ends                 |
+| StepsResumed         | Fires when a plan is resumed from an interruption |
 | ConsultDialog       | fired when consulting                             |
+| CancelDialog       | fired when dialog canceled                             |
+
 
 
 # Input/Prompt Dialogs
