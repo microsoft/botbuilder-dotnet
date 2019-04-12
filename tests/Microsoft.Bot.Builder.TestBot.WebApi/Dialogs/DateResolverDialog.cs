@@ -16,12 +16,11 @@ namespace Microsoft.BotBuilderSamples
             : base(id ?? nameof(DateResolverDialog))
         {
             AddDialog(new DateTimePrompt(nameof(DateTimePrompt), DateTimePromptValidator));
-            var steps = new WaterfallStep[]
+            AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 InitialStepAsync,
                 FinalStepAsync,
-            };
-            AddDialog(new WaterfallDialog(nameof(WaterfallDialog), steps));
+           }));
 
             // The initial child Dialog to run.
             InitialDialogId = nameof(WaterfallDialog);
