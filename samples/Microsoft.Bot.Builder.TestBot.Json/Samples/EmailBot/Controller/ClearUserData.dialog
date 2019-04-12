@@ -38,8 +38,7 @@
       "arrayProperty": "user.recipients"
     },
     {
-      "$type": "Microsoft.SetProperty",
-      "value": "null",
+      "$type": "Microsoft.DeleteProperty",
       "property": "user.email"
     },
     {

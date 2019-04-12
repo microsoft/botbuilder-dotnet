@@ -15,10 +15,6 @@
       "$type": "Microsoft.IntentRule",
       "intent": "ForwardEmailIntent",
       "steps": [
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "Hello ForwardEmailIntent"
-        },
         "ForwardEmail"
       ]
     },

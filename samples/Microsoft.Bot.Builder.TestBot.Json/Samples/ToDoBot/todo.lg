@@ -14,7 +14,7 @@
 - IF: {count(user.groceryList) > 0}
     - ```
     Your most recent @{count(user.groceryList)} tasks are 
-    @{humanize(user.groceryList, '[showSingleTodo]', '\n')}
+    @{join(foreach(user.groceryList, x, lgTemplate('showSingleTodo', x)), '\n')}
       ```
 - ELSE:
     - You don't have any todos in grocery.
