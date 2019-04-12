@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                     var options = from sourceItem in sourceByItem
                                   let source = sourceItem.Value
-                                  where source.Path == row.Source.path
+                                  where string.Equals(source.Path, row.Source.path, StringComparison.CurrentCultureIgnoreCase)
                                   where source.Start.LineIndex >= row.SourceBreakpoint.line
                                   let distance = Math.Abs(source.Start.LineIndex - row.SourceBreakpoint.line)
                                   orderby distance

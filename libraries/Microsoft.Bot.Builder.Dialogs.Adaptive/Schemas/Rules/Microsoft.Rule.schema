@@ -7,7 +7,7 @@
     "additionalProperties": false,
     "properties": {
         "constraint": {
-            "type": "string",
+            "$type": "Microsoft.IExpression",
             "title": "Constraint",
             "description": "Optional constraint to which must be met for this rule to fire",
             "examples": [

@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         [JsonProperty("options")]
         public QnAMakerOptions Options { get; set; }
 
-        public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+        public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (qnamaker == null)
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Bot.Builder.LanguageGeneration;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 {
@@ -70,6 +71,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void WariningTest(string input)
         {
             var engine = TemplateEngine.FromFiles(GetExampleFilePath(input));
+         
+            var report = new StaticChecker(engine.Templates).Check();
+
+            TestContext.WriteLine(string.Join("\n", report));
         }
     }
 }

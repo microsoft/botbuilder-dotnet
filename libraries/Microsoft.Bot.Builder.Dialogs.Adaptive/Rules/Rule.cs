@@ -46,11 +46,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         /// <summary>
         /// Get the expression for this rule by calling GatherConstraints()
         /// </summary>
-        public Expression GetExpression()
+        public Expression GetExpression(IExpressionParser parser)
         {
             if (this.constraint == null)
             {
-                this.constraint = BuildExpression(new ExpressionEngine());
+                this.constraint = BuildExpression(parser);
             }
 
             return this.constraint;

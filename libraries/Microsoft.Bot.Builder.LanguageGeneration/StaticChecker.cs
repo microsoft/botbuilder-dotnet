@@ -7,7 +7,7 @@ using Antlr4.Runtime.Tree;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 
-namespace Microsoft.Bot.Builder.AI.LanguageGeneration
+namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class ReportEntry
     {
@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                 }
 
                 var invalidSeperateCharacters = parameters.INVALID_SEPERATE_CHAR();
-                if(invalidSeperateCharacters != null 
+                if (invalidSeperateCharacters != null
                     && invalidSeperateCharacters.Length > 0)
                 {
                     result.Add(new ReportEntry("Parameters for templates must be separated by comma."));
@@ -160,7 +160,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     result.Add(new ReportEntry($"condition is not end with else: '{context.conditionalTemplateBody().GetText()}'", ReportEntryType.WARN));
                 }
 
-                if (0 < idx && idx < ifRules.Length-1 && !string.Equals(conditionLabel, "elseif:"))
+                if (0 < idx && idx < ifRules.Length - 1 && !string.Equals(conditionLabel, "elseif:"))
                 {
                     result.Add(new ReportEntry($"only elseif is allowed in middle of condition: '{context.conditionalTemplateBody().GetText()}'"));
                 }
@@ -173,7 +173,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                         result.Add(new ReportEntry($"if and elseif should followed by one valid expression: '{ifRules[idx].GetText()}'"));
                     }
                     else
-                    { 
+                    {
                         result.AddRange(CheckExpression(ifRules[idx].ifCondition().EXPRESSION(0).GetText()));
                     }
                 }
@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
                     }
                 }
 
-                if(ifRules[idx].normalTemplateBody() != null)
+                if (ifRules[idx].normalTemplateBody() != null)
                 {
                     result.AddRange(Visit(ifRules[idx].normalTemplateBody()));
                 }
@@ -281,10 +281,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             foreach (Match match in mc)
             {
                 var newExp = match.Value.Substring(1); // remove @
-                if (newExp.StartsWith("{[") && newExp.EndsWith("]}"))
-                {
-                    result.AddRange(CheckTemplateRef(newExp.Substring(2, newExp.Length - 4)));//[ ]
-                }
+                result.AddRange(CheckExpression(newExp));
             }
             return result;
         }
@@ -319,14 +316,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             {
                 new ExpressionEngine(new GetMethodExtensions(new Evaluator(this.Templates, null)).GetMethodX).Parse(exp);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 result.Add(new ReportEntry(e.Message + $" in expression `{exp}`"));
                 return result;
             }
 
             return result;
-            
+
         }
 
         private List<ReportEntry> CheckEscapeCharacter(string exp)

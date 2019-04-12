@@ -5,6 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="CustomSteps\Testbot.CalculateDogYears.schema" />
+    <None Remove="CustomSteps\Testbot.CSharpStep.schema" />
+    <None Remove="CustomSteps\Testbot.JavascriptStep.schema" />
     <None Remove="en-us.lg" />
     <None Remove="main.dialog" />
     <None Remove="Samples\02 - EndTurn\EndTurn.main.dialog" />
@@ -30,9 +33,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Samples\EmailBot\Service\MSGraph\ReplyEmails.dialog" />
-    <Content Include="Samples\EmailBot\Service\MSGraph\ForwardEmails.dialog" />
-    <Content Include="Samples\EmailBot\Service\MSGraph\SendEmails.dialog" />
+    <Content Include="CustomSteps\Testbot.CalculateDogYears.schema" />
+    <Content Include="CustomSteps\Testbot.CSharpStep.schema" />
+    <Content Include="CustomSteps\Testbot.JavascriptStep.schema" />
     <Content Include="Samples\RootDialog\RootDialog.lg" />
     <Content Include="Samples\RootDialog\RootDialog.main.dialog" />
     <Content Include="Samples\08 - ExternalLanguage\ExternalLanguage.main.lg" />
@@ -51,6 +54,7 @@
   <ItemGroup>
     <PackageReference Include="Jurassic" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -64,12 +68,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\integration\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj" />
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.AI.LanguageGeneration\Microsoft.Bot.Builder.AI.LanguageGeneration.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj" />
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Composition\Microsoft.Bot.Builder.Dialogs.Composition.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Debugging\Microsoft.Bot.Builder.Dialogs.Debugging.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Declarative\Microsoft.Bot.Builder.Dialogs.Declarative.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.LanguageGeneration.Renderer\Microsoft.Bot.Builder.LanguageGeneration.Renderer.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
   </ItemGroup>

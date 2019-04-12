@@ -27,15 +27,20 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
         private readonly ResourceExplorer resourceExplorer;
 
-        private TestBotAccessors accessors;
+        private UserState userState;
+        private ConversationState conversationState;
+        private IStatePropertyAccessor<DialogState> dialogState;
 
         private Source.IRegistry registry;
 
-        public TestBot(TestBotAccessors accessors, ResourceExplorer resourceExplorer, Source.IRegistry registry)
+        public TestBot(UserState userState, ConversationState conversationState, ResourceExplorer resourceExplorer, Source.IRegistry registry)
         {
+            dialogState = conversationState.CreateProperty<DialogState>("DialogState");
+
             this.registry = registry;
-            this.accessors = accessors;
             this.resourceExplorer = resourceExplorer;
+            
+            // auto reload dialogs when file changes
             this.resourceExplorer.Changed += ResourceExplorer_Changed;
 
             LoadRootDialog();
@@ -66,7 +71,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             //var rootFile = resourceExplorer.GetResource("CustomStep.dialog");
 
             rootDialog = DeclarativeTypeLoader.Load<IDialog>(rootFile.FullName, resourceExplorer, registry);
-            _dialogs = new DialogSet(accessors.ConversationDialogState);
+            _dialogs = new DialogSet(this.dialogState);
             _dialogs.Add(rootDialog);
 
             System.Diagnostics.Trace.TraceInformation("Done loading resources.");

@@ -947,7 +947,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 { ExpressionType.Month, new ExpressionEvaluator(
                    Apply(args => ParseTimestamp(args[0]).Month, VerifyString), ReturnType.Number, ValidateUnaryString) },
                 { ExpressionType.Date, new ExpressionEvaluator(
-                   Apply(args => ParseTimestamp(args[0]).Date.ToString("d"), VerifyString), ReturnType.String, ValidateUnaryString) },
+                   Apply(args => ParseTimestamp(args[0]).Date.ToString("M/dd/yyyy"), VerifyString), ReturnType.String, ValidateUnaryString) },
                 { ExpressionType.Year, new ExpressionEvaluator(
                    Apply(args => ParseTimestamp(args[0]).Year, VerifyString), ReturnType.Number, ValidateUnaryString) },
                 { ExpressionType.UtcNow, new ExpressionEvaluator(

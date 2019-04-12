@@ -425,7 +425,7 @@ namespace Microsoft.Bot.Builder.Adapters
                         }
                     }
                     
-                    throw new Exception(description ?? $"Text \"{text}\" does not one of candidates: {string.Join("\n", candidates)}");
+                    throw new Exception(description ?? $"Text \"{text}\" does not match one of candidates: {string.Join("\n", candidates)}");
                 },
                 description,
                 timeout);

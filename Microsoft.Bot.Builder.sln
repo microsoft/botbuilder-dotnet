@@ -76,8 +76,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Declarative", "libraries\Microsoft.Bot.Builder.Dialogs.Declarative\Microsoft.Bot.Builder.Dialogs.Declarative.csproj", "{1BC05915-044E-4776-8956-B44BBEFF2F84}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.LanguageGeneration", "libraries\Microsoft.Bot.Builder.AI.LanguageGeneration\Microsoft.Bot.Builder.AI.LanguageGeneration.csproj", "{150BC344-4534-41E1-9700-9D231CF327D2}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.LanguageGeneration.Tests", "tests\Microsoft.Bot.Builder.AI.LanguageGeneration.Tests\Microsoft.Bot.Builder.AI.LanguageGeneration.Tests.csproj", "{A6E642AE-B132-4A90-A95A-A44A82BC0B66}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive", "libraries\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj", "{3CF175CF-1AF4-4109-96CB-221684DCED7D}"
@@ -104,7 +102,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.TriggerTrees.Tests", "tests\Microsoft.Bot.Builder.AI.TriggerTrees.Tests\Microsoft.Bot.Builder.AI.TriggerTrees.Tests.csproj", "{A9E5DD02-E633-46DC-B702-2ABA1AAC2851}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Dialogs.Debugging", "libraries\Microsoft.Bot.Builder.Dialogs.Debugging\Microsoft.Bot.Builder.Dialogs.Debugging.csproj", "{84E3B6A2-42D9-498A-9CD2-1C5F5BE0D526}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Debugging", "libraries\Microsoft.Bot.Builder.Dialogs.Debugging\Microsoft.Bot.Builder.Dialogs.Debugging.csproj", "{84E3B6A2-42D9-498A-9CD2-1C5F5BE0D526}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.LanguageGeneration", "libraries\Microsoft.Bot.Builder.LanguageGeneration\Microsoft.Bot.Builder.LanguageGeneration.csproj", "{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.LanguageGeneration.Renderer", "libraries\Microsoft.Bot.Builder.LanguageGeneration.Renderer\Microsoft.Bot.Builder.LanguageGeneration.Renderer.csproj", "{97347C9A-A33B-453D-B176-0C3E13DC8D4F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -369,14 +371,6 @@ Global
 		{1BC05915-044E-4776-8956-B44BBEFF2F84}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{1BC05915-044E-4776-8956-B44BBEFF2F84}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1BC05915-044E-4776-8956-B44BBEFF2F84}.Release|Any CPU.Build.0 = Release|Any CPU
-		{150BC344-4534-41E1-9700-9D231CF327D2}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{150BC344-4534-41E1-9700-9D231CF327D2}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{150BC344-4534-41E1-9700-9D231CF327D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{150BC344-4534-41E1-9700-9D231CF327D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{150BC344-4534-41E1-9700-9D231CF327D2}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
-		{150BC344-4534-41E1-9700-9D231CF327D2}.Documentation|Any CPU.Build.0 = Debug|Any CPU
-		{150BC344-4534-41E1-9700-9D231CF327D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{150BC344-4534-41E1-9700-9D231CF327D2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A6E642AE-B132-4A90-A95A-A44A82BC0B66}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
 		{A6E642AE-B132-4A90-A95A-A44A82BC0B66}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{A6E642AE-B132-4A90-A95A-A44A82BC0B66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -481,6 +475,22 @@ Global
 		{84E3B6A2-42D9-498A-9CD2-1C5F5BE0D526}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{84E3B6A2-42D9-498A-9CD2-1C5F5BE0D526}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84E3B6A2-42D9-498A-9CD2-1C5F5BE0D526}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
+		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
+		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97347C9A-A33B-453D-B176-0C3E13DC8D4F}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{97347C9A-A33B-453D-B176-0C3E13DC8D4F}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{97347C9A-A33B-453D-B176-0C3E13DC8D4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97347C9A-A33B-453D-B176-0C3E13DC8D4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97347C9A-A33B-453D-B176-0C3E13DC8D4F}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{97347C9A-A33B-453D-B176-0C3E13DC8D4F}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{97347C9A-A33B-453D-B176-0C3E13DC8D4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97347C9A-A33B-453D-B176-0C3E13DC8D4F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -521,7 +531,6 @@ Global
 		{2255FF5B-8010-4C8D-897E-BDDEBB629967} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{78D16CCC-6184-4678-87D8-E8C4299317CE} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{1BC05915-044E-4776-8956-B44BBEFF2F84} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
-		{150BC344-4534-41E1-9700-9D231CF327D2} = {763168FA-A590-482C-84D8-2922F7ADB1A2}
 		{A6E642AE-B132-4A90-A95A-A44A82BC0B66} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{3CF175CF-1AF4-4109-96CB-221684DCED7D} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
@@ -535,6 +544,8 @@ Global
 		{D5E70443-4BA2-42ED-992A-010268440B08} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{A9E5DD02-E633-46DC-B702-2ABA1AAC2851} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{84E3B6A2-42D9-498A-9CD2-1C5F5BE0D526} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
+		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
+		{97347C9A-A33B-453D-B176-0C3E13DC8D4F} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

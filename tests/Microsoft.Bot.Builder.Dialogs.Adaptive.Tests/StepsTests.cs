@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.AI.LanguageGeneration;
+using Microsoft.Bot.Builder.LanguageGeneration.Renderer;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
@@ -14,6 +14,7 @@ using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -22,12 +23,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     {
         public TestContext TestContext { get; set; }
 
-        private TestFlow CreateFlow(AdaptiveDialog planningDialog, ConversationState convoState, UserState userState)
+        private TestFlow CreateFlow(AdaptiveDialog planningDialog, ConversationState convoState, UserState userState, bool sendTrace = false)
         {
             var botResourceManager = new ResourceExplorer();
             var lg = new LGLanguageGenerator(botResourceManager);
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace)
                 .Use(new RegisterClassMiddleware<ResourceExplorer>(botResourceManager))
                 .Use(new RegisterClassMiddleware<ILanguageGenerator>(lg))
                 .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
@@ -72,6 +73,45 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             .Send("Carlos")
                 .AssertReply("Hello Carlos, nice to meet you!")
             .StartTestAsync();
+        }
+
+
+        [TestMethod]
+        public async Task Step_TraceActivity()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var dialog = new AdaptiveDialog("traceActivity");
+
+            dialog.AddRules(new List<IRule>()
+            {
+                new UnknownIntentRule(
+                    new List<IDialog>()
+                    {
+                        new SetProperty()
+                        {
+                             Property = "user.name",
+                             Value = new ExpressionEngine().Parse("'frank'")
+                        },
+                        new TraceActivity()
+                        {
+                            Name = "test",
+                            ValueType = "user.name",
+                            ValueProperty = "user.name"
+                        }
+                    })});
+
+            await CreateFlow(dialog, convoState, userState, sendTrace: true)
+            .Send("hi")
+                .AssertReply((activity) =>
+                {
+                    var traceActivity = (ITraceActivity)activity;
+                    Assert.AreEqual(ActivityTypes.Trace, traceActivity.Type, "type doesn't match");
+                    Assert.AreEqual("user.name", traceActivity.ValueType, "ValueType doesn't match");
+                    Assert.AreEqual("frank", traceActivity.Value, "Value doesn't match");
+                })
+                .StartTestAsync();
         }
 
         [TestMethod]

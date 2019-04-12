@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.TemplateManager;
 
-namespace Microsoft.Bot.Builder.AI.LanguageGeneration
+namespace Microsoft.Bot.Builder.LanguageGeneration.Renderer
 {
     public class LanguageGenerationRenderer : ITemplateRenderer
     {
