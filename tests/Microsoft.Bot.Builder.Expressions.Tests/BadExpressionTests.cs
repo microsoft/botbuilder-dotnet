@@ -59,6 +59,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("add()"), // arg count doesn't match
             Test("func()"), // no such func
             Test("add(five, six)"), // no such variables
+
             //Test("add(one)"), // add function need two variables
             Test("items[3]"), // index out of range
             Test("items[one+0.5]"), // index is not integer
@@ -94,6 +95,19 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("max(hello, one)"), // max can only accept two parameters with same type of integer, float or string
             Test("mul(hello, one)"), // mul can only accept two parameters of interger or float
             //Test("mul(one)"), // mul function need two parameters
+
+
+            //foreach
+            Test("foreach(hello, item, item)"),// first arg is not list
+            Test("foreach(items, item)"),//should have three args
+            Test("foreach(items, item, item2, item3)"),//should have three args
+            Test("foreach(items, add(1), item)"),// Second paramter of foreach is not an identifier
+
+            //join
+            Test("join(items, 'p1', 'p2','p3')"),//builtin function should have 3 params, 
+                                                    //method extension should have 2-3 params
+            Test("join(hello, 'hi')"),// first args must list
+            //Test("join(items, 1)"),// second args must string 
         };
 
         [DataTestMethod]
@@ -114,11 +128,45 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     {
                         four = 4.0,
                     },
-                    index = 3,
-                    list = new[] { "red", "blue" }
+                    list = new[] { "red", "blue" },
+                    index = 3
                 },
                 items = new string[] { "zero", "one", "two" },
-                
+                nestedItems = new[]
+                {
+                    new
+                    {
+                        x = 1
+                    },
+                    new
+                    {
+                        x = 2,
+                    },
+                    new
+                    {
+                        x = 3,
+                    }
+                },
+                timestamp = "2018-03-15T13:00:00Z",
+                turn = new
+                {
+                    entities = new
+                    {
+                        city = "Seattle"
+                    },
+                    intents = new
+                    {
+                        BookFlight = "BookFlight"
+                    }
+                },
+                dialog = new
+                {
+                    result = new
+                    {
+                        title = "Dialog Title",
+                        subTitle = "Dialog Sub Title"
+                    }
+                }
             };
 
             try
