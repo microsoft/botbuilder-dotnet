@@ -29,13 +29,13 @@ The new **Adaptive dialog** and the event model simplify sophisticated conversat
         - TraceActivity
         - LogStep
     - Memory manipulation
-        - SaveEntity
+        - SaveEntity - used to extract an entity returned by recognizer into memory.
         - EditArray
         - InitProperty
-        - SetProperty
+        - SetProperty - used to set a property's value in memory. See [here](../CommonExpressionLanguage) to learn more about expressions.
         - DeleteProperty
     - Conversational flow and dialog management
-        - IfCondition
+        - IfCondition - used to evaluate an expression. See [here](../CommonExpressionLanguage) to learn more about expressions.
         - SwitchCondition
         - EndTurn
         - BeginDialog
