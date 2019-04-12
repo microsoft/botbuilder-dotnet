@@ -85,6 +85,7 @@ namespace Microsoft.Bot.Builder.Tests
 
         public static string EnsureTranscriptsDownload()
         {
+            // This is a test comment. Don't merge. 
             if (!string.IsNullOrWhiteSpace(TranscriptsLocalPath))
             {
                 return TranscriptsLocalPath;
