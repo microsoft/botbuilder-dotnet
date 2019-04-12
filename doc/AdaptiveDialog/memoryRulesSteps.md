@@ -120,7 +120,7 @@ example for intenet rule with entieid and constrains
 {
     "$type":"Microsoft.IntentRule",
     "intent":"MyIntent",
-    "entities": [ "entityx", "entity"]
+    "entities": [ "entityx", "entity"],
      "constraint":"turn.DialogEvent.Value.Entities.UserName != null || turn.DialogEvent.Value.Entities.UserName_patternAny != null"
 }
 ```
