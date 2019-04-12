@@ -82,7 +82,8 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string Accessor = "Accessor";
         public const string Element = "Element";
         public const string CreateArray = "createArray";
-     
+        public const string Property = "property";
+
 
         // Misc
         public const string Constant = "Constant";
