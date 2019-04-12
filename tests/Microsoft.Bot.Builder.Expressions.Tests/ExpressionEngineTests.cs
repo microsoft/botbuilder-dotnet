@@ -168,7 +168,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("dayOfWeek(timestamp)", 4),//Thursday
             Test("dayOfYear(timestamp)", 74),
             Test("month(timestamp)", 3),
-            Test("date(timestamp)", "3/15/2018"),//Dfefault. TODO
+            Test("date(timestamp)", "3/15/2018"),//Default. TODO
             Test("year(timestamp)", 2018),
             Test("formatDateTime(timestamp)", "2018-03-15T13:00:00.0000000Z"),
             Test("formatDateTime(timestamp, 'MM-dd-yy')", "03-15-18"),
