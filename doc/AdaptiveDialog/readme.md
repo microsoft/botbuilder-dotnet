@@ -13,6 +13,8 @@ Current set of dialog types offered by Bot Builder V4 SDK put you in control of 
 
 The new **Adaptive dialog** and the event model simplify sophisticated conversation modelling primitives, eliminate much of the boiler plate code and helps you focus on the model of the conversation rather than the mechanics of dialog management.
 
+See [here](./memoryRulesSteps.md) to learn more about memory, adaptive dialog constructs. 
+
 ***Adaptive dialogs*** at the core comprise of 4 main concepts - 
 - _Recognizers_ help understand user input. You use recognizers to extract meaningful pieces of information from user's input. All recognizers emit events - of specific interest is the 'recognizedIntent' event that fires when the recognizer picks up an intent (or extracts entities) from given user utterance. Adaptive Dialogs support the following recognizers - 
     - RegEx recognizer
