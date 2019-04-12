@@ -6,7 +6,7 @@
     "type": "object",
     "properties": {
         "selector": {
-            "$type": "IRuleSelector"
+            "$type": "Microsoft.IRuleSelector"
         }
     }
 }
