@@ -10,7 +10,8 @@
       "FindContactIntent": "(?i)find email contact",
       "ShowNextPageIntent": "(?i)next page email",
       "ForwardEmailIntent": "(?i)forward email",
-      "ReplyEmailIntent": "(?i)reply email"
+      "ReplyEmailIntent": "(?i)reply email",
+      "CancelIntent": "(?i)cancel|never mind"
     }
   },
   "rules": [
@@ -20,6 +21,19 @@
         {
           "$type": "Microsoft.SendActivity",
           "activity": "Hi! I'm a Email bot. Say \"show email\" to get started."
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "CancelIntent",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "ok, see you next time."
+        },
+        {
+          "$type": "Microsoft.EndDialog"
         }
       ]
     },

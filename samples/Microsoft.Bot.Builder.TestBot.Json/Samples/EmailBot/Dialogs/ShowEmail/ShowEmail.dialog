@@ -47,7 +47,7 @@
   ],
   "steps": [
     "DisplayEmailList",
-    // Display overview again
+    // Display overview again -- a little hack way. Always use intent to push a new dialog on top of stack, and reprompt this question after this new dialog is finished.
     // Question: How to build a dialog which can repeat itself: show email->read email->show again?->show email… Do we need to use Microsoft.RepeatDialog? How to use it?
     {
       "$type": "Microsoft.ConfirmInput",

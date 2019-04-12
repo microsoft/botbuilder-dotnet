@@ -22,43 +22,68 @@
           "property": "dialog.choice"
         },
         // Question: how to use SwitchCondition
+        {
+          "$type": "Microsoft.SwitchCondition",
+          "condition": "dialog.choice",
+          "cases": {
+            "'1'": [
+              {
+                "$type": "Microsoft.SetProperty",
+                "property": "user.focusedEmail",
+                "value": "user.emails[0]"
+              }
+            ],
+            "'2'": [
+              {
+                "$type": "Microsoft.SetProperty",
+                "property": "user.focusedEmail",
+                "value": "user.emails[1]"
+              }
+            ],
+            "'3'": [
+              {
+                "$type": "Microsoft.SetProperty",
+                "property": "user.focusedEmail",
+                "value": "user.emails[2]"
+              }
+            ]
+          }
+        },
+
+
         //{
-        //  "$type": "Microsoft.SwitchCondition",
-        //  "condition": "dialog.choice"
+        //  "$type": "Microsoft.IfCondition",
+        //  "condition": "dialog.choice == '1'",
+        //  "steps": [
+        //    {
+        //      "$type": "Microsoft.SetProperty",
+        //      "property": "user.focusedEmail",
+        //      "value": "user.emails[0]"
+        //    }
+        //  ]
         //},
-        {
-          "$type": "Microsoft.IfCondition",
-          "condition": "dialog.choice == '1'",
-          "steps": [
-            {
-              "$type": "Microsoft.SetProperty",
-              "property": "user.focusedEmail",
-              "value": "user.emails[0]"
-            }
-          ]
-        },
-        {
-          "$type": "Microsoft.IfCondition",
-          "condition": "dialog.choice == '2'",
-          "steps": [
-            {
-              "$type": "Microsoft.SetProperty",
-              "property": "user.focusedEmail",
-              "value": "user.emails[1]"
-            }
-          ]
-        },
-        {
-          "$type": "Microsoft.IfCondition",
-          "condition": "dialog.choice == '3'",
-          "steps": [
-            {
-              "$type": "Microsoft.SetProperty",
-              "property": "user.focusedEmail",
-              "value": "user.emails[2]"
-            }
-          ]
-        },
+        //{
+        //  "$type": "Microsoft.IfCondition",
+        //  "condition": "dialog.choice == '2'",
+        //  "steps": [
+        //    {
+        //      "$type": "Microsoft.SetProperty",
+        //      "property": "user.focusedEmail",
+        //      "value": "user.emails[1]"
+        //    }
+        //  ]
+        //},
+        //{
+        //  "$type": "Microsoft.IfCondition",
+        //  "condition": "dialog.choice == '3'",
+        //  "steps": [
+        //    {
+        //      "$type": "Microsoft.SetProperty",
+        //      "property": "user.focusedEmail",
+        //      "value": "user.emails[2]"
+        //    }
+        //  ]
+        //},
 
         // Read focused email
         {

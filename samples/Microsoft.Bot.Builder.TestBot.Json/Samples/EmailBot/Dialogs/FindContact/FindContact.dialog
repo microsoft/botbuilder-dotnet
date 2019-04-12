@@ -11,7 +11,7 @@
       "$type": "Microsoft.IfCondition",
       "condition": "!contains({user.email}, '@')",
       "steps": [
-        "FindSingleContact"
+        "GetContact"
       ]
     }
   ]

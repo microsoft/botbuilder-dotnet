@@ -7,6 +7,10 @@
       "$type": "Microsoft.SetProperty",
       "value": "user.showIndex+1",
       "property": "user.showIndex"
-    }
+    },
+    //{
+    //  "$type": "Microsoft.SendActivity",
+    //  "activity": "user.showIndex = {user.showIndex}"
+    //}
   ]
 }
