@@ -301,6 +301,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 {
                     supportsConfigurationDoneRequest = true,
                     supportsSetVariable = true,
+                    supportsEvaluateForHovers = true,
                 };
                 var response = Protocol.Response.From(NextSeq, initialize, body);
                 await SendAsync(response, cancellationToken).ConfigureAwait(false);
@@ -414,6 +415,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                 return Protocol.Response.From(NextSeq, setVariable, body);
             }
+            else if (message is Protocol.Request<Protocol.Evaluate> evaluate)
+            {
+                var arguments = evaluate.arguments;
+                var frame = this.frames[arguments.frameId];
+                var expression = arguments.expression.Trim('"');
+                var result = frame.DialogContext.State.GetValue<JToken>(expression);
+                if (result != null)
+                {
+                    var body = new
+                    {
+                        result = model.ToString(result),
+                        variablesReference = VariablesReference(result),
+                    };
+
+                    return Protocol.Response.From(NextSeq, evaluate, body);
+                }
+                else
+                {
+                    return Protocol.Response.Fail(NextSeq, evaluate, string.Empty);
+                }
+            }
             else if (message is Protocol.Request<Protocol.Continue> cont)
             {
                 bool found = this.threads.TryGetValue(cont.arguments.threadId, out var thread);
@@ -479,10 +501,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     }
                     catch (Exception error)
                     {
-                        var response = Protocol.Response.From(NextSeq, request, error.Message);
-                        response.success = false;
-                        response.message = error.Message;
-                        message = response;
+                        message = Protocol.Response.Fail(NextSeq, request, error.Message);
                     }
 
                     await SendAsync(message, cancellationToken).ConfigureAwait(false);

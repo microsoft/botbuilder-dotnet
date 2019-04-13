@@ -92,6 +92,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             public string name { get; set; }
             public string value { get; set; }
         }
+        public class Evaluate
+        {
+            public int frameId { get; set; }
+            public string expression { get; set; }
+        }
         public class ConfigurationDone
         {
         }
@@ -135,6 +140,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             public string message { get; set; }
             public string command { get; set; }
             public static Response<Body> From<Body>(int seq, Request request, Body body) => new Response<Body>(seq, request) { body = body };
+            public static Response<string> Fail(int seq, Request request, string message) => new Response<string>(seq, request) { body = message, message = message, success = false };
         }
 
         public class Response<Body> : Response
@@ -208,6 +214,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                         case "scopes": return token.ToObject<Request<Scopes>>();
                         case "variables": return token.ToObject<Request<Variables>>();
                         case "setVariable": return token.ToObject<Request<SetVariable>>();
+                        case "evaluate": return token.ToObject<Request<Evaluate>>();
                         case "continue": return token.ToObject<Request<Continue>>();
                         case "pause": return token.ToObject<Request<Pause>>();
                         case "next": return token.ToObject<Request<Next>>();
