@@ -71,7 +71,8 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             {
                 // by setting the source registry all dialogs will register themselves to be debugged as execution flows
                 DebugSupport.SourceRegistry = sourceMap;
-                debugAdapter = new DebugAdapter(sourceMap, sourceMap, new DebugLogger(nameof(DebugAdapter)));
+                var model = new DataModel(Coercion.Instance);
+                debugAdapter = new DebugAdapter(model, sourceMap, sourceMap, new DebugLogger(nameof(DebugAdapter)));
             }
 
             services.AddSingleton<IConfiguration>(this.Configuration);

@@ -86,6 +86,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
             public int variablesReference { get; set; }
         }
+        public class SetVariable
+        {
+            public int variablesReference { get; set; }
+            public string name { get; set; }
+            public string value { get; set; }
+        }
+        public class Evaluate
+        {
+            public int frameId { get; set; }
+            public string expression { get; set; }
+        }
         public class ConfigurationDone
         {
         }
@@ -126,8 +137,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
             public int request_seq { get; set; }
             public bool success { get; set; }
+            public string message { get; set; }
             public string command { get; set; }
             public static Response<Body> From<Body>(int seq, Request request, Body body) => new Response<Body>(seq, request) { body = body };
+            public static Response<string> Fail(int seq, Request request, string message) => new Response<string>(seq, request) { body = message, message = message, success = false };
         }
 
         public class Response<Body> : Response
@@ -185,7 +198,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             public int line { get; set; }
         }
 
-        public static Message Parse(JToken token)
+        public static Request Parse(JToken token)
         {
             switch ((string)token["type"])
             {
@@ -200,6 +213,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                         case "stackTrace": return token.ToObject<Request<StackTrace>>();
                         case "scopes": return token.ToObject<Request<Scopes>>();
                         case "variables": return token.ToObject<Request<Variables>>();
+                        case "setVariable": return token.ToObject<Request<SetVariable>>();
+                        case "evaluate": return token.ToObject<Request<Evaluate>>();
                         case "continue": return token.ToObject<Request<Continue>>();
                         case "pause": return token.ToObject<Request<Pause>>();
                         case "next": return token.ToObject<Request<Next>>();
@@ -211,13 +226,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                         case "setExceptionBreakpoints":
                         default: return token.ToObject<Request>();
                     }
-                case "event":
-                    switch ((string)token["event"])
-                    {
-                        default: return token.ToObject<Event>();
-                    }
                 default:
-                    return token.ToObject<Message>();
+                    throw new NotImplementedException();
             }
         }
     }

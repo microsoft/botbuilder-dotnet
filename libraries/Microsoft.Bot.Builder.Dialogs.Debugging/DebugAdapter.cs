@@ -18,6 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     {
         private readonly CancellationTokenSource cancellationToken = new CancellationTokenSource();
 
+        private readonly IDataModel model;
         private readonly Source.IRegistry registry;
         private readonly IBreakpoints breakpoints;
 
@@ -25,21 +26,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private readonly ConcurrentDictionary<ITurnContext, TurnThreadModel> threadByContext = new ConcurrentDictionary<ITurnContext, TurnThreadModel>();
         private readonly Identifier<IThreadModel> threads = new Identifier<IThreadModel>();
         // TODO: leaks - consider scoping or ConditionalWeakTable
-        private readonly Identifier<FrameModel> frames = new Identifier<FrameModel>();
+        private readonly Identifier<CodeModel> frames = new Identifier<CodeModel>();
         // TODO: leaks - consider scoping or ConditionalWeakTable
-        private readonly Identifier<VariableModel> variables = new Identifier<VariableModel>();
+        private readonly Identifier<object> values = new Identifier<object>();
 
         private interface IThreadModel
         {
             string Name { get; }
-            IReadOnlyList<FrameModel> Frames { get; }
+            IReadOnlyList<CodeModel> Frames { get; }
             RunModel Run { get; }
         }
 
         private sealed class BotThreadModel : IThreadModel
         {
             public string Name => "Bot";
-            public IReadOnlyList<FrameModel> Frames => Array.Empty<FrameModel>();
+            public IReadOnlyList<CodeModel> Frames => Array.Empty<CodeModel>();
             public RunModel Run { get; } = new RunModel();
         }
 
@@ -51,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
             public string Name => TurnContext.Activity.Text;
 
-            public IReadOnlyList<FrameModel> Frames => Model.FramesFor(LastContext, LastItem, LastMore);
+            public IReadOnlyList<CodeModel> Frames => CodeModel.FramesFor(LastContext, LastItem, LastMore);
             public RunModel Run { get; } = new RunModel();
             public ITurnContext TurnContext { get; }
             public DialogContext LastContext { get; set; }
@@ -82,22 +83,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        private int VariablesReference(VariableModel variable)
+        private int VariablesReference(object value)
         {
-            var value = variable.Value;
-            if (Policy.ShowAsScalar(variable.Value))
+            if (model.IsScalar(value))
             {
                 return 0;
             }
 
-            return variables.Add(variable);
+            return values.Add(value);
         }
 
         private readonly Task task;
 
-        public DebugAdapter(Source.IRegistry registry, IBreakpoints breakpoints, ILogger logger)
+        public DebugAdapter(IDataModel model, Source.IRegistry registry, IBreakpoints breakpoints, ILogger logger)
             : base(logger)
         {
+            this.model = model ?? throw new ArgumentNullException(nameof(model));
             this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
             this.breakpoints = breakpoints ?? throw new ArgumentNullException(nameof(breakpoints));
             this.task = ListenAsync(new IPEndPoint(IPAddress.Any, port: 4712), cancellationToken.Token);
@@ -151,9 +152,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             {
                 if (item is Dialog)
                 {
-                    System.Diagnostics.Trace.TraceInformation($"{Policy.NameFor(item)} {((Dialog)item).Id} {more}");
+                    System.Diagnostics.Trace.TraceInformation($"{CodeModel.NameFor(item)} {((Dialog)item).Id} {more}");
                 }
-                await OutputAsync($"Step: {Policy.NameFor(item)} {more}", item, cancellationToken).ConfigureAwait(false);
+                await OutputAsync($"Step: {CodeModel.NameFor(item)} {more}", item, cancellationToken).ConfigureAwait(false);
 
                 await UpdateBreakpointsAsync(cancellationToken).ConfigureAwait(false);
 
@@ -218,7 +219,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 if (breakpoint.verified)
                 {
                     var item = this.breakpoints.ItemFor(breakpoint);
-                    await OutputAsync($"Set breakpoint at {Policy.NameFor(item)}", item, cancellationToken).ConfigureAwait(false);
+                    await OutputAsync($"Set breakpoint at {CodeModel.NameFor(item)}", item, cancellationToken).ConfigureAwait(false);
                 }
 
                 var body = new { reason = "changed", breakpoint };
@@ -235,7 +236,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
 
             var phase = run.Phase;
-            var suffix = item != null ? $" at {Policy.NameFor(item)}" : string.Empty;
+            var suffix = item != null ? $" at {CodeModel.NameFor(item)}" : string.Empty;
             var description = $"'{thread.Name}' is {phase}{suffix}";
 
             await OutputAsync(description, item, cancellationToken).ConfigureAwait(false);
@@ -305,6 +306,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 var body = new
                 {
                     supportsConfigurationDoneRequest = true,
+                    supportsSetVariable = true,
+                    supportsEvaluateForHovers = true,
                 };
                 var response = Protocol.Response.From(NextSeq, initialize, body);
                 await SendAsync(response, cancellationToken).ConfigureAwait(false);
@@ -330,7 +333,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     if (breakpoint.verified)
                     {
                         var item = this.breakpoints.ItemFor(breakpoint);
-                        await OutputAsync($"Set breakpoint at {Policy.NameFor(item)}", item, cancellationToken).ConfigureAwait(false);
+                        await OutputAsync($"Set breakpoint at {CodeModel.NameFor(item)}", item, cancellationToken).ConfigureAwait(false);
                     }
                 }
 
@@ -390,20 +393,54 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             else if (message is Protocol.Request<Protocol.Variables> vars)
             {
                 var arguments = vars.arguments;
-                var variable = this.variables[arguments.variablesReference];
-                var variables = Model.VariablesFor(variable);
+                var context = this.values[arguments.variablesReference];
+                var names = this.model.Names(context);
 
                 var body = new
                 {
-                    variables = variables.Select(v => new
-                    {
-                        name = v.Name,
-                        value = Policy.ScalarJsonValue(v.Value),
-                        variablesReference = VariablesReference(v)
-                    }).ToArray()
+                    variables = (from name in names
+                                 let value = model[context, name]
+                                 let variablesReference = VariablesReference(value)
+                                 select new { name = model.ToString(name), value = model.ToString(value), variablesReference }
+                                ).ToArray()
                 };
 
                 return Protocol.Response.From(NextSeq, vars, body);
+            }
+            else if (message is Protocol.Request<Protocol.SetVariable> setVariable)
+            {
+                var arguments = setVariable.arguments;
+                var context = this.values[arguments.variablesReference];
+                var value = this.model[context, arguments.name] = JToken.Parse(arguments.value);
+
+                var body = new
+                {
+                    value = model.ToString(value),
+                    variablesReference = VariablesReference(value)
+                };
+
+                return Protocol.Response.From(NextSeq, setVariable, body);
+            }
+            else if (message is Protocol.Request<Protocol.Evaluate> evaluate)
+            {
+                var arguments = evaluate.arguments;
+                var frame = this.frames[arguments.frameId];
+                var expression = arguments.expression.Trim('"');
+                var result = frame.DialogContext.State.GetValue<JToken>(expression);
+                if (result != null)
+                {
+                    var body = new
+                    {
+                        result = model.ToString(result),
+                        variablesReference = VariablesReference(result),
+                    };
+
+                    return Protocol.Response.From(NextSeq, evaluate, body);
+                }
+                else
+                {
+                    return Protocol.Response.Fail(NextSeq, evaluate, string.Empty);
+                }
             }
             else if (message is Protocol.Request<Protocol.Continue> cont)
             {
@@ -462,9 +499,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 try
                 {
                     var token = await ReadAsync(cancellationToken).ConfigureAwait(false);
-                    var message = Protocol.Parse(token);
-                    var response = await DispatchAsync(message, cancellationToken).ConfigureAwait(false);
-                    await SendAsync(response, cancellationToken).ConfigureAwait(false);
+                    var request = Protocol.Parse(token);
+                    Protocol.Message message;
+                    try
+                    {
+                        message = await DispatchAsync(request, cancellationToken).ConfigureAwait(false);
+                    }
+                    catch (Exception error)
+                    {
+                        message = Protocol.Response.Fail(NextSeq, request, error.Message);
+                    }
+
+                    await SendAsync(message, cancellationToken).ConfigureAwait(false);
                 }
                 catch (Exception error)
                 {

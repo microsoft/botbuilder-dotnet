@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -62,6 +61,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private readonly Identifier<Row> rows = new Identifier<Row>();
         private readonly HashSet<object> items = new HashSet<object>(ReferenceEquality<object>.Instance);
 
+        // TODO: incorrect on unix, need to resolve through file system
+        // on VSCode Insiders, drive letter casing changes
+        private static bool PathEquals(string one, string two) =>
+            string.Equals(one, two, StringComparison.CurrentCultureIgnoreCase);
+
         private IReadOnlyList<Protocol.Breakpoint> Update()
         {
             lock (gate)
@@ -75,7 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                     var options = from sourceItem in sourceByItem
                                   let source = sourceItem.Value
-                                  where string.Equals(source.Path, row.Source.path, StringComparison.CurrentCultureIgnoreCase)
+                                  where PathEquals(source.Path, row.Source.path)
                                   where source.Start.LineIndex >= row.SourceBreakpoint.line
                                   let distance = Math.Abs(source.Start.LineIndex - row.SourceBreakpoint.line)
                                   orderby distance
@@ -124,7 +128,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 foreach (var kv in rows)
                 {
                     var row = kv.Value;
-                    if (row.Source.path == path)
+                    if (PathEquals(row.Source.path, path))
                     {
                         rows.Remove(row);
                     }
@@ -171,6 +175,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 return this.rows[breakpoint.id].item;
             }
         }
-
     }
 }
