@@ -16,7 +16,8 @@ For the purpose of this hack you will use the C# version of the SDK. To particip
 
 ## Samples 
 Currently, we are light on documentation. However, there are few samples to help you bootstrap and get started using the new dialogs, LG, memory, and decelrative. 
--	The main [samples](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog/samples) folder include basic documentation for Memory, Input prompts and dialogs, and Rule base dialog system. 
+-	The csharp [samples](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog/samples) folder include basic documentation for Memory, Input prompts and dialogs, and Rule base dialog system. 
+- We also created a version of the samples that uses packaged nuget pckages. [TestBot.Json as sample based on nuget packages called 60-AdaptiveBot](https://github.com/Microsoft/BotBuilder-Samples/blob/4.next/samples/csharp_dotnetcore/60.AdaptiveBot/README.md).  [Here](https://botbuilder.myget.org/F/botbuilder-declarative/api/v3/index.json )  the nuget feed for C# packages. 
 -	The [Microsoft.Bot.Bbuilder.Testbot.Json](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog/samples/Microsoft.Bot.Builder.TestBot.Json) folder include samples for LG and declarative dialogs.
 -	In Microsoft.Bot.Bbuilder.Testbot.Json , the [samples](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog/samples/Microsoft.Bot.Builder.TestBot.Json/Samples) folder includes a series of bots defined declaratively, showing the different dialog/ prompts and available steps. 
 -	The [LG](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog/samples/Microsoft.Bot.Builder.TestBot.Json/LG) folder includes list of .lg files explaining various features and functionality  of the new local LG library
@@ -34,13 +35,14 @@ Currently, we are light on documentation. However, there are few samples to help
 
 
 ## What bot should I build?
-Feel free to explorer and follow any scenario you want. Form filling and task completion are the good candidate like Ice cream (or Pizza) ordering, managing lists of Todo, Alarm Bot; booking a table; etc.  In the process of creating your bot’s dialog, try to include new elements and combine different parts like LG, Memory and Decelerative. 
+We would like you to try either using the Adaptive Dialog using code or using JSON. While using these dialogs, feel free to explore and follow any scenario you want. If you are looking for inspiration, we would like you to pick one of the skills in the [Virtual Assistent solution](https://github.com/Microsoft/AI/tree/master/solutions/Virtual-Assistant/src), identify one or two dialogs, and try to convert these dialogs to the new Adaptive Dialog. All VA skills includes full LUIS models that you can use and code (using Waterfall) 
+
 
 ## How to use AdaptiveDialog in NodeJs
 
 - Enlist in botbuilder-js
-- Checkout stevenic/4.4-planning branch
-- AdaptiveDialog samples can be found [here](https://github.com/Microsoft/botbuilder-js/tree/stevenic/4.4-planning/samples)
+- Checkout [4.next](https://github.com/Microsoft/botbuilder-js/tree/4.next) branch
+- AdaptiveDialog samples can be found [here](https://github.com/Microsoft/botbuilder-js/tree/4.next/samples)
 - From the root of the entire repo, make sure lerna is installed globally by using ```npm install -g lerna```
 - From the root of the entire repo, run ```lerna bootstrap --hoist``` to setup dependencies
 - From the root of the entire repo, run ```npm run build``` to setup dependencies
@@ -52,14 +54,15 @@ Feel free to explorer and follow any scenario you want. Form filling and task co
 ## How to use AdaptiveDialog in Json
 
 - Enlist in botbuilder-dotnet
-- Checkout the ComposableDialog branch
+- Checkout the [ComposableDialog](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog) branch
 - Open solution in Visual Studio
+- We also created a version of the samples that uses packaged nuget pckages. [TestBot.Json as sample based on nuget packages called 60-AdaptiveBot](https://github.com/Microsoft/BotBuilder-Samples/blob/4.next/samples/csharp_dotnetcore/60.AdaptiveBot/README.md).  [Here](https://botbuilder.myget.org/F/botbuilder-declarative/api/v3/index.json )  the nuget feed for C# packages. 
 - There is a test bot ready to adapt to your needs: Microsoft.Bot.Builder.TestBot.Json
 - Select a sample in the samples folder that best matches what you want to achieve
 - Open TestBot.cs and replace the line below with a pointer to the root dialog you want for your bot:
 
 ```csharp
-rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 11 - HttpRequest\HttpRequest.main.dialog"), resourceProvider);
+ var rootFile = resourceExplorer.GetResource(@"ToDoBot.main.dialog");
 ```
 - Run the project and open in the emulator!
 - *Editor hint:* Visual Studio does not support our json schemas. Use Visual Studio Code to edit json files!
@@ -73,103 +76,6 @@ rootDialog = DeclarativeTypeLoader.Load<IDialog>(File.ReadAllText(@"Samples\Plan
 - There is a test bot ready to adapt to your needs: Microsoft.Bot.Builder.TestBot
 - Create a new AdaptiveDialog and start hacking! Example:
 
-### Simple example: Text Prompt
-
-```csharp
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
-            var ruleDialog = new AdaptiveDialog("planningTest");
-
-            ruleDialog.AddRule(
-                new DefaultRule(
-                    new List<IDialog>()
-                    {
-                        new IfProperty()
-                        {
-                            Expression = new CommonExpression("user.name == null"),
-                            IfTrue = new List<IDialog>()
-                            {
-                                new TextPrompt()
-                                {
-                                    InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
-                                    Property = "user.name"
-                                }
-                            }
-                        },
-                        new SendActivity("Hello {user.name}, nice to meet you!")
-                    }));
-```
-
-### CallDialog example
-
-```csharp
-var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
-            var ruleDialog = new AdaptiveDialog("planningTest");
-
-            ruleDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
-
-            ruleDialog.AddRules(new List<IRule>()
-            {
-                new ReplacePlanRule("JokeIntent",
-                    steps: new List<IDialog>()
-                    {
-                        new CallDialog("TellJokeDialog")
-                    }),
-                new WelcomeRule(
-                    steps: new List<IDialog>()
-                    {
-                        new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
-                    }),
-                new DefaultRule(
-                    new List<IDialog>()
-                    {
-                        new CallDialog("AskNameDialog")
-                    })});
-
-            ruleDialog.AddDialog(new[] {
-                new AdaptiveDialog("AskNameDialog")
-                {
-                    Rules = new List<IRule>()
-                    {
-                        new DefaultRule(new List<IDialog>()
-                        {
-                            new IfProperty()
-                            {
-                                Expression = new CommonExpression("user.name == null"),
-                                IfTrue = new List<IDialog>()
-                                {
-                                    new TextPrompt()
-                                    {
-                                        InitialPrompt = new ActivityTemplate("Hello, what is your name?"),
-                                        OutputBinding = "user.name"
-                                    }
-                                }
-                            },
-                            new SendActivity("Hello {user.name}, nice to meet you!")
-                        })
-                    }
-                }
-
-                });
-
-            ruleDialog.AddDialog(new[] {
-                new AdaptiveDialog("TellJokeDialog")
-                    {
-                        Rules = new List<IRule>() {
-                            new DefaultRule(new List<IDialog>()
-                            {
-                                new SendActivity("Why did the chicken cross the road?"),
-                                new WaitForInput(),
-                                new SendActivity("To get to the other side")
-                            })
-                        }
-                    }
-                });
-```
 
 # Trying the LG sample
 

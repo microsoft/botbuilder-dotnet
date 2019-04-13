@@ -235,7 +235,15 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
             }
 
-            current[segments.Last()] = value;
+            if (value is JToken || value is JObject || value is JArray)
+            {
+                current[segments.Last()] = (JToken)value;
+            }
+            else
+            {
+                current[segments.Last()] = value;
+
+            }
         }
 
         public void Add(string key, object value)

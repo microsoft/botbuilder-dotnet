@@ -157,45 +157,51 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                 await UpdateBreakpointsAsync(cancellationToken).ConfigureAwait(false);
 
-                var thread = threadByContext[context.Context];
-                thread.LastContext = context;
-                thread.LastItem = item;
-                thread.LastMore = more;
-
-                var run = thread.Run;
-                if (breakpoints.IsBreakPoint(item))
+                if (threadByContext.TryGetValue(context.Context, out TurnThreadModel thread))
                 {
-                    run.Post(Phase.Breakpoint);
+                    thread.LastContext = context;
+                    thread.LastItem = item;
+                    thread.LastMore = more;
+
+                    var run = thread.Run;
+                    if (breakpoints.IsBreakPoint(item))
+                    {
+                        run.Post(Phase.Breakpoint);
+                    }
+
+                    // TODO: implement asynchronous condition variables
+                    Monitor.Enter(run.Gate);
+                    try
+                    {
+                        // TODO: remove synchronous waits
+                        UpdateThreadPhaseAsync(thread, item, cancellationToken).GetAwaiter().GetResult();
+
+                        while (!(run.Phase == Phase.Started || run.Phase == Phase.Continue || run.Phase == Phase.Next))
+                        {
+                            Monitor.Wait(run.Gate);
+                        }
+
+                        if (run.Phase == Phase.Started)
+                        {
+                            run.Phase = Phase.Continue;
+                        }
+
+                        // TODO: remove synchronous waits
+                        UpdateThreadPhaseAsync(thread, item, cancellationToken).GetAwaiter().GetResult();
+
+                        if (run.Phase == Phase.Next)
+                        {
+                            run.Phase = Phase.Step;
+                        }
+                    }
+                    finally
+                    {
+                        Monitor.Exit(run.Gate);
+                    }
                 }
-
-                // TODO: implement asynchronous condition variables
-                Monitor.Enter(run.Gate);
-                try
+                else
                 {
-                    // TODO: remove synchronous waits
-                    UpdateThreadPhaseAsync(thread, item, cancellationToken).GetAwaiter().GetResult();
-
-                    while (!(run.Phase == Phase.Started || run.Phase == Phase.Continue || run.Phase == Phase.Next))
-                    {
-                        Monitor.Wait(run.Gate);
-                    }
-
-                    if (run.Phase == Phase.Started)
-                    {
-                        run.Phase = Phase.Continue;
-                    }
-
-                    // TODO: remove synchronous waits
-                    UpdateThreadPhaseAsync(thread, item, cancellationToken).GetAwaiter().GetResult();
-
-                    if (run.Phase == Phase.Next)
-                    {
-                        run.Phase = Phase.Step;
-                    }
-                }
-                finally
-                {
-                    Monitor.Exit(run.Gate);
+                    this.logger.LogError($"thread context not found");
                 }
             }
             catch (Exception error)

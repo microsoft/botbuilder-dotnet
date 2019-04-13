@@ -24,8 +24,8 @@
 
 > Templates can include conditions and inline variations
 # WelcomeTemplateV2
-- CASE: {userState.userName}
+- IF: {userState.userName}
     - [WelcomeTemplate] {userState.userName}
     - Welcome back {userState.userName}!
-- DEFAULT:
+- ELSE:
     - [WelcomeTemplate]
