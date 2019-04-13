@@ -5,7 +5,7 @@
 **Story arc**: _As a bot developer, I’ve been used to hard coding bot responses and related resources. With .LG file format, MSLG CLI tool, LG resolver runtime, common expression library I can completely de-couple language resources for my bot and manage them in separate files like I have been doing for LU. With that I can now make my bot sound more natural and lively.​_
 
 ## Remaining work
-- - [ ] Find new home for LanguageGenerationRenderer, LGLanguageGenerator
+- - [X] Find new home for LanguageGenerationRenderer, LGLanguageGenerator
 - - [X] Expression analyzer (CCI ask) – we will just provide parse tree + sample. Nothing baked into the library​
 - - [X] Wrap up C# and JS libraries – improved library error and exception bubbling, actionable and informative exception messages.​
 - - [ ] Parse, collate and translate TS/ JS library that can be surfaced through a CLI tool (or consumed by an UI based authoring experience)

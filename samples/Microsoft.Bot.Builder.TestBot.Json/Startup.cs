@@ -10,14 +10,13 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.AI.LanguageGeneration;
+using Microsoft.Bot.Builder.LanguageGeneration.Renderer;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Builder.TestBot.Json.Recognizers;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,7 +45,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             TypeFactory.RegisterAdaptiveTypes();
 
             // register custom types
-            TypeFactory.Register("Testbot.RuleRecognizer", typeof(RuleRecognizer));
             TypeFactory.Register("Testbot.CalculateDogYears", typeof(CalculateDogYears));
             TypeFactory.Register("Testbot.JavascriptStep", typeof(JavascriptStep));
             TypeFactory.Register("Testbot.CSharpStep", typeof(CSharpStep));
@@ -75,19 +73,11 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 debugAdapter = new DebugAdapter(sourceMap, sourceMap, new DebugLogger(nameof(DebugAdapter)));
             }
 
-            // m
             services.AddSingleton<IConfiguration>(this.Configuration);
 
             IStorage dataStore = new MemoryStorage();
-            var conversationState = new ConversationState(dataStore);
             var userState = new UserState(dataStore);
-            var userStateMap = userState.CreateProperty<Dictionary<string, object>>("user");
-            var accessors = new TestBotAccessors
-            {
-                ConversationDialogState = conversationState.CreateProperty<DialogState>("DialogState"),
-                ConversationState = conversationState,
-                UserState = userState
-            };
+            var conversationState = new ConversationState(dataStore);
 
             // manage all bot resources
             var resourceExplorer = ResourceExplorer.LoadProject(HostingEnvironment.ContentRootPath);
@@ -96,7 +86,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 (IServiceProvider sp) =>
                 {
                     // declarative Adaptive dialogs bot sample
-                    return new TestBot(accessors, resourceExplorer, DebugSupport.SourceRegistry);
+                    return new TestBot(userState, conversationState, resourceExplorer, DebugSupport.SourceRegistry);
 
                     // LG bot sample
                     // return new TestBotLG(accessors);

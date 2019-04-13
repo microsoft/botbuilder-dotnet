@@ -9,7 +9,7 @@ using Antlr4.Runtime.Tree;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 
-namespace Microsoft.Bot.Builder.AI.LanguageGeneration
+namespace Microsoft.Bot.Builder.LanguageGeneration
 { 
     class EvaluationTarget
     {
@@ -234,10 +234,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration
             var evalutor = new MatchEvaluator(m =>
             {
                 var newExp = m.Value.Substring(1); // remove @
-
-                // why replace " to ' ?
-                return EvalExpression(newExp)?.Replace("\"","\'");//{ }
-                
+                return EvalExpression(newExp);
             });
 
             return Regex.Replace(exp, reg, evalutor);
