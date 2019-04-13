@@ -99,10 +99,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                         opt.RetryPrompt.InputHint = InputHints.ExpectingInput;
                     }
                 }
-                else
-                {
-                    throw new ArgumentException(nameof(options));
-                }
+                //else
+                //{
+                //    throw new ArgumentException(nameof(options));
+                //}
             }
 
             // Initialize state
@@ -116,7 +116,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             var output = await GetUserTokenAsync(dc.Context, cancellationToken).ConfigureAwait(false);
             if (output != null)
             {
-                // Return token
+                // Save token to Turn State.
+                if (Property != null)
+                {
+                    dc.State.Turn[Property] = output.Token;
+                }
                 return await dc.EndDialogAsync(output, cancellationToken).ConfigureAwait(false);
             }
             else
@@ -168,6 +172,12 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // Return recognized value or re-prompt
                 if (isValid)
                 {
+                    // Save token to Propery
+                    if (Property != null)
+                    {
+                        dc.State.Turn[Property] = recognized.Value.Token;
+                    }
+
                     return await dc.EndDialogAsync(recognized.Value, cancellationToken).ConfigureAwait(false);
                 }
                 else

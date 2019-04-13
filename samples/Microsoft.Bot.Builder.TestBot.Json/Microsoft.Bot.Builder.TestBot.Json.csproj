@@ -23,6 +23,8 @@
     <None Remove="Samples\08 - ExternalLanguage\FortuneTellerDialog.dialog" />
     <None Remove="Samples\08 - ExternalLanguage\TellJokeDialog.dialog" />
     <None Remove="Samples\09 - EndDialog\EndDialog.main.dialog" />
+    <None Remove="Samples\EmailBot\Service\MSGraph\ForwardEmails.dialog" />
+    <None Remove="Samples\EmailBot\Service\MSGraph\ReplyEmails.dialog" />
     <None Remove="Samples\RootDialog\RootDialog.lg" />
   </ItemGroup>
 

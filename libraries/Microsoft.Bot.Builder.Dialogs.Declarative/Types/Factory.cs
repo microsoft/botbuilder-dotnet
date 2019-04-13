@@ -129,20 +129,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.SetProperty", typeof(SetProperty));
             Register("Microsoft.SwitchCondition", typeof(SwitchCondition));
 
-            // Dialogs
-            Register("Microsoft.AdaptiveDialog", typeof(AdaptiveDialog));
-
             // Inputs
             Register("Microsoft.ConfirmInput", typeof(ConfirmInput));
             Register("Microsoft.FloatInput", typeof(FloatInput));
             Register("Microsoft.IntegerInput", typeof(IntegerInput));
             Register("Microsoft.TextInput", typeof(TextInput));
             Register("Microsoft.ChoiceInput", typeof(ChoiceInput));
+            Register("Microsoft.OAuthPrompt", typeof(OAuthPrompt), new OAuthPromptLoader());
 
             // Recognizers
             Register("Microsoft.LuisRecognizer", typeof(LuisRecognizer), new LuisRecognizerLoader(TypeFactory.Configuration));
             Register("Microsoft.RegexRecognizer", typeof(RegexRecognizer));
             Register("Microsoft.MultiLanguageRecognizer", typeof(MultiLanguageRecognizer));
+
+            Register("Microsoft.AdaptiveDialog", typeof(AdaptiveDialog));
         }
 
         private static void EnsureConfig()
