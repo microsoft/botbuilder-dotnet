@@ -17,15 +17,14 @@ namespace Microsoft.BotBuilderSamples
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
             AddDialog(new DateResolverDialog());
-            var steps = new WaterfallStep[]
+            AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 DestinationStepAsync,
                 OriginStepAsync,
                 TravelDateStepAsync,
                 ConfirmStepAsync,
                 FinalStepAsync,
-            };
-            AddDialog(new WaterfallDialog(nameof(WaterfallDialog), steps));
+            }));
 
             // The initial child Dialog to run.
             InitialDialogId = nameof(WaterfallDialog);
