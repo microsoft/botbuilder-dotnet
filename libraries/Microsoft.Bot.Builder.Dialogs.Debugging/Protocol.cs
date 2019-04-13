@@ -86,6 +86,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
             public int variablesReference { get; set; }
         }
+        public class SetVariable
+        {
+            public int variablesReference { get; set; }
+            public string name { get; set; }
+            public string value { get; set; }
+        }
         public class ConfigurationDone
         {
         }
@@ -200,6 +206,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                         case "stackTrace": return token.ToObject<Request<StackTrace>>();
                         case "scopes": return token.ToObject<Request<Scopes>>();
                         case "variables": return token.ToObject<Request<Variables>>();
+                        case "setVariable": return token.ToObject<Request<SetVariable>>();
                         case "continue": return token.ToObject<Request<Continue>>();
                         case "pause": return token.ToObject<Request<Pause>>();
                         case "next": return token.ToObject<Request<Next>>();
