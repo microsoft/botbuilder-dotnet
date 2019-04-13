@@ -180,6 +180,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             .StartTestAsync();
         }
 
+        [Ignore]
         [TestMethod]
         public async Task JsonDialogLoad_ToDoBot()
         {
