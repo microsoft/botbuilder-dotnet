@@ -20,9 +20,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     {
         private readonly List<Choice> _colorChoices = new List<Choice>
         {
-            new Choice {Value = "red"},
-            new Choice {Value = "green"},
-            new Choice {Value = "blue"},
+            new Choice { Value = "red" },
+            new Choice { Value = "green" },
+            new Choice { Value = "blue" },
         };
 
         [TestMethod]
@@ -108,7 +108,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                             "ChoicePrompt",
                             new PromptOptions
                             {
-                                Prompt = new Activity {Type = ActivityTypes.Message, Text = "favorite color?"},
+                                Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                                 Choices = _colorChoices,
                             },
                             cancellationToken);
@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                             "ChoicePrompt",
                             new PromptOptions
                             {
-                                Prompt = new Activity {Type = ActivityTypes.Message, Text = "favorite color?"},
+                                Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                                 Choices = _colorChoices,
                             },
                             cancellationToken);
@@ -182,7 +182,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                             "ChoicePrompt",
                             new PromptOptions
                             {
-                                Prompt = new Activity {Type = ActivityTypes.Message, Text = "favorite color?"},
+                                Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                                 Choices = _colorChoices,
                             },
                             cancellationToken);
@@ -220,7 +220,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                             "ChoicePrompt",
                             new PromptOptions
                             {
-                                Prompt = new Activity {Type = ActivityTypes.Message, Text = "favorite color?"},
+                                Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                                 Choices = _colorChoices,
                             },
                             cancellationToken);
@@ -233,9 +233,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     {
                         Actions = new List<CardAction>
                         {
-                            new CardAction {Type = "imBack", Value = "red", Title = "red"},
-                            new CardAction {Type = "imBack", Value = "green", Title = "green"},
-                            new CardAction {Type = "imBack", Value = "blue", Title = "blue"},
+                            new CardAction { Type = "imBack", Value = "red", Title = "red" },
+                            new CardAction { Type = "imBack", Value = "green", Title = "green" },
+                            new CardAction { Type = "imBack", Value = "blue", Title = "blue" },
                         },
                     }))
                 .StartTestAsync();
@@ -268,7 +268,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                             "ChoicePrompt",
                             new PromptOptions
                             {
-                                Prompt = new Activity {Type = ActivityTypes.Message, Text = "favorite color?"},
+                                Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                                 Choices = _colorChoices,
                             },
                             cancellationToken);
@@ -280,9 +280,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     Text = "favorite color?",
                     Buttons = new List<CardAction>
                     {
-                        new CardAction {Type = "imBack", Value = "red", Title = "red"},
-                        new CardAction {Type = "imBack", Value = "green", Title = "green"},
-                        new CardAction {Type = "imBack", Value = "blue", Title = "blue"},
+                        new CardAction { Type = "imBack", Value = "red", Title = "red" },
+                        new CardAction { Type = "imBack", Value = "green", Title = "green" },
+                        new CardAction { Type = "imBack", Value = "blue", Title = "blue" },
                     },
                 }))
                 .StartTestAsync();
@@ -316,7 +316,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                             "ChoicePrompt",
                             new PromptOptions
                             {
-                                Prompt = new Activity {Type = ActivityTypes.Message, Text = "favorite color?"},
+                                Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                                 Choices = _colorChoices,
                             },
                             cancellationToken);
@@ -399,7 +399,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                             "ChoicePrompt",
                             new PromptOptions
                             {
-                                Prompt = new Activity {Type = ActivityTypes.Message, Text = "favorite color?"},
+                                Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                                 Choices = _colorChoices,
                             },
                             cancellationToken);
@@ -444,8 +444,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                             "ChoicePrompt",
                             new PromptOptions
                             {
-                                Prompt = new Activity {Type = ActivityTypes.Message, Text = "favorite color?"},
-                                RetryPrompt = new Activity {Type = ActivityTypes.Message, Text = "your favorite color, please?"},
+                                Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
+                                RetryPrompt = new Activity { Type = ActivityTypes.Message, Text = "your favorite color, please?" },
                                 Choices = _colorChoices,
                             },
                             cancellationToken);
@@ -491,7 +491,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                             "ChoicePrompt",
                             new PromptOptions
                             {
-                                Prompt = new Activity {Type = ActivityTypes.Message, Text = "favorite color?"},
+                                Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                                 Choices = _colorChoices,
                             },
                             cancellationToken);
@@ -541,9 +541,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     {
                         Actions = new List<CardAction>
                         {
-                            new CardAction {Type = "imBack", Value = "red", Title = "red"},
-                            new CardAction {Type = "imBack", Value = "green", Title = "green"},
-                            new CardAction {Type = "imBack", Value = "blue", Title = "blue"},
+                            new CardAction { Type = "imBack", Value = "red", Title = "red" },
+                            new CardAction { Type = "imBack", Value = "green", Title = "green" },
+                            new CardAction { Type = "imBack", Value = "blue", Title = "blue" },
                         },
                     }))
                 .StartTestAsync();
