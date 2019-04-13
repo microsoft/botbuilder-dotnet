@@ -54,26 +54,15 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
         public static IEnumerable<object[]> BadExpressions => new[]
         {
-            Test("one[0]"),  // one is not list
-            Test("add(hello, 2)"), // string + int
-            Test("add()"), // arg count doesn't match
+            # region General test
             Test("func()"), // no such func
-            Test("add(five, six)"), // no such variables
+            # endregion
 
-            //Test("add(one)"), // add function need two variables
-            Test("items[3]"), // index out of range
-            Test("items[one+0.5]"), // index is not integer
-            Test("div(one, 0)"), // one cannot be divided by zero
-            Test("div(hello, one)"), // string hello cannot be divided
-            Test("and(one, hello, one < two)"), //one and hello are not bool type
-            Test("greater(one, hello)"), // string and integer are not comparable
-            Test("greater(one)"), // greater need two parameters
-            Test("less(one, hello)"), // string and integer are not comparable
-            Test("less(one)"), // less need two parameters
-            Test("pow(2, hello)"), // pow cannot accept parameter of string
-            Test("mod(one, 0)"), // mod cannot accept zero as the second parameter
-            Test("not(hello)"), // not can only accept bool parameter
+            # region Operators test
             Test("'string'&one"), // $ can only accept string parameter
+            # endregion
+
+            # region String functions test
             Test("concat(one, hello)"), // concat can only accept string parameter
             Test("length(one)"), // length can only accept string parameter
             Test("replace(hello)"), // replace need three parameters
@@ -87,27 +76,82 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("toLower(one)"), // the parameter of toLower must be string
             Test("toUpper(one)"), // the parameter of toUpper must be string
             Test("trim(one)"), // the parameter of trim must be string
+            # endregion
+
+            # region Logical comparison functions test
+            Test("and(one, hello, one < two)"), //one and hello are not bool type
+            Test("greater(one, hello)"), // string and integer are not comparable
+            Test("greater(one)"), // greater need two parameters
+            Test("less(one, hello)"), // string and integer are not comparable
+            Test("less(one)"), // less need two parameters
+            Test("not(hello)"), // not can only accept bool parameter
             Test("equals(one)"), // equals must accept two parameters
             Test("if(hello, 'r1', 'r2')"), // the first parameter of the if must be bool
             //Test("if(!exists(one), one, hello)"), // the second and third parameters of if must the same type
             //Test("or(hello == 'hello')"), // or function needs two parameters
             Test("or(hello, one)"), // or function only accept bool parameters
+            # endregion
+
+            # region Conversion functions test
+            // TODO
+            # endregion
+
+            # region Math functions test
             Test("max(hello, one)"), // max can only accept two parameters with same type of integer, float or string
             Test("mul(hello, one)"), // mul can only accept two parameters of interger or float
             //Test("mul(one)"), // mul function need two parameters
+            Test("add(hello, 2)"), // string + int
+            Test("add()"), // arg count doesn't match
+            Test("add(five, six)"), // no such variables
+            //Test("add(one)"), // add function need two variables
+            Test("div(one, 0)"), // one cannot be divided by zero
+            Test("div(hello, one)"), // string hello cannot be divided
+            Test("pow(2, hello)"), // pow cannot accept parameter of string
+            Test("mod(one, 0)"), // mod cannot accept zero as the second parameter
+            # endregion
 
+            # region Date and time function test
+            // TODO
+            # endregion
 
-            //foreach
-            Test("foreach(hello, item, item)"),// first arg is not list
-            Test("foreach(items, item)"),//should have three args
-            Test("foreach(items, item, item2, item3)"),//should have three args
-            Test("foreach(items, add(1), item)"),// Second paramter of foreach is not an identifier
-
-            //join
+            # region collection functions test
+            Test("contains('hello world', 'hello', 'new')"),//should have 2 parameter
+            Test("count(items, 1)"), //should have 1 parameter
+            Test("count(1)"), //first param should be list
+            Test("empty(1,2)"), //should have two params
+            Test("first(items,2)"), //should have 1 param
+            Test("last(items,2)"), //should have 1 param
             Test("join(items, 'p1', 'p2','p3')"),//builtin function should have 3 params, 
                                                     //method extension should have 2-3 params
-            Test("join(hello, 'hi')"),// first args must list
-            //Test("join(items, 1)"),// second args must string 
+            Test("join(hello, 'hi')"),// first param must list
+            Test("join(items, 1)"),// second param must string 
+            Test("foreach(hello, item, item)"),// first arg is not list
+            Test("foreach(items, item)"),//should have three parameters
+            Test("foreach(items, item, item2, item3)"),//should have three parameters
+            Test("foreach(items, add(1), item)"),// Second paramter of foreach is not an identifier
+            # endregion
+
+            # region Object manipulation and construction functions test
+            Test("json(1,2)"), //should have 1 parameter
+            Test("json(1)"),//should be string parameter
+            Test("json('{\"key1\":value1\"}')"), // invalid json format string 
+            Test("addProperty(json('{\"key1\":\"value1\"}'), 'key2','value2','key3')"), //should have 3 parameter
+            Test("addProperty(json('{\"key1\":\"value1\"}'), 1,'value2')"), // second param should be string
+            Test("setProperty(json('{\"key1\":\"value1\"}'), 'key2','value2','key3')"), //should have 3 parameter
+            Test("setProperty(json('{\"key1\":\"value1\"}'), 1,'value2')"), // second param should be string
+            Test("removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), 1))"),// second param should be string
+            Test("removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), '1', '2'))"),// should have 2 parameter
+           # endregion
+
+            # region Short Hand Expression test
+            //TODO
+            # endregion
+
+            # region Memory access test
+            Test("one[0]"),  // one is not list
+            Test("items[3]"), // index out of range
+            Test("items[one+0.5]"), // index is not integer
+            # endregion
         };
 
         [DataTestMethod]
