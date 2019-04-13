@@ -134,6 +134,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             return Task.FromResult(new PromptRecognizerResult<Activity>
             {
+                AllowInterruption = true,
                 Succeeded = true,
                 Value = turnContext.Activity,
             });
