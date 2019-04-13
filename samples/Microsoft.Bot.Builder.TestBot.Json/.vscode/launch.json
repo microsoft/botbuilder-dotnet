@@ -35,7 +35,7 @@
             "request": "attach",
             "trace": false,
             "name": "Attach to Dialog",
-            "debugServer": 4712,
+            "debugServer": 9999,
         }
     ]
 }

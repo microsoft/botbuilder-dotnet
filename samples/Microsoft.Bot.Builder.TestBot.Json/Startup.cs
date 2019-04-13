@@ -22,22 +22,16 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Debug;
+using System.Diagnostics;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public Startup(IHostingEnvironment env, IConfiguration configuration)
         {
-            HostingEnvironment = env;
-
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-
-            Configuration = builder.Build();
+            this.HostingEnvironment = env;
+            this.Configuration = configuration;
 
             // set the configuration for types
             TypeFactory.Configuration = this.Configuration;
@@ -72,7 +66,9 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 // by setting the source registry all dialogs will register themselves to be debugged as execution flows
                 DebugSupport.SourceRegistry = sourceMap;
                 var model = new DataModel(Coercion.Instance);
-                debugAdapter = new DebugAdapter(model, sourceMap, sourceMap, new DebugLogger(nameof(DebugAdapter)));
+                var port = Configuration.GetValue<int>("debugport", 4712);
+                Console.WriteLine($"debugger port:{port}");
+                debugAdapter = new DebugAdapter(port, model, sourceMap, sourceMap, new DebugLogger(nameof(DebugAdapter)));
             }
 
             services.AddSingleton<IConfiguration>(this.Configuration);

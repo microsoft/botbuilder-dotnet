@@ -95,13 +95,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         private readonly Task task;
 
-        public DebugAdapter(IDataModel model, Source.IRegistry registry, IBreakpoints breakpoints, ILogger logger)
+        public DebugAdapter(int port, IDataModel model, Source.IRegistry registry, IBreakpoints breakpoints, ILogger logger)
             : base(logger)
         {
             this.model = model ?? throw new ArgumentNullException(nameof(model));
             this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
             this.breakpoints = breakpoints ?? throw new ArgumentNullException(nameof(breakpoints));
-            this.task = ListenAsync(new IPEndPoint(IPAddress.Any, port: 4712), cancellationToken.Token);
+            this.task = ListenAsync(new IPEndPoint(IPAddress.Any, port: port), cancellationToken.Token);
             //threads.Add(new BotThreadModel());
         }
 

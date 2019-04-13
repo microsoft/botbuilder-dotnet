@@ -7,7 +7,7 @@
   "keywords": [ "debuggers", "bot" ],
   "icon": "icon.png",
   "preview": true,
-  "version": "0.0.3",
+  "version": "0.0.5",
   "publisher": "Microsoft",
   "license": "SEE LICENSE file",
   "engines": {
