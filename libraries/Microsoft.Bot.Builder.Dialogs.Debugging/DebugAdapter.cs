@@ -471,9 +471,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 try
                 {
                     var token = await ReadAsync(cancellationToken).ConfigureAwait(false);
-                    var message = Protocol.Parse(token);
-                    var response = await DispatchAsync(message, cancellationToken).ConfigureAwait(false);
-                    await SendAsync(response, cancellationToken).ConfigureAwait(false);
+                    var request = Protocol.Parse(token);
+                    Protocol.Message message;
+                    try
+                    {
+                        message = await DispatchAsync(request, cancellationToken).ConfigureAwait(false);
+                    }
+                    catch (Exception error)
+                    {
+                        var response = Protocol.Response.From(NextSeq, request, error.Message);
+                        response.success = false;
+                        response.message = error.Message;
+                        message = response;
+                    }
+
+                    await SendAsync(message, cancellationToken).ConfigureAwait(false);
                 }
                 catch (Exception error)
                 {

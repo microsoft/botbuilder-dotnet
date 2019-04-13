@@ -132,6 +132,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
             public int request_seq { get; set; }
             public bool success { get; set; }
+            public string message { get; set; }
             public string command { get; set; }
             public static Response<Body> From<Body>(int seq, Request request, Body body) => new Response<Body>(seq, request) { body = body };
         }
@@ -191,7 +192,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             public int line { get; set; }
         }
 
-        public static Message Parse(JToken token)
+        public static Request Parse(JToken token)
         {
             switch ((string)token["type"])
             {
@@ -218,13 +219,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                         case "setExceptionBreakpoints":
                         default: return token.ToObject<Request>();
                     }
-                case "event":
-                    switch ((string)token["event"])
-                    {
-                        default: return token.ToObject<Event>();
-                    }
                 default:
-                    return token.ToObject<Message>();
+                    throw new NotImplementedException();
             }
         }
     }
