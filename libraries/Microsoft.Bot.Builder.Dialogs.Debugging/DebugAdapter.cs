@@ -23,38 +23,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private readonly IBreakpoints breakpoints;
 
         // lifetime scoped to IMiddleware.OnTurnAsync
-        private readonly ConcurrentDictionary<ITurnContext, TurnThreadModel> threadByContext = new ConcurrentDictionary<ITurnContext, TurnThreadModel>();
-        private readonly Identifier<IThreadModel> threads = new Identifier<IThreadModel>();
-        // TODO: leaks - consider scoping or ConditionalWeakTable
-        private readonly Identifier<CodeModel> frames = new Identifier<CodeModel>();
-        // TODO: leaks - consider scoping or ConditionalWeakTable
-        private readonly Identifier<object> values = new Identifier<object>();
+        private readonly ConcurrentDictionary<ITurnContext, ThreadModel> threadByContext = new ConcurrentDictionary<ITurnContext, ThreadModel>();
+        private readonly Identifier<ThreadModel> threads = new Identifier<ThreadModel>();
 
-        private interface IThreadModel
+        private sealed class ThreadModel
         {
-            string Name { get; }
-            IReadOnlyList<CodeModel> Frames { get; }
-            RunModel Run { get; }
-        }
-
-        private sealed class BotThreadModel : IThreadModel
-        {
-            public string Name => "Bot";
-            public IReadOnlyList<CodeModel> Frames => Array.Empty<CodeModel>();
-            public RunModel Run { get; } = new RunModel();
-        }
-
-        private sealed class TurnThreadModel : IThreadModel
-        {
-            public TurnThreadModel(ITurnContext turnContext)
+            public ThreadModel(ITurnContext turnContext)
             {
                 TurnContext = turnContext;
             }
+            public ITurnContext TurnContext { get; }
             public string Name => TurnContext.Activity.Text;
-
             public IReadOnlyList<CodeModel> Frames => CodeModel.FramesFor(LastContext, LastItem, LastMore);
             public RunModel Run { get; } = new RunModel();
-            public ITurnContext TurnContext { get; }
+            public Identifier<CodeModel> FrameCodes { get; } = new Identifier<CodeModel>();
+            public Identifier<object> ValueCodes { get; } = new Identifier<object>();
             public DialogContext LastContext { get; set; }
             public object LastItem { get; set; }
             public string LastMore { get; set; }
@@ -83,14 +66,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        private int VariablesReference(object value)
+        private ulong EncodeValue(ThreadModel thread, object value)
         {
             if (model.IsScalar(value))
             {
                 return 0;
             }
 
-            return values.Add(value);
+            var threadCode = threads[thread];
+            var valueCode = thread.ValueCodes.Add(value);
+            return Identifier.Encode(threadCode, valueCode);
+        }
+
+        private void DecodeValue(ulong variablesReference, out ThreadModel thread, out object value)
+        {
+            Identifier.Decode(variablesReference, out var threadCode, out var valueCode);
+            thread = this.threads[threadCode];
+            value = thread.ValueCodes[valueCode];
+        }
+
+        private ulong EncodeFrame(ThreadModel thread, CodeModel frame)
+        {
+            var threadCode = threads[thread];
+            var valueCode = thread.FrameCodes.Add(frame);
+            return Identifier.Encode(threadCode, valueCode);
+        }
+
+        private void DecodeFrame(ulong frameCode, out ThreadModel thread, out CodeModel frame)
+        {
+            Identifier.Decode(frameCode, out var threadCode, out var valueCode);
+            thread = this.threads[threadCode];
+            frame = thread.FrameCodes[valueCode];
         }
 
         private readonly Task task;
@@ -117,14 +123,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         async Task IMiddleware.OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
         {
-            //if (System.Diagnostics.Debugger.IsAttached)
-            //{
-            //    var source = new CancellationTokenSource();
-            //    source.CancelAfter(TimeSpan.FromMinutes(2));
-            //    cancellationToken = source.Token;
-            //}
-
-            var thread = new TurnThreadModel(turnContext);
+            var thread = new ThreadModel(turnContext);
             var threadId = threads.Add(thread);
             threadByContext.TryAdd(turnContext, thread);
             try
@@ -158,7 +157,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                 await UpdateBreakpointsAsync(cancellationToken).ConfigureAwait(false);
 
-                if (threadByContext.TryGetValue(context.Context, out TurnThreadModel thread))
+                if (threadByContext.TryGetValue(context.Context, out ThreadModel thread))
                 {
                     thread.LastContext = context;
                     thread.LastItem = item;
@@ -227,7 +226,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        private async Task UpdateThreadPhaseAsync(IThreadModel thread, object item, CancellationToken cancellationToken)
+        private async Task UpdateThreadPhaseAsync(ThreadModel thread, object item, CancellationToken cancellationToken)
         {
             var run = thread.Run;
             if (run.Phase == run.PhaseSent)
@@ -359,7 +358,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 {
                     var stackFrame = new Protocol.StackFrame()
                     {
-                        id = this.frames.Add(frame),
+                        id = EncodeFrame(thread, frame),
                         name = frame.Name
                     };
 
@@ -380,12 +379,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             else if (message is Protocol.Request<Protocol.Scopes> scopes)
             {
                 var arguments = scopes.arguments;
-                var frame = this.frames[arguments.frameId];
+                DecodeFrame(arguments.frameId, out var thread, out var frame);
                 const bool expensive = false;
 
                 var body = new
                 {
-                    scopes = new[] { new { expensive, name = frame.Name, variablesReference = VariablesReference(frame.Scopes) } }
+                    scopes = new[]
+                    {
+                        new { expensive, name = frame.Name, variablesReference = EncodeValue(thread, frame.Scopes) }
+                    }
                 };
 
                 return Protocol.Response.From(NextSeq, scopes, body);
@@ -393,14 +395,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             else if (message is Protocol.Request<Protocol.Variables> vars)
             {
                 var arguments = vars.arguments;
-                var context = this.values[arguments.variablesReference];
+                DecodeValue(arguments.variablesReference, out var thread, out var context);
+
                 var names = this.model.Names(context);
 
                 var body = new
                 {
                     variables = (from name in names
                                  let value = model[context, name]
-                                 let variablesReference = VariablesReference(value)
+                                 let variablesReference = EncodeValue(thread, value)
                                  select new { name = model.ToString(name), value = model.ToString(value), variablesReference }
                                 ).ToArray()
                 };
@@ -410,13 +413,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             else if (message is Protocol.Request<Protocol.SetVariable> setVariable)
             {
                 var arguments = setVariable.arguments;
-                var context = this.values[arguments.variablesReference];
+                DecodeValue(arguments.variablesReference, out var thread, out var context);
+
                 var value = this.model[context, arguments.name] = JToken.Parse(arguments.value);
 
                 var body = new
                 {
                     value = model.ToString(value),
-                    variablesReference = VariablesReference(value)
+                    variablesReference = EncodeValue(thread, value)
                 };
 
                 return Protocol.Response.From(NextSeq, setVariable, body);
@@ -424,7 +428,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             else if (message is Protocol.Request<Protocol.Evaluate> evaluate)
             {
                 var arguments = evaluate.arguments;
-                var frame = this.frames[arguments.frameId];
+                DecodeFrame(arguments.frameId, out var thread, out var frame);
                 var expression = arguments.expression.Trim('"');
                 var result = frame.DialogContext.State.GetValue<JToken>(expression);
                 if (result != null)
@@ -432,7 +436,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     var body = new
                     {
                         result = model.ToString(result),
-                        variablesReference = VariablesReference(result),
+                        variablesReference = EncodeValue(thread, result),
                     };
 
                     return Protocol.Response.From(NextSeq, evaluate, body);

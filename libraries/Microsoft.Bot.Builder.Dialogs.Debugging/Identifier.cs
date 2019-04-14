@@ -17,14 +17,77 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         int IEqualityComparer<T>.GetHashCode(T obj) => RuntimeHelpers.GetHashCode(obj);
     }
 
-    public sealed class Identifier<T> : IEnumerable<KeyValuePair<int, T>>
+    public static class Identifier
     {
-        private readonly Dictionary<T, int> codeByItem = new Dictionary<T, int>(ReferenceEquality<T>.Instance);
-        private readonly Dictionary<int, T> itemByCode = new Dictionary<int, T>();
-        private readonly object gate = new object();
-        private int last = 0;
+        private const ulong MORE = 0x80;
+        private const ulong DATA = 0x7F;
+        private static void Encode(ulong source, ref ulong target, ref int offset)
+        {
+            while (source > DATA)
+            {
+                ulong chunk = (byte)(source | MORE);
+                target |= chunk << offset;
+                offset += 8;
+                source >>= 7;
+            }
 
-        public int Add(T item)
+            {
+                ulong chunk = (byte)source;
+                target |= chunk << offset;
+                offset += 8;
+            }
+        }
+        private static void Decode(ref ulong source, out ulong target)
+        {
+            target = 0;
+            int offset = 0;
+            while (true)
+            {
+                ulong chunk = (byte)source;
+                target |= (chunk & DATA) << offset;
+                source >>= 8;
+
+                if ((chunk & MORE) == 0)
+                {
+                    break;
+                }
+
+                offset += 7;
+            }
+        }
+        public static ulong Encode(ulong one, ulong two)
+        {
+            ulong target = 0;
+            int offset = 0;
+            Encode(one, ref target, ref offset);
+            Encode(two, ref target, ref offset);
+            return target;
+        }
+
+        public static void Decode(ulong item, out ulong one, out ulong two)
+        {
+            Decode(ref item, out one);
+            Decode(ref item, out two);
+        }
+    }
+
+    /// <summary>
+    /// This class maintains an integer identifier for C# memory within the debug adapter
+    /// that is referenced in the debug adapter protocol with Visual Studio Code.
+    /// Examples include stack frames, values, and breakpoints.
+    /// Ideally, identitiers fit within a 53 bit JavaScript Number.
+    /// Ideally, identifiers can be recycled at some point.
+    /// Some identifiers have a lifetime scoped to a thread (e.g. values or stack frames)
+    /// For these combined identifiers, we use 7 bit encoding.
+    /// </summary>
+    public sealed class Identifier<T> : IEnumerable<KeyValuePair<ulong, T>>
+    {
+        private readonly Dictionary<T, ulong> codeByItem = new Dictionary<T, ulong>(ReferenceEquality<T>.Instance);
+        private readonly Dictionary<ulong, T> itemByCode = new Dictionary<ulong, T>();
+        private readonly object gate = new object();
+        private ulong last = 0;
+
+        public ulong Add(T item)
         {
             lock (gate)
             {
@@ -49,7 +112,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        IEnumerator<KeyValuePair<int, T>> IEnumerable<KeyValuePair<int, T>>.GetEnumerator()
+        IEnumerator<KeyValuePair<ulong, T>> IEnumerable<KeyValuePair<ulong, T>>.GetEnumerator()
         {
             lock (gate)
             {
@@ -57,9 +120,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<KeyValuePair<int, T>>)this).GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<KeyValuePair<ulong, T>>)this).GetEnumerator();
 
-        public T this[int code]
+        public T this[ulong code]
         {
             get
             {
@@ -69,7 +132,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 }
             }
         }
-        public int this[T item]
+        public ulong this[T item]
         {
             get
             {
@@ -80,7 +143,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        public bool TryGetValue(int code, out T item)
+        public bool TryGetValue(ulong code, out T item)
         {
             lock (gate)
             {

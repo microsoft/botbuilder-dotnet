@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         }
         public abstract class PerThread
         {
-            public int threadId { get; set; }
+            public ulong threadId { get; set; }
         }
         public class StackTrace : PerThread
         {
@@ -80,21 +80,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         }
         public class Scopes
         {
-            public int frameId { get; set; }
+            public ulong frameId { get; set; }
         }
         public class Variables
         {
-            public int variablesReference { get; set; }
+            public ulong variablesReference { get; set; }
         }
         public class SetVariable
         {
-            public int variablesReference { get; set; }
+            public ulong variablesReference { get; set; }
             public string name { get; set; }
             public string value { get; set; }
         }
         public class Evaluate
         {
-            public int frameId { get; set; }
+            public ulong frameId { get; set; }
             public string expression { get; set; }
         }
         public class ConfigurationDone
@@ -154,7 +154,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         public abstract class Reference
         {
-            public int id { get; set; }
+            public ulong id { get; set; }
         }
 
         public class Range : Reference
