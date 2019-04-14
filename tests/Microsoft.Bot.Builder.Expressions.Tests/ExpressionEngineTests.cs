@@ -263,7 +263,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("items[2]", "two", new HashSet<string> { "items[2]" }),
             Test("bag.list[bag.index - 2]", "blue", new HashSet<string> {"bag.list", "bag.index" }),
             # endregion
-
         };
 
         [DataTestMethod]
