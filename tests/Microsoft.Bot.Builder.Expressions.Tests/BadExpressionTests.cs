@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -152,12 +153,48 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("mod(5, 2.1)"), //  param should be integer
             Test("rand(5, 6.1)"), //  param should be integer
             Test("rand(7, 6)"), //  minvalue cannot be greater than maxValue
-            # endregion
+            #endregion
+            
+            #region Date and time function test
+            Test("addDays('errortime', 1)"),// error datetime format
+            Test("addDays(timestamp, 'hi')"),// second param should be integer
+            Test("addDays(timestamp)"),// should have 2 or 3 params
+            Test("addDays(timestamp, 1,'yyyy', 2)"),// should have 2 or 3 params
+            Test("addHours('errortime', 1)"),// error datetime format
+            Test("addHours(timestamp, 'hi')"),// second param should be integer
+            Test("addHours(timestamp)"),// should have 2 or 3 params
+            Test("addHours(timestamp, 1,'yyyy', 2)"),// should have 2 or 3 params
+            Test("addMinutes('errortime', 1)"),// error datetime format
+            Test("addMinutes(timestamp, 'hi')"),// second param should be integer
+            Test("addMinutes(timestamp)"),// should have 2 or 3 params
+            Test("addMinutes(timestamp, 1,'yyyy', 2)"),// should have 2 or 3 params
+            Test("addSeconds('errortime', 1)"),// error datetime format
+            Test("addSeconds(timestamp, 'hi')"),// second param should be integer
+            Test("addSeconds(timestamp)"),// should have 2 or 3 params
+            Test("addSeconds(timestamp, 1,'yyyy', 2)"),// should have 2 or 3 params
+            Test("dayOfMonth('errortime')"), // error datetime format
+            Test("dayOfMonth(timestamp, 1)"), //should have 1 param
+            Test("dayOfWeek('errortime')"), // error datetime format
+            Test("dayOfWeek(timestamp, 1)"), //should have 1 param
+            Test("dayOfYear('errortime')"), // error datetime format
+            Test("dayOfYear(timestamp, 1)"), //should have 1 param
+            Test("month('errortime')"), // error datetime format
+            Test("month(timestamp, 1)"), //should have 1 param
+            Test("date('errortime')"), // error datetime format
+            Test("date(timestamp, 1)"), //should have 1 param
+            Test("year('errortime')"), // error datetime format
+            Test("year(timestamp, 1)"), // should have 1 param
+            Test("formatDateTime('errortime')"), // error datetime format
+            Test("formatDateTime(timestamp, 'yyyy', 1)"), // should have 2 or 3 params
+            Test("subtractFromTime('errortime', 'yyyy', 1)"), // error datetime format
+            Test("subtractFromTime(timestamp, 'yyyy', '1')"), // third param should be integer
+            Test("subtractFromTime(timestamp, 'yyyy', 1, 1)"), // should have 3 params
+            Test("dateReadBack('errortime', 'errortime')"), // error datetime format
+            Test("dateReadBack(timestamp)"), // shold have two params
+            Test("getTimeOfDay('errortime')"), // error datetime format
+            Test("getTimeOfDay(timestamp, timestamp)"), // should have 1 param
 
-            # region Date and time function test
-            // TODO
             # endregion
-
             # region collection functions test
             Test("sum(items, 'hello')"),//should have 1 parameter
             Test("sum('hello')"),//first param should be list
@@ -191,17 +228,12 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), '1', '2'))"),// should have 2 parameter
            # endregion
 
-            # region Short Hand Expression test
-            //TODO
-            # endregion
-
             # region Memory access test
             Test("property(bag, 1)"),// second param should be string
             Test("one[0]"),  // one is not list
             Test("items[3]"), // index out of range
             Test("items[one+0.5]"), // index is not integer
             # endregion
-            
         };
 
         [DataTestMethod]
