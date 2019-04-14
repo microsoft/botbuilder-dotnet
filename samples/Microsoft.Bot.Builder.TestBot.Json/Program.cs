@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -15,7 +16,14 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                .Build();
+            .ConfigureAppConfiguration((hostingContext, config) =>
+            {
+                var env = hostingContext.HostingEnvironment;
+                config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                      .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+                config.AddEnvironmentVariables();
+                config.AddCommandLine(args);
+            }).UseStartup<Startup>()
+            .Build();
     }
 }
