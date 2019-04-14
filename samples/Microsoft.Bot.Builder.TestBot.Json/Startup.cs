@@ -67,7 +67,8 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 DebugSupport.SourceRegistry = sourceMap;
                 var model = new DataModel(Coercion.Instance);
                 var port = Configuration.GetValue<int>("debugport", 4712);
-                Console.WriteLine($"debugger port:{port}");
+                Console.WriteLine($"Debugger listening on port:{port}");
+                Console.WriteLine("     use --debugport # or use 'debugport' setting to change)");
                 debugAdapter = new DebugAdapter(port, model, sourceMap, sourceMap, new DebugLogger(nameof(DebugAdapter)));
             }
 

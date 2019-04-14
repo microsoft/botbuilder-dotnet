@@ -31,11 +31,11 @@
             "processId": "${command:pickProcess}"
         },
         {
-            "type": "dialog",
+            "type": "json",
             "request": "attach",
             "trace": false,
-            "name": "Attach to Dialog",
-            "debugServer": 9999,
+            "name": "Attach Bot",
+            "debugServer": 9999
         }
     ]
 }
