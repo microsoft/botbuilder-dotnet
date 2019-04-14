@@ -59,55 +59,99 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             # endregion
 
             # region Operators test
+            Test("'1' + 2"), // params should be number
+            Test("'1' * 2"), // params should be number
+            Test("'1' - 2"), // params should be number
+            Test("'1' / 2"), // params should be number
+            Test("'1' % 2"), // params should be number
+            Test("'1' ^ 2"), // params should be number
+            Test("'1' && true"), // params should be boolean
+            Test("'1' || true"), // params should be boolean
+            Test("!'1'"), // params should be boolean
+            Test("items >= 1"), // params should be number or string
+            Test("items <= 1"), // params should be number or string
             Test("'string'&one"), // $ can only accept string parameter
             # endregion
-
+            
             # region String functions test
             Test("concat(one, hello)"), // concat can only accept string parameter
-            Test("length(one)"), // length can only accept string parameter
+            Test("length(one, 1)"), // length can only have one param
             Test("replace(hello)"), // replace need three parameters
             Test("replace(one, 'l', 'k')"), // replace only accept string parameter
+            Test("replace('hi', 1, 'k')"), // replace only accept string parameter
+            Test("replace('hi', 'l', 1)"), // replace only accept string parameter
+            Test("replaceIgnoreCase(hello)"), // replaceIgnoreCase need three parameters
+            Test("replaceIgnoreCase(one, 'l', 'k')"), // replaceIgnoreCase only accept string parameter
+            Test("replaceIgnoreCase('hi', 1, 'k')"), // replaceIgnoreCase only accept string parameter
+            Test("replaceIgnoreCase('hi', 'l', 1)"), // replaceIgnoreCase only accept string parameter
             Test("split(hello)"), // split need two parameters
             Test("split(one, 'l')"), // split only accept string parameter
+            Test("split(hello, 1)"), // split only accept string parameter
             Test("substring(hello, 0.5)"), // the second parameter of substring must be integer
             Test("substring(one, 0)"), // the first parameter of substring must be string
             Test("substring(hello, 10)"), // the start index is out of the range of the string length
             Test("substring(hello, 0, 10)"), // the length of substring is out of the range of the original string
             Test("toLower(one)"), // the parameter of toLower must be string
+            Test("toLower('hi', 1)"), // should have 1 param
             Test("toUpper(one)"), // the parameter of toUpper must be string
+            Test("toUpper('hi', 1)"), // should have 1 param
             Test("trim(one)"), // the parameter of trim must be string
+            Test("trim('hi', 1)"), // should have 1 param
             # endregion
 
             # region Logical comparison functions test
             Test("and(one, hello, one < two)"), //one and hello are not bool type
             Test("greater(one, hello)"), // string and integer are not comparable
             Test("greater(one)"), // greater need two parameters
+            Test("greaterOrEquals(one, hello)"), // string and integer are not comparable
+            Test("greaterOrEquals(one)"), // function need two parameters
             Test("less(one, hello)"), // string and integer are not comparable
-            Test("less(one)"), // less need two parameters
+            Test("less(one)"), // function need two parameters
+            Test("lessOrEquals(one, hello)"), // string and integer are not comparable
+            Test("lessOrEquals(one)"), // function need two parameters
             Test("not(hello)"), // not can only accept bool parameter
             Test("equals(one)"), // equals must accept two parameters
+            Test("exists(1, 2)"), // function need one parameter
             Test("if(hello, 'r1', 'r2')"), // the first parameter of the if must be bool
             //Test("if(!exists(one), one, hello)"), // the second and third parameters of if must the same type
             //Test("or(hello == 'hello')"), // or function needs two parameters
             Test("or(hello, one)"), // or function only accept bool parameters
+            Test("not(false, one)"), // function need one parameter
+            Test("not(1)"), //accept boolean param
             # endregion
 
             # region Conversion functions test
-            // TODO
+            Test("float(hello)"), // param shoud be float format string
+            Test("float(hello, 1)"), // shold have 1 param
+            Test("int(hello)"), // param shoud be int format string
+            Test("int(1, 1)"), // shold have 1 param
+            Test("string(hello, 1)"), // shold have 1 param
+            Test("bool(hello)"), // param shoud be float format string
+            Test("bool(false, 1)"), // shold have 1 param
             # endregion
 
             # region Math functions test
-            Test("max(hello, one)"), // max can only accept two parameters with same type of integer, float or string
-            Test("mul(hello, one)"), // mul can only accept two parameters of interger or float
-            //Test("mul(one)"), // mul function need two parameters
-            Test("add(hello, 2)"), // string + int
+            Test("max(hello, one)"), // param should be number
+            Test("min(hello, one)"), // param should be number
+            Test("add(hello, 2)"), // param should be number
             Test("add()"), // arg count doesn't match
             Test("add(five, six)"), // no such variables
             //Test("add(one)"), // add function need two variables
+            Test("sub(hello, 2)"), // param should be number
+            Test("sub()"), // arg count doesn't match
+            Test("sub(five, six)"), // no such variables
+            //Test("sub(one)"), // add function need two variables
+            Test("mul(hello, one)"), // param should be number
+            //Test("mul(one)"), // mul function need two parameters
             Test("div(one, 0)"), // one cannot be divided by zero
             Test("div(hello, one)"), // string hello cannot be divided
-            Test("pow(2, hello)"), // pow cannot accept parameter of string
-            Test("mod(one, 0)"), // mod cannot accept zero as the second parameter
+            //Test("mul(one)"), // div function need two parameters
+            Test("exp(2, hello)"), // exp cannot accept parameter of string
+            Test("mod(1, 0)"), // mod cannot accept zero as the second parameter
+            Test("mod(5.5, 2)"), //  param should be integer
+            Test("mod(5, 2.1)"), //  param should be integer
+            Test("rand(5, 6.1)"), //  param should be integer
+            Test("rand(7, 6)"), //  minvalue cannot be greater than maxValue
             # endregion
 
             # region Date and time function test
@@ -115,6 +159,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             # endregion
 
             # region collection functions test
+            Test("sum(items, 'hello')"),//should have 1 parameter
+            Test("sum('hello')"),//first param should be list
+            Test("average(items, 'hello')"),//should have 1 parameter
+            Test("average('hello')"),//first param should be list
             Test("contains('hello world', 'hello', 'new')"),//should have 2 parameter
             Test("count(items, 1)"), //should have 1 parameter
             Test("count(1)"), //first param should be list
@@ -148,10 +196,12 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             # endregion
 
             # region Memory access test
+            Test("property(bag, 1)"),// second param should be string
             Test("one[0]"),  // one is not list
             Test("items[3]"), // index out of range
             Test("items[one+0.5]"), // index is not integer
             # endregion
+            
         };
 
         [DataTestMethod]

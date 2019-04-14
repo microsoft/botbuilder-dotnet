@@ -170,10 +170,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("min(mul(1, 2), 5) ", 2),
             Test("min(4, 5) ", 4),
             Test("min(1.0, two) + max(one, 2.0)", 3.0, oneTwo),
-            Test("sum(createArray(1, 2))", 3),
-            Test("sum(createArray(one, two, 3))", 6.0),
-            Test("average(createArray(1, 2))", 1.5),
-            Test("average(createArray(one, two, 3))", 2.0),
+           
             Test("sub(2, 1)", 1),
             Test("sub(2.0, 0.5)", 1.5),
             Test("mul(2, 5)", 10),
@@ -218,6 +215,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             # endregion
 
             # region  collection functions test
+            Test("sum(createArray(1, 2))", 3),
+            Test("sum(createArray(one, two, 3))", 6.0),
+            Test("average(createArray(1, 2))", 1.5),
+            Test("average(createArray(one, two, 3))", 2.0),
             Test("contains('hello world', 'hello')", true),
             Test("contains('hello world', 'hellow')", false),
             Test("contains(items, 'zero')", true),

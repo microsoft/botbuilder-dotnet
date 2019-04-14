@@ -694,6 +694,12 @@ namespace Microsoft.Bot.Builder.Expressions
             dynamic start;
             dynamic length;
             (str, error) = expression.Children[0].TryEvaluate(state);
+            if (expression.Children.Length == 2)
+            {
+                // Support just have start index
+                length = str.Length;
+            }
+
             if (error == null)
             {
                 var startExpr = expression.Children[1];
@@ -996,7 +1002,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 { ExpressionType.Substring,
                     new ExpressionEvaluator(
                         Substring, ReturnType.String,
-                        (expression) => ValidateOrder(expression, null, ReturnType.String, ReturnType.Number, ReturnType.Number)) },
+                        (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.String, ReturnType.Number)) },
                 { ExpressionType.ToLower, StringTransform(args => args[0].ToLower())},
                 { ExpressionType.ToUpper, StringTransform(args => args[0].ToUpper())},
                 { ExpressionType.Trim, StringTransform(args => args[0].Trim())},
@@ -1111,7 +1117,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 { ExpressionType.Accessor,
                     new ExpressionEvaluator(Accessor, ReturnType.Object, ValidateAccessor) },
                  { ExpressionType.Property,
-                    new ExpressionEvaluator(Property, ReturnType.Object, (expr) => ValidateArityAndAnyType(expr, 2, 2, ReturnType.Object, ReturnType.String)) },
+                    new ExpressionEvaluator(Property, ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)) },
                 { ExpressionType.If,
                     new ExpressionEvaluator(
                         Apply(args => args[0] ? args[1] : args[2]),
