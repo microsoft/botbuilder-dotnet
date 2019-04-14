@@ -211,22 +211,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return error;
         }
 
-        /// <summary>
-        /// Verify value is list.
-        /// </summary>
-        /// <param name="value">Value to check.</param>
-        /// <param name="expression">Expression that led to value.</param>
-        /// <returns>Error or null if valid.</returns>
-        public static string VerifyList(object value, Expression expression)
-        {
-            string error = null;
-            if (!(value is IList))
-            {
-                error = $"{expression} is not a list.";
-            }
-            return error;
-        }
-
+     
         /// <summary>
         /// Verify value is an integer.
         /// </summary>
@@ -919,7 +904,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         if (operands.All(u => (u is int))) return operands.Sum(u => (int)u);
                         if (operands.All(u => ((u is int) || (u is double)))) return operands.Sum(u => Convert.ToDouble(u));
                         return 0;
-                    }, VerifyList),
+                    }),
                         ReturnType.Number, ValidateUnary) },
                 { ExpressionType.Count,
                     new ExpressionEvaluator(Apply(args => ((IList<object>)args[0]).Count), ReturnType.Number, ValidateUnary)},
@@ -1019,7 +1004,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     new ExpressionEvaluator(
                         Apply(args => string.Join(args[1], ((IList) args[0]).OfType<object>().Select(x => x.ToString()))),
                         ReturnType.String,
-                        ValidateBinary)},
+                        expr => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String))},
 
                 // Date and time
                 { ExpressionType.AddDays, TimeTransform((ts, add) => ts.AddDays(add)) },
@@ -1153,13 +1138,16 @@ namespace Microsoft.Bot.Builder.Expressions
                 // Object manipulation and construction functions
                 // TODO
                 { ExpressionType.Json,
-                    new ExpressionEvaluator(Apply(args => JToken.Parse(args[0])), ReturnType.String, ValidateUnary) },
+                    new ExpressionEvaluator(Apply(args => JToken.Parse(args[0])), ReturnType.String, (expr) => ValidateOrder(expr, null, ReturnType.String)) },
                 { ExpressionType.AddProperty,
-                    new ExpressionEvaluator(Apply(args => {var newJobj = (JObject)args[0]; newJobj[args[1].ToString()] = args[2];return newJobj; })) },
+                    new ExpressionEvaluator(Apply(args => {var newJobj = (JObject)args[0]; newJobj[args[1].ToString()] = args[2];return newJobj; }), 
+                    ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String, ReturnType.Object)) },
                 { ExpressionType.SetProperty,
-                    new ExpressionEvaluator(Apply(args => {var newJobj = (JObject)args[0]; newJobj[args[1].ToString()] = args[2];return newJobj; })) },
+                   new ExpressionEvaluator(Apply(args => {var newJobj = (JObject)args[0]; newJobj[args[1].ToString()] = args[2];return newJobj; }),
+                    ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String, ReturnType.Object)) },
                 { ExpressionType.RemoveProperty,
-                    new ExpressionEvaluator(Apply(args => {var newJobj = (JObject)args[0]; newJobj.Property(args[1].ToString()).Remove();return newJobj; })) },
+                    new ExpressionEvaluator(Apply(args => {var newJobj = (JObject)args[0]; newJobj.Property(args[1].ToString()).Remove();return newJobj; }),
+                    ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)) },
 
                 { ExpressionType.Foreach, new ExpressionEvaluator(Foreach, ReturnType.Object, ValidateForeach)},
             };
