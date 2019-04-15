@@ -55,6 +55,11 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         {
             # region General test
             Test("func()"), // no such func
+            Test("a.func()"), // no such function
+            Test("(1.foreach)()"),// error func
+            Test("('str'.foreach)()"),// error func
+
+
             # endregion
 
             # region Operators test
@@ -228,6 +233,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
             # region Memory access test
             Test("property(bag, 1)"),// second param should be string
+            Test("Accessor(1)"),// first param should be string
             Test("one[0]"),  // one is not list
             Test("items[3]"), // index out of range
             Test("items[one+0.5]"), // index is not integer
