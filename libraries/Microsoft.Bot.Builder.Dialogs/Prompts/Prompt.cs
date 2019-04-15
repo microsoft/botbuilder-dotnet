@@ -83,56 +83,56 @@ namespace Microsoft.Bot.Builder.Dialogs
             return Dialog.EndOfTurn;
         }
 
-        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogConsultation> ConsultDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (dc == null)
-            {
-                throw new ArgumentNullException(nameof(dc));
-            }
-
             // Don't do anything for non-message activities
             if (dc.Context.Activity.Type != ActivityTypes.Message)
             {
-                return Dialog.EndOfTurn;
+                return new DialogConsultation()
+                {
+                    Desire = DialogConsultationDesire.CanProcess,
+                    Processor = async (dialogContext2) => Dialog.EndOfTurn,
+                };
             }
 
             // Perform base recognition
-            var state = (IDictionary<string, object>)dc.DialogState[PersistedState];
-            var options = (PromptOptions)dc.DialogState[PersistedOptions];
-            var recognized = await OnRecognizeAsync(dc.Context, state, options, cancellationToken).ConfigureAwait(false);
+            var state = dc.DialogState;
+            var recognized = await this.OnRecognizeAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions]).ConfigureAwait(false);
 
-            // Validate the return value
-            var isValid = false;
-            if (_validator != null)
+            return new DialogConsultation()
             {
-                var promptContext = new PromptValidatorContext<T>(dc.Context, recognized, state, options);
-                isValid = await _validator(promptContext, cancellationToken).ConfigureAwait(false);
-            }
-            else if (recognized.Succeeded)
-            {
-                isValid = true;
-            }
-
-            // Return recognized value or re-prompt
-            if (isValid)
-            {
-                if (Property != null)
+                Desire = recognized.Succeeded && !recognized.AllowInterruption ? DialogConsultationDesire.ShouldProcess : DialogConsultationDesire.CanProcess,
+                Processor = async (dialogContext) =>
                 {
-                    dc.State.SetValue(Property, recognized.Value);
-                }
+                    // Validate the return value
+                    bool isValid = false;
+                    if (this._validator != null)
+                    {
+                        isValid = await this._validator(new PromptValidatorContext<T>(dialogContext.Context, recognized, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions]), cancellationToken).ConfigureAwait(false);
+                    }
+                    else if (recognized.Succeeded)
+                    {
+                        isValid = true;
+                    }
 
-                return await dc.EndDialogAsync(recognized.Value).ConfigureAwait(false);
-            }
-            else
-            {
-                if (!dc.Context.Responded)
-                {
-                    await OnPromptAsync(dc.Context, state, options, true, cancellationToken).ConfigureAwait(false);
-                }
+                    // Return recognized value or re-prompt
+                    if (isValid)
+                    {
+                        return await dc.EndDialogAsync(recognized.Value, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        if (!dc.Context.Responded)
+                        {
+                            await this.OnPromptAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions], true).ConfigureAwait(false);
+                        }
 
-                return Dialog.EndOfTurn;
-            }
+                        return Dialog.EndOfTurn;
+                    }
+                },
+            };
         }
+
 
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {

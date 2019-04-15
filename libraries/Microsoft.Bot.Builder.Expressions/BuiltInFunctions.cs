@@ -472,7 +472,95 @@ namespace Microsoft.Bot.Builder.Expressions
             }
             if (error == null && children[0] is Constant cnst && cnst.ReturnType == ReturnType.String)
             {
-                (value, error) = instance.AccessProperty((string)cnst.Value, expression);
+                (value, error) = AccessProperty(instance, (string)cnst.Value);
+            }
+            return (value, error);
+        }
+
+        private static (object value, string error) Property(Expression expression, object state)
+        {
+            object value = null;
+            string error = null;
+            object instance = null;
+            object property = null;
+
+            var children = expression.Children;
+            (instance, error) = children[0].TryEvaluate(state);
+            (property, error) = children[1].TryEvaluate(state);
+            if(error == null)
+            {
+                (value, error) =  AccessProperty(instance, (string)property);
+            }
+
+            return (value, error);
+            
+        }
+        /// <summary>
+        /// Lookup a property in IDictionary, JObject or through reflection.
+        /// </summary>
+        /// <param name="instance">Instance with property.</param>
+        /// <param name="property">Property to lookup.</param>
+        /// <param name="expression">Expression that generated instance.</param>
+        /// <returns>Value and error information if any.</returns>
+        private static (object value, string error) AccessProperty(object instance, string property)
+        {
+            // NOTE: This returns null rather than an error if property is not present
+            object value = null;
+            string error = null;
+            if (instance != null)
+            {
+                if (instance is IDictionary<string, object> idict)
+                {
+                    idict.TryGetValue(property, out value);
+                }
+                else if (instance is System.Collections.IDictionary dict)
+                {
+                    if (dict.Contains(property))
+                    {
+                        value = dict[property];
+                    }
+                }
+                else if (instance is JObject jobj)
+                {
+                    if (jobj.TryGetValue(property, out var jtoken))
+                    {
+                        if (jtoken is JArray jarray)
+                        {
+                            value = jarray.ToArray<object>();
+                        }
+                        else if (jtoken is JValue jvalue)
+                        {
+                            value = jvalue.Value;
+                            if (jvalue.Type == JTokenType.Integer)
+                            {
+                                value = jvalue.ToObject<int>();
+                            }
+                            else if (jvalue.Type == JTokenType.String)
+                            {
+                                value = jvalue.ToObject<string>();
+                            }
+                            else if (jvalue.Type == JTokenType.Boolean)
+                            {
+                                value = jvalue.ToObject<bool>();
+                            }
+                            else if (jvalue.Type == JTokenType.Float)
+                            {
+                                value = jvalue.ToObject<double>();
+                            }
+                        }
+                        else value = jtoken;
+                    }
+                }
+                else
+                {
+                    // Use reflection
+                    var type = instance.GetType();
+                    var prop = type.GetProperty(property);
+                    if (prop != null)
+                    {
+                        value = prop.GetValue(instance);
+                    }
+                }
             }
             return (value, error);
         }
@@ -947,7 +1035,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 { ExpressionType.Month, new ExpressionEvaluator(
                    Apply(args => ParseTimestamp(args[0]).Month, VerifyString), ReturnType.Number, ValidateUnaryString) },
                 { ExpressionType.Date, new ExpressionEvaluator(
-                   Apply(args => ParseTimestamp(args[0]).Date.ToString("d"), VerifyString), ReturnType.String, ValidateUnaryString) },
+                   Apply(args => ParseTimestamp(args[0]).Date.ToString("M/dd/yyyy"), VerifyString), ReturnType.String, ValidateUnaryString) },
                 { ExpressionType.Year, new ExpressionEvaluator(
                    Apply(args => ParseTimestamp(args[0]).Year, VerifyString), ReturnType.Number, ValidateUnaryString) },
                 { ExpressionType.UtcNow, new ExpressionEvaluator(
@@ -1037,6 +1125,8 @@ namespace Microsoft.Bot.Builder.Expressions
                 // Misc
                 { ExpressionType.Accessor,
                     new ExpressionEvaluator(Accessor, ReturnType.Object, ValidateAccessor) },
+                 { ExpressionType.Property,
+                    new ExpressionEvaluator(Property, ReturnType.Object, (expr) => ValidateArityAndAnyType(expr, 2, 2, ReturnType.Object, ReturnType.String)) },
                 { ExpressionType.If,
                     new ExpressionEvaluator(
                         Apply(args => args[0] ? args[1] : args[2]),

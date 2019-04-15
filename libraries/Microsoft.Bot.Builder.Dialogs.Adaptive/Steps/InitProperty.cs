@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,6 +34,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
+            var prop = await new TextTemplate(this.Property).BindToData(dc.Context, dc.State, (property, data) => dc.State.GetValue<object>(data, property)).ConfigureAwait(false);
+
 
             // Ensure planning context
             if (dc is PlanningContext planning)
@@ -40,10 +43,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 switch (Type.ToLower())
                 {
                     case "array":
-                        dc.State.SetValue(this.Property, new JArray());
+                        dc.State.SetValue(prop, new JArray());
                         break;
                     case "object":
-                        dc.State.SetValue(this.Property, new JObject());
+                        dc.State.SetValue(prop, new JObject());
                         break;
                 }
 

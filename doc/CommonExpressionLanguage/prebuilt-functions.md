@@ -9,6 +9,7 @@ or you can browse the functions based on [alphabetical order](#alphabetical-list
 - [Conversion functions](#Conversion-functions)
 - [Math functions](#Math-functions)
 - [Date and time functions](#Date-and-time-functions)
+- [Other functions](#Other-functions)
 
 ### String functions
 |Function	|Explanation|
@@ -31,6 +32,7 @@ or you can browse the functions based on [alphabetical order](#alphabetical-list
 |[join](#join) 	|Return a string that has all the items from an array and has each character separated by a delimiter. Join(collection, delimiter). Join(createArray(‘a’,’b’), ‘.’) = “a.b”	|
 |[last](#last) 	|Returns the last item from the collection	|
 |[count](#count)	|Returns the number of items in the collection	|
+|[forEach](#forEach) |Iterates and applies an expression over each item in a collection. |
 
 
 ### Logical comparison functions
@@ -88,6 +90,11 @@ or you can browse the functions based on [alphabetical order](#alphabetical-list
 |date	|Returns date for a given timestamp	|
 |year	|Returns year for the given timestamp	|
 |getTimeOfDay	|Returns time of day for a given timestamp (midnight = 12AM, morning = 12:01AM – 11:59PM, noon = 12PM, afternoon = 12:01PM -05:59PM, evening = 06:00PM – 10:00PM, night = 10:01PM – 11:59PM) 	|
+
+### Other functions
+|Function	|Explanation|
+|-----------|-----------|
+|[lgTemplate](#lgTemplate) | Expand a language generation template |
 
 <a name="alphabetical-list"></a>
 
@@ -817,6 +824,52 @@ float('10.333')
 
 And returns this result: `10.333`
 
+<a name="forEach"></a>
+
+### forEach
+
+Iterates and applies an expression over every item in a collection.
+
+```
+forEach(collection, iterator, expression)
+```
+
+| Parameter | Required | Type | Description |
+| --------- | -------- | ---- | ----------- |
+| collection | Yes | Array | Collection to iterate on |
+| iterator | Yes | literal | name of the iterator |
+| expression | Yes | String | expression to apply on each item in the collection |
+|||||
+
+| Return value | Type | Description |
+| ------------ | ---- | ----------- |
+| <*updated-collection*> | Array | The updated collection where each item has the expression applied |
+||||
+
+*Example*
+
+This example takes a complex object, iterates and extracts a specific piece of information from it and returns a new array.
+
+```
+myCollection = {
+    "Values": [
+        {
+            "Value": "quick"
+        }, 
+        {
+            "Value": "brown"
+        },
+        {
+            "Value": "fox"
+        }
+    ]
+}
+
+forEach(myCollection, item, 'item.Value')
+```
+
+The forEach call above returns a new Array that has ["quick", "brown", "fox"].
+
 <a name="formatDateTime"></a>
 
 ### formatDateTime
@@ -1133,6 +1186,44 @@ And return these results:
 
 * First example: `true`
 * Second example: `false`
+
+<a name="lgTemplate"></a>
+
+### lgTemplate
+
+Evaluates a language generation template and returns the result.
+
+```
+lgTemplate('templateName', arg1, arg2, ...)
+```
+
+| Parameter | Required | Type | Description |
+| --------- | -------- | ---- | ----------- |
+| templateName | Yes | String | name of the language generation template to evaluate |
+| arg1, arg2, ..| No | Object | parameters to pass to the language generation template for evaluation |
+|||||
+
+| Return value | Type | Description |
+| ------------ | ---- | ----------- |
+| <*result*> | Stromg | Resulting string from evaluating the language generation template |
+||||
+
+*Example*
+
+Assuming the following language generation template - 
+```
+# template1
+- hi
+- hello
+```
+
+```
+lgTemplate('template1')
+```
+
+Returns either 'hi' or 'hello'. 
+
+See [here](../LanguageGeneration) to learn more about language generation
 
 <a name="max"></a>
 

@@ -2,15 +2,20 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Recognizers.Text;
@@ -27,15 +32,20 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
         private readonly ResourceExplorer resourceExplorer;
 
-        private TestBotAccessors accessors;
+        private UserState userState;
+        private ConversationState conversationState;
+        private IStatePropertyAccessor<DialogState> dialogState;
 
         private Source.IRegistry registry;
 
-        public TestBot(TestBotAccessors accessors, ResourceExplorer resourceExplorer, Source.IRegistry registry)
+        public TestBot(UserState userState, ConversationState conversationState, ResourceExplorer resourceExplorer, Source.IRegistry registry)
         {
+            dialogState = conversationState.CreateProperty<DialogState>("DialogState");
+
             this.registry = registry;
-            this.accessors = accessors;
             this.resourceExplorer = resourceExplorer;
+            
+            // auto reload dialogs when file changes
             this.resourceExplorer.Changed += ResourceExplorer_Changed;
 
             LoadRootDialog();
@@ -55,6 +65,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             System.Diagnostics.Trace.TraceInformation("Loading resources...");
             var rootFile = resourceExplorer.GetResource(@"VARootDialog.main.dialog");
             //var rootFile = resourceExplorer.GetResource("ToDoLuisBot.main.dialog");
+            //var rootFile = resourceExplorer.GetResource(@"ToDoBot.main.dialog");
             //var rootFile = resourceExplorer.GetResource("NoMatchRule.main.dialog");
             //var rootFile = resourceExplorer.GetResource("EndTurn.main.dialog");
             //var rootFile = resourceExplorer.GetResource("IfCondition.main.dialog");
@@ -65,11 +76,83 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             //var rootFile = resourceExplorer.GetResource("ExternalLanguage.main.dialog");
             //var rootFile = resourceExplorer.GetResource("CustomStep.dialog");
 
-            rootDialog = DeclarativeTypeLoader.Load<IDialog>(rootFile.FullName, resourceExplorer, registry);
-            _dialogs = new DialogSet(accessors.ConversationDialogState);
+            // rootDialog = DeclarativeTypeLoader.Load<IDialog>(rootFile.FullName, resourceExplorer, registry);
+            rootDialog = LoadCodeDialog();
+
+            _dialogs = new DialogSet(this.dialogState);
             _dialogs.Add(rootDialog);
 
             System.Diagnostics.Trace.TraceInformation("Done loading resources.");
+        }
+
+        private AdaptiveDialog LoadCodeDialog()
+        {
+            var expressionParser = new ExpressionEngine();
+            var dialog = new AdaptiveDialog()
+            {
+                AutoEndDialog = false,
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>()
+                    {
+                        { "Intent1", "intent1" },
+                        { "Intent2", "intent2" },
+                        { "Intent3", "intent3" },
+                        { "Intent4", "intent4" },
+                    }
+                },
+                Steps = new List<IDialog>()
+                {
+                    new SendActivity("hello1"),
+                    new SendActivity("hello2"),
+                    new IfCondition()
+                    {
+                        Condition = expressionParser.Parse("user.name == null"),
+                        Steps = new List<IDialog>()
+                        {
+                            new SendActivity("name is null"),
+                        },
+                        ElseSteps = new List<IDialog>()
+                        {
+                            new SendActivity("name is not null"),
+                        }
+                    },
+                    new SendActivity("hello4")
+                },
+                Rules = new List<IRule>()
+                {
+                    new IntentRule("Intent1")
+                    {
+                        Steps = new List<IDialog>()
+                        {
+                            new SendActivity("Intent 1 triggered")
+                        }
+                    },
+                    new IntentRule("Intent2")
+                    {
+                        Steps = new List<IDialog>()
+                        {
+                            new SendActivity("Intent 2 triggered")
+                        }
+                    },
+                    new IntentRule("Intent3")
+                    {
+                        Steps = new List<IDialog>()
+                        {
+                            new SendActivity("Intent 3 triggered")
+                        }
+                    },
+                    new UnknownIntentRule()
+                    {
+                        Steps = new List<IDialog>()
+                        {
+                            new SendActivity("Wha?")
+                        }
+                    },
+                }
+            };
+
+            return dialog;
         }
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))

@@ -8,6 +8,8 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
+using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
@@ -51,6 +53,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </remarks>
         public bool AutoEndDialog { get; set; } = true;
 
+        /// <summary>
+        /// Gets or sets the selector for picking the possible rules to execute.
+        /// </summary>
+        public IRuleSelector Selector { get; set; }
+
         public override IBotTelemetryClient TelemetryClient
         {
             get
@@ -75,7 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             if (options is CancellationToken)
             {
-                throw new ArgumentException($"{nameof(options)} should not ever be a cancealltion token");
+                throw new ArgumentException($"{nameof(options)} should not ever be a cancellation token");
             }
 
             if (!installedDependencies)
@@ -89,6 +96,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     AddDialog(rule.Steps.ToArray());
                 }
             }
+
 
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
             activeDialogState["planningState"] = new PlanningState();
@@ -105,6 +113,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             // Create a new planning context
             var planning = PlanningContext.Create(dc, state);
+
+            if (this.Selector == null)
+            {
+                // Default to most specific then first
+                this.Selector = new MostSpecificSelector
+                {
+                    Selector = new FirstSelector()
+                };
+            }
+            await this.Selector.Initialize(planning, this.Rules, true, cancellationToken).ConfigureAwait(false);
 
             if (this.Steps.Any())
             {
@@ -185,15 +203,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             };
         }
 
-        private static async Task SaveBotState(IStorage storage, StoredBotState newState, BotStateStorageKeys keys)
-        {
-            await storage.WriteAsync(new Dictionary<string, object>()
+        private static async Task SaveBotState(IStorage storage, StoredBotState newState, BotStateStorageKeys keys) => await storage.WriteAsync(new Dictionary<string, object>()
             {
                 { keys.UserState, newState.UserState},
                 { keys.ConversationState, newState.ConversationState},
                 { keys.DialogState, newState.DialogStack}
             });
-        }
 
         private static BotStateStorageKeys ComputeKeys(ITurnContext context)
         {
@@ -328,10 +343,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        public IDialog FindDialog(string dialogId)
-        {
-            return dialogs.Find(dialogId);
-        }
+        public IDialog FindDialog(string dialogId) => dialogs.Find(dialogId);
 
         public void AddDialog(IEnumerable<IDialog> dialogs)
         {
@@ -341,10 +353,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        protected override string OnComputeId()
-        {
-            return $"AdaptiveDialog[{this.BindingPath()}]";
-        }
+        protected override string OnComputeId() => $"AdaptiveDialog[{this.BindingPath()}]";
 
         public async Task<BotTurnResult> OnTurnAsync(ITurnContext context, StoredBotState storedState, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -676,7 +685,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 }
                 else if (dialogEvent.Name == AdaptiveEvents.RecognizedIntent.ToString())
                 {
-                    handled = await QueueBestMatches(planning, dialogEvent, cancellationToken).ConfigureAwait(false);
+                    handled = await QueueFirstMatchAsync(planning, dialogEvent, cancellationToken).ConfigureAwait(false);
 
                     if (!handled)
                     {
@@ -710,205 +719,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         private async Task<bool> QueueFirstMatchAsync(PlanningContext planning, DialogEvent dialogEvent, CancellationToken cancellationToken)
         {
-            for (int i = 0; i < Rules.Count; i++)
+            var selection = await Selector.Select(planning, cancellationToken).ConfigureAwait(false);
+            if (selection.Any())
             {
-                await planning.DebuggerStepAsync(Rules[i], dialogEvent, cancellationToken).ConfigureAwait(false);
-                var expression = Rules[i].GetExpression();
-                var (value, error) = expression.TryEvaluate(planning.State);
-                var result = error == null && (bool)value;
-                if (result == true)
-                {
-                    System.Diagnostics.Trace.TraceInformation($"Executing Dialog: {this.Id} Rule[{i}]: {Rules[i].GetType().Name}: {expression}");
-                    var changes = await Rules[i].ExecuteAsync(planning).ConfigureAwait(false);
+                var rule = Rules[selection.First()];
+                await planning.DebuggerStepAsync(rule, dialogEvent, cancellationToken).ConfigureAwait(false);
+                System.Diagnostics.Trace.TraceInformation($"Executing Dialog: {this.Id} Rule[{selection}]: {rule.GetType().Name}: {rule.GetExpression(null)}");
+                var changes = await rule.ExecuteAsync(planning).ConfigureAwait(false);
 
-                    if (changes != null && changes.Count > 0)
-                    {
-                        planning.QueueChanges(changes[0]);
-                        return true;
-                    }
+                if (changes != null && changes.Count > 0)
+                {
+                    planning.QueueChanges(changes[0]);
+                    return true;
                 }
             }
-
-            return false;
-        }
-
-        private async Task<bool> QueueBestMatches(PlanningContext planning, DialogEvent dialogEvent, CancellationToken cancellationToken)
-        {
-            // Get list of proposed changes
-            var allChanges = new List<PlanChangeList>();
-
-            for (int i = 0; i < Rules.Count; i++)
-            {
-                await planning.DebuggerStepAsync(Rules[i], dialogEvent, cancellationToken).ConfigureAwait(false);
-                var expression = Rules[i].GetExpression();
-                var (value, error) = expression.TryEvaluate(planning.State);
-                var result = error == null && (bool)value;
-                if (result == true)
-                {
-                    System.Diagnostics.Trace.TraceInformation($"Executing Dialog: {this.Id} Rule[{i}]: {Rules[i].GetType().Name}: {expression}");
-                    var changes = await Rules[i].ExecuteAsync(planning).ConfigureAwait(false);
-
-                    if (changes != null)
-                    {
-                        changes.ForEach(c => allChanges.Add(c));
-                    }
-                }
-            }
-
-            // Find changes with most coverage
-            var appliedChanges = new List<Tuple<int, PlanChangeList>>();
-
-            if (allChanges.Count > 0)
-            {
-                while (true)
-                {
-                    // Find the change that has the most intents and entities covered
-                    var index = FindBestChange(allChanges);
-
-                    if (index == -1)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        // Add change to apply list
-                        var change = allChanges[index];
-                        appliedChanges.Add(new Tuple<int, PlanChangeList>(index, change));
-
-                        // Remove applied changes
-                        allChanges.RemoveAt(index);
-
-
-                        // Remove changes with overlapping intents
-                        for (int i = allChanges.Count - 1; i >= 0; i--)
-                        {
-                            if (IntentsOverlap(change, allChanges[i]))
-                            {
-                                allChanges.RemoveAt(i);
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Queue changes
-            if (appliedChanges.Count > 0)
-            {
-                var sorted = appliedChanges.OrderBy(c => c.Item1).ToList();
-
-                if (sorted.Count > 0)
-                {
-                    // Look for the first change that starts a new plan
-                    for (int i = 0; i < sorted.Count; i++)
-                    {
-                        var changeType = sorted[i].Item2.ChangeType;
-
-                        if (changeType == PlanChangeTypes.NewPlan || changeType == PlanChangeTypes.ReplacePlan)
-                        {
-                            // Queue change and remove from list
-                            planning.QueueChanges(sorted[i].Item2);
-                            sorted.RemoveAt(i);
-                            break;
-                        }
-                    }
-
-                    // Queue additional changes
-                    // Additional NewPlan or ReplacePlan steps will be changed to a DoStepsLater
-                    // change type so that they're appended to the new plan
-                    for (int i = 0; i < sorted.Count; i++)
-                    {
-                        var change = sorted[i].Item2;
-
-                        switch (change.ChangeType)
-                        {
-                            case PlanChangeTypes.DoSteps:
-                            case PlanChangeTypes.DoStepsBeforeTags:
-                            case PlanChangeTypes.DoStepsLater:
-                                planning.QueueChanges(change);
-                                break;
-                            case PlanChangeTypes.NewPlan:
-                            case PlanChangeTypes.ReplacePlan:
-                                change.ChangeType = PlanChangeTypes.DoStepsLater;
-                                planning.QueueChanges(change);
-                                break;
-                        }
-                    }
-                }
-                else
-                {
-                    // Just queue the change
-                    planning.QueueChanges(sorted[0].Item2);
-                }
-
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        private int FindBestChange(List<PlanChangeList> changes)
-        {
-            PlanChangeList top = null;
-            var topIndex = -1;
-
-            for (int i = 0; i < changes.Count; i++)
-            {
-                var change = changes[i];
-                var better = false;
-
-                if (top == null)
-                {
-                    better = true;
-                }
-                else
-                {
-                    var topIntents = top.IntentsMatched ?? new List<string>();
-                    var intents = change.IntentsMatched ?? new List<string>();
-
-                    if (intents.Count > topIntents.Count)
-                    {
-                        better = true;
-                    }
-                    else if (intents.Count == topIntents.Count)
-                    {
-                        var topEntities = top.EntitiesMatched ?? new List<string>();
-                        var entities = change.EntitiesMatched ?? new List<string>();
-                        better = entities.Count > topEntities.Count;
-                    }
-                }
-
-                if (better)
-                {
-                    top = change;
-                    topIndex = i;
-                }
-            }
-
-            return topIndex;
-        }
-
-        private bool IntentsOverlap(PlanChangeList c1, PlanChangeList c2)
-        {
-            var i1 = c1.IntentsMatched ?? new List<string>();
-            var i2 = c2.IntentsMatched ?? new List<string>();
-
-            if (i2.Count > 0 && i1.Count > 0)
-            {
-                for (int i = 0; i < i2.Count; i++)
-                {
-                    if (i1.IndexOf(i2[i]) >= 0)
-                    {
-                        return true;
-                    }
-                }
-            }
-            else if (i2.Count == i1.Count)
-            {
-                return true;
-            }
-
             return false;
         }
     }

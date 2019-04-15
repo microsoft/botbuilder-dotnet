@@ -17,7 +17,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         public static IEnumerable<object[]> Data => new[]
        {
             // operators test
-            Test("first(nestedItems).x", 1, new HashSet<string> { "nestedItems"}),
             Test("1 + 2", 3),
             Test("1 - 2", -1),
             Test("1.0 + 2.0", 3.0),
@@ -168,7 +167,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("dayOfWeek(timestamp)", 4),//Thursday
             Test("dayOfYear(timestamp)", 74),
             Test("month(timestamp)", 3),
-            Test("date(timestamp)", "3/15/2018"),//Dfefault. TODO
+            Test("date(timestamp)", "3/15/2018"),//Default. TODO
             Test("year(timestamp)", 2018),
             Test("formatDateTime(timestamp)", "2018-03-15T13:00:00.0000000Z"),
             Test("formatDateTime(timestamp, 'MM-dd-yy')", "03-15-18"),
@@ -259,6 +258,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("join(foreach(nestedItems, i, i.x + first(nestedItems).x), ',')", "2,3,4", new HashSet<string>{ "nestedItems"}),
             Test("join(foreach(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3", new HashSet<string>{ "items"}),
 
+            //Memory access
+             Test("first(nestedItems).x", 1, new HashSet<string> { "nestedItems"}),
+             Test("property(bag, concat('na','me'))","mybag")
+
         };
 
         [DataTestMethod]
@@ -279,7 +282,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                         four = 4.0,
                     },
                     list = new[] { "red", "blue" },
-                    index = 3
+                    index = 3,
+                    name = "mybag"
                 },
                 items = new string[] { "zero", "one", "two" },
                 nestedItems = new []

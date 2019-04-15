@@ -113,6 +113,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             // Steps
             Register("Microsoft.BeginDialog", typeof(BeginDialog));
             Register("Microsoft.CancelAllDialog", typeof(CancelAllDialogs));
+            Register("Microsoft.DebugBreak", typeof(DebugBreak));
             Register("Microsoft.DeleteProperty", typeof(DeleteProperty));
             Register("Microsoft.EditArray", typeof(EditArray));
             // Register("Microsoft.EmitEvent", typeof(EmitEvent));

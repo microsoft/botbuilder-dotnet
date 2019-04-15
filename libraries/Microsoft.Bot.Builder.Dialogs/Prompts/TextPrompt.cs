@@ -54,6 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var message = turnContext.Activity.AsMessageActivity();
                 if (message.Text != null)
                 {
+                    result.AllowInterruption = true;
                     result.Succeeded = true;
                     result.Value = message.Text;
                 }

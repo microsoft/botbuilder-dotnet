@@ -7,7 +7,7 @@
   "keywords": [ "debuggers", "bot" ],
   "icon": "icon.png",
   "preview": true,
-  "version": "0.0.3",
+  "version": "0.0.5",
   "publisher": "Microsoft",
   "license": "SEE LICENSE file",
   "engines": {
@@ -17,34 +17,22 @@
   "contributes": {
     "languages": [
       {
-        "id": "dialog",
-        "aliases": [
-          "dialog",
-          "DIALOG"
-        ],
+        "id": "json",
         "extensions": [
           ".dialog"
-        ],
-        "configuration": "./language-configuration.json"
-      }
-    ],
-    "grammars": [
-      {
-        "language": "dialog",
-        "scopeName": "source.json",
-        "path": "./syntaxes/JSON.tmLanguage.json"
+        ]
       }
     ],
     "debuggers": [
       {
-        "type": "dialog",
+        "type": "json",
         "label": "Bot Framework Dialog Debugger",
         "languages": [
-          "dialog"
+          "json"
         ],
         "initialConfigurations": [
 					{
-						"type": "dialog",
+						"type": "json",
 						"request": "attach",
             "name": "Attach to Dialog",
             "debugServer": 4712
@@ -54,7 +42,7 @@
     ],
     "breakpoints": [
       {
-        "language": "dialog"
+        "language": "json"
       }
     ]
   }

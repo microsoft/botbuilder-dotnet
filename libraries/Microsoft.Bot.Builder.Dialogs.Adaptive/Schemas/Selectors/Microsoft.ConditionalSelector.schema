@@ -1,0 +1,19 @@
+﻿{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IRuleSelector)",
+    "title": "Condtional Rule Selector",
+    "description": "Use a rule selector based on a condition",
+    "type": "object",
+    "properties": {
+        "condition": {
+            "$type": "Microsoft.IExpression"
+        },
+        "ifTrue": {
+            "$type": "Microsoft.IRuleSelector"
+        },
+        "ifFalse": {
+            "$type": "Microsoft.IRuleSelector"
+        },
+        "required": ["condition", "iftrue", "iffalse"]
+    }
+}

@@ -17,9 +17,9 @@
 - - [X] Wire up expression language support in Adaptive dialog rules and steps
 - - [X] Add support for explicit values with both 'value' and "value". [Spec](https://microsoft.sharepoint.com/:w:/t/ConversationalAI785/EfIx5-gPhE5HlAGhvNEoKLIBo0AeoWmq1ITRhai2q2trLA?e=zX8HSY)
 - - [ ] New pre-built functions ask
-    - - [ ] [4/11] forEach(collection, iterator, expression)
+    - - [X] [4/11] forEach(collection, iterator, expression)
     - - [ ] [Post //BUILD] match(regExp)
-    - - [ ] [4/11] lgTemplate(templateName, arg1, arg2,...) - drop support for @{[]} 
+    - - [X] [4/11] lgTemplate(templateName, arg1, arg2,...) - drop support for @{[]} 
     - - [ ] property(scope, expression) evaluates to scope.<expressionResult>
 - - [ ] [4/11] Drop support for object manipulation functions (json, addProperty, setProperty, removeProperty) from expression library - from doc. Vishwac. 
 - - [ ] [4/11] Document exists function - Vishwac.

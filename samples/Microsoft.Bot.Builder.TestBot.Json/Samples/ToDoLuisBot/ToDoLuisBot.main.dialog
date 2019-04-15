@@ -18,7 +18,7 @@
     "rules": [
         {
             "$type": "Microsoft.IntentRule",
-            "intent": "AddItem",
+            "intent": "AddToDo",
             "steps": [
                 "ToDoLuisBot.AddItem"
             ]
