@@ -15,6 +15,12 @@
         }
       ]
     },
+
+    {
+      "$type": "Microsoft.SendActivity",
+      "activity": "{dialog.token.Token}"
+    },
+
     {
       "$type": "Microsoft.HttpRequest",
       "url": "https://graph.microsoft.com/v1.0/me/calendarview?startdatetime={utcNow()}&enddatetime={addDays(utcNow(), 1)}",
@@ -23,10 +29,10 @@
         "Authorization": "Bearer {dialog.token.Token}"
       },
       "Property": "user.getGraphMeetings"
+    },
+    {
+      "$type": "Microsoft.SendActivity",
+      "activity": "{user.getGraphMeetings}"
     }
-    //{
-    //  "$type": "Microsoft.SendActivity",
-    //  "activity": "user.getGraphMeetings"
-    //}
   ]
 }

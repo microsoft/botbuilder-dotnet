@@ -30,9 +30,6 @@
 - ELSE:
   - You should not be here.
 
-# ReshowOverview
-- Do you want to see your overview again? You can reply yes or no.
-
 # ReadFocusedMeeting(user)
 - Here is the detail for {user.focusedMeeting.subject}:
 

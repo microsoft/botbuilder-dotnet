@@ -4,7 +4,6 @@
   "recognizer": {
     "$type": "Microsoft.RegexRecognizer",
     "intents": {
-      "ShowMeetingIntent": "(?i)show meeting",
       "CreateMeetingIntent": "(?i)create meeting",
       "HelpIntent": "(?i)help",
       "ShowNextPageIntent": "(?i)next page meeting",
@@ -18,30 +17,21 @@
       "$type": "Microsoft.IntentRule",
       "intent": "UpdateMeetingIntent",
       "steps": [
-        // should be initialize
-        "ClearUserData",
-        "UpdateMeeting",
-        "ClearUserData"
+        "UpdateMeeting"
       ]
     },
     {
       "$type": "Microsoft.IntentRule",
       "intent": "AcceptMeetingIntent",
       "steps": [
-        // should be initialize
-        "ClearUserData",
-        "AcceptMeeting",
-        "ClearUserData"
+        "AcceptMeeting"
       ]
     },
     {
       "$type": "Microsoft.IntentRule",
       "intent": "DeclineMeetingIntent",
       "steps": [
-        // should be initialize
-        "ClearUserData",
-        "DeclineMeeting",
-        "ClearUserData"
+        "DeclineMeeting"
       ]
     }
   ],

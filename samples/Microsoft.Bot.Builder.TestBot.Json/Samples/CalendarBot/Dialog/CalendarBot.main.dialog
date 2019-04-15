@@ -28,9 +28,9 @@
       "intent": "ShowMeetingIntent",
       "steps": [
         // should be initialize
-        "ClearUserData",
+        "CalendarClearUserData",
         "ShowMeeting",
-        "ClearUserData"
+        "CalendarClearUserData"
       ]
     },
     {
@@ -38,9 +38,9 @@
       "intent": "CreateMeetingIntent",
       "steps": [
         // should be initialize
-        "ClearUserData",
+        "CalendarClearUserData",
         "CreateMeeting",
-        "ClearUserData"
+        "CalendarClearUserData"
       ]
     },
     {
@@ -48,9 +48,9 @@
       "intent": "UpdateMeetingIntent",
       "steps": [
         // should be initialize
-        "ClearUserData",
+        "CalendarClearUserData",
         "UpdateMeeting",
-        "ClearUserData"
+        "CalendarClearUserData"
       ]
     },
     {
@@ -58,9 +58,9 @@
       "intent": "AcceptMeetingIntent",
       "steps": [
         // should be initialize
-        "ClearUserData",
+        "CalendarClearUserData",
         "AcceptMeeting",
-        "ClearUserData"
+        "CalendarClearUserData"
       ]
     },
     {
@@ -68,9 +68,9 @@
       "intent": "DeclineMeetingIntent",
       "steps": [
         // should be initialize
-        "ClearUserData",
+        "CalendarClearUserData",
         "DeclineMeeting",
-        "ClearUserData"
+        "CalendarClearUserData"
       ]
     },
     {
@@ -87,7 +87,7 @@
       "$type": "Microsoft.IntentRule",
       "intent": "ShowNextPageIntent",
       "steps": [
-        "NextPage",
+        "CalendarNextPage",
         "ShowMeeting"
       ]
     }
