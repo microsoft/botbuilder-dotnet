@@ -62,10 +62,29 @@
         }
       ]
     },
+    // should replace with add duration to start date time as end date time
+    {
+      "$type": "Microsoft.IfCondition",
+      "condition": "user.endDateTime == null",
+      "steps": [
+        {
+          "$type": "Microsoft.DateTimeInput",
+          "Prompt": "OK, please enter the new end date time of meeting.",
+          "property": "user.endDateTime"
+        }
+      ]
+    },
+
+    // convert date time prompt result to timestamp
     {
       "$type": "Microsoft.SetProperty",
       "property": "user.startDateTime",
       "value": "formatDateTime(user.startDateTime[0].Value)"
+    },
+    {
+      "$type": "Microsoft.SetProperty",
+      "property": "user.endDateTime",
+      "value": "formatDateTime(user.endDateTime[0].Value)"
     },
 
     {

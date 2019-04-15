@@ -81,6 +81,17 @@
       "value": "addSeconds(user.startDateTime, int(user.duration[0].Value))"
     },
     {
+      "$type": "Microsoft.IfCondition",
+      "condition": "user.location == null",
+      "steps": [
+        {
+          "$type": "Microsoft.TextInput",
+          "Prompt": "OK, please enter the location of your meeting.",
+          "property": "user.location"
+        }
+      ]
+    },
+    {
       "$type": "Microsoft.ConfirmInput",
       "property": "dialog.confirmed",
       "prompt": "Are you sure to create this meeting?",

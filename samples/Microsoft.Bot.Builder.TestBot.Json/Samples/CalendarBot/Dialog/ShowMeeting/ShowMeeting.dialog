@@ -16,16 +16,6 @@
   "rules": [
     {
       "$type": "Microsoft.IntentRule",
-      "intent": "ShowMeetingIntent",
-      "steps": [
-        // should be initialize
-        "ClearUserData",
-        "ShowMeeting",
-        "ClearUserData"
-      ]
-    },
-    {
-      "$type": "Microsoft.IntentRule",
       "intent": "UpdateMeetingIntent",
       "steps": [
         // should be initialize
@@ -115,7 +105,7 @@
           ]
         },
 
-        // Read focused email
+        // Read focused meeting
         {
           "$type": "Microsoft.SendActivity",
           "activity": "[ReadFocusedMeeting(user)]"
@@ -127,7 +117,7 @@
         {
           "$type": "Microsoft.ConfirmInput",
           "property": "dialog.confirmed",
-          "prompt": "Do you want to go back to overview? Or you can say 'show meeting' or 'update meeting' or 'decline meeting'",
+          "prompt": "You can say 'update meeting' or 'decline meeting' or 'accept meeting' to do action on this meeting.",
           "alwaysPrompt": true
         }
 

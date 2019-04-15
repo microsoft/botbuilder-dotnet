@@ -28,6 +28,10 @@
         "start": {
           "dateTime": "{user.startDateTime}",
           "timeZone": "UTC"
+        },
+        "end": {
+          "dateTime": "{user.endDateTime}",
+          "timeZone": "UTC"
         }
       },
       "Property": "user.updateResponse"

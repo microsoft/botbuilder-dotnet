@@ -58,13 +58,24 @@
             "items": [
                 {
                     "type": "TextBlock",
+                    "text": "@{x.start.dateTime} - @{x.end.dateTime}",
+                    "wrap": true,
+                    "maxLines": 5
+                }
+            ]
+        },
+        {
+            "type": "Container",
+            "items": [
+                {
+                    "type": "TextBlock",
                     "text": "@{x.bodyPreview}",
                     "wrap": true,
                     "maxLines": 5
                 }
             ]
         }
-    ]
+    ],
     "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
     "version": "1.0"
 }
