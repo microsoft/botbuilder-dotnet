@@ -19,38 +19,22 @@
 
     {
       "$type": "Microsoft.HttpRequest",
-      "url": "https://graph.microsoft.com/v1.0/me/events",
-      "method": "POST",
+      "url": "https://graph.microsoft.com/v1.0/me/events/{user.focusedMeeting.id}",
+      "method": "PATCH",
       "header": {
         "Authorization": "Bearer {dialog.token.Token}"
       },
       "body": {
-        "body": {
-          "content": "{user.body}",
-          "contentType": "Text"
-        },
-        "subject": "{user.subject}",
-        "attendees": [
-          {
-            "emailAddress": {
-              "address": "{user.email}"
-            }
-          }
-        ],
         "start": {
           "dateTime": "{user.startDateTime}",
           "timeZone": "UTC"
-        },
-        "end": {
-          "dateTime": "{user.endDateTime}",
-          "timeZone": "UTC"
         }
       },
-      "Property": "user.createResponse"
+      "Property": "user.updateResponse"
     }
     //{
     //  "$type": "Microsoft.SendActivity",
-    //  "activity": "response: {user.createResponse}"
+    //  "activity": "response: {user.updateResponse}"
     //}
   ]
 }

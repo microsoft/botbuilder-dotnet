@@ -22,7 +22,7 @@
 - ELSE:
   - You should not be here.
 
-# ChooseMeetingList(user)
+# ChooseReadMeetingList(user)
 - IF: {count(user.meetings) == 1}
   - Do you want to read this one?
 - ELSEIF: {count(user.meetings) >= 1}
@@ -64,7 +64,7 @@
                 }
             ]
         }
-    ],
+    ]
     "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
     "version": "1.0"
 }

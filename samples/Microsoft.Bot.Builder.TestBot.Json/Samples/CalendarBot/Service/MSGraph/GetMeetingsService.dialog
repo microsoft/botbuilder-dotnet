@@ -23,6 +23,10 @@
         "Authorization": "Bearer {dialog.token.Token}"
       },
       "Property": "user.getGraphMeetings"
+    },
+    {
+      "$type": "Microsoft.SendActivity",
+      "activity": "user.getGraphMeetings"
     }
   ]
 }

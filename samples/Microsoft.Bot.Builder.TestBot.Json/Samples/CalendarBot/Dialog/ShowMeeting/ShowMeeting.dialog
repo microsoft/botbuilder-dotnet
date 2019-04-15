@@ -1,7 +1,62 @@
 {
   "$schema": "../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
-  "steps": [
+  "recognizer": {
+    "$type": "Microsoft.RegexRecognizer",
+    "intents": {
+      "ShowMeetingIntent": "(?i)show meeting",
+      "CreateMeetingIntent": "(?i)create meeting",
+      "HelpIntent": "(?i)help",
+      "ShowNextPageIntent": "(?i)next page meeting",
+      "UpdateMeetingIntent": "(?i)update meeting",
+      "AcceptMeetingIntent": "(?i)accept meeting",
+      "DeclineMeetingIntent": "(?i)decline meeting"
+    }
+  },
+  "rules": [
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "ShowMeetingIntent",
+      "steps": [
+        // should be initialize
+        "ClearUserData",
+        "ShowMeeting",
+        "ClearUserData"
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "UpdateMeetingIntent",
+      "steps": [
+        // should be initialize
+        "ClearUserData",
+        "UpdateMeeting",
+        "ClearUserData"
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "AcceptMeetingIntent",
+      "steps": [
+        // should be initialize
+        "ClearUserData",
+        "AcceptMeeting",
+        "ClearUserData"
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "DeclineMeetingIntent",
+      "steps": [
+        // should be initialize
+        "ClearUserData",
+        "DeclineMeeting",
+        "ClearUserData"
+      ]
+    }
+  ],
+  "steps":
+  [
     "GetDisplayMeetings",
     {
       "$type": "Microsoft.SendActivity",
@@ -18,7 +73,7 @@
         },
         {
           "$type": "Microsoft.TextInput",
-          "prompt": "[ChooseMeetingList(user)]",
+          "prompt": "[ChooseReadMeetingList(user)]",
           "property": "dialog.choice"
         },
         // Question: how to use SwitchCondition
@@ -70,8 +125,10 @@
           "activity": "[ShowMeetingCard(user.focusedMeeting)]"
         },
         {
-          "$type": "Microsoft.SendActivity",
-          "activity": "OK, have a good time. You can also say 'next page meeting' to go to next page."
+          "$type": "Microsoft.ConfirmInput",
+          "property": "dialog.confirmed",
+          "prompt": "Do you want to go back to overview? Or you can say 'show meeting' or 'update meeting' or 'decline meeting'",
+          "alwaysPrompt": true
         }
 
         // todo: show overview

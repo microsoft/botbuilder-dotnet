@@ -2,7 +2,7 @@
   "$schema": "../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
   "steps": [
-    "GetMeetings",
+    "GetMeetingsService",
     {
       "$type": "Microsoft.EditArray",
       "changeType": "Clear",

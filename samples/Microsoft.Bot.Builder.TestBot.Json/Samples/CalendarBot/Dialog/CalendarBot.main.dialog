@@ -7,7 +7,10 @@
       "ShowMeetingIntent": "(?i)show meeting",
       "CreateMeetingIntent": "(?i)create meeting",
       "HelpIntent": "(?i)help",
-      "ShowNextPageIntent": "(?i)next page meeting"
+      "ShowNextPageIntent": "(?i)next page meeting",
+      "UpdateMeetingIntent": "(?i)update meeting",
+      "AcceptMeetingIntent": "(?i)accept meeting",
+      "DeclineMeetingIntent": "(?i)decline meeting"
     }
   },
   "rules": [
@@ -37,6 +40,36 @@
         // should be initialize
         "ClearUserData",
         "CreateMeeting",
+        "ClearUserData"
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "UpdateMeetingIntent",
+      "steps": [
+        // should be initialize
+        "ClearUserData",
+        "UpdateMeeting",
+        "ClearUserData"
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "AcceptMeetingIntent",
+      "steps": [
+        // should be initialize
+        "ClearUserData",
+        "AcceptMeeting",
+        "ClearUserData"
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "DeclineMeetingIntent",
+      "steps": [
+        // should be initialize
+        "ClearUserData",
+        "DeclineMeeting",
         "ClearUserData"
       ]
     },

@@ -56,12 +56,22 @@
     {
       "$type": "Microsoft.SetProperty",
       "value": "null",
-      "property": "user.date"
+      "property": "user.startDate"
     },
     {
       "$type": "Microsoft.SetProperty",
       "value": "null",
-      "property": "user.time"
+      "property": "user.startTime"
+    },
+    {
+      "$type": "Microsoft.SetProperty",
+      "value": "null",
+      "property": "user.startDateTime"
+    },
+    {
+      "$type": "Microsoft.SetProperty",
+      "value": "null",
+      "property": "user.endDateTime"
     },
     {
       "$type": "Microsoft.SetProperty",
