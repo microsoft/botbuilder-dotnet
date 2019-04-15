@@ -264,6 +264,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("bag.list[bag.index - 2]", "blue", new HashSet<string> {"bag.list", "bag.index" }),
             Test("bag['name']","mybag"),
             Test("bag[substring(concat('na','me','more'), 0, length('name'))]","mybag"),
+            Test("items[1+1]","two"),
             # endregion
         };
 
