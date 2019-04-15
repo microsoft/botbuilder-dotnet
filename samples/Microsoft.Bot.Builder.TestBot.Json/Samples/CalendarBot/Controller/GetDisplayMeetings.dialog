@@ -50,16 +50,13 @@
           "changeType": "Push",
           "arrayProperty": "user.meetings",
           "itemProperty": "user.getGraphMeetings.value[2]"
-        },
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "{user.meetings}"
         }
+        // bug: the user.meetings should be a list object but not a Json array object
       ]
-    },
-    {
-      "$type": "Microsoft.SendActivity",
-      "activity": "Get meetings model done"
     }
+    //,{
+    //  "$type": "Microsoft.SendActivity",
+    //  "activity": "Get meetings model done"
+    //}
   ]
 }
