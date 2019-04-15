@@ -34,8 +34,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         };
 
 
-
-
         [DataTestMethod]
         [DynamicData(nameof(InvalidExpressions))]
         [ExpectedException(typeof(Exception))]
