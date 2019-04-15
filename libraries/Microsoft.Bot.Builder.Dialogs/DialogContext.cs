@@ -94,7 +94,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             var dialog = FindDialog(dialogId);
             if (dialog == null)
             {
-                throw new Exception($"DialogContext.BeginDialogAsync(): A dialog with an id of '{dialogId}' wasn't found.");
+                throw new Exception(
+                    $"DialogContext.BeginDialogAsync(): A dialog with an id of '{dialogId}' wasn't found." +
+                    " The dialog must be included in the current or parent DialogSet." +
+                    " For example, if subclassing a ComponentDialog you can call AddDialog() within your constructor.");
             }
 
             // Push new instance onto stack
