@@ -211,7 +211,23 @@ namespace Microsoft.Bot.Builder.Expressions
             return error;
         }
 
-     
+        /// <summary>
+        /// Verify value is list.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <param name="expression">Expression that led to value.</param>
+        /// <returns>Error or null if valid.</returns>
+        public static string VerifyList(object value, Expression expression)
+        {
+            string error = null;
+            if (!(value is IList))
+            {
+                error = $"{expression} is not a list.";
+            }
+            return error;
+        }
+
+
         /// <summary>
         /// Verify value is an integer.
         /// </summary>
@@ -925,7 +941,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         if (operands.All(u => ((u is int) || (u is double))))
                             return operands.Sum(u => Convert.ToDouble(u));
                         return 0;
-                    }),
+                    }, VerifyList),
                         ReturnType.Number, ValidateUnary) },
                 { ExpressionType.Count,
                     new ExpressionEvaluator(Apply(args => ((IList) args[0]).OfType<object>().Count(), VerifyList), ReturnType.Number, ValidateUnary)},
