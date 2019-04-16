@@ -23,6 +23,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Debug;
 using System.Diagnostics;
+using System.IO;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -78,8 +79,16 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             var userState = new UserState(dataStore);
             var conversationState = new ConversationState(dataStore);
 
+
             // manage all bot resources
-            var resourceExplorer = ResourceExplorer.LoadProject(HostingEnvironment.ContentRootPath);
+            var resourceExplorer = ResourceExplorer
+                .LoadProject(HostingEnvironment.ContentRootPath, ignoreFolders: new string[] { "models" });
+
+            // add LuisRecognizer .dialog files for current environment/authoringRegion
+            var environment = Configuration.GetValue<string>("luis:environment", Environment.UserName);
+            var authoringRegion = Configuration.GetValue<string>("luis:authoringRegion", "westus");
+            var luisModelsFolder = Path.Combine(HostingEnvironment.ContentRootPath, "models", environment, authoringRegion);
+            resourceExplorer.AddFolder(luisModelsFolder);
 
             services.AddBot<IBot>(
                 (IServiceProvider sp) =>

@@ -46,9 +46,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private CancellationTokenSource CancelReloadToken = new CancellationTokenSource();
         private ConcurrentBag<string> changedPaths = new ConcurrentBag<string>();
 
-        public ResourceExplorer AddFolder(string folder, bool monitorFiles = true)
+        public ResourceExplorer AddFolder(string folder, bool includeSubFolders = true, bool monitorFiles = true)
         {
-            var folderResource = new FolderResource(folder, monitorFiles);
+            var folderResource = new FolderResource(folder, includeSubFolders, monitorFiles);
 
             if (folderResource.Watcher != null)
             {
@@ -58,6 +58,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             }
 
             this.folderResources.Add(folderResource);
+            return this;
+        }
+
+        public ResourceExplorer AddFolders(string folder, string[] ignoreFolders = null, bool monitorFiles = true)
+        {
+            if (ignoreFolders != null)
+            {
+                this.AddFolder(folder, includeSubFolders: false);
+
+                var hashIgnore = new HashSet<string>(ignoreFolders.Select(p => Path.Combine(folder, p)), StringComparer.CurrentCultureIgnoreCase);
+                foreach (var subFolder in Directory.GetDirectories(folder).Where(f => !hashIgnore.Contains(f)))
+                {
+                    // add subfolders not in ignore list
+                    this.AddFolder(subFolder, includeSubFolders: true, monitorFiles: monitorFiles);
+                }
+            }
+            else
+            {
+                this.AddFolder(folder, includeSubFolders: true, monitorFiles: monitorFiles);
+            }
             return this;
         }
 
@@ -88,7 +108,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <param name="manager"></param>
         /// <param name="projectFile"></param>
         /// <returns></returns>
-        public static ResourceExplorer LoadProject(string projectFile)
+        public static ResourceExplorer LoadProject(string projectFile, string[] ignoreFolders = null)
         {
             var explorer = new ResourceExplorer();
             if (!File.Exists(projectFile))
@@ -105,7 +125,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             xmlDoc.Load(projectFile);
 
             // add folder for the project
-            explorer.AddFolder(projectFolder);
+            if (ignoreFolders != null)
+            {
+                explorer.AddFolders(projectFolder, ignoreFolders, monitorFiles: true);
+            }
+            else
+            {
+                explorer.AddFolder(projectFolder, includeSubFolders: true, monitorFiles: true);
+            }
 
             // add project references
             foreach (XmlNode node in xmlDoc.SelectNodes("//ProjectReference"))
@@ -198,13 +225,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </summary>
         internal class FolderResource : IDisposable
         {
-            internal FolderResource(string folder, bool monitorChanges = true)
+            internal FolderResource(string folder, bool includeSubFolders, bool monitorChanges = true)
             {
+                this.IncludeSubFolders = includeSubFolders;
                 this.Directory = new DirectoryInfo(folder);
                 if (monitorChanges)
                 {
                     this.Watcher = new FileSystemWatcher(folder);
-                    this.Watcher.IncludeSubdirectories = true;
+                    this.Watcher.IncludeSubdirectories = this.IncludeSubFolders;
                     this.Watcher.EnableRaisingEvents = true;
                 }
             }
@@ -215,6 +243,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             public DirectoryInfo Directory { get; set; }
 
             public FileSystemWatcher Watcher { get; private set; }
+
+            public bool IncludeSubFolders { get; set; }
 
             public void Dispose()
             {
@@ -234,7 +264,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             /// </summary>
             public IEnumerable<FileInfo> GetResources(string extension)
             {
-                foreach (var fileInfo in this.Directory.EnumerateFiles($"*.{extension.TrimStart('.')}", SearchOption.AllDirectories))
+                SearchOption option = (this.IncludeSubFolders) ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+                foreach (var fileInfo in this.Directory.EnumerateFiles($"*.{extension.TrimStart('.')}", option))
                 {
                     yield return fileInfo;
                 }
