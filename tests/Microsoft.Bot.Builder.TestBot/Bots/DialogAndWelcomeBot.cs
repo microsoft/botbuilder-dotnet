@@ -40,22 +40,28 @@ namespace Microsoft.BotBuilderSamples
         private Activity CreateResponse(IActivity activity, Attachment attachment)
         {
             var response = ((Activity)activity).CreateReply();
-            response.Attachments = new List<Attachment>() { attachment };
+            response.Attachments = new List<Attachment>() {attachment};
             return response;
         }
 
         // Load attachment from file.
         private Attachment CreateAdaptiveCardAttachment()
         {
-            // combine path for cross platform support
-            string[] paths = { ".", "Cards", "welcomeCard.json" };
-            string fullPath = Path.Combine(paths);
-            var adaptiveCard = File.ReadAllText(fullPath);
-            return new Attachment()
+            var rootNamespace = typeof(Startup).Namespace;
+            var cardResourcePath = $"{rootNamespace}.Cards.welcomeCard.json";
+
+            using (var stream = GetType().Assembly.GetManifestResourceStream(cardResourcePath))
             {
-                ContentType = "application/vnd.microsoft.card.adaptive",
-                Content = JsonConvert.DeserializeObject(adaptiveCard),
-            };
+                using (var reader = new StreamReader(stream))
+                {
+                    var adaptiveCard = reader.ReadToEnd();
+                    return new Attachment()
+                    {
+                        ContentType = "application/vnd.microsoft.card.adaptive",
+                        Content = JsonConvert.DeserializeObject(adaptiveCard),
+                    };
+                }
+            }
         }
     }
 }
