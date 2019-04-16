@@ -40,6 +40,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         }
 
         [TestMethod]
+        public async Task TestFolderSource_Shallow()
+        {
+            var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"..\..\.."));
+            var explorer = new ResourceExplorer();
+            explorer.AddFolder(path, includeSubFolders: false);
+
+            var resources = explorer.GetResources("dialog").ToArray();
+            Assert.AreEqual(0, resources.Length, "shallow folder shouldn't list the dialog resources");
+
+            resources = explorer.GetResources("cs").ToArray();
+            Assert.IsTrue(resources.Length > 0, "shallow folder should list the root files");
+        }
+
+        [TestMethod]
         public async Task TestFolderSource_NewFiresChanged()
         {
             File.Delete(testDialogFile);
