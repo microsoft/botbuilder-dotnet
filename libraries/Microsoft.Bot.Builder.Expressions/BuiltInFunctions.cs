@@ -905,19 +905,29 @@ namespace Microsoft.Bot.Builder.Expressions
                     new ExpressionEvaluator(Apply(args => args[0] % args[1], VerifyInteger),
                         ReturnType.Number, ValidateBinaryNumber) },
                 { ExpressionType.Average,
-                    new ExpressionEvaluator(Apply(args => ((IList) args[0]).OfType<object>().Average(u => Convert.ToDouble(u)), VerifyList),
+                    new ExpressionEvaluator(Apply(args => {
+                        var operands = ((IList) args[0]).OfType<object>();
+                        if (operands.All(u => (u is JValue jvalue && (jvalue.Type == JTokenType.Integer || jvalue.Type == JTokenType.Float))))
+                            return operands.Average(u => ((JValue)u).ToObject<double>());
+                        return operands.Average(u => Convert.ToDouble(u));
+                    }, VerifyList),
                         ReturnType.Number, ValidateUnary) },
                 { ExpressionType.Sum,
                     new ExpressionEvaluator(Apply(args =>    {
                         var operands = ((IList) args[0]).OfType<object>();
-                        if (operands.All(u => (u is int))) return operands.Sum(u => (int)u);
-                        if (operands.All(u => ((u is int) || (u is double)))) return operands.Sum(u => Convert.ToDouble(u));
+                        // Support Jtoken
+                        if (operands.All(u => (u is JValue jvalue && jvalue.Type == JTokenType.Integer)))
+                            return operands.Sum(u => ((JValue)u).ToObject<int>());
+                        if (operands.All(u => (u is JValue jvalue && (jvalue.Type == JTokenType.Integer || jvalue.Type == JTokenType.Float))))
+                            return operands.Sum(u => ((JValue)u).ToObject<double>());
+                        if (operands.All(u => (u is int)))
+                            return operands.Sum(u => (int)u);
+                        if (operands.All(u => ((u is int) || (u is double))))
+                            return operands.Sum(u => Convert.ToDouble(u));
                         return 0;
                     }),
                         ReturnType.Number, ValidateUnary) },
                 { ExpressionType.Count,
-                    //new ExpressionEvaluator(Apply(args => ((IList<object>)args[0]).Count, VerifyList), ReturnType.Number, ValidateUnary)},
-
                     new ExpressionEvaluator(Apply(args => ((IList) args[0]).OfType<object>().Count(), VerifyList), ReturnType.Number, ValidateUnary)},
 
                 // Booleans
@@ -947,6 +957,9 @@ namespace Microsoft.Bot.Builder.Expressions
                         //list to find a value
                         else if (args[0] is IList list1)
                         {
+                            if(args[0] is JArray jarray)
+                                return jarray.Select(u=>u.ToString()).Contains((string)(args[1]));
+
                             if (list1.Contains(args[1]))
                                 return true;
                         }
