@@ -56,15 +56,6 @@
     "Source": [
       {
         "$instance": {
-          "State": [
-            {
-              "startIndex": 19,
-              "endIndex": 21,
-              "text": "va",
-              "type": "State",
-              "score": 0.8453893
-            }
-          ],
           "number": [
             {
               "startIndex": 13,
@@ -73,28 +64,28 @@
               "type": "builtin.number",
               "subtype": "integer"
             }
+          ],
+          "State": [
+            {
+              "startIndex": 19,
+              "endIndex": 21,
+              "text": "va",
+              "type": "State",
+              "score": 0.8453893
+            }
           ]
         },
-        "State": [
-          "va"
-        ],
         "number": [
           12345
+        ],
+        "State": [
+          "va"
         ]
       }
     ],
     "Destination": [
       {
         "$instance": {
-          "State": [
-            {
-              "startIndex": 31,
-              "endIndex": 33,
-              "text": "wa",
-              "type": "State",
-              "score": 0.9857455
-            }
-          ],
           "number": [
             {
               "startIndex": 25,
@@ -103,13 +94,22 @@
               "type": "builtin.number",
               "subtype": "integer"
             }
+          ],
+          "State": [
+            {
+              "startIndex": 31,
+              "endIndex": 33,
+              "text": "wa",
+              "type": "State",
+              "score": 0.9857455
+            }
           ]
         },
-        "State": [
-          "wa"
-        ],
         "number": [
           12346
+        ],
+        "State": [
+          "wa"
         ]
       }
     ]
@@ -224,12 +224,12 @@
         "value": "12345 va",
         "children": [
           {
-            "type": "State",
-            "value": "va"
-          },
-          {
             "type": "builtin.number",
             "value": "12345"
+          },
+          {
+            "type": "State",
+            "value": "va"
           }
         ]
       },
@@ -238,12 +238,12 @@
         "value": "12346 wa",
         "children": [
           {
-            "type": "State",
-            "value": "wa"
-          },
-          {
             "type": "builtin.number",
             "value": "12346"
+          },
+          {
+            "type": "State",
+            "value": "wa"
           }
         ]
       }
