@@ -16,6 +16,28 @@
         {
             "$type": "Microsoft.SendActivity",
             "activity": "Hello {user.name}, nice to talk to you!"
+        }, 
+        {
+            "$type": "Microsoft.IntegerInput",
+            "property": "user.result",
+            "alwaysPrompt":  true,
+            "prompt": "2 * 2.2 equals?"
+        },
+        {
+            "$type": "Microsoft.IfCondition",
+            "condition": "user.result == 4.4",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "That's right!"
+                }
+            ],
+            "elseSteps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "You are wrong!"
+                }
+            ]
         }
     ]
 }
