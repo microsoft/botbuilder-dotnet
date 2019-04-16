@@ -506,43 +506,41 @@ namespace Microsoft.Bot.Builder.Expressions
         private static (object value, string error) AccessProperty(object instance, string property)
         {
             // NOTE: This returns null rather than an error if property is not present
+            if (instance == null)
+            {
+                return (null, null);
+            }
+
             object value = null;
             string error = null;
-            if (instance != null)
+            if (instance is IDictionary dict)
             {
-                if (instance is IDictionary<string, object> idict)
+                if (dict.Contains(property))
                 {
-                    idict.TryGetValue(property, out value);
+                    value = dict[property];
                 }
-                else if (instance is System.Collections.IDictionary dict)
+            }
+            else if (instance is JObject jobj)
+            {
+                if (jobj.TryGetValue(property, out var jtoken))
                 {
-                    if (dict.Contains(property))
-                    {
-                        value = dict[property];
-                    }
+                    value = jtoken;
                 }
-                else if (instance is JObject jobj)
+            }
+            else
+            {
+                // Use reflection
+                var type = instance.GetType();
+                var prop = type.GetProperty(property);
+                if (prop != null)
                 {
-                    if (jobj.TryGetValue(property, out var jtoken))
-                    {
-                        value = jtoken;
-                    }
-                }
-                else
-                {
-                    // Use reflection
-                    var type = instance.GetType();
-                    var prop = type.GetProperty(property);
-                    if (prop != null)
-                    {
-                        value = prop.GetValue(instance);
-                    }
+                    value = prop.GetValue(instance);
                 }
             }
 
             if (value is JValue jvalue)
             {
-                value = GetSpecificTypeFromJValue(jvalue);
+                value = ResolveJValue(jvalue);
             }
 
             return (value, error);
@@ -604,12 +602,12 @@ namespace Microsoft.Bot.Builder.Expressions
             }
             if (value is JValue jvalue)
             {
-                value = GetSpecificTypeFromJValue(jvalue);
+                value = ResolveJValue(jvalue);
             }
             return (value, error);
         }
 
-        private static object GetSpecificTypeFromJValue(JValue jvalue)
+        private static object ResolveJValue(JValue jvalue)
         {
             var value = jvalue.Value;
             if (jvalue.Type == JTokenType.Integer)
@@ -1170,7 +1168,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         {
                             if(list[0] is JValue jvalue)
                             {
-                                return GetSpecificTypeFromJValue(jvalue);
+                                return ResolveJValue(jvalue);
                             }
                             return list[0];
                         } 
@@ -1183,7 +1181,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         {
                              if(list[list.Count - 1] is JValue jvalue)
                             {
-                                return GetSpecificTypeFromJValue(jvalue);
+                                return ResolveJValue(jvalue);
                             }
                             return list[list.Count - 1];
                         }
