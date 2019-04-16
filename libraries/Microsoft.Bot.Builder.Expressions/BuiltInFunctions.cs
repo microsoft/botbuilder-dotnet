@@ -583,7 +583,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         }
                         else
                         {
-                            error = $"type of ({instance}, {idx}) should be (object, string) or (collection, int)";
+                            error = $"{instance} is not a collection.";
                         }
                     }
                     else if(idxValue is string idxStr)
