@@ -315,14 +315,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     index = 3,
                     name = "mybag"
                 },
-                
                 jarrInt = new JArray { 1, 2, 3 },
                 jarrFloat = new JArray { 1.1, 2.2, 3.3 },
                 jarrString = new JArray { "first", "second", "third" },
-                jObjStr = new JObject() { { "a","b"} },
-                jObjInt = new JObject() { { "a", 1 } },
-                jObjFloat = new JObject() { { "a", 1.1 } },
-
                 items = new string[] { "zero", "one", "two" },
                 nestedItems = new []
                 {
