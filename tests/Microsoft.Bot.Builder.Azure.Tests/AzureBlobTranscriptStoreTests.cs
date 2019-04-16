@@ -6,11 +6,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Azure.Storage;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
 using Activity = Microsoft.Bot.Schema.Activity;
 
 // These tests require Azure Storage Emulator v5.7
@@ -214,7 +213,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public void BlobParamTest()
         {
-            Assert.ThrowsException<FormatException>(() => new AzureBlobTranscriptStore("123", ContainerName));
+            Assert.ThrowsException<FormatException>(() => new Azure.AzureBlobTranscriptStore("123", ContainerName));
 
             Assert.ThrowsException<ArgumentNullException>(() =>
                 new AzureBlobTranscriptStore((CloudStorageAccount)null, ContainerName));
@@ -225,7 +224,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             Assert.ThrowsException<ArgumentNullException>(() =>
                 new AzureBlobTranscriptStore((CloudStorageAccount)null, null));
 
-            Assert.ThrowsException<ArgumentNullException>(() => new AzureBlobTranscriptStore((string)null, null));
+            Assert.ThrowsException<ArgumentNullException>(() => new Azure.AzureBlobTranscriptStore((string)null, null));
         }
 
         // These tests require Azure Storage Emulator v5.7

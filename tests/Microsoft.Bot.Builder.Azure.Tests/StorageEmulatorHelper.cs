@@ -9,8 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
 using Activity = Microsoft.Bot.Schema.Activity;
 
 // These tests require Azure Storage Emulator v5.7
