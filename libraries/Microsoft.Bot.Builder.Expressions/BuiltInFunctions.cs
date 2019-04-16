@@ -515,7 +515,23 @@ namespace Microsoft.Bot.Builder.Expressions
                         }
                         else if (jtoken is JValue jvalue)
                         {
-                            value = GetSpecificTypeFromJValue(jvalue);
+                            value = jvalue.Value;
+                            if (jvalue.Type == JTokenType.Integer)
+                            {
+                                value = jvalue.ToObject<int>();
+                            }
+                            else if (jvalue.Type == JTokenType.String)
+                            {
+                                value = jvalue.ToObject<string>();
+                            }
+                            else if (jvalue.Type == JTokenType.Boolean)
+                            {
+                                value = jvalue.ToObject<bool>();
+                            }
+                            else if (jvalue.Type == JTokenType.Float)
+                            {
+                                value = jvalue.ToObject<double>();
+                            }
                         }
                         else value = jtoken;
                     }
@@ -573,7 +589,23 @@ namespace Microsoft.Bot.Builder.Expressions
                                 }
                                 else if (value is JValue jvalue)
                                 {
-                                    value = GetSpecificTypeFromJValue(jvalue);
+                                    value = jvalue.Value;
+                                    if (jvalue.Type == JTokenType.Integer)
+                                    {
+                                        value = jvalue.ToObject<int>();
+                                    }
+                                    else if (jvalue.Type == JTokenType.String)
+                                    {
+                                        value = jvalue.ToObject<string>();
+                                    }
+                                    else if (jvalue.Type == JTokenType.Boolean)
+                                    {
+                                        value = jvalue.ToObject<bool>();
+                                    }
+                                    else if (jvalue.Type == JTokenType.Float)
+                                    {
+                                        value = jvalue.ToObject<double>();
+                                    }
                                 }
                             }
                             else
@@ -597,28 +629,6 @@ namespace Microsoft.Bot.Builder.Expressions
                 }
             }
             return (value, error);
-        }
-
-        private static object GetSpecificTypeFromJValue(JValue jvalue)
-        {
-            var value = jvalue.Value;
-            if (jvalue.Type == JTokenType.Integer)
-            {
-                value = jvalue.ToObject<int>();
-            }
-            else if (jvalue.Type == JTokenType.String)
-            {
-                value = jvalue.ToObject<string>();
-            }
-            else if (jvalue.Type == JTokenType.Boolean)
-            {
-                value = jvalue.ToObject<bool>();
-            }
-            else if (jvalue.Type == JTokenType.Float)
-            {
-                value = jvalue.ToObject<double>();
-            }
-            return value;
         }
 
         private static (object value, string error) And(Expression expression, object state)
