@@ -525,31 +525,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 {
                     if (jobj.TryGetValue(property, out var jtoken))
                     {
-                        if (jtoken is JArray jarray)
-                        {
-                            value = jarray.ToArray<object>();
-                        }
-                        else if (jtoken is JValue jvalue)
-                        {
-                            value = jvalue.Value;
-                            if (jvalue.Type == JTokenType.Integer)
-                            {
-                                value = jvalue.ToObject<int>();
-                            }
-                            else if (jvalue.Type == JTokenType.String)
-                            {
-                                value = jvalue.ToObject<string>();
-                            }
-                            else if (jvalue.Type == JTokenType.Boolean)
-                            {
-                                value = jvalue.ToObject<bool>();
-                            }
-                            else if (jvalue.Type == JTokenType.Float)
-                            {
-                                value = jvalue.ToObject<double>();
-                            }
-                        }
-                        else value = jtoken;
+                        value = jtoken;
                     }
                 }
                 else
@@ -563,6 +539,12 @@ namespace Microsoft.Bot.Builder.Expressions
                     }
                 }
             }
+
+            if (value is JValue jvalue)
+            {
+                value = GetSpecificTypeFromJValue(jvalue);
+            }
+
             return (value, error);
         }
 
@@ -599,30 +581,6 @@ namespace Microsoft.Bot.Builder.Expressions
                             {
                                 dynamic idyn = inst;
                                 value = idyn[idx];
-                                if (value is JArray jarray)
-                                {
-                                    value = jarray.ToArray<object>();
-                                }
-                                else if (value is JValue jvalue)
-                                {
-                                    value = jvalue.Value;
-                                    if (jvalue.Type == JTokenType.Integer)
-                                    {
-                                        value = jvalue.ToObject<int>();
-                                    }
-                                    else if (jvalue.Type == JTokenType.String)
-                                    {
-                                        value = jvalue.ToObject<string>();
-                                    }
-                                    else if (jvalue.Type == JTokenType.Boolean)
-                                    {
-                                        value = jvalue.ToObject<bool>();
-                                    }
-                                    else if (jvalue.Type == JTokenType.Float)
-                                    {
-                                        value = jvalue.ToObject<double>();
-                                    }
-                                }
                             }
                             else
                             {
@@ -644,7 +602,33 @@ namespace Microsoft.Bot.Builder.Expressions
                     }
                 }
             }
+            if (value is JValue jvalue)
+            {
+                value = GetSpecificTypeFromJValue(jvalue);
+            }
             return (value, error);
+        }
+
+        private static object GetSpecificTypeFromJValue(JValue jvalue)
+        {
+            var value = jvalue.Value;
+            if (jvalue.Type == JTokenType.Integer)
+            {
+                value = jvalue.ToObject<int>();
+            }
+            else if (jvalue.Type == JTokenType.String)
+            {
+                value = jvalue.ToObject<string>();
+            }
+            else if (jvalue.Type == JTokenType.Boolean)
+            {
+                value = jvalue.ToObject<bool>();
+            }
+            else if (jvalue.Type == JTokenType.Float)
+            {
+                value = jvalue.ToObject<double>();
+            }
+            return value;
         }
 
         private static (object value, string error) And(Expression expression, object state)
@@ -974,7 +958,24 @@ namespace Microsoft.Bot.Builder.Expressions
                         else if (args[0] is IList list1)
                         {
                             if(args[0] is JArray jarray)
-                                return jarray.Select(u=>u.ToString()).Contains((string)(args[1]));
+                            {
+                                if(args[1] is string string2)
+                                {
+                                     return jarray.Select(u=>u.ToString()).Contains(string2);
+                                }
+                                else if(args[1] is int int2)
+                                {
+                                    if (((JArray)args[0]).All(u => u is JValue jvalue && (jvalue.Type == JTokenType.Integer)))
+                                    {
+                                        return jarray.Select(u => u.ToObject<int>()).Contains(int2);
+                                    }
+                                }
+                                else
+                                {
+                                    return jarray.Contains(args[1]);
+                                }
+                            }
+                                
 
                             if (list1.Contains(args[1]))
                                 return true;
@@ -1165,13 +1166,27 @@ namespace Microsoft.Bot.Builder.Expressions
                 { ExpressionType.First, new ExpressionEvaluator(Apply(args =>
                     {
                         if (args[0] is string string0 && string0.Length > 0) return string0.First().ToString();
-                        if (args[0] is IList list && list.Count > 0) return list[0];
+                        if (args[0] is IList list && list.Count > 0)
+                        {
+                            if(list[0] is JValue jvalue)
+                            {
+                                return GetSpecificTypeFromJValue(jvalue);
+                            }
+                            return list[0];
+                        } 
                         return null;
                     }), ReturnType.Object, ValidateUnary) },
                 { ExpressionType.Last, new ExpressionEvaluator(Apply(args =>
                     {
                         if (args[0] is string string0 && string0.Length > 0) return string0.Last().ToString();
-                        if (args[0] is IList list && list.Count > 0) return list[list.Count - 1];
+                        if (args[0] is IList list && list.Count > 0)
+                        {
+                             if(list[list.Count - 1] is JValue jvalue)
+                            {
+                                return GetSpecificTypeFromJValue(jvalue);
+                            }
+                            return list[list.Count - 1];
+                        }
                         return null;
                     }), ReturnType.Object, ValidateUnary) },
 

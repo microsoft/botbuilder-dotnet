@@ -277,6 +277,20 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("count(jarrInt)",3),
             Test("count(jarrFloat)",3),
             Test("contains(jarrString, 'first')",true),
+            Test("contains(jarrInt, 1)",true),
+            Test("empty(jarrString)",false),
+            Test("join(jarrString, ',')","first,second,third"),
+            Test("first(jarrString)","first"),
+            Test("first(jarrInt)",1),
+            Test("last(jarrString)","third"),
+            Test("last(jarrInt)",3),
+
+            // Other test with non collection of Json, JValue will parsed to Object with 
+            // below code:
+            //if (value is JValue jvalue)
+            //{
+            //    value = GetSpecificTypeFromJValue(jvalue);
+            //}
             # endregion
         };
 
@@ -301,9 +315,14 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     index = 3,
                     name = "mybag"
                 },
-                jarrInt = new JArray {1, 2, 3 },
+                
+                jarrInt = new JArray { 1, 2, 3 },
                 jarrFloat = new JArray { 1.1, 2.2, 3.3 },
                 jarrString = new JArray { "first", "second", "third" },
+                jObjStr = new JObject() { { "a","b"} },
+                jObjInt = new JObject() { { "a", 1 } },
+                jObjFloat = new JObject() { { "a", 1.1 } },
+
                 items = new string[] { "zero", "one", "two" },
                 nestedItems = new []
                 {
