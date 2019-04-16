@@ -407,7 +407,6 @@
   },
   "luisResult": {
     "query": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c",
-    "alteredQuery": null,
     "topScoringIntent": {
       "intent": "EntityTests",
       "score": 0.9783022
@@ -990,7 +989,6 @@
     "sentimentAnalysis": {
       "label": "neutral",
       "score": 0.5
-    },
-    "connectedServiceResult": null
+    }
   }
 }
