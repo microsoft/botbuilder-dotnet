@@ -17,6 +17,13 @@ _The new Adaptive dialog and the event model simplify sophisticated conversation
 - - [ ] Close on support for Switch...Case..Default step. Exists in C# but not in TS. [Tom and Steve]
 - - [ ] make sure card recognizer is part of adaptive on C# side. [Tom]
 - - [ ] LG and common expression language integration on TS. [Steve]
+- - [ ] Typeloader and resource explorer for TS [Carlos; ETA 4/17]
+- - [ ] Typescript
+    - - [ ] LG [Steve; ETA ?]
+    - - [ ] QnADialog step [Steve]    
+    - - [ ] langauge generation renderer [Carlos]
+    - - [ ] TextMessageActivityGenerator [Carlos]
+    - - [ ] ActivityTemplate [Carlos]
 - - [ ] Functional parity across C# and TS for planned set of steps, rules, interruption handling and prompt wrappers
     - - [ ] Class level consistency
     - - [ ] Property, Methods and method signatures are consistent
@@ -27,6 +34,12 @@ _The new Adaptive dialog and the event model simplify sophisticated conversation
 Deferred to post //BUILD
 - - [ ] Move dialog internal state to a dialog_internal or dialogInternal scope and not have this under 'dialog' scope. 
 - - [ ] LG integration per Adaptive dialog via outputGeneration. Model this similar to recognizer.
+### Post //BUILD
+- - [ ] Move dialog internal state to a dialog_internal or dialogInternal scope and not have this under 'dialog' scope. 
+- - [ ] Inputs
+    - - [ ] dateInput
+    - - [ ] timeInput
+    - - [ ] attachmentInput
 
 ### Recognizers
 
@@ -79,7 +92,7 @@ We will support the following recognizers in Adaptive dialogs
 | SendActivity          |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|                                                                     |
 | EmitEvent             |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| EmitEvents -> EmitEvent                                             |
 | EndTurn               |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| WaitForInput -> EndTurn                                             |
-| EditSteps              |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| Should allow plan push, pop, insert at position                     |
+| ~~EditSteps~~              |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| Should allow plan push, pop, insert at position                     |
 | ReplaceSteps           |<ul><li>- [ ] </li></ul>|<ul><li>- [x] </li></ul>|                                                                     |
 | QnADialog              |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|                                                                     |
 | SaveEntity      |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| SetProperty - '@EntityName' resolves to turn.entities.EntityName[0] |
@@ -108,9 +121,9 @@ We will add new \<entityType\>Input class that does the follwing -
 | choiceInput           |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|                                     |
 | numberInput           |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|                                     |
 | textInput             |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|                                     |
-| dateInput             |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|                                     |
-| timeInput             |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|                                     |
-| attachmentInput       |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|                                     |
+| ~~dateInput~~             |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|                                     |
+| ~~timeInput~~             |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|                                     |
+| ~~attachmentInput~~       |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|                                     |
 | ~~OAuthPrompt~~       |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|                                     |
 | ~~ActivityPrompt~~    |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|                                     |
 
