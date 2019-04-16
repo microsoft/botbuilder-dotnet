@@ -905,18 +905,20 @@ namespace Microsoft.Bot.Builder.Expressions
                     new ExpressionEvaluator(Apply(args => args[0] % args[1], VerifyInteger),
                         ReturnType.Number, ValidateBinaryNumber) },
                 { ExpressionType.Average,
-                    new ExpressionEvaluator(Apply(args => ((IList<object>)args[0]).Average(u => Convert.ToDouble(u))),
+                    new ExpressionEvaluator(Apply(args => ((IList) args[0]).OfType<object>().Average(u => Convert.ToDouble(u)), VerifyList),
                         ReturnType.Number, ValidateUnary) },
                 { ExpressionType.Sum,
                     new ExpressionEvaluator(Apply(args =>    {
-                        var operands = (IList<object>)args[0];
+                        var operands = ((IList) args[0]).OfType<object>();
                         if (operands.All(u => (u is int))) return operands.Sum(u => (int)u);
                         if (operands.All(u => ((u is int) || (u is double)))) return operands.Sum(u => Convert.ToDouble(u));
                         return 0;
                     }),
                         ReturnType.Number, ValidateUnary) },
                 { ExpressionType.Count,
-                    new ExpressionEvaluator(Apply(args => ((IList<object>)args[0]).Count), ReturnType.Number, ValidateUnary)},
+                    //new ExpressionEvaluator(Apply(args => ((IList<object>)args[0]).Count, VerifyList), ReturnType.Number, ValidateUnary)},
+
+                    new ExpressionEvaluator(Apply(args => ((IList) args[0]).OfType<object>().Count(), VerifyList), ReturnType.Number, ValidateUnary)},
 
                 // Booleans
                 { ExpressionType.LessThan, Comparison(args => args[0] < args[1]) },
