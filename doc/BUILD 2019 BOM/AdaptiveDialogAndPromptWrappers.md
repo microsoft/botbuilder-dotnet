@@ -16,6 +16,7 @@ _The new Adaptive dialog and the event model simplify sophisticated conversation
 - - [ ] Alignment on Bot + Run method. C# needs DialogManager [Tom]
 - - [ ] Close on support for Switch...Case..Default step. Exists in C# but not in TS. [Tom and Steve]
 - - [ ] make sure card recognizer is part of adaptive on C# side. [Tom]
+- - [ ] LG and common expression language integration on TS. [Steve]
 - - [ ] Typeloader and resource explorer for TS [Carlos; ETA 4/17]
 - - [ ] Typescript
     - - [ ] LG [Steve; ETA ?]
@@ -30,6 +31,9 @@ _The new Adaptive dialog and the event model simplify sophisticated conversation
 - - [ ] [Documentation](#Documentation)
 - - [ ] [Samples](#Samples)
 
+Deferred to post //BUILD
+- - [ ] Move dialog internal state to a dialog_internal or dialogInternal scope and not have this under 'dialog' scope. 
+- - [ ] LG integration per Adaptive dialog via outputGeneration. Model this similar to recognizer.
 ### Post //BUILD
 - - [ ] Move dialog internal state to a dialog_internal or dialogInternal scope and not have this under 'dialog' scope. 
 - - [ ] Inputs
