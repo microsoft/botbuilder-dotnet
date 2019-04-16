@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -9,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Moq;
+using Moq.Protected;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -58,9 +60,49 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests
             Assert.Equal("im.feeling.really.attacked.right.now", json["quite.honestly"]);
         }
 
+        [Fact]
+        public async Task MessageActivityWithHttpClient()
+        {
+            // Arrange
+            var httpRequest = new HttpRequestMessage();
+            httpRequest.Content = CreateMessageActivityContent();
+
+            var httpResponse = new HttpResponseMessage();
+
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+            mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .Returns((HttpRequestMessage request, CancellationToken cancellationToken) => Task.FromResult(CreateInternalHttpResponse()));
+
+            var httpClient = new HttpClient(mockHttpMessageHandler.Object);
+
+            var bot = new MessageBot();
+
+            // Act
+            var adapter = new BotFrameworkHttpAdapter(null, null, httpClient, null);
+            await adapter.ProcessAsync(httpRequest, httpResponse, bot);
+
+            // Assert
+            mockHttpMessageHandler.Protected().Verify<Task<HttpResponseMessage>>("SendAsync", Times.Once(), ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>());
+        }
+
         private static HttpContent CreateMessageActivityContent()
         {
-            return CreateContent(new Activity { Type = ActivityTypes.Message, Text = "hi", ServiceUrl = "http://localhost" });
+            return CreateContent(new Activity
+            {
+                Type = ActivityTypes.Message,
+                Text = "hi",
+                ServiceUrl = "http://localhost",
+                ChannelId = "ChannelId",
+                Conversation = new ConversationAccount { Id = "ConversationId" },
+            });
+        }
+
+        private static HttpResponseMessage CreateInternalHttpResponse()
+        {
+            var response = new HttpResponseMessage(HttpStatusCode.OK);
+            response.Content = new StringContent(new JObject { { "id", "SendActivityId" } }.ToString());
+            return response;
         }
 
         private static HttpContent CreateInvokeActivityContent()
@@ -92,6 +134,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests
                         Body = new JObject { { "quite.honestly", "im.feeling.really.attacked.right.now" } },
                     },
                 };
+            }
+        }
+
+        private class MessageBot : IBot
+        {
+            public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                await turnContext.SendActivityAsync(MessageFactory.Text("rage.rage.against.the.dying.of.the.light"));
             }
         }
     }
