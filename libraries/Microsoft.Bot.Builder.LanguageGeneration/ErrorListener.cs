@@ -10,14 +10,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         public override void SyntaxError([NotNull] Antlr4.Runtime.IRecognizer recognizer, [Nullable] IToken offendingSymbol, int line, int charPositionInLine, [NotNull] string msg, [Nullable] RecognitionException e)
         {
-            var lineStrArray = offendingSymbol.InputStream.GetText(new Interval(0, int.MaxValue)).Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            var lineStrArray = offendingSymbol.InputStream.GetText(new Interval(0, int.MaxValue)).Split('\n');
             var lineStr = lineStrArray[line - 1];
 
             var errorbuilder = new StringBuilder();
             errorbuilder.Append("[ERROR]:\r\n");
             errorbuilder.Append(lineStr + "\r\n");
             errorbuilder.Append(new string(' ', charPositionInLine));
-            errorbuilder.Append("\r\n");
 
             var length = offendingSymbol.StopIndex - offendingSymbol.StartIndex + 1;
             errorbuilder.Append(new string('^', length));
