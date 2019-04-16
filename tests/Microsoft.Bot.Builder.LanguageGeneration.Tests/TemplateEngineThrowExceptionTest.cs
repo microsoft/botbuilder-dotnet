@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using System.IO;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 {
@@ -16,7 +17,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         private string GetExampleFilePath(string fileName)
         {
-            return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "ExceptionExamples\\" + fileName;
+            return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "ExceptionExamples" + Path.DirectorySeparatorChar + fileName;
         }
 
         public static object[] Test(string input) => new object[] { input };

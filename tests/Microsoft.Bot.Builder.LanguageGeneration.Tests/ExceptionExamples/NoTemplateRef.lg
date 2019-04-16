@@ -1,0 +1,11 @@
+﻿﻿# template
+- [templateRef]
+
+# multiLineTemplate
+- ```
+@{lgTemplate('templateRefInMultiLine')}
+```
+
+# otherTemplate
+- hi 
+

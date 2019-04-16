@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using System.Linq;
+using System.IO;
 using Microsoft.Bot.Builder.Expressions;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
@@ -15,7 +16,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         private string GetExampleFilePath(string fileName)
         {
-            return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "Examples\\" + fileName;
+            return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "Examples" + Path.DirectorySeparatorChar + fileName;
         }
 
 
