@@ -18,7 +18,7 @@
             "activity": "Hello {user.name}, nice to talk to you!"
         }, 
         {
-            "$type": "Microsoft.IntegerInput",
+            "$type": "Microsoft.FloatInput",
             "property": "user.result",
             "alwaysPrompt":  true,
             "prompt": "2 * 2.2 equals?"
