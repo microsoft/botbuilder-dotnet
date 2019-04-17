@@ -21,7 +21,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             # region Operators test
             
             Test("1 + 2", 3),
+            Test("- 1 + 2", 1),
+            Test("+ 1 + 2", 3),
             Test("1 - 2", -1),
+            Test("1 - (-2)", 3),
             Test("1.0 + 2.0", 3.0),
             Test("1 * 2 + 3", 5),
             Test("1 + 2 * 3", 7),
@@ -66,6 +69,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("\"string\"&\"builder\"","stringbuilder"),
             Test("one > 0.5 && two < 2.5", true, oneTwo),
             Test("one > 0.5 || two < 1.5", true, oneTwo),
+            Test("0/3", 0),
             # endregion
 
             # region  String functions test
@@ -165,9 +169,11 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("add(1.0, 2.0)", 3.0),
             Test("add(mul(1, 2), 3)", 5),
             Test("max(mul(1, 2), 5) ", 5),
+            Test("max(5) ", 5),
             Test("max(4, 5) ", 5),
             Test("min(mul(1, 2), 5) ", 2),
             Test("min(4, 5) ", 4),
+            Test("min(4) ", 4),
             Test("min(1.0, two) + max(one, 2.0)", 3.0, oneTwo),
            
             Test("sub(2, 1)", 1),
