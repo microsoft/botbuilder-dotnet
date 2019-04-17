@@ -262,24 +262,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             return newExpr;
         }
 
-        private IEnumerable<Expression> OrLeaves(Expression expression)
-        {
-            if (expression.Type == ExpressionType.Or)
-            {
-                foreach (var child in expression.Children)
-                {
-                    foreach (var leaf in OrLeaves(child))
-                    {
-                        yield return leaf;
-                    }
-                }
-            }
-            else
-            {
-                yield return expression;
-            }
-        }
-
         private IEnumerable<Clause> GenerateClauses(Expression expression)
         {
             switch (expression.Type)
