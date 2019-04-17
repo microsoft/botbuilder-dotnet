@@ -289,7 +289,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             // below code:
             //if (value is JValue jvalue)
             //{
-            //    value = GetSpecificTypeFromJValue(jvalue);
+            //    value = ResolveJValue(jvalue);
             //}
             # endregion
         };

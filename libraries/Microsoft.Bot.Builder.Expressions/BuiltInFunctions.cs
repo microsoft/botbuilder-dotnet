@@ -343,7 +343,14 @@ namespace Microsoft.Bot.Builder.Expressions
                 (args, error) = EvaluateChildren(expression, state, verify);
                 if (error == null)
                 {
-                    value = function(args);
+                    try
+                    {
+                        value = function(args);
+                    }
+                    catch(Exception e)
+                    {
+                        error = e.Message;
+                    }
                 }
                 return (value, error);
             };
@@ -501,7 +508,6 @@ namespace Microsoft.Bot.Builder.Expressions
         /// </summary>
         /// <param name="instance">Instance with property.</param>
         /// <param name="property">Property to lookup.</param>
-        /// <param name="expression">Expression that generated instance.</param>
         /// <returns>Value and error information if any.</returns>
         private static (object value, string error) AccessProperty(object instance, string property)
         {
@@ -552,6 +558,60 @@ namespace Microsoft.Bot.Builder.Expressions
             return (value, error);
         }
 
+        /// <summary>
+        /// Lookup a index property of instance
+        /// </summary>
+        /// <param name="instance">Instance with property.</param>
+        /// <param name="index">Property to lookup.</param>
+        /// <returns>Value and error information if any.</returns>
+        /// 
+        private static (object value, string error) AccessIndex(object instance, int index)
+        {
+            // NOTE: This returns null rather than an error if property is not present
+            if (instance == null)
+            {
+                return (null, null);
+            }
+
+            object value = null;
+            string error = null;
+
+            var count = -1;
+            if (instance is Array arr)
+            {
+                count = arr.Length;
+            }
+            else if (instance is ICollection collection)
+            {
+                count = collection.Count;
+            }
+            var itype = instance.GetType();
+            var indexer = itype.GetProperties().Except(itype.GetDefaultMembers().OfType<PropertyInfo>());
+            if (count != -1 && indexer != null)
+            {
+                if (index >= 0 && count > index)
+                {
+                    dynamic idyn = instance;
+                    value = idyn[index];
+                }
+                else
+                {
+                    error = $"{index} is out of range for ${instance}";
+                }
+            }
+            else
+            {
+                error = $"{instance} is not a collection.";
+            }
+
+            if (value is JValue jvalue)
+            {
+                value = ResolveJValue(jvalue);
+            }
+
+            return (value, error);
+        }
+
         private static (object value, string error) ExtractElement(Expression expression, object state)
         {
             object value = null;
@@ -568,33 +628,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 {
                     if (idxValue is int idx)
                     {
-                        var count = -1;
-                        if (inst is Array arr)
-                        {
-                            count = arr.Length;
-                        }
-                        else if (inst is ICollection collection)
-                        {
-                            count = collection.Count;
-                        }
-                        var itype = inst.GetType();
-                        var indexer = itype.GetProperties().Except(itype.GetDefaultMembers().OfType<PropertyInfo>());
-                        if (count != -1 && indexer != null)
-                        {
-                            if (idx >= 0 && count > idx)
-                            {
-                                dynamic idyn = inst;
-                                value = idyn[idx];
-                            }
-                            else
-                            {
-                                error = $"{index}={idx} is out of range for ${instance}";
-                            }
-                        }
-                        else
-                        {
-                            error = $"{instance} is not a collection.";
-                        }
+                        (value, error) = AccessIndex(inst, idx);
                     }
                     else if(idxValue is string idxStr)
                     {
@@ -605,10 +639,6 @@ namespace Microsoft.Bot.Builder.Expressions
                         error = $"Could not coerce {index} to an int or string";
                     }
                 }
-            }
-            if (value is JValue jvalue)
-            {
-                value = ResolveJValue(jvalue);
             }
             return (value, error);
         }
@@ -633,6 +663,25 @@ namespace Microsoft.Bot.Builder.Expressions
                 value = jvalue.ToObject<double>();
             }
             return value;
+        }
+
+        /// <summary>
+        /// return new object list replace jarray.ToArray<object>()
+        /// </summary>
+        /// <param name="jarray"></param>
+        /// <returns></returns>
+        private static List<object> WrapList(object instance)
+        {
+            var result = new List<object>();
+
+            if (!(instance is IList list))
+                return result;
+
+            for(var i = 0;i < list.Count; i++)
+            {
+                result.Add(AccessIndex(instance, i).value);
+            }
+            return result;
         }
 
         private static (object value, string error) And(Expression expression, object state)
@@ -910,20 +959,13 @@ namespace Microsoft.Bot.Builder.Expressions
                         ReturnType.Number, ValidateBinaryNumber) },
                 { ExpressionType.Average,
                     new ExpressionEvaluator(Apply(args => {
-                        var operands = ((IList) args[0]).OfType<object>();
-                        if (operands.All(u => (u is JValue jvalue && (jvalue.Type == JTokenType.Integer || jvalue.Type == JTokenType.Float))))
-                            return operands.Average(u => ((JValue)u).ToObject<double>());
+                        List<object> operands = WrapList(args[0]);
                         return operands.Average(u => Convert.ToDouble(u));
                     }, VerifyList),
                         ReturnType.Number, ValidateUnary) },
                 { ExpressionType.Sum,
                     new ExpressionEvaluator(Apply(args =>    {
-                        var operands = ((IList) args[0]).OfType<object>();
-                        // Support Jtoken
-                        if (operands.All(u => (u is JValue jvalue && jvalue.Type == JTokenType.Integer)))
-                            return operands.Sum(u => ((JValue)u).ToObject<int>());
-                        if (operands.All(u => (u is JValue jvalue && (jvalue.Type == JTokenType.Integer || jvalue.Type == JTokenType.Float))))
-                            return operands.Sum(u => ((JValue)u).ToObject<double>());
+                        List<object> operands = WrapList(args[0]);
                         if (operands.All(u => (u is int)))
                             return operands.Sum(u => (int)u);
                         if (operands.All(u => ((u is int) || (u is double))))
@@ -961,35 +1003,16 @@ namespace Microsoft.Bot.Builder.Expressions
                         //list to find a value
                         else if (args[0] is IList list1)
                         {
-                            if(args[0] is JArray jarray)
-                            {
-                                if(args[1] is string string2)
-                                {
-                                     return jarray.Select(u=>u.ToString()).Contains(string2);
-                                }
-                                else if(args[1] is int int2)
-                                {
-                                    if (((JArray)args[0]).All(u => u is JValue jvalue && (jvalue.Type == JTokenType.Integer)))
-                                    {
-                                        return jarray.Select(u => u.ToObject<int>()).Contains(int2);
-                                    }
-                                }
-                                else
-                                {
-                                    return jarray.Contains(args[1]);
-                                }
-                            }
-                                
-
-                            if (list1.Contains(args[1]))
+                            List<object> operands = WrapList(args[0]);
+                            if (operands.Contains(args[1]))
                                 return true;
                         }
                         //Dictionary contains key
-                        else if (args[0] is IDictionary dict && args[1] is string string2)
+                        else if (args[0] is IDictionary<string, object> dict 
+                                    && args[1] is string string2
+                                    && dict.ContainsKey(string2))
                         {
-                            if (dict is Dictionary<string, object> realdict
-                                && realdict.ContainsKey(string2))
-                                return true;
+                            return true;
                         }
                         else if(args[1] is string string3)
                         {
@@ -1172,11 +1195,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         if (args[0] is string string0 && string0.Length > 0) return string0.First().ToString();
                         if (args[0] is IList list && list.Count > 0)
                         {
-                            if(list[0] is JValue jvalue)
-                            {
-                                return ResolveJValue(jvalue);
-                            }
-                            return list[0];
+                           return AccessIndex(list, 0).value;
                         } 
                         return null;
                     }), ReturnType.Object, ValidateUnary) },
@@ -1185,11 +1204,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         if (args[0] is string string0 && string0.Length > 0) return string0.Last().ToString();
                         if (args[0] is IList list && list.Count > 0)
                         {
-                             if(list[list.Count - 1] is JValue jvalue)
-                            {
-                                return ResolveJValue(jvalue);
-                            }
-                            return list[list.Count - 1];
+                            return AccessIndex(list, list.Count - 1).value;
                         }
                         return null;
                     }), ReturnType.Object, ValidateUnary) },
