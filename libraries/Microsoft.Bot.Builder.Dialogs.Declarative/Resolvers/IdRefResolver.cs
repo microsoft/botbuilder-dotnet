@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
             var targetFragments = refTarget.Split('#');
 
             var dialogResources = resourceExplorer.GetResources("dialog").ToArray();
-            var refResources = dialogResources?.Where(r => Path.GetFileNameWithoutExtension(r.Name) == targetFragments[0]).ToList();
+            var refResources = dialogResources?.Where(r => Path.GetFileNameWithoutExtension(r.Id) == targetFragments[0]).ToList();
 
             // Ref target must exist
             if (refResources == null || refResources.Count == 0)
@@ -61,12 +61,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
                 var builder = new StringBuilder();
                 builder.AppendLine($"Multiple resources found for id {targetFragments[0]}. Please ensure unique names to be able to reference them. Conflicts: ");
 
-                refResources.ForEach(r => builder.AppendLine($"Name: {r.Name}. Path: .{r.FullName}"));
+                refResources.ForEach(r => builder.AppendLine($"Name: {r.Id} "));
 
                 throw new Exception(builder.ToString());
             }
-            var file = refResources.Single();
-            var text = File.ReadAllText(file.FullName);
+            var resource = refResources.Single();
+            string text = await resource.ReadTextAsync().ConfigureAwait(false);
             var json = JToken.Parse(text);
 
             foreach (JProperty prop in refToken.Children<JProperty>())
@@ -94,7 +94,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
             }
 
             // if we have a source path for the resource, then make it available to InterfaceConverter
-            registry.Add(json, new Source.Range() { Path = file.FullName });
+            if (resource is FileResource fileResource) {
+                registry.Add(json, new Source.Range() { Path = fileResource.Id });
+            }
 
             return json;
         }
