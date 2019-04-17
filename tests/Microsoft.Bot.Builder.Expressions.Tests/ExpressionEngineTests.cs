@@ -284,13 +284,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("first(jarrInt)",1),
             Test("last(jarrString)","third"),
             Test("last(jarrInt)",3),
-
-            // Other test with non collection of Json, JValue will parsed to Object with 
-            // below code:
-            //if (value is JValue jvalue)
-            //{
-            //    value = ResolveJValue(jvalue);
-            //}
+            // todo more JToken test will be added soon
+           
             # endregion
         };
 
