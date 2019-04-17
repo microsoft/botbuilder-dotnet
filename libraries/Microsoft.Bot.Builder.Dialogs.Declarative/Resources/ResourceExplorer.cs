@@ -23,69 +23,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
     /// </summary>
     public class ResourceExplorer : IDisposable
     {
-        private List<FolderResource> folderResources = new List<FolderResource>();
+        private List<IResourceProvider> resourceProviders = new List<IResourceProvider>();
+
+        private CancellationTokenSource CancelReloadToken = new CancellationTokenSource();
+        private ConcurrentBag<string> changedPaths = new ConcurrentBag<string>();
 
         public ResourceExplorer()
         {
         }
 
-
-        public IEnumerable<DirectoryInfo> Folders
-        {
-            get
-            {
-                foreach (var folderResource in folderResources)
-                {
-                    yield return folderResource.Directory;
-                }
-            }
-        }
+        public IEnumerable<IResourceProvider> ResourceProviders { get { return this.resourceProviders; } }
 
         public event ResourceChangedEventHandler Changed;
 
-        private CancellationTokenSource CancelReloadToken = new CancellationTokenSource();
-        private ConcurrentBag<string> changedPaths = new ConcurrentBag<string>();
-
-        public ResourceExplorer AddFolder(string folder, bool includeSubFolders = true, bool monitorFiles = true)
+        public ResourceExplorer AddResourceProvider(IResourceProvider resourceProvider)
         {
-            var folderResource = new FolderResource(folder, includeSubFolders, monitorFiles);
+            resourceProvider.Changed += ResourceProvider_Changed;
 
-            if (folderResource.Watcher != null)
-            {
-                folderResource.Watcher.Created += Watcher_Changed;
-                folderResource.Watcher.Changed += Watcher_Changed;
-                folderResource.Watcher.Deleted += Watcher_Changed;
-            }
-
-            this.folderResources.Add(folderResource);
+            this.resourceProviders.Add(resourceProvider);
             return this;
         }
 
-        public ResourceExplorer AddFolders(string folder, string[] ignoreFolders = null, bool monitorFiles = true)
-        {
-            if (ignoreFolders != null)
-            {
-                this.AddFolder(folder, includeSubFolders: false);
-
-                var hashIgnore = new HashSet<string>(ignoreFolders.Select(p => Path.Combine(folder, p)), StringComparer.CurrentCultureIgnoreCase);
-                foreach (var subFolder in Directory.GetDirectories(folder).Where(f => !hashIgnore.Contains(f)))
-                {
-                    // add subfolders not in ignore list
-                    this.AddFolder(subFolder, includeSubFolders: true, monitorFiles: monitorFiles);
-                }
-            }
-            else
-            {
-                this.AddFolder(folder, includeSubFolders: true, monitorFiles: monitorFiles);
-            }
-            return this;
-        }
-
-        private void Watcher_Changed(object sender, FileSystemEventArgs e)
+        private void ResourceProvider_Changed(string[] ids)
         {
             if (this.Changed != null)
             {
-                changedPaths.Add(e.FullPath);
+                foreach (var id in ids)
+                {
+                    changedPaths.Add(id);
+                }
+
                 lock (CancelReloadToken)
                 {
                     CancelReloadToken.Cancel();
@@ -95,8 +62,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                         {
                             if (t.IsCanceled)
                                 return;
-
-                            this.Changed(changedPaths.ToArray());
+                            var changed = changedPaths.ToArray();
+                            changedPaths = new ConcurrentBag<string>();
+                            this.Changed(changed);
                         }).ContinueWith(t => t.Status);
                 }
             }
@@ -127,11 +95,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             // add folder for the project
             if (ignoreFolders != null)
             {
-                explorer.AddFolders(projectFolder, ignoreFolders, monitorFiles: true);
+                explorer.AddFolders(projectFolder, ignoreFolders, monitorChanges: true);
             }
             else
             {
-                explorer.AddFolder(projectFolder, includeSubFolders: true, monitorFiles: true);
+                explorer.AddResourceProvider(new FolderResourceProvider(projectFolder, includeSubFolders: true, monitorChanges: true));
             }
 
             // add project references
@@ -140,7 +108,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 var path = Path.Combine(projectFolder, PlatformPath(node.Attributes["Include"].Value));
                 path = Path.GetFullPath(path);
                 path = Path.GetDirectoryName(path);
-                explorer.AddFolder(path);
+                explorer.AddResourceProvider(new FolderResourceProvider(path, includeSubFolders: true, monitorChanges: true));
             }
 
             var packages = Path.GetFullPath("packages");
@@ -166,7 +134,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     var folder = Path.Combine(packages, PlatformPath(pathResolver.GetPackageDirectoryName(package)));
                     if (Directory.Exists(folder))
                     {
-                        explorer.AddFolder(folder, monitorFiles: false);
+                        explorer.AddResourceProvider(new FolderResourceProvider(folder, includeSubFolders: true, monitorChanges: false));
                     }
                 }
             }
@@ -191,13 +159,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </summary>
         /// <param name="fileExtension"></param>
         /// <returns></returns>
-        public IEnumerable<FileInfo> GetResources(string fileExtension)
+        public IEnumerable<IResource> GetResources(string fileExtension)
         {
-            foreach (var folder in this.folderResources)
+            foreach (var resourceProvider in this.resourceProviders)
             {
-                foreach (var fileInfo in folder.GetResources(fileExtension))
+                foreach (var resource in resourceProvider.GetResources(fileExtension))
                 {
-                    yield return fileInfo;
+                    yield return resource;
                 }
             }
         }
@@ -207,72 +175,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </summary>
         /// <param name="filename"></param>
         /// <returns></returns>
-        public FileInfo GetResource(string filename)
+        public IResource GetResource(string filename)
         {
-            return GetResources(Path.GetExtension(filename)).Where(fi => fi.Name == filename).SingleOrDefault();
+            return GetResources(Path.GetExtension(filename)).Where(resource => resource.Id == filename).SingleOrDefault();
         }
 
         public void Dispose()
         {
-            foreach (var folderResource in this.folderResources)
+            foreach (var resource in this.resourceProviders)
             {
-                folderResource.Dispose();
+                if (resource is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
             }
         }
-
-        /// <summary>
-        /// Folder/FileResources
-        /// </summary>
-        internal class FolderResource : IDisposable
-        {
-            internal FolderResource(string folder, bool includeSubFolders, bool monitorChanges = true)
-            {
-                this.IncludeSubFolders = includeSubFolders;
-                this.Directory = new DirectoryInfo(folder);
-                if (monitorChanges)
-                {
-                    this.Watcher = new FileSystemWatcher(folder);
-                    this.Watcher.IncludeSubdirectories = this.IncludeSubFolders;
-                    this.Watcher.EnableRaisingEvents = true;
-                }
-            }
-
-            /// <summary>
-            /// folder to enumerate
-            /// </summary>
-            public DirectoryInfo Directory { get; set; }
-
-            public FileSystemWatcher Watcher { get; private set; }
-
-            public bool IncludeSubFolders { get; set; }
-
-            public void Dispose()
-            {
-                lock (Directory)
-                {
-                    if (Watcher != null)
-                    {
-                        Watcher.EnableRaisingEvents = false;
-                        Watcher.Dispose();
-                        Watcher = null;
-                    }
-                }
-            }
-
-            /// <summary>
-            /// id -> Resource object)
-            /// </summary>
-            public IEnumerable<FileInfo> GetResources(string extension)
-            {
-                SearchOption option = (this.IncludeSubFolders) ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-                foreach (var fileInfo in this.Directory.EnumerateFiles($"*.{extension.TrimStart('.')}", option))
-                {
-                    yield return fileInfo;
-                }
-                yield break;
-            }
-        }
-
-
     }
 }

@@ -1,14 +1,15 @@
 {
-  "$schema": "../../app.schema",
-  "$type": "Microsoft.AdaptiveDialog",
-  "recognizer": {
-    "$type": "Microsoft.RegexRecognizer",
-    "intents": {
-      "ToDoIntent": "(?i)todo",
-      "EmailIntent": "(?i)email",
-      "HelpIntent": "(?i)help"
-    }
-  },
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "recognizer": {
+        "$type": "Microsoft.RegexRecognizer",
+      "intents": {
+        "ToDoIntent": "(?i)todo",
+        "EmailIntent": "(?i)email",
+        "CalendarIntent": "(?i)meeting",
+        "HelpIntent": "(?i)help"
+      }
+    },
   "rules": [
     {
       "$type": "Microsoft.IntentRule",
@@ -22,6 +23,13 @@
       "intent": "EmailIntent",
       "steps": [
         "EmailBot.main"
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "CalendarIntent",
+      "steps": [
+        "CalendarBot.main"
       ]
     },
     {

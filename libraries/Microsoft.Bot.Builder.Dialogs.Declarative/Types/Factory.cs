@@ -135,6 +135,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.IntegerInput", typeof(IntegerInput));
             Register("Microsoft.TextInput", typeof(TextInput));
             Register("Microsoft.ChoiceInput", typeof(ChoiceInput));
+            Register("Microsoft.DateTimeInput", typeof(DateTimeInput));
             Register("Microsoft.OAuthPrompt", typeof(OAuthPrompt), new OAuthPromptLoader());
 
             // Recognizers

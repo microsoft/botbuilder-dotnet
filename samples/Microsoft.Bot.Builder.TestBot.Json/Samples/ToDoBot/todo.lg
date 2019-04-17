@@ -1,4 +1,4 @@
-﻿# ShowTodo
+# ShowTodo
 - IF: {count(user.todos) > 0}
     - ```
     Your most recent @{count(user.todos)} tasks are 
@@ -18,4 +18,3 @@
       ```
 - ELSE:
     - You don't have any todos in grocery.
-

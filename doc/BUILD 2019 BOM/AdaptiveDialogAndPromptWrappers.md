@@ -13,13 +13,18 @@ _The new Adaptive dialog and the event model simplify sophisticated conversation
     - ~~C# implementation introduces properties on existing prompts. TS does not have any implementation of the new properties~~
     - ~~TS added new prompt++ (suffix input) that does binding to memory as well as existential check before prompting. C# does not appear to do any existential checks~~
     - ~~C# has float prompt added while TS does not have this.~~
-- - [ ] Alignment on Bot + Run method. C# needs DialogManager [Tom]
-- - [ ] Close on support for Switch...Case..Default step. Exists in C# but not in TS. [Tom and Steve]
-- - [ ] make sure card recognizer is part of adaptive on C# side. [Tom]
-- - [ ] LG and common expression language integration on TS. [Steve]
-- - [ ] Typeloader and resource explorer for TS [Carlos; ETA 4/17]
-- - [ ] Typescript
-    - - [ ] LG [Steve; ETA ?]
+- - [ ] Breaking change for OnContinueDialogAsync - roll back breaking change. [Steve]
+    - - [ ] Redo of consultation and event bubbling [Steve]
+- - [ ] Alignment on Bot + Run method. C# needs DialogManager [Tom; 4/16]
+- - [ ] Prompting into turn scope - event payload values; activity [Tom; 4/17]
+- - [ ] Document and ship debugger [Vishwac + Tom]
+- - [ ] Input DCR on C# [Tom; Carlos]
+- - [ ] ~~make sure card recognizer is part of adaptive on C# side.~~ [Tom]
+- - [ ] ~~Typescript~~
+    - - [ ] Packages for npm; daily updates of packages
+    - - [ ] Close on support for Switch...Case..Default step. Exists in C# but not in TS. [Tom and Steve]
+    - - [x] LG and common expression language integration on TS. [Steve]
+    - - [ ] Typeloader and resource explorer for TS [Carlos; ETA 4/17]
     - - [ ] QnADialog step [Steve]    
     - - [ ] langauge generation renderer [Carlos]
     - - [ ] TextMessageActivityGenerator [Carlos]

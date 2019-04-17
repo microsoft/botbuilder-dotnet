@@ -8,43 +8,40 @@
             "property": "dialog.todo"
         },
         {
-            "$type": "Microsoft.SaveEntity",
-            "entity": "listType",
-            "property": "user.listType"
-        },
-        "GetListType",
-        {
-            "$type": "Microsoft.TextInput",
-            "prompt": "OK, please enter the title of your todo.",
-            "property": "dialog.todo"
-        },
-        {
             "$type": "Microsoft.IfCondition",
-            "condition": "user.listType.Value == 'GroceryList'",
+            "condition": "dialog.todo == null",
             "steps": [
                 {
-                    "$type": "Microsoft.EditArray",
-                    "changeType": "Push",
-                    "arrayProperty": "user.groceryList",
-                    "itemProperty": "dialog.todo"
-                }
-            ],
-            "elseSteps": [
-                {
-                    "$type": "Microsoft.EditArray",
-                    "changeType": "Push",
-                    "arrayProperty": "user.todos",
-                    "itemProperty": "dialog.todo"
+                    "$type": "Microsoft.TextInput",
+                    "prompt": "OK, please enter the title of your todo.",
+                    "property": "dialog.todo"
                 }
             ]
         },
         {
+            "$type": "Microsoft.EditArray",
+            "changeType": "Push",
+            "arrayProperty": "user.todos",
+            "itemProperty": "dialog.todo"
+        },
+        {
             "$type": "Microsoft.SendActivity",
-            "activity": "Successfully added a todo named \"{dialog.todo}\" in {user.listType.Value}"
+            "activity": "Successfully added a todo named \"{dialog.todo}\""
         },
         {
             "$type": "Microsoft.DeleteProperty",
-            "property": "user.listType"
+            "property": "dialog.todo"
+        }
+    ],
+    "rules": [
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "CancelIntent",
+            "steps": [
+                {
+                    "$type": "Microsoft.CancelAllDialog"
+                }
+            ]
         }
     ]
 }
