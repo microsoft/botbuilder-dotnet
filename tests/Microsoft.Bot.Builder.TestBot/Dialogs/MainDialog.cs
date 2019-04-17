@@ -14,10 +14,8 @@ namespace Microsoft.BotBuilderSamples
 {
     public class MainDialog : ComponentDialog
     {
-#pragma warning disable SA1401 // Fields should be private
-        protected readonly IConfiguration _configuration;
-        protected readonly ILogger _logger;
-#pragma warning restore SA1401 // Fields should be private
+        private readonly IConfiguration _configuration;
+        private readonly ILogger _logger;
 
         public MainDialog(IConfiguration configuration, ILogger<MainDialog> logger)
             : base(nameof(MainDialog))
@@ -90,7 +88,7 @@ namespace Microsoft.BotBuilderSamples
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text("Thank you."), cancellationToken);
             }
 
-            return await stepContext.EndDialogAsync();
+            return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
         }
     }
 }

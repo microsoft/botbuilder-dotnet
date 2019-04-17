@@ -21,7 +21,8 @@ namespace Microsoft.BotBuilderSamples.Tests.Bots
                 .Returns(Task.FromResult(new DialogTurnResult(DialogTurnStatus.Empty)));
 
             // TODO: do we need state here?
-            var sut = new DialogAndWelcomeBot<Dialog>(new ConversationState(new MemoryStorage()), new UserState(new MemoryStorage()), mockRootDialog.Object, null);
+            var memoryStorage = new MemoryStorage();
+            var sut = new DialogAndWelcomeBot<Dialog>(new ConversationState(memoryStorage), new UserState(memoryStorage), mockRootDialog.Object, null);
             var testAdapter = new TestAdapter();
             var testFlow = new TestFlow(testAdapter, sut);
             await testFlow.Send(new Activity
@@ -29,9 +30,9 @@ namespace Microsoft.BotBuilderSamples.Tests.Bots
                     Type = ActivityTypes.ConversationUpdate,
                     MembersAdded = new List<ChannelAccount>
                     {
-                        new ChannelAccount {Id = "theUser"},
+                        new ChannelAccount { Id = "theUser" },
                     },
-                    Recipient = new ChannelAccount {Id = "theBot"},
+                    Recipient = new ChannelAccount { Id = "theBot" },
                 })
                 .AssertReply(activity =>
                 {

@@ -33,7 +33,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Bots
             var testFlow = new TestFlow(testAdapter, sut);
             await testFlow.Send("Hi").StartTestAsync();
 
-            // Assert that SaveChangesAsyncWasCalled
+            // Assert that log was changed with the expected parameters
             mockLogger.Verify(
                 x => x.Log(LogLevel.Information, It.IsAny<EventId>(), It.Is<object>(o => o.ToString() == "Running dialog with Message Activity."), null, It.IsAny<Func<object, Exception, string>>()),
                 Times.Once);
@@ -91,7 +91,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Bots
             var testFlow = new TestFlow(testAdapter, sut);
             await testFlow.Send("Hi").StartTestAsync();
 
-            // Assert that SaveChangesAsyncWasCalled
+            // Assert that SaveChangesAsync was called
             mockConversationState.Verify(x => x.SaveChangesAsync(It.IsAny<TurnContext>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
             mockUserState.Verify(x => x.SaveChangesAsync(It.IsAny<TurnContext>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
         }
