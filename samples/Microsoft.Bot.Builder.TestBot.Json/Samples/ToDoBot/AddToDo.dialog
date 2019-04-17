@@ -19,6 +19,17 @@
             ]
         },
         {
+            "$type": "Microsoft.IfCondition",
+            "condition": "user.todos == null",
+            "steps": [
+                {
+                    "$type": "Microsoft.InitProperty",
+                    "property": "user.todos",
+                    "type": "array"
+                }
+            ]
+        },
+        {
             "$type": "Microsoft.EditArray",
             "changeType": "Push",
             "arrayProperty": "user.todos",

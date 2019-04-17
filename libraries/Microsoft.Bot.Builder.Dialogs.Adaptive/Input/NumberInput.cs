@@ -30,7 +30,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             // We override the default constructor behavior from base class to add custom validation around min and max values.
             return new NumberPrompt<TNumber>(null, new PromptValidator<TNumber>(async (promptContext, cancel) =>
             {
-                var result = (IComparable<TNumber>)promptContext.Recognized.Value;
+                if (!promptContext.Recognized.Succeeded)
+                {
+                    return false;
+                }
+
+                var result = (IComparable<TNumber>)promptContext.Recognized.Value; 
 
                 if (result.CompareTo(MinValue) < 0 || result.CompareTo(MaxValue) > 0)
                 {

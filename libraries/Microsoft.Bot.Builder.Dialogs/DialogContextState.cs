@@ -206,7 +206,38 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else
             {
-                return defaultValue;
+                return default(T);
+            }
+        }
+
+        public bool HasValue<T>(string pathExpression)
+        {
+            return HasValue<T>(this, pathExpression);
+        }
+
+        public bool HasValue<T>(object o, string pathExpression)
+        {
+            JToken result = null;
+            if (o != null && o.GetType() == typeof(JArray))
+            {
+                int index = 0;
+                if (int.TryParse(pathExpression, out index) && index < JArray.FromObject(o).Count)
+                {
+                    result = JArray.FromObject(o)[index];
+                }
+            }
+            else
+            {
+                result = JToken.FromObject(o).SelectToken(pathExpression);
+            }
+
+            if (result != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
