@@ -550,16 +550,13 @@ namespace Microsoft.Bot.Builder.Expressions
                 }
             }
 
-            if (value is JValue jvalue)
-            {
-                value = ResolveJValue(jvalue);
-            }
+            value = ResolveValue(value);
 
             return (value, error);
         }
 
         /// <summary>
-        /// Lookup a index property of instance
+        /// Lookup an index property of instance
         /// </summary>
         /// <param name="instance">Instance with property.</param>
         /// <param name="index">Property to lookup.</param>
@@ -604,10 +601,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 error = $"{instance} is not a collection.";
             }
 
-            if (value is JValue jvalue)
-            {
-                value = ResolveJValue(jvalue);
-            }
+            value = ResolveValue(value);
 
             return (value, error);
         }
@@ -643,24 +637,27 @@ namespace Microsoft.Bot.Builder.Expressions
             return (value, error);
         }
 
-        private static object ResolveJValue(JValue jvalue)
+        private static object ResolveValue(object obj)
         {
-            var value = jvalue.Value;
-            if (jvalue.Type == JTokenType.Integer)
+            if (!(obj is JValue jValue))
+                return obj;
+
+            var value = jValue.Value;
+            if (jValue.Type == JTokenType.Integer)
             {
-                value = jvalue.ToObject<int>();
+                value = jValue.ToObject<int>();
             }
-            else if (jvalue.Type == JTokenType.String)
+            else if (jValue.Type == JTokenType.String)
             {
-                value = jvalue.ToObject<string>();
+                value = jValue.ToObject<string>();
             }
-            else if (jvalue.Type == JTokenType.Boolean)
+            else if (jValue.Type == JTokenType.Boolean)
             {
-                value = jvalue.ToObject<bool>();
+                value = jValue.ToObject<bool>();
             }
-            else if (jvalue.Type == JTokenType.Float)
+            else if (jValue.Type == JTokenType.Float)
             {
-                value = jvalue.ToObject<double>();
+                value = jValue.ToObject<double>();
             }
             return value;
         }
@@ -670,7 +667,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// </summary>
         /// <param name="jarray"></param>
         /// <returns></returns>
-        private static List<object> WrapList(object instance)
+        private static List<object> ResolveListValue(object instance)
         {
             var result = new List<object>();
 
@@ -959,13 +956,13 @@ namespace Microsoft.Bot.Builder.Expressions
                         ReturnType.Number, ValidateBinaryNumber) },
                 { ExpressionType.Average,
                     new ExpressionEvaluator(Apply(args => {
-                        List<object> operands = WrapList(args[0]);
+                        List<object> operands = ResolveListValue(args[0]);
                         return operands.Average(u => Convert.ToDouble(u));
                     }, VerifyList),
                         ReturnType.Number, ValidateUnary) },
                 { ExpressionType.Sum,
                     new ExpressionEvaluator(Apply(args =>    {
-                        List<object> operands = WrapList(args[0]);
+                        List<object> operands = ResolveListValue(args[0]);
                         if (operands.All(u => (u is int)))
                             return operands.Sum(u => (int)u);
                         if (operands.All(u => ((u is int) || (u is double))))
@@ -974,7 +971,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     }, VerifyList),
                         ReturnType.Number, ValidateUnary) },
                 { ExpressionType.Count,
-                    new ExpressionEvaluator(Apply(args => ((IList) args[0]).OfType<object>().Count(), VerifyList), ReturnType.Number, ValidateUnary)},
+                    new ExpressionEvaluator(Apply(args => ((List<object>)ResolveListValue(args[0])).Count, VerifyList), ReturnType.Number, ValidateUnary)},
 
                 // Booleans
                 { ExpressionType.LessThan, Comparison(args => args[0] < args[1]) },
@@ -1003,7 +1000,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         //list to find a value
                         else if (args[0] is IList list1)
                         {
-                            List<object> operands = WrapList(args[0]);
+                            List<object> operands = ResolveListValue(args[0]);
                             if (operands.Contains(args[1]))
                                 return true;
                         }
