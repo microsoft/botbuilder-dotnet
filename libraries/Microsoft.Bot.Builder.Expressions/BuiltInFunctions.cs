@@ -513,7 +513,13 @@ namespace Microsoft.Bot.Builder.Expressions
 
             object value = null;
             string error = null;
-            if (instance is IDictionary dict)
+            
+            // NOTE: what about other type of TKey, TValue?
+            if (instance is IDictionary<string, object> idict)
+            {
+                idict.TryGetValue(property, out value);
+            }
+            else if (instance is IDictionary dict)
             {
                 if (dict.Contains(property))
                 {
