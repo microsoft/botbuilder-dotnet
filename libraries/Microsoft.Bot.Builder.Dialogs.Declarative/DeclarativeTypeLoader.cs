@@ -1,36 +1,49 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
-using System.IO;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
+using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative
 {
     public static class DeclarativeTypeLoader
     {
-        public static T Load<T>(string path, ResourceExplorer resourceExplorer, Source.IRegistry registry)
+        public static async Task<T> LoadAsync<T>(IResource resource, ResourceExplorer resourceExplorer, Source.IRegistry registry)
         {
             IRefResolver refResolver = new IdRefResolver(resourceExplorer, registry);
 
             var paths = new Stack<string>();
-            paths.Push(path);
+            paths.Push(resource.Id);
 
-            var json = File.ReadAllText(path);
+            var json = await resource.ReadTextAsync();
 
-            var dialog = JsonConvert.DeserializeObject<T>(
+            return _load<T>(registry, refResolver, paths, json);
+        }
+
+        public static T Load<T>(IResource resource, ResourceExplorer resourceExplorer, Source.IRegistry registry)
+        {
+            IRefResolver refResolver = new IdRefResolver(resourceExplorer, registry);
+
+            var paths = new Stack<string>();
+            paths.Push(resource.Id);
+
+            var json = resource.ReadText();
+
+            return _load<T>(registry, refResolver, paths, json);
+        }
+
+        private static T _load<T>(Source.IRegistry registry, IRefResolver refResolver, Stack<string> paths, string json)
+        {
+            return JsonConvert.DeserializeObject<T>(
                 json, new JsonSerializerSettings()
                 {
                     SerializationBinder = new UriTypeBinder(),
@@ -54,7 +67,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                         NamingStrategy = new CamelCaseNamingStrategy()
                     }
                 });
-            return dialog;
         }
 
         /// <summary>
