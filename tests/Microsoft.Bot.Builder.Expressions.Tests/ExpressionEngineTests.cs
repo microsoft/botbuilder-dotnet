@@ -266,6 +266,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("bag[substring(concat('na','me','more'), 0, length('name'))]","mybag"),
             Test("items[1+1]","two"),
             # endregion
+
         };
 
         [DataTestMethod]
