@@ -64,7 +64,6 @@
     <Content Include="Schemas\Microsoft.ITextTemplate.schema" />
     <Content Include="Schemas\Microsoft.IActivityTemplate.schema" />
     <Content Include="Schemas\Microsoft.IDialog.schema" />
-    <Content Include="Schemas\Microsoft.IExpression.schema" />
     <Content Include="Schemas\Microsoft.IRecognizer.schema" />
     <Content Include="Schemas\Policies\Microsoft.LanguagePolicy.schema" />
   </ItemGroup>

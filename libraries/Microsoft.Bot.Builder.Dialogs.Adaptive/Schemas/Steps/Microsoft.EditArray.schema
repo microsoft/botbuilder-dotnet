@@ -4,7 +4,6 @@
     "title": "Edit Array Step",
     "description": "This is a step which allows you to modify an array in memory",
     "type": "object",
-    "additionalProperties": false,
     "properties": {
         "changeType": {
             "type": "string",
@@ -19,12 +18,12 @@
             ]
         },
         "arrayProperty": {
-            "type": "string",
+            "$role": "memoryPath",
             "title": "Array Property",
             "description": "Memory expression of the array to manipulate."
         },
         "itemProperty": {
-            "type": "string",
+            "$role": "memoryPath",
             "title": "List Property",
             "description": "Memory expression for the item"
         }

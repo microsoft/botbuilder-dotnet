@@ -5,7 +5,7 @@
     "$role": "unionType",
     "oneOf": [
         {
-            "type": "string"
+            "$role": "lg"
         }
     ]
 }

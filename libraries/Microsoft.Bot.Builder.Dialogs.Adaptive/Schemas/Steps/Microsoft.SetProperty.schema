@@ -4,16 +4,15 @@
     "title": "Set Property Step",
     "description": "This step allows you to set memory to the value of an expression",
     "type": "object",
-    "additionalProperties": false,
     "properties": {
         "property": {
-            "type": "string",
+            "$role": "memoryPath",
             "title": "Property",
             "description": "The property to set the value of",
             "examples": [ "user.age" ]
         },
         "value": {
-            "$type": "Microsoft.IExpression",
+            "$role": "expression",
             "title": "Value",
             "description": "Expression against memory to use to get the value.",
             "examples": [

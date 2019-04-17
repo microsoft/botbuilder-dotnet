@@ -4,5 +4,4 @@
     "title": "End Turn",
     "description": "End the current turn without ending the dialog.",
     "type": "object",
-    "additionalProperties": false
 }

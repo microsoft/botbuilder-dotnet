@@ -2,33 +2,38 @@
     "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
     "$ref": "./Microsoft.Rule.schema#",
     "title": "Event Rule",
-    "description": "Defines a rule for an event which is triggered by some sourcy",
+    "description": "Defines a rule for an event which is triggered by some source",
     "type": "object",
-    "additionalProperties": false,
-    "properties": {
-        "$ref": "./Microsoft.Rule.schema#/properties",
-        "events": {
-            "type": "array",
-            "description": "Events to trigger this rule for",
-            "items": {
-                "type": "string",
-                "enum": [
-                    "beginDialog",
-                    "consultDialog",
-                    "cancelDialog",
-                    "activityReceived",
-                    "recognizedIntent",
-                    "unknownIntent",
-                    "stepsStarted",
-                    "stepsSaved",
-                    "stepsEnded",
-                    "stepsResumed"
-                ]
-            }
+    "allOf": [
+        {
+            "$ref": "./Microsoft.Rule.schema"
+        },
+        {
+            "properties": {
+                "events": {
+                    "type": "array",
+                    "description": "Events to trigger this rule for",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "beginDialog",
+                            "consultDialog",
+                            "cancelDialog",
+                            "activityReceived",
+                            "recognizedIntent",
+                            "unknownIntent",
+                            "stepsStarted",
+                            "stepsSaved",
+                            "stepsEnded",
+                            "stepsResumed"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "events",
+                "steps"
+            ]
         }
-    },
-    "required": [
-        "events",
-        "steps"
     ]
 }
