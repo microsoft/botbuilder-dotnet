@@ -69,10 +69,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
         [TestMethod]
         public async Task JsonDialogLoad_TextInputWithoutProperty()
-        {
-            string path = Path.Combine(samplesDirectory, @"04 - TextInput\TextInput.WithoutProperty.main.dialog");
-
-            await BuildTestFlow(path)
+        {   
+            await BuildTestFlow("TextInput.WithoutProperty.main.dialog")
             .SendConversationUpdate()
                 .AssertReply("Hello, I'm Zoidberg. What is your name?")
             .Send("Carlos")
