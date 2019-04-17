@@ -618,9 +618,13 @@ namespace Microsoft.Bot.Builder.Expressions
                             error = $"{instance} is not a collection.";
                         }
                     }
+                    else if(idxValue is string idxStr)
+                    {
+                        (value, error) = AccessProperty(inst, idxStr);
+                    }
                     else
                     {
-                        error = $"Could not coerce {index} to an int.";
+                        error = $"Could not coerce {index} to an int or string";
                     }
                 }
             }
@@ -880,8 +884,7 @@ namespace Microsoft.Bot.Builder.Expressions
             var functions = new Dictionary<string, ExpressionEvaluator>
             {
                 // Math
-                { ExpressionType.Element, new ExpressionEvaluator(ExtractElement, ReturnType.Object,
-                    (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.Number)) },
+                { ExpressionType.Element, new ExpressionEvaluator(ExtractElement, ReturnType.Object,ValidateBinary) },
                 { ExpressionType.Add, Numeric(args => args[0] + args[1]) },
                 { ExpressionType.Subtract, Numeric(args => args[0] - args[1]) },
                 { ExpressionType.Multiply, Numeric(args => args[0] * args[1]) },
