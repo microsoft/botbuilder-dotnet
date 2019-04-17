@@ -963,10 +963,8 @@ namespace Microsoft.Bot.Builder.Expressions
                 { ExpressionType.Sum,
                     new ExpressionEvaluator(Apply(args =>    {
                         List<object> operands = ResolveListValue(args[0]);
-                        if (operands.All(u => (u is int)))
-                            return operands.Sum(u => (int)u);
-                        if (operands.All(u => ((u is int) || (u is double))))
-                            return operands.Sum(u => Convert.ToDouble(u));
+                        if (operands.All(u => (u is int))) return operands.Sum(u => (int)u);
+                        if (operands.All(u => ((u is int) || (u is double)))) return operands.Sum(u => Convert.ToDouble(u));
                         return 0;
                     }, VerifyList),
                         ReturnType.Number, ValidateUnary) },
