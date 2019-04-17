@@ -1,6 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -10,42 +8,32 @@ using Xunit;
 
 namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 {
-    public class MainDialogTests
+    public class MainDialogTests : DialogTestsBase
     {
         [Fact]
-        public async Task HappyPath()
+        public void DialogConstructor()
         {
+            // TODO: check with the team if there's value in these types of test or if there's a better way of asserting the
+            // dialog got composed properly.
             var mockConfig = new Mock<IConfiguration>();
             var mockLogger = new Mock<ILogger<MainDialog>>();
 
             var sut = new MainDialog(mockConfig.Object, mockLogger.Object);
 
-            var convoState = new ConversationState(new MemoryStorage());
-            var testAdapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-            var dialogState = convoState.CreateProperty<DialogState>("DialogState");
-            var testFlow = new TestFlow(testAdapter, async (turnContext, cancellationToken) =>
-            {
-                var state = await dialogState.GetAsync(turnContext, () => new DialogState(), cancellationToken);
-                var dialogs = new DialogSet(dialogState);
+            Assert.Equal("MainDialog", sut.Id);
+            Assert.IsType<TextPrompt>(sut.FindDialog("TextPrompt"));
+            Assert.IsType<BookingDialog>(sut.FindDialog("BookingDialog"));
+            Assert.IsType<WaterfallDialog>(sut.FindDialog("WaterfallDialog"));
+        }
 
-                dialogs.Add(sut);
+        [Fact]
+        public async Task HappyPath()
+        {
+            var mockConfig = new Mock<IConfiguration>();
+            var mockLogger = new Mock<ILogger<MainDialog>>();
+            var sut = new MainDialog(mockConfig.Object, mockLogger.Object);
 
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                switch (results.Status)
-                {
-                    case DialogTurnStatus.Empty:
-                        await dc.BeginDialogAsync(sut.Id, null, cancellationToken);
-                        break;
-                    case DialogTurnStatus.Complete:
-                    {
-                        // TODO: Dialog has ended, figure out a way of asserting that this is the case.
-                        break;
-                    }
-                }
-            });
+            var testFlow = BuildTestFlow(sut);
 
             await testFlow.Send("hi")
                 .AssertReply(activity =>

@@ -17,14 +17,14 @@ namespace Microsoft.BotBuilderSamples
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
 
-        public MainDialog(IConfiguration configuration, ILogger<MainDialog> logger)
+        public MainDialog(IConfiguration configuration, ILogger<MainDialog> logger, BookingDialog bookingDialog)
             : base(nameof(MainDialog))
         {
             _configuration = configuration;
             _logger = logger;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
-            AddDialog(new BookingDialog());
+            AddDialog(bookingDialog);
             var steps = new WaterfallStep[]
             {
                 IntroStepAsync,
@@ -35,6 +35,11 @@ namespace Microsoft.BotBuilderSamples
 
             // The initial child Dialog to run.
             InitialDialogId = nameof(WaterfallDialog);
+        }
+
+        public MainDialog(IConfiguration configuration, ILogger<MainDialog> logger)
+            : this(configuration, logger, new BookingDialog())
+        {
         }
 
         private async Task<DialogTurnResult> IntroStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -56,10 +61,8 @@ namespace Microsoft.BotBuilderSamples
         {
             // Call LUIS and gather any potential booking details. (Note the TurnContext has the response to the prompt.)
             var bookingDetails = stepContext.Result != null
-                    ?
-                await LuisHelper.ExecuteLuisQuery(_configuration, _logger, stepContext.Context, cancellationToken)
-                    :
-                new BookingDetails();
+                ? await LuisHelper.ExecuteLuisQuery(_configuration, _logger, stepContext.Context, cancellationToken)
+                : new BookingDetails();
 
             // In this sample we only have a single Intent we are concerned with. However, typically a scneario
             // will have multiple different Intents each corresponding to starting a different child Dialog.
