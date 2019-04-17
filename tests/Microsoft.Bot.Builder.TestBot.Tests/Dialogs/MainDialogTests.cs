@@ -1,9 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Moq;
 using Xunit;
 
 namespace Microsoft.BotBuilderSamples.Tests.Dialogs
@@ -15,10 +12,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         {
             // TODO: check with the team if there's value in these types of test or if there's a better way of asserting the
             // dialog got composed properly.
-            var mockConfig = new Mock<IConfiguration>();
-            var mockLogger = new Mock<ILogger<MainDialog>>();
-
-            var sut = new MainDialog(mockConfig.Object, mockLogger.Object);
+            var sut = new MainDialog(MockConfig.Object, MockLogger.Object);
 
             Assert.Equal("MainDialog", sut.Id);
             Assert.IsType<TextPrompt>(sut.FindDialog("TextPrompt"));
@@ -29,9 +23,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         [Fact]
         public async Task HappyPath()
         {
-            var mockConfig = new Mock<IConfiguration>();
-            var mockLogger = new Mock<ILogger<MainDialog>>();
-            var sut = new MainDialog(mockConfig.Object, mockLogger.Object);
+            var sut = new MainDialog(MockConfig.Object, MockLogger.Object);
 
             var testFlow = BuildTestFlow(sut);
 
@@ -40,9 +32,10 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 {
                     var message = (IMessageActivity)activity;
                     Assert.Equal(
-                        "NOTE: LUIS is not configured. To enable all capabilities, add 'LuisAppId', 'LuisAPIKey' and 'LuisAPIHostName' to the appsettings.json file.",
+                        "What can I help you with today?",
                         message.Text);
                 })
+                .Send("irrelevant")
                 .AssertReply(activity =>
                 {
                     var message = (IMessageActivity)activity;

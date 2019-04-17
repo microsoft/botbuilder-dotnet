@@ -36,14 +36,6 @@ namespace Microsoft.BotBuilderSamples
             }
         }
 
-        // Create an attachment message response.
-        private Activity CreateResponse(IActivity activity, Attachment attachment)
-        {
-            var response = ((Activity)activity).CreateReply();
-            response.Attachments = new List<Attachment>() {attachment};
-            return response;
-        }
-
         // Load attachment from file.
         private Attachment CreateAdaptiveCardAttachment()
         {
@@ -62,6 +54,14 @@ namespace Microsoft.BotBuilderSamples
                     };
                 }
             }
+        }
+
+        // Create an attachment message response.
+        private Activity CreateResponse(IActivity activity, Attachment attachment)
+        {
+            var response = ((Activity)activity).CreateReply();
+            response.Attachments = new List<Attachment>() { attachment };
+            return response;
         }
     }
 }

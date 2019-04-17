@@ -4,14 +4,31 @@
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 {
+    /// <summary>
+    /// A base class with helper methods and properties to test dialogs in isolation.
+    /// </summary>
     public class DialogTestsBase
     {
-        /// <summary>
-        /// Factory method to create a <see cref="TestFlow"/>.
-        /// </summary>
+        public DialogTestsBase()
+        {
+            MockLogger = new Mock<ILogger<MainDialog>>();
+            MockConfig = new Mock<IConfiguration>();
+            MockConfig.Setup(x => x["LuisAppId"]).Returns("SomeLuisAppId");
+            MockConfig.Setup(x => x["LuisAPIKey"]).Returns("SomeLuisAppKey");
+            MockConfig.Setup(x => x["LuisAPIHostName"]).Returns("SomeLuisAppHostName");
+        }
+
+        protected Mock<IConfiguration> MockConfig { get; }
+
+        protected Mock<ILogger<MainDialog>> MockLogger { get; }
+
+        // Factory method to create a <see cref="TestFlow"/>.
         protected static TestFlow BuildTestFlow(Dialog targetDialog)
         {
             var convoState = new ConversationState(new MemoryStorage());
