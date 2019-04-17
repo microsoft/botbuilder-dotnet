@@ -35,11 +35,16 @@ namespace Microsoft.BotBuilderSamples.Tests.Bots
 
             // Assert that log was changed with the expected parameters
             mockLogger.Verify(
-                x => x.Log(LogLevel.Information, It.IsAny<EventId>(), It.Is<object>(o => o.ToString() == "Running dialog with Message Activity."), null, It.IsAny<Func<object, Exception, string>>()),
+                x => x.Log(
+                    LogLevel.Information,
+                    It.IsAny<EventId>(),
+                    It.Is<object>(o => o.ToString() == "Running dialog with Message Activity."),
+                    null,
+                    It.IsAny<Func<object, Exception, string>>()),
                 Times.Once);
         }
 
-        [Fact(Skip="TODO: need to figure out how to implement this version of the test")]
+        [Fact(Skip = "TODO: need to figure out how to implement this version of the test")]
         public async Task SavesTurnStateUsingMemoryStorage()
         {
             // TODO: Figure out how to implement this test.

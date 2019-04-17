@@ -25,4 +25,8 @@
     <ProjectReference Include="..\Microsoft.Bot.Builder.TestBot\Microsoft.Bot.Builder.TestBot.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+
 </Project>
