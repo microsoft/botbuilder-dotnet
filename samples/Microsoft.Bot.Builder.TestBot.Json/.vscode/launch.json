@@ -4,7 +4,17 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
+        {
+            "type": "json",
+            "request": "attach",
+            "name": "Attach to Bot",
+            "debugServer": 4712
+        },
+        {
+            "type": "json",
+            "request": "launch",
+            "name": "Launch Bot"
+        },
         {
             "name": ".NET Core Launch (web)",
             "type": "coreclr",
@@ -29,13 +39,6 @@
             "type": "coreclr",
             "request": "attach",
             "processId": "${command:pickProcess}"
-        },
-        {
-            "type": "json",
-            "request": "attach",
-            "trace": false,
-            "name": "Attach Bot",
-            "debugServer": 9999
         }
     ]
 }
