@@ -4,7 +4,6 @@
     "title": "Log Step",
     "description": "This is a step which writes to console.log and optional creates a TraceActivity around a text binding",
     "type": "object",
-    "additionalProperties": false,
     "properties": {
         "text": {
             "type": "string",

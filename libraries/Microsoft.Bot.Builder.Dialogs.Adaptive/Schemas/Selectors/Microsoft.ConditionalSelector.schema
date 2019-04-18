@@ -6,14 +6,18 @@
     "type": "object",
     "properties": {
         "condition": {
-            "$type": "Microsoft.IExpression"
+            "$role": "expression"
         },
         "ifTrue": {
             "$type": "Microsoft.IRuleSelector"
         },
         "ifFalse": {
             "$type": "Microsoft.IRuleSelector"
-        },
-        "required": ["condition", "iftrue", "iffalse"]
-    }
+        }
+    },
+    "required": [
+        "condition",
+        "ifTrue",
+        "ifFalse"
+    ]
 }

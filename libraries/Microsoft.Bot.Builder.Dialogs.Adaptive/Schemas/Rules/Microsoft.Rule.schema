@@ -2,12 +2,11 @@
     "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
     "$role": "unionType(Microsoft.IRule)",
     "title": "Event Rule",
-    "description": "Defines a rule for an event which is triggered by some sourcy",
+    "description": "Defines a rule for an event which is triggered by some source",
     "type": "object",
-    "additionalProperties": false,
     "properties": {
         "constraint": {
-            "$type": "Microsoft.IExpression",
+            "$role": "expression",
             "title": "Constraint",
             "description": "Optional constraint to which must be met for this rule to fire",
             "examples": [

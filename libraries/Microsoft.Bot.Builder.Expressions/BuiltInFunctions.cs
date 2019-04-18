@@ -166,6 +166,13 @@ namespace Microsoft.Bot.Builder.Expressions
             => ValidateArityAndAnyType(expression, 2, 2, ReturnType.Number);
 
         /// <summary>
+        /// Validate 2 or more than 2 numeric arguments.
+        /// </summary>
+        /// <param name="expression">Expression to validate.</param>
+        public static void ValidateTwoOrMoreThanTwoNumbers(Expression expression)
+            => ValidateArityAndAnyType(expression, 2, int.MaxValue, ReturnType.Number);
+
+        /// <summary>
         /// Validate there are 2 numeric or string arguments.
         /// </summary>
         /// <param name="expression">Expression to validate.</param>
@@ -220,13 +227,28 @@ namespace Microsoft.Bot.Builder.Expressions
         public static string VerifyList(object value, Expression expression)
         {
             string error = null;
-            if (!(value is IList))
+            if (!TryParseList(value, out var _))
             {
                 error = $"{expression} is not a list.";
             }
             return error;
         }
 
+        public static bool TryParseList(object value, out IList list)
+        {
+            list = null;
+            if(value is JObject jObj) // JObject would also a IList, but here we ignore it
+            {
+                return false;
+            }
+            
+            if(value is IList listValue)
+            {
+                list = listValue;
+                return true;
+            }
+            return false;
+        }
 
         /// <summary>
         /// Verify value is an integer.
@@ -384,6 +406,14 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <returns>Delegate for evaluating an expression.</returns>
         public static ExpressionEvaluator Numeric(Func<IReadOnlyList<dynamic>, object> function)
             => new ExpressionEvaluator(ApplySequence(function, VerifyNumber), ReturnType.Number, ValidateNumber);
+
+        /// <summary>
+        /// Numeric operators that can have 2 or more args.
+        /// </summary>
+        /// <param name="function">Function to apply.</param>
+        /// <returns>Delegate for evaluating an expression.</returns>
+        public static ExpressionEvaluator MultivariateNumeric(Func<IReadOnlyList<dynamic>, object> function)
+            => new ExpressionEvaluator(ApplySequence(function, VerifyNumber), ReturnType.Number, ValidateTwoOrMoreThanTwoNumbers);
 
         /// <summary>
         /// Comparison operators that have 2 args and work over strings or numbers.
@@ -574,13 +604,9 @@ namespace Microsoft.Bot.Builder.Expressions
             string error = null;
 
             var count = -1;
-            if (instance is Array arr)
-            {
-                count = arr.Length;
-            }
-            else if (instance is ICollection collection)
-            {
-                count = collection.Count;
+            if (TryParseList(instance, out var list))
+            { 
+                count = list.Count;
             }
             var itype = instance.GetType();
             var indexer = itype.GetProperties().Except(itype.GetDefaultMembers().OfType<PropertyInfo>());
@@ -671,7 +697,7 @@ namespace Microsoft.Bot.Builder.Expressions
         {
             var result = new List<object>();
 
-            if (!(instance is IList list))
+            if (!TryParseList(instance, out var list))
                 return result;
 
             for(var i = 0;i < list.Count; i++)
@@ -799,14 +825,14 @@ namespace Microsoft.Bot.Builder.Expressions
                 // 2nd parameter has been rewrite to $local.item
                 var iteratorName = (string)(expression.Children[1].Children[0] as Constant).Value;
                 
-                if (collection is IList ilist)
+                if (TryParseList(collection, out IList ilist))
                 {
                     result = new List<object>();
                     for (int idx = 0; idx < ilist.Count; idx++)
                     {
                         var local = new Dictionary<string, object>
                         {
-                            {iteratorName, ilist[idx]},
+                            {iteratorName, AccessIndex(ilist, idx).value},
                         };
                         var newScope = new Dictionary<string, object>
                         {
@@ -935,22 +961,17 @@ namespace Microsoft.Bot.Builder.Expressions
             {
                 // Math
                 { ExpressionType.Element, new ExpressionEvaluator(ExtractElement, ReturnType.Object,ValidateBinary) },
-                { ExpressionType.Add, Numeric(args => args[0] + args[1]) },
-                { ExpressionType.Subtract, Numeric(args => args[0] - args[1]) },
-                { ExpressionType.Multiply, Numeric(args => args[0] * args[1]) },
-                { ExpressionType.Divide,
-                    new ExpressionEvaluator(ApplySequence(args => args[0] / args[1],
-                    (value, expression) => {
-                        var error = VerifyNumber(value, expression);
-                        if (error == null && Convert.ToDouble(value) == 0.0)
-                        {
-                            error = $"Cannot divide by 0 from {expression}";
-                        }
-                        return error;
-                    }), ReturnType.Number, ValidateNumber) },
+                { ExpressionType.Add, MultivariateNumeric(args => args[0] + args[1]) },
+                { ExpressionType.Subtract, MultivariateNumeric(args => args[0] - args[1]) },
+                { ExpressionType.Multiply, MultivariateNumeric(args => args[0] * args[1]) },
+                { ExpressionType.Divide, MultivariateNumeric(args => {
+                    if (Convert.ToDouble(args[1]) == 0.0)
+                        throw new ArgumentException($"Cannot divide by 0");
+                    return args[0] / args[1];
+                }) },
                 { ExpressionType.Min, Numeric(args => Math.Min(args[0], args[1])) },
                 { ExpressionType.Max, Numeric(args => Math.Max(args[0], args[1])) },
-                { ExpressionType.Power, Numeric(args => Math.Pow(args[0], args[1])) },
+                { ExpressionType.Power, MultivariateNumeric(args => Math.Pow(args[0], args[1])) },
                 { ExpressionType.Mod,
                     new ExpressionEvaluator(Apply(args => args[0] % args[1], VerifyInteger),
                         ReturnType.Number, ValidateBinaryNumber) },
@@ -968,8 +989,13 @@ namespace Microsoft.Bot.Builder.Expressions
                         return 0;
                     }, VerifyList),
                         ReturnType.Number, ValidateUnary) },
-                { ExpressionType.Count,
-                    new ExpressionEvaluator(Apply(args => ((List<object>)ResolveListValue(args[0])).Count, VerifyList), ReturnType.Number, ValidateUnary)},
+                { ExpressionType.Count, new ExpressionEvaluator(Apply(args =>
+                    {
+                        if (args[0] is string string0) return string0.Length;
+                        if (args[0] is IList list) return list.Count;
+                        throw new ArgumentException("count accept list or string");
+                    }), ReturnType.Number, ValidateUnary) },
+                   
 
                 // Booleans
                 { ExpressionType.LessThan, Comparison(args => args[0] < args[1]) },
@@ -996,34 +1022,25 @@ namespace Microsoft.Bot.Builder.Expressions
                                 return true;
                         }
                         //list to find a value
-                        else if (args[0] is IList list1)
+                        else if (TryParseList(args[0], out IList ilist))
                         {
-                            List<object> operands = ResolveListValue(args[0]);
+                            var operands = ResolveListValue(ilist);
                             if (operands.Contains(args[1]))
                                 return true;
                         }
-                        //Dictionary contains key
-                        else if (args[0] is IDictionary<string, object> dict 
-                                    && args[1] is string string2
-                                    && dict.ContainsKey(string2))
+                        else if (args[1] is string string2)
                         {
-                            return true;
+                            var (value, error) = AccessProperty((object)args[0], string2);
+                            if(value != null) return true;
                         }
-                        else if(args[1] is string string3)
-                        {
-                            var propInfo = args[0].GetType().GetProperty(string3);
-                            if (propInfo != null)
-                            {
-                                return true;
-                            }
-                        }
+                        
                         return false;
                     }), ReturnType.Boolean, ValidateBinary) },
                 { ExpressionType.Empty,
                     new ExpressionEvaluator(Apply(args => {
                            if (args[0] == null) return true;
                            if (args[0] is string string0) return string.IsNullOrEmpty(string0);
-                           if (args[0] is IList list) return list.Count == 0;
+                           if (TryParseList(args[0], out IList list)) return list.Count == 0;
                            return args[0].GetType().GetProperties().Length == 0;
                     }), ReturnType.Boolean, ValidateUnary) }, 
 
@@ -1065,7 +1082,11 @@ namespace Microsoft.Bot.Builder.Expressions
                 { ExpressionType.Trim, StringTransform(args => args[0].Trim())},
                 { ExpressionType.Join,
                     new ExpressionEvaluator(
-                        Apply(args => string.Join(args[1], ((IList) args[0]).OfType<object>().Select(x => x.ToString()))),
+                        Apply(args => {
+                            if(!TryParseList(args[0], out IList list))
+                                throw new ArgumentException("first parameters in join should be list");
+                            return string.Join(args[1], list.OfType<object>().Select(x => x.ToString()));
+                        }),
                         ReturnType.String,
                         expr => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String))},
 
@@ -1188,7 +1209,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 { ExpressionType.First, new ExpressionEvaluator(Apply(args =>
                     {
                         if (args[0] is string string0 && string0.Length > 0) return string0.First().ToString();
-                        if (args[0] is IList list && list.Count > 0)
+                        if (TryParseList(args[0], out IList list) && list.Count > 0)
                         {
                            return AccessIndex(list, 0).value;
                         } 
@@ -1197,7 +1218,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 { ExpressionType.Last, new ExpressionEvaluator(Apply(args =>
                     {
                         if (args[0] is string string0 && string0.Length > 0) return string0.Last().ToString();
-                        if (args[0] is IList list && list.Count > 0)
+                        if (TryParseList(args[0], out IList list) && list.Count > 0)
                         {
                             return AccessIndex(list, list.Count - 1).value;
                         }
@@ -1222,11 +1243,11 @@ namespace Microsoft.Bot.Builder.Expressions
             };
 
             // Math aliases
-            functions.Add("add", functions[ExpressionType.Add]);
-            functions.Add("div", functions[ExpressionType.Divide]);
-            functions.Add("mul", functions[ExpressionType.Multiply]);
-            functions.Add("sub", functions[ExpressionType.Subtract]);
-            functions.Add("exp", functions[ExpressionType.Power]);
+            functions.Add("add", functions[ExpressionType.Add]); // more than 1 params
+            functions.Add("div", functions[ExpressionType.Divide]); // more than 1 params
+            functions.Add("mul", functions[ExpressionType.Multiply]);// more than 1 params
+            functions.Add("sub", functions[ExpressionType.Subtract]);// more than 1 params
+            functions.Add("exp", functions[ExpressionType.Power]);// more than 1 params
             functions.Add("mod", functions[ExpressionType.Mod]);
 
             // Comparison aliases

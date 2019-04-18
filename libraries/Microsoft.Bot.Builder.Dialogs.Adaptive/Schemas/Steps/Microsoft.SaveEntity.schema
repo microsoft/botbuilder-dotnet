@@ -4,7 +4,6 @@
     "title": "SaveEntity Step",
     "description": "This is a step which allows you to save a memory property as an entity",
     "type": "object",
-    "additionalProperties": false,
     "properties": {
         "entity": {
             "type": "string",
@@ -12,7 +11,7 @@
             "description": "name of the entity to save"
         },
         "property": {
-            "type": "string",
+            "$role": "memoryPath",
             "title": "Property",
             "description": "Memory expression of the property to save as an entity."
         }

@@ -4,7 +4,6 @@
     "title": "Begin Dialog",
     "description": "Step which begins another dialog (and when that dialog is done, it will return the caller).",
     "type": "object",
-    "additionalProperties": false,
     "properties": {
         "dialog": {
             "$type": "Microsoft.IDialog",
@@ -18,7 +17,7 @@
             "description": "Options to pass to the dialog."
         },
         "property": {
-            "type": "string",
+            "$role": "memoryPath",
             "title": "Property",
             "description": "The property to bind to the dialog and store the result in",
             "examples": [

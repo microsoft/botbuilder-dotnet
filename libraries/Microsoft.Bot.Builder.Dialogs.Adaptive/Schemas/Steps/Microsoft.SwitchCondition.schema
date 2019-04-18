@@ -4,25 +4,29 @@
     "title": "Switch Step",
     "description": "Step which conditionally decides which step to execute next.",
     "type": "object",
-    "additionalProperties": false,
     "properties": {
         "condition": {
-            "$type": "Microsoft.IExpression",
+            "$role": "expression",
             "title": "Condition",
-            "description": "Expression to evaluate.",
+            "description": "Expression to evaluate to switch on.",
             "examples": [
                 "user.age > 3"
             ]
         },
         "cases": {
             "type": "object",
+            "propertyNames": {
+                "title": "Case",
+                "description": "Case expression to compare to condition",
+                "$role": "expression"
+            },
             "additionalProperties": {
                 "type": "array",
                 "items": {
                     "$type": "Microsoft.IDialog"
                 },
-                "title": "If False",
-                "description": "Step to execute if case is true"
+                "title": "If True",
+                "description": "Step to execute if case is equal to condition"
             }
         },
         "default": {
@@ -30,12 +34,11 @@
             "items": {
                 "$type": "Microsoft.IDialog"
             },
-            "title": "If True",
-            "description": "Step to execute if expression is true."
+            "title": "Default",
+            "description": "Step to execute if no case is equal to condition"
         }
     },
     "required": [
-        "expression",
-        "ifTrue"
+        "condition"
     ]
 }
