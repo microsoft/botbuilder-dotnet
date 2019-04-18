@@ -105,6 +105,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             public bool restart { get; set; }
             public bool terminateDebuggee { get; set; }
         }
+        public class Terminate
+        {
+            public bool restart { get; set; }
+        }
         public class Event : Message
         {
             public Event(int seq, string @event)
@@ -221,6 +225,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                         case "stepIn": return token.ToObject<Request<Next>>();
                         case "stepOut": return token.ToObject<Request<Next>>();
                         case "configurationDone": return token.ToObject<Request<ConfigurationDone>>();
+                        case "terminate": return token.ToObject<Request<Terminate>>();
                         case "disconnect": return token.ToObject<Request<Disconnect>>();
                         case "setFunctionBreakpoints":
                         case "setExceptionBreakpoints":

@@ -107,8 +107,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             this.model = model ?? throw new ArgumentNullException(nameof(model));
             this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
             this.breakpoints = breakpoints ?? throw new ArgumentNullException(nameof(breakpoints));
-            this.task = ListenAsync(new IPEndPoint(IPAddress.Any, port: port), cancellationToken.Token);
-            //threads.Add(new BotThreadModel());
+            this.task = ListenAsync(new IPEndPoint(IPAddress.Any, port), cancellationToken.Token);
         }
 
         public async Task DisposeAsync()
@@ -476,10 +475,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                 return Protocol.Response.From(NextSeq, next, new { });
             }
+            else if (message is Protocol.Request<Protocol.Disconnect> terminate)
+            {
+                // would prefer a graceful shutdown a la IApplicationLifetime.StopAsync
+                // https://github.com/aspnet/AspNetCore/issues/7077
+                Environment.Exit(0);
+
+                return Protocol.Response.From(NextSeq, terminate, new { });
+            }
             else if (message is Protocol.Request<Protocol.Disconnect> disconnect)
             {
-                // possibly run all threads
-
+                // if attach, possibly run all threads
                 return Protocol.Response.From(NextSeq, disconnect, new { });
             }
             else if (message is Protocol.Request request)
