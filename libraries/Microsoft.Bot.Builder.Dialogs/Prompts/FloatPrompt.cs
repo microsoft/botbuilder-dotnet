@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Prompts;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.Number;
 using static Microsoft.Recognizers.Text.Culture;
