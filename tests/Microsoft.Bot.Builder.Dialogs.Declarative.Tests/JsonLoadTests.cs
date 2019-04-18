@@ -90,6 +90,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         }
 
         [TestMethod]
+        public async Task JsonDialogLoad_NumberInput()
+        {
+            await BuildTestFlow("NumberInput.main.dialog")
+            .SendConversationUpdate()
+                .AssertReply("What is your age?")
+            .Send("Blablabla")
+                .AssertReply("What is your age?")
+            .Send("4")
+                .AssertReply("Hello, your age is 4!")
+                .AssertReply("2 * 2.2 equals?")
+            .Send("4.4")
+                .AssertReply("2 * 2.2 equals 4.4, that's right!")
+                .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task JsonDialogLoad_DoSteps()
         {
             await BuildTestFlow("DoSteps.main.dialog")
@@ -175,11 +191,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             .StartTestAsync();
         }
 
-        [Ignore]
         [TestMethod]
         public async Task JsonDialogLoad_ToDoBot()
         {
-            await BuildTestFlow("TodoBot.main.dialog")
+            await BuildTestFlow("ToDoBot.main.dialog")
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
             .SendConversationUpdate()
                 .AssertReply("Hi! I'm a ToDo bot. Say \"add a todo named first\" to get started.")
