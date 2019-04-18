@@ -70,6 +70,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 services.AddSingleton<IBreakpoints>(x => x.GetRequiredService<SourceMap>());
                 services.AddSingleton<ICoercion, Coercion>();
                 services.AddSingleton<IDataModel, DataModel>();
+                // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-2.2#use-di-services-to-configure-options
                 services.AddTransient<IConfigureOptions<BotFrameworkOptions>, ConfigureDebugOptions>();
             }
 
