@@ -1,3 +1,7 @@
+#
+# Installs and runs Coveralls.exe to upload coverage files to https://coveralls.io/.
+# Arguments example: -coverallsToken $(Coveralls.Token) -pathToCoverageFiles $(Build.SourcesDirectory)\CodeCoverage
+#
 Param(
     [string]$coverallsToken,
     [string]$pathToCoverageFiles
