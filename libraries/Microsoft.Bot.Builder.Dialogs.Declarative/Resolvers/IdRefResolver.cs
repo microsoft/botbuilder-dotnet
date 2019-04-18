@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
 
             // if we have a source path for the resource, then make it available to InterfaceConverter
             if (resource is FileResource fileResource) {
-                registry.Add(json, new Source.Range() { Path = fileResource.Id });
+                registry.Add(json, new Source.Range() { Path = fileResource.FullName });
             }
 
             return json;
