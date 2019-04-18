@@ -4,7 +4,6 @@
     "type": "object",
     "title": "Replace Dialog",
     "description": "This is a step which replaces the current dialog with the target dialog",
-    "additionalProperties": false,
     "properties": {
         "dialog": {
             "$type": "Microsoft.IDialog",
@@ -18,7 +17,7 @@
             "description": "Options to pass to the dialog."
         },
         "property": {
-            "title": "Property",
+            "$role": "memoryPath",
             "description": "The property to bind to the dialog and store the result in",
             "examples": [
                 "user.name"

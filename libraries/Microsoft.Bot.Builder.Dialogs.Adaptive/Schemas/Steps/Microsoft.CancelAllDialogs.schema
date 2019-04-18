@@ -4,7 +4,6 @@
     "title": "Cancel All Dialogs",
     "description": "Command to cancel all of the current dialogs by emitting an event which must be caught to prevent cancelation from propagating.",
     "type": "object",
-    "additionalProperties": false,
     "properties": {
         "eventName": {
             "type": "string",
@@ -15,7 +14,7 @@
             "type": "object",
             "title": "Event Value",
             "description": "object value which is a payload to communicate to the parent dialogs so that they can decide how to process it",
-            "additionalProperties": "true"
+            "additionalProperties": true
         }
     }
 

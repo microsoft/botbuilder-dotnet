@@ -4,10 +4,9 @@
     "title": "Init Property Step",
     "description": "This step allows you to innitial a property to either an object or array",
     "type": "object",
-    "additionalProperties": false,
     "properties": {
         "property": {
-            "type": "string",
+            "$role": "memoryPath",
             "title": "Property",
             "description": "The property to set the value of",
             "examples": [ "user.age" ]

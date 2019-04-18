@@ -4,71 +4,53 @@
     "title": "Integer prompt",
     "description": "This represents a dialog which gathers a number in a specified range",
     "type": "object",
-    "additionalProperties": false,
-    "properties": {
-        "property": {
-            "type": "string",
-            "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
-            "examples": [
-                "value.birthday"
-            ]
+    "allOf": [
+        {
+            "$ref": "./baseSchema.json"
         },
-        "inputProperties": {
-            "type": "object",
-            "description": "This defines properties which be passed as arguments to this dialog",
-            "additionalProperties": {
-                "type": "string"
-            },
-            "examples": [
-                "value.birthday"
-            ]
-        },
-        "outputProperty": {
-            "type": "string",
-            "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
-            "examples": [
-                "value.birthday"
-            ]
-        },
-        "prompt": {
-            "$type": "Microsoft.IActivityTemplate",
-            "title": "Initial Prompt",
-            "description": "The message to send to as prompt for this input.",
-            "examples": [
-                "What is your birth date?"
-            ]
-        },
-        "retryPrompt": {
-            "$type": "Microsoft.IActivityTemplate",
-            "title": "Retry Prompt",
-            "description": "The message to send to prompt again.",
-            "examples": [
-                "Let's try again. What is your birth date?"
-            ]
-        },
-        "invalidPrompt": {
-            "$type": "Microsoft.IActivityTemplate",
-            "title": "Invalid Prompt",
-            "description": "The message to send to when then input was not recognized or not valid for the input type.",
-            "examples": [
-                "No date was recognized"
-            ]
-        },
-        "minValue": {
-            "type": "integer",
-            "title": "Mininum value",
-            "description": "The minimum value that is acceptable.  ",
-            "examples": [
-                "0"
-            ]
-        },
-        "maxValue": {
-            "type": "integer",
-            "title": "Maximum value",
-            "description": "The maximum value that is acceptable.  ",
-            "examples": [
-                "120"
-            ]
+        {
+            "properties": {
+                "prompt": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Initial Prompt",
+                    "description": "The message to send to as prompt for this input.",
+                    "examples": [
+                        "What is your birth date?"
+                    ]
+                },
+                "retryPrompt": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Retry Prompt",
+                    "description": "The message to send to prompt again.",
+                    "examples": [
+                        "Let's try again. What is your birth date?"
+                    ]
+                },
+                "invalidPrompt": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Invalid Prompt",
+                    "description": "The message to send to when then input was not recognized or not valid for the input type.",
+                    "examples": [
+                        "No date was recognized"
+                    ]
+                },
+                "minValue": {
+                    "type": "integer",
+                    "title": "Mininum value",
+                    "description": "The minimum value that is acceptable.  ",
+                    "examples": [
+                        "0"
+                    ]
+                },
+                "maxValue": {
+                    "type": "integer",
+                    "title": "Maximum value",
+                    "description": "The maximum value that is acceptable.  ",
+                    "examples": [
+                        "120"
+                    ]
+                }
+            }
         }
-    }
+    ]
 }

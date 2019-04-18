@@ -4,7 +4,6 @@
     "title": "Emit Event Step",
     "description": "This is a step which allows you to emit an event",
     "type": "object",
-    "additionalProperties": false,
     "properties": {
         "eventName": {
             "type": "string",
