@@ -630,7 +630,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         protected virtual async Task<bool> EvaluateRulesAsync(PlanningContext planning, DialogEvent dialogEvent, CancellationToken cancellationToken)
         {
-            planning.State.Turn["DialogEvent"] = dialogEvent;
+            // save into turn
+            planning.State.SetValue($"turn.dialogEvent", dialogEvent);
+            planning.State.SetValue($"turn.dialogEvents.{dialogEvent.Name}", dialogEvent.Value);
 
             var handled = false;
 
@@ -644,7 +646,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     if (!handled)
                     {
                         // Process activityReceived event
-                        handled = await EvaluateRulesAsync(planning, new DialogEvent() { Name = AdaptiveEvents.ActivityReceived.ToString(), Value = null, Bubble = false }, cancellationToken).ConfigureAwait(false);
+                        handled = await EvaluateRulesAsync(planning, new DialogEvent() { Name = AdaptiveEvents.ActivityReceived.ToString(), Value = planning.Context.Activity, Bubble = false }, cancellationToken).ConfigureAwait(false);
                     }
                 }
                 else if (dialogEvent.Name == AdaptiveEvents.ConsultDialog.ToString())
@@ -655,11 +657,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     if (!handled)
                     {
                         // Process activityReceived event
-                        handled = await EvaluateRulesAsync(planning, new DialogEvent() { Name = AdaptiveEvents.ActivityReceived.ToString(), Value = null, Bubble = false }, cancellationToken).ConfigureAwait(false);
+                        handled = await EvaluateRulesAsync(planning, new DialogEvent() { Name = AdaptiveEvents.ActivityReceived.ToString(), Value = planning.Context.Activity, Bubble = false }, cancellationToken).ConfigureAwait(false);
                     }
                 }
                 else if (dialogEvent.Name == AdaptiveEvents.ActivityReceived.ToString())
                 {
+                    planning.State.SetValue($"turn.activity", dialogEvent.Value);
+
                     // Emit event
                     handled = await QueueFirstMatchAsync(planning, dialogEvent, cancellationToken).ConfigureAwait(false);
 

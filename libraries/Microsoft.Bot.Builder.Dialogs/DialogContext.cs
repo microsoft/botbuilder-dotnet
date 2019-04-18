@@ -30,11 +30,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             Context = Parent.Context;
             Stack = state.DialogStack;
             settings = settings ?? Configuration.LoadSettings(Context.TurnState.Get<IConfiguration>());
-            conversationState = conversationState ?? state?.ConversationState ?? new Dictionary<string, object>();
-            userState = userState ?? state?.UserState ?? new Dictionary<string, object>();
+            conversationState = conversationState ?? state?.ConversationState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+            userState = userState ?? state?.UserState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
             if (!Context.TurnState.TryGetValue("TurnStateMap", out object turnState))
             {
-                turnState = new Dictionary<string, object>();
+                turnState = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
                 Context.TurnState["TurnStateMap"] = turnState;
             }
 
@@ -48,11 +48,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             Context = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
             Stack = state.DialogStack;
             settings = settings ?? Configuration.LoadSettings(Context.TurnState.Get<IConfiguration>());
-            conversationState = conversationState ?? state?.ConversationState ?? new Dictionary<string, object>();
-            userState = userState ?? state?.UserState ?? new Dictionary<string, object>();
+            conversationState = conversationState ?? state?.ConversationState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+            userState = userState ?? state?.UserState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
             if (!Context.TurnState.TryGetValue("TurnStateMap", out object turnState))
             {
-                turnState = new Dictionary<string, object>();
+                turnState = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
                 Context.TurnState["TurnStateMap"] = turnState;
             }
 

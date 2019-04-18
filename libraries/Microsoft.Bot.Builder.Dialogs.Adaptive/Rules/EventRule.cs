@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
 
             foreach (var evt in Events)
             {
-                expressions.Add(factory.Parse($"turn.DialogEvent.Name == '{evt}'"));
+                expressions.Add(factory.Parse($"turn.dialogEvent.name == '{evt}'"));
             }
 
             return Expression.AndExpression(Expression.OrExpression(expressions.ToArray()), base.BuildExpression(factory));
