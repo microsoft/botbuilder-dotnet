@@ -30,7 +30,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 conversation = state.Conversation,
                 dialog = dialogContext.ActiveDialog != null ? state.Dialog : null,
                 turn = state.Turn,
-                entities = state.Entities,
                 tags = dialogContext.ActiveTags,
             };
         }

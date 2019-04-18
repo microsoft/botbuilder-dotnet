@@ -34,16 +34,20 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 if (turnContext.Activity.Text.ToLower() == "hi")
                 {
                     await turnContext.SendActivityAsync(engine.EvaluateTemplate("GreetingTemplate", null));
-                } else if (turnContext.Activity.Text.ToLower().Contains("marco"))
+                }
+                else if (turnContext.Activity.Text.ToLower().Contains("marco"))
                 {
-                    await turnContext.SendActivityAsync(engine.EvaluateTemplate("WordGameReply", new { GameName = "MarcoPolo" } ));
-                } else if (turnContext.Activity.Text.ToLower().Contains("what time is it"))
+                    await turnContext.SendActivityAsync(engine.EvaluateTemplate("WordGameReply", new { GameName = "MarcoPolo" }));
+                }
+                else if (turnContext.Activity.Text.ToLower().Contains("what time is it"))
                 {
                     await turnContext.SendActivityAsync(engine.EvaluateTemplate("TimeOfDayExmple", new { timeOfDay = "morning" }));
-                } else if (turnContext.Activity.Text.ToLower().Contains("multi"))
+                }
+                else if (turnContext.Activity.Text.ToLower().Contains("multi"))
                 {
                     await turnContext.SendActivityAsync(engine.EvaluateTemplate("MultiLineExample", null));
-                } else if (turnContext.Activity.Text.ToLower().Contains("card"))
+                }
+                else if (turnContext.Activity.Text.ToLower().Contains("card"))
                 {
                     HeroCard card = JsonConvert.DeserializeObject<HeroCard>(engine.EvaluateTemplate("CardExample", null));
                     var reply = turnContext.Activity.CreateReply();
@@ -51,14 +55,14 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                     reply.Attachments.Add(card.ToAttachment());
                     await turnContext.SendActivityAsync(reply);
                 }
-                else if (turnContext.Activity.Text.ToLower().Contains("weather")) 
+                else if (turnContext.Activity.Text.ToLower().Contains("weather"))
                 {
                     var temp = new
                     {
-                        partOfDay = "morning",
-                        isAGoodDay = "true",
-                        high = "75",
-                        low = "33"
+                        partOfDay = "morning",
+                        isAGoodDay = "true",
+                        high = "75",
+                        low = "33"
                     };
 
                     await turnContext.SendActivityAsync(engine.EvaluateTemplate("WeatherForecast", temp));
@@ -81,7 +85,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                     }
                 }
             }
-            else 
+            else
             {
                 await turnContext.SendActivityAsync($"{turnContext.Activity.Type} event detected");
             }

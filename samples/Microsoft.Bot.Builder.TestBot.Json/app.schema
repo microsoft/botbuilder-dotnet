@@ -67,7 +67,7 @@
         },
         {
             "title": "Microsoft.EventRule",
-            "description": "Defines a rule for an event which is triggered by some sourcy",
+            "description": "Defines a rule for an event which is triggered by some source",
             "$ref": "#/definitions/Microsoft.EventRule"
         },
         {
@@ -151,13 +151,18 @@
             "$ref": "#/definitions/Microsoft.RegexRecognizer"
         },
         {
+            "title": "Microsoft.RepeatDialog",
+            "description": "This is a step which repeats the current dialog with the same dialog.",
+            "$ref": "#/definitions/Microsoft.RepeatDialog"
+        },
+        {
             "title": "Microsoft.ReplaceDialog",
             "description": "This is a step which replaces the current dialog with the target dialog",
             "$ref": "#/definitions/Microsoft.ReplaceDialog"
         },
         {
             "title": "Microsoft.Rule",
-            "description": "Defines a rule for an event which is triggered by some sourcy",
+            "description": "Defines a rule for an event which is triggered by some source",
             "$ref": "#/definitions/Microsoft.Rule"
         },
         {
@@ -222,7 +227,6 @@
             "title": "Adaptive Dialog",
             "description": "Configures a data driven dialog via a collection of steps/dialogs.",
             "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -243,18 +247,20 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
-                "autoEndDialog": {
-                    "type": "boolean",
-                    "title": "Auto End Dialog",
-                    "description": "IF this is true the dialog will automatically end when there are no more steps to run.  If this is false it is the responsbility of the author to call EndDialog at an appropriate time."
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
                 },
                 "property": {
-                    "type": "string",
+                    "$role": "memoryPath",
                     "title": "Property",
                     "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
                     "examples": [
                         "value.birthday"
-                    ]
+                    ],
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "inputProperties": {
                     "type": "object",
@@ -268,12 +274,19 @@
                     }
                 },
                 "outputProperty": {
-                    "type": "string",
+                    "$role": "memoryPath",
                     "title": "Output Property",
                     "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
                     "examples": [
                         "value.birthday"
-                    ]
+                    ],
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                },
+                "autoEndDialog": {
+                    "type": "boolean",
+                    "title": "Auto End Dialog",
+                    "description": "IF this is true the dialog will automatically end when there are no more steps to run.  If this is false it is the responsbility of the author to call EndDialog at an appropriate time."
                 },
                 "recognizer": {
                     "$type": "Microsoft.IRecognizer",
@@ -304,6 +317,7 @@
                     }
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -329,7 +343,6 @@
             "title": "Begin Dialog",
             "description": "Step which begins another dialog (and when that dialog is done, it will return the caller).",
             "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -350,6 +363,11 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "dialog": {
                     "$type": "Microsoft.IDialog",
                     "title": "Dialog",
@@ -363,14 +381,17 @@
                     "additionalProperties": true
                 },
                 "property": {
-                    "type": "string",
+                    "$role": "memoryPath",
                     "title": "Property",
                     "description": "The property to bind to the dialog and store the result in",
                     "examples": [
                         "user.name"
-                    ]
+                    ],
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -396,7 +417,6 @@
             "title": "Cancel All Dialogs",
             "description": "Command to cancel all of the current dialogs by emitting an event which must be caught to prevent cancelation from propagating.",
             "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -417,6 +437,11 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "eventName": {
                     "type": "string",
                     "title": "Event Name",
@@ -425,9 +450,11 @@
                 "eventValue": {
                     "type": "object",
                     "title": "Event Value",
-                    "description": "object value which is a payload to communicate to the parent dialogs so that they can decide how to process it"
+                    "description": "object value which is a payload to communicate to the parent dialogs so that they can decide how to process it",
+                    "additionalProperties": true
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -453,7 +480,34 @@
             "title": "ChoiceInput Dialog",
             "description": "This represents a dialog which gathers a choice responses",
             "type": "object",
-            "additionalProperties": false,
+            "definitions": {
+                "choice": {
+                    "type": "object",
+                    "properties": {
+                        "value": {
+                            "type": "string",
+                            "title": "Value",
+                            "description": "the value to return when selected."
+                        },
+                        "action": {
+                            "title": "Action",
+                            "description": "Card action for the choice",
+                            "type": "object"
+                        },
+                        "synonyms": {
+                            "type": "array",
+                            "title": "Synonyms",
+                            "description": "the list of synonyms to recognize in addition to the value. This is optional.",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "CardAction": {
+                    "type": "object"
+                }
+            },
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -474,29 +528,41 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "property": {
-                    "type": "string",
+                    "$role": "memoryPath",
+                    "title": "Property",
                     "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
                     "examples": [
-                        "user.confirmed"
-                    ]
+                        "value.birthday"
+                    ],
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "inputProperties": {
                     "type": "object",
+                    "title": "Input Properties",
                     "description": "This defines properties which be passed as arguments to this dialog",
                     "examples": [
-                        "user.confirmed"
+                        "value.birthday"
                     ],
                     "additionalProperties": {
                         "type": "string"
                     }
                 },
                 "outputProperty": {
-                    "type": "string",
+                    "$role": "memoryPath",
+                    "title": "Output Property",
                     "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
                     "examples": [
-                        "user.confirmed"
-                    ]
+                        "value.birthday"
+                    ],
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "prompt": {
                     "$type": "Microsoft.IActivityTemplate",
@@ -572,34 +638,7 @@
                     ]
                 }
             },
-            "definitions": {
-                "choice": {
-                    "type": "object",
-                    "properties": {
-                        "value": {
-                            "type": "string",
-                            "title": "Value",
-                            "description": "the value to return when selected."
-                        },
-                        "action": {
-                            "title": "Action",
-                            "description": "Card action for the choice",
-                            "type": "object"
-                        },
-                        "synonyms": {
-                            "type": "array",
-                            "title": "Synonyms",
-                            "description": "the list of synonyms to recognize in addition to the value. This is optional.",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                },
-                "CardAction": {
-                    "type": "object"
-                }
-            },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -645,9 +684,15 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "condition": {
-                    "$type": "Microsoft.IExpression",
-                    "$ref": "#/definitions/Microsoft.IExpression"
+                    "$role": "expression",
+                    "type": "string",
+                    "description": "String must contain an expression."
                 },
                 "ifTrue": {
                     "$type": "Microsoft.IRuleSelector",
@@ -656,8 +701,7 @@
                 "ifFalse": {
                     "$type": "Microsoft.IRuleSelector",
                     "$ref": "#/definitions/Microsoft.IRuleSelector"
-                },
-                "required": {}
+                }
             },
             "additionalProperties": false,
             "patternProperties": {
@@ -675,6 +719,9 @@
                 {
                     "title": "Type",
                     "required": [
+                        "condition",
+                        "ifTrue",
+                        "ifFalse",
                         "$type"
                     ]
                 }
@@ -685,7 +732,6 @@
             "title": "ConfirmInput Dialog",
             "description": "This represents a dialog which gathers a yes/no style responses",
             "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -706,29 +752,41 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "property": {
-                    "type": "string",
+                    "$role": "memoryPath",
+                    "title": "Property",
                     "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
                     "examples": [
-                        "user.confirmed"
-                    ]
+                        "value.birthday"
+                    ],
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "inputProperties": {
                     "type": "object",
+                    "title": "Input Properties",
                     "description": "This defines properties which be passed as arguments to this dialog",
                     "examples": [
-                        "user.confirmed"
+                        "value.birthday"
                     ],
                     "additionalProperties": {
                         "type": "string"
                     }
                 },
                 "outputProperty": {
-                    "type": "string",
+                    "$role": "memoryPath",
+                    "title": "Output Property",
                     "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
                     "examples": [
-                        "user.confirmed"
-                    ]
+                        "value.birthday"
+                    ],
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "prompt": {
                     "$type": "Microsoft.IActivityTemplate",
@@ -758,6 +816,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -802,6 +861,11 @@
                     "description": "Inline id for reuse of an inline definition",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
                 }
             },
             "additionalProperties": false,
@@ -830,7 +894,6 @@
             "title": "Delete PropertyS",
             "description": "This is a step which allows you to remove a property from memory",
             "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -851,12 +914,20 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "property": {
-                    "type": "string",
+                    "$role": "memoryPath",
                     "title": "Property",
-                    "description": "The Memory property path to delete"
+                    "description": "The Memory property path to delete",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -883,7 +954,6 @@
             "title": "Edit Array Step",
             "description": "This is a step which allows you to modify an array in memory",
             "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -904,6 +974,11 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "changeType": {
                     "type": "string",
                     "title": "Change Type",
@@ -917,16 +992,21 @@
                     ]
                 },
                 "arrayProperty": {
-                    "type": "string",
+                    "$role": "memoryPath",
                     "title": "Array Property",
-                    "description": "Memory expression of the array to manipulate."
+                    "description": "Memory expression of the array to manipulate.",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "itemProperty": {
-                    "type": "string",
+                    "$role": "memoryPath",
                     "title": "List Property",
-                    "description": "Memory expression for the item"
+                    "description": "Memory expression for the item",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -954,7 +1034,6 @@
             "title": "Emit Event Step",
             "description": "This is a step which allows you to emit an event",
             "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -974,6 +1053,11 @@
                     "description": "Inline id for reuse of an inline definition",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
                 },
                 "eventName": {
                     "type": "string",
@@ -1002,6 +1086,7 @@
                     "description": "if true this event should propagate to parent dialogs"
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -1028,7 +1113,6 @@
             "title": "End Dialog",
             "description": "Command which ends the current dialog, returning the resultProperty as the result of the dialog.",
             "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -1049,14 +1133,22 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "property": {
-                    "title": "Property",
+                    "$role": "memoryPath",
                     "description": "Specifies a path to memory should be returned as the result to the calling dialog.",
                     "examples": [
                         "dialog.name"
-                    ]
+                    ],
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -1082,7 +1174,6 @@
             "title": "End Turn",
             "description": "End the current turn without ending the dialog.",
             "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -1102,8 +1193,14 @@
                     "description": "Inline id for reuse of an inline definition",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -1126,9 +1223,9 @@
         },
         "Microsoft.EventRule": {
             "title": "Event Rule",
-            "description": "Defines a rule for an event which is triggered by some sourcy",
+            "description": "Defines a rule for an event which is triggered by some source",
             "type": "object",
-            "additionalProperties": false,
+            "$role": "unionType(Microsoft.IRule)",
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -1149,6 +1246,28 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "constraint": {
+                    "$role": "expression",
+                    "title": "Constraint",
+                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "examples": [
+                        "user.vip == true"
+                    ],
+                    "type": "string"
+                },
+                "steps": {
+                    "type": "array",
+                    "description": "Sequence of steps or dialogs to execute",
+                    "items": {
+                        "$type": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                },
                 "events": {
                     "type": "array",
                     "description": "Events to trigger this rule for",
@@ -1167,26 +1286,9 @@
                             "stepsResumed"
                         ]
                     }
-                },
-                "constraint": {
-                    "$type": "Microsoft.IExpression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
-                    "examples": [
-                        "user.vip == true"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IExpression"
-                },
-                "steps": {
-                    "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
-                    "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
-                    }
                 }
             },
-            "$role": "unionType(Microsoft.IRule)",
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -1233,6 +1335,11 @@
                     "description": "Inline id for reuse of an inline definition",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
                 }
             },
             "additionalProperties": false,
@@ -1261,7 +1368,6 @@
             "title": "Float  prompt",
             "description": "This represents a dialog which gathers a number in a specified range",
             "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -1282,29 +1388,41 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "property": {
-                    "type": "string",
+                    "$role": "memoryPath",
+                    "title": "Property",
                     "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
                     "examples": [
-                        "user.height"
-                    ]
+                        "value.birthday"
+                    ],
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "inputProperties": {
                     "type": "object",
+                    "title": "Input Properties",
                     "description": "This defines properties which be passed as arguments to this dialog",
                     "examples": [
-                        "user.height"
+                        "value.birthday"
                     ],
                     "additionalProperties": {
                         "type": "string"
                     }
                 },
                 "outputProperty": {
-                    "type": "string",
+                    "$role": "memoryPath",
+                    "title": "Output Property",
                     "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
                     "examples": [
-                        "user.height"
-                    ]
+                        "value.birthday"
+                    ],
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "prompt": {
                     "$type": "Microsoft.IActivityTemplate",
@@ -1350,6 +1468,7 @@
                     ]
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -1375,7 +1494,6 @@
             "type": "object",
             "title": "Goto Dialog",
             "description": "This is a step which replaces the current dialog with the target dialog",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -1395,6 +1513,11 @@
                     "description": "Inline id for reuse of an inline definition",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
                 },
                 "method": {
                     "type": "string",
@@ -1424,12 +1547,14 @@
                     "additionalProperties": true
                 },
                 "property": {
-                    "type": "string",
+                    "$role": "memoryPath",
                     "title": "Property",
                     "description": "The property to store the result of the HTTP call in (as object or string)",
                     "examples": [
                         "dialog.contosodata"
-                    ]
+                    ],
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "header": {
                     "type": "object",
@@ -1449,6 +1574,7 @@
                     ]
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -1477,7 +1603,9 @@
             "$role": "unionType",
             "oneOf": [
                 {
+                    "$role": "lg",
                     "type": "string",
+                    "description": "String is used for language generation.",
                     "title": "string"
                 }
             ]
@@ -1583,6 +1711,11 @@
                     "$ref": "#/definitions/Microsoft.QnAMakerDialog"
                 },
                 {
+                    "title": "Microsoft.RepeatDialog",
+                    "description": "This is a step which repeats the current dialog with the same dialog.",
+                    "$ref": "#/definitions/Microsoft.RepeatDialog"
+                },
+                {
                     "title": "Microsoft.ReplaceDialog",
                     "description": "This is a step which replaces the current dialog with the target dialog",
                     "$ref": "#/definitions/Microsoft.ReplaceDialog"
@@ -1638,19 +1771,8 @@
                 }
             ]
         },
-        "Microsoft.IExpression": {
-            "title": "Microsoft IExpression",
-            "description": "Union of components which implement the IExpression interface",
-            "$role": "unionType",
-            "oneOf": [
-                {
-                    "type": "string",
-                    "title": "string"
-                }
-            ]
-        },
         "Microsoft.ILanguagePolicy": {
-            "title": "Microsoft ILanguagePolicy",
+            "title": "Microsoft Language Policy",
             "description": "Union of components which implement the ILanguagePolicy interface",
             "$role": "unionType",
             "oneOf": [
@@ -1658,6 +1780,10 @@
                     "title": "Microsoft.LanguagePolicy",
                     "description": "This represents a dialog which gathers a DateTime in a specified range",
                     "$ref": "#/definitions/Microsoft.LanguagePolicy"
+                },
+                {
+                    "type": "string",
+                    "title": "string"
                 }
             ]
         },
@@ -1690,7 +1816,7 @@
             "oneOf": [
                 {
                     "title": "Microsoft.EventRule",
-                    "description": "Defines a rule for an event which is triggered by some sourcy",
+                    "description": "Defines a rule for an event which is triggered by some source",
                     "$ref": "#/definitions/Microsoft.EventRule"
                 },
                 {
@@ -1700,7 +1826,7 @@
                 },
                 {
                     "title": "Microsoft.Rule",
-                    "description": "Defines a rule for an event which is triggered by some sourcy",
+                    "description": "Defines a rule for an event which is triggered by some source",
                     "$ref": "#/definitions/Microsoft.Rule"
                 },
                 {
@@ -1758,7 +1884,6 @@
             "title": "If Condition Step",
             "description": "Step which conditionally decides which step to execute next.",
             "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -1779,14 +1904,19 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "condition": {
-                    "$type": "Microsoft.IExpression",
+                    "$role": "expression",
                     "title": "Condition",
                     "description": "Expression to evaluate.",
                     "examples": [
                         "user.age > 3"
                     ],
-                    "$ref": "#/definitions/Microsoft.IExpression"
+                    "type": "string"
                 },
                 "steps": {
                     "type": "array",
@@ -1807,6 +1937,7 @@
                     }
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -1834,7 +1965,6 @@
             "title": "Init Property Step",
             "description": "This step allows you to innitial a property to either an object or array",
             "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -1855,13 +1985,20 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "property": {
-                    "type": "string",
+                    "$role": "memoryPath",
                     "title": "Property",
                     "description": "The property to set the value of",
                     "examples": [
                         "user.age"
-                    ]
+                    ],
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "type": {
                     "type": "string",
@@ -1873,6 +2010,7 @@
                     ]
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -1900,7 +2038,6 @@
             "title": "Integer prompt",
             "description": "This represents a dialog which gathers a number in a specified range",
             "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -1921,15 +2058,24 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "property": {
-                    "type": "string",
+                    "$role": "memoryPath",
+                    "title": "Property",
                     "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
                     "examples": [
                         "value.birthday"
-                    ]
+                    ],
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "inputProperties": {
                     "type": "object",
+                    "title": "Input Properties",
                     "description": "This defines properties which be passed as arguments to this dialog",
                     "examples": [
                         "value.birthday"
@@ -1939,11 +2085,14 @@
                     }
                 },
                 "outputProperty": {
-                    "type": "string",
+                    "$role": "memoryPath",
+                    "title": "Output Property",
                     "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
                     "examples": [
                         "value.birthday"
-                    ]
+                    ],
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "prompt": {
                     "$type": "Microsoft.IActivityTemplate",
@@ -1989,6 +2138,7 @@
                     ]
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -2014,7 +2164,6 @@
             "title": "Intent Rule",
             "description": "This defines the steps to take when an Intent is recognized (and optionally entities)",
             "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -2035,6 +2184,28 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "constraint": {
+                    "$role": "expression",
+                    "title": "Constraint",
+                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "examples": [
+                        "user.vip == true"
+                    ],
+                    "type": "string"
+                },
+                "steps": {
+                    "type": "array",
+                    "description": "Sequence of steps or dialogs to execute",
+                    "items": {
+                        "$type": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                },
                 "intent": {
                     "type": "string",
                     "title": "Intent",
@@ -2044,44 +2215,9 @@
                     "type": "array",
                     "title": "Entities",
                     "description": "The entities required to trigger this rule"
-                },
-                "events": {
-                    "type": "array",
-                    "description": "Events to trigger this rule for",
-                    "items": {
-                        "type": "string",
-                        "enum": [
-                            "beginDialog",
-                            "consultDialog",
-                            "cancelDialog",
-                            "activityReceived",
-                            "recognizedIntent",
-                            "unknownIntent",
-                            "stepsStarted",
-                            "stepsSaved",
-                            "stepsEnded",
-                            "stepsResumed"
-                        ]
-                    }
-                },
-                "constraint": {
-                    "$type": "Microsoft.IExpression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
-                    "examples": [
-                        "user.vip == true"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IExpression"
-                },
-                "steps": {
-                    "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
-                    "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
-                    }
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -2129,6 +2265,11 @@
                     "description": "Inline id for reuse of an inline definition",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
                 }
             },
             "patternProperties": {
@@ -2156,7 +2297,6 @@
             "title": "Log Step",
             "description": "This is a step which writes to console.log and optional creates a TraceActivity around a text binding",
             "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -2177,6 +2317,11 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "text": {
                     "type": "string",
                     "title": "Text",
@@ -2188,6 +2333,7 @@
                     "description": "Set to true to also create a TraceActivity with the log text"
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -2235,6 +2381,11 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "applicationId": {
                     "type": "string"
                 },
@@ -2242,9 +2393,6 @@
                     "type": "string"
                 },
                 "endpointKey": {
-                    "type": "string"
-                },
-                "priority": {
                     "type": "string"
                 }
             },
@@ -2295,6 +2443,11 @@
                     "description": "Inline id for reuse of an inline definition",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
                 },
                 "selector": {
                     "$type": "Microsoft.IRuleSelector",
@@ -2347,6 +2500,11 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "languagePolicy": {
                     "$type": "Microsoft.ILanguagePolicy",
                     "type": "object",
@@ -2391,7 +2549,6 @@
             "title": "Number prompt",
             "description": "This represents a dialog which gathers a decimal number in a specified range",
             "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -2412,15 +2569,24 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "property": {
-                    "type": "string",
+                    "$role": "memoryPath",
+                    "title": "Property",
                     "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
                     "examples": [
                         "value.birthday"
-                    ]
+                    ],
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "inputProperties": {
                     "type": "object",
+                    "title": "Input Properties",
                     "description": "This defines properties which be passed as arguments to this dialog",
                     "examples": [
                         "value.birthday"
@@ -2430,11 +2596,14 @@
                     }
                 },
                 "outputProperty": {
-                    "type": "string",
+                    "$role": "memoryPath",
+                    "title": "Output Property",
                     "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
                     "examples": [
                         "value.birthday"
-                    ]
+                    ],
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "prompt": {
                     "$type": "Microsoft.IActivityTemplate",
@@ -2480,6 +2649,7 @@
                     ]
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -2525,6 +2695,11 @@
                     "description": "Inline id for reuse of an inline definition",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
                 },
                 "endpoint": {
                     "type": "object",
@@ -2614,6 +2789,11 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "seed": {
                     "type": "integer"
                 }
@@ -2664,6 +2844,11 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "intents": {
                     "type": "object",
                     "title": "RegEx patterns to intents",
@@ -2695,12 +2880,63 @@
                 }
             ]
         },
+        "Microsoft.RepeatDialog": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "type": "object",
+            "title": "Repeat Dialog",
+            "description": "This is a step which repeats the current dialog with the same dialog.",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RepeatDialog"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Microsoft.ReplaceDialog": {
             "$role": "unionType(Microsoft.IDialog)",
             "type": "object",
             "title": "Replace Dialog",
             "description": "This is a step which replaces the current dialog with the target dialog",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -2721,6 +2957,11 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "dialog": {
                     "$type": "Microsoft.IDialog",
                     "title": "Dialog",
@@ -2734,13 +2975,16 @@
                     "additionalProperties": true
                 },
                 "property": {
-                    "title": "Property",
+                    "$role": "memoryPath",
                     "description": "The property to bind to the dialog and store the result in",
                     "examples": [
                         "user.name"
-                    ]
+                    ],
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -2764,9 +3008,8 @@
         "Microsoft.Rule": {
             "$role": "unionType(Microsoft.IRule)",
             "title": "Event Rule",
-            "description": "Defines a rule for an event which is triggered by some sourcy",
+            "description": "Defines a rule for an event which is triggered by some source",
             "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -2787,14 +3030,19 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "constraint": {
-                    "$type": "Microsoft.IExpression",
+                    "$role": "expression",
                     "title": "Constraint",
                     "description": "Optional constraint to which must be met for this rule to fire",
                     "examples": [
                         "user.vip == true"
                     ],
-                    "$ref": "#/definitions/Microsoft.IExpression"
+                    "type": "string"
                 },
                 "steps": {
                     "type": "array",
@@ -2805,6 +3053,7 @@
                     }
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -2831,7 +3080,6 @@
             "title": "SaveEntity Step",
             "description": "This is a step which allows you to save a memory property as an entity",
             "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -2852,17 +3100,25 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "entity": {
                     "type": "string",
                     "title": "Entity",
                     "description": "name of the entity to save"
                 },
                 "property": {
-                    "type": "string",
+                    "$role": "memoryPath",
                     "title": "Property",
-                    "description": "Memory expression of the property to save as an entity."
+                    "description": "Memory expression of the property to save as an entity.",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -2890,7 +3146,6 @@
             "title": "Send Activity Step",
             "description": "This is a step which sends an activity to the user",
             "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -2911,6 +3166,11 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "activity": {
                     "$type": "Microsoft.IActivityTemplate",
                     "title": "Activity",
@@ -2918,6 +3178,7 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -2943,7 +3204,6 @@
             "title": "Set Property Step",
             "description": "This step allows you to set memory to the value of an expression",
             "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -2964,24 +3224,32 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "property": {
-                    "type": "string",
+                    "$role": "memoryPath",
                     "title": "Property",
                     "description": "The property to set the value of",
                     "examples": [
                         "user.age"
-                    ]
+                    ],
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "value": {
-                    "$type": "Microsoft.IExpression",
+                    "$role": "expression",
                     "title": "Value",
                     "description": "Expression against memory to use to get the value.",
                     "examples": [
                         "dialog.result"
                     ],
-                    "$ref": "#/definitions/Microsoft.IExpression"
+                    "type": "string"
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -3009,7 +3277,6 @@
             "title": "Switch Step",
             "description": "Step which conditionally decides which step to execute next.",
             "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -3030,21 +3297,32 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "condition": {
-                    "$type": "Microsoft.IExpression",
+                    "$role": "expression",
                     "title": "Condition",
-                    "description": "Expression to evaluate.",
+                    "description": "Expression to evaluate to switch on.",
                     "examples": [
                         "user.age > 3"
                     ],
-                    "$ref": "#/definitions/Microsoft.IExpression"
+                    "type": "string"
                 },
                 "cases": {
                     "type": "object",
+                    "propertyNames": {
+                        "title": "Case",
+                        "description": "Case expression to compare to condition",
+                        "$role": "expression",
+                        "type": "string"
+                    },
                     "additionalProperties": {
                         "type": "array",
-                        "title": "If False",
-                        "description": "Step to execute if case is true",
+                        "title": "If True",
+                        "description": "Step to execute if case is equal to condition",
                         "items": {
                             "$type": "Microsoft.IDialog",
                             "$ref": "#/definitions/Microsoft.IDialog"
@@ -3053,14 +3331,15 @@
                 },
                 "default": {
                     "type": "array",
-                    "title": "If True",
-                    "description": "Step to execute if expression is true.",
+                    "title": "Default",
+                    "description": "Step to execute if no case is equal to condition",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -3076,8 +3355,7 @@
                 {
                     "title": "Type",
                     "required": [
-                        "expression",
-                        "ifTrue",
+                        "condition",
                         "$type"
                     ]
                 }
@@ -3088,7 +3366,6 @@
             "title": "Text prompt",
             "description": "This represents a dialog which gathers a text from the user",
             "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -3109,29 +3386,41 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "property": {
-                    "type": "string",
+                    "$role": "memoryPath",
+                    "title": "Property",
                     "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
                     "examples": [
-                        "user.name"
-                    ]
+                        "value.birthday"
+                    ],
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "inputProperties": {
                     "type": "object",
+                    "title": "Input Properties",
                     "description": "This defines properties which be passed as arguments to this dialog",
                     "examples": [
-                        "user.name"
+                        "value.birthday"
                     ],
                     "additionalProperties": {
                         "type": "string"
                     }
                 },
                 "outputProperty": {
-                    "type": "string",
+                    "$role": "memoryPath",
+                    "title": "Output Property",
                     "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
                     "examples": [
-                        "user.name"
-                    ]
+                        "value.birthday"
+                    ],
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "prompt": {
                     "$type": "Microsoft.IActivityTemplate",
@@ -3169,6 +3458,7 @@
                     ]
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -3194,7 +3484,6 @@
             "title": "Trace Activity Step",
             "description": "This is a step which sends an TraceActivity to the transcript",
             "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -3215,6 +3504,11 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "name": {
                     "type": "string",
                     "title": "Name",
@@ -3226,11 +3520,14 @@
                     "description": "Value type of the trace activity"
                 },
                 "valueProperty": {
-                    "type": "string",
+                    "$role": "memoryPath",
                     "title": "Value Property",
-                    "description": "Property path to memory object to send as the value of the trace activity"
+                    "description": "Property path to memory object to send as the value of the trace activity",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 }
             },
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -3275,6 +3572,11 @@
                     "description": "Inline id for reuse of an inline definition",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
                 }
             },
             "additionalProperties": false,
@@ -3301,8 +3603,8 @@
         "Microsoft.UnknownIntentRule": {
             "title": "This defines the steps to take when an utterence is not recognized (aka, the None Intent). NOTE: UnknownIntent will defer to any specific intent that fires in a parent dialog",
             "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
+            "$role": "unionType(Microsoft.IRule)",
             "type": "object",
-            "additionalProperties": false,
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -3323,33 +3625,19 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
-                "events": {
-                    "type": "array",
-                    "description": "Events to trigger this rule for",
-                    "items": {
-                        "type": "string",
-                        "enum": [
-                            "beginDialog",
-                            "consultDialog",
-                            "cancelDialog",
-                            "activityReceived",
-                            "recognizedIntent",
-                            "unknownIntent",
-                            "stepsStarted",
-                            "stepsSaved",
-                            "stepsEnded",
-                            "stepsResumed"
-                        ]
-                    }
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
                 },
                 "constraint": {
-                    "$type": "Microsoft.IExpression",
+                    "$role": "expression",
                     "title": "Constraint",
                     "description": "Optional constraint to which must be met for this rule to fire",
                     "examples": [
                         "user.vip == true"
                     ],
-                    "$ref": "#/definitions/Microsoft.IExpression"
+                    "type": "string"
                 },
                 "steps": {
                     "type": "array",
@@ -3360,7 +3648,7 @@
                     }
                 }
             },
-            "$role": "unionType(Microsoft.IRule)",
+            "additionalProperties": false,
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
@@ -3407,6 +3695,11 @@
                     "description": "Inline id for reuse of an inline definition",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
                 },
                 "property": {
                     "type": "string",
@@ -3476,6 +3769,11 @@
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
                 },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "inputProperty": {
                     "type": "string",
                     "title": "Input Property",
@@ -3532,6 +3830,11 @@
                     "description": "Inline id for reuse of an inline definition",
                     "type": "string",
                     "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
                 },
                 "property": {
                     "type": "string",

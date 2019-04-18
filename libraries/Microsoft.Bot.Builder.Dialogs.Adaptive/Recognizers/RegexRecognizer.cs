@@ -18,6 +18,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// </summary>
     public class RegexRecognizer : IRecognizer
     {
+        private Dictionary<string, Regex> patterns = new Dictionary<string, Regex>();
+
         /// <summary>
         /// Dictionary of patterns -> Intent names
         /// </summary>
@@ -49,19 +51,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             foreach (var kv in Intents)
             {
                 var intent = kv.Key;
-                var regex = new Regex(kv.Value);
+                Regex regex;
+                if (!patterns.TryGetValue(intent, out regex))
+                {
+                    regex = new Regex(kv.Value, RegexOptions.Compiled);
+                    patterns.Add(intent, regex);
+                }
 
                 var match = regex.Match(utterance);
 
                 if (match.Success)
                 {
                     // TODO length weighted match and multiple intents
-                    result.Intents.Add(intent, new IntentScore() { Score = 1.0 });
+                    result.Intents.Add(intent.Replace(" ","_"), new IntentScore() { Score = 1.0 });
 
                     // Check for named capture groups
                     var entities = new Dictionary<string, string>();
-                    foreach (var name in regex.GetGroupNames())
+                    foreach (var name in regex.GetGroupNames().Where(name => name.Length > 1))
                     {
+                        // only if we have a value and the name is not a number "0"
                         if (!string.IsNullOrEmpty(match.Groups[name].Value))
                         {
                             entities.Add(name, match.Groups[name].Value);

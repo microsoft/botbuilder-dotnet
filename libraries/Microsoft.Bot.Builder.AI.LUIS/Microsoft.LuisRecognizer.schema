@@ -14,9 +14,6 @@
         },
         "endpointKey": {
             "type": "string"
-        },
-        "priority": {
-            "type": "string"
         }
     },
     "required": [

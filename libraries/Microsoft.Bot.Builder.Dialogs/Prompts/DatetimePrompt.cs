@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Prompts;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.DateTime;
 using static Microsoft.Recognizers.Text.Culture;
@@ -19,6 +18,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             : base(dialogId, validator)
         {
             DefaultLocale = defaultLocale;
+        }
+
+        public DateTimePrompt()
+            : base()
+        {
         }
 
         public string DefaultLocale { get; set; }

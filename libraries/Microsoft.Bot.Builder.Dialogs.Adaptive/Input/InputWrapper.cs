@@ -63,10 +63,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            // Check value in state and only call if missing or required by AlwaysPrompt
-            var value = dc.State.GetValue<TValue>(Property);
+            // Check value in state and only call if missing and Property specified, or if required by AlwaysPrompt
+            var hasValue = Property == null ? false : dc.State.HasValue<TValue>(Property);
 
-            if (value == null || AlwaysPrompt)
+            if (hasValue == false || AlwaysPrompt)
             {
                 if (Prompt == null)
                 {

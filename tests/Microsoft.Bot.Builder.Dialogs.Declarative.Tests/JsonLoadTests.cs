@@ -37,10 +37,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_Steps()
         {
-            string path = Path.Combine(samplesDirectory, @"01 - Steps\Steps.main.dialog");
-
-            await BuildTestFlow(path)
-            .SendConversationUpdate()
+            await BuildTestFlow(@"Steps.main.dialog")
+                .SendConversationUpdate()
                 .AssertReply("Step 1")
                 .AssertReply("Step 2")
                 .AssertReply("Step 3")
@@ -50,9 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_EndTurn()
         {
-            string path = Path.Combine(samplesDirectory, @"02 - EndTurn\EndTurn.main.dialog");
-
-            await BuildTestFlow(path)
+            await BuildTestFlow("EndTurn.main.dialog")
             .Send("hello")
                 .AssertReply("What's up?")
             .Send("Nothing")
@@ -63,9 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_IfProperty()
         {
-            string path = Path.Combine(samplesDirectory, @"03 - IfCondition\IfCondition.main.dialog");
-
-            await BuildTestFlow(path)
+            await BuildTestFlow("IfCondition.main.dialog")
             .SendConversationUpdate()
             .AssertReply("Hello, I'm Zoidberg. What is your name?")
             .Send("Carlos")
@@ -74,11 +68,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         }
 
         [TestMethod]
+        public async Task JsonDialogLoad_TextInputWithoutProperty()
+        {
+            await BuildTestFlow("TextInput.WithoutProperty.main.dialog")
+            .SendConversationUpdate()
+                .AssertReply("Hello, I'm Zoidberg. What is your name?")
+            .Send("Carlos")
+                .AssertReply("Hello, nice to talk to you!")
+                .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task JsonDialogLoad_TextInput()
         {
-            string path = Path.Combine(samplesDirectory, @"04 - TextInput\TextInput.main.dialog");
-
-            await BuildTestFlow(path)
+            await BuildTestFlow("TextInput.main.dialog")
             .SendConversationUpdate()
                 .AssertReply("Hello, I'm Zoidberg. What is your name?")
             .Send("Carlos")
@@ -87,11 +90,54 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         }
 
         [TestMethod]
+        public async Task JsonDialogLoad_NumberInput()
+        {
+            await BuildTestFlow("NumberInput.main.dialog")
+            .SendConversationUpdate()
+                .AssertReply("What is your age?")
+            .Send("Blablabla")
+                .AssertReply("What is your age?")
+            .Send("4")
+                .AssertReply("Hello, your age is 4!")
+                .AssertReply("2 * 2.2 equals?")
+            .Send("4.4")
+                .AssertReply("2 * 2.2 equals 4.4, that's right!")
+                .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task JsonDialogLoad_RepeatDialog()
+        {
+            await BuildTestFlow("RepeatDialog.main.dialog")
+            .SendConversationUpdate()
+                .AssertReply("Hello, what is your name?")
+            .Send("Carlos")
+                .AssertReply("Hello Carlos, nice to meet you!")
+            .Send("hi")
+                .AssertReply("Hello Carlos, nice to meet you!")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task JsonDialogLoad_TraceAndLog()
+        {
+            await BuildTestFlow("TraceAndLog.main.dialog", sendTraceActivity: true)
+            .SendConversationUpdate()
+                .AssertReply("Hello, what is your name?")
+            .Send("Carlos")
+                .AssertReply(activity =>
+                {
+                    var trace = (Activity)activity;
+                    Assert.AreEqual(ActivityTypes.Trace, trace.Type, "should be trace activity");
+                    Assert.AreEqual("memory", trace.ValueType, "value type should be memory");
+                })
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task JsonDialogLoad_DoSteps()
         {
-            string path = Path.Combine(samplesDirectory, @"06 - DoSteps\DoSteps.main.dialog");
-
-            await BuildTestFlow(path)
+            await BuildTestFlow("DoSteps.main.dialog")
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
             .SendConversationUpdate()
                 .AssertReply("Hello, I'm Zoidberg. What is your name?")
@@ -111,9 +157,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_BeginDialog()
         {
-            string path = Path.Combine(samplesDirectory, @"07 - BeginDialog\BeginDialog.main.dialog");
-
-            await BuildTestFlow(path)
+            await BuildTestFlow("BeginDialog.main.dialog")
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
             .SendConversationUpdate()
                 .AssertReply("Hello, I'm Zoidberg. What is your name?")
@@ -133,9 +177,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_ChoiceInputDialog()
         {
-            string path = Path.Combine(samplesDirectory, @"10 - ChoiceInput\ChoiceInput.main.dialog");
-
-            await BuildTestFlow(path)
+            await BuildTestFlow("ChoiceInput.main.dialog")
             .SendConversationUpdate()
                 .AssertReply("Please select a value from below:\n\n   1. Test1\n   2. Test2\n   3. Test3")
             .Send("Test1")
@@ -146,9 +188,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_ExternalLanguage()
         {
-            string path = Path.Combine(samplesDirectory, @"08 - ExternalLanguage\ExternalLanguage.main.dialog");
-
-            await BuildTestFlow(path)
+            await BuildTestFlow("ExternalLanguage.main.dialog")
             .SendConversationUpdate()
                 .AssertReplyOneOf(new string[]
                 {
@@ -180,13 +220,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             .StartTestAsync();
         }
 
-        [Ignore]
         [TestMethod]
         public async Task JsonDialogLoad_ToDoBot()
         {
-            string path = Path.Combine(samplesDirectory, @"ToDoBot\TodoBot.main.dialog");
-
-            await BuildTestFlow(path)
+            await BuildTestFlow("ToDoBot.main.dialog")
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
             .SendConversationUpdate()
                 .AssertReply("Hi! I'm a ToDo bot. Say \"add a todo named first\" to get started.")
@@ -214,9 +251,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [TestMethod]
         public async Task JsonDialogLoad_HttpRequest()
         {
-            string path = Path.Combine(samplesDirectory, @"11 - HttpRequest\HttpRequest.main.dialog");
-
-            await BuildTestFlow(path)
+            await BuildTestFlow("HttpRequest.main.dialog")
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
             .AssertReply("Welcome! Here is a http request sample, please enter a name for you visual pet.")
             .Send("TestPetName")
@@ -230,12 +265,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             .StartTestAsync();
         }
 
-        private TestFlow BuildTestFlow(string path)
+        private TestFlow BuildTestFlow(string resourceName, bool sendTraceActivity = false)
         {
             string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, $@"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj"));
             var resourceExplorer = ResourceExplorer.LoadProject(projPath);
 
-            var dialog = DeclarativeTypeLoader.Load<IDialog>(path, resourceExplorer, DebugSupport.SourceRegistry);
+            var resource = resourceExplorer.GetResource(resourceName);
+            var dialog = DeclarativeTypeLoader.Load<IDialog>(resource, resourceExplorer, DebugSupport.SourceRegistry);
 
             IStorage dataStore = new MemoryStorage();
 
@@ -244,7 +280,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
             var lg = new LGLanguageGenerator(resourceExplorer);
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTraceActivity: sendTraceActivity)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()))
                 .Use(new AutoSaveStateMiddleware(convoState))
                 .Use(new RegisterClassMiddleware<ResourceExplorer>(resourceExplorer))

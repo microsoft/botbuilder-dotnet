@@ -34,12 +34,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Renderer
                 var engs = new Dictionary<string, TemplateEngine>(StringComparer.CurrentCultureIgnoreCase);
 
                 var lgs = this.resourceManager.GetResources("lg").ToArray();
-                var contents = lgs.Select(resource => (FileLocale(resource.Name), File.ReadAllText(resource.FullName)));
+                var contents = lgs.Select(async resource => (FileLocale(resource.Id), await resource.ReadTextAsync().ConfigureAwait(false)));
 
                 Dictionary<string, string> languageResources = new Dictionary<string, string>();
                 foreach (var result in contents)
                 {
-                    var (locale, text) = result;
+                    var (locale, text) = await result;
                     if (!languageResources.ContainsKey(locale))
                     {
                         languageResources[locale] = text;

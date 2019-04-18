@@ -2,14 +2,13 @@
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
     "steps": [
-        "GetListType",
         {
             "$type": "Microsoft.IfCondition",
-            "condition": "user.listType.Value == 'GroceryList'",
+            "condition": "user.todos == null",
             "steps": [
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "[ShowGrocery]"
+                    "activity": "You have no todos."
                 }
             ],
             "elseSteps": [
@@ -18,10 +17,17 @@
                     "activity": "[ShowTodo]"
                 }
             ]
-        },
+        }
+    ],
+    "rules": [
         {
-            "$type": "Microsoft.DeleteProperty",
-            "property": "user.listType"
+            "$type": "Microsoft.IntentRule",
+            "intent": "CancelIntent",
+            "steps": [
+                {
+                    "$type": "Microsoft.CancelAllDialog"
+                }
+            ]
         }
     ]
 }

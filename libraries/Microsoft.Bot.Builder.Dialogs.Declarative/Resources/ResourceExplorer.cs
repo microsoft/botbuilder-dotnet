@@ -23,49 +23,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
     /// </summary>
     public class ResourceExplorer : IDisposable
     {
-        private List<FolderResource> folderResources = new List<FolderResource>();
+        private List<IResourceProvider> resourceProviders = new List<IResourceProvider>();
+
+        private CancellationTokenSource CancelReloadToken = new CancellationTokenSource();
+        private ConcurrentBag<string> changedPaths = new ConcurrentBag<string>();
 
         public ResourceExplorer()
         {
         }
 
-
-        public IEnumerable<DirectoryInfo> Folders
-        {
-            get
-            {
-                foreach (var folderResource in folderResources)
-                {
-                    yield return folderResource.Directory;
-                }
-            }
-        }
+        public IEnumerable<IResourceProvider> ResourceProviders { get { return this.resourceProviders; } }
 
         public event ResourceChangedEventHandler Changed;
 
-        private CancellationTokenSource CancelReloadToken = new CancellationTokenSource();
-        private ConcurrentBag<string> changedPaths = new ConcurrentBag<string>();
-
-        public ResourceExplorer AddFolder(string folder, bool monitorFiles = true)
+        public ResourceExplorer AddResourceProvider(IResourceProvider resourceProvider)
         {
-            var folderResource = new FolderResource(folder, monitorFiles);
+            resourceProvider.Changed += ResourceProvider_Changed;
 
-            if (folderResource.Watcher != null)
-            {
-                folderResource.Watcher.Created += Watcher_Changed;
-                folderResource.Watcher.Changed += Watcher_Changed;
-                folderResource.Watcher.Deleted += Watcher_Changed;
-            }
-
-            this.folderResources.Add(folderResource);
+            this.resourceProviders.Add(resourceProvider);
             return this;
         }
 
-        private void Watcher_Changed(object sender, FileSystemEventArgs e)
+        private void ResourceProvider_Changed(string[] ids)
         {
             if (this.Changed != null)
             {
-                changedPaths.Add(e.FullPath);
+                foreach (var id in ids)
+                {
+                    changedPaths.Add(id);
+                }
+
                 lock (CancelReloadToken)
                 {
                     CancelReloadToken.Cancel();
@@ -75,8 +62,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                         {
                             if (t.IsCanceled)
                                 return;
-
-                            this.Changed(changedPaths.ToArray());
+                            var changed = changedPaths.ToArray();
+                            changedPaths = new ConcurrentBag<string>();
+                            this.Changed(changed);
                         }).ContinueWith(t => t.Status);
                 }
             }
@@ -88,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <param name="manager"></param>
         /// <param name="projectFile"></param>
         /// <returns></returns>
-        public static ResourceExplorer LoadProject(string projectFile)
+        public static ResourceExplorer LoadProject(string projectFile, string[] ignoreFolders = null)
         {
             var explorer = new ResourceExplorer();
             if (!File.Exists(projectFile))
@@ -105,7 +93,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             xmlDoc.Load(projectFile);
 
             // add folder for the project
-            explorer.AddFolder(projectFolder);
+            if (ignoreFolders != null)
+            {
+                explorer.AddFolders(projectFolder, ignoreFolders, monitorChanges: true);
+            }
+            else
+            {
+                explorer.AddResourceProvider(new FolderResourceProvider(projectFolder, includeSubFolders: true, monitorChanges: true));
+            }
 
             // add project references
             foreach (XmlNode node in xmlDoc.SelectNodes("//ProjectReference"))
@@ -113,7 +108,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 var path = Path.Combine(projectFolder, PlatformPath(node.Attributes["Include"].Value));
                 path = Path.GetFullPath(path);
                 path = Path.GetDirectoryName(path);
-                explorer.AddFolder(path);
+                explorer.AddResourceProvider(new FolderResourceProvider(path, includeSubFolders: true, monitorChanges: true));
             }
 
             var packages = Path.GetFullPath("packages");
@@ -139,7 +134,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     var folder = Path.Combine(packages, PlatformPath(pathResolver.GetPackageDirectoryName(package)));
                     if (Directory.Exists(folder))
                     {
-                        explorer.AddFolder(folder, monitorFiles: false);
+                        explorer.AddResourceProvider(new FolderResourceProvider(folder, includeSubFolders: true, monitorChanges: false));
                     }
                 }
             }
@@ -164,13 +159,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </summary>
         /// <param name="fileExtension"></param>
         /// <returns></returns>
-        public IEnumerable<FileInfo> GetResources(string fileExtension)
+        public IEnumerable<IResource> GetResources(string fileExtension)
         {
-            foreach (var folder in this.folderResources)
+            foreach (var resourceProvider in this.resourceProviders)
             {
-                foreach (var fileInfo in folder.GetResources(fileExtension))
+                foreach (var resource in resourceProvider.GetResources(fileExtension))
                 {
-                    yield return fileInfo;
+                    yield return resource;
                 }
             }
         }
@@ -180,68 +175,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </summary>
         /// <param name="filename"></param>
         /// <returns></returns>
-        public FileInfo GetResource(string filename)
+        public IResource GetResource(string filename)
         {
-            return GetResources(Path.GetExtension(filename)).Where(fi => fi.Name == filename).SingleOrDefault();
+            return GetResources(Path.GetExtension(filename)).Where(resource => resource.Id == filename).SingleOrDefault();
         }
 
         public void Dispose()
         {
-            foreach (var folderResource in this.folderResources)
+            foreach (var resource in this.resourceProviders)
             {
-                folderResource.Dispose();
+                if (resource is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
             }
         }
-
-        /// <summary>
-        /// Folder/FileResources
-        /// </summary>
-        internal class FolderResource : IDisposable
-        {
-            internal FolderResource(string folder, bool monitorChanges = true)
-            {
-                this.Directory = new DirectoryInfo(folder);
-                if (monitorChanges)
-                {
-                    this.Watcher = new FileSystemWatcher(folder);
-                    this.Watcher.IncludeSubdirectories = true;
-                    this.Watcher.EnableRaisingEvents = true;
-                }
-            }
-
-            /// <summary>
-            /// folder to enumerate
-            /// </summary>
-            public DirectoryInfo Directory { get; set; }
-
-            public FileSystemWatcher Watcher { get; private set; }
-
-            public void Dispose()
-            {
-                lock (Directory)
-                {
-                    if (Watcher != null)
-                    {
-                        Watcher.EnableRaisingEvents = false;
-                        Watcher.Dispose();
-                        Watcher = null;
-                    }
-                }
-            }
-
-            /// <summary>
-            /// id -> Resource object)
-            /// </summary>
-            public IEnumerable<FileInfo> GetResources(string extension)
-            {
-                foreach (var fileInfo in this.Directory.EnumerateFiles($"*.{extension.TrimStart('.')}", SearchOption.AllDirectories))
-                {
-                    yield return fileInfo;
-                }
-                yield break;
-            }
-        }
-
-
     }
 }

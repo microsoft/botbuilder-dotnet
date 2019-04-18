@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -80,8 +81,16 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             var userState = new UserState(dataStore);
             var conversationState = new ConversationState(dataStore);
 
+
             // manage all bot resources
-            var resourceExplorer = ResourceExplorer.LoadProject(HostingEnvironment.ContentRootPath);
+            var resourceExplorer = ResourceExplorer
+                .LoadProject(HostingEnvironment.ContentRootPath, ignoreFolders: new string[] { "models" });
+
+            // add LuisRecognizer .dialog files for current environment/authoringRegion
+            var environment = Configuration.GetValue<string>("luis:environment", Environment.UserName);
+            var authoringRegion = Configuration.GetValue<string>("luis:authoringRegion", "westus");
+            var luisModelsFolder = Path.Combine(HostingEnvironment.ContentRootPath, "models", environment, authoringRegion);
+            resourceExplorer.AddFolder(luisModelsFolder);
 
             services.AddBot<IBot>(
                 (IServiceProvider sp) =>

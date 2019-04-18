@@ -1,0 +1,33 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "type": "object",
+    "properties": {
+        "property": {
+            "$role": "memoryPath",
+            "title": "Property",
+            "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
+            "examples": [
+                "value.birthday"
+            ]
+        },
+        "inputProperties": {
+            "type": "object",
+            "title": "Input Properties",
+            "description": "This defines properties which be passed as arguments to this dialog",
+            "additionalProperties": {
+                "type": "string"
+            },
+            "examples": [
+                "value.birthday"
+            ]
+        },
+        "outputProperty": {
+            "$role": "memoryPath",
+            "title": "Output Property",
+            "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
+            "examples": [
+                "value.birthday"
+            ]
+        }
+    }
+}

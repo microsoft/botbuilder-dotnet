@@ -47,7 +47,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         public enum HttpMethod
         {
             GET,
-            POST
+            POST,
+            PATCH
         }
 
         [JsonConstructor]
@@ -165,6 +166,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             if (instanceBody != null && this.Method == HttpMethod.POST)
             {
                 response = await client.PostAsync(instanceUrl, new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json"));
+            }
+
+            if (instanceBody != null && this.Method == HttpMethod.PATCH)
+            {
+                var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl);
+                request.Content = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
+                response = await client.SendAsync(request);
             }
 
             if (this.Method == HttpMethod.GET)

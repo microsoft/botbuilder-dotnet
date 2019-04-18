@@ -84,6 +84,7 @@
     <None Remove="Schemas\Steps\Microsoft.IfProperty.schema" />
     <None Remove="Schemas\Steps\Microsoft.InitProperty.schema" />
     <None Remove="Schemas\Steps\Microsoft.LogStep.schema" />
+    <None Remove="Schemas\Steps\Microsoft.RepeatDialog.schema" />
     <None Remove="Schemas\Steps\Microsoft.ReplaceDialog.schema" />
     <None Remove="Schemas\Steps\Microsoft.SaveEntity.schema" />
     <None Remove="Schemas\Steps\Microsoft.SendActivity.schema" />
@@ -110,6 +111,7 @@
     <Content Include="Schemas\Rules\Microsoft.UnknownIntentRule.schema" />
     <Content Include="Schemas\Selectors\Microsoft.ConditionalSelector.schema" />
     <Content Include="Schemas\Selectors\Microsoft.TrueSelector.schema" />
+    <Content Include="Schemas\Steps\Microsoft.RepeatDialog.schema" />
     <Content Include="Schemas\Steps\Microsoft.DeleteProperty.schema" />
     <Content Include="Schemas\Steps\Microsoft.IfCondition.schema" />
     <Content Include="Schemas\Steps\Microsoft.LogStep.schema" />

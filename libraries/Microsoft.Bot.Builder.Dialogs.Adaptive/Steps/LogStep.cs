@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 {
     /// <summary>
-    /// write log activity to console log
+    /// Write log activity to console log
     /// </summary>
     public class LogStep : DialogCommand
     {

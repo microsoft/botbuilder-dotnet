@@ -33,9 +33,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             // Check value in state and only call if missing or required by AlwaysPrompt
-            var value = dc.State.GetValue<FoundChoice>(Property);
+            var hasValue = Property == null ? false : dc.State.HasValue<FoundChoice>(Property);
 
-            if (value == null || AlwaysPrompt)
+            if (hasValue == false || AlwaysPrompt)
             {
                 if (Prompt == null)
                 {
@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     }
                 }
 
-                return await dc.PromptAsync(this.prompt.Id, new ChoicePromptOptions() { Prompt = prompt, RetryPrompt = retryPrompt, Choices = choices}, cancellationToken).ConfigureAwait(false);
+                return await dc.PromptAsync(this.prompt.Id, new PromptOptions() { Prompt = prompt, RetryPrompt = retryPrompt, Choices = choices}, cancellationToken).ConfigureAwait(false);
             }
             else
             {

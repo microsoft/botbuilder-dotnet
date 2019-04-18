@@ -32,11 +32,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         {
             var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"..\..\.."));
             var explorer = new ResourceExplorer();
-            explorer.AddFolder(path);
+            explorer.AddResourceProvider(new FolderResourceProvider(path));
 
             await AssertResourceType(path, explorer, "dialog");
             var resources = explorer.GetResources("foo").ToArray();
             Assert.AreEqual(0, resources.Length);
+        }
+
+        [TestMethod]
+        public async Task TestFolderSource_Shallow()
+        {
+            var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"..\..\.."));
+            var explorer = new ResourceExplorer();
+            explorer.AddFolder(path, includeSubFolders: false);
+
+            var resources = explorer.GetResources("dialog").ToArray();
+            Assert.AreEqual(0, resources.Length, "shallow folder shouldn't list the dialog resources");
+
+            resources = explorer.GetResources("cs").ToArray();
+            Assert.IsTrue(resources.Length > 0, "shallow folder should list the root files");
         }
 
         [TestMethod]
@@ -71,7 +85,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
             var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"..\..\.."));
             var explorer = new ResourceExplorer();
-            explorer.AddFolder(path);
+            explorer.AddResourceProvider(new FolderResourceProvider(path));
 
             TaskCompletionSource<bool> changeFired = new TaskCompletionSource<bool>();
 
@@ -96,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
             var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"..\..\.."));
             var explorer = new ResourceExplorer();
-            explorer.AddFolder(path);
+            explorer.AddResourceProvider(new FolderResourceProvider(path));
 
             TaskCompletionSource<bool> changeFired = new TaskCompletionSource<bool>();
 
@@ -116,38 +130,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         {
             var resources = explorer.GetResources(resourceType).ToArray();
             Assert.AreEqual(1, resources.Length);
-            Assert.AreEqual($".{resourceType}", resources[0].Extension);
-            Assert.AreEqual("test", Path.GetFileNameWithoutExtension(resources[0].Name));
-            Assert.AreEqual(Path.Combine(path, $@"resources\test.{resourceType}"), resources[0].FullName);
+            Assert.AreEqual($".{resourceType}", Path.GetExtension(resources[0].Id));
+            Assert.AreEqual("test", Path.GetFileNameWithoutExtension(resources[0].Id));
         }
-
-
-        //[TestMethod]
-        //public async Task TestNugetSource()
-        //{
-        //    // don't have a nuget source yet!?
-        //}
-
-        //[TestMethod]
-        //public async Task TestResourceManager_AddProject()
-        //{
-        //    string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, $@"..\..\..\Microsoft.Bot.Builder.Dialogs.Composition.Tests.csproj"));
-        //    string projRefPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, $@"..\..\..\..\..\libraries\Microsoft.Bot.Builder.Dialogs"));
-        //    System.Diagnostics.Debug.Print(projRefPath);
-        //    ResourceExplorer manager = new ResourceExplorer();
-        //    manager.AddProjectResources(projPath);
-        //    var x = manager.Providers.Select(s => { System.Diagnostics.Debug.WriteLine(s.Id); return s.Id; }).ToArray();
-        //    Assert.IsTrue(manager.Providers.Any(s => Path.Equals(s.Id, Path.GetDirectoryName(projPath))), "project folder not added");
-        //    Assert.IsTrue(manager.Providers.Any(s => Path.Equals(s.Id, projRefPath)), "project reference not added");
-        //    // TODO we need a nuget source
-        //    // Assert.IsTrue(manager.Sources.Any(s => s.Id.EndsWith("nuget package with resources.csproj")), "nuget reference not added");
-
-        //    var dialogs = await manager.GetResources("dialog");
-        //    Assert.IsTrue(dialogs.Any(dialog => dialog.Name == "test" && dialog.ResourceType == "dialog"), "should have found the dialog file in current project");
-
-        //    var schemas = await manager.GetResources("schema");
-        //    Assert.IsTrue(schemas.Any(schema => schema.Name == "Microsoft.IntegerPrompt" && schema.ResourceType == "schema"), "should have found schema file from project reference");
-        //}
-
     }
 }

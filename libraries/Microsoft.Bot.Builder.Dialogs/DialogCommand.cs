@@ -76,16 +76,19 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             PopCommands(dc);
 
-            if (dc.Stack.Count > 0 || dc.Parent == null)
+            var targetDialogId = dc.Parent.ActiveDialog.Id;
+
+            var repeatedIds = dc.State.GetValue<List<string>>("__repeatedIds", new List<string>());
+            if (repeatedIds.Contains(targetDialogId))
             {
-                return await dc.ReplaceDialogAsync(dc.ActiveDialog.Id, options, cancellationToken).ConfigureAwait(false);
+                throw new ArgumentException($"Recursive loop detected, {targetDialogId} cannot be repeated twice in one turn.");
             }
-            else
-            {
-                var turnResult = await dc.Parent.ReplaceDialogAsync(dc.Parent.ActiveDialog.Id, options, cancellationToken).ConfigureAwait(false);
-                turnResult.ParentEnded = true;
-                return turnResult;
-            }
+
+            repeatedIds.Add(targetDialogId);
+
+            var turnResult = await dc.Parent.ReplaceDialogAsync(dc.Parent.ActiveDialog.Id, options, cancellationToken).ConfigureAwait(false);
+            turnResult.ParentEnded = true;
+            return turnResult;
         }
 
         protected async Task<DialogTurnResult> CancelAllParentDialogsAsync(DialogContext dc, object result = null, CancellationToken cancellationToken = default(CancellationToken))
