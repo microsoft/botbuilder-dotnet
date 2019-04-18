@@ -689,7 +689,7 @@ namespace Microsoft.Bot.Builder.Expressions
             }
             else if (jValue.Type == JTokenType.Float)
             {
-                value = jValue.ToObject<double>();
+                value = jValue.ToObject<float>();
             }
             return value;
         }
