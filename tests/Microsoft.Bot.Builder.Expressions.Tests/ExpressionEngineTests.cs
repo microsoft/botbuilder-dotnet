@@ -16,8 +16,64 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         public static HashSet<string> one = new HashSet<string> { "one" };
         public static HashSet<string> oneTwo = new HashSet<string> {"one", "two" };
 
+        object scope = new
+        {
+            one = 1.0,
+            two = 2.0,
+            hello = "hello",
+            world = "world",
+            bag = new
+            {
+                three = 3.0,
+                set = new
+                {
+                    four = 4.0,
+                },
+                list = new[] { "red", "blue" },
+                index = 3,
+                name = "mybag"
+            },
+            items = new string[] { "zero", "one", "two" },
+            nestedItems = new[]
+                {
+                    new
+                    {
+                        x = 1
+                    },
+                    new
+                    {
+                        x = 2,
+                    },
+                    new
+                    {
+                        x = 3,
+                    }
+                },
+            timestamp = "2018-03-15T13:00:00Z",
+            turn = new
+            {
+                entities = new
+                {
+                    city = "Seattle"
+                },
+                intents = new
+                {
+                    BookFlight = "BookFlight"
+                }
+            },
+            dialog = new
+            {
+                result = new
+                {
+                    title = "Dialog Title",
+                    subTitle = "Dialog Sub Title"
+                }
+            },
+        };
+
         public static IEnumerable<object[]> Data => new[]
        {
+            Test("contains(bag, 'xxx')", false),
             # region Operators test
             
             Test("1 + 2", 3),
@@ -286,60 +342,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         [DynamicData(nameof(Data))]
         public void Evaluate(string input, object expected, HashSet<string> expectedRefs)
         {
-            var scope = new
-            {
-                one = 1.0,
-                two = 2.0,
-                hello = "hello",
-                world = "world",
-                bag = new
-                {
-                    three = 3.0,
-                    set = new
-                    {
-                        four = 4.0,
-                    },
-                    list = new[] { "red", "blue" },
-                    index = 3,
-                    name = "mybag"
-                },
-                items = new string[] { "zero", "one", "two" },
-                nestedItems = new []
-                {
-                    new
-                    {
-                        x = 1
-                    },
-                    new
-                    {
-                        x = 2,
-                    },
-                    new
-                    {
-                        x = 3,
-                    }
-                },
-                timestamp = "2018-03-15T13:00:00Z",
-                turn = new
-                {
-                    entities = new
-                    {
-                        city = "Seattle"
-                    },
-                    intents = new
-                    {
-                        BookFlight = "BookFlight"
-                    }
-                },
-                dialog = new
-                {
-                    result = new
-                    {
-                        title = "Dialog Title",
-                        subTitle = "Dialog Sub Title"
-                    }
-                },
-            };
             var parsed = new ExpressionEngine().Parse(input);
             Assert.IsNotNull(parsed);
             var (actual, msg) = parsed.TryEvaluate(scope);
@@ -351,49 +353,24 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
             }
         }
-        
-
-        public static IEnumerable<object[]> JsonData => new[]
-        {
-            Test("sum(jarrInt)",6),
-            Test("sum(jarrFloat)",6.6),
-            Test("average(jarrInt)",2.0),
-            Test("average(jarrFloat)",2.2),
-            Test("count(jarrInt)",3),
-            Test("count(jarrFloat)",3),
-            Test("contains(jarrString, 'item1')",true),
-            Test("contains(jarrInt, 1)",true),
-            Test("empty(jarrString)",false),
-            Test("join(jarrString, ',')","item1,item2,item3"),
-            Test("first(jarrString)","item1"),
-            Test("first(jarrInt)",1),
-            Test("last(jarrString)","item3"),
-            Test("last(jarrInt)",3),
-            Test("exists(one)", true),
-            Test("jarrString[0] == 'item1'", true),
-            Test("'item1' == jarrString[0]", true),
-
-            // todo more JToken test will be added soon
-        };
 
         [DataTestMethod]
-        [DynamicData(nameof(JsonData))]
-        public void EvaluateJSON(string input, object expected, HashSet<string> expectedRefs)
+        [DynamicData(nameof(Data))]
+        public void EvaluateJson(string input, object expected, HashSet<string> expectedRefs)
         {
-            var scope = JsonConvert.DeserializeObject(@"{
-                            'one': 1,
-                            'two': 2,
-                            'hello': 'hello',
-            
-                            'jarrString': ['item1', 'item2', 'item3'],
-                            'jarrInt': [1, 2, 3],
-                            'jarrFloat': [1.1, 2.2, 3.3],
-                        }");
-
+            var jsonScope = JToken.FromObject(scope);
             var parsed = new ExpressionEngine().Parse(input);
-            var (actual, error) = parsed.TryEvaluate(scope);
+            Assert.IsNotNull(parsed);
+            var (actual, msg) = parsed.TryEvaluate(jsonScope);
+            Assert.AreEqual(null, msg);
             AssertObjectEquals(expected, actual);
+            if (expectedRefs != null)
+            {
+                var actualRefs = parsed.References();
+                Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
+            }
         }
+
 
         private void AssertObjectEquals(object expected, object actual)
         {
