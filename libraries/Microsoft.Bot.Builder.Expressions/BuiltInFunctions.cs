@@ -554,31 +554,37 @@ namespace Microsoft.Bot.Builder.Expressions
 
             object value = null;
             string error = null;
+            property = property.ToLower();
 
             // NOTE: what about other type of TKey, TValue?
             if (instance is IDictionary<string, object> idict)
             {
-                idict.TryGetValue(property, out value);
+                if (!idict.TryGetValue(property, out value))
+                {
+                    // fall back to case insensitive
+                    var prop = idict.Keys.Where(k => k.ToLower() == property).SingleOrDefault();
+                    if (prop != null)
+                    {
+                        idict.TryGetValue(prop, out value);
+                    }
+                }
             }
             else if (instance is IDictionary dict)
             {
-                if (dict.Contains(property))
+                foreach (var p in dict.Keys)
                 {
                     value = dict[property];
                 }
             }
             else if (instance is JObject jobj)
             {
-                if (jobj.TryGetValue(property, out var jtoken))
-                {
-                    value = jtoken;
-                }
+                value = jobj.GetValue(property, StringComparison.CurrentCultureIgnoreCase);
             }
             else
             {
                 // Use reflection
                 var type = instance.GetType();
-                var prop = type.GetProperty(property);
+                var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
                 if (prop != null)
                 {
                     value = prop.GetValue(instance);
