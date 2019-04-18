@@ -347,7 +347,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     {
                         value = function(args);
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         error = e.Message;
                     }
@@ -495,13 +495,13 @@ namespace Microsoft.Bot.Builder.Expressions
             var children = expression.Children;
             (instance, error) = children[0].TryEvaluate(state);
             (property, error) = children[1].TryEvaluate(state);
-            if(error == null)
+            if (error == null)
             {
-                (value, error) =  AccessProperty(instance, (string)property);
+                (value, error) = AccessProperty(instance, (string)property);
             }
 
             return (value, error);
-            
+
         }
         /// <summary>
         /// Lookup a property in IDictionary, JObject or through reflection.
@@ -524,26 +524,26 @@ namespace Microsoft.Bot.Builder.Expressions
             // NOTE: what about other type of TKey, TValue?
             if (instance is IDictionary<string, object> idict)
             {
-                var prop = idict.Keys.Where(k => k.ToLower() == property).SingleOrDefault();
-                if (prop != null)
+                if (!idict.TryGetValue(property, out value))
                 {
-                    idict.TryGetValue(prop, out value);
+                    // fall back to case insensitive
+                    var prop = idict.Keys.Where(k => k.ToLower() == property).SingleOrDefault();
+                    if (prop != null)
+                    {
+                        idict.TryGetValue(prop, out value);
+                    }
                 }
             }
             else if (instance is IDictionary dict)
             {
-                foreach(var p in dict.Keys)
+                foreach (var p in dict.Keys)
                 {
                     value = dict[property];
                 }
             }
             else if (instance is JObject jobj)
             {
-                var prop = jobj.Properties().Where(p=> p.Name.ToLower() == property).SingleOrDefault();
-                if (prop != null)
-                {
-                    value = prop.Value;
-                }
+                value = jobj.GetValue(property, StringComparison.CurrentCultureIgnoreCase);
             }
             else
             {
@@ -630,7 +630,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     {
                         (value, error) = AccessIndex(inst, idx);
                     }
-                    else if(idxValue is string idxStr)
+                    else if (idxValue is string idxStr)
                     {
                         (value, error) = AccessProperty(inst, idxStr);
                     }
@@ -680,7 +680,7 @@ namespace Microsoft.Bot.Builder.Expressions
             if (!(instance is IList list))
                 return result;
 
-            for(var i = 0;i < list.Count; i++)
+            for (var i = 0; i < list.Count; i++)
             {
                 result.Add(AccessIndex(instance, i).value);
             }
@@ -743,7 +743,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
-        
+
 
 
         private static (object value, string error) Substring(Expression expression, object state)
@@ -804,7 +804,7 @@ namespace Microsoft.Bot.Builder.Expressions
             {
                 // 2nd parameter has been rewrite to $local.item
                 var iteratorName = (string)(expression.Children[1].Children[0] as Constant).Value;
-                
+
                 if (collection is IList ilist)
                 {
                     result = new List<object>();
@@ -829,7 +829,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         ((List<object>)result).Add(r);
                     }
                 }
-                
+
                 else
                 {
                     error = $"{expression.Children[0]} is not a collection to run foreach";
@@ -1009,7 +1009,7 @@ namespace Microsoft.Bot.Builder.Expressions
                                 return true;
                         }
                         //Dictionary contains key
-                        else if (args[0] is IDictionary<string, object> dict 
+                        else if (args[0] is IDictionary<string, object> dict
                                     && args[1] is string string2
                                     && dict.ContainsKey(string2))
                         {
@@ -1197,7 +1197,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         if (args[0] is IList list && list.Count > 0)
                         {
                            return AccessIndex(list, 0).value;
-                        } 
+                        }
                         return null;
                     }), ReturnType.Object, ValidateUnary) },
                 { ExpressionType.Last, new ExpressionEvaluator(Apply(args =>
@@ -1215,7 +1215,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 { ExpressionType.Json,
                     new ExpressionEvaluator(Apply(args => JToken.Parse(args[0])), ReturnType.String, (expr) => ValidateOrder(expr, null, ReturnType.String)) },
                 { ExpressionType.AddProperty,
-                    new ExpressionEvaluator(Apply(args => {var newJobj = (JObject)args[0]; newJobj[args[1].ToString()] = args[2];return newJobj; }), 
+                    new ExpressionEvaluator(Apply(args => {var newJobj = (JObject)args[0]; newJobj[args[1].ToString()] = args[2];return newJobj; }),
                     ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String, ReturnType.Object)) },
                 { ExpressionType.SetProperty,
                    new ExpressionEvaluator(Apply(args => {var newJobj = (JObject)args[0]; newJobj[args[1].ToString()] = args[2];return newJobj; }),

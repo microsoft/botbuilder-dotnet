@@ -66,29 +66,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             // simple value types
             state.SetValue("UseR.nuM", 15);
             state.SetValue("uSeR.NuM", 25);
-            Assert.AreEqual(state.GetValue<int>("user.num"), 25);
+            Assert.AreEqual(25, state.GetValue<int>("user.num"));
 
             state.SetValue("UsEr.StR", "string1");
             state.SetValue("usER.STr", "string2");
-            Assert.AreEqual(state.GetValue<string>("USer.str"), "string2");
+            Assert.AreEqual("string2", state.GetValue<string>("USer.str") );
 
             // simple value types
             state.SetValue("ConVErsation.nuM", 15);
             state.SetValue("ConVErSation.NuM", 25);
-            Assert.AreEqual(state.GetValue<int>("conversation.num"), 25);
+            Assert.AreEqual(25, state.GetValue<int>("conversation.num"));
 
             state.SetValue("ConVErsation.StR", "string1");
             state.SetValue("CoNVerSation.STr", "string2");
-            Assert.AreEqual(state.GetValue<string>("conversation.str"), "string2");
+            Assert.AreEqual("string2", state.GetValue<string>("conversation.str"));
 
             // simple value types
             state.SetValue("tUrn.nuM", 15);
             state.SetValue("turN.NuM", 25);
-            Assert.AreEqual(state.GetValue<int>("turn.num"), 25);
+            Assert.AreEqual(25, state.GetValue<int>("turn.num"));
 
             state.SetValue("tuRn.StR", "string1");
             state.SetValue("TuRn.STr", "string2");
-            Assert.AreEqual(state.GetValue<string>("turn.str"), "string2");
+            Assert.AreEqual("string2", state.GetValue<string>("turn.str"));
         }
 
         [TestMethod]
@@ -108,15 +108,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             // complex type paths
             state.SetValue("UseR.fOo", foo);
-            Assert.AreEqual(state.GetValue<string>("user.foo.SuBname.name"), "bob");
+            Assert.AreEqual("bob", state.GetValue<string>("user.foo.SuBname.name"));
 
             // complex type paths
             state.SetValue("ConVerSation.FOo", foo);
-            Assert.AreEqual(state.GetValue<string>("conversation.foo.SuBname.name"), "bob");
+            Assert.AreEqual("bob", state.GetValue<string>("conversation.foo.SuBname.name"));
 
             // complex type paths
             state.SetValue("TurN.fOo", foo);
-            Assert.AreEqual(state.GetValue<string>("TuRN.foo.SuBname.name"), "bob");
+            Assert.AreEqual("bob", state.GetValue<string>("TuRN.foo.SuBname.name"));
         }
 
         [TestMethod]

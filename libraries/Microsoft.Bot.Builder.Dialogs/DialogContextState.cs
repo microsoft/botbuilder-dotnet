@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -30,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     {
         private static JsonSerializerSettings expressionCaseSettings = new JsonSerializerSettings
         {
-            ContractResolver = new DefaultContractResolver { NamingStrategy = new LowerCaseNamingStrategy() },
+            ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() },
             NullValueHandling = NullValueHandling.Ignore,
         };
 
@@ -176,22 +177,39 @@ namespace Microsoft.Bot.Builder.Dialogs
         public T GetValue<T>(object o, string pathExpression, T defaultValue = default(T))
         {
             JToken result = null;
-            pathExpression = pathExpression.ToLower();
-            if (o != null && o.GetType() == typeof(JArray))
+            if (pathExpression.StartsWith("$"))
             {
-                int index = 0;
-                if (int.TryParse(pathExpression, out index) && index < JArray.FromObject(o).Count)
+                // jpath
+                if (o != null && o.GetType() == typeof(JArray))
                 {
-                    result = JArray.FromObject(o)[index];
+                    int index = 0;
+                    if (int.TryParse(pathExpression, out index) && index < JArray.FromObject(o).Count)
+                    {
+                        result = JArray.FromObject(o)[index];
+                    }
                 }
-            }
-            else if (o != null && o is JObject)
-            {
-                result = ((JObject)o).SelectToken(pathExpression);
+                else if (o != null && o is JObject)
+                {
+                    result = ((JObject)o).SelectToken(pathExpression);
+                }
+                else
+                {
+                    result = JToken.FromObject(o).SelectToken(pathExpression);
+                }
             }
             else
             {
-                result = JToken.FromObject(o).SelectToken(pathExpression);
+                // normal expression
+                var exp = new ExpressionEngine().Parse(pathExpression);
+                var (value, error) = exp.TryEvaluate(o);
+                if (value is JToken)
+                {
+                    result = (JToken)value;
+                }
+                else if (value != null)
+                {
+                    return (T)value;
+                }
             }
 
             if (result != null)
