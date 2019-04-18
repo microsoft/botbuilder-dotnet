@@ -91,15 +91,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             object result = null;
             if (parameters.Count == 2 &&
-                parameters[0] is IList p0 &&
-                !(parameters[0] is JObject) && // exclude JObject
+                BuiltInFunctions.TryParseList(parameters[0], out var p0) &&
                 parameters[1] is String sep)
             {
                 result = String.Join(sep + " ", p0.OfType<object>().Select(x => x.ToString())); // "," => ", " 
             }
             else if (parameters.Count == 3 &&
-                parameters[0] is IList li &&
-                !(parameters[0] is JObject) && // exclude JObject
+                BuiltInFunctions.TryParseList(parameters[0], out var li) &&
                 parameters[1] is String sep1 &&
                 parameters[2] is String sep2)
             {
