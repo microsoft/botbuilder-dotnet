@@ -3,8 +3,13 @@
   "displayName": "Debugger for Dialogs",
   "description": "This extension provides the ability to debug Microsoft Bot Framework declarative dialog flows.",
   "author": "Microsoft",
-  "categories": [ "debuggers" ],
-  "keywords": [ "debuggers", "bot" ],
+  "categories": [
+    "Debuggers"
+  ],
+  "keywords": [
+    "debuggers",
+    "bot"
+  ],
   "icon": "icon.png",
   "preview": true,
   "version": "0.0.5",
@@ -14,6 +19,18 @@
     "vscode": "^1.0.0"
   },
   "repository": "https://github.com/microsoft/botbuilder",
+  "main": "./src/js/extension",
+  "activationEvents": [
+    "onDebug"
+  ],
+  "scripts": {
+    "build": "node node_modules/typescript/bin/tsc --project src/ts/tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "3.4.3",
+    "vscode": "1.1.33",
+    "@types/node": "11.13.4"
+  },
   "contributes": {
     "languages": [
       {
@@ -31,13 +48,39 @@
           "json"
         ],
         "initialConfigurations": [
-					{
-						"type": "json",
-						"request": "attach",
-            "name": "Attach to Dialog",
+          {
+            "type": "json",
+            "request": "attach",
+            "name": "Attach to Bot",
             "debugServer": 4712
-					}
-				]
+          },
+          {
+            "type": "json",
+            "request": "launch",
+            "name": "Launch Bot"
+          }
+        ],
+        "configurationSnippets": [
+          {
+            "label": "Bot: Attach Configuration",
+            "description": "A new configuration for attaching to a bot web service process.",
+            "body": {
+              "type": "json",
+              "request": "attach",
+              "name": "Attach to Bot",
+              "debugServer": 4712
+            }
+          },
+          {
+            "label": "Bot: Launch Configuration",
+            "description": "A new configuration for launching a bot web service process.",
+            "body": {
+              "type": "json",
+              "request": "launch",
+              "name": "Launch Bot"
+            }
+          }
+        ]
       }
     ],
     "breakpoints": [

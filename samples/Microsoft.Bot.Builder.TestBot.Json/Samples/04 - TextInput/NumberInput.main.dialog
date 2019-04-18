@@ -5,6 +5,7 @@
         {
             "$type": "Microsoft.IntegerInput",
             "property": "user.age",
+            "alwaysPrompt": true,
             "prompt": "What is your age?",
             "invalidPrompt": "Please input a number."
         },

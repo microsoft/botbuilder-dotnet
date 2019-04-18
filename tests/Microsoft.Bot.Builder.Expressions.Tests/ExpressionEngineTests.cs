@@ -370,16 +370,26 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             }
         }
 
+        public static bool IsNumber(object value)
+        {
+            return value is sbyte
+                    || value is byte
+                    || value is short
+                    || value is ushort
+                    || value is int
+                    || value is uint
+                    || value is long
+                    || value is ulong
+                    || value is float
+                    || value is double
+                    || value is decimal;
+        }
 
         private void AssertObjectEquals(object expected, object actual)
         {
-            if (expected is float expFloat && actual is float actuFloat)
+            if (IsNumber(actual) && IsNumber(expected))
             {
-                Assert.IsTrue(Math.Abs(expFloat - actuFloat) < 0.0000001);
-            }
-            else if (expected is double expDouble && actual is double actuDouble)
-            {
-                Assert.IsTrue(Math.Abs(expDouble - actuDouble) < 0.0000001);
+                Assert.IsTrue(Convert.ToSingle(actual) == Convert.ToSingle(expected));
             }
             // Compare two lists
             else if(expected is IList expectedList
