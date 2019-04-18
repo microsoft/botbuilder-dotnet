@@ -1,42 +1,19 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
-    "$role": "unionType(Microsoft.IDialog)",
-    "title": "Adaptive Dialog",
-    "description": "Configures a data driven dialog via a collection of steps/dialogs.",
-    "type": "object",
-    "additionalProperties": false,
-    "properties": {
+  "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+  "$role": "unionType(Microsoft.IDialog)",
+  "title": "Adaptive Dialog",
+  "description": "Configures a data driven dialog via a collection of steps/dialogs.",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "./baseSchema.json"
+    },
+    {
+      "properties": {
         "autoEndDialog": {
-            "type": "boolean",
-            "title": "Auto End Dialog",
-            "description": "IF this is true the dialog will automatically end when there are no more steps to run.  If this is false it is the responsbility of the author to call EndDialog at an appropriate time."
-        },
-        "property": {
-            "type": "string",
-            "title": "Property",
-            "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
-            "examples": [
-                "value.birthday"
-            ]
-        },
-        "inputProperties": {
-            "type": "object",
-            "title": "Input Properties",
-            "description": "This defines properties which be passed as arguments to this dialog",
-            "additionalProperties": {
-                "type": "string"
-            },
-            "examples": [
-                "value.birthday"
-            ]
-        },
-        "outputProperty": {
-            "type": "string",
-            "title": "Output Property",
-            "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
-            "examples": [
-                "value.birthday"
-            ]
+          "type": "boolean",
+          "title": "Auto End Dialog",
+          "description": "IF this is true the dialog will automatically end when there are no more steps to run.  If this is false it is the responsbility of the author to call EndDialog at an appropriate time."
         },
         "recognizer": {
           "$type": "Microsoft.IRecognizer",
@@ -46,23 +23,23 @@
         "selector": {
           "$type": "Microsoft.IRuleSelector",
           "title": "Selector",
-          "description":  "Policy for how to select rule to execute next"
+          "description": "Policy for how to select rule to execute next"
         },
         "steps": {
-            "type": "array",
-            "description": "Initial Sequence of steps or dialogs to execute when dialog is started",
-            "items": {
-                "$type": "Microsoft.IDialog"
-            }
+          "type": "array",
+          "description": "Initial Sequence of steps or dialogs to execute when dialog is started",
+          "items": {
+            "$type": "Microsoft.IDialog"
+          }
         },
         "rules": {
-            "type": "array",
-            "description": "Array of rules to use to evaluate conversation",
-            "items": {
-                "$type": "Microsoft.IRule"
-            }
+          "type": "array",
+          "description": "Array of rules to use to evaluate conversation",
+          "items": {
+            "$type": "Microsoft.IRule"
+          }
         }
-    },
-    "required": [
-    ]
+      }
+    }
+  ]
 }

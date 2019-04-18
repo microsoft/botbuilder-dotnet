@@ -4,7 +4,6 @@
     "title": "Trace Activity Step",
     "description": "This is a step which sends an TraceActivity to the transcript",
     "type": "object",
-    "additionalProperties": false,
     "properties": {
         "name": {
             "type": "string",
@@ -17,7 +16,7 @@
             "description": "Value type of the trace activity"
         },
         "valueProperty": {
-            "type": "string",
+            "$role": "memoryPath",
             "title": "Value Property",
             "description": "Property path to memory object to send as the value of the trace activity"
         }

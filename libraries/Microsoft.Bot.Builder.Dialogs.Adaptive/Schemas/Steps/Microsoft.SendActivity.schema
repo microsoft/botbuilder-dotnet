@@ -4,7 +4,6 @@
     "title": "Send Activity Step",
     "description": "This is a step which sends an activity to the user",
     "type": "object",
-    "additionalProperties": false,
     "properties": {
         "activity": {
             "$type": "Microsoft.IActivityTemplate",
