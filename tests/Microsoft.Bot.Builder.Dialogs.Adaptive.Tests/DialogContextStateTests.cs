@@ -66,28 +66,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             // simple value types
             state.SetValue("UseR.nuM", 15);
             state.SetValue("uSeR.NuM", 25);
+            Assert.IsTrue(state.HasValue<int>("user.num"), "should have the value");
             Assert.AreEqual(25, state.GetValue<int>("user.num"));
 
             state.SetValue("UsEr.StR", "string1");
             state.SetValue("usER.STr", "string2");
+            Assert.IsTrue(state.HasValue<string>("user.str"), "should have the value");
             Assert.AreEqual("string2", state.GetValue<string>("USer.str") );
 
             // simple value types
             state.SetValue("ConVErsation.nuM", 15);
             state.SetValue("ConVErSation.NuM", 25);
+            Assert.IsTrue(state.HasValue<int>("conversation.num"), "should have the value");
             Assert.AreEqual(25, state.GetValue<int>("conversation.num"));
 
             state.SetValue("ConVErsation.StR", "string1");
             state.SetValue("CoNVerSation.STr", "string2");
+            Assert.IsTrue(state.HasValue<string>("conversation.str"), "should have the value");
             Assert.AreEqual("string2", state.GetValue<string>("conversation.str"));
 
             // simple value types
             state.SetValue("tUrn.nuM", 15);
             state.SetValue("turN.NuM", 25);
+            Assert.IsTrue(state.HasValue<int>("turn.num"), "should have the value");
             Assert.AreEqual(25, state.GetValue<int>("turn.num"));
 
             state.SetValue("tuRn.StR", "string1");
             state.SetValue("TuRn.STr", "string2");
+            Assert.IsTrue(state.HasValue<string>("turn.str"), "should have the value");
             Assert.AreEqual("string2", state.GetValue<string>("turn.str"));
         }
 
@@ -108,14 +114,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             // complex type paths
             state.SetValue("UseR.fOo", foo);
+            Assert.IsTrue(state.HasValue<string>("user.foo.SuBname.name"), "should have the value");
             Assert.AreEqual("bob", state.GetValue<string>("user.foo.SuBname.name"));
 
             // complex type paths
             state.SetValue("ConVerSation.FOo", foo);
+            Assert.IsTrue(state.HasValue<string>("conversation.foo.SuBname.name"), "should have the value");
             Assert.AreEqual("bob", state.GetValue<string>("conversation.foo.SuBname.name"));
 
             // complex type paths
             state.SetValue("TurN.fOo", foo);
+            Assert.IsTrue(state.HasValue<string>("TuRN.foo.SuBname.name"), "should have the value");
             Assert.AreEqual("bob", state.GetValue<string>("TuRN.foo.SuBname.name"));
         }
 
@@ -136,14 +145,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             // complex type paths
             state.SetValue("UseR.fOo", foo);
+            Assert.IsTrue(state.HasValue<Foo>("user.foo"), "should have the value");
             Assert.AreEqual(state.GetValue<Foo>("user.foo").SubName.Name, "bob");
 
             // complex type paths
             state.SetValue("ConVerSation.FOo", foo);
+            Assert.IsTrue(state.HasValue<Foo>("conversation.foo"), "should have the value");
             Assert.AreEqual(state.GetValue<Foo>("conversation.foo").SubName.Name, "bob");
 
             // complex type paths
             state.SetValue("TurN.fOo", foo);
+            Assert.IsTrue(state.HasValue<Foo>("turn.foo"), "should have the value");
             Assert.AreEqual(state.GetValue<Foo>("turn.foo").SubName.Name, "bob");
         }
 
@@ -170,7 +182,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 await planningDialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
             });
         }
-
 
         [TestMethod]
         public async Task DialogContextState_TurnStateMappings()

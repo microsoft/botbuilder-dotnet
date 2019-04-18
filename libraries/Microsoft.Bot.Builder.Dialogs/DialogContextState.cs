@@ -229,19 +229,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public bool HasValue<T>(object o, string pathExpression)
         {
-            JToken result = null;
-            if (o != null && o.GetType() == typeof(JArray))
-            {
-                int index = 0;
-                if (int.TryParse(pathExpression, out index) && index < JArray.FromObject(o).Count)
-                {
-                    result = JArray.FromObject(o)[index];
-                }
-            }
-            else
-            {
-                result = JToken.FromObject(o).SelectToken(pathExpression);
-            }
+            var result = GetValue<T>(o, pathExpression);
 
             if (result != null)
             {
