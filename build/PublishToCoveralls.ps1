@@ -1,3 +1,6 @@
+#
+# Arguments example: -coverallsToken $(Coveralls.Token) -pathToCoverageFiles $(Build.SourcesDirectory)\CodeCoverage
+#
 Param(
     [string]$coverallsToken,
     [string]$pathToCoverageFiles
