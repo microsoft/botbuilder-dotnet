@@ -73,7 +73,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
        {
-            Test("contains(bag, 'xxx')", false),
             # region Operators test
             
             Test("1 + 2", 3),
