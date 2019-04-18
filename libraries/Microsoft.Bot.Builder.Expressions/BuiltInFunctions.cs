@@ -211,7 +211,23 @@ namespace Microsoft.Bot.Builder.Expressions
             return error;
         }
 
-     
+        /// <summary>
+        /// Verify value is list.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <param name="expression">Expression that led to value.</param>
+        /// <returns>Error or null if valid.</returns>
+        public static string VerifyList(object value, Expression expression)
+        {
+            string error = null;
+            if (!(value is IList))
+            {
+                error = $"{expression} is not a list.";
+            }
+            return error;
+        }
+
+
         /// <summary>
         /// Verify value is an integer.
         /// </summary>
@@ -327,7 +343,14 @@ namespace Microsoft.Bot.Builder.Expressions
                 (args, error) = EvaluateChildren(expression, state, verify);
                 if (error == null)
                 {
-                    value = function(args);
+                    try
+                    {
+                        value = function(args);
+                    }
+                    catch(Exception e)
+                    {
+                        error = e.Message;
+                    }
                 }
                 return (value, error);
             };
@@ -485,75 +508,105 @@ namespace Microsoft.Bot.Builder.Expressions
         /// </summary>
         /// <param name="instance">Instance with property.</param>
         /// <param name="property">Property to lookup.</param>
-        /// <param name="expression">Expression that generated instance.</param>
         /// <returns>Value and error information if any.</returns>
         private static (object value, string error) AccessProperty(object instance, string property)
         {
             // NOTE: This returns null rather than an error if property is not present
+            if (instance == null)
+            {
+                return (null, null);
+            }
+
             object value = null;
             string error = null;
             property = property.ToLower();
-            if (instance != null)
-            {
-                if (instance is IDictionary<string, object> idict)
-                {
-                    var key = idict.Keys.Where(k => k.ToLower() == property).SingleOrDefault();
-                    if (key != null)
-                    {
-                        idict.TryGetValue(key, out value);
-                    }
-                }
-                else if (instance is System.Collections.IDictionary dict)
-                {
-                    if (dict.Contains(property))
-                    {
-                        value = dict[property];
-                    }
-                }
-                else if (instance is JObject jobj)
-                {
-                    var key = jobj.Properties().Where(p => p.Name.ToLower() == property).Select(p => p.Name).SingleOrDefault();
 
-                    if (jobj.TryGetValue(key, out var jtoken))
-                    {
-                        if (jtoken is JArray jarray)
-                        {
-                            value = jarray.ToArray<object>();
-                        }
-                        else if (jtoken is JValue jvalue)
-                        {
-                            value = jvalue.Value;
-                            if (jvalue.Type == JTokenType.Integer)
-                            {
-                                value = jvalue.ToObject<int>();
-                            }
-                            else if (jvalue.Type == JTokenType.String)
-                            {
-                                value = jvalue.ToObject<string>();
-                            }
-                            else if (jvalue.Type == JTokenType.Boolean)
-                            {
-                                value = jvalue.ToObject<bool>();
-                            }
-                            else if (jvalue.Type == JTokenType.Float)
-                            {
-                                value = jvalue.ToObject<double>();
-                            }
-                        }
-                        else value = jtoken;
-                    }
+            // NOTE: what about other type of TKey, TValue?
+            if (instance is IDictionary<string, object> idict)
+            {
+                var prop = idict.Keys.Where(k => k.ToLower() == property).SingleOrDefault();
+                idict.TryGetValue(prop, out value);
+            }
+            else if (instance is IDictionary dict)
+            {
+                foreach(var p in dict.Keys)
+                {
+                    value = dict[property];
+                }
+            }
+            else if (instance is JObject jobj)
+            {
+                var prop = jobj.GetProperties().Where(p=> p.Name.ToLower() == property).SingleOrDefault();
+
+                if (jobj.TryGetValue(prop, out var jtoken))
+                {
+                    value = jtoken;
+                }
+            }
+            else
+            {
+                // Use reflection
+                var type = instance.GetType();
+                var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
+                if (prop != null)
+                {
+                    value = prop.GetValue(instance);
+                }
+            }
+
+            value = ResolveValue(value);
+
+            return (value, error);
+        }
+
+        /// <summary>
+        /// Lookup an index property of instance
+        /// </summary>
+        /// <param name="instance">Instance with property.</param>
+        /// <param name="index">Property to lookup.</param>
+        /// <returns>Value and error information if any.</returns>
+        /// 
+        private static (object value, string error) AccessIndex(object instance, int index)
+        {
+            // NOTE: This returns null rather than an error if property is not present
+            if (instance == null)
+            {
+                return (null, null);
+            }
+
+            object value = null;
+            string error = null;
+
+            var count = -1;
+            if (instance is Array arr)
+            {
+                count = arr.Length;
+            }
+            else if (instance is ICollection collection)
+            {
+                count = collection.Count;
+            }
+            var itype = instance.GetType();
+            var indexer = itype.GetProperties().Except(itype.GetDefaultMembers().OfType<PropertyInfo>());
+            if (count != -1 && indexer != null)
+            {
+                if (index >= 0 && count > index)
+                {
+                    dynamic idyn = instance;
+                    value = idyn[index];
                 }
                 else
                 {
-                    // Use reflection
-                    var type = instance.GetType();
-                    var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
-                    if (prop != null)
-                    {
-                        value = prop.GetValue(instance);
-                    }
+                    error = $"{index} is out of range for ${instance}";
                 }
             }
+            else
+            {
+                error = $"{instance} is not a collection.";
+            }
+
+            value = ResolveValue(value);
+
             return (value, error);
         }
 
@@ -573,57 +626,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 {
                     if (idxValue is int idx)
                     {
-                        var count = -1;
-                        if (inst is Array arr)
-                        {
-                            count = arr.Length;
-                        }
-                        else if (inst is ICollection collection)
-                        {
-                            count = collection.Count;
-                        }
-                        var itype = inst.GetType();
-                        var indexer = itype.GetProperties().Except(itype.GetDefaultMembers().OfType<PropertyInfo>());
-                        if (count != -1 && indexer != null)
-                        {
-                            if (idx >= 0 && count > idx)
-                            {
-                                dynamic idyn = inst;
-                                value = idyn[idx];
-                                if (value is JArray jarray)
-                                {
-                                    value = jarray.ToArray<object>();
-                                }
-                                else if (value is JValue jvalue)
-                                {
-                                    value = jvalue.Value;
-                                    if (jvalue.Type == JTokenType.Integer)
-                                    {
-                                        value = jvalue.ToObject<int>();
-                                    }
-                                    else if (jvalue.Type == JTokenType.String)
-                                    {
-                                        value = jvalue.ToObject<string>();
-                                    }
-                                    else if (jvalue.Type == JTokenType.Boolean)
-                                    {
-                                        value = jvalue.ToObject<bool>();
-                                    }
-                                    else if (jvalue.Type == JTokenType.Float)
-                                    {
-                                        value = jvalue.ToObject<double>();
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                error = $"{index}={idx} is out of range for ${instance}";
-                            }
-                        }
-                        else
-                        {
-                            error = $"{instance} is not a collection.";
-                        }
+                        (value, error) = AccessIndex(inst, idx);
                     }
                     else if(idxValue is string idxStr)
                     {
@@ -636,6 +639,50 @@ namespace Microsoft.Bot.Builder.Expressions
                 }
             }
             return (value, error);
+        }
+
+        private static object ResolveValue(object obj)
+        {
+            if (!(obj is JValue jValue))
+                return obj;
+
+            var value = jValue.Value;
+            if (jValue.Type == JTokenType.Integer)
+            {
+                value = jValue.ToObject<int>();
+            }
+            else if (jValue.Type == JTokenType.String)
+            {
+                value = jValue.ToObject<string>();
+            }
+            else if (jValue.Type == JTokenType.Boolean)
+            {
+                value = jValue.ToObject<bool>();
+            }
+            else if (jValue.Type == JTokenType.Float)
+            {
+                value = jValue.ToObject<double>();
+            }
+            return value;
+        }
+
+        /// <summary>
+        /// return new object list replace jarray.ToArray<object>()
+        /// </summary>
+        /// <param name="jarray"></param>
+        /// <returns></returns>
+        private static List<object> ResolveListValue(object instance)
+        {
+            var result = new List<object>();
+
+            if (!(instance is IList list))
+                return result;
+
+            for(var i = 0;i < list.Count; i++)
+            {
+                result.Add(AccessIndex(instance, i).value);
+            }
+            return result;
         }
 
         private static (object value, string error) And(Expression expression, object state)
@@ -912,18 +959,21 @@ namespace Microsoft.Bot.Builder.Expressions
                     new ExpressionEvaluator(Apply(args => args[0] % args[1], VerifyInteger),
                         ReturnType.Number, ValidateBinaryNumber) },
                 { ExpressionType.Average,
-                    new ExpressionEvaluator(Apply(args => ((IList<object>)args[0]).Average(u => Convert.ToDouble(u))),
+                    new ExpressionEvaluator(Apply(args => {
+                        List<object> operands = ResolveListValue(args[0]);
+                        return operands.Average(u => Convert.ToDouble(u));
+                    }, VerifyList),
                         ReturnType.Number, ValidateUnary) },
                 { ExpressionType.Sum,
                     new ExpressionEvaluator(Apply(args =>    {
-                        var operands = (IList<object>)args[0];
+                        List<object> operands = ResolveListValue(args[0]);
                         if (operands.All(u => (u is int))) return operands.Sum(u => (int)u);
                         if (operands.All(u => ((u is int) || (u is double)))) return operands.Sum(u => Convert.ToDouble(u));
                         return 0;
-                    }),
+                    }, VerifyList),
                         ReturnType.Number, ValidateUnary) },
                 { ExpressionType.Count,
-                    new ExpressionEvaluator(Apply(args => ((IList<object>)args[0]).Count), ReturnType.Number, ValidateUnary)},
+                    new ExpressionEvaluator(Apply(args => ((List<object>)ResolveListValue(args[0])).Count, VerifyList), ReturnType.Number, ValidateUnary)},
 
                 // Booleans
                 { ExpressionType.LessThan, Comparison(args => args[0] < args[1]) },
@@ -952,15 +1002,16 @@ namespace Microsoft.Bot.Builder.Expressions
                         //list to find a value
                         else if (args[0] is IList list1)
                         {
-                            if (list1.Contains(args[1]))
+                            List<object> operands = ResolveListValue(args[0]);
+                            if (operands.Contains(args[1]))
                                 return true;
                         }
                         //Dictionary contains key
-                        else if (args[0] is IDictionary dict && args[1] is string string2)
+                        else if (args[0] is IDictionary<string, object> dict 
+                                    && args[1] is string string2
+                                    && dict.ContainsKey(string2))
                         {
-                            if (dict is Dictionary<string, object> realdict
-                                && realdict.ContainsKey(string2))
-                                return true;
+                            return true;
                         }
                         else if(args[1] is string string3)
                         {
@@ -1141,13 +1192,19 @@ namespace Microsoft.Bot.Builder.Expressions
                 { ExpressionType.First, new ExpressionEvaluator(Apply(args =>
                     {
                         if (args[0] is string string0 && string0.Length > 0) return string0.First().ToString();
-                        if (args[0] is IList list && list.Count > 0) return list[0];
+                        if (args[0] is IList list && list.Count > 0)
+                        {
+                           return AccessIndex(list, 0).value;
+                        } 
                         return null;
                     }), ReturnType.Object, ValidateUnary) },
                 { ExpressionType.Last, new ExpressionEvaluator(Apply(args =>
                     {
                         if (args[0] is string string0 && string0.Length > 0) return string0.Last().ToString();
-                        if (args[0] is IList list && list.Count > 0) return list[list.Count - 1];
+                        if (args[0] is IList list && list.Count > 0)
+                        {
+                            return AccessIndex(list, list.Count - 1).value;
+                        }
                         return null;
                     }), ReturnType.Object, ValidateUnary) },
 
