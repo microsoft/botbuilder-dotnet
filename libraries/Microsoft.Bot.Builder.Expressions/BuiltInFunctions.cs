@@ -978,8 +978,13 @@ namespace Microsoft.Bot.Builder.Expressions
                         return 0;
                     }, VerifyList),
                         ReturnType.Number, ValidateUnary) },
-                { ExpressionType.Count,
-                    new ExpressionEvaluator(Apply(args => ((List<object>)ResolveListValue(args[0])).Count, VerifyList), ReturnType.Number, ValidateUnary)},
+                { ExpressionType.Count, new ExpressionEvaluator(Apply(args =>
+                    {
+                        if (args[0] is string string0) return string0.Length;
+                        if (args[0] is IList list) return list.Count;
+                        throw new ArgumentException("count accept list or string");
+                    }), ReturnType.Number, ValidateUnary) },
+                   
 
                 // Booleans
                 { ExpressionType.LessThan, Comparison(args => args[0] < args[1]) },
