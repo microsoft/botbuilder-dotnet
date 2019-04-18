@@ -519,6 +519,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task Step_RepeatDialog()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var testDialog = new AdaptiveDialog("testDialog")
+            {
+                Steps = new List<IDialog>()
+                {
+                    new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputProperty = "user.name" },
+                    new SendActivity("Hello {user.name}, nice to meet you!"),
+                    new EndTurn(),
+                    new RepeatDialog()
+                }
+            };
+
+            await CreateFlow(testDialog, convoState, userState)
+                .Send("hi")
+                    .AssertReply("Hello, what is your name?")
+                .Send("Carlos")
+                    .AssertReply("Hello Carlos, nice to meet you!")
+                .Send("hi")
+                    .AssertReply("Hello Carlos, nice to meet you!")
+                .StartTestAsync();
+        }
+
+
 #if EMIT
         [TestMethod]
         public async Task Step_EmitEvent()

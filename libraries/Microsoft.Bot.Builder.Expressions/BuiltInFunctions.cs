@@ -689,7 +689,7 @@ namespace Microsoft.Bot.Builder.Expressions
             }
             else if (jValue.Type == JTokenType.Float)
             {
-                value = jValue.ToObject<double>();
+                value = jValue.ToObject<float>();
             }
             return value;
         }
@@ -971,7 +971,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 { ExpressionType.Subtract, MultivariateNumeric(args => args[0] - args[1]) },
                 { ExpressionType.Multiply, MultivariateNumeric(args => args[0] * args[1]) },
                 { ExpressionType.Divide, MultivariateNumeric(args => {
-                    if (Convert.ToDouble(args[1]) == 0.0)
+                    if (Convert.ToSingle(args[1]) == 0.0)
                         throw new ArgumentException($"Cannot divide by 0");
                     return args[0] / args[1];
                 }) },
@@ -984,14 +984,14 @@ namespace Microsoft.Bot.Builder.Expressions
                 { ExpressionType.Average,
                     new ExpressionEvaluator(Apply(args => {
                         List<object> operands = ResolveListValue(args[0]);
-                        return operands.Average(u => Convert.ToDouble(u));
+                        return operands.Average(u => Convert.ToSingle(u));
                     }, VerifyList),
                         ReturnType.Number, ValidateUnary) },
                 { ExpressionType.Sum,
                     new ExpressionEvaluator(Apply(args =>    {
                         List<object> operands = ResolveListValue(args[0]);
                         if (operands.All(u => (u is int))) return operands.Sum(u => (int)u);
-                        if (operands.All(u => ((u is int) || (u is double)))) return operands.Sum(u => Convert.ToDouble(u));
+                        if (operands.All(u => ((u is int) || (u is float) || (u is double)))) return operands.Sum(u => Convert.ToSingle(u));
                         return 0;
                     }, VerifyList),
                         ReturnType.Number, ValidateUnary) },
@@ -1188,7 +1188,7 @@ namespace Microsoft.Bot.Builder.Expressions
 
                 // Conversions
                 { ExpressionType.Float,
-                    new ExpressionEvaluator(Apply(args => (float)Convert.ToDouble(args[0])), ReturnType.Number, ValidateUnary) },
+                    new ExpressionEvaluator(Apply(args => (float)Convert.ToSingle(args[0])), ReturnType.Number, ValidateUnary) },
                 { ExpressionType.Int,
                     new ExpressionEvaluator(Apply(args => Convert.ToInt32(args[0])), ReturnType.Number, ValidateUnary) },
                 // TODO: Is this really the best way?
