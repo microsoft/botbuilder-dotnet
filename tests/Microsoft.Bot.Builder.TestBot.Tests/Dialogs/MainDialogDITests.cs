@@ -34,7 +34,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         {
             var sut = new MainDialog(MockConfig.Object, MockLogger.Object);
             var testFlow = BuildTestFlow(sut);
-            await testFlow.Send("Hi")
+            await testFlow.Send("Irrelevant")
                 .AssertReply("What can I help you with today?")
                 .StartTestAsync();
         }
