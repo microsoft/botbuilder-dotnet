@@ -206,7 +206,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else
             {
-                return default(T);
+                return defaultValue;
             }
         }
 
