@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Microsoft.Bot.Builder.Expressions;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
 {
@@ -50,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
             // add constraints for the intents property
             if (!String.IsNullOrEmpty(this.Intent))
             {
-                constraints.Add(factory.Parse($"turn.DialogEvent.Value.Intents.{this.Intent}.Score > 0.0"));
+                constraints.Add(factory.Parse($"turn.dialogEvent.value.intents.{this.Intent}.score > 0.0"));
             }
 
             //TODO
@@ -71,20 +72,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
 
         protected override PlanChangeList OnCreateChangeList(PlanningContext planning, object dialogOptions = null)
         {
-            var dialogEvent = planning.State.Turn["DialogEvent"] as DialogEvent;
-            if (dialogEvent.Value is RecognizerResult recognizerResult)
+            var recognizerResult = planning.State.GetValue<RecognizerResult>("turn.dialogEvent.value");
+            if (recognizerResult != null)
             {
-                Dictionary<string, object> entitiesRecognized = new Dictionary<string, object>();
-                entitiesRecognized = recognizerResult.Entities.ToObject<Dictionary<string, object>>();
-
+                var (name, score) = recognizerResult.GetTopScoringIntent();
                 return new PlanChangeList()
                 {
                     //ChangeType = this.ChangeType,
-                    IntentsMatched = new List<string> {
-                        this.Intent,
+
+                    // proposed turn state changes
+                    Turn = new Dictionary<string, object>()
+                    {
+                        { "intent",  new Dictionary<string, object>() { { name, score } } },
+                        { "entities", recognizerResult.Entities }
                     },
-                    EntitiesMatched = this.Entities,
-                    EntitiesRecognized = entitiesRecognized,
                     Steps = Steps.Select(s => new PlanStepState()
                     {
                         DialogStack = new List<DialogInstance>(),
