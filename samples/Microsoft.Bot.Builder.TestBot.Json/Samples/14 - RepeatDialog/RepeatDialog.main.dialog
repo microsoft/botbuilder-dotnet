@@ -5,11 +5,10 @@
     "steps": [
         {
             "$type":"Microsoft.TextInput",
-            prompt : "Hello, what is your name?", 
-            outputProperty "user.name" ,
+            "prompt" : "Hello, what is your name?", 
+            "outputProperty": "user.name"
         },
         {
-            
             "$type":"Microsoft.SendActivity",
             "activity": "Hello {user.name}, nice to meet you!"
         },
@@ -17,7 +16,7 @@
             "$type":"Microsoft.EndTurn"
         },
         {
-            "$type":"Mirosoft.RepeatDialog"
+            "$type":"Microsoft.RepeatDialog"
         }
    ]
 }

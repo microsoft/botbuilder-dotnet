@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
         [TestMethod]
         public async Task JsonDialogLoad_TextInputWithoutProperty()
-        {   
+        {
             await BuildTestFlow("TextInput.WithoutProperty.main.dialog")
             .SendConversationUpdate()
                 .AssertReply("Hello, I'm Zoidberg. What is your name?")
@@ -103,6 +103,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             .Send("4.4")
                 .AssertReply("2 * 2.2 equals 4.4, that's right!")
                 .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task JsonDialogLoad_RepeatDialog()
+        {
+            await BuildTestFlow("RepeatDialog.main.dialog")
+            .SendConversationUpdate()
+                .AssertReply("Hello, what is your name?")
+            .Send("Carlos")
+                .AssertReply("Hello Carlos, nice to meet you!")
+            .Send("hi")
+                .AssertReply("Hello Carlos, nice to meet you!")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task JsonDialogLoad_TraceAndLog()
+        {
+            await BuildTestFlow("TraceAndLog.main.dialog", sendTraceActivity: true)
+            .SendConversationUpdate()
+                .AssertReply("Hello, what is your name?")
+            .Send("Carlos")
+                .AssertReply(activity =>
+                {
+                    var trace = (Activity)activity;
+                    Assert.AreEqual(ActivityTypes.Trace, trace.Type, "should be trace activity");
+                    Assert.AreEqual("memory", trace.ValueType, "value type should be memory");
+                })
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -236,7 +265,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             .StartTestAsync();
         }
 
-        private TestFlow BuildTestFlow(string resourceName)
+        private TestFlow BuildTestFlow(string resourceName, bool sendTraceActivity = false)
         {
             string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, $@"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj"));
             var resourceExplorer = ResourceExplorer.LoadProject(projPath);
@@ -251,7 +280,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
             var lg = new LGLanguageGenerator(resourceExplorer);
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTraceActivity: sendTraceActivity)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()))
                 .Use(new AutoSaveStateMiddleware(convoState))
                 .Use(new RegisterClassMiddleware<ResourceExplorer>(resourceExplorer))
