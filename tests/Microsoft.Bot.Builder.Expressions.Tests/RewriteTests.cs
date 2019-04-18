@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         };
 
         private ExpressionEvaluator Lookup(string type) => 
-            type == "ignore" ? new ExpressionEvaluator(null) : BuiltInFunctions.Lookup(type);
+            type == "ignore" ? new ExpressionEvaluator("ignore", null) : BuiltInFunctions.Lookup(type);
 
         [DataTestMethod]
         [DynamicData(nameof(Data))]

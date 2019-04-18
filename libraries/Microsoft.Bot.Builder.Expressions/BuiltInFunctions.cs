@@ -237,12 +237,12 @@ namespace Microsoft.Bot.Builder.Expressions
         public static bool TryParseList(object value, out IList list)
         {
             list = null;
-            if(value is JObject jObj) // JObject would also a IList, but here we ignore it
+            if (value is JObject jObj) // JObject would also a IList, but here we ignore it
             {
                 return false;
             }
-            
-            if(value is IList listValue)
+
+            if (value is IList listValue)
             {
                 list = listValue;
                 return true;
@@ -369,7 +369,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     {
                         value = function(args);
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         error = e.Message;
                     }
@@ -402,42 +402,47 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <summary>
         /// Numeric operators that can have 1 or more args.
         /// </summary>
+        /// <param name="type">Expression type.</param>
         /// <param name="function">Function to apply.</param>
         /// <returns>Delegate for evaluating an expression.</returns>
-        public static ExpressionEvaluator Numeric(Func<IReadOnlyList<dynamic>, object> function)
-            => new ExpressionEvaluator(ApplySequence(function, VerifyNumber), ReturnType.Number, ValidateNumber);
+        public static ExpressionEvaluator Numeric(string type, Func<IReadOnlyList<dynamic>, object> function)
+            => new ExpressionEvaluator(type, ApplySequence(function, VerifyNumber), ReturnType.Number, ValidateNumber);
 
         /// <summary>
         /// Numeric operators that can have 2 or more args.
         /// </summary>
+        /// <param name="type">Expression type.</param>
         /// <param name="function">Function to apply.</param>
         /// <returns>Delegate for evaluating an expression.</returns>
-        public static ExpressionEvaluator MultivariateNumeric(Func<IReadOnlyList<dynamic>, object> function)
-            => new ExpressionEvaluator(ApplySequence(function, VerifyNumber), ReturnType.Number, ValidateTwoOrMoreThanTwoNumbers);
+        public static ExpressionEvaluator MultivariateNumeric(string type, Func<IReadOnlyList<dynamic>, object> function)
+            => new ExpressionEvaluator(type, ApplySequence(function, VerifyNumber), ReturnType.Number, ValidateTwoOrMoreThanTwoNumbers);
 
         /// <summary>
         /// Comparison operators that have 2 args and work over strings or numbers.
         /// </summary>
+        /// <param name="type">Expression type.</param>
         /// <param name="function">Function to apply.</param>
         /// <returns>Delegate for evaluating an expression.</returns>        
-        public static ExpressionEvaluator Comparison(Func<IReadOnlyList<dynamic>, object> function)
-            => new ExpressionEvaluator(Apply(function, VerifyNumberOrString), ReturnType.Boolean, ValidateBinaryNumberOrString);
+        public static ExpressionEvaluator Comparison(string type, Func<IReadOnlyList<dynamic>, object> function)
+            => new ExpressionEvaluator(type, Apply(function, VerifyNumberOrString), ReturnType.Boolean, ValidateBinaryNumberOrString);
 
         /// <summary>
         /// Transform a string into another string.
         /// </summary>
+        /// <param name="type">Expression type.</param>
         /// <param name="function">Function to apply.</param>
         /// <returns>Delegate for evaluating an expression.</returns>
-        public static ExpressionEvaluator StringTransform(Func<IReadOnlyList<dynamic>, object> function)
-            => new ExpressionEvaluator(Apply(function, VerifyString), ReturnType.String, ValidateUnaryString);
+        public static ExpressionEvaluator StringTransform(string type, Func<IReadOnlyList<dynamic>, object> function)
+            => new ExpressionEvaluator(type, Apply(function, VerifyString), ReturnType.String, ValidateUnaryString);
 
         /// <summary>
         /// Transform a datetime to another datetime.
         /// </summary>
+        /// <param name="type">Expression type.</param>
         /// <param name="function">Transformer.</param>
         /// <returns>Delegate for evaluating expression.</returns>
-        public static ExpressionEvaluator TimeTransform(Func<DateTime, int, DateTime> function)
-            => new ExpressionEvaluator((expr, state) =>
+        public static ExpressionEvaluator TimeTransform(string type, Func<DateTime, int, DateTime> function)
+            => new ExpressionEvaluator(type, (expr, state) =>
                 {
                     object value = null;
                     string error = null;
@@ -525,13 +530,13 @@ namespace Microsoft.Bot.Builder.Expressions
             var children = expression.Children;
             (instance, error) = children[0].TryEvaluate(state);
             (property, error) = children[1].TryEvaluate(state);
-            if(error == null)
+            if (error == null)
             {
-                (value, error) =  AccessProperty(instance, (string)property);
+                (value, error) = AccessProperty(instance, (string)property);
             }
 
             return (value, error);
-            
+
         }
         /// <summary>
         /// Lookup a property in IDictionary, JObject or through reflection.
@@ -549,7 +554,7 @@ namespace Microsoft.Bot.Builder.Expressions
 
             object value = null;
             string error = null;
-            
+
             // NOTE: what about other type of TKey, TValue?
             if (instance is IDictionary<string, object> idict)
             {
@@ -605,7 +610,7 @@ namespace Microsoft.Bot.Builder.Expressions
 
             var count = -1;
             if (TryParseList(instance, out var list))
-            { 
+            {
                 count = list.Count;
             }
             var itype = instance.GetType();
@@ -650,7 +655,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     {
                         (value, error) = AccessIndex(inst, idx);
                     }
-                    else if(idxValue is string idxStr)
+                    else if (idxValue is string idxStr)
                     {
                         (value, error) = AccessProperty(inst, idxStr);
                     }
@@ -700,7 +705,7 @@ namespace Microsoft.Bot.Builder.Expressions
             if (!TryParseList(instance, out var list))
                 return result;
 
-            for(var i = 0;i < list.Count; i++)
+            for (var i = 0; i < list.Count; i++)
             {
                 result.Add(AccessIndex(instance, i).value);
             }
@@ -763,7 +768,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
-        
+
 
 
         private static (object value, string error) Substring(Expression expression, object state)
@@ -824,7 +829,7 @@ namespace Microsoft.Bot.Builder.Expressions
             {
                 // 2nd parameter has been rewrite to $local.item
                 var iteratorName = (string)(expression.Children[1].Children[0] as Constant).Value;
-                
+
                 if (TryParseList(collection, out IList ilist))
                 {
                     result = new List<object>();
@@ -849,7 +854,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         ((List<object>)result).Add(r);
                     }
                 }
-                
+
                 else
                 {
                     error = $"{expression.Children[0]} is not a collection to run foreach";
@@ -957,64 +962,53 @@ namespace Microsoft.Bot.Builder.Expressions
 
         private static Dictionary<string, ExpressionEvaluator> BuildFunctionLookup()
         {
-            var functions = new Dictionary<string, ExpressionEvaluator>
+            var functions = new List<ExpressionEvaluator>
             {
                 // Math
-                { ExpressionType.Element, new ExpressionEvaluator(ExtractElement, ReturnType.Object,ValidateBinary) },
-                { ExpressionType.Add, MultivariateNumeric(args => args[0] + args[1]) },
-                { ExpressionType.Subtract, MultivariateNumeric(args => args[0] - args[1]) },
-                { ExpressionType.Multiply, MultivariateNumeric(args => args[0] * args[1]) },
-                { ExpressionType.Divide, MultivariateNumeric(args => {
+                new ExpressionEvaluator(ExpressionType.Element, ExtractElement, ReturnType.Object,ValidateBinary),
+                MultivariateNumeric(ExpressionType.Add, args => args[0] + args[1]),
+                MultivariateNumeric(ExpressionType.Subtract, args => args[0] - args[1]),
+                MultivariateNumeric(ExpressionType.Multiply, args => args[0] * args[1]),
+                MultivariateNumeric(ExpressionType.Divide, args => {
                     if (Convert.ToDouble(args[1]) == 0.0)
                         throw new ArgumentException($"Cannot divide by 0");
                     return args[0] / args[1];
-                }) },
-                { ExpressionType.Min, Numeric(args => Math.Min(args[0], args[1])) },
-                { ExpressionType.Max, Numeric(args => Math.Max(args[0], args[1])) },
-                { ExpressionType.Power, MultivariateNumeric(args => Math.Pow(args[0], args[1])) },
-                { ExpressionType.Mod,
-                    new ExpressionEvaluator(Apply(args => args[0] % args[1], VerifyInteger),
-                        ReturnType.Number, ValidateBinaryNumber) },
-                { ExpressionType.Average,
-                    new ExpressionEvaluator(Apply(args => {
+                }),
+                Numeric(ExpressionType.Min, args => Math.Min(args[0], args[1])),
+                Numeric(ExpressionType.Max, args => Math.Max(args[0], args[1])),
+                MultivariateNumeric(ExpressionType.Power, args => Math.Pow(args[0], args[1])),
+                new ExpressionEvaluator(ExpressionType.Mod, Apply(args => args[0] % args[1], VerifyInteger), ReturnType.Number, ValidateBinaryNumber),
+                new ExpressionEvaluator(ExpressionType.Average, Apply(args => {
                         List<object> operands = ResolveListValue(args[0]);
                         return operands.Average(u => Convert.ToDouble(u));
                     }, VerifyList),
-                        ReturnType.Number, ValidateUnary) },
-                { ExpressionType.Sum,
-                    new ExpressionEvaluator(Apply(args =>    {
+                    ReturnType.Number, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Sum, Apply(args => {
                         List<object> operands = ResolveListValue(args[0]);
                         if (operands.All(u => (u is int))) return operands.Sum(u => (int)u);
                         if (operands.All(u => ((u is int) || (u is double)))) return operands.Sum(u => Convert.ToDouble(u));
                         return 0;
-                    }, VerifyList),
-                        ReturnType.Number, ValidateUnary) },
-                { ExpressionType.Count, new ExpressionEvaluator(Apply(args =>
+                    } , VerifyList),
+                    ReturnType.Number, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Count, Apply(args =>
                     {
                         if (args[0] is string string0) return string0.Length;
                         if (args[0] is IList list) return list.Count;
                         throw new ArgumentException("count accept list or string");
-                    }), ReturnType.Number, ValidateUnary) },
-                   
+                    }), ReturnType.Number, ValidateUnary),
 
                 // Booleans
-                { ExpressionType.LessThan, Comparison(args => args[0] < args[1]) },
-                { ExpressionType.LessThanOrEqual, Comparison(args => args[0] <= args[1]) },
-                { ExpressionType.Equal,
-                    new ExpressionEvaluator(Apply(args => args[0] == args[1]), ReturnType.Boolean, ValidateBinary) },
-                { ExpressionType.NotEqual,
-                    new ExpressionEvaluator(Apply(args => args[0] != args[1]), ReturnType.Boolean, ValidateBinary) },
-                { ExpressionType.GreaterThan,Comparison(args => args[0] > args[1]) },
-                { ExpressionType.GreaterThanOrEqual, Comparison(args => args[0] >= args[1]) },
-                { ExpressionType.Exists, new ExpressionEvaluator(Apply(args => args[0] != null), ReturnType.Boolean, ValidateUnary) },
-                { ExpressionType.And,
-                    new ExpressionEvaluator((expression, state) => And(expression, state), ReturnType.Boolean, ValidateBoolean) },
-                { ExpressionType.Or,
-                    new ExpressionEvaluator((expression, state) => Or(expression, state), ReturnType.Boolean, ValidateBoolean) },
-                { ExpressionType.Not,
-                    new ExpressionEvaluator(Apply(args => !args[0], VerifyBoolean), ReturnType.Boolean, ValidateUnaryBoolean) },
-                { ExpressionType.Contains,
-                    new ExpressionEvaluator(Apply(args =>
+                Comparison(ExpressionType.LessThan, args => args[0] < args[1]),
+                Comparison(ExpressionType.LessThanOrEqual, args => args[0] <= args[1]),
+                new ExpressionEvaluator(ExpressionType.Equal, Apply(args => args[0] == args[1]), ReturnType.Boolean, ValidateBinary),
+                new ExpressionEvaluator(ExpressionType.NotEqual, Apply(args => args[0] != args[1]), ReturnType.Boolean, ValidateBinary),
+                Comparison(ExpressionType.GreaterThan, args => args[0] > args[1]),
+                Comparison(ExpressionType.GreaterThanOrEqual, args => args[0] >= args[1]),
+                new ExpressionEvaluator(ExpressionType.Exists, Apply(args => args[0] != null), ReturnType.Boolean, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.And, (expression, state) => And(expression, state), ReturnType.Boolean, ValidateBoolean),
+                new ExpressionEvaluator(ExpressionType.Or, (expression, state) => Or(expression, state), ReturnType.Boolean, ValidateBoolean),
+                new ExpressionEvaluator(ExpressionType.Not, Apply(args => !args[0], VerifyBoolean), ReturnType.Boolean, ValidateUnaryBoolean),
+                new ExpressionEvaluator(ExpressionType.Contains, Apply(args =>
                     {
                         if (args[0] is string string0 && args[1] is string string1)
                         {
@@ -1033,87 +1027,76 @@ namespace Microsoft.Bot.Builder.Expressions
                             var (value, error) = AccessProperty((object)args[0], string2);
                             if(value != null) return true;
                         }
-                        
+
                         return false;
-                    }), ReturnType.Boolean, ValidateBinary) },
-                { ExpressionType.Empty,
-                    new ExpressionEvaluator(Apply(args => {
-                           if (args[0] == null) return true;
-                           if (args[0] is string string0) return string.IsNullOrEmpty(string0);
-                           if (TryParseList(args[0], out IList list)) return list.Count == 0;
-                           return args[0].GetType().GetProperties().Length == 0;
-                    }), ReturnType.Boolean, ValidateUnary) }, 
+                    }), ReturnType.Boolean, ValidateBinary),
+                new ExpressionEvaluator(ExpressionType.Empty, Apply(args =>
+                    {
+                        if (args[0] == null) return true;
+                        if (args[0] is string string0) return string.IsNullOrEmpty(string0);
+                        if (TryParseList(args[0], out IList list)) return list.Count == 0;
+                        return args[0].GetType().GetProperties().Length == 0;
+                    }), ReturnType.Boolean, ValidateUnary), 
 
                 // String
-                { ExpressionType.Concat,
-                    new ExpressionEvaluator(
-                        Apply(args =>
+                new ExpressionEvaluator(ExpressionType.Concat, Apply(args =>
+                    {
+                        var builder = new StringBuilder();
+                        foreach (var arg in args)
                         {
-                            var builder = new StringBuilder();
-                            foreach (var arg in args)
-                            {
-                                builder.Append(arg);
-                            }
-                            return builder.ToString();
-                        }, VerifyString),
-                        ReturnType.String, ValidateString) },
-                { ExpressionType.Length,
-                    new ExpressionEvaluator(Apply(args => args[0].Length, VerifyString), ReturnType.Number, ValidateUnaryString) },
-                { ExpressionType.Replace,
-                    new ExpressionEvaluator(Apply(args => args[0].Replace(args[1], args[2]), VerifyString),
-                        ReturnType.String,
-                        (expression) => ValidateArityAndAnyType(expression, 3, 3, ReturnType.String)) },
-                { ExpressionType.ReplaceIgnoreCase,
-                    new ExpressionEvaluator(
-                        Apply(args => Regex.Replace(args[0], args[1], args[2], RegexOptions.IgnoreCase), VerifyString),
-                        ReturnType.String,
-                        (expression) => ValidateArityAndAnyType(expression, 3, 3, ReturnType.String)) },
-                { ExpressionType.Split,
-                    new ExpressionEvaluator(
-                        Apply(args => args[0].Split(args[1].ToCharArray()), VerifyString),
-                        ReturnType.Object,
-                        (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String)) },
-                { ExpressionType.Substring,
-                    new ExpressionEvaluator(
-                        Substring, ReturnType.String,
-                        (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.String, ReturnType.Number)) },
-                { ExpressionType.ToLower, StringTransform(args => args[0].ToLower())},
-                { ExpressionType.ToUpper, StringTransform(args => args[0].ToUpper())},
-                { ExpressionType.Trim, StringTransform(args => args[0].Trim())},
-                { ExpressionType.Join,
-                    new ExpressionEvaluator(
-                        Apply(args => {
-                            if(!TryParseList(args[0], out IList list))
-                                throw new ArgumentException("first parameters in join should be list");
-                            return string.Join(args[1], list.OfType<object>().Select(x => x.ToString()));
-                        }),
-                        ReturnType.String,
-                        expr => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String))},
+                            builder.Append(arg);
+                        }
+                        return builder.ToString();
+                    }, VerifyString),
+                    ReturnType.String, ValidateString),
+                new ExpressionEvaluator(ExpressionType.Length, Apply(args => args[0].Length, VerifyString), ReturnType.Number, ValidateUnaryString),
+                new ExpressionEvaluator(ExpressionType.Replace, Apply(args => args[0].Replace(args[1], args[2]), VerifyString),
+                    ReturnType.String, (expression) => ValidateArityAndAnyType(expression, 3, 3, ReturnType.String)),
+                new ExpressionEvaluator(ExpressionType.ReplaceIgnoreCase,
+                    Apply(args => Regex.Replace(args[0], args[1], args[2], RegexOptions.IgnoreCase), VerifyString),
+                    ReturnType.String,
+                    (expression) => ValidateArityAndAnyType(expression, 3, 3, ReturnType.String)),
+                new ExpressionEvaluator(ExpressionType.Split,
+                    Apply(args => args[0].Split(args[1].ToCharArray()), VerifyString),
+                    ReturnType.Object,
+                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String)),
+                new ExpressionEvaluator(ExpressionType.Substring,
+                    Substring, ReturnType.String,
+                    (expression) => ValidateOrder(expression, new[] { ReturnType.String, ReturnType.Number, ReturnType.Number })),
+                StringTransform(ExpressionType.ToLower, args => args[0].ToLower()),
+                StringTransform(ExpressionType.ToUpper, args => args[0].ToUpper()),
+                StringTransform(ExpressionType.Trim, args => args[0].Trim()),
+                new ExpressionEvaluator(ExpressionType.Join, Apply(args => 
+                    {
+                        if (!TryParseList(args[0], out IList list))
+                        throw new ArgumentException("first parameters in join should be list");
+                        return string.Join(args[1], list.OfType<object>().Select(x => x.ToString()));
+                    }), ReturnType.String, expr => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
 
                 // Date and time
-                { ExpressionType.AddDays, TimeTransform((ts, add) => ts.AddDays(add)) },
-                { ExpressionType.AddHours, TimeTransform((ts, add) => ts.AddHours(add)) },
-                { ExpressionType.AddMinutes, TimeTransform((ts, add) => ts.AddMinutes(add)) },
-                { ExpressionType.AddSeconds, TimeTransform((ts, add) => ts.AddSeconds(add)) },
-                { ExpressionType.DayOfMonth, new ExpressionEvaluator(
-                   Apply(args => ParseTimestamp(args[0]).Day, VerifyString), ReturnType.Number, ValidateUnaryString) },
-                { ExpressionType.DayOfWeek, new ExpressionEvaluator(
-                   Apply(args => (int)ParseTimestamp(args[0]).DayOfWeek, VerifyString), ReturnType.Number, ValidateUnaryString) },
-                { ExpressionType.DayOfYear, new ExpressionEvaluator(
-                   Apply(args => ParseTimestamp(args[0]).DayOfYear, VerifyString), ReturnType.Number, ValidateUnaryString) },
-                { ExpressionType.Month, new ExpressionEvaluator(
-                   Apply(args => ParseTimestamp(args[0]).Month, VerifyString), ReturnType.Number, ValidateUnaryString) },
-                { ExpressionType.Date, new ExpressionEvaluator(
-                   Apply(args => ParseTimestamp(args[0]).Date.ToString("M/dd/yyyy"), VerifyString), ReturnType.String, ValidateUnaryString) },
-                { ExpressionType.Year, new ExpressionEvaluator(
-                   Apply(args => ParseTimestamp(args[0]).Year, VerifyString), ReturnType.Number, ValidateUnaryString) },
-                { ExpressionType.UtcNow, new ExpressionEvaluator(
+                TimeTransform(ExpressionType.AddDays, (ts, add) => ts.AddDays(add)),
+                TimeTransform(ExpressionType.AddHours, (ts, add) => ts.AddHours(add)),
+                TimeTransform(ExpressionType.AddMinutes, (ts, add) => ts.AddMinutes(add)),
+                TimeTransform(ExpressionType.AddSeconds, (ts, add) => ts.AddSeconds(add)),
+                new ExpressionEvaluator(ExpressionType.DayOfMonth,
+                   Apply(args => ParseTimestamp(args[0]).Day, VerifyString), ReturnType.Number, ValidateUnaryString),
+                new ExpressionEvaluator(ExpressionType.DayOfWeek,
+                   Apply(args => (int)ParseTimestamp(args[0]).DayOfWeek, VerifyString), ReturnType.Number, ValidateUnaryString),
+                new ExpressionEvaluator(ExpressionType.DayOfYear,
+                   Apply(args => ParseTimestamp(args[0]).DayOfYear, VerifyString), ReturnType.Number, ValidateUnaryString),
+                new ExpressionEvaluator(ExpressionType.Month,
+                   Apply(args => ParseTimestamp(args[0]).Month, VerifyString), ReturnType.Number, ValidateUnaryString),
+                new ExpressionEvaluator(ExpressionType.Date,
+                   Apply(args => ParseTimestamp(args[0]).Date.ToString("M/dd/yyyy"), VerifyString), ReturnType.String, ValidateUnaryString),
+                new ExpressionEvaluator(ExpressionType.Year,
+                   Apply(args => ParseTimestamp(args[0]).Year, VerifyString), ReturnType.Number, ValidateUnaryString),
+                new ExpressionEvaluator(ExpressionType.UtcNow,
                    Apply(args => DateTime.UtcNow.ToString(args.Count() == 1 ? args[0] : DefaultDateTimeFormat), VerifyString),
-                   ReturnType.String) },
-                { ExpressionType.FormatDateTime, new ExpressionEvaluator(
+                   ReturnType.String),
+                new ExpressionEvaluator(ExpressionType.FormatDateTime,
                    Apply(args => ParseTimestamp(args[0]).ToString(args.Count() == 2 ? args[1] : DefaultDateTimeFormat), VerifyString),
-                   ReturnType.String, (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String)) },
-                { ExpressionType.SubtractFromTime, new ExpressionEvaluator(
+                   ReturnType.String, (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String  )),
+                new ExpressionEvaluator(ExpressionType.SubtractFromTime,
                    (expr, state) =>
                    {
                        object value = null;
@@ -1135,8 +1118,9 @@ namespace Microsoft.Bot.Builder.Expressions
                        return (value, error);
                    },
                    ReturnType.String,
-                   (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String, ReturnType.Number, ReturnType.String)) },
-                { ExpressionType.DateReadBack, new ExpressionEvaluator(
+                   (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String, ReturnType.Number, ReturnType.String)),
+                // TODO: This should really be hooked up to the timex library function which offers more
+                new ExpressionEvaluator(ExpressionType.DateReadBack,
                    Apply(args =>
                    {
                        object value = null;
@@ -1164,8 +1148,8 @@ namespace Microsoft.Bot.Builder.Expressions
                        }
                        return value;
                    }, VerifyString),
-                   ReturnType.String, expr => ValidateOrder(expr, null, ReturnType.String, ReturnType.String)) },
-                { ExpressionType.GetTimeOfDay, new ExpressionEvaluator(
+                   ReturnType.String, expr => ValidateOrder(expr, null, ReturnType.String, ReturnType.String)),
+                new ExpressionEvaluator(ExpressionType.GetTimeOfDay,
                    Apply(args =>
                    {
                        object value = null;
@@ -1178,44 +1162,35 @@ namespace Microsoft.Bot.Builder.Expressions
                        else value = "night";
                        return value;
                    }, VerifyString),
-                   ReturnType.String, expr => ValidateOrder(expr, null, ReturnType.String)) },
+                   ReturnType.String, expr => ValidateOrder(expr, null, ReturnType.String)),
 
                 // Conversions
-                { ExpressionType.Float,
-                    new ExpressionEvaluator(Apply(args => (float)Convert.ToDouble(args[0])), ReturnType.Number, ValidateUnary) },
-                { ExpressionType.Int,
-                    new ExpressionEvaluator(Apply(args => Convert.ToInt32(args[0])), ReturnType.Number, ValidateUnary) },
+                new ExpressionEvaluator(ExpressionType.Float, Apply(args => (float)Convert.ToDouble(args[0])), ReturnType.Number, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Int, Apply(args => Convert.ToInt32(args[0])), ReturnType.Number, ValidateUnary),
                 // TODO: Is this really the best way?
-                { ExpressionType.String,
-                    new ExpressionEvaluator(Apply(args => JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"')), ReturnType.String, ValidateUnary) },
-                { ExpressionType.Bool,
-                    new ExpressionEvaluator(Apply(args => Convert.ToBoolean(args[0])), ReturnType.Boolean, ValidateUnary) },
+                new ExpressionEvaluator(ExpressionType.String, Apply(args => JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"')), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Bool, Apply(args => Convert.ToBoolean(args[0])), ReturnType.Boolean, ValidateUnary),
             
                 // Misc
-                { ExpressionType.Accessor,
-                    new ExpressionEvaluator(Accessor, ReturnType.Object, ValidateAccessor) },
-                 { ExpressionType.Property,
-                    new ExpressionEvaluator(Property, ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)) },
-                { ExpressionType.If,
-                    new ExpressionEvaluator(
-                        Apply(args => args[0] ? args[1] : args[2]),
-                        ReturnType.Object,
-                        (expr) => ValidateOrder(expr, null, ReturnType.Boolean, ReturnType.Object, ReturnType.Object)) },
-                { ExpressionType.Rand,
-                    new ExpressionEvaluator(Apply(args => Randomizer.Next(args[0], args[1]), VerifyInteger),
-                        ReturnType.Number, ValidateBinaryNumber) },
-                { ExpressionType.CreateArray,
-                    new ExpressionEvaluator(Apply(args => new List<object>(args)), ReturnType.Object) },
-                { ExpressionType.First, new ExpressionEvaluator(Apply(args =>
+                new ExpressionEvaluator(ExpressionType.Accessor, Accessor, ReturnType.Object, ValidateAccessor),
+                new ExpressionEvaluator(ExpressionType.Property, Property, ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
+                new ExpressionEvaluator(ExpressionType.If,
+                    Apply(args => args[0] ? args[1] : args[2]),
+                    ReturnType.Object,
+                    (expr) => ValidateOrder(expr, null, ReturnType.Boolean, ReturnType.Object, ReturnType.Object)),
+                new ExpressionEvaluator(ExpressionType.Rand, Apply(args => Randomizer.Next(args[0], args[1]), VerifyInteger),
+                    ReturnType.Number, ValidateBinaryNumber),
+                new ExpressionEvaluator(ExpressionType.CreateArray, Apply(args => new List<object>(args)), ReturnType.Object),
+                new ExpressionEvaluator(ExpressionType.First, Apply(args =>
                     {
                         if (args[0] is string string0 && string0.Length > 0) return string0.First().ToString();
                         if (TryParseList(args[0], out IList list) && list.Count > 0)
                         {
-                           return AccessIndex(list, 0).value;
-                        } 
+                            return AccessIndex(list, 0).value;
+                        }
                         return null;
-                    }), ReturnType.Object, ValidateUnary) },
-                { ExpressionType.Last, new ExpressionEvaluator(Apply(args =>
+                    }), ReturnType.Object, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Last, Apply(args =>
                     {
                         if (args[0] is string string0 && string0.Length > 0) return string0.Last().ToString();
                         if (TryParseList(args[0], out IList list) && list.Count > 0)
@@ -1223,45 +1198,45 @@ namespace Microsoft.Bot.Builder.Expressions
                             return AccessIndex(list, list.Count - 1).value;
                         }
                         return null;
-                    }), ReturnType.Object, ValidateUnary) },
+                    }), ReturnType.Object, ValidateUnary),
 
                 // Object manipulation and construction functions
-                // TODO
-                { ExpressionType.Json,
-                    new ExpressionEvaluator(Apply(args => JToken.Parse(args[0])), ReturnType.String, (expr) => ValidateOrder(expr, null, ReturnType.String)) },
-                { ExpressionType.AddProperty,
-                    new ExpressionEvaluator(Apply(args => {var newJobj = (JObject)args[0]; newJobj[args[1].ToString()] = args[2];return newJobj; }), 
-                    ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String, ReturnType.Object)) },
-                { ExpressionType.SetProperty,
-                   new ExpressionEvaluator(Apply(args => {var newJobj = (JObject)args[0]; newJobj[args[1].ToString()] = args[2];return newJobj; }),
-                    ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String, ReturnType.Object)) },
-                { ExpressionType.RemoveProperty,
-                    new ExpressionEvaluator(Apply(args => {var newJobj = (JObject)args[0]; newJobj.Property(args[1].ToString()).Remove();return newJobj; }),
-                    ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)) },
-
-                { ExpressionType.Foreach, new ExpressionEvaluator(Foreach, ReturnType.Object, ValidateForeach)},
+                new ExpressionEvaluator(ExpressionType.Json, Apply(args => JToken.Parse(args[0])), ReturnType.String, (expr) => ValidateOrder(expr, null, ReturnType.String)),
+                new ExpressionEvaluator(ExpressionType.AddProperty, Apply(args => { var newJobj = (JObject)args[0]; newJobj[args[1].ToString()] = args[2]; return newJobj; }),
+                    ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String, ReturnType.Object)),
+                new ExpressionEvaluator(ExpressionType.SetProperty, Apply(args => { var newJobj = (JObject)args[0]; newJobj[args[1].ToString()] = args[2]; return newJobj; }),
+                    ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String, ReturnType.Object)),
+                new ExpressionEvaluator(ExpressionType.RemoveProperty, Apply(args => { var newJobj = (JObject)args[0]; newJobj.Property(args[1].ToString()).Remove(); return newJobj; }),
+                    ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
+                new ExpressionEvaluator(ExpressionType.Foreach, Foreach, ReturnType.Object, ValidateForeach),
             };
 
+            var lookup = new Dictionary<string, ExpressionEvaluator>();
+            foreach (var function in functions)
+            {
+                lookup.Add(function.Type, function);
+            }
+
             // Math aliases
-            functions.Add("add", functions[ExpressionType.Add]); // more than 1 params
-            functions.Add("div", functions[ExpressionType.Divide]); // more than 1 params
-            functions.Add("mul", functions[ExpressionType.Multiply]);// more than 1 params
-            functions.Add("sub", functions[ExpressionType.Subtract]);// more than 1 params
-            functions.Add("exp", functions[ExpressionType.Power]);// more than 1 params
-            functions.Add("mod", functions[ExpressionType.Mod]);
+            lookup.Add("add", lookup[ExpressionType.Add]); // more than 1 params
+            lookup.Add("div", lookup[ExpressionType.Divide]); // more than 1 params
+            lookup.Add("mul", lookup[ExpressionType.Multiply]);// more than 1 params
+            lookup.Add("sub", lookup[ExpressionType.Subtract]);// more than 1 params
+            lookup.Add("exp", lookup[ExpressionType.Power]);// more than 1 params
+            lookup.Add("mod", lookup[ExpressionType.Mod]);
 
             // Comparison aliases
-            functions.Add("and", functions[ExpressionType.And]);
-            functions.Add("equals", functions[ExpressionType.Equal]);
-            functions.Add("greater", functions[ExpressionType.GreaterThan]);
-            functions.Add("greaterOrEquals", functions[ExpressionType.GreaterThanOrEqual]);
-            functions.Add("less", functions[ExpressionType.LessThan]);
-            functions.Add("lessOrEquals", functions[ExpressionType.LessThanOrEqual]);
-            functions.Add("not", functions[ExpressionType.Not]);
-            functions.Add("or", functions[ExpressionType.Or]);
+            lookup.Add("and", lookup[ExpressionType.And]);
+            lookup.Add("equals", lookup[ExpressionType.Equal]);
+            lookup.Add("greater", lookup[ExpressionType.GreaterThan]);
+            lookup.Add("greaterOrEquals", lookup[ExpressionType.GreaterThanOrEqual]);
+            lookup.Add("less", lookup[ExpressionType.LessThan]);
+            lookup.Add("lessOrEquals", lookup[ExpressionType.LessThanOrEqual]);
+            lookup.Add("not", lookup[ExpressionType.Not]);
+            lookup.Add("or", lookup[ExpressionType.Or]);
 
-            functions.Add("concat", functions[ExpressionType.Concat]);
-            return functions;
+            lookup.Add("concat", lookup[ExpressionType.Concat]);
+            return lookup;
         }
 
         /// <summary>

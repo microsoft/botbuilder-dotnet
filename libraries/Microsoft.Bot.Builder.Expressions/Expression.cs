@@ -45,13 +45,13 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <summary>
         /// Expression constructor.
         /// </summary>
-        /// <param name="type">Type of expression from <see cref="ExpressionType"/>.</param>
+        /// <param name="type">Type of expression usually from <see cref="ExpressionType"/>.</param>
         /// <param name="evaluator">Information about how to validate and evaluate expression.</param>
         /// <param name="children">Child expressions.</param>
         public Expression(string type, ExpressionEvaluator evaluator = null, params Expression[] children)
         {
-            Type = type;
             Evaluator = evaluator ?? BuiltInFunctions.Lookup(type);
+            Type = Evaluator?.Type ?? type;
             Children = children;
         }
 
@@ -180,7 +180,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="function">Function to create an expression from.</param>
         /// <returns></returns>
         public static Expression LambaExpression(EvaluateExpressionDelegate function)
-            => new Expression(ExpressionType.Lambda, new ExpressionEvaluator(function));
+            => new Expression(ExpressionType.Lambda, new ExpressionEvaluator("lambda", function));
 
         /// <summary>
         /// Construct an expression from a lamba expression over the state.
@@ -190,7 +190,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <returns>New expression.</returns>
         public static Expression Lambda(Func<object, object> function)
             => new Expression(ExpressionType.Lambda,
-                new ExpressionEvaluator((expression, state) =>
+                new ExpressionEvaluator("lambda", (expression, state) =>
                 {
                     object value = null;
                     string error = null;
