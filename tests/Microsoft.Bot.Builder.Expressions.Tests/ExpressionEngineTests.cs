@@ -177,10 +177,13 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("min(1.0, two) + max(one, 2.0)", 3.0, oneTwo),
            
             Test("sub(2, 1)", 1),
+            Test("sub(2, 1, 1)", 0),
             Test("sub(2.0, 0.5)", 1.5),
             Test("mul(2, 5)", 10),
+            Test("mul(2, 5, 2)", 20),
             Test("div(mul(2, 5), 2)", 5),
             Test("div(5, 2)", 2),
+            Test("div(5, 2 ,2)", 1),
             Test("exp(2,2)", 4.0),
             Test("mod(5,2)", 1),
             Test("rand(1, 2)", 1),

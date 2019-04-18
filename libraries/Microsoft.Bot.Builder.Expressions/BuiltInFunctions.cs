@@ -166,10 +166,10 @@ namespace Microsoft.Bot.Builder.Expressions
             => ValidateArityAndAnyType(expression, 2, 2, ReturnType.Number);
 
         /// <summary>
-        /// Validate more than 2 numeric arguments.
+        /// Validate 2 or more than 2 numeric arguments.
         /// </summary>
         /// <param name="expression">Expression to validate.</param>
-        public static void ValidateMoreThanTwoNumbers(Expression expression)
+        public static void ValidateTwoOrMoreThanTwoNumbers(Expression expression)
             => ValidateArityAndAnyType(expression, 2, int.MaxValue, ReturnType.Number);
 
         /// <summary>
@@ -398,7 +398,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="function">Function to apply.</param>
         /// <returns>Delegate for evaluating an expression.</returns>
         public static ExpressionEvaluator MultivariateNumeric(Func<IReadOnlyList<dynamic>, object> function)
-            => new ExpressionEvaluator(ApplySequence(function, VerifyNumber), ReturnType.Number, ValidateMoreThanTwoNumbers);
+            => new ExpressionEvaluator(ApplySequence(function, VerifyNumber), ReturnType.Number, ValidateTwoOrMoreThanTwoNumbers);
 
         /// <summary>
         /// Comparison operators that have 2 args and work over strings or numbers.
@@ -951,14 +951,13 @@ namespace Microsoft.Bot.Builder.Expressions
                 // Math
                 { ExpressionType.Element, new ExpressionEvaluator(ExtractElement, ReturnType.Object,ValidateBinary) },
                 { ExpressionType.Add, MultivariateNumeric(args => args[0] + args[1]) },
-                { ExpressionType.Subtract, new ExpressionEvaluator(Apply(args => args[0] - args[1], VerifyNumber),
-                        ReturnType.Number, ValidateBinaryNumber)},
+                { ExpressionType.Subtract, MultivariateNumeric(args => args[0] - args[1]) },
                 { ExpressionType.Multiply, MultivariateNumeric(args => args[0] * args[1]) },
-                { ExpressionType.Divide, new ExpressionEvaluator(Apply(args => {
+                { ExpressionType.Divide, MultivariateNumeric(args => {
                     if (Convert.ToDouble(args[1]) == 0.0)
                         throw new ArgumentException($"Cannot divide by 0");
-                    return args[0]/args[1];
-                }, VerifyNumber),ReturnType.Number,ValidateBinaryNumber)},
+                    return args[0] / args[1];
+                }) },
                 { ExpressionType.Min, Numeric(args => Math.Min(args[0], args[1])) },
                 { ExpressionType.Max, Numeric(args => Math.Max(args[0], args[1])) },
                 { ExpressionType.Power, MultivariateNumeric(args => Math.Pow(args[0], args[1])) },
@@ -1233,11 +1232,11 @@ namespace Microsoft.Bot.Builder.Expressions
             };
 
             // Math aliases
-            functions.Add("add", functions[ExpressionType.Add]); // more than two params
-            functions.Add("div", functions[ExpressionType.Divide]); // 2 params
-            functions.Add("mul", functions[ExpressionType.Multiply]);// more than two params
-            functions.Add("sub", functions[ExpressionType.Subtract]);// 2 params
-            functions.Add("exp", functions[ExpressionType.Power]);// more than 2 params
+            functions.Add("add", functions[ExpressionType.Add]); // more than 1 params
+            functions.Add("div", functions[ExpressionType.Divide]); // more than 1 params
+            functions.Add("mul", functions[ExpressionType.Multiply]);// more than 1 params
+            functions.Add("sub", functions[ExpressionType.Subtract]);// more than 1 params
+            functions.Add("exp", functions[ExpressionType.Power]);// more than 1 params
             functions.Add("mod", functions[ExpressionType.Mod]);
 
             // Comparison aliases
