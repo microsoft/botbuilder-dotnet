@@ -75,6 +75,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("items >= 1"), // params should be number or string
             Test("items <= 1"), // params should be number or string
             Test("'string'&one"), // $ can only accept string parameter
+             Test("1/0"), // $ can not divide 0
             # endregion
             
             # region String functions test
@@ -136,25 +137,29 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
             # region Math functions test
             Test("max(hello, one)"), // param should be number
+            Test("max()"), // function need 1 or more than 1 parameters
             Test("min(hello, one)"), // param should be number
+            Test("min()"), // function need 1 or more than 1 parameters
             Test("add(hello, 2)"), // param should be number
             Test("add()"), // arg count doesn't match
             Test("add(five, six)"), // no such variables
-            //Test("add(one)"), // add function need two variables
+            Test("add(one)"), // add function need 2 or more than two parameters
             Test("sub(hello, 2)"), // param should be number
             Test("sub()"), // arg count doesn't match
             Test("sub(five, six)"), // no such variables
-            //Test("sub(one)"), // add function need two variables
+            Test("sub(one)"), // sub function need 2 or more than two parameters
             Test("mul(hello, one)"), // param should be number
-            //Test("mul(one)"), // mul function need two parameters
+            Test("mul(one)"), // mul function need 2 or more than two parameters
             Test("div(one, 0)"), // one cannot be divided by zero
+            Test("div(one)"), // // div function need 2 or more than two parameters
             Test("div(hello, one)"), // string hello cannot be divided
-            //Test("mul(one)"), // div function need two parameters
             Test("exp(2, hello)"), // exp cannot accept parameter of string
             Test("mod(1, 0)"), // mod cannot accept zero as the second parameter
             Test("mod(5.5, 2)"), //  param should be integer
             Test("mod(5, 2.1)"), //  param should be integer
+            Test("mod(5, 2.1 ,3)"), //  need two params
             Test("rand(5, 6.1)"), //  param should be integer
+            Test("rand(5)"), //  need two params
             Test("rand(7, 6)"), //  minvalue cannot be greater than maxValue
             #endregion
             
