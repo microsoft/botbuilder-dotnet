@@ -16,12 +16,70 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         public static HashSet<string> one = new HashSet<string> { "one" };
         public static HashSet<string> oneTwo = new HashSet<string> {"one", "two" };
 
+        object scope = new
+        {
+            one = 1.0,
+            two = 2.0,
+            hello = "hello",
+            world = "world",
+            bag = new
+            {
+                three = 3.0,
+                set = new
+                {
+                    four = 4.0,
+                },
+                list = new[] { "red", "blue" },
+                index = 3,
+                name = "mybag"
+            },
+            items = new string[] { "zero", "one", "two" },
+            nestedItems = new[]
+                {
+                    new
+                    {
+                        x = 1
+                    },
+                    new
+                    {
+                        x = 2,
+                    },
+                    new
+                    {
+                        x = 3,
+                    }
+                },
+            timestamp = "2018-03-15T13:00:00Z",
+            turn = new
+            {
+                entities = new
+                {
+                    city = "Seattle"
+                },
+                intents = new
+                {
+                    BookFlight = "BookFlight"
+                }
+            },
+            dialog = new
+            {
+                result = new
+                {
+                    title = "Dialog Title",
+                    subTitle = "Dialog Sub Title"
+                }
+            },
+        };
+
         public static IEnumerable<object[]> Data => new[]
        {
             # region Operators test
             
             Test("1 + 2", 3),
+            Test("- 1 + 2", 1),
+            Test("+ 1 + 2", 3),
             Test("1 - 2", -1),
+            Test("1 - (-2)", 3),
             Test("1.0 + 2.0", 3.0),
             Test("1 * 2 + 3", 5),
             Test("1 + 2 * 3", 7),
@@ -66,6 +124,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("\"string\"&\"builder\"","stringbuilder"),
             Test("one > 0.5 && two < 2.5", true, oneTwo),
             Test("one > 0.5 || two < 1.5", true, oneTwo),
+            Test("0/3", 0),
             # endregion
 
             # region  String functions test
@@ -75,6 +134,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("length('hello')",5),
             Test("length(\"hello\")",5),
             Test("length(concat(hello,world))",10),
+            Test("count('hello')",5),
+            Test("count(\"hello\")",5),
+            Test("count(concat(hello,world))",10),
             Test("replace('hello', 'l', 'k')","hekko"),
             Test("replace('hello', 'L', 'k')","hello"),
             Test("replaceIgnoreCase('hello', 'L', 'k')","hekko"),
@@ -165,16 +227,21 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("add(1.0, 2.0)", 3.0),
             Test("add(mul(1, 2), 3)", 5),
             Test("max(mul(1, 2), 5) ", 5),
+            Test("max(5) ", 5),
             Test("max(4, 5) ", 5),
             Test("min(mul(1, 2), 5) ", 2),
             Test("min(4, 5) ", 4),
+            Test("min(4) ", 4),
             Test("min(1.0, two) + max(one, 2.0)", 3.0, oneTwo),
            
             Test("sub(2, 1)", 1),
+            Test("sub(2, 1, 1)", 0),
             Test("sub(2.0, 0.5)", 1.5),
             Test("mul(2, 5)", 10),
+            Test("mul(2, 5, 2)", 20),
             Test("div(mul(2, 5), 2)", 5),
             Test("div(5, 2)", 2),
+            Test("div(5, 2 ,2)", 1),
             Test("exp(2,2)", 4.0),
             Test("mod(5,2)", 1),
             Test("rand(1, 2)", 1),
@@ -268,88 +335,12 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("bag[substring(concat('na','me','more'), 0, length('name'))]","mybag"),
             Test("items[1+1]","two"),
             # endregion
-
-            #region Json test
-            Test("sum(jarrInt)",6),
-            Test("sum(jarrFloat)",6.6),
-            Test("average(jarrInt)",2.0),
-            Test("average(jarrFloat)",2.2),
-            Test("count(jarrInt)",3),
-            Test("count(jarrFloat)",3),
-            Test("contains(jarrString, 'first')",true),
-            Test("contains(jarrInt, 1)",true),
-            Test("empty(jarrString)",false),
-            Test("join(jarrString, ',')","first,second,third"),
-            Test("first(jarrString)","first"),
-            Test("first(jarrInt)",1),
-            Test("last(jarrString)","third"),
-            Test("last(jarrInt)",3),
-            // todo more JToken test will be added soon
-           
-            # endregion
         };
 
         [DataTestMethod]
         [DynamicData(nameof(Data))]
         public void Evaluate(string input, object expected, HashSet<string> expectedRefs)
         {
-            var scope = new
-            {
-                one = 1.0,
-                two = 2.0,
-                hello = "hello",
-                world = "world",
-                bag = new
-                {
-                    three = 3.0,
-                    set = new
-                    {
-                        four = 4.0,
-                    },
-                    list = new[] { "red", "blue" },
-                    index = 3,
-                    name = "mybag"
-                },
-                jarrInt = new JArray { 1, 2, 3 },
-                jarrFloat = new JArray { 1.1, 2.2, 3.3 },
-                jarrString = new JArray { "first", "second", "third" },
-                items = new string[] { "zero", "one", "two" },
-                nestedItems = new []
-                {
-                    new
-                    {
-                        x = 1
-                    },
-                    new
-                    {
-                        x = 2,
-                    },
-                    new
-                    {
-                        x = 3,
-                    }
-                },
-                timestamp = "2018-03-15T13:00:00Z",
-                turn = new
-                {
-                    entities = new
-                    {
-                        city = "Seattle"
-                    },
-                    intents = new
-                    {
-                        BookFlight = "BookFlight"
-                    }
-                },
-                dialog = new
-                {
-                    result = new
-                    {
-                        title = "Dialog Title",
-                        subTitle = "Dialog Sub Title"
-                    }
-                },
-            };
             var parsed = new ExpressionEngine().Parse(input);
             Assert.IsNotNull(parsed);
             var (actual, msg) = parsed.TryEvaluate(scope);
@@ -361,31 +352,24 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
             }
         }
-        
-
-        public static IEnumerable<object[]> JsonData => new[]
-        {
-            //Test("exist(one)", true),
-            Test("items[0] == 'item1'", true),
-            // Test("'item1' == items[0]", false), // false because string.CompareTo(JValue) will get exception
-        };
 
         [DataTestMethod]
-        [DynamicData(nameof(JsonData))]
-        public void EvaluateJSON(string input, object expected, HashSet<string> expectedRefs)
+        [DynamicData(nameof(Data))]
+        public void EvaluateJson(string input, object expected, HashSet<string> expectedRefs)
         {
-            var scope = JsonConvert.DeserializeObject(@"{
-                            'one': 1,
-                            'two': 2,
-                            'hello': 'hello',
-            
-                            'items': ['item1', 'item2', 'item3']
-                        }");
-
+            var jsonScope = JToken.FromObject(scope);
             var parsed = new ExpressionEngine().Parse(input);
-            var (actual, error) = parsed.TryEvaluate(scope);
+            Assert.IsNotNull(parsed);
+            var (actual, msg) = parsed.TryEvaluate(jsonScope);
+            Assert.AreEqual(null, msg);
             AssertObjectEquals(expected, actual);
+            if (expectedRefs != null)
+            {
+                var actualRefs = parsed.References();
+                Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
+            }
         }
+
 
         private void AssertObjectEquals(object expected, object actual)
         {

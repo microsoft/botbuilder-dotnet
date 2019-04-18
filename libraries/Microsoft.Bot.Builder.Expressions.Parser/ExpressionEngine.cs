@@ -85,6 +85,11 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             {
                 var unaryOperationName = context.GetChild(0).GetText();
                 var operand = Visit(context.expression());
+                if(unaryOperationName == ExpressionType.Subtract 
+                    || unaryOperationName == ExpressionType.Add)
+                {
+                    return MakeExpression(unaryOperationName, new Constant(0), operand);
+                }
                 return MakeExpression(unaryOperationName, operand);
             }
 
