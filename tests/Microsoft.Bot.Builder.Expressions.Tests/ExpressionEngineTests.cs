@@ -280,25 +280,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("bag[substring(concat('na','me','more'), 0, length('name'))]","mybag"),
             Test("items[1+1]","two"),
             # endregion
-
-            #region Json test
-            Test("sum(jarrInt)",6),
-            Test("sum(jarrFloat)",6.6),
-            Test("average(jarrInt)",2.0),
-            Test("average(jarrFloat)",2.2),
-            Test("count(jarrInt)",3),
-            Test("count(jarrFloat)",3),
-            Test("contains(jarrString, 'first')",true),
-            Test("contains(jarrInt, 1)",true),
-            Test("empty(jarrString)",false),
-            Test("join(jarrString, ',')","first,second,third"),
-            Test("first(jarrString)","first"),
-            Test("first(jarrInt)",1),
-            Test("last(jarrString)","third"),
-            Test("last(jarrInt)",3),
-            // todo more JToken test will be added soon
-           
-            # endregion
         };
 
         [DataTestMethod]
@@ -322,9 +303,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     index = 3,
                     name = "mybag"
                 },
-                jarrInt = new JArray { 1, 2, 3 },
-                jarrFloat = new JArray { 1.1, 2.2, 3.3 },
-                jarrString = new JArray { "first", "second", "third" },
                 items = new string[] { "zero", "one", "two" },
                 nestedItems = new []
                 {
@@ -377,9 +355,25 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
         public static IEnumerable<object[]> JsonData => new[]
         {
-            //Test("exist(one)", true),
-            Test("items[0] == 'item1'", true),
-            // Test("'item1' == items[0]", false), // false because string.CompareTo(JValue) will get exception
+            Test("sum(jarrInt)",6),
+            Test("sum(jarrFloat)",6.6),
+            Test("average(jarrInt)",2.0),
+            Test("average(jarrFloat)",2.2),
+            Test("count(jarrInt)",3),
+            Test("count(jarrFloat)",3),
+            Test("contains(jarrString, 'item1')",true),
+            Test("contains(jarrInt, 1)",true),
+            Test("empty(jarrString)",false),
+            Test("join(jarrString, ',')","item1,item2,item3"),
+            Test("first(jarrString)","item1"),
+            Test("first(jarrInt)",1),
+            Test("last(jarrString)","item3"),
+            Test("last(jarrInt)",3),
+            Test("exists(one)", true),
+            Test("jarrString[0] == 'item1'", true),
+            Test("'item1' == jarrString[0]", true),
+
+            // todo more JToken test will be added soon
         };
 
         [DataTestMethod]
@@ -391,7 +385,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                             'two': 2,
                             'hello': 'hello',
             
-                            'items': ['item1', 'item2', 'item3']
+                            'jarrString': ['item1', 'item2', 'item3'],
+                            'jarrInt': [1, 2, 3],
+                            'jarrFloat': [1.1, 2.2, 3.3],
                         }");
 
             var parsed = new ExpressionEngine().Parse(input);
