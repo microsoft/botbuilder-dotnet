@@ -22,7 +22,8 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Debug;
-using System.Diagnostics;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -58,18 +59,18 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             }
 
             // hook up debugging support
-            var sourceMap = new SourceMap();
-            DebugAdapter debugAdapter = null;
             bool enableDebugger = true;
             if (enableDebugger)
             {
-                // by setting the source registry all dialogs will register themselves to be debugged as execution flows
-                DebugSupport.SourceRegistry = sourceMap;
-                var model = new DataModel(Coercion.Instance);
-                var port = Configuration.GetValue<int>("debugport", 4712);
-                Console.WriteLine($"Debugger listening on port:{port}");
-                Console.WriteLine("     use --debugport # or use 'debugport' setting to change)");
-                debugAdapter = new DebugAdapter(port, model, sourceMap, sourceMap, new DebugLogger(nameof(DebugAdapter)));
+                services.Configure<BotFrameworkOptions>(Configuration);
+                services.AddSingleton<ILogger>(new DebugLogger(nameof(DebugAdapter)));
+                // https://andrewlock.net/how-to-register-a-service-with-multiple-interfaces-for-in-asp-net-core-di/
+                services.AddSingleton<SourceMap>();
+                services.AddSingleton<Source.IRegistry>(x => x.GetRequiredService<SourceMap>());
+                services.AddSingleton<IBreakpoints>(x => x.GetRequiredService<SourceMap>());
+                services.AddSingleton<ICoercion, Coercion>();
+                services.AddSingleton<IDataModel, DataModel>();
+                services.AddTransient<IConfigureOptions<BotFrameworkOptions>, ConfigureDebugOptions>();
             }
 
             services.AddSingleton<IConfiguration>(this.Configuration);
@@ -85,7 +86,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 (IServiceProvider sp) =>
                 {
                     // declarative Adaptive dialogs bot sample
-                    return new TestBot(userState, conversationState, resourceExplorer, DebugSupport.SourceRegistry);
+                    return new TestBot(userState, conversationState, resourceExplorer, sp.GetRequiredService<Source.IRegistry>());
 
                     // LG bot sample
                     // return new TestBotLG(accessors);
@@ -101,18 +102,31 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                     options.CredentialProvider = new SimpleCredentialProvider(this.Configuration["AppId"], this.Configuration["AppPassword"]);
                     options.Middleware.Add(new RegisterClassMiddleware<IStorage>(dataStore));
                     options.Middleware.Add(new RegisterClassMiddleware<ResourceExplorer>(resourceExplorer));
-
-                    if (debugAdapter != null)
-                    {
-                        options.Middleware.Add(debugAdapter);
-                    }
-
                     var lg = new LGLanguageGenerator(resourceExplorer);
                     options.Middleware.Add(new RegisterClassMiddleware<ILanguageGenerator>(lg));
                     options.Middleware.Add(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)));
                     options.Middleware.Add(new IgnoreConversationUpdateForBotMiddleware());
                     options.Middleware.Add(new AutoSaveStateMiddleware(conversationState));
                 });
+        }
+
+        private sealed class ConfigureDebugOptions : IConfigureOptions<BotFrameworkOptions>
+        {
+            public Action<BotFrameworkOptions> Configure{ get; }
+            public ConfigureDebugOptions(IApplicationLifetime applicationLifetime, IDataModel dataModel, Source.IRegistry registry, IBreakpoints breakpoints, ILogger logger)
+            {
+                Configure = (options) =>
+                {
+                    // by setting the source registry all dialogs will register themselves to be debugged as execution flows
+                    DebugSupport.SourceRegistry = registry;
+                    var adapter = new DebugAdapter(options.DebugPort, dataModel, registry, breakpoints, applicationLifetime.StopApplication, logger);
+                    options.Middleware.Add(adapter);
+                };
+            }
+            void IConfigureOptions<BotFrameworkOptions>.Configure(BotFrameworkOptions options)
+            {
+                this.Configure(options);
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
