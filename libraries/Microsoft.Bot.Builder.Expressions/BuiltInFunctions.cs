@@ -492,11 +492,16 @@ namespace Microsoft.Bot.Builder.Expressions
             // NOTE: This returns null rather than an error if property is not present
             object value = null;
             string error = null;
+            property = property.ToLower();
             if (instance != null)
             {
                 if (instance is IDictionary<string, object> idict)
                 {
-                    idict.TryGetValue(property, out value);
+                    var key = idict.Keys.Where(k => k.ToLower() == property).SingleOrDefault();
+                    if (key != null)
+                    {
+                        idict.TryGetValue(key, out value);
+                    }
                 }
                 else if (instance is System.Collections.IDictionary dict)
                 {
@@ -507,7 +512,9 @@ namespace Microsoft.Bot.Builder.Expressions
                 }
                 else if (instance is JObject jobj)
                 {
-                    if (jobj.TryGetValue(property, out var jtoken))
+                    var key = jobj.Properties().Where(p => p.Name.ToLower() == property).Select(p => p.Name).SingleOrDefault();
+
+                    if (jobj.TryGetValue(key, out var jtoken))
                     {
                         if (jtoken is JArray jarray)
                         {
@@ -540,7 +547,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 {
                     // Use reflection
                     var type = instance.GetType();
-                    var prop = type.GetProperty(property);
+                    var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
                     if (prop != null)
                     {
                         value = prop.GetValue(instance);

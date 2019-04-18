@@ -37,21 +37,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
 
         protected override PlanChangeList OnCreateChangeList(PlanningContext planning, object dialogOptions = null)
         {
-            var dialogEvent = planning.State.Turn["DialogEvent"] as DialogEvent;
-            if (dialogEvent.Value is RecognizerResult recognizerResult)
+            var recognizerResult = planning.State.GetValue<RecognizerResult>("turn.dialogEvent.value");
+            if (recognizerResult != null)
             {
-                Dictionary<string, object> entitiesRecognized = new Dictionary<string, object>();
-                entitiesRecognized = recognizerResult.Entities.ToObject<Dictionary<string, object>>();
-
                 return new PlanChangeList()
                 {
                     //ChangeType = this.ChangeType,
                     Desire = DialogConsultationDesire.CanProcess,
-                    IntentsMatched = new List<string> {
-                        "None",
-                    },
-                    EntitiesMatched = null,
-                    EntitiesRecognized = entitiesRecognized,
                     Steps = Steps.Select(s => new PlanStepState()
                     {
                         DialogStack = new List<DialogInstance>(),

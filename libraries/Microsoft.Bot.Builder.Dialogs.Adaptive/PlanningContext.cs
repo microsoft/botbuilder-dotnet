@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
@@ -88,19 +89,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 // Apply each queued set of changes
                 foreach (var change in changes)
                 {
-                    if (change.EntitiesRecognized != null && change.EntitiesRecognized.Count > 0)
+                    // apply memory changes to turn state
+                    if (change.Turn != null)
                     {
-                        var entities = this.State.Entities;
-                        foreach (var name in change.EntitiesRecognized.Keys)
+                        foreach (var keyValue in change.Turn)
                         {
-                            if (!entities.ContainsKey(name))
-                            {
-                                entities.Add(name, change.EntitiesRecognized[name]);
-                            }
-                            else
-                            {
-                                entities[name] = change.EntitiesRecognized[name];
-                            }
+                            this.State.SetValue($"turn.{keyValue.Key}", keyValue.Value);
                         }
                     }
 
@@ -395,10 +389,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
         }
 
+        [JsonProperty(PropertyName = "options")]
         public dynamic Options { get; set; }
+
+        [JsonProperty(PropertyName = "plan")]
         public PlanState Plan { get; set; }
+
+        [JsonProperty(PropertyName = "savedPlans")]
         public List<PlanState> SavedPlans { get; set; } = new List<PlanState>();
+
+        [JsonProperty(PropertyName = "changes")]
         public List<PlanChangeList> Changes { get; set; } = new List<PlanChangeList>();
+
+        [JsonProperty(PropertyName = "result")]
         public object Result { get; set; }
     }
 
@@ -414,13 +417,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             Options = options;
         }
 
+        [JsonProperty(PropertyName = "dialogId")]
         public string DialogId { get; set; }
+
+        [JsonProperty(PropertyName = "options")]
         public object Options { get; set; }
     }
 
     public class PlanState
     {
+        [JsonProperty(PropertyName = "title")]
         public string Title { get; set; }
+
+        [JsonProperty(PropertyName = "steps")]
         public List<PlanStepState> Steps { get; set; } = new List<PlanStepState>();
     }
 
@@ -436,12 +445,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
     public class PlanChangeList
     {
+        [JsonProperty(PropertyName = "changeType")]
         public PlanChangeTypes ChangeType { get; set; } = PlanChangeTypes.DoSteps;
+
+        [JsonProperty(PropertyName = "steps")]
         public List<PlanStepState> Steps { get; set; } = new List<PlanStepState>();
+
+        [JsonProperty(PropertyName = "tags")]
         public List<string> Tags { get; set; } = new List<string>();
-        public List<string> EntitiesMatched { get; set; } = new List<string>();
-        public List<string> IntentsMatched { get; set; } = new List<string>();
-        public Dictionary<string, object> EntitiesRecognized { get; set; } = new Dictionary<string, object>();
+
+        /// <summary>
+        /// Gets or sets turn state associated with the plan change list (it will be applied to turn state when plan is applied)
+        /// </summary>
+        [JsonProperty(PropertyName = "turn")]
+        public Dictionary<string, object> Turn { get; set; }
+
+        [JsonProperty(PropertyName = "desire")]
         public DialogConsultationDesire Desire { get; set; } = DialogConsultationDesire.ShouldProcess;
 
     }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -27,7 +28,12 @@ namespace Microsoft.Bot.Builder.Dialogs
 
     public class DialogContextState : IDictionary<string, object>
     {
-        private const string TurnEntities = "turn_entities";
+        private static JsonSerializerSettings expressionCaseSettings = new JsonSerializerSettings
+        {
+            ContractResolver = new DefaultContractResolver { NamingStrategy = new LowerCaseNamingStrategy() },
+            NullValueHandling = NullValueHandling.Ignore,
+        };
+
         private readonly DialogContext dialogContext;
 
         public DialogContextState(DialogContext dc, Dictionary<string, object> settings, Dictionary<string, object> userState, Dictionary<string, object> conversationState, Dictionary<string, object> turnState)
@@ -42,7 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Gets or sets settings for the application.
         /// </summary>
-        [JsonProperty(PropertyName ="settings")]
+        [JsonProperty(PropertyName = "settings")]
         public Dictionary<string, object> Settings { get; set; }
 
         /// <summary>
@@ -75,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
                     else
                     {
-                        throw new Exception("DialogContext.State.Dialog: no active or parent dialog instance.");
+                        return null;  //throw new Exception("DialogContext.State.Dialog: no active or parent dialog instance.");
                     }
                 }
 
@@ -109,26 +115,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         [JsonProperty(PropertyName = "turn")]
         public Dictionary<string, object> Turn { get; set; }
 
-        [JsonProperty(PropertyName = "entities")]
-        public Dictionary<string, object> Entities
-        {
-            get
-            {
-                var entities = dialogContext.Context.TurnState.Get<object>(TurnEntities);
-                if (entities == null)
-                {
-                    entities = new Dictionary<string, object>();
-                    dialogContext.Context.TurnState.Add(TurnEntities, entities);
-                }
+        public ICollection<string> Keys => new[] { "user", "conversation", "dialog", "turn", "settings" };
 
-                return entities as Dictionary<string, object>;
-            }
-        }
-
-
-        public ICollection<string> Keys => new[] { "user", "conversation", "dialog", "turn", "settings", "entities" };
-
-        public ICollection<object> Values => new[] { User, Conversation, Dialog, Turn, Entities };
+        public ICollection<object> Values => new[] { User, Conversation, Dialog, Turn };
 
         public int Count => 3;
 
@@ -187,6 +176,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public T GetValue<T>(object o, string pathExpression, T defaultValue = default(T))
         {
             JToken result = null;
+            pathExpression = pathExpression.ToLower();
             if (o != null && o.GetType() == typeof(JArray))
             {
                 int index = 0;
@@ -194,6 +184,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     result = JArray.FromObject(o)[index];
                 }
+            }
+            else if (o != null && o is JObject)
+            {
+                result = ((JObject)o).SelectToken(pathExpression);
             }
             else
             {
@@ -218,7 +212,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // If the json path does not exist
-            string[] segments = pathExpression.Split('.');
+            string[] segments = pathExpression.Split('.').Select(segment => segment.ToLower()).ToArray();
             dynamic current = this;
 
             for (int i = 0; i < segments.Length - 1; i++)
@@ -228,7 +222,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     if (!curDict.ContainsKey(segment))
                     {
-                        curDict[segment] = new Dictionary<string, object>();
+                        curDict[segment] = new JObject();
                     }
 
                     current = curDict[segment];
@@ -239,10 +233,20 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 current[segments.Last()] = (JToken)value;
             }
+            else if (value == null)
+            {
+                current[segments.Last()] = null;
+            }
+            else if (value is string || value is byte || value is bool ||
+                    value is Int16 || value is Int32 || value is Int64 ||
+                    value is UInt16 || value is UInt32 || value is UInt64 ||
+                    value is Decimal || value is float || value is double)
+            {
+                current[segments.Last()] = JValue.FromObject(value);
+            }
             else
             {
-                current[segments.Last()] = value;
-
+                current[segments.Last()] = (JObject)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(value, expressionCaseSettings));
             }
         }
 
@@ -280,9 +284,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                     return true;
                 case "turn":
                     value = this.Turn;
-                    return true;
-                case "entities":
-                    value = this.Entities;
                     return true;
             }
 
