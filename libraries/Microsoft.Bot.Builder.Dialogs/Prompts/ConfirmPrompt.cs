@@ -12,10 +12,6 @@ using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public class ConfirmPromptOptions : PromptOptions
-    {
-    }
-
     /// <summary>
     /// Prompts a user to confirm something with a yes/no response.
     ///

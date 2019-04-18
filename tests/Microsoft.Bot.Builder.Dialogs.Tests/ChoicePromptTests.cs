@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
-                        new ChoicePromptOptions
+                        new PromptOptions
                         {
                             Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                             Choices = colorChoices
@@ -156,7 +156,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
-                        new ChoicePromptOptions
+                        new PromptOptions
                         {
                             Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                             Choices = colorChoices
@@ -194,7 +194,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
-                        new ChoicePromptOptions
+                        new PromptOptions
                         {
                             Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                             Choices = colorChoices
@@ -230,7 +230,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
-                        new ChoicePromptOptions
+                        new PromptOptions
                         {
                             Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                             Choices = colorChoices
@@ -274,7 +274,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     if (results.Status == DialogTurnStatus.Empty)
                     {
                         await dc.PromptAsync("ChoicePrompt",
-                            new ChoicePromptOptions
+                            new PromptOptions
                             {
                                 Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                                 Choices = colorChoices
@@ -320,7 +320,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
-                        new ChoicePromptOptions
+                        new PromptOptions
                         {
                             Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                             Choices = colorChoices
@@ -357,7 +357,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
-                        new ChoicePromptOptions
+                        new PromptOptions
                         {
                             Prompt = new Activity {
                                 Type = ActivityTypes.Message,
@@ -398,7 +398,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
-                        new ChoicePromptOptions
+                        new PromptOptions
                         {
                             Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                             Choices = colorChoices
@@ -441,7 +441,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
-                        new ChoicePromptOptions
+                        new PromptOptions
                         {
                             Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                             RetryPrompt = new Activity { Type = ActivityTypes.Message, Text = "your favorite color, please?" },
@@ -486,7 +486,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
-                        new ChoicePromptOptions
+                        new PromptOptions
                         {
                             Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                             Choices = colorChoices

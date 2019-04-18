@@ -11,11 +11,6 @@ using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public class ChoicePromptOptions : PromptOptions
-    {
-        public IList<Choice> Choices { get; set; }
-    }
-
     public class ChoicePrompt : Prompt<FoundChoice>
     {
         private static readonly Dictionary<string, ChoiceFactoryOptions> DefaultChoiceOptions = new Dictionary<string, ChoiceFactoryOptions>()
@@ -71,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Format prompt to send
             IMessageActivity prompt;
-            var choices = (options as ChoicePromptOptions)?.Choices ?? new List<Choice>();
+            var choices = options?.Choices ?? new List<Choice>();
             var channelId = turnContext.Activity.ChannelId;
             var choiceOptions = ChoiceOptions ?? DefaultChoiceOptions[culture];
             if (isRetry && options.RetryPrompt != null)
@@ -94,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(turnContext));
             }
 
-            var choices = (options as ChoicePromptOptions)?.Choices ?? new List<Choice>();
+            var choices = options?.Choices ?? new List<Choice>();
 
             var result = new PromptRecognizerResult<FoundChoice>();
             if (turnContext.Activity.Type == ActivityTypes.Message)
