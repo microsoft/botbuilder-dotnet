@@ -525,7 +525,10 @@ namespace Microsoft.Bot.Builder.Expressions
             if (instance is IDictionary<string, object> idict)
             {
                 var prop = idict.Keys.Where(k => k.ToLower() == property).SingleOrDefault();
-                idict.TryGetValue(prop, out value);
+                if (prop != null)
+                {
+                    idict.TryGetValue(prop, out value);
+                }
             }
             else if (instance is IDictionary dict)
             {
@@ -536,11 +539,10 @@ namespace Microsoft.Bot.Builder.Expressions
             }
             else if (instance is JObject jobj)
             {
-                var prop = jobj.GetProperties().Where(p=> p.Name.ToLower() == property).SingleOrDefault();
-
-                if (jobj.TryGetValue(prop, out var jtoken))
+                var prop = jobj.Properties().Where(p=> p.Name.ToLower() == property).SingleOrDefault();
+                if (prop != null)
                 {
-                    value = jtoken;
+                    value = prop.Value;
                 }
             }
             else
