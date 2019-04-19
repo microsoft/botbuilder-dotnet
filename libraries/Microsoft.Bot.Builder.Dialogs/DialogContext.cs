@@ -30,11 +30,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             Context = Parent.Context;
             Stack = state.DialogStack;
             settings = settings ?? Configuration.LoadSettings(Context.TurnState.Get<IConfiguration>());
-            conversationState = conversationState ?? state?.ConversationState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
-            userState = userState ?? state?.UserState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+            conversationState = conversationState ?? state?.ConversationState ?? new Dictionary<string, object>();
+            userState = userState ?? state?.UserState ?? new Dictionary<string, object>();
             if (!Context.TurnState.TryGetValue("TurnStateMap", out object turnState))
             {
-                turnState = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+                turnState = new Dictionary<string, object>();
                 Context.TurnState["TurnStateMap"] = turnState;
             }
 
@@ -48,11 +48,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             Context = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
             Stack = state.DialogStack;
             settings = settings ?? Configuration.LoadSettings(Context.TurnState.Get<IConfiguration>());
-            conversationState = conversationState ?? state?.ConversationState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
-            userState = userState ?? state?.UserState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+            conversationState = conversationState ?? state?.ConversationState ?? new Dictionary<string, object>();
+            userState = userState ?? state?.UserState ?? new Dictionary<string, object>();
             if (!Context.TurnState.TryGetValue("TurnStateMap", out object turnState))
             {
-                turnState = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+                turnState = new Dictionary<string, object>();
                 Context.TurnState["TurnStateMap"] = turnState;
             }
 
@@ -171,28 +171,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new Exception($"DialogContext.BeginDialogAsync(): A dialog with an id of '{dialogId}' wasn't found.");
             }
 
-            // Process dialogs input bindings
-            // - If the stack is empty, any 'dialog.*' bindings will be pulled from the active dialog on
-            //   the parents stack.
-            if (options == null)
-            {
-                options = new Dictionary<string, object>();
-            }
-
-            // TODO: reevaluate assumptions here, breaking options with this approach
-            if (options?.GetType() == typeof(Dictionary<string, object>))
-            {
-                foreach (var option in dialog.InputProperties)
-                {
-                    var bindingKey = option.Key;
-                    var bindingValue = option.Value;
-
-                    var value = State.GetValue<string>(bindingValue);
-
-                    (options as Dictionary<string, object>)[bindingKey] = value;
-                }
-            }
-
             // Check for inherited state
             // Local stack references are positive numbers and negative numbers are references on the
             // parents stack.
@@ -237,6 +215,30 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             Stack.Insert(0, instance);
             activeTags = null;
+
+
+            // Process dialogs input bindings
+            // - If the stack is empty, any 'dialog.*' bindings will be pulled from the active dialog on
+            //   the parents stack.
+            var stateBindings = State.GetValue<Dictionary<string, object>>("dialog.bindings");
+
+            if (stateBindings == null)
+            {
+                stateBindings = new Dictionary<string, object>();
+            }
+
+            foreach (var option in dialog.InputProperties)
+            {
+                var bindingKey = option.Key;
+                var bindingValue = option.Value;
+
+                var value = State.GetValue<string>(bindingValue);
+
+                stateBindings[bindingKey] = value;
+            }
+
+            State.SetValue("dialog.bindings", stateBindings);
+
 
             // Call dialogs BeginAsync() method.
             await DebuggerStepAsync(dialog, cancellationToken).ConfigureAwait(false);
@@ -414,8 +416,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 Stack.RemoveAt(0);
             }
-
-            this.State.Turn["__repeatDialogId"] = dialogId;
 
             // Start replacement dialog
             return await BeginDialogAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
