@@ -609,10 +609,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     if (stackIndex < dialogContext.Stack.Count)
                     {
-                        return this.GetActiveDialogState(dialogContext, null, stackIndex);
+                        return this.GetActiveDialogState(dialogContext, dialogContext.Stack[stackIndex].State, null);
                     }
                     else
-
                     {
                         throw new Exception("DialogContext.ActiveDialog: Can't find inherited state. Index out of range.");
                     }
