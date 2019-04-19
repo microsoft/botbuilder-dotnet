@@ -22,6 +22,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             two = 2.0,
             hello = "hello",
             world = "world",
+            istrue = true,
             bag = new
             {
                 three = 3.0,
@@ -73,6 +74,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
        {
+            Test("substring('hello', 0)", "hello"),
             # region Operators test
             Test("1 + 2", 3),
             Test("- 1 + 2", 1),
@@ -202,6 +204,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("if(!!exists(one), 'r1', 'r2')", "r1"),//true
             Test("if(0, 'r1', 'r2')", "r1"),//true
             Test("if(bool('true'), 'r1', 'r2')", "r1"),//true
+            Test("if(istrue, 'r1', 'r2')", "r1"),//true
             Test("exists(one)", true),
             Test("exists(xxx)", false),
             Test("exists(one.xxx)", false),
@@ -288,7 +291,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("year(timestamp)", 2018),
             Test("formatDateTime(timestamp)", "2018-03-15T13:00:00.0000000Z"),
             Test("formatDateTime(timestamp, 'MM-dd-yy')", "03-15-18"),
+            Test("subtractFromTime(timestamp, 1, 'Week')", "2018-03-08T13:00:00.0000000Z"),
             Test("subtractFromTime(timestamp, 1, 'Day')", "2018-03-14T13:00:00.0000000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Hour')", "2018-03-15T12:00:00.0000000Z"),
             Test("subtractFromTime(timestamp, 1, 'Minute')", "2018-03-15T12:59:00.0000000Z"),
             Test("subtractFromTime(timestamp, 1, 'Second')", "2018-03-15T12:59:59.0000000Z"),
             Test("dateReadBack(timestamp, addDays(timestamp, 1))", "tomorrow"),
@@ -322,6 +327,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("first(items)", "zero"),
             Test("first('hello')", "h"),
             Test("first(createArray(0, 1, 2))", 0),
+            Test("first(1)", null),
             Test("first(nestedItems).x", 1, new HashSet<string> { "nestedItems"}),
             Test("join(items,',')", "zero,one,two"),
             Test("join(createArray('a', 'b', 'c'), '.')", "a.b.c"),
@@ -331,6 +337,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("last(items)", "two"),
             Test("last('hello')", "o"),
             Test("last(createArray(0, 1, 2))", 2),
+            Test("last(1)", null),
             # endregion
 
             # region  Object manipulation and construction functions
@@ -353,9 +360,12 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("property(bag, concat('na','me'))","mybag"),
             Test("items[2]", "two", new HashSet<string> { "items[2]" }),
             Test("bag.list[bag.index - 2]", "blue", new HashSet<string> {"bag.list", "bag.index" }),
+            Test("items[nestedItems[1].x]", "two", new HashSet<string> { "items","nestedItems[1].x" }),
             Test("bag['name']","mybag"),
             Test("bag[substring(concat('na','me','more'), 0, length('name'))]","mybag"),
             Test("items[1+1]","two"),
+            Test("property(null, 'p')", null),
+            Test("(property(null, 'p'))[1]", null),
             # endregion
         };
 

@@ -124,7 +124,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 }
                 var child = expression.Children[ic];
                 var type = optional[i];
-                if (child.ReturnType != type)
+                if (type != ReturnType.Object && child.ReturnType != ReturnType.Object && child.ReturnType != type)
                 {
                     throw new ArgumentException($"{child} in {expression} is not a {type}.");
                 }
@@ -301,22 +301,6 @@ namespace Microsoft.Bot.Builder.Expressions
             if (value != null && !value.IsNumber() && !(value is string))
             {
                 error = $"{expression} is not string or number.";
-            }
-            return error;
-        }
-
-        /// <summary>
-        /// Verify value is boolean.
-        /// </summary>
-        /// <param name="value">Value to check.</param>
-        /// <param name="expression">Expression that led to value.</param>
-        /// <returns>Error or null if valid.</returns>
-        public static string VerifyBoolean(object value, Expression expression)
-        {
-            string error = null;
-            if (!(value is bool))
-            {
-                error = $"{expression} is not a boolean.";
             }
             return error;
         }
@@ -911,6 +895,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     {
                         error = $"{startExpr}={start} which is out of range for {str}.";
                     }
+                    
                     if (error == null)
                     {
                         dynamic length;
@@ -1115,7 +1100,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         List<object> operands = ResolveListValue(args[0]);
                         if (operands.All(u => (u is int))) return operands.Sum(u => (int)u);
                         if (operands.All(u => ((u is int) || (u is float) || (u is double)))) return operands.Sum(u => Convert.ToSingle(u));
-                        return 0;
+                        throw new ArgumentException($"should have int/float/double parameters");
                     } , VerifyList),
                     ReturnType.Number, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Count, Apply(args =>
