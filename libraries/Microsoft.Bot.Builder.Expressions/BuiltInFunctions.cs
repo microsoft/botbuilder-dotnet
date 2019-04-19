@@ -138,13 +138,6 @@ namespace Microsoft.Bot.Builder.Expressions
             => ValidateArityAndAnyType(expression, 1, int.MaxValue, ReturnType.Number);
 
         /// <summary>
-        /// Validate 1 or more boolean arguments.
-        /// </summary>
-        /// <param name="expression">Expression to validate.</param>
-        public static void ValidateBoolean(Expression expression)
-            => ValidateArityAndAnyType(expression, 1, int.MaxValue, ReturnType.Boolean);
-
-        /// <summary>
         /// Validate 1 or more string arguments.
         /// </summary>
         /// <param name="expression">Expression to validate.</param>
@@ -718,6 +711,31 @@ namespace Microsoft.Bot.Builder.Expressions
             return result;
         }
 
+        
+        private static bool IsEmpty(object instance)
+        {
+            if (instance == null) return true;
+            if (instance is string string0) return string.IsNullOrEmpty(string0);
+            if (TryParseList(instance, out IList list)) return list.Count == 0;
+            return instance.GetType().GetProperties().Length == 0;
+        }
+
+        /// <summary>
+        /// Logic True in Logical comparison functions
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <returns></returns>
+        private static bool IsLogicTrue(object instance)
+        {
+            if (instance is bool instanceBool)
+                return instanceBool;
+
+            if (instance.IsNumber())
+                return !(Convert.ToSingle(instance) == 0.0);
+
+            return !IsEmpty(instance);
+        }
+
         private static (object value, string error) And(Expression expression, object state)
         {
             object result = true;
@@ -727,14 +745,13 @@ namespace Microsoft.Bot.Builder.Expressions
                 (result, error) = child.TryEvaluate(state);
                 if (error == null)
                 {
-                    if (!(result is bool bresult))
+                    if (IsLogicTrue(result))
                     {
-                        error = $"{child} is not boolean";
-                        break;
+                        result = true;
                     }
-                    else if (!bresult)
+                    else
                     {
-                        // Hit a false so stop
+                        result = false;
                         break;
                     }
                 }
@@ -755,14 +772,13 @@ namespace Microsoft.Bot.Builder.Expressions
                 (result, error) = child.TryEvaluate(state);
                 if (error == null)
                 {
-                    if (!(result is bool bresult))
+                    if (!IsLogicTrue(result))
                     {
-                        error = $"{child} is not boolean";
-                        break;
+                        result = false;
                     }
-                    else if (bresult)
+                    else
                     {
-                        // Hit a true so stop
+                        result = true;
                         break;
                     }
                 }
@@ -1011,9 +1027,9 @@ namespace Microsoft.Bot.Builder.Expressions
                 Comparison(ExpressionType.GreaterThan, args => args[0] > args[1]),
                 Comparison(ExpressionType.GreaterThanOrEqual, args => args[0] >= args[1]),
                 new ExpressionEvaluator(ExpressionType.Exists, Apply(args => args[0] != null), ReturnType.Boolean, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.And, (expression, state) => And(expression, state), ReturnType.Boolean, ValidateBoolean),
-                new ExpressionEvaluator(ExpressionType.Or, (expression, state) => Or(expression, state), ReturnType.Boolean, ValidateBoolean),
-                new ExpressionEvaluator(ExpressionType.Not, Apply(args => !args[0], VerifyBoolean), ReturnType.Boolean, ValidateUnaryBoolean),
+                new ExpressionEvaluator(ExpressionType.And, (expression, state) => And(expression, state), ReturnType.Boolean),
+                new ExpressionEvaluator(ExpressionType.Or, (expression, state) => Or(expression, state), ReturnType.Boolean),
+                new ExpressionEvaluator(ExpressionType.Not, Apply(args => !IsLogicTrue(args[0])), ReturnType.Boolean, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Contains, Apply(args =>
                     {
                         if (args[0] is string string0 && args[1] is string string1)
@@ -1036,13 +1052,7 @@ namespace Microsoft.Bot.Builder.Expressions
 
                         return false;
                     }), ReturnType.Boolean, ValidateBinary),
-                new ExpressionEvaluator(ExpressionType.Empty, Apply(args =>
-                    {
-                        if (args[0] == null) return true;
-                        if (args[0] is string string0) return string.IsNullOrEmpty(string0);
-                        if (TryParseList(args[0], out IList list)) return list.Count == 0;
-                        return args[0].GetType().GetProperties().Length == 0;
-                    }), ReturnType.Boolean, ValidateUnary), 
+                new ExpressionEvaluator(ExpressionType.Empty, Apply(args => IsEmpty(args[0])), ReturnType.Boolean, ValidateUnary), 
 
                 // String
                 new ExpressionEvaluator(ExpressionType.Concat, Apply(args =>
@@ -1175,15 +1185,15 @@ namespace Microsoft.Bot.Builder.Expressions
                 new ExpressionEvaluator(ExpressionType.Int, Apply(args => (float)Convert.ToSingle(args[0])), ReturnType.Number, ValidateUnary),
                 // TODO: Is this really the best way?
                 new ExpressionEvaluator(ExpressionType.String, Apply(args => JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"')), ReturnType.String, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Bool, Apply(args => Convert.ToBoolean(args[0])), ReturnType.Boolean, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Bool, Apply(args => IsLogicTrue(args[0])), ReturnType.Boolean, ValidateUnary),
             
                 // Misc
                 new ExpressionEvaluator(ExpressionType.Accessor, Accessor, ReturnType.Object, ValidateAccessor),
                 new ExpressionEvaluator(ExpressionType.Property, Property, ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
                 new ExpressionEvaluator(ExpressionType.If,
-                    Apply(args => args[0] ? args[1] : args[2]),
+                    Apply(args => IsLogicTrue(args[0]) ? args[1] : args[2]),
                     ReturnType.Object,
-                    (expr) => ValidateOrder(expr, null, ReturnType.Boolean, ReturnType.Object, ReturnType.Object)),
+                    (expression) => ValidateArityAndAnyType(expression, 3, 3)),
                 new ExpressionEvaluator(ExpressionType.Rand, Apply(args => Randomizer.Next(args[0], args[1]), VerifyInteger),
                     ReturnType.Number, ValidateBinaryNumber),
                 new ExpressionEvaluator(ExpressionType.CreateArray, Apply(args => new List<object>(args)), ReturnType.Object),
