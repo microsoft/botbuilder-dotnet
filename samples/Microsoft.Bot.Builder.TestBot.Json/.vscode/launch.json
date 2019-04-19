@@ -13,7 +13,14 @@
         {
             "type": "json",
             "request": "launch",
-            "name": "Launch Bot"
+            "name": "Launch .NET Core Bot",
+            "command": "dotnet",
+            "args": [
+              "run",
+              "--",
+              "--debugport",
+              "0"
+            ]
         },
         {
             "name": ".NET Core Launch (web)",

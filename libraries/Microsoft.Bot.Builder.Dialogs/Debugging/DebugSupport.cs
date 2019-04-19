@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
     public static partial class DebugSupport
     {
-        public static Source.IRegistry SourceRegistry { get; set; } = new NullRegistry();
+        public static Source.IRegistry SourceRegistry { get; set; } = NullRegistry.Instance;
 
         public interface IDebugger
         {

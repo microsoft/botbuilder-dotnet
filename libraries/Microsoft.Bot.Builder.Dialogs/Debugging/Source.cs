@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
             public static readonly IRegistry Instance = new NullRegistry();
 
-            public NullRegistry()
+            private NullRegistry()
             {
             }
 
