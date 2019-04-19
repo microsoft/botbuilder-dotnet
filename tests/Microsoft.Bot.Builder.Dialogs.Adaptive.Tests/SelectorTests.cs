@@ -33,8 +33,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             };
             planningDialog.AddRules(new List<IRule>()
             {
-                new IntentRule("a", steps: new List<IDialog> { new SetProperty {  OutputProperty = "user.a", Value = Expression.ConstantExpression(1) } }),
-                new IntentRule("b", steps: new List<IDialog> { new SetProperty {  OutputProperty = "user.b", Value = Expression.ConstantExpression(1) } }),
+                new IntentRule("a", steps: new List<IDialog> { new SetProperty {  OutputBinding = "user.a", Value = Expression.ConstantExpression(1) } }),
+                new IntentRule("b", steps: new List<IDialog> { new SetProperty {  OutputBinding = "user.b", Value = Expression.ConstantExpression(1) } }),
                 new IntentRule("trigger", constraint:"user.a == 1", steps: new List<IDialog> { new SendActivity("ruleA1") }),
                 new IntentRule("trigger", constraint:"user.a == 1", steps: new List<IDialog> { new SendActivity("ruleA2") }),
                 new IntentRule("trigger", constraint:"user.b == 1 || user.c == 1", steps: new List<IDialog> { new SendActivity("ruleBorC") }),

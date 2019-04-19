@@ -298,7 +298,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     new TextInput()
                                     {
                                         Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                        OutputProperty = "user.name"
+                                        OutputBinding = "user.name"
                                     }
                                 }
                             },
