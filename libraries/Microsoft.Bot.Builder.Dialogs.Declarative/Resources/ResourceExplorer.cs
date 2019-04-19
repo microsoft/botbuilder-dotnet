@@ -8,11 +8,11 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Xml;
+using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.Versioning;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 {
