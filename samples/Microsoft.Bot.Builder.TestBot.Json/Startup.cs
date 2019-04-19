@@ -59,21 +59,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 TelemetryConfiguration.Active.DisableTelemetry = true;
             }
 
-            // hook up debugging support
-            bool enableDebugger = true;
-            if (enableDebugger)
-            {
-                services.Configure<BotFrameworkOptions>(Configuration);
-                services.AddSingleton<ILogger>(new DebugLogger(nameof(DebugAdapter)));
-                // https://andrewlock.net/how-to-register-a-service-with-multiple-interfaces-for-in-asp-net-core-di/
-                services.AddSingleton<SourceMap>();
-                services.AddSingleton<Source.IRegistry>(x => x.GetRequiredService<SourceMap>());
-                services.AddSingleton<IBreakpoints>(x => x.GetRequiredService<SourceMap>());
-                services.AddSingleton<ICoercion, Coercion>();
-                services.AddSingleton<IDataModel, DataModel>();
-                // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-2.2#use-di-services-to-configure-options
-                services.AddTransient<IConfigureOptions<BotFrameworkOptions>, ConfigureDebugOptions>();
-            }
 
             services.AddSingleton<IConfiguration>(this.Configuration);
 
@@ -92,7 +77,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 (IServiceProvider sp) =>
                 {
                     // declarative Adaptive dialogs bot sample
-                    return new TestBot(userState, conversationState, resourceExplorer, sp.GetRequiredService<Source.IRegistry>());
+                    return new TestBot(userState, conversationState, resourceExplorer, DebugSupport.SourceRegistry);
 
                     // LG bot sample
                     // return new TestBotLG(accessors);
@@ -113,26 +98,15 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                     options.Middleware.Add(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)));
                     options.Middleware.Add(new IgnoreConversationUpdateForBotMiddleware());
                     options.Middleware.Add(new AutoSaveStateMiddleware(conversationState));
+                    // hook up debugging support
+                    bool enableDebugger = true;
+                    if (enableDebugger)
+                    {
+                        DebugSupport.SourceRegistry = new SourceMap();
+                        var adapter = new DebugAdapter(Configuration.GetValue<int>("debugport", 4712), DebugSupport.SourceRegistry, logger: new DebugLogger(nameof(DebugAdapter)));
+                        options.Middleware.Add(adapter);
+                    }
                 });
-        }
-
-        private sealed class ConfigureDebugOptions : IConfigureOptions<BotFrameworkOptions>
-        {
-            public Action<BotFrameworkOptions> Configure{ get; }
-            public ConfigureDebugOptions(IApplicationLifetime applicationLifetime, IDataModel dataModel, Source.IRegistry registry, IBreakpoints breakpoints, ILogger logger)
-            {
-                Configure = (options) =>
-                {
-                    // by setting the source registry all dialogs will register themselves to be debugged as execution flows
-                    DebugSupport.SourceRegistry = registry;
-                    var adapter = new DebugAdapter(options.DebugPort, dataModel, registry, breakpoints, applicationLifetime.StopApplication, logger);
-                    options.Middleware.Add(adapter);
-                };
-            }
-            void IConfigureOptions<BotFrameworkOptions>.Configure(BotFrameworkOptions options)
-            {
-                this.Configure(options);
-            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

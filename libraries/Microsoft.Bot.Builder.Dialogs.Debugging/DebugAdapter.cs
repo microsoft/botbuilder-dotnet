@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using static Microsoft.Bot.Builder.Dialogs.Debugging.Source;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
@@ -102,13 +103,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         private readonly Task task;
 
-        public DebugAdapter(int port, IDataModel model, Source.IRegistry registry, IBreakpoints breakpoints, Action terminate, ILogger logger)
+        public DebugAdapter(int port, Source.IRegistry registry, IDataModel model = null, ICoercion coercion = null, IBreakpoints breakpoints = null, ILogger logger = null, Action terminate = null)
             : base(logger)
         {
-            this.model = model ?? throw new ArgumentNullException(nameof(model));
-            this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
-            this.breakpoints = breakpoints ?? throw new ArgumentNullException(nameof(breakpoints));
-            this.terminate = terminate ?? throw new ArgumentNullException(nameof(terminate));
+            this.model = model ?? new DataModel(coercion ?? new Coercion());
+            this.registry = registry ?? NullRegistry.Instance;
+            this.breakpoints = breakpoints ?? (registry as IBreakpoints) ?? throw new ArgumentNullException(nameof(breakpoints));
+            this.terminate = terminate;
             this.task = ListenAsync(new IPEndPoint(IPAddress.Any, port), cancellationToken.Token);
         }
 
@@ -479,7 +480,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
             else if (message is Protocol.Request<Protocol.Disconnect> terminate)
             {
-                this.terminate();
+                if (this.terminate != null)
+                {
+                    this.terminate();
+                }
 
                 return Protocol.Response.From(NextSeq, terminate, new { });
             }
