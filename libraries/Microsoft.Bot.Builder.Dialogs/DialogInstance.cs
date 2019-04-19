@@ -24,6 +24,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The instance's persisted state.
         /// </value>
-        public object State { get; set; }
+        public Dictionary<string, object> State { get; set; }
+
+        /// <summary>
+        /// Positive values are indexes within the current DC and negative values are indexes in
+        /// the parent DC.
+        /// </summary>
+        public int? StackIndex { get; set; }
     }
 }
