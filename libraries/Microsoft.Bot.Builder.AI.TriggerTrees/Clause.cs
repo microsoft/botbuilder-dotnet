@@ -25,12 +25,12 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         }
 
         internal Clause(Expression expression)
-            : base(ExpressionType.And, null, expression)
+            : base(ExpressionType.And, expression)
         {
         }
 
         internal Clause(IEnumerable<Expression> children)
-            : base(ExpressionType.And, null, children.ToArray())
+            : base(ExpressionType.And, children.ToArray())
         {
         }
 

@@ -44,8 +44,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             _quantifiers = quantifiers;
             if (expression != null)
             {
-                var notNormalized = PushDownNot(expression, false);
-                _clauses = GenerateClauses(notNormalized).ToList();
+                var normalForm = expression.PushDownNot(new HashSet<string> { "optional", "ignore" });
+                _clauses = GenerateClauses(normalForm).ToList();
                 RemoveDuplicatedPredicates();
                 OptimizeClauses();
                 ExpandQuantifiers();
@@ -171,112 +171,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             else
             {
                 builder.Append("<Empty>");
-            }
-        }
-
-        private Expression ReplaceExpression(string type, Expression expression) => Expression.MakeExpression(type, TriggerTree.LookupFunction(type), expression.Children);
-
-        private Expression MakeExpression(string type, Expression expression) => Expression.MakeExpression(type, TriggerTree.LookupFunction(type), expression);
-
-
-        // Push not down to leaves using De Morgan's rule
-        private Expression PushDownNot(Expression expression, bool inNot)
-        {
-            var newExpr = expression;
-            switch (expression.Type)
-            {
-                case ExpressionType.And:
-                    {
-                        if (inNot)
-                        {
-                            newExpr = Expression.MakeExpression(ExpressionType.Or, null, (from child in expression.Children select PushDownNot(child, true)).ToArray());
-                        }
-                        else
-                        {
-                            newExpr = Expression.MakeExpression(ExpressionType.And, null, (from child in expression.Children select PushDownNot(child, false)).ToArray());
-                        }
-                    }
-                    break;
-                case ExpressionType.Or:
-                    {
-                        if (inNot)
-                        {
-                            newExpr = Expression.MakeExpression(ExpressionType.And, null, (from child in expression.Children select PushDownNot(child, true)).ToArray());
-                        }
-                        else
-                        {
-                            newExpr = Expression.MakeExpression(ExpressionType.Or, null, (from child in expression.Children select PushDownNot(child, false)).ToArray());
-                        }
-                    }
-                    break;
-                case ExpressionType.Not:
-                    newExpr = PushDownNot(expression.Children[0], !inNot);
-                    break;
-                // Rewrite comparison operators
-                case ExpressionType.LessThan:
-                    if (inNot)
-                    {
-                        newExpr = ReplaceExpression(ExpressionType.GreaterThanOrEqual, expression);
-                    }
-                    break;
-                case ExpressionType.LessThanOrEqual:
-                    if (inNot)
-                    {
-                        newExpr = ReplaceExpression(ExpressionType.GreaterThan, expression);
-                    }
-                    break;
-                case ExpressionType.Equal:
-                    if (inNot)
-                    {
-                        newExpr = ReplaceExpression(ExpressionType.NotEqual, expression);
-                    }
-                    break;
-                case ExpressionType.GreaterThanOrEqual:
-                    if (inNot)
-                    {
-                        newExpr = ReplaceExpression(ExpressionType.LessThan, expression);
-                    }
-                    break;
-                case ExpressionType.GreaterThan:
-                    if (inNot)
-                    {
-                        newExpr = ReplaceExpression(ExpressionType.LessThanOrEqual, expression);
-                    }
-                    break;
-                case ExpressionType.Exists:
-                    // Rewrite exists(x) -> x != null
-                    newExpr = Expression.MakeExpression(inNot ? ExpressionType.Equal : ExpressionType.NotEqual, null, expression.Children[0], Expression.ConstantExpression(null));
-                    break;
-                case TriggerTree.Optional:
-                case TriggerTree.Ignore:
-                    // Pass through optional/ignore
-                    newExpr = MakeExpression(expression.Type, PushDownNot(expression.Children[0], inNot));
-                    break;
-                default:
-                    if (inNot)
-                    {
-                        newExpr = Expression.MakeExpression(ExpressionType.Not, null, expression);
-                    }
-                    break;
-            }
-            return newExpr;
-        }
-
-        private IEnumerable<Expression> OrLeaves(Expression expression)
-        {
-            if (expression.Type == ExpressionType.Or)
-            {
-                foreach (var child in expression.Children)
-                {
-                    foreach (var leaf in OrLeaves(child))
-                    {
-                        yield return leaf;
-                    }
-                }
-            }
-            else
-            {
-                yield return expression;
             }
         }
 
@@ -479,7 +373,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 }
                 if (changed)
                 {
-                    newExpr = new Expression(expression.Type, expression.Evaluator, children.ToArray());
+                    newExpr = new Expression(expression.Evaluator, children.ToArray());
                 }
             }
             return newExpr;
