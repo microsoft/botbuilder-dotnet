@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
                 }
 
-                return (Dictionary<string, object>)instance.State;
+                return instance.State;
             }
 
             set
