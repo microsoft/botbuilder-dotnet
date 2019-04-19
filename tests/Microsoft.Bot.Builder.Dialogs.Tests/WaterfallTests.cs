@@ -19,15 +19,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public BindingTestDialog(string dialogId, string inputBinding, string outputBinding)
             : base(dialogId)
         {
-            this.InputProperties["value"] = inputBinding;
-            this.OutputProperty = outputBinding;
+            this.InputBindings["value"] = inputBinding;
+            this.OutputBinding = outputBinding;
         }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            Assert.IsInstanceOfType(options, typeof(object));
-            //Assert.IsNotNull(((dynamic)options).value);
-            return await dc.EndDialogAsync(((dynamic)options)["value"]).ConfigureAwait(false);
+            var bindingValue = dc.State.GetValue<string>("dialog.result.value");
+            return await dc.EndDialogAsync(bindingValue).ConfigureAwait(false);
         }
     }
 
@@ -201,7 +200,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 async (step, cancellationToken) =>
                 {
                     await Task.Delay(0);
-                    step.State.User[    "name"] = "user";
+                    step.State.User["name"] = "user";
                     step.State.Conversation["name"] = "convo";
                     step.State.Dialog["name"] = "foo";
                     return Dialog.EndOfTurn;
@@ -376,7 +375,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public void WaterfallWithStepsNull()
         {
             var waterfall = new WaterfallDialog("test");
-            waterfall.AddStep(null);            
+            waterfall.AddStep(null);
         }
 
         [TestMethod]
