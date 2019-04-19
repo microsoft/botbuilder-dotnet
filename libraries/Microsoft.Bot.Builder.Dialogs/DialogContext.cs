@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     instance = new DialogInstance()
                     {
                         Id = frame.Id,
-                        State = GetActiveDialogState(this, frame.State, frame.StateIndex),
+                        State = GetActiveDialogState(this, frame.State, frame.StackIndex),
                     };
                 }
 
@@ -210,7 +210,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 Id = dialogId,
                 State = state,
-                StateIndex = stateIndex
+                StackIndex = stateIndex
             };
 
             Stack.Insert(0, instance);
@@ -592,24 +592,24 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        private Dictionary<string, object> GetActiveDialogState(DialogContext dialogContext, Dictionary<string, object> state = null, int? stateIdx = null)
+        private Dictionary<string, object> GetActiveDialogState(DialogContext dialogContext, Dictionary<string, object> state = null, int? stackIdx = null)
         {
-            if (state == null && !stateIdx.HasValue)
+            if (state == null && !stackIdx.HasValue)
             {
-                throw new ArgumentNullException($"Either {nameof(state)} or {nameof(stateIdx)} must be provided");
+                throw new ArgumentNullException($"Either {nameof(state)} or {nameof(stackIdx)} must be provided");
             }
 
-            if (stateIdx.HasValue)
+            if (stackIdx.HasValue)
             {
                 // Positive values are indexes within the current DC and negative values are indexes in
                 // the parent DC.
-                int stateIndex = stateIdx.Value;
+                int stackIndex = stackIdx.Value;
 
-                if (stateIndex >= 0)
+                if (stackIndex >= 0)
                 {
-                    if (stateIndex < dialogContext.Stack.Count)
+                    if (stackIndex < dialogContext.Stack.Count)
                     {
-                        return this.GetActiveDialogState(dialogContext, null, stateIndex);
+                        return this.GetActiveDialogState(dialogContext, null, stackIndex);
                     }
                     else
 
@@ -619,7 +619,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
                 else if (dialogContext.Parent != null)
                 {
-                    return this.GetActiveDialogState(dialogContext.Parent, null, -stateIndex - 1);
+                    return this.GetActiveDialogState(dialogContext.Parent, null, -stackIndex - 1);
                 }
                 else
                 {
