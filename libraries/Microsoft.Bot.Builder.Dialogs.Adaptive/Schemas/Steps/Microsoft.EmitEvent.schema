@@ -24,7 +24,8 @@
         "eventValue": {
             "type": "object",
             "title": "Event Value",
-            "description": "optional value to emit along with the event"
+            "description": "optional value to emit along with the event",
+            "additionalProperties": true
         },
         "bubbleEvent": {
             "type": "boolean",
