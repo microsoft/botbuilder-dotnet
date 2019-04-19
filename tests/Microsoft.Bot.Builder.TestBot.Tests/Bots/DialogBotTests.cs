@@ -15,6 +15,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Bots
         [Fact]
         public async Task LogsInformationToILogger()
         {
+            // Arrange
             var memoryStorage = new MemoryStorage();
             var conversationState = new ConversationState(memoryStorage);
             var userState = new UserState(memoryStorage);
@@ -44,6 +45,39 @@ namespace Microsoft.BotBuilderSamples.Tests.Bots
                 Times.Once);
         }
 
+
+        [Fact]
+        public async Task SavesTurnStateUsingMockWithVirtualSaveChangesAsync()
+        {
+            // Note: this test requires that SaveChangesAsync is made virtual in order to be able to create a mock.
+            var memoryStorage = new MemoryStorage();
+            var mockConversationState = new Mock<ConversationState>(memoryStorage)
+            {
+                CallBase = true,
+            };
+
+            var mockUserState = new Mock<UserState>(memoryStorage)
+            {
+                CallBase = true,
+            };
+
+            var mockRootDialog = new Mock<Dialog>("mockRootDialog");
+            mockRootDialog.Setup(x => x.ContinueDialogAsync(It.IsAny<DialogContext>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new DialogTurnResult(DialogTurnStatus.Empty)));
+
+            var mockLogger = new Mock<ILogger<DialogBot<Dialog>>>();
+
+            // Act
+            var sut = new DialogBot<Dialog>(mockConversationState.Object, mockUserState.Object, mockRootDialog.Object, mockLogger.Object);
+            var testAdapter = new TestAdapter();
+            var testFlow = new TestFlow(testAdapter, sut);
+            await testFlow.Send("Hi").StartTestAsync();
+
+            // Assert that SaveChangesAsync was called
+            mockConversationState.Verify(x => x.SaveChangesAsync(It.IsAny<TurnContext>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
+            mockUserState.Verify(x => x.SaveChangesAsync(It.IsAny<TurnContext>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
         [Fact(Skip = "TODO: need to figure out how to implement this version of the test")]
         public async Task SavesTurnStateUsingMemoryStorage()
         {
@@ -69,36 +103,5 @@ namespace Microsoft.BotBuilderSamples.Tests.Bots
             Assert.True(false, "TODO");
         }
 
-        [Fact]
-        public async Task SavesTurnStateUsingMockWithVirtualSaveChangesAsync()
-        {
-            // Note: this test requires that SaveChangesAsync is made virtual in order to be able to create a mock.
-            var memoryStorage = new MemoryStorage();
-            var mockConversationState = new Mock<ConversationState>(memoryStorage)
-            {
-                CallBase = true,
-            };
-
-            var mockUserState = new Mock<UserState>(memoryStorage)
-            {
-                CallBase = true,
-            };
-
-            var mockRootDialog = new Mock<Dialog>("mockRootDialog");
-            mockRootDialog.Setup(x => x.ContinueDialogAsync(It.IsAny<DialogContext>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult(new DialogTurnResult(DialogTurnStatus.Empty)));
-
-            var mockLogger = new Mock<ILogger<DialogBot<Dialog>>>();
-
-            // Run the bot
-            var sut = new DialogBot<Dialog>(mockConversationState.Object, mockUserState.Object, mockRootDialog.Object, mockLogger.Object);
-            var testAdapter = new TestAdapter();
-            var testFlow = new TestFlow(testAdapter, sut);
-            await testFlow.Send("Hi").StartTestAsync();
-
-            // Assert that SaveChangesAsync was called
-            mockConversationState.Verify(x => x.SaveChangesAsync(It.IsAny<TurnContext>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
-            mockUserState.Verify(x => x.SaveChangesAsync(It.IsAny<TurnContext>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
-        }
     }
 }

@@ -1,41 +1,36 @@
 ﻿// // Copyright (c) Microsoft Corporation. All rights reserved.
 // // Licensed under the MIT License.
 
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Moq;
+using Xunit.Abstractions;
 
-namespace Microsoft.BotBuilderSamples.Tests.Dialogs
+namespace Microsoft.BotBuilderSamples.Tests.Utils
 {
     /// <summary>
-    /// A base class with helper methods and properties to test dialogs in isolation.
+    /// A Bot to be used for testing dialogs in isolation.
     /// </summary>
-    public class DialogTestsBase
+    public class DialogsTestBot
     {
-        public DialogTestsBase()
-        {
-            MockLogger = new Mock<ILogger<MainDialog>>();
-            MockConfig = new Mock<IConfiguration>();
-            MockConfig.Setup(x => x["LuisAppId"]).Returns("SomeLuisAppId");
-            MockConfig.Setup(x => x["LuisAPIKey"]).Returns("SomeLuisAppKey");
-            MockConfig.Setup(x => x["LuisAPIHostName"]).Returns("SomeLuisAppHostName");
-        }
+        private readonly BotCallbackHandler _callback;
+        private readonly TestAdapter _testAdapter;
 
-        protected Mock<IConfiguration> MockConfig { get; }
-
-        protected Mock<ILogger<MainDialog>> MockLogger { get; }
-
-        // Factory method to create a <see cref="TestFlow"/>.
-        protected static TestFlow BuildTestFlow(Dialog targetDialog)
+        public DialogsTestBot(Dialog targetDialog, ITestOutputHelper outputHelper = null)
         {
             var convoState = new ConversationState(new MemoryStorage());
-            var testAdapter = new TestAdapter()
+            _testAdapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(convoState));
+            if (outputHelper != null)
+            {
+                _testAdapter.Use(new XUnitOutputMiddleware(outputHelper));
+            }
+
             var dialogState = convoState.CreateProperty<DialogState>("DialogState");
-            var testFlow = new TestFlow(testAdapter, async (turnContext, cancellationToken) =>
+
+            _callback = async (turnContext, cancellationToken) =>
             {
                 var state = await dialogState.GetAsync(turnContext, () => new DialogState(), cancellationToken);
                 var dialogs = new DialogSet(dialogState);
@@ -56,8 +51,19 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                         break;
                     }
                 }
-            });
-            return testFlow;
+            };
+        }
+
+        public async Task<T> SendAsync<T>(string text, CancellationToken cancellationToken = default)
+        {
+            var task = _testAdapter.SendTextToBotAsync(text, _callback, cancellationToken);
+            task.Wait(cancellationToken);
+            return await GetNextReplyAsync<T>();
+        }
+
+        public Task<T> GetNextReplyAsync<T>()
+        {
+            return Task.FromResult((T)_testAdapter.GetNextReply());
         }
     }
 }

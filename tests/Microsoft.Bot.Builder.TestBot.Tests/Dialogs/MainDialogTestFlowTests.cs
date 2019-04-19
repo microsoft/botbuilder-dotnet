@@ -1,27 +1,15 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
+using Microsoft.BotBuilderSamples.Tests.Utils;
 using Xunit;
 
 namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 {
-    public class MainDialogTests : DialogTestsBase
+    public class MainDialogTestFlowTests : DialogTestsBase
     {
         [Fact]
-        public void DialogConstructor()
-        {
-            // TODO: check with the team if there's value in these types of test or if there's a better way of asserting the
-            // dialog got composed properly.
-            var sut = new MainDialog(MockConfig.Object, MockLogger.Object);
-
-            Assert.Equal("MainDialog", sut.Id);
-            Assert.IsType<TextPrompt>(sut.FindDialog("TextPrompt"));
-            Assert.IsType<BookingDialog>(sut.FindDialog("BookingDialog"));
-            Assert.IsType<WaterfallDialog>(sut.FindDialog("WaterfallDialog"));
-        }
-
-        [Fact]
-        public async Task HappyPath()
+        public async Task WholeEnchilada()
         {
             var sut = new MainDialog(MockConfig.Object, MockLogger.Object);
 
