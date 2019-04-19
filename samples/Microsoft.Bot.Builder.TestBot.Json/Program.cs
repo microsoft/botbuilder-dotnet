@@ -20,20 +20,13 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             .ConfigureAppConfiguration((hostingContext, config) =>
             {
                 var env = hostingContext.HostingEnvironment;
+                var luisAuthoringRegion = Environment.GetEnvironmentVariable("LUIS_AUTHORING_REGION") ?? "westus";
                 config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                      .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
-
-                foreach (var region in new string[] {  "westus", "westeurope", "australiaeast"})
-                {
-                    config.AddJsonFile($"luis.settings.{env.EnvironmentName}.{region}.json", optional: true, reloadOnChange: true);
-                }
-                foreach (var region in new string[] { "westus", "westeurope", "australiaeast" })
-                {
-                    config.AddJsonFile($"luis.settings.{Environment.UserName}.{region}.json", optional: true, reloadOnChange: true);
-                }
-                config.AddEnvironmentVariables();
-
-                config.AddCommandLine(args);
+                    .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
+                    .AddJsonFile($"luis.settings.{env.EnvironmentName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: true)
+                    .AddJsonFile($"luis.settings.{Environment.UserName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: true)
+                    .AddEnvironmentVariables()
+                    .AddCommandLine(args);
             }).UseStartup<Startup>()
             .Build();
     }
