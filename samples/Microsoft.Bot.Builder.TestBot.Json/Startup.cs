@@ -85,10 +85,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 .LoadProject(HostingEnvironment.ContentRootPath, ignoreFolders: new string[] { "models" });
 
             // add LuisRecognizer .dialog files for current environment/authoringRegion
-            var environment = Configuration.GetValue<string>("luis:environment", Environment.UserName);
-            var authoringRegion = Configuration.GetValue<string>("luis:authoringRegion", "westus");
-            var luisModelsFolder = Path.Combine(HostingEnvironment.ContentRootPath, "models", environment, authoringRegion);
-            resourceExplorer.AddFolder(luisModelsFolder);
 
             services.AddBot<IBot>(
                 (IServiceProvider sp) =>
