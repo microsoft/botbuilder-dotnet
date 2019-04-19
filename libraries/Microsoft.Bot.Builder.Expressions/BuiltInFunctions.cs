@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Expressions
             {
                 foreach (var child in expression.Children)
                 {
-                    if (child.ReturnType != ReturnType.Object && !types.Contains(child.ReturnType) && !types.Contains(ReturnType.Object))
+                    if (child.ReturnType != ReturnType.Object && !types.Contains(child.ReturnType))
                     {
                         if (types.Count() == 1)
                         {
@@ -1193,7 +1193,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 new ExpressionEvaluator(ExpressionType.If,
                     Apply(args => IsLogicTrue(args[0]) ? args[1] : args[2]),
                     ReturnType.Object,
-                    (expression) => ValidateArityAndAnyType(expression, 3, 3, ReturnType.Object)),
+                    (expression) => ValidateArityAndAnyType(expression, 3, 3)),
                 new ExpressionEvaluator(ExpressionType.Rand, Apply(args => Randomizer.Next(args[0], args[1]), VerifyInteger),
                     ReturnType.Number, ValidateBinaryNumber),
                 new ExpressionEvaluator(ExpressionType.CreateArray, Apply(args => new List<object>(args)), ReturnType.Object),
