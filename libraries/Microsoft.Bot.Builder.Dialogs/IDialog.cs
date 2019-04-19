@@ -19,12 +19,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// JSONPath expression for the memory slots to bind the dialogs options to on a call to `beginDialog()`.
         /// </summary>
-        Dictionary<string, string> InputProperties { get; }
+        Dictionary<string, string> InputBindings { get; }
 
         /// <summary>
         /// JSONPath expression for the memory slot to bind the dialogs result to when `endDialog()` is called.
         /// </summary>
-        string OutputProperty { get; }
+        string OutputBinding { get; }
 
         /// <summary>
         /// Telemetry client

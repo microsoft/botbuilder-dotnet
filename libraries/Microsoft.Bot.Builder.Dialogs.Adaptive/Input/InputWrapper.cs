@@ -40,12 +40,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         {
             get
             {
-                return OutputProperty;
+                return OutputBinding;
             }
             set
             {
-                InputProperties["value"] = value;
-                OutputProperty = value;
+                InputBindings["value"] = value;
+                OutputBinding = value;
             }
         }
 
