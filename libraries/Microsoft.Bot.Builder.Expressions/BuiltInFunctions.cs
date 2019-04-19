@@ -132,6 +132,13 @@ namespace Microsoft.Bot.Builder.Expressions
         }
 
         /// <summary>
+        /// Validate at least 1 argument of any type.
+        /// </summary>
+        /// <param name="expression">Expression to validate.</param>
+        public static void ValidateAtLeastOne(Expression expression)
+            => ValidateArityAndAnyType(expression, 1, int.MaxValue);
+
+        /// <summary>
         /// Validate 1 or more numeric arguments.
         /// </summary>
         /// <param name="expression">Expression to validate.</param>
@@ -228,10 +235,16 @@ namespace Microsoft.Bot.Builder.Expressions
             return error;
         }
 
+        /// <summary>
+        /// Try to coerce object to IList.
+        /// </summary>
+        /// <param name="value">Value to coerce.</param>
+        /// <param name="list">IList if found.</param>
+        /// <returns>true if found IList.</returns>
         public static bool TryParseList(object value, out IList list)
         {
             list = null;
-            if (value is JObject jObj) // JObject would also a IList, but here we ignore it
+            if (value is JObject) // JObject would also a IList, but here we ignore it
             {
                 return false;
             }
@@ -311,14 +324,21 @@ namespace Microsoft.Bot.Builder.Expressions
         // Apply -- these are helpers for adding functions to the expression library.
 
         /// <summary>
+        /// Verify the result of an expression is of the appropriate type and return a string if not.
+        /// </summary>
+        /// <param name="value">Value to verify.</param>
+        /// <param name="expression">Expression that produced value.</param>
+        /// <returns>Null if value if correct or error string otherwise.</returns>
+        public delegate string VerifyExpression(object value, Expression expression);
+
+        /// <summary>
         /// Evaluate expression children and return them.
         /// </summary>
         /// <param name="expression">Expression with children.</param>
         /// <param name="state">Global state.</param>
         /// <param name="verify">Optional function to verify each child's result.</param>
         /// <returns>List of child values or error message.</returns>
-        public static (IReadOnlyList<dynamic>, string error) EvaluateChildren(Expression expression, object state,
-            Func<object, Expression, string> verify = null)
+        public static (IReadOnlyList<dynamic>, string error) EvaluateChildren(Expression expression, object state, VerifyExpression verify = null)
         {
             var args = new List<dynamic>();
             object value;
@@ -349,7 +369,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="function">Function to apply.</param>
         /// <param name="verify">Function to check each arg for validity.</param>
         /// <returns>Delegate for evaluating an expression.</returns>
-        public static EvaluateExpressionDelegate Apply(Func<IReadOnlyList<dynamic>, object> function, Func<object, Expression, string> verify = null)
+        public static EvaluateExpressionDelegate Apply(Func<IReadOnlyList<dynamic>, object> function, VerifyExpression verify = null)
             =>
             (expression, state) =>
             {
@@ -378,7 +398,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="function">Function to apply.</param>
         /// <param name="verify">Function to check each arg for validity.</param>
         /// <returns>Delegate for evaluating an expression.</returns>
-        public static EvaluateExpressionDelegate ApplySequence(Func<IReadOnlyList<dynamic>, object> function, Func<object, Expression, string> verify = null)
+        public static EvaluateExpressionDelegate ApplySequence(Func<IReadOnlyList<dynamic>, object> function, VerifyExpression verify = null)
             => Apply(
                 args =>
                 {
@@ -412,13 +432,39 @@ namespace Microsoft.Bot.Builder.Expressions
             => new ExpressionEvaluator(type, ApplySequence(function, VerifyNumber), ReturnType.Number, ValidateTwoOrMoreThanTwoNumbers);
 
         /// <summary>
-        /// Comparison operators that have 2 args and work over strings or numbers.
+        /// Comparison operators.
         /// </summary>
+        /// <remarks>
+        /// A comparison operator returns false if the comparison is false, or there is an error.  This prevents errors from short-circuiting boolean expressions.
+        /// </remarks>
         /// <param name="type">Expression type.</param>
         /// <param name="function">Function to apply.</param>
         /// <returns>Delegate for evaluating an expression.</returns>        
-        public static ExpressionEvaluator Comparison(string type, Func<IReadOnlyList<dynamic>, object> function)
-            => new ExpressionEvaluator(type, Apply(function, VerifyNumberOrString), ReturnType.Boolean, ValidateBinaryNumberOrString);
+        public static ExpressionEvaluator Comparison(string type, Func<IReadOnlyList<dynamic>, bool> function, ValidateExpressionDelegate validator, VerifyExpression verify = null)
+            => new ExpressionEvaluator(type, (expression, state) =>
+            {
+                bool result = false;
+                string error = null;
+                IReadOnlyList<dynamic> args;
+                (args, error) = EvaluateChildren(expression, state, verify);
+                if (error == null)
+                {
+                    try
+                    {
+                        result = function(args);
+                    }
+                    catch (Exception e)
+                    {
+                        error = e.Message;
+                    }
+                }
+                else
+                {
+                    // Swallow errors and treat as false
+                    error = null;
+                }
+                return (result, error);
+            }, ReturnType.Boolean, validator);
 
         /// <summary>
         /// Transform a string into another string.
@@ -497,7 +543,7 @@ namespace Microsoft.Bot.Builder.Expressions
         {
             object value = null;
             string error = null;
-            var instance = state;
+            object instance;
             var children = expression.Children;
             if (children.Length == 2)
             {
@@ -517,18 +563,20 @@ namespace Microsoft.Bot.Builder.Expressions
         private static (object value, string error) Property(Expression expression, object state)
         {
             object value = null;
-            string error = null;
-            object instance = null;
-            object property = null;
+            string error;
+            object instance;
+            object property;
 
             var children = expression.Children;
             (instance, error) = children[0].TryEvaluate(state);
-            (property, error) = children[1].TryEvaluate(state);
             if (error == null)
             {
-                (value, error) = AccessProperty(instance, (string)property);
+                (property, error) = children[1].TryEvaluate(state);
+                if (error == null)
+                {
+                    (value, error) = AccessProperty(instance, (string)property);
+                }
             }
-
             return (value, error);
 
         }
@@ -640,7 +688,7 @@ namespace Microsoft.Bot.Builder.Expressions
         private static (object value, string error) ExtractElement(Expression expression, object state)
         {
             object value = null;
-            string error = null;
+            string error;
             var instance = expression.Children[0];
             var index = expression.Children[1];
             object inst;
@@ -712,34 +760,51 @@ namespace Microsoft.Bot.Builder.Expressions
             return result;
         }
 
-        
+
         private static bool IsEmpty(object instance)
         {
-            if (instance == null) return true;
-            if (instance is string string0) return string.IsNullOrEmpty(string0);
-            if (TryParseList(instance, out IList list)) return list.Count == 0;
-            return instance.GetType().GetProperties().Length == 0;
+            bool result;
+            if (instance == null)
+            {
+                result = true;
+            }
+            else if (instance is string string0)
+            {
+                result = string.IsNullOrEmpty(string0);
+            }
+            else if (TryParseList(instance, out var list))
+            {
+                result = list.Count == 0;
+            }
+            else
+            {
+                result = instance.GetType().GetProperties().Length == 0;
+            }
+            return result;
         }
 
         /// <summary>
-        /// Logic True in Logical comparison functions
+        /// Test result to see if True in logical comparison functions.
         /// </summary>
-        /// <param name="instance"></param>
-        /// <returns></returns>
+        /// <param name="instance">Computed value.</param>
+        /// <returns>True if boolean true or non-null.</returns>
         private static bool IsLogicTrue(object instance)
         {
+            var result = true;
             if (instance is bool instanceBool)
-                return instanceBool;
-
-            if (instance.IsNumber())
-                return !(Convert.ToSingle(instance) == 0.0);
-
-            return !IsEmpty(instance);
+            {
+                result = instanceBool;
+            }
+            else if (instance == null)
+            {
+                result = false;
+            }
+            return result;
         }
 
         private static (object value, string error) And(Expression expression, object state)
         {
-            object result = true;
+            object result = false;
             string error = null;
             foreach (var child in expression.Children)
             {
@@ -758,6 +823,9 @@ namespace Microsoft.Bot.Builder.Expressions
                 }
                 else
                 {
+                    // We interpret any error as false and swallow the error
+                    result = false;
+                    error = null;
                     break;
                 }
             }
@@ -766,18 +834,14 @@ namespace Microsoft.Bot.Builder.Expressions
 
         private static (object value, string error) Or(Expression expression, object state)
         {
-            object result = true;
+            object result = false;
             string error = null;
             foreach (var child in expression.Children)
             {
                 (result, error) = child.TryEvaluate(state);
                 if (error == null)
                 {
-                    if (!IsLogicTrue(result))
-                    {
-                        result = false;
-                    }
-                    else
+                    if (IsLogicTrue(result))
                     {
                         result = true;
                         break;
@@ -785,57 +849,98 @@ namespace Microsoft.Bot.Builder.Expressions
                 }
                 else
                 {
-                    break;
+                    // Interpret error as false and swallow errors
+                    error = null;
                 }
             }
             return (result, error);
         }
 
+        private static (object value, string error) Not(Expression expression, object state)
+        {
+            object result;
+            string error;
+            (result, error) = expression.Children[0].TryEvaluate(state);
+            if (error == null)
+            {
+                result = !IsLogicTrue(result);
+            }
+            else
+            {
+                error = null;
+                result = true;
+            }
+            return (result, error);
+        }
 
-
+        private static (object value, string error) If(Expression expression, object state)
+        {
+            object result;
+            string error;
+            (result, error) = expression.Children[0].TryEvaluate(state);
+            if (error == null && IsLogicTrue(result))
+            {
+                (result, error) = expression.Children[1].TryEvaluate(state);
+            }
+            else
+            {
+                // Swallow error and treat as false
+                (result, error) = expression.Children[2].TryEvaluate(state);
+            }
+            return (result, error);
+        }
 
         private static (object value, string error) Substring(Expression expression, object state)
         {
             object result = null;
-            string error = null;
+            string error;
             dynamic str;
-            dynamic start;
-            dynamic length;
             (str, error) = expression.Children[0].TryEvaluate(state);
-            if (expression.Children.Length == 2)
-            {
-                // Support just have start index
-                length = str.Length;
-            }
-
             if (error == null)
             {
-                var startExpr = expression.Children[1];
-                (start, error) = startExpr.TryEvaluate(state);
-                if (error == null && !(start is int))
+                if (str is string)
                 {
-                    error = $"{startExpr} is not an integer.";
-                }
-                else if (start < 0 || start >= str.Length)
-                {
-                    error = $"{startExpr}={start} which is out of range for {str}.";
-                }
-                if (error == null)
-                {
-                    var lengthExpr = expression.Children[2];
-                    (length, error) = lengthExpr.TryEvaluate(state);
-                    if (error == null && !(length is int))
+                    dynamic start;
+                    var startExpr = expression.Children[1];
+                    (start, error) = startExpr.TryEvaluate(state);
+                    if (error == null && !(start is int))
                     {
-                        error = $"{lengthExpr} is not an integer.";
+                        error = $"{startExpr} is not an integer.";
                     }
-                    else if (length < 0 || start + length > str.Length)
+                    else if (start < 0 || start >= str.Length)
                     {
-                        error = $"{lengthExpr}={length} which is out of range for {str}.";
+                        error = $"{startExpr}={start} which is out of range for {str}.";
                     }
                     if (error == null)
                     {
-                        result = str.Substring(start, length);
+                        dynamic length;
+                        if (expression.Children.Length == 2)
+                        {
+                            // Without length, compute to end
+                            length = str.Length - start;
+                        }
+                        else
+                        {
+                            var lengthExpr = expression.Children[2];
+                            (length, error) = lengthExpr.TryEvaluate(state);
+                            if (error == null && !(length is int))
+                            {
+                                error = $"{lengthExpr} is not an integer.";
+                            }
+                            else if (length < 0 || start + length > str.Length)
+                            {
+                                error = $"{lengthExpr}={length} which is out of range for {str}.";
+                            }
+                        }
+                        if (error == null)
+                        {
+                            result = str.Substring(start, length);
+                        }
                     }
+                }
+                else
+                {
+                    error = $"{expression.Children[0]} is not a string.";
                 }
             }
             return (result, error);
@@ -844,7 +949,7 @@ namespace Microsoft.Bot.Builder.Expressions
         private static (object value, string error) Foreach(Expression expression, object state)
         {
             object result = null;
-            string error = null;
+            string error;
 
             dynamic collection;
             (collection, error) = expression.Children[0].TryEvaluate(state);
@@ -856,7 +961,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 if (TryParseList(collection, out IList ilist))
                 {
                     result = new List<object>();
-                    for (int idx = 0; idx < ilist.Count; idx++)
+                    for (var idx = 0; idx < ilist.Count; idx++)
                     {
                         var local = new Dictionary<string, object>
                         {
@@ -937,7 +1042,7 @@ namespace Microsoft.Bot.Builder.Expressions
             else
             {
                 // rewite children if have any
-                for (int idx = 0; idx < expression.Children.Count(); idx++)
+                for (var idx = 0; idx < expression.Children.Count(); idx++)
                 {
                     expression.Children[idx] = RewriteAccessor(expression.Children[idx], localVarName);
                 }
@@ -1021,17 +1126,15 @@ namespace Microsoft.Bot.Builder.Expressions
                     }), ReturnType.Number, ValidateUnary),
 
                 // Booleans
-                Comparison(ExpressionType.LessThan, args => args[0] < args[1]),
-                Comparison(ExpressionType.LessThanOrEqual, args => args[0] <= args[1]),
-                new ExpressionEvaluator(ExpressionType.Equal, Apply(args => args[0] == args[1]), ReturnType.Boolean, ValidateBinary),
-                new ExpressionEvaluator(ExpressionType.NotEqual, Apply(args => args[0] != args[1]), ReturnType.Boolean, ValidateBinary),
-                Comparison(ExpressionType.GreaterThan, args => args[0] > args[1]),
-                Comparison(ExpressionType.GreaterThanOrEqual, args => args[0] >= args[1]),
-                new ExpressionEvaluator(ExpressionType.Exists, Apply(args => args[0] != null), ReturnType.Boolean, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.And, (expression, state) => And(expression, state), ReturnType.Boolean),
-                new ExpressionEvaluator(ExpressionType.Or, (expression, state) => Or(expression, state), ReturnType.Boolean),
-                new ExpressionEvaluator(ExpressionType.Not, Apply(args => !IsLogicTrue(args[0])), ReturnType.Boolean, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Contains, Apply(args =>
+                Comparison(ExpressionType.LessThan, args => args[0] < args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
+                Comparison(ExpressionType.LessThanOrEqual, args => args[0] <= args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
+                Comparison(ExpressionType.Equal, args => args[0] == args[1], ValidateBinary),
+                Comparison(ExpressionType.NotEqual, args => args[0] != args[1], ValidateBinary),
+                Comparison(ExpressionType.GreaterThan, args => args[0] > args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
+                Comparison(ExpressionType.GreaterThanOrEqual, args => args[0] >= args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
+                Comparison(ExpressionType.Exists, args => args[0] != null, ValidateUnary, VerifyNumberOrString),
+                Comparison(ExpressionType.Contains,
+                    args =>
                     {
                         if (args[0] is string string0 && args[1] is string string1)
                         {
@@ -1048,12 +1151,15 @@ namespace Microsoft.Bot.Builder.Expressions
                         else if (args[1] is string string2)
                         {
                             var (value, error) = AccessProperty((object)args[0], string2);
-                            if(value != null) return true;
+                            if (value != null) return true;
                         }
 
                         return false;
-                    }), ReturnType.Boolean, ValidateBinary),
-                new ExpressionEvaluator(ExpressionType.Empty, Apply(args => IsEmpty(args[0])), ReturnType.Boolean, ValidateUnary), 
+                    }, ValidateBinary),
+                Comparison(ExpressionType.Empty, args => IsEmpty(args[0]), ValidateUnary, VerifyNumberOrString),
+                new ExpressionEvaluator(ExpressionType.And, (expression, state) => And(expression, state), ReturnType.Boolean, ValidateAtLeastOne),
+                new ExpressionEvaluator(ExpressionType.Or, (expression, state) => Or(expression, state), ReturnType.Boolean, ValidateAtLeastOne),
+                new ExpressionEvaluator(ExpressionType.Not, (expression, state) => Not(expression, state), ReturnType.Boolean, ValidateUnary),
 
                 // String
                 new ExpressionEvaluator(ExpressionType.Concat, Apply(args =>
@@ -1079,11 +1185,11 @@ namespace Microsoft.Bot.Builder.Expressions
                     (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String)),
                 new ExpressionEvaluator(ExpressionType.Substring,
                     Substring, ReturnType.String,
-                    (expression) => ValidateOrder(expression, new[] { ReturnType.String, ReturnType.Number, ReturnType.Number })),
+                    (expression) => ValidateOrder(expression, new[] {ReturnType.Number }, ReturnType.String, ReturnType.Number)),
                 StringTransform(ExpressionType.ToLower, args => args[0].ToLower()),
                 StringTransform(ExpressionType.ToUpper, args => args[0].ToUpper()),
                 StringTransform(ExpressionType.Trim, args => args[0].Trim()),
-                new ExpressionEvaluator(ExpressionType.Join, Apply(args => 
+                new ExpressionEvaluator(ExpressionType.Join, Apply(args =>
                     {
                         if (!TryParseList(args[0], out IList list))
                         throw new ArgumentException("first parameters in join should be list");
@@ -1165,15 +1271,13 @@ namespace Microsoft.Bot.Builder.Expressions
                 new ExpressionEvaluator(ExpressionType.Int, Apply(args => (float)Convert.ToSingle(args[0])), ReturnType.Number, ValidateUnary),
                 // TODO: Is this really the best way?
                 new ExpressionEvaluator(ExpressionType.String, Apply(args => JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"')), ReturnType.String, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Bool, Apply(args => IsLogicTrue(args[0])), ReturnType.Boolean, ValidateUnary),
+                Comparison(ExpressionType.Bool, args => IsLogicTrue(args[0]), ValidateUnary),
             
                 // Misc
                 new ExpressionEvaluator(ExpressionType.Accessor, Accessor, ReturnType.Object, ValidateAccessor),
                 new ExpressionEvaluator(ExpressionType.Property, Property, ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
-                new ExpressionEvaluator(ExpressionType.If,
-                    Apply(args => IsLogicTrue(args[0]) ? args[1] : args[2]),
-                    ReturnType.Object,
-                    (expression) => ValidateArityAndAnyType(expression, 3, 3)),
+                new ExpressionEvaluator(ExpressionType.If, (expression, state) => If(expression, state), 
+                    ReturnType.Object, (expression) => ValidateArityAndAnyType(expression, 3, 3)),
                 new ExpressionEvaluator(ExpressionType.Rand, Apply(args => Randomizer.Next(args[0], args[1]), VerifyInteger),
                     ReturnType.Number, ValidateBinaryNumber),
                 new ExpressionEvaluator(ExpressionType.CreateArray, Apply(args => new List<object>(args)), ReturnType.Object),
@@ -1207,14 +1311,14 @@ namespace Microsoft.Bot.Builder.Expressions
                 new ExpressionEvaluator(ExpressionType.Foreach, Foreach, ReturnType.Object, ValidateForeach),
             };
 
-            var lookup = new Dictionary<string, ExpressionEvaluator>();
+        var lookup = new Dictionary<string, ExpressionEvaluator>();
             foreach (var function in functions)
             {
                 lookup.Add(function.Type, function);
             }
 
-            // Math aliases
-            lookup.Add("add", lookup[ExpressionType.Add]); // more than 1 params
+    // Math aliases
+    lookup.Add("add", lookup[ExpressionType.Add]); // more than 1 params
             lookup.Add("div", lookup[ExpressionType.Divide]); // more than 1 params
             lookup.Add("mul", lookup[ExpressionType.Multiply]);// more than 1 params
             lookup.Add("sub", lookup[ExpressionType.Subtract]);// more than 1 params
@@ -1235,9 +1339,9 @@ namespace Microsoft.Bot.Builder.Expressions
             return lookup;
         }
 
-        /// <summary>
-        /// Dictionary of built-in functions.
-        /// </summary>
-        public static Dictionary<string, ExpressionEvaluator> _functions = BuildFunctionLookup();
+/// <summary>
+/// Dictionary of built-in functions.
+/// </summary>
+public static Dictionary<string, ExpressionEvaluator> _functions = BuildFunctionLookup();
     }
 }
