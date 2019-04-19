@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -1125,34 +1126,12 @@ namespace Microsoft.Bot.Builder.Expressions
                    },
                    ReturnType.String,
                    (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String, ReturnType.Number, ReturnType.String)),
-                // TODO: This should really be hooked up to the timex library function which offers more
                 new ExpressionEvaluator(ExpressionType.DateReadBack,
                    Apply(args =>
                    {
-                       object value = null;
-                       var timestamp1 = ParseTimestamp(args[0]).Date;
-                       var timestamp2 = ParseTimestamp(args[1]).Date;
-                       if (IsSameDay(timestamp1, timestamp2))
-                       {
-                           value = "Today";
-                       }
-                       if (IsSameDay(timestamp1.AddDays(1), timestamp2))
-                       {
-                           value = "Tomorrow";
-                       }
-                       else if (IsSameDay(timestamp1.AddDays(2), timestamp2))
-                       {
-                           value = "The day after tomorrow";
-                       }
-                       else if (IsSameDay(timestamp1.AddDays(-1), timestamp2))
-                       {
-                           value = "Yesterday";
-                       }
-                       else if (IsSameDay(timestamp1.AddDays(-2), timestamp2))
-                       {
-                           value = "The day before yesterday";
-                       }
-                       return value;
+                       DateTime timestamp1 = ParseTimestamp(args[0]);
+                       var timex = new TimexProperty((string)args[1]);
+                       return TimexRelativeConvert.ConvertTimexToStringRelative(timex, timestamp1);
                    }, VerifyString),
                    ReturnType.String, expr => ValidateOrder(expr, null, ReturnType.String, ReturnType.String)),
                 new ExpressionEvaluator(ExpressionType.GetTimeOfDay,
