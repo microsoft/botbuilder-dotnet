@@ -1,7 +1,7 @@
 {
   "name": "vscode-dialog-debugger",
-  "displayName": "Debugger for Dialogs",
-  "description": "This extension provides the ability to debug Microsoft Bot Framework declarative dialog flows.",
+  "displayName": "Bot Framework Debugger",
+  "description": "This extension provides the ability to debug Microsoft Bot Framework declarative dialogs.",
   "author": "Microsoft",
   "categories": [
     "Debuggers"
@@ -12,19 +12,19 @@
   ],
   "icon": "icon.png",
   "preview": true,
-  "version": "0.0.5",
+  "version": "1.0.1-preview",
   "publisher": "Microsoft",
   "license": "SEE LICENSE file",
   "engines": {
     "vscode": "^1.0.0"
   },
   "repository": "https://github.com/microsoft/botbuilder",
-  "main": "./src/js/extension",
+  "main": "./lib/extension.js",
   "activationEvents": [
     "onDebug"
   ],
   "scripts": {
-    "build": "node node_modules/typescript/bin/tsc --project src/ts/tsconfig.json"
+    "build": "node node_modules/typescript/bin/tsc"
   },
   "devDependencies": {
     "typescript": "3.4.3",
@@ -50,8 +50,7 @@
         "configurationAttributes": {
           "launch": {
             "required": [
-              "command",
-              "args"
+              "command"
             ],
             "properties": {
               "command": {
@@ -102,7 +101,7 @@
             "body": {
               "type": "json",
               "request": "launch",
-              "name": "Launch .NET Core Bot",
+              "name": "Debug Bot",
               "command": "dotnet",
               "args": [
                 "run",

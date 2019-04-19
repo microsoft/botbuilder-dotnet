@@ -6,20 +6,14 @@
     "configurations": [
         {
             "type": "json",
-            "request": "attach",
-            "name": "Attach to Bot",
-            "debugServer": 4712
-        },
-        {
-            "type": "json",
             "request": "launch",
-            "name": "Launch .NET Core Bot",
+            "name": "Debug Bot",
             "command": "dotnet",
             "args": [
-              "run",
-              "--",
-              "--debugport",
-              "0"
+                "run",
+                "--",
+                "--debugport",
+                "0"
             ]
         },
         {
