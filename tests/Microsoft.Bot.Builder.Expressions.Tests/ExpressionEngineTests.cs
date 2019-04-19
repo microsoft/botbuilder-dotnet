@@ -74,7 +74,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
        {
-            Test("substring('hello', 0)", "hello"),
             # region Operators test
             Test("1 + 2", 3),
             Test("- 1 + 2", 1),
