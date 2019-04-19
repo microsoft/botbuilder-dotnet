@@ -86,13 +86,5 @@ namespace Microsoft.Bot.Builder.Integration
         /// <value>The path strings.</value>
         /// <seealso cref="BotFrameworkPaths"/>
         public BotFrameworkPaths Paths { get; set; } = new BotFrameworkPaths();
-
-        /// <summary>
-        /// Gets or sets the TCP listening port used by the debug adapter.
-        /// </summary>
-        /// <value>
-        /// The TCP listening port used by the debug adapter.
-        /// </value>
-        public int DebugPort { get; set; } = 4712;
     }
 }

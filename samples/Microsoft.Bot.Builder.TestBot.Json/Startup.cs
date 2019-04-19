@@ -58,14 +58,12 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             {
                 TelemetryConfiguration.Active.DisableTelemetry = true;
             }
-
-
+            
             services.AddSingleton<IConfiguration>(this.Configuration);
 
             IStorage dataStore = new MemoryStorage();
             var userState = new UserState(dataStore);
             var conversationState = new ConversationState(dataStore);
-
 
             // manage all bot resources
             var resourceExplorer = ResourceExplorer
@@ -98,13 +96,14 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                     options.Middleware.Add(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)));
                     options.Middleware.Add(new IgnoreConversationUpdateForBotMiddleware());
                     options.Middleware.Add(new AutoSaveStateMiddleware(conversationState));
+                    
                     // hook up debugging support
                     bool enableDebugger = true;
                     if (enableDebugger)
                     {
-                        DebugSupport.SourceRegistry = new SourceMap();
-                        var adapter = new DebugAdapter(Configuration.GetValue<int>("debugport", 4712), DebugSupport.SourceRegistry, logger: new DebugLogger(nameof(DebugAdapter)));
-                        options.Middleware.Add(adapter);
+                        var sourceMap = new SourceMap();
+                        DebugSupport.SourceRegistry = sourceMap;
+                        options.Middleware.Add(new DebugAdapter(Configuration.GetValue<int>("debugport", 4712), sourceMap, sourceMap, () => Environment.Exit(0), logger: new DebugLogger(nameof(DebugAdapter))));
                     }
                 });
         }
