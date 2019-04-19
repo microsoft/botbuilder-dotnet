@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                                                 KnowledgeBaseId = "24d34beb-1be5-466c-861d-97711191595d",
                                                 Host = "https://vk-test-qna.azurewebsites.net/qnamaker",
                                             },
-                                            OutputProperty = "turn.LastResult"
+                                            OutputBinding = "turn.LastResult"
                                         },
                                         new IfCondition()
                                         {

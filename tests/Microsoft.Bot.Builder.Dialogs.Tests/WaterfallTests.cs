@@ -19,13 +19,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public BindingTestDialog(string dialogId, string inputBinding, string outputBinding)
             : base(dialogId)
         {
-            this.InputProperties["value"] = inputBinding;
-            this.OutputProperty = outputBinding;
+            this.InputBindings["value"] = inputBinding;
+            this.OutputBinding = outputBinding;
         }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var bindingValue = dc.State.GetValue<string>("dialog.bindings.value");
+            var bindingValue = dc.State.GetValue<string>("dialog.result.value");
             return await dc.EndDialogAsync(bindingValue).ConfigureAwait(false);
         }
     }
