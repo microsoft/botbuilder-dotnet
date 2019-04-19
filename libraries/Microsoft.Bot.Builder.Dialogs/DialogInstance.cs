@@ -30,6 +30,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Positive values are indexes within the current DC and negative values are indexes in
         /// the parent DC.
         /// </summary>
-        public int? StateIndex { get; set; }
+        public int? StackIndex { get; set; }
     }
 }
