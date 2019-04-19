@@ -16,8 +16,20 @@ export const activate = (context: vscode.ExtensionContext) => {
 export const deactivate = () => {
 }
 
+export interface AttachConfiguration extends vscode.DebugConfiguration {
+    request: 'attach';
+}
+
+export interface LaunchConfiguration extends vscode.DebugConfiguration {
+    request: 'launch';
+    command: string;
+    args: Array<string>;
+}
+
+export type Configuration = AttachConfiguration | LaunchConfiguration;
+
 class DialogConfigurationProvider implements vscode.DebugConfigurationProvider {
-    resolveDebugConfiguration(folder: vscode.WorkspaceFolder | undefined, config: vscode.DebugConfiguration, token?: vscode.CancellationToken): vscode.ProviderResult<vscode.DebugConfiguration> {
+    resolveDebugConfiguration(folder: vscode.WorkspaceFolder | undefined, config: Configuration, token?: vscode.CancellationToken): vscode.ProviderResult<Configuration> {
         // TODO: any validation or fixes or UI we want to do around configurations
         // see https://github.com/Microsoft/vscode-mock-debug/blob/master/src/extension.ts
         return config;
@@ -48,8 +60,9 @@ class DialogDebugAdapterDescriptorFactory implements vscode.DebugAdapterDescript
                 options.cwd = workspaceFolder.uri.fsPath;
             }
 
-            const args = ['run', '--', '--debugport', '0'];
-            this.handle = cp.spawn('dotnet', args, options);
+            const configuration = session.configuration as LaunchConfiguration;
+            const { command, args } = configuration;
+            this.handle = cp.spawn(command, args, options);
 
             type Listener = (...args: any[]) => void;
             type Target = { on: (event: string, Listener: Listener) => void };
