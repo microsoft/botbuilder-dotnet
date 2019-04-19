@@ -32,13 +32,15 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <summary>
         /// Constructor for expression information.
         /// </summary>
+        /// <param name="type">Expression type.</param>
         /// <param name="evaluator">Delegate to evaluate an expression.</param>
         /// <param name="returnType">Type expected from evaluation.</param>
         /// <param name="validator">Static validation of expression.</param>
-        public ExpressionEvaluator(EvaluateExpressionDelegate evaluator,
+        public ExpressionEvaluator(string type, EvaluateExpressionDelegate evaluator,
             ReturnType returnType = ReturnType.Object,
             ValidateExpressionDelegate validator = null)
         {
+            Type = type;
             _evaluator = evaluator;
             ReturnType = returnType;
             _validator = validator ?? new ValidateExpressionDelegate((expr) => { });
@@ -46,6 +48,11 @@ namespace Microsoft.Bot.Builder.Expressions
 
         private ValidateExpressionDelegate _validator;
         private EvaluateExpressionDelegate _evaluator;
+
+        /// <summary>
+        /// Expression type for evaluator.
+        /// </summary>
+        public string Type { get; }
 
         /// <summary>
         /// Evaluate an expression.

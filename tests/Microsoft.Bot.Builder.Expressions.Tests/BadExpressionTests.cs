@@ -69,9 +69,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("'1' / 2"), // params should be number
             Test("'1' % 2"), // params should be number
             Test("'1' ^ 2"), // params should be number
-            Test("'1' && true"), // params should be boolean
-            Test("'1' || true"), // params should be boolean
-            Test("!'1'"), // params should be boolean
             Test("items >= 1"), // params should be number or string
             Test("items <= 1"), // params should be number or string
             Test("'string'&one"), // $ can only accept string parameter
@@ -105,7 +102,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             # endregion
 
             # region Logical comparison functions test
-            Test("and(one, hello, one < two)"), //one and hello are not bool type
             Test("greater(one, hello)"), // string and integer are not comparable
             Test("greater(one)"), // greater need two parameters
             Test("greaterOrEquals(one, hello)"), // string and integer are not comparable
@@ -114,15 +110,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("less(one)"), // function need two parameters
             Test("lessOrEquals(one, hello)"), // string and integer are not comparable
             Test("lessOrEquals(one)"), // function need two parameters
-            Test("not(hello)"), // not can only accept bool parameter
             Test("equals(one)"), // equals must accept two parameters
             Test("exists(1, 2)"), // function need one parameter
-            Test("if(hello, 'r1', 'r2')"), // the first parameter of the if must be bool
             //Test("if(!exists(one), one, hello)"), // the second and third parameters of if must the same type
-            //Test("or(hello == 'hello')"), // or function needs two parameters
-            Test("or(hello, one)"), // or function only accept bool parameters
             Test("not(false, one)"), // function need one parameter
-            Test("not(1)"), //accept boolean param
             # endregion
 
             # region Conversion functions test
@@ -131,7 +122,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("int(hello)"), // param shoud be int format string
             Test("int(1, 1)"), // shold have 1 param
             Test("string(hello, 1)"), // shold have 1 param
-            Test("bool(hello)"), // param shoud be float format string
             Test("bool(false, 1)"), // shold have 1 param
             # endregion
 

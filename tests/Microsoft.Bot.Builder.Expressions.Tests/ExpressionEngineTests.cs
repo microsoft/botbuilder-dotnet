@@ -123,6 +123,13 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("'string'&'builder'","stringbuilder"),
             Test("\"string\"&\"builder\"","stringbuilder"),
             Test("one > 0.5 && two < 2.5", true, oneTwo),
+            Test("float(5.5) && float(0.0)", false),
+            Test("hello && \"hello\"", true),
+            Test("items || ((2 + 2) <= (4 - 1))", true), // true || false
+            Test("0 || false", false), // false || false
+            Test("!(hello)", false), // false
+            Test("!(10)", false),
+            Test("!(0)", true),
             Test("one > 0.5 || two < 1.5", true, oneTwo),
             Test("0/3", 0),
             # endregion
@@ -203,6 +210,17 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("not(one == 1.0)", false, new HashSet<string> {"one" }),
             Test("not(not(one == 1.0))", true, new HashSet<string> {"one" }),
             Test("not(false)", true),
+            Test("and(one > 0.5, two < 2.5)", true, oneTwo),
+            Test("and(float(5.5), float(0.0))", false),
+            Test("and(hello, \"hello\")", true),
+            Test("or(items, (2 + 2) <= (4 - 1))", true), // true || false
+            Test("or(0, false)", false), // false || false
+            Test("not(hello)", false), // false
+            Test("not(10)", false),
+            Test("not(0)", true),
+            Test("if(hello, 'r1', 'r2')", "r1"),
+            Test("if(0, 'r1', 'r2')", "r2"),
+            Test("if(10, 'r1', 'r2')", "r1"),
             # endregion
 
             # region  Conversion functions test
@@ -215,10 +233,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("string(bag.set)", "{\"four\":4.0}"),
             Test("bool(1)", true),
             Test("bool(0)", false),
-            Test("bool('false')", false),
-            Test("bool('true')", true),
+            Test("bool('false')", true), // we make it true, because it is not empty
+            Test("bool('hi')", true),
             Test("createArray('h', 'e', 'l', 'l', 'o')", new List<object>{"h", "e", "l", "l", "o" }),
-            Test("createArray(1, bool('false'), string(bool(1)), float('10'))", new List<object>{1, false, "true", 10.0f }),
+            Test("createArray(1, bool(0), string(bool(1)), float('10'))", new List<object>{1, false, "true", 10.0f }),
             # endregion
 
             # region  Math functions test
@@ -269,8 +287,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("subtractFromTime(timestamp, 1, 'Day')", "2018-03-14T13:00:00.0000000Z"),
             Test("subtractFromTime(timestamp, 1, 'Minute')", "2018-03-15T12:59:00.0000000Z"),
             Test("subtractFromTime(timestamp, 1, 'Second')", "2018-03-15T12:59:59.0000000Z"),
-            Test("dateReadBack(timestamp, addDays(timestamp, 1))", "Tomorrow"),
-            Test("dateReadBack(addDays(timestamp, 1),timestamp))", "Yesterday"),
+            Test("dateReadBack(timestamp, addDays(timestamp, 1))", "tomorrow"),
+            Test("dateReadBack(addDays(timestamp, 1),timestamp))", "yesterday"),
             Test("getTimeOfDay('2018-03-15T00:00:00Z')", "midnight"),
             Test("getTimeOfDay('2018-03-15T08:00:00Z')", "morning"),
             Test("getTimeOfDay('2018-03-15T12:00:00Z')", "noon"),

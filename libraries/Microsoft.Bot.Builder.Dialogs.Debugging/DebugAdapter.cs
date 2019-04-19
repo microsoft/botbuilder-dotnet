@@ -21,6 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private readonly IDataModel model;
         private readonly Source.IRegistry registry;
         private readonly IBreakpoints breakpoints;
+        private readonly Action terminate;
 
         // lifetime scoped to IMiddleware.OnTurnAsync
         private readonly ConcurrentDictionary<ITurnContext, ThreadModel> threadByContext = new ConcurrentDictionary<ITurnContext, ThreadModel>();
@@ -101,12 +102,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         private readonly Task task;
 
-        public DebugAdapter(int port, IDataModel model, Source.IRegistry registry, IBreakpoints breakpoints, ILogger logger)
+        public DebugAdapter(int port, IDataModel model, Source.IRegistry registry, IBreakpoints breakpoints, Action terminate, ILogger logger)
             : base(logger)
         {
             this.model = model ?? throw new ArgumentNullException(nameof(model));
             this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
             this.breakpoints = breakpoints ?? throw new ArgumentNullException(nameof(breakpoints));
+            this.terminate = terminate ?? throw new ArgumentNullException(nameof(terminate));
             this.task = ListenAsync(new IPEndPoint(IPAddress.Any, port), cancellationToken.Token);
         }
 
@@ -477,9 +479,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
             else if (message is Protocol.Request<Protocol.Disconnect> terminate)
             {
-                // would prefer a graceful shutdown a la IApplicationLifetime.StopAsync
-                // https://github.com/aspnet/AspNetCore/issues/7077
-                Environment.Exit(0);
+                this.terminate();
 
                 return Protocol.Response.From(NextSeq, terminate, new { });
             }

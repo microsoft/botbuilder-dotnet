@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -21,6 +22,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         void Source.IRegistry.Add(object item, Source.Range range)
         {
+            if (!Path.IsPathRooted(range.Path))
+            {
+                throw new ArgumentOutOfRangeException(range.Path);
+            }
+
             lock (gate)
             {
                 sourceByItem[item] = range;

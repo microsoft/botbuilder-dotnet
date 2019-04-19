@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     }
                     if (children.Any())
                     {
-                        Expression = Expression.MakeExpression(ExpressionType.And, null, children.ToArray());
+                        Expression = Expression.MakeExpression(ExpressionType.And, children.ToArray());
                     }
                 }
             }

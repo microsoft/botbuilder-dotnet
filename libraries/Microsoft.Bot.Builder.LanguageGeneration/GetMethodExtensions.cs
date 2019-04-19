@@ -34,9 +34,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             switch (name)
             {
                 case "lgTemplate":
-                    return new ExpressionEvaluator(BuiltInFunctions.Apply(this.LgTemplate), ReturnType.String, this.ValidLgTemplate);
+                    return new ExpressionEvaluator("lgTemplate", BuiltInFunctions.Apply(this.LgTemplate), ReturnType.String, this.ValidLgTemplate);
                 case "join":
-                    return new ExpressionEvaluator(BuiltInFunctions.Apply(this.Join));
+                    return new ExpressionEvaluator("join", BuiltInFunctions.Apply(this.Join));
             }
             return BuiltInFunctions.Lookup(name);
         }

@@ -14,8 +14,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// </summary>
         /// <param name="value"></param>
         public Constant(object value = null)
-            : base(ExpressionType.Constant, 
-                  new ExpressionEvaluator((expression, state) => ((expression as Constant).Value, null)))
+            : base(new ExpressionEvaluator(ExpressionType.Constant, (expression, state) => ((expression as Constant).Value, null)))
         {
             Value = value;
         }

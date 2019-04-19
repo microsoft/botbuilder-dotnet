@@ -13,8 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
     public sealed class Coercion : ICoercion
     {
-        public static readonly ICoercion Instance = new Coercion();
-        private Coercion()
+        public Coercion()
         {
         }
         object ICoercion.Coerce(object source, Type target)
