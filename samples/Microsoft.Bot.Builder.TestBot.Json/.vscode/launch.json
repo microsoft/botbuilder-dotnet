@@ -17,6 +17,7 @@
             "command": "dotnet",
             "args": [
                 "run",
+                "--no-build",
                 "--",
                 "--debugport",
                 "0"
