@@ -1,22 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.BotBuilderSamples.Tests.Utils;
-using Moq;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 {
     public class MainDialogIdealTests : DialogTestsBase
     {
-
         public MainDialogIdealTests(ITestOutputHelper output)
             : base(output)
         {
@@ -50,7 +44,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         [Theory]
         [InlineData("{\"Destination\":\"Bahamas\",\"Origin\":\"New York\",\"TravelDate\":\"2019-04-20\"}", "I have you booked to Bahamas from New York on tomorrow")]
         [InlineData(null, "Thank you.")]
-        public async Task MainDialogWithMockBooking(string bookingResult, string endMessage)
+        public async Task MainDialogWithMockBookingAndInlineData(string bookingResult, string endMessage)
         {
             // Arrange
             var expectedResult = bookingResult == null ? null : JsonConvert.DeserializeObject<BookingDetails>(bookingResult);
@@ -70,34 +64,32 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             Assert.Equal(endMessage, reply.Text);
         }
 
-        //[Fact]
-        //public async Task TestSingleStep()
-        //{
-        //    //Arrange
-        //    JObject Foo = new MyState("Set all my state here");
-        //    MyDialog d = new MyDialog(Foo);
-
-        //    Activity a = new New Activty("Hi");
-
-        //    // ACt
-        //    (RevisedState rs, OutputActivities oa) = RunDialogStep(MyDialog, Foo, a);
-
-        //    //Assert
-        //    Assert.rs[Targetcity] = "SFO"
-        //    Assert.oa.Count()( = 2)
-        //    Assert oa[0] = typeing
-        //    Assert
-        //}
-
-        public static IEnumerable<object[]> MainDialogData =>
-            new List<object[]>
+        public static MainDialogData<BookingDetails, string> MainDialogDataSource =>
+            new MainDialogData<BookingDetails, string>
             {
-                new object[] { null, "Thank you." },
-                new object[] { new BookingDetails { Destination = "Bahamas", Origin = "New York", TravelDate = $"{DateTime.UtcNow.AddDays(1):yyyy-MM-dd}"}, "I have you booked to Bahamas from New York on tomorrow" },
+                { null, "Thank you." },
+                {
+                    new BookingDetails
+                    {
+                        Destination = "Bahamas",
+                        Origin = "New York",
+                        TravelDate = $"{DateTime.UtcNow.AddDays(1):yyyy-MM-dd}",
+                    },
+                    "I have you booked to Bahamas from New York on tomorrow"
+                },
+                {
+                    new BookingDetails
+                    {
+                        Destination = "Seattle",
+                        Origin = "Bahamas",
+                        TravelDate = $"{DateTime.UtcNow:yyyy-MM-dd}",
+                    },
+                    "I have you booked to Seattle from Bahamas on today"
+                },
             };
 
         [Theory]
-        [MemberData(nameof(MainDialogData))]
+        [MemberData(nameof(MainDialogDataSource))]
         public async Task MainDialogWithMockBookingAndMemberData(BookingDetails expectedResult, string endMessage)
         {
             // Arrange
@@ -128,6 +120,15 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             Assert.IsType<TextPrompt>(sut.FindDialog("TextPrompt"));
             Assert.IsType<BookingDialog>(sut.FindDialog("BookingDialog"));
             Assert.IsType<WaterfallDialog>(sut.FindDialog("WaterfallDialog"));
+        }
+
+        public class MainDialogData<TBookingDetails, TExpectedReply> : TheoryData
+            where TBookingDetails : BookingDetails
+        {
+            public void Add(TBookingDetails bookingDetails, TExpectedReply expectedReply)
+            {
+                AddRow(bookingDetails, expectedReply);
+            }
         }
     }
 }
