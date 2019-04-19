@@ -911,7 +911,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     }
 
                     expression.Children = new Expression[] { expression.Children[0],
-                                                  Expression.MakeExpression(ExpressionType.Accessor, null, new Constant(prefix)) };
+                                                  Expression.MakeExpression(ExpressionType.Accessor, new Constant(prefix)) };
 
                 }
 

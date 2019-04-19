@@ -163,7 +163,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                         value = Rand.Next();
                         expression = Expression.MakeExpression(
                             type,
-                            null,
                             Expression.Accessor(name),
                             Expression.ConstantExpression(AdjustValue((int)value, type)));
                     }
@@ -173,7 +172,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                         value = Rand.NextDouble();
                         expression = Expression.MakeExpression(
                             type,
-                            null,
                             Expression.Accessor(name),
                             Expression.ConstantExpression(AdjustValue((double)value, type)));
                     }
@@ -189,15 +187,15 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
             switch (Rand.Next(3))
             {
                 case 0:
-                    expression = Expression.MakeExpression(ExpressionType.Exists, null, Expression.Accessor(name));
+                    expression = Expression.MakeExpression(ExpressionType.Exists, Expression.Accessor(name));
                     value = Rand.Next();
                     break;
                 case 1:
-                    expression = Expression.MakeExpression(ExpressionType.Exists, null, Expression.Accessor(name));
+                    expression = Expression.MakeExpression(ExpressionType.Exists, Expression.Accessor(name));
                     value = Rand.NextDouble();
                     break;
                 case 2:
-                    expression = Expression.MakeExpression(ExpressionType.NotEqual, null, Expression.Accessor(name), Expression.ConstantExpression(null));
+                    expression = Expression.MakeExpression(ExpressionType.NotEqual, Expression.Accessor(name), Expression.ConstantExpression(null));
                     value = RandomString(5);
                     break;
             }
@@ -286,7 +284,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                     var predicate = predicates[choice];
                     if (j == 0)
                     {
-                        var optional = Expression.MakeExpression(TriggerTree.Optional, TriggerTree.LookupFunction(TriggerTree.Optional), predicate.Expression);
+                        var optional = Expression.MakeExpression(TriggerTree.LookupFunction(TriggerTree.Optional), predicate.Expression);
                         if (Rand.NextDouble() < 0.25)
                         {
                             optional = Expression.NotExpression(optional);
@@ -318,7 +316,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                 }
                 else
                 {
-                    binaryExpression = Expression.MakeExpression(type, null, binaryExpression, info.Expression);
+                    binaryExpression = Expression.MakeExpression(type, binaryExpression, info.Expression);
                 }
             }
             return binaryExpression;

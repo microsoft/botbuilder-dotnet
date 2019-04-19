@@ -373,7 +373,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 }
                 if (changed)
                 {
-                    newExpr = new Expression(expression.Type, expression.Evaluator, children.ToArray());
+                    newExpr = new Expression(expression.Evaluator, children.ToArray());
                 }
             }
             return newExpr;

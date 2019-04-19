@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Expressions
             }
             else
             {
-                result = Expression.MakeExpression(ExpressionType.Or, null, children.ToArray());
+                result = Expression.MakeExpression(ExpressionType.Or, children.ToArray());
             }
             return result;
         }
@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Expressions
                                             var children = new List<Expression>();
                                             children.AddRange(old.Children);
                                             children.AddRange(clause.Children);
-                                            newClauses.Add(Expression.MakeExpression(ExpressionType.And, null, children.ToArray()));
+                                            newClauses.Add(Expression.MakeExpression(ExpressionType.And, children.ToArray()));
                                         }
                                         else
                                         {
@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     }
                     else
                     {
-                        yield return Expression.MakeExpression(ExpressionType.And, null, expression);
+                        yield return Expression.MakeExpression(ExpressionType.And, expression);
                     }
                     break;
             }
@@ -159,11 +159,11 @@ namespace Microsoft.Bot.Builder.Expressions
                     {
                         if (inNot)
                         {
-                            newExpr = Expression.MakeExpression(ExpressionType.Or, null, (from child in expression.Children select PushDownNot(child, passThrough, true)).ToArray());
+                            newExpr = Expression.MakeExpression(ExpressionType.Or, (from child in expression.Children select PushDownNot(child, passThrough, true)).ToArray());
                         }
                         else
                         {
-                            newExpr = Expression.MakeExpression(ExpressionType.And, null, (from child in expression.Children select PushDownNot(child, passThrough, false)).ToArray());
+                            newExpr = Expression.MakeExpression(ExpressionType.And, (from child in expression.Children select PushDownNot(child, passThrough, false)).ToArray());
                         }
                     }
                     break;
@@ -171,11 +171,11 @@ namespace Microsoft.Bot.Builder.Expressions
                     {
                         if (inNot)
                         {
-                            newExpr = Expression.MakeExpression(ExpressionType.And, null, (from child in expression.Children select PushDownNot(child, passThrough, true)).ToArray());
+                            newExpr = Expression.MakeExpression(ExpressionType.And, (from child in expression.Children select PushDownNot(child, passThrough, true)).ToArray());
                         }
                         else
                         {
-                            newExpr = Expression.MakeExpression(ExpressionType.Or, null, (from child in expression.Children select PushDownNot(child, passThrough, false)).ToArray());
+                            newExpr = Expression.MakeExpression(ExpressionType.Or, (from child in expression.Children select PushDownNot(child, passThrough, false)).ToArray());
                         }
                     }
                     break;
@@ -186,52 +186,52 @@ namespace Microsoft.Bot.Builder.Expressions
                 case ExpressionType.LessThan:
                     if (inNot)
                     {
-                        newExpr = Expression.MakeExpression(ExpressionType.GreaterThanOrEqual, null, expression.Children);
+                        newExpr = Expression.MakeExpression(ExpressionType.GreaterThanOrEqual, expression.Children);
                     }
                     break;
                 case ExpressionType.LessThanOrEqual:
                     if (inNot)
                     {
-                        newExpr = Expression.MakeExpression(ExpressionType.GreaterThan, null, expression.Children);
+                        newExpr = Expression.MakeExpression(ExpressionType.GreaterThan, expression.Children);
                     }
                     break;
                 case ExpressionType.Equal:
                     if (inNot)
                     {
-                        newExpr = Expression.MakeExpression(ExpressionType.NotEqual, null, expression.Children);
+                        newExpr = Expression.MakeExpression(ExpressionType.NotEqual, expression.Children);
                     }
                     break;
                 case ExpressionType.NotEqual:
                     if (inNot)
                     {
-                        newExpr = Expression.MakeExpression(ExpressionType.Equal, null, expression.Children);
+                        newExpr = Expression.MakeExpression(ExpressionType.Equal, expression.Children);
                     }
                     break;
                 case ExpressionType.GreaterThanOrEqual:
                     if (inNot)
                     {
-                        newExpr = Expression.MakeExpression(ExpressionType.LessThan, null, expression.Children);
+                        newExpr = Expression.MakeExpression(ExpressionType.LessThan, expression.Children);
                     }
                     break;
                 case ExpressionType.GreaterThan:
                     if (inNot)
                     {
-                        newExpr = Expression.MakeExpression(ExpressionType.LessThanOrEqual, null, expression.Children);
+                        newExpr = Expression.MakeExpression(ExpressionType.LessThanOrEqual, expression.Children);
                     }
                     break;
                 case ExpressionType.Exists:
                     // Rewrite exists(x) -> x != null
-                    newExpr = Expression.MakeExpression(inNot ? ExpressionType.Equal : ExpressionType.NotEqual, null, expression.Children[0], Expression.ConstantExpression(null));
+                    newExpr = Expression.MakeExpression(inNot ? ExpressionType.Equal : ExpressionType.NotEqual, expression.Children[0], Expression.ConstantExpression(null));
                     break;
                 default:
                     if (passThrough.Contains(expression.Type))
                     {
                         // Pass through marker functions like optional/ignore to children
-                        newExpr = Expression.MakeExpression(expression.Type, expression.Evaluator, PushDownNot(expression.Children[0], passThrough, inNot));
+                        newExpr = Expression.MakeExpression(expression.Evaluator, PushDownNot(expression.Children[0], passThrough, inNot));
                     }
                     else if (inNot)
                     {
-                        newExpr = Expression.MakeExpression(ExpressionType.Not, null, expression);
+                        newExpr = Expression.MakeExpression(ExpressionType.Not, expression);
                     }
                     break;
             }
