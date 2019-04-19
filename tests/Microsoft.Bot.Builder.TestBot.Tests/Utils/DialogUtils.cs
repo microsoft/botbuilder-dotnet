@@ -6,10 +6,10 @@ namespace Microsoft.BotBuilderSamples.Tests.Utils
 {
     public static class DialogUtils
     {
-        public static Mock<T> CreateMockDialog<T>(object expectedResult)
+        public static Mock<T> CreateMockDialog<T>(object expectedResult = null, params object[] constructorParams)
             where T : Dialog
         {
-            var mockDialog = new Mock<T>();
+            var mockDialog = new Mock<T>(constructorParams);
             var mockDialogNameTypeName = typeof(T).Name;
             mockDialog.Setup(x => x.BeginDialogAsync(It.IsAny<DialogContext>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
                 .Returns(async (DialogContext dialogContext, object options, CancellationToken cancellationToken) =>

@@ -48,7 +48,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         }
 
         [Theory]
-        [InlineData("{\"Destination\":\"Bahamas\",\"Origin\":\"New York\",\"TravelDate\":\"2019-04-19\"}", "I have you booked to Bahamas from New York on tomorrow")]
+        [InlineData("{\"Destination\":\"Bahamas\",\"Origin\":\"New York\",\"TravelDate\":\"2019-04-20\"}", "I have you booked to Bahamas from New York on tomorrow")]
         [InlineData(null, "Thank you.")]
         public async Task MainDialogWithMockBooking(string bookingResult, string endMessage)
         {
@@ -93,7 +93,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             new List<object[]>
             {
                 new object[] { null, "Thank you." },
-                new object[] { new BookingDetails { Destination = "BahXamas", Origin = "New York", TravelDate = $"{DateTime.UtcNow.AddDays(1):yyyy-MM-dd}"}, "I have you booked to Bahamas from New York on tomorrow" },
+                new object[] { new BookingDetails { Destination = "Bahamas", Origin = "New York", TravelDate = $"{DateTime.UtcNow.AddDays(1):yyyy-MM-dd}"}, "I have you booked to Bahamas from New York on tomorrow" },
             };
 
         [Theory]

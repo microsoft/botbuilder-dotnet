@@ -6,7 +6,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
-using Moq;
+using Microsoft.BotBuilderSamples.Tests.Utils;
 using Xunit;
 
 namespace Microsoft.BotBuilderSamples.Tests.Bots
@@ -16,31 +16,32 @@ namespace Microsoft.BotBuilderSamples.Tests.Bots
         [Fact]
         public async Task ReturnsWelcomeCardOnConversationUpdate()
         {
-            var mockRootDialog = new Mock<Dialog>("mockRootDialog");
-            mockRootDialog.Setup(x => x.ContinueDialogAsync(It.IsAny<DialogContext>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult(new DialogTurnResult(DialogTurnStatus.Empty)));
+            // Arrange
+            var mockRootDialog = DialogUtils.CreateMockDialog<Dialog>(expectedResult: null, "mockRootDialog");
 
             // TODO: do we need state here?
             var memoryStorage = new MemoryStorage();
             var sut = new DialogAndWelcomeBot<Dialog>(new ConversationState(memoryStorage), new UserState(memoryStorage), mockRootDialog.Object, null);
+            var conversationUpdateActivity = new Activity
+            {
+                Type = ActivityTypes.ConversationUpdate,
+                MembersAdded = new List<ChannelAccount>
+                {
+                    new ChannelAccount { Id = "theUser" },
+                },
+                Recipient = new ChannelAccount { Id = "theBot" },
+            };
             var testAdapter = new TestAdapter();
-            var testFlow = new TestFlow(testAdapter, sut);
-            await testFlow.Send(new Activity
-                {
-                    Type = ActivityTypes.ConversationUpdate,
-                    MembersAdded = new List<ChannelAccount>
-                    {
-                        new ChannelAccount { Id = "theUser" },
-                    },
-                    Recipient = new ChannelAccount { Id = "theBot" },
-                })
-                .AssertReply(activity =>
-                {
-                    var message = (IMessageActivity)activity;
-                    Assert.Equal(1, message.Attachments.Count);
-                    Assert.Equal("application/vnd.microsoft.card.adaptive", message.Attachments.FirstOrDefault()?.ContentType);
-                })
-                .StartTestAsync();
+
+            // Act
+            // Note: it is kind of obscure that we need to use OnTurnAsync to trigger OnMembersAdded so we get the card
+            await testAdapter.ProcessActivityAsync(conversationUpdateActivity, sut.OnTurnAsync, CancellationToken.None);
+            var reply = testAdapter.GetNextReply();
+
+            // Assert
+            var m = (IMessageActivity)reply;
+            Assert.Equal(1, m.Attachments.Count);
+            Assert.Equal("application/vnd.microsoft.card.adaptive", m.Attachments.FirstOrDefault()?.ContentType);
         }
     }
 }
