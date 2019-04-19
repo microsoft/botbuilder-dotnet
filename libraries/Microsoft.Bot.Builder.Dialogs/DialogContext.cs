@@ -220,14 +220,14 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Process dialogs input bindings
             // - If the stack is empty, any 'dialog.*' bindings will be pulled from the active dialog on
             //   the parents stack.
-            var stateBindings = State.GetValue<Dictionary<string, object>>("dialog.bindings");
+            var stateBindings = State.GetValue<Dictionary<string, object>>("dialog.result");
 
             if (stateBindings == null)
             {
                 stateBindings = new Dictionary<string, object>();
             }
 
-            foreach (var option in dialog.InputProperties)
+            foreach (var option in dialog.InputBindings)
             {
                 var bindingKey = option.Key;
                 var bindingValue = option.Value;
@@ -237,7 +237,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 stateBindings[bindingKey] = value;
             }
 
-            State.SetValue("dialog.bindings", stateBindings);
+            State.SetValue("dialog.result", stateBindings);
 
 
             // Call dialogs BeginAsync() method.
@@ -418,7 +418,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             this.State.Turn["__repeatDialogId"] = dialogId;
-
             // Start replacement dialog
             return await BeginDialogAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
         }
@@ -586,9 +585,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 Stack.RemoveAt(0);
 
                 // Process dialogs output binding
-                if (!string.IsNullOrEmpty(dialog?.OutputProperty) && result != null)
+                if (!string.IsNullOrEmpty(dialog?.OutputBinding) && result != null)
                 {
-                    this.State.SetValue(dialog.OutputProperty, result);
+                    this.State.SetValue(dialog.OutputBinding, result);
                 }
             }
         }

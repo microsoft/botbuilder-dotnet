@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 new UnknownIntentRule(
                     new List<IDialog>()
                     {
-                        new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"),  OutputProperty = "user.name" },
+                        new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"),  OutputBinding = "user.name" },
                         new SendActivity("Hello {user.name}, nice to meet you!"),
                     })});
 
@@ -134,7 +134,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             {
                                 new TextInput() {
                                     Prompt  = new ActivityTemplate("Hello, what is your name?"),
-                                    OutputProperty = "user.name"
+                                    OutputBinding = "user.name"
                                 },
                             }
                         },
@@ -295,7 +295,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 new TextInput()
                                 {
                                     Prompt  = new ActivityTemplate("Hello, what is your name?"),
-                                    OutputProperty = "user.name"
+                                    OutputBinding = "user.name"
                                 }
                             }
                         },
@@ -348,7 +348,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new TextInput()
                             {
                                 Prompt  = new ActivityTemplate("Hello, what is your name?"),
-                                OutputProperty = "user.name"
+                                OutputBinding = "user.name"
                             }
                         }
                     },
@@ -529,7 +529,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
                 Steps = new List<IDialog>()
                 {
-                    new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputProperty = "user.name" },
+                    new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name" },
                     new SendActivity("Hello {user.name}, nice to meet you!"),
                     new EndTurn(),
                     new RepeatDialog()

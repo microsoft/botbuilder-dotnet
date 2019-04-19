@@ -35,12 +35,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         {
             get
             {
-                return InputProperties["value"];
+                return InputBindings["value"];
             }
             set
             {
-                InputProperties["value"] = value;
-                OutputProperty = value;
+                InputBindings["value"] = value;
+                OutputBinding = value;
             }
         }
 
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             : base()
         {
             this.dialogIdToCall = dialogIdToCall;
-            this.OutputProperty = "dialog.lastResult";
+            this.OutputBinding = "dialog.lastResult";
 
             if (options != null)
             {

@@ -86,6 +86,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                 .AssertReply("Hello, I'm Zoidberg. What is your name?")
             .Send("Carlos")
                 .AssertReply("Hello Carlos, nice to talk to you!")
+            .Send("hi")
+                .AssertReply("Hello Carlos, nice to talk to you!")
                 .StartTestAsync();
         }
 
