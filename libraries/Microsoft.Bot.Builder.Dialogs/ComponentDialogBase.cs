@@ -189,9 +189,14 @@ namespace Microsoft.Bot.Builder.Dialogs
             return innerDc.ConsultDialogAsync(cancellationToken);
         }
 
-        protected virtual Task<DialogTurnResult> OnContinueDialogAsync(DialogContext innerDc, DialogConsultation consultation = null, CancellationToken cancellationToken = default(CancellationToken))
+        protected virtual Task<DialogTurnResult> OnContinueDialogAsync(DialogContext innerDc, DialogConsultation consultation, CancellationToken cancellationToken = default(CancellationToken))
         {
             return consultation != null ? consultation.Processor(innerDc) : innerDc.ContinueDialogAsync(cancellationToken);
+        }
+
+        protected virtual Task<DialogTurnResult> OnContinueDialogAsync(DialogContext innerDc, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return OnContinueDialogAsync(innerDc, null, cancellationToken);
         }
 
         protected virtual Task OnEndDialogAsync(ITurnContext context, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
