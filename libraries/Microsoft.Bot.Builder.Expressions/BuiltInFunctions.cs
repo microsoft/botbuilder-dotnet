@@ -1130,7 +1130,8 @@ namespace Microsoft.Bot.Builder.Expressions
                    Apply(args =>
                    {
                        DateTime timestamp1 = ParseTimestamp(args[0]);
-                       var timex = new TimexProperty((string)args[1]);
+                       DateTime timestamp2 = ParseTimestamp(args[1]);
+                       var timex = new TimexProperty(timestamp2.ToString("yyyy-MM-dd"));
                        return TimexRelativeConvert.ConvertTimexToStringRelative(timex, timestamp1);
                    }, VerifyString),
                    ReturnType.String, expr => ValidateOrder(expr, null, ReturnType.String, ReturnType.String)),
