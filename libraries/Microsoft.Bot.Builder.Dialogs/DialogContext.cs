@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     instance = new DialogInstance()
                     {
                         Id = frame.Id,
-                        State = GetActiveDialogState(this, frame.State),
+                        State = GetActiveDialogState(this, frame.State, frame.StateIndex),
                     };
                 }
 
@@ -174,18 +174,19 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Check for inherited state
             // Local stack references are positive numbers and negative numbers are references on the
             // parents stack.
-            object state = null;
+            Dictionary<string, object> state = null;
+            int stateIndex = 0;
 
             if (dialog is DialogCommand)
             {
                 if (Stack.Count > 0)
                 {
-                    state = Stack.Count - 1;
+                    stateIndex = Stack.Count - 1;
                 }
                 else if (Parent != null)
                 {
                     // We can't use -0 so index 0 in the parent's stack is encoded as -1
-                    state = 0 - Parent.Stack.Count;
+                    stateIndex = 0 - Parent.Stack.Count;
                 }
 
                 // Find stack entry to inherit
@@ -193,7 +194,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     if (Stack[i].GetType() == typeof(object))
                     {
-                        state = i;
+                        stateIndex = i;
                         break;
                     }
                 }
@@ -209,6 +210,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 Id = dialogId,
                 State = state,
+                StateIndex = stateIndex
             };
 
             Stack.Insert(0, instance);
@@ -590,24 +592,24 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        private object GetActiveDialogState(DialogContext dialogContext, object state)
+        private Dictionary<string, object> GetActiveDialogState(DialogContext dialogContext, Dictionary<string, object> state = null, int? stateIdx = null)
         {
-            if (state == null)
+            if (state == null && !stateIdx.HasValue)
             {
-                throw new ArgumentNullException(nameof(state));
+                throw new ArgumentNullException($"Either {nameof(state)} or {nameof(stateIdx)} must be provided");
             }
 
-            if (state.GetType() == typeof(int))
+            if (stateIdx.HasValue)
             {
                 // Positive values are indexes within the current DC and negative values are indexes in
                 // the parent DC.
-                int stateIndex = (int)state;
+                int stateIndex = stateIdx.Value;
 
                 if (stateIndex >= 0)
                 {
                     if (stateIndex < dialogContext.Stack.Count)
                     {
-                        return this.GetActiveDialogState(dialogContext, dialogContext.Stack[stateIndex].State);
+                        return this.GetActiveDialogState(dialogContext, null, stateIndex);
                     }
                     else
 
@@ -617,7 +619,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
                 else if (dialogContext.Parent != null)
                 {
-                    return this.GetActiveDialogState(dialogContext.Parent, -stateIndex - 1);
+                    return this.GetActiveDialogState(dialogContext.Parent, null, -stateIndex - 1);
                 }
                 else
                 {
