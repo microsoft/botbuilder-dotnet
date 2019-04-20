@@ -104,15 +104,12 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             # endregion
 
             # region Logical comparison functions test
-            Test("and(less('hi', 5))"), // children func error
-            Test("or(less('hi', 5))"), // children func error
             Test("greater(one, hello)"), // string and integer are not comparable
             Test("greater(one)"), // greater need two parameters
             Test("greaterOrEquals(one, hello)"), // string and integer are not comparable
             Test("greaterOrEquals(one)"), // function need two parameters
             Test("less(false, true)"), // string or number parameters are needed
             Test("less(one, hello)"), // string and integer are not comparable
-            Test("less(items, items)"), // string or number parameters are needed
             Test("less(one)"), // function need two parameters
             Test("lessOrEquals(one, hello)"), // string and integer are not comparable
             Test("lessOrEquals(one)"), // function need two parameters
