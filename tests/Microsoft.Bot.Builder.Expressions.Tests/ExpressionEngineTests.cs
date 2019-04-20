@@ -152,6 +152,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("substring('hello', 0, 5)", "hello"),
             Test("substring('hello', 0, 3)", "hel"),
             Test("substring('hello', 3)", "lo"),
+            Test("substring('hello', 0, bag.index)", "hel"),
             Test("toLower('UpCase')", "upcase"),
             Test("toUpper('lowercase')", "LOWERCASE"),
             Test("toLower(toUpper('lowercase'))", "lowercase"),

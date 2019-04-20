@@ -895,7 +895,6 @@ namespace Microsoft.Bot.Builder.Expressions
                     {
                         error = $"{startExpr}={start} which is out of range for {str}.";
                     }
-                    
                     if (error == null)
                     {
                         dynamic length;
