@@ -305,12 +305,12 @@ namespace Microsoft.Bot.Builder.Expressions
             return error;
         }
 
-        /// <summary>	
-        /// Verify value is boolean.	
-        /// </summary>	
-        /// <param name="value">Value to check.</param>	
-        /// <param name="expression">Expression that led to value.</param>	
-        /// <returns>Error or null if valid.</returns>	
+        /// <summary>
+        /// Verify value is boolean.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <param name="expression">Expression that led to value.</param>
+        /// <returns>Error or null if valid.</returns>
         public static string VerifyBoolean(object value, Expression expression)
         {
             string error = null;
