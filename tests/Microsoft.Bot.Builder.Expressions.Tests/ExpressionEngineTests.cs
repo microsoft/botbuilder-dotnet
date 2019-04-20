@@ -74,7 +74,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         public static IEnumerable<object[]> Data => new[]
        {
             # region Operators test
-            
             Test("1 + 2", 3),
             Test("- 1 + 2", 1),
             Test("+ 1 + 2", 3),
@@ -123,14 +122,15 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("'string'&'builder'","stringbuilder"),
             Test("\"string\"&\"builder\"","stringbuilder"),
             Test("one > 0.5 && two < 2.5", true, oneTwo),
-            Test("float(5.5) && float(0.0)", false),
+            Test("float(5.5) && float(0.0)", true),
             Test("hello && \"hello\"", true),
             Test("items || ((2 + 2) <= (4 - 1))", true), // true || false
-            Test("0 || false", false), // false || false
+            Test("0 || false", true), // true || false
             Test("!(hello)", false), // false
             Test("!(10)", false),
-            Test("!(0)", true),
+            Test("!(0)", false),
             Test("one > 0.5 || two < 1.5", true, oneTwo),
+            Test("one / 0 || two", true),
             Test("0/3", 0),
             # endregion
 
@@ -150,6 +150,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("split('hello','e')",new string[]{ "h","llo"}),
             Test("substring('hello', 0, 5)", "hello"),
             Test("substring('hello', 0, 3)", "hel"),
+            Test("substring('hello', 3)", "lo"),
             Test("toLower('UpCase')", "upcase"),
             Test("toUpper('lowercase')", "LOWERCASE"),
             Test("toLower(toUpper('lowercase'))", "lowercase"),
@@ -196,10 +197,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("equals(bag.index, 3)", true),
             Test("equals(bag.index, 2)", false),
             Test("equals(hello == 'world', bool('true'))", false),//false, true
-            Test("equals(hello == 'world', bool(0))", true),//false, false
+            Test("equals(hello == 'world', bool(0))", false),//false, true
             Test("if(!exists(one), 'r1', 'r2')", "r2"),//false
             Test("if(!!exists(one), 'r1', 'r2')", "r1"),//true
-            Test("if(bool(0), 'r1', 'r2')", "r2"),//false
+            Test("if(0, 'r1', 'r2')", "r1"),//true
             Test("if(bool('true'), 'r1', 'r2')", "r1"),//true
             Test("exists(one)", true),
             Test("exists(xxx)", false),
@@ -211,15 +212,16 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("not(not(one == 1.0))", true, new HashSet<string> {"one" }),
             Test("not(false)", true),
             Test("and(one > 0.5, two < 2.5)", true, oneTwo),
-            Test("and(float(5.5), float(0.0))", false),
+            Test("and(float(5.5), float(0.0))", true),
             Test("and(hello, \"hello\")", true),
             Test("or(items, (2 + 2) <= (4 - 1))", true), // true || false
-            Test("or(0, false)", false), // false || false
+            Test("or(0, false)", true), // true || false
             Test("not(hello)", false), // false
             Test("not(10)", false),
-            Test("not(0)", true),
+            Test("not(0)", false),
             Test("if(hello, 'r1', 'r2')", "r1"),
-            Test("if(0, 'r1', 'r2')", "r2"),
+            Test("if(null, 'r1', 'r2')", "r2"),
+            Test("if(hello * 5, 'r1', 'r2')", "r2"),
             Test("if(10, 'r1', 'r2')", "r1"),
             # endregion
 
@@ -232,11 +234,13 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("string(bool(1))", "true"),
             Test("string(bag.set)", "{\"four\":4.0}"),
             Test("bool(1)", true),
-            Test("bool(0)", false),
-            Test("bool('false')", true), // we make it true, because it is not empty
+            Test("bool(0)", true),
+            Test("bool(null)", false),
+            Test("bool(hello * 5)", false),
+            Test("bool('false')", true), 
             Test("bool('hi')", true),
             Test("createArray('h', 'e', 'l', 'l', 'o')", new List<object>{"h", "e", "l", "l", "o" }),
-            Test("createArray(1, bool(0), string(bool(1)), float('10'))", new List<object>{1, false, "true", 10.0f }),
+            Test("createArray(1, bool(0), string(bool(1)), float('10'))", new List<object>{1, true, "true", 10.0f }),
             # endregion
 
             # region  Math functions test

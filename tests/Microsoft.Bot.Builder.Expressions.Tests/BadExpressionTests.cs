@@ -69,8 +69,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("'1' / 2"), // params should be number
             Test("'1' % 2"), // params should be number
             Test("'1' ^ 2"), // params should be number
-            Test("items >= 1"), // params should be number or string
-            Test("items <= 1"), // params should be number or string
             Test("'string'&one"), // $ can only accept string parameter
              Test("1/0"), // $ can not divide 0
             # endregion
@@ -193,6 +191,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("getTimeOfDay(timestamp, timestamp)"), // should have 1 param
 
             # endregion
+
             # region collection functions test
             Test("sum(items, 'hello')"),//should have 1 parameter
             Test("sum('hello')"),//first param should be list
