@@ -305,6 +305,22 @@ namespace Microsoft.Bot.Builder.Expressions
             return error;
         }
 
+        /// <summary>	
+        /// Verify value is boolean.	
+        /// </summary>	
+        /// <param name="value">Value to check.</param>	
+        /// <param name="expression">Expression that led to value.</param>	
+        /// <returns>Error or null if valid.</returns>	
+        public static string VerifyBoolean(object value, Expression expression)
+        {
+            string error = null;
+            if (!(value is bool))
+            {
+                error = $"{expression} is not a boolean.";
+            }
+            return error;
+        }
+
         // Apply -- these are helpers for adding functions to the expression library.
 
         /// <summary>
