@@ -1,3 +1,18 @@
-﻿# template
+﻿> condition error
+# template
 - IF: hi
     - hello
+
+> more than 1 if
+# templat2
+ - IF: {true}
+    - hello
+- IF: {false}
+    - hi
+
+> else should not follewed by any expressions
+# templat3
+ - IF: {true}
+    - hello
+- ELSE: {false}
+    - hi
