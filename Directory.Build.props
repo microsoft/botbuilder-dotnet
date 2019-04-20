@@ -56,4 +56,8 @@
 
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
+  
+  <PropertyGroup>
+    <DefaultItemExcludes>.git\**;**\node_modules\**;$(DefaultItemExcludes)</DefaultItemExcludes>
+  </PropertyGroup>
 </Project>

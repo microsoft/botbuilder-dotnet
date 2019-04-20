@@ -12,7 +12,7 @@
   ],
   "icon": "icon.png",
   "preview": true,
-  "version": "1.0.1-preview",
+  "version": "1.0.2-preview",
   "publisher": "Microsoft",
   "license": "SEE LICENSE file",
   "engines": {
@@ -74,10 +74,11 @@
           {
             "type": "json",
             "request": "launch",
-            "name": "Launch .NET Core Bot",
+            "name": "Debug Bot (.NET)",
             "command": "dotnet",
             "args": [
               "run",
+              "--no-build",
               "--",
               "--debugport",
               "0"
@@ -101,10 +102,11 @@
             "body": {
               "type": "json",
               "request": "launch",
-              "name": "Debug Bot",
+              "name": "Debug Bot (.NET)",
               "command": "dotnet",
               "args": [
                 "run",
+                "--no-build",
                 "--",
                 "--debugport",
                 "0"

@@ -6,11 +6,18 @@
     "configurations": [
         {
             "type": "json",
+            "request": "attach",
+            "name": "Attach to Bot",
+            "debugServer": 4712
+        },
+        {
+            "type": "json",
             "request": "launch",
             "name": "Debug Bot",
             "command": "dotnet",
             "args": [
                 "run",
+                "--no-build",
                 "--",
                 "--debugport",
                 "0"
