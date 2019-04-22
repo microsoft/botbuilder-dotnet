@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 var adapter = new BotFrameworkHttpAdapter();
                 adapter
                     .UseStorage(storage)
-                    .UseState()
+                    .UseState(userState, conversationState)
                     .UseResourceExplorer(resourceExplorer, () =>
                     {
                         TypeFactory.Register("Testbot.CalculateDogYears", typeof(CalculateDogYears));

@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="conversationState">ConversationState to use (default is new ConversationState (registered storage))</param>
         /// <param name="auto">automatically manage state (default is true), if set to false, it is your responsibility to load and save state</param>
         /// <returns>Botadapter</returns>
-        public static BotAdapter UseState(this BotAdapter botAdapter, UserState userState = null, ConversationState conversationState = null, bool auto=true)
+        public static BotAdapter UseState(this BotAdapter botAdapter, UserState userState, ConversationState conversationState, bool auto = true)
         {
             if (botAdapter == null)
             {
