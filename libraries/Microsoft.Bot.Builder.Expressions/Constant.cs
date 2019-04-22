@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Expressions
             {
                 return "null";
             }
-            else if (Value is string str)
+            else if (Value is string)
             {
                 return $"'{Value}'";
             }
