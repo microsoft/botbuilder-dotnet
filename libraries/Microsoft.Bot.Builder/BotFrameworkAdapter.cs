@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder
                 Use(middleware);
             }
 
-            Use(new FixTenantID);
+            Use(new FixTenantID());
 
             // DefaultRequestHeaders are not thread safe so set them up here because this adapter should be a singleton.
             ConnectorClient.AddDefaultRequestHeaders(_httpClient);
