@@ -943,8 +943,8 @@ namespace Microsoft.Bot.Builder
     {
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
         {
-            if (!turnContext.Activity && turnContext.Activity.Conversation && !turnContext.Activity.Conversation.tenantId && turnContext.Activity.ChannelData.tenant) {
-                turnContext.Activity.Conversation.tenantId = turnContext.Activity.ChannelData.tenant.id;
+            if (turnContext.Activity.Conversation && !turnContext.Activity.Conversation.TenantId && turnContext.Activity.ChannelData.tenant) {
+                turnContext.Activity.Conversation.TenantId = turnContext.Activity.ChannelData.tenant.id;
             }
             await next(cancellationToken);
         }
