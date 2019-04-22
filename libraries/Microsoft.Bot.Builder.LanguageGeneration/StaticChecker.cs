@@ -23,13 +23,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
     public class StaticChecker : LGFileParserBaseVisitor<List<ReportEntry>>
     {
-        private readonly List<LGTemplate> templates;
+        public readonly List<LGTemplate> Templates;
 
         private Dictionary<string, LGTemplate> templateMap = new Dictionary<string, LGTemplate>();
 
         public StaticChecker(List<LGTemplate> templates)
         {
-            this.templates = templates;
+            this.Templates = templates;
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var result = new List<ReportEntry>();
 
             // check dup first
-            var duplicatedTemplates = templates
+            var duplicatedTemplates = Templates
                                       .GroupBy(t => t.Name)
                                       .Where(g => g.Count() > 1)
                                       .ToList();
@@ -61,16 +61,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             // Covert to dict should be fine after checking dup
-            templateMap = templates.ToDictionary(t => t.Name);
+            templateMap = Templates.ToDictionary(t => t.Name);
 
-            if (templates.Count == 0)
+            if (Templates.Count == 0)
             {
                 result.Add(new ReportEntry(
                     "File must have at least one template definition ",
                     ReportEntryType.WARN));
             }
 
-            templates.ForEach(t =>
+            Templates.ForEach(t =>
             {
                 result.AddRange(Visit(t.ParseTree));
             });
@@ -313,7 +313,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             exp = exp.TrimStart('{').TrimEnd('}');
             try
             {
-                new ExpressionEngine(new GetMethodExtensions(new Evaluator(this.templates, null)).GetMethodX).Parse(exp);
+                new ExpressionEngine(new GetMethodExtensions(new Evaluator(this.Templates, null)).GetMethodX).Parse(exp);
             }
             catch (Exception e)
             {

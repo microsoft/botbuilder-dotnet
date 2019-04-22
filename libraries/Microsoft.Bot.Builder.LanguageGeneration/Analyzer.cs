@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class Analyzer : LGFileParserBaseVisitor<List<string>>
     {
-        private readonly List<LGTemplate> templates;
+        public readonly List<LGTemplate> Templates;
         private readonly Dictionary<string, LGTemplate> templateMap;
 
         private readonly IExpressionParser _expressionParser;
@@ -20,9 +20,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public Analyzer(List<LGTemplate> templates)
         {
-            this.templates = templates;
+            this.Templates = templates;
             templateMap = templates.ToDictionary(t => t.Name);
-            _expressionParser = new ExpressionEngine(new GetMethodExtensions(new Evaluator(this.templates, null)).GetMethodX);
+            _expressionParser = new ExpressionEngine(new GetMethodExtensions(new Evaluator(this.Templates, null)).GetMethodX);
         }
 
         public List<string> AnalyzeTemplate(string templateName)
