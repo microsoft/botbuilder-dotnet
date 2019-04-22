@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             this.model = model ?? new DataModel(coercion ?? new Coercion());
             this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
             this.breakpoints = breakpoints ?? throw new ArgumentNullException(nameof(breakpoints));
-            this.terminate = terminate ?? throw new ArgumentNullException(nameof(terminate));
+            this.terminate = terminate ?? new Action(() => Environment.Exit(0));
             this.task = ListenAsync(new IPEndPoint(IPAddress.Any, port), cancellationToken.Token);
         }
 
