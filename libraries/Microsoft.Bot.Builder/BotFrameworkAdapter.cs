@@ -93,6 +93,8 @@ namespace Microsoft.Bot.Builder
                 Use(middleware);
             }
 
+            Use(new FixTenantID);
+
             // DefaultRequestHeaders are not thread safe so set them up here because this adapter should be a singleton.
             ConnectorClient.AddDefaultRequestHeaders(_httpClient);
         }
@@ -931,6 +933,20 @@ namespace Microsoft.Bot.Builder
                 new MicrosoftAppCredentials(appId, appPassword, _httpClient);
             _appCredentialMap[appId] = appCredentials;
             return appCredentials;
+        }
+    }
+
+    /// <summary>
+    /// Relocate the tenantId field to the new location for MS Teams
+    /// </summary>
+    private class FixTenantID : IMiddleware
+    {
+        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
+        {
+            if (!turnContext.Activity && turnContext.Activity.Conversation && !turnContext.Activity.Conversation.tenantId && turnContext.Activity.ChannelData.tenant) {
+                turnContext.Activity.Conversation.tenantId = turnContext.Activity.ChannelData.tenant.id;
+            }
+            await next(cancellationToken);
         }
     }
 }
