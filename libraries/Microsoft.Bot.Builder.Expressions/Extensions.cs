@@ -66,9 +66,30 @@ namespace Microsoft.Bot.Builder.Expressions
                     else
                     {
                         eq = expr.Children.Count() == other.Children.Count();
-                        for (var i = 0; eq && i < expr.Children.Count(); ++i)
+                        if (expr.Type == ExpressionType.And || expr.Type == ExpressionType.Or)
                         {
-                            eq = expr.Children[i].DeepEquals(other.Children[i]);
+                            // And/Or do not depend on order
+                            for (var i = 0; eq && i < expr.Children.Count(); ++i)
+                            {
+                                var primary = expr.Children[i];
+                                var found = false;
+                                for (var j = 0; j < expr.Children.Count(); ++j)
+                                {
+                                    if (primary.DeepEquals(other.Children[j]))
+                                    {
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                eq = found;
+                            }
+                        }
+                        else
+                        {
+                            for (var i = 0; eq && i < expr.Children.Count(); ++i)
+                            {
+                                eq = expr.Children[i].DeepEquals(other.Children[i]);
+                            }
                         }
                     }
                 }

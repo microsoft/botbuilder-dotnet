@@ -121,7 +121,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 // Commands store the index of the state they are inheriting so we can tell a command
                 // by looking to see if its state is of type int
-                if (dc.Stack[i].State.GetType() == typeof(int))
+                if (dc.Stack[i].StackIndex.HasValue)
                 {
                     dc.Stack.RemoveAt(i);
                     i--;

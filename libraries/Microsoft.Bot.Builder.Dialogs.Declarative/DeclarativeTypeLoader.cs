@@ -34,7 +34,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
             IRefResolver refResolver = new IdRefResolver(resourceExplorer, registry);
 
             var paths = new Stack<string>();
-            paths.Push(resource.Id);
+            if (resource is FileResource fileResource)
+            {
+                paths.Push(fileResource.FullName);
+            }
 
             var json = resource.ReadText();
 

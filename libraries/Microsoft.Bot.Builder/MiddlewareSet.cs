@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// Contains an ordered set of <see cref="IMiddleware"/>.
     /// </summary>
-    public class MiddlewareSet : IMiddleware
+    public class MiddlewareSet : IMiddleware, IEnumerable<IMiddleware>
     {
         private readonly IList<IMiddleware> _middleware = new List<IMiddleware>();
 
@@ -81,6 +82,16 @@ namespace Microsoft.Bot.Builder
                 turnContext,
                 (ct) => ReceiveActivityInternalAsync(turnContext, callback, nextMiddlewareIndex + 1, ct),
                 cancellationToken);
+        }
+
+        public IEnumerator<IMiddleware> GetEnumerator()
+        {
+            return this._middleware.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this._middleware.GetEnumerator();
         }
     }
 }

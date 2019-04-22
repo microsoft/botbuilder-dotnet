@@ -35,19 +35,19 @@
                     ]
                 },
                 "minValue": {
-                    "type": "integer",
+                    "type": "number",
                     "title": "Mininum value",
                     "description": "The minimum value that is acceptable.  ",
                     "examples": [
-                        "0"
+                        "0.5"
                     ]
                 },
                 "maxValue": {
-                    "type": "integer",
+                    "type": "number",
                     "title": "Maximum value",
                     "description": "The maximum value that is acceptable.  ",
                     "examples": [
-                        "120"
+                        "12.5"
                     ]
                 }
             }

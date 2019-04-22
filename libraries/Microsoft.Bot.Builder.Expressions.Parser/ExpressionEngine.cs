@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
 
             private Expression MakeExpression(string type, params Expression[] children)
             {
-                return Expression.MakeExpression(type, _lookup(type), children);
+                return Expression.MakeExpression(_lookup(type), children);
             }
 
             public Expression Transform(IParseTree context)

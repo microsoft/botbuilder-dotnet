@@ -239,15 +239,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 if (matchItem.Success)
                 {
                     var value = matchItem.Value.Substring(1);// remove @
-
-                    if (value.StartsWith("{[") && value.EndsWith("]}"))
-                    {
-                        result.AddRange(AnalyzeTemplateRef(value.Substring(2, value.Length - 4)));//[ ]
-                    }
-                    else
-                    {
-                        result.AddRange(AnalyzeExpression(value));//{ }
-                    }
+                    result.AddRange(AnalyzeExpression(value));//{ }
                 }
             }
 

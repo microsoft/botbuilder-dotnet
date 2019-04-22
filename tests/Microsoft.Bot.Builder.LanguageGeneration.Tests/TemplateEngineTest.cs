@@ -275,7 +275,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsTrue(evaled2.All(evaled2Options.Contains) && evaled2.Count == evaled2Options.Count);
 
             var evaled3 = engine.AnalyzeTemplate("template1");
-            var evaled3Options = new List<string> { "alarms", "customer", "tasks[0]", "age" };
+            var evaled3Options = new List<string> { "alarms", "customer", "tasks[0]", "age", "city" };
             Assert.IsTrue(evaled3.All(evaled3Options.Contains) && evaled3.Count == evaled3Options.Count);
         }
 

@@ -34,9 +34,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             switch (name)
             {
                 case "lgTemplate":
-                    return new ExpressionEvaluator(BuiltInFunctions.Apply(this.LgTemplate), ReturnType.String, this.ValidLgTemplate);
+                    return new ExpressionEvaluator("lgTemplate", BuiltInFunctions.Apply(this.LgTemplate), ReturnType.String, this.ValidLgTemplate);
                 case "join":
-                    return new ExpressionEvaluator(BuiltInFunctions.Apply(this.Join));
+                    return new ExpressionEvaluator("join", BuiltInFunctions.Apply(this.Join));
             }
             return BuiltInFunctions.Lookup(name);
         }
@@ -78,15 +78,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
-        public object Count(IReadOnlyList<object> parameters)
-        {
-            if (parameters[0] is IList li)
-            {
-                return li.Count;
-            }
-            throw new NotImplementedException();
-        }
-
         public object Join(IReadOnlyList<object> parameters)
         {
             object result = null;
@@ -115,73 +106,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
             }
             return result;
-        }
-
-        public object Foreach(IReadOnlyList<object> parameters)
-        {
-            if (parameters.Count == 2 && 
-                parameters[0] is IList li && 
-                parameters[1] is string func)
-            {
-                if (!IsTemplateRef(ref func) || !_evaluator.TemplateMap.ContainsKey(func))
-                {
-                    throw new Exception($"No such template defined: {func}");
-                }
-
-                var result = li.OfType<object>().Select(x =>
-                {
-                    var newScope = _evaluator.ConstructScope(func, new List<object>() { x });
-                    var evaled = _evaluator.EvaluateTemplate(func, newScope);
-                    return evaled;
-                }).ToList();
-
-                return result;
-            }
-
-            throw new NotImplementedException();
-        }
-
-        public object ForeachThenJoin(IReadOnlyList<object> parameters)
-        {
-            if (parameters.Count >= 2 &&
-                parameters[0] is IList li &&
-                parameters[1] is string template)
-            {
-                template = template.TrimStart('[').TrimEnd(']');
-                if (!_evaluator.TemplateMap.ContainsKey(template))
-                {
-                    throw new Exception($"No such template defined: {template}");
-                }
-
-                var result = li.OfType<object>().Select(x =>
-                {
-                    var newScope = _evaluator.ConstructScope(template, new List<object>() { x });
-                    var evaled = _evaluator.EvaluateTemplate(template, newScope);
-                    return evaled;
-                }).ToList();
-
-                var newParameter = parameters.Skip(2).ToList();
-                newParameter.Insert(0, result);
-                return this.Join(newParameter);
-                
-            }
-
-            throw new NotImplementedException();
-        }
-
-
-        private bool IsTemplateRef(ref string templateName)
-        {
-            if (string.IsNullOrWhiteSpace(templateName))
-                return false;
-
-            if(templateName.StartsWith("[") && templateName.EndsWith("]"))
-            {
-                templateName = templateName.Substring(1, templateName.Length - 2);
-                return true;
-            }
-
-            return false;
         }
     }
 }

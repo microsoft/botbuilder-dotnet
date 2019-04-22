@@ -53,6 +53,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
         public static IEnumerable<object[]> BadExpressions => new[]
         {
+            Test("length(func())"), // no such function in children
             # region General test
             Test("func()"), // no such func
             Test("a.func()"), // no such function
@@ -69,11 +70,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("'1' / 2"), // params should be number
             Test("'1' % 2"), // params should be number
             Test("'1' ^ 2"), // params should be number
-            Test("'1' && true"), // params should be boolean
-            Test("'1' || true"), // params should be boolean
-            Test("!'1'"), // params should be boolean
-            Test("items >= 1"), // params should be number or string
-            Test("items <= 1"), // params should be number or string
             Test("'string'&one"), // $ can only accept string parameter
              Test("1/0"), // $ can not divide 0
             # endregion
@@ -81,6 +77,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             # region String functions test
             Test("concat(one, hello)"), // concat can only accept string parameter
             Test("length(one, 1)"), // length can only have one param
+            Test("length(concat(one, hello))"), // children func error
             Test("replace(hello)"), // replace need three parameters
             Test("replace(one, 'l', 'k')"), // replace only accept string parameter
             Test("replace('hi', 1, 'k')"), // replace only accept string parameter
@@ -95,7 +92,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("substring(hello, 0.5)"), // the second parameter of substring must be integer
             Test("substring(one, 0)"), // the first parameter of substring must be string
             Test("substring(hello, 10)"), // the start index is out of the range of the string length
+            Test("substring(hello, 0, hello)"), // length is not integer
             Test("substring(hello, 0, 10)"), // the length of substring is out of the range of the original string
+            Test("substring(hello, 0, 'hello')"), // length is not integer
             Test("toLower(one)"), // the parameter of toLower must be string
             Test("toLower('hi', 1)"), // should have 1 param
             Test("toUpper(one)"), // the parameter of toUpper must be string
@@ -105,24 +104,19 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             # endregion
 
             # region Logical comparison functions test
-            Test("and(one, hello, one < two)"), //one and hello are not bool type
             Test("greater(one, hello)"), // string and integer are not comparable
             Test("greater(one)"), // greater need two parameters
             Test("greaterOrEquals(one, hello)"), // string and integer are not comparable
             Test("greaterOrEquals(one)"), // function need two parameters
+            Test("less(false, true)"), // string or number parameters are needed
             Test("less(one, hello)"), // string and integer are not comparable
             Test("less(one)"), // function need two parameters
             Test("lessOrEquals(one, hello)"), // string and integer are not comparable
             Test("lessOrEquals(one)"), // function need two parameters
-            Test("not(hello)"), // not can only accept bool parameter
             Test("equals(one)"), // equals must accept two parameters
             Test("exists(1, 2)"), // function need one parameter
-            Test("if(hello, 'r1', 'r2')"), // the first parameter of the if must be bool
             //Test("if(!exists(one), one, hello)"), // the second and third parameters of if must the same type
-            //Test("or(hello == 'hello')"), // or function needs two parameters
-            Test("or(hello, one)"), // or function only accept bool parameters
             Test("not(false, one)"), // function need one parameter
-            Test("not(1)"), //accept boolean param
             # endregion
 
             # region Conversion functions test
@@ -131,7 +125,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("int(hello)"), // param shoud be int format string
             Test("int(1, 1)"), // shold have 1 param
             Test("string(hello, 1)"), // shold have 1 param
-            Test("bool(hello)"), // param shoud be float format string
             Test("bool(false, 1)"), // shold have 1 param
             # endregion
 
@@ -161,6 +154,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("rand(5, 6.1)"), //  param should be integer
             Test("rand(5)"), //  need two params
             Test("rand(7, 6)"), //  minvalue cannot be greater than maxValue
+            Test("sum(items)"), //  should have number parameters
             #endregion
             
             #region Date and time function test
@@ -195,6 +189,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("formatDateTime('errortime')"), // error datetime format
             Test("formatDateTime(timestamp, 'yyyy', 1)"), // should have 2 or 3 params
             Test("subtractFromTime('errortime', 'yyyy', 1)"), // error datetime format
+            Test("subtractFromTime(timestamp, 1, 'W')"),// error time unit
+            Test("subtractFromTime(timestamp, timestamp, 'W')"),// error parameters format
             Test("subtractFromTime(timestamp, 'yyyy', '1')"), // third param should be integer
             Test("subtractFromTime(timestamp, 'yyyy', 1, 1)"), // should have 3 params
             Test("dateReadBack('errortime', 'errortime')"), // error datetime format
@@ -203,11 +199,13 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("getTimeOfDay(timestamp, timestamp)"), // should have 1 param
 
             # endregion
+
             # region collection functions test
             Test("sum(items, 'hello')"),//should have 1 parameter
             Test("sum('hello')"),//first param should be list
             Test("average(items, 'hello')"),//should have 1 parameter
             Test("average('hello')"),//first param should be list
+            Test("average(hello)"),//first param should be list
             Test("contains('hello world', 'hello', 'new')"),//should have 2 parameter
             Test("count(items, 1)"), //should have 1 parameter
             Test("count(1)"), //first param should be list or string
@@ -222,6 +220,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("foreach(items, item)"),//should have three parameters
             Test("foreach(items, item, item2, item3)"),//should have three parameters
             Test("foreach(items, add(1), item)"),// Second paramter of foreach is not an identifier
+            Test("foreach(items, 1, item)"),// Second paramter error
+            Test("foreach(items, x, sum(x))"),// third paramter error
             # endregion
 
             # region Object manipulation and construction functions test
@@ -239,6 +239,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             # region Memory access test
             Test("property(bag, 1)"),// second param should be string
             Test("Accessor(1)"),// first param should be string
+            Test("Accessor(bag, 1)"),// second should be object
             Test("one[0]"),  // one is not list
             Test("items[3]"), // index out of range
             Test("items[one+0.5]"), // index is not integer
@@ -250,12 +251,13 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         public void Evaluate(string exp)
         {
             var isFail = false;
-            var scope = new
+            object scope = new
             {
                 one = 1.0,
                 two = 2.0,
                 hello = "hello",
                 world = "world",
+                istrue = true,
                 bag = new
                 {
                     three = 3.0,
@@ -264,7 +266,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                         four = 4.0,
                     },
                     list = new[] { "red", "blue" },
-                    index = 3
+                    index = 3,
+                    name = "mybag"
                 },
                 items = new string[] { "zero", "one", "two" },
                 nestedItems = new[]
@@ -301,7 +304,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                         title = "Dialog Title",
                         subTitle = "Dialog Sub Title"
                     }
-                }
+                },
             };
 
             try

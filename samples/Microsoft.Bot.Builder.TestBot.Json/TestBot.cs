@@ -17,55 +17,42 @@ using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Recognizers.Text;
-using Newtonsoft.Json;
-
+using static Microsoft.Bot.Builder.Dialogs.Debugging.Source;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
     public class TestBot : IBot
     {
         private DialogSet _dialogs;
-
         private IDialog rootDialog;
-
         private readonly ResourceExplorer resourceExplorer;
 
-        private UserState userState;
-        private ConversationState conversationState;
-        private IStatePropertyAccessor<DialogState> dialogState;
-
-        private Source.IRegistry registry;
-
-        public TestBot(UserState userState, ConversationState conversationState, ResourceExplorer resourceExplorer, Source.IRegistry registry)
+        public TestBot(ConversationState conversationState, ResourceExplorer resourceExplorer, Source.IRegistry registry = null)
         {
-            dialogState = conversationState.CreateProperty<DialogState>("DialogState");
+            _dialogs = new DialogSet(conversationState.CreateProperty<DialogState>("DialogState"));
 
-            this.registry = registry;
             this.resourceExplorer = resourceExplorer;
-            
+            registry = registry ?? NullRegistry.Instance;
+
             // auto reload dialogs when file changes
-            this.resourceExplorer.Changed += ResourceExplorer_Changed;
-
-            LoadRootDialogAsync();
-        }
-
-        private void ResourceExplorer_Changed(string[] paths)
-        {
-            if (paths.Any(p => Path.GetExtension(p) == ".dialog"))
+            this.resourceExplorer.Changed += (paths) =>
             {
-                Task.Run(() => this.LoadRootDialogAsync());
-            }
+                if (paths.Any(p => Path.GetExtension(p) == ".dialog"))
+                {
+                    Task.Run(() => this.LoadRootDialogAsync(registry));
+                }
+            };
+
+            LoadRootDialogAsync(registry);
         }
 
         
-        private void LoadRootDialogAsync()
+        private void LoadRootDialogAsync(IRegistry registry)
         {
             System.Diagnostics.Trace.TraceInformation("Loading resources...");
             //var rootFile = resourceExplorer.GetResource(@"VARootDialog.main.dialog");
-            var rootFile = resourceExplorer.GetResource("ToDoLuisBot.main.dialog");
-            //var rootFile = resourceExplorer.GetResource(@"ToDoBot.main.dialog");
+            // var rootFile = resourceExplorer.GetResource("ToDoLuisBot.main.dialog");
+            var rootFile = resourceExplorer.GetResource(@"ToDoBot.main.dialog");
             //var rootFile = resourceExplorer.GetResource("NoMatchRule.main.dialog");
             //var rootFile = resourceExplorer.GetResource("EndTurn.main.dialog");
             //var rootFile = resourceExplorer.GetResource("IfCondition.main.dialog");
@@ -79,7 +66,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             rootDialog = DeclarativeTypeLoader.Load<IDialog>(rootFile, resourceExplorer, registry);
             //rootDialog = LoadCodeDialog();
 
-            _dialogs = new DialogSet(this.dialogState);
             _dialogs.Add(rootDialog);
 
             System.Diagnostics.Trace.TraceInformation("Done loading resources.");

@@ -43,22 +43,31 @@ namespace Microsoft.Bot.Builder.Expressions
     public class Expression
     {
         /// <summary>
+        /// Built-in expression constructor.
+        /// </summary>
+        /// <param name="type">Type of built-in expression from <see cref="ExpressionType"/>.</param>
+        /// <param name="children">Child expressions.</param>
+        public Expression(string type, params Expression[] children)
+        {
+            Evaluator = BuiltInFunctions.Lookup(type);
+            Children = children;
+        }
+
+        /// <summary>
         /// Expression constructor.
         /// </summary>
-        /// <param name="type">Type of expression from <see cref="ExpressionType"/>.</param>
         /// <param name="evaluator">Information about how to validate and evaluate expression.</param>
         /// <param name="children">Child expressions.</param>
-        public Expression(string type, ExpressionEvaluator evaluator = null, params Expression[] children)
+        public Expression(ExpressionEvaluator evaluator, params Expression[] children)
         {
-            Type = type;
-            Evaluator = evaluator ?? BuiltInFunctions.Lookup(type);
+            Evaluator = evaluator;
             Children = children;
         }
 
         /// <summary>
         /// Type of expression.
         /// </summary>
-        public string Type { get; }
+        public string Type { get => Evaluator.Type; }
 
         public ExpressionEvaluator Evaluator { get; }
 
@@ -164,15 +173,28 @@ namespace Microsoft.Bot.Builder.Expressions
         /// Make an expression and validate it.
         /// </summary>
         /// <param name="type">Type of expression from <see cref="ExpressionType"/>.</param>
-        /// <param name="evaluator">Information about how to validate and evaluate expression.</param>
         /// <param name="children">Child expressions.</param>
         /// <returns>New expression.</returns>
-        public static Expression MakeExpression(string type, ExpressionEvaluator evaluator = null, params Expression[] children)
+        public static Expression MakeExpression(string type, params Expression[] children)
         {
-            var expr = new Expression(type, evaluator, children);
+            var expr = new Expression(type, children);
             expr.Validate();
             return expr;
         }
+
+        /// <summary>
+        /// Make an expression and validate it.
+        /// </summary>
+        /// <param name="evaluator">Information about how to validate and evaluate expression.</param>
+        /// <param name="children">Child expressions.</param>
+        /// <returns>New expression.</returns>
+        public static Expression MakeExpression(ExpressionEvaluator evaluator, params Expression[] children)
+        {
+            var expr = new Expression(evaluator, children);
+            expr.Validate();
+            return expr;
+        }
+
 
         /// <summary>
         /// Construct an expression from a <see cref="EvaluateExpressionDelegate"/>.
@@ -180,7 +202,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="function">Function to create an expression from.</param>
         /// <returns></returns>
         public static Expression LambaExpression(EvaluateExpressionDelegate function)
-            => new Expression(ExpressionType.Lambda, new ExpressionEvaluator(function));
+            => new Expression(new ExpressionEvaluator(ExpressionType.Lambda, function));
 
         /// <summary>
         /// Construct an expression from a lamba expression over the state.
@@ -189,8 +211,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="function">Lambda expression to evaluate.</param>
         /// <returns>New expression.</returns>
         public static Expression Lambda(Func<object, object> function)
-            => new Expression(ExpressionType.Lambda,
-                new ExpressionEvaluator((expression, state) =>
+            => new Expression(new ExpressionEvaluator(ExpressionType.Lambda, (expression, state) =>
                 {
                     object value = null;
                     string error = null;
@@ -211,7 +232,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="children">Child clauses.</param>
         /// <returns>New expression.</returns>
         public static Expression EqualsExpression(params Expression[] children)
-            => Expression.MakeExpression(ExpressionType.Equal, null, children);
+            => Expression.MakeExpression(ExpressionType.Equal, children);
 
 
         /// <summary>
@@ -220,7 +241,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="children">Child clauses.</param>
         /// <returns>New expression.</returns>
         public static Expression AndExpression(params Expression[] children)
-            => Expression.MakeExpression(ExpressionType.And, null, children);
+            => Expression.MakeExpression(ExpressionType.And, children);
 
         /// <summary>
         /// Construct and validate an Or expression.
@@ -228,7 +249,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="children">Child clauses.</param>
         /// <returns>New expression.</returns>
         public static Expression OrExpression(params Expression[] children)
-            => Expression.MakeExpression(ExpressionType.Or, null, children);
+            => Expression.MakeExpression(ExpressionType.Or, children);
 
         /// <summary>
         /// Construct and validate a Not expression.
@@ -236,7 +257,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="children">Child clauses.</param>
         /// <returns>New expression.</returns>
         public static Expression NotExpression(Expression child)
-            => Expression.MakeExpression(ExpressionType.Not, null, child);
+            => Expression.MakeExpression(ExpressionType.Not, child);
 
         /// <summary>
         /// Construct a constant expression.
@@ -254,7 +275,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <returns>New expression.</returns>
         public static Expression Accessor(string property, Expression instance = null)
             => instance == null
-            ? MakeExpression(ExpressionType.Accessor, null, ConstantExpression(property))
-            : MakeExpression(ExpressionType.Accessor, null, ConstantExpression(property), instance);
+            ? MakeExpression(ExpressionType.Accessor, ConstantExpression(property))
+            : MakeExpression(ExpressionType.Accessor, ConstantExpression(property), instance);
     }
 }
