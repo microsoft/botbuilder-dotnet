@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder
                 Use(middleware);
             }
 
-            Use(new FixTenantID());
+            Use(new FixTenantIdMiddleware());
 
             // DefaultRequestHeaders are not thread safe so set them up here because this adapter should be a singleton.
             ConnectorClient.AddDefaultRequestHeaders(_httpClient);
@@ -939,7 +939,7 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// Relocate the tenantId field to the new location for MS Teams
     /// </summary>
-    private class FixTenantID : IMiddleware
+    internal class FixTenantIdMiddleware : IMiddleware
     {
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
         {
