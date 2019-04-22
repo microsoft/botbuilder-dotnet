@@ -180,6 +180,16 @@ namespace Microsoft.Bot.Builder.Dialogs
             return _dialogs.Find(dialogId);
         }
 
+        protected virtual Task OnInitialize(DialogContext dc)
+        {
+            if (this.InitialDialogId == null)
+            {
+                this.InitialDialogId = _dialogs.GetDialogs().FirstOrDefault()?.Id;
+            }
+
+            return Task.CompletedTask;
+        }
+
         protected virtual Task<DialogTurnResult> OnBeginDialogAsync(DialogContext innerDc, object options, CancellationToken cancellationToken = default(CancellationToken))
         {
             return innerDc.BeginDialogAsync(InitialDialogId, options, cancellationToken);
