@@ -9,10 +9,13 @@ namespace Microsoft.Bot.Builder.Expressions
     /// </summary>
     public class Constant : Expression
     {
+        private object _value;
+
         /// <summary>
+        /// Initializes a new instance of the <see cref="Constant"/> class.
         /// Construct an expression constant.
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">Constant value.</param>
         public Constant(object value = null)
             : base(new ExpressionEvaluator(ExpressionType.Constant, (expression, state) => ((expression as Constant).Value, null)))
         {
@@ -20,26 +23,28 @@ namespace Microsoft.Bot.Builder.Expressions
         }
 
         /// <summary>
-        /// Constant value.
+        /// Gets or sets constant value.
         /// </summary>
+        /// <value>
+        /// Constant value.
+        /// </value>
         public object Value
         {
             get
             {
                 return _value;
             }
+
             set
             {
                 Evaluator.ReturnType =
-                      (value is string ? ReturnType.String
+                      value is string ? ReturnType.String
                       : value.IsNumber() ? ReturnType.Number
                       : value is bool ? ReturnType.Boolean
-                      : ReturnType.Object);
+                      : ReturnType.Object;
                 _value = value;
             }
         }
-
-        private object _value;
 
         public override string ToString()
         {

@@ -1,38 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
-
     /// <summary>
     /// Here is a data model that can easily understanded and used as the context or all kinds of visitors
-    /// wether it's evalator, static checker, anayler.. etc
+    /// wether it's evalator, static checker, anayler.. etc.
     /// </summary>
     public class LGTemplate
     {
         /// <summary>
-        /// Name of the template, what's followed by '#' in a LG file
+        /// Name of the template, what's followed by '#' in a LG file.
         /// </summary>
         public string Name;
+
         /// <summary>
-        /// Paramter list of this template
+        /// Paramter list of this template.
         /// </summary>
         public List<string> Paramters;
+
         /// <summary>
-        /// Source of this template, source file path if it's from a certain file
+        /// Source of this template, source file path if it's from a certain file.
         /// </summary>
         public string Source;
+
         /// <summary>
-        /// The parse tree of this template
+        /// The parse tree of this template.
         /// </summary>
         public LGFileParser.TemplateDefinitionContext ParseTree;
 
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="LGTemplate"/> class.
         /// </summary>
-        /// <param name="parseTree"></param>
+        /// <param name="parseTree">The parse tree of this template.</param>
+        /// <param name="source">Source of this template.</param>
         public LGTemplate(LGFileParser.TemplateDefinitionContext parseTree, string source = "")
         {
             ParseTree = parseTree;
@@ -54,6 +55,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 return parameters.IDENTIFIER().Select(param => param.GetText()).ToList();
             }
+
             return new List<string>();
         }
     }

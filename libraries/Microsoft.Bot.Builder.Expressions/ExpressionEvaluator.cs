@@ -20,7 +20,8 @@ namespace Microsoft.Bot.Builder.Expressions
     /// <summary>
     /// Delegate to lookup function information from the type.
     /// </summary>
-    /// <param name="type">Name to lookup, usually from <see cref="ExpressionType"/></param>
+    /// <param name="type">Name to lookup, usually from <see cref="ExpressionType"/>.
+    /// </param>
     /// <returns>Expression evaluation information.</returns>
     public delegate ExpressionEvaluator EvaluatorLookup(string type);
 
@@ -34,13 +35,16 @@ namespace Microsoft.Bot.Builder.Expressions
         private ExpressionEvaluator _negation;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="ExpressionEvaluator"/> class.
         /// Constructor for expression information.
         /// </summary>
         /// <param name="type">Expression type.</param>
         /// <param name="evaluator">Delegate to evaluate an expression.</param>
         /// <param name="returnType">Type expected from evaluation.</param>
         /// <param name="validator">Static validation of expression.</param>
-        public ExpressionEvaluator(string type, EvaluateExpressionDelegate evaluator,
+        public ExpressionEvaluator(
+            string type,
+            EvaluateExpressionDelegate evaluator,
             ReturnType returnType = ReturnType.Object,
             ValidateExpressionDelegate validator = null)
         {
@@ -53,9 +57,20 @@ namespace Microsoft.Bot.Builder.Expressions
         public override string ToString() => $"{Type} => {ReturnType}";
 
         /// <summary>
-        /// Expression type for evaluator.
+        /// Gets expression type for evaluator.
         /// </summary>
+        /// <value>
+        /// Expression type for evaluator.
+        /// </value>
         public string Type { get; }
+
+        /// <summary>
+        /// Gets or sets type expected by evaluating the expression.
+        /// </summary>
+        /// <value>
+        /// Type expected by evaluating the expression.
+        /// </value>
+        public ReturnType ReturnType { get; set; }
 
         /// <summary>
         /// Evaluate an expression.

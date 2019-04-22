@@ -11,13 +11,15 @@ using Antlr4.Runtime.Tree;
 
 namespace Microsoft.Bot.Builder.Expressions.Parser
 {
-
     /// <summary>
     /// Parser to turn strings into an <see cref="Expression"/>.
     /// </summary>
     public class ExpressionEngine : IExpressionParser
     {
+        private readonly EvaluatorLookup _lookup;
+
         /// <summary>
+        /// Initializes a new instance of the <see cref="ExpressionEngine"/> class.
         /// Constructor.
         /// </summary>
         /// <param name="lookup">If present delegate to lookup evaluation information from type string.</param>
@@ -25,9 +27,6 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
         {
             _lookup = lookup ?? BuiltInFunctions.Lookup;
         }
-
-        private EvaluatorLookup _lookup;
-
 
         /// <summary>
         /// Parse the input into an expression.
@@ -53,16 +52,11 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
 
         private class ExpressionTransformer : ExpressionBaseVisitor<Expression>
         {
+            private readonly EvaluatorLookup _lookup;
+
             public ExpressionTransformer(EvaluatorLookup lookup)
             {
                 _lookup = lookup;
-            }
-
-            private readonly EvaluatorLookup _lookup;
-
-            private Expression MakeExpression(string type, params Expression[] children)
-            {
-                return Expression.MakeExpression(_lookup(type), children);
             }
 
             public Expression Transform(IParseTree context)
@@ -70,26 +64,16 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                 return Visit(context);
             }
 
-            private IEnumerable<Expression> ProcessArgsList(ExpressionParser.ArgsListContext context)
-            {
-                if (context != null)
-                {
-                    foreach (var expression in context.expression())
-                    {
-                        yield return Visit(expression);
-                    }
-                }
-            }
-
             public override Expression VisitUnaryOpExp([NotNull] ExpressionParser.UnaryOpExpContext context)
             {
                 var unaryOperationName = context.GetChild(0).GetText();
                 var operand = Visit(context.expression());
-                if(unaryOperationName == ExpressionType.Subtract 
+                if (unaryOperationName == ExpressionType.Subtract
                     || unaryOperationName == ExpressionType.Add)
                 {
                     return MakeExpression(unaryOperationName, new Constant(0), operand);
                 }
+
                 return MakeExpression(unaryOperationName, operand);
             }
 
@@ -105,15 +89,15 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             {
                 var parameters = ProcessArgsList(context.argsList()).ToList();
 
-                //if context.primaryExpression() is idAtom --> normal function
-                if (context.primaryExpression() is ExpressionParser.IdAtomContext idAtom)
+                // if context.primaryExpression() is idAtom --> normal function
+                if (context.primaryExpression() is ExpressionParser.IdAtomContext functionNameItem)
                 {
-                    var functionName = idAtom.GetText();
+                    var functionName = functionNameItem.GetText();
                     return MakeExpression(functionName, parameters.ToArray());
                 }
 
                 // TODO: We really should interpret this as a function with a namespace and not an accessor with a function.  Should also loop over them.
-                //if context.primaryExpression() is memberaccessExp --> accessor
+                // if context.primaryExpression() is memberaccessExp --> accessor
                 if (context.primaryExpression() is ExpressionParser.MemberAccessExpContext memberAccessExp)
                 {
                     var instance = Visit(memberAccessExp.primaryExpression());
@@ -149,6 +133,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                 {
                     result = MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(symbol));
                 }
+
                 return result;
             }
 
@@ -156,7 +141,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             {
                 var instance = Visit(context.primaryExpression());
                 var index = Visit(context.expression());
-                return MakeExpression(ExpressionType.Element, instance, index );
+                return MakeExpression(ExpressionType.Element, instance, index);
             }
 
             public override Expression VisitMemberAccessExp([NotNull] ExpressionParser.MemberAccessExpContext context)
@@ -168,23 +153,28 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                 {
                     throw new Exception($"shorthand like {property} is not allowed in an accessor");
                 }
+
                 return MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(property), instance);
             }
 
             public override Expression VisitNumericAtom([NotNull] ExpressionParser.NumericAtomContext context)
             {
                 if (int.TryParse(context.GetText(), out var intValue))
+                {
                     return Expression.ConstantExpression(intValue);
+                }
 
                 if (double.TryParse(context.GetText(), out var doubleValue))
+                {
                     return Expression.ConstantExpression(doubleValue);
+                }
 
                 throw new Exception($"{context.GetText()} is not a number.");
             }
 
             public override Expression VisitParenthesisExp([NotNull] ExpressionParser.ParenthesisExpContext context) => Visit(context.expression());
 
-            public override Expression VisitStringAtom([NotNull] ExpressionParser.StringAtomContext context) 
+            public override Expression VisitStringAtom([NotNull] ExpressionParser.StringAtomContext context)
             {
                 var text = context.GetText();
                 if (text.StartsWith("'"))
@@ -196,11 +186,23 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                     // start with "
                     return Expression.ConstantExpression(Regex.Unescape(text.Trim('"')));
                 }
-                    
             }
 
+            private Expression MakeExpression(string type, params Expression[] children)
+            {
+                return Expression.MakeExpression(_lookup(type), children);
+            }
 
-            
+            private IEnumerable<Expression> ProcessArgsList(ExpressionParser.ArgsListContext context)
+            {
+                if (context != null)
+                {
+                    foreach (var expression in context.expression())
+                    {
+                        yield return Visit(expression);
+                    }
+                }
+            }
 
             private bool IsShortHandExpression(string name)
             {
@@ -214,34 +216,44 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                     throw new Exception($"variable name:{name} is not a shorthand");
                 }
 
-                char prefix = name[0];
+                var prefix = name[0];
                 name = name.Substring(1);
 
                 // $title == dialog.result.title
-                // @city == turn.entities.city 
+                // @city == turn.entities.city
                 // #BookFlight == turn.intents.BookFlight
                 switch (prefix)
                 {
                     case '#':
-                        return MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(name),
-                                   MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression("intents"),
-                                       MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression("turn"))));
+                        return MakeExpression(
+                            ExpressionType.Accessor,
+                            Expression.ConstantExpression(name),
+                            MakeExpression(
+                                ExpressionType.Accessor,
+                                Expression.ConstantExpression("intents"),
+                                MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression("turn"))));
 
                     case '@':
-                        return MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(name),
-                                   MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression("entities"),
-                                       MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression("turn"))));
+                        return MakeExpression(
+                            ExpressionType.Accessor,
+                            Expression.ConstantExpression(name),
+                            MakeExpression(
+                                ExpressionType.Accessor,
+                                Expression.ConstantExpression("entities"),
+                                MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression("turn"))));
 
                     case '$':
-                        return MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(name),
-                                   MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression("result"),
-                                       MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression("dialog"))));
+                        return MakeExpression(
+                            ExpressionType.Accessor,
+                            Expression.ConstantExpression(name),
+                            MakeExpression(
+                                ExpressionType.Accessor,
+                                Expression.ConstantExpression("result"),
+                                MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression("dialog"))));
                 }
 
                 throw new Exception($"no match for shorthand prefix: {prefix}");
-
             }
         }
-
     }
 }
