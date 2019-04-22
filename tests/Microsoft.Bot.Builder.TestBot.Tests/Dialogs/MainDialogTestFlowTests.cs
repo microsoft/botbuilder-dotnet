@@ -16,37 +16,13 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             var testFlow = BuildTestFlow(sut);
 
             await testFlow.Send("hi")
-                .AssertReply(activity =>
-                {
-                    var message = (IMessageActivity)activity;
-                    Assert.Equal(
-                        "What can I help you with today?",
-                        message.Text);
-                })
+                .AssertReply("What can I help you with today?")
                 .Send("irrelevant")
-                .AssertReply(activity =>
-                {
-                    var message = (IMessageActivity)activity;
-                    Assert.Equal(
-                        "Where would you like to travel to?",
-                        message.Text);
-                })
+                .AssertReply("Where would you like to travel to?")
                 .Send("Bahamas")
-                .AssertReply(activity =>
-                {
-                    var message = (IMessageActivity)activity;
-                    Assert.Equal(
-                        "Where are you traveling from?",
-                        message.Text);
-                })
+                .AssertReply("Where are you traveling from?")
                 .Send("New York")
-                .AssertReply(activity =>
-                {
-                    var message = (IMessageActivity)activity;
-                    Assert.Equal(
-                        "When would you like to travel?",
-                        message.Text);
-                })
+                .AssertReply("When would you like to travel?")
                 .Send("tomorrow at 5 PM")
                 .AssertReply(activity =>
                 {
@@ -57,13 +33,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                         message.Text);
                 })
                 .Send("Yes")
-                .AssertReply(activity =>
-                {
-                    var message = (IMessageActivity)activity;
-                    Assert.Equal(
-                        "I have you booked to Bahamas from New York on tomorrow 5PM",
-                        message.Text);
-                })
+                .AssertReply("I have you booked to Bahamas from New York on tomorrow 5PM")
                 .StartTestAsync();
         }
     }
