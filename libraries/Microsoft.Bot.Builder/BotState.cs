@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task LoadAsync(ITurnContext turnContext, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task LoadAsync(ITurnContext turnContext, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task SaveChangesAsync(ITurnContext turnContext, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task SaveChangesAsync(ITurnContext turnContext, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>NOTE: that SaveChangesAsync must be called in order for the cleared state to be persisted to the underlying store.</remarks>
-        public Task ClearStateAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task ClearStateAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="turnContext">The context object for this turn.</param>
         /// <param name="cancellationToken">cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task DeleteAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task DeleteAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
