@@ -18,7 +18,7 @@
         "recognizer": {
           "$type": "Microsoft.IRecognizer",
           "title": "Recognizer",
-          "decription": "Configured recognizer to generate intent and entites from user utterance"
+          "description": "Configured recognizer to generate intent and entites from user utterance"
         },
         "selector": {
           "$type": "Microsoft.IRuleSelector",
