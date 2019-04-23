@@ -17,10 +17,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         private string GetExampleFilePath(string fileName)
         {
-            return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "ExceptionExamples" + Path.DirectorySeparatorChar + fileName;
+            //return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "ExceptionExamples" + Path.DirectorySeparatorChar + fileName;
+            return "D:\\projects\\BotFramework\\botbuilder-dotnet\\tests\\Microsoft.Bot.Builder.LanguageGeneration.Tests\\ExceptionExamples\\" + fileName;
         }
 
         public static object[] Test(string input) => new object[] { input };
+        public static object[] TestTemplate(string input, string templateName) => new object[] { input, templateName };
 
         public static IEnumerable<object[]> ExceptionData => new[]
         {
@@ -43,6 +45,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Test("EmptyLGFile.lg"),
             Test("OnlyNoMatchRule.lg"),
             Test("NoMatchRule.lg")
+        };
+
+        public static IEnumerable<object[]> AnalyzerExceptionData => new[]
+        {
+            TestTemplate("AnalyzerNoTemplate.lg", "NotExistTemplateName"),
         };
 
 
@@ -76,6 +83,40 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var report = new StaticChecker(engine.Templates).Check();
 
             TestContext.WriteLine(string.Join("\n", report));
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(AnalyzerExceptionData))]
+        public void AnalyzerThrowExceptionTest(string input, string templateName)
+        {
+            var isFail = false;
+            var errorMessage = "";
+            TemplateEngine engine = null;
+            try
+            {
+                engine = TemplateEngine.FromFiles(GetExampleFilePath(input));
+            }
+            catch (Exception)
+            {
+                isFail = true;
+                errorMessage = "error occurs when parsing file";
+            }
+
+            try
+            {
+                engine.AnalyzeTemplate(templateName);
+                isFail = true;
+                errorMessage = "No exception is thrown.";
+            }
+            catch(Exception e)
+            {
+                TestContext.WriteLine(e.Message);
+            }
+
+            if (isFail)
+            {
+                Assert.Fail(errorMessage);
+            }
         }
     }
 }

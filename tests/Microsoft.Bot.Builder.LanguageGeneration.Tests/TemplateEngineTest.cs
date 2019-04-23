@@ -16,7 +16,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         private string GetExampleFilePath(string fileName)
         {
-            return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "Examples" + Path.DirectorySeparatorChar + fileName;
+            //return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "Examples" + Path.DirectorySeparatorChar + fileName;
+            return "D:\\projects\\BotFramework\\botbuilder-dotnet\\tests\\Microsoft.Bot.Builder.LanguageGeneration.Tests\\Examples\\" + fileName;
         }
 
 
@@ -273,7 +274,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var evaled2 = engine.AnalyzeTemplate("sandwichOrderConfirmation");
             var evaled2Options = new List<string> { "bread", "meat" };
             Assert.IsTrue(evaled2.All(evaled2Options.Contains) && evaled2.Count == evaled2Options.Count);
-
+            
             var evaled3 = engine.AnalyzeTemplate("template1");
             var evaled3Options = new List<string> { "alarms", "customer", "tasks[0]", "age", "city" };
             Assert.IsTrue(evaled3.All(evaled3Options.Contains) && evaled3.Count == evaled3Options.Count);
