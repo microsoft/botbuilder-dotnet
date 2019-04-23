@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var state = dc.DialogState;
             var instanceId = Guid.NewGuid().ToString();
             state[PersistedOptions] = options;
-            state[PersistedValues] = new ExpandoObject();
+            state[PersistedValues] = new Dictionary<string, object>();
             state[PersistedInstanceId] = instanceId;
 
             var properties = new Dictionary<string, string>()
@@ -175,7 +175,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         return Dialog.EndOfTurn;
                     }
 
-                    // Run next steo with the message text as the result
+                    // Run next step with the message text as the result
                     return await this.ResumeDialogAsync(dialogContext, DialogReason.ContinueCalled, dialogContext.Context.Activity.Text).ConfigureAwait(false);
                 },
             };

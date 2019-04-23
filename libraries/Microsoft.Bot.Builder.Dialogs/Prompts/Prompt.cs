@@ -53,9 +53,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Initialize prompt state
             var state = dc.DialogState;
             state[PersistedOptions] = promptOptions;
-            state[PersistedState] = new ExpandoObject();
+            state[PersistedState] = new Dictionary<string, object>();
 
-            if (!String.IsNullOrEmpty(Property))
+            if (!string.IsNullOrEmpty(Property))
             {
                 var tokens = dc.State.Query(Property);
                 if (tokens.Any())
