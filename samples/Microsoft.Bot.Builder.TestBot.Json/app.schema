@@ -291,7 +291,7 @@
                 "recognizer": {
                     "$type": "Microsoft.IRecognizer",
                     "title": "Recognizer",
-                    "decription": "Configured recognizer to generate intent and entites from user utterance",
+                    "description": "Configured recognizer to generate intent and entites from user utterance",
                     "$ref": "#/definitions/Microsoft.IRecognizer"
                 },
                 "selector": {
@@ -596,7 +596,7 @@
                 "choicesProperty": {
                     "type": "string",
                     "title": "Choices Property",
-                    "decription": "unknown ??? "
+                    "description": "unknown ??? "
                 },
                 "choices": {
                     "type": "array",

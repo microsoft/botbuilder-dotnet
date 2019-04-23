@@ -107,7 +107,19 @@ namespace Microsoft.Bot.Builder.Dialogs
             return new DialogConsultation()
             {
                 Desire = innerConsultation != null ? innerConsultation.Desire : DialogConsultationDesire.CanProcess,
-                Processor = (dc) => OnContinueDialogAsync(innerDc, innerConsultation),
+                Processor = async (dc) =>
+                {
+                    var turnResult = await OnContinueDialogAsync(innerDc, innerConsultation).ConfigureAwait(false);
+
+                    if (turnResult.Status != DialogTurnStatus.Waiting)
+                    {
+                        return await EndComponentAsync(outerDc, turnResult.Result, cancellationToken).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        return EndOfTurn;
+                    }
+                },
             };
         }
 
