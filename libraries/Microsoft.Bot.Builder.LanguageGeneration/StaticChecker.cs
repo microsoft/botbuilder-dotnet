@@ -196,9 +196,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 switch (node.Symbol.Type)
                 {
-                    case LGFileParser.ESCAPE_CHARACTER:
-                        result.AddRange(CheckEscapeCharacter(node.GetText()));
-                        break;
                     case LGFileParser.INVALID_ESCAPE:
                         result.Add(new ReportEntry($"escape character {node.GetText()} is invalid"));
                         break;
@@ -319,22 +316,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 result.Add(new ReportEntry(e.Message + $" in expression `{exp}`"));
                 return result;
-            }
-
-            return result;
-        }
-
-        private List<ReportEntry> CheckEscapeCharacter(string exp)
-        {
-            var result = new List<ReportEntry>();
-            var validEscapeCharacters = new List<string>
-            {
-                @"\r", @"\n", @"\t", @"\\", @"\[", @"\]", @"\{", @"\}",
-            };
-
-            if (!validEscapeCharacters.Contains(exp))
-            {
-                result.Add(new ReportEntry($"escape character {exp} is invalid"));
             }
 
             return result;
