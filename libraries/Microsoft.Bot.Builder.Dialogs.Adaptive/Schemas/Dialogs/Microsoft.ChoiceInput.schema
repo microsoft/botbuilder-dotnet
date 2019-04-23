@@ -50,7 +50,7 @@
         "choicesProperty": {
           "type": "string",
           "title": "Choices Property",
-          "decription": "unknown ??? "
+          "description": "unknown ??? "
         },
         "choices": {
           "type": "array",
