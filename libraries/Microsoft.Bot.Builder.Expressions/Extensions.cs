@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Expressions
 {
@@ -81,6 +80,7 @@ namespace Microsoft.Bot.Builder.Expressions
                                         break;
                                     }
                                 }
+
                                 eq = found;
                             }
                         }
@@ -94,6 +94,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     }
                 }
             }
+
             return eq;
         }
 
@@ -101,7 +102,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// Return the static reference paths to memory.
         /// </summary>
         /// <remarks>
-        /// Return all static paths to memory.  If there is a computed element index, then the path is terminated there, 
+        /// Return all static paths to memory.  If there is a computed element index, then the path is terminated there,
         /// but you might get other paths from the computed part as well.
         /// </remarks>
         /// <param name="expression">Expression to get references from.</param>
@@ -161,6 +162,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         {
                             path = path + "." + prop;
                         }
+
                         // if path is null we still keep it null, won't append prop
                         // because for example, first(items).x should not return x as refs
                     }
@@ -179,6 +181,7 @@ namespace Microsoft.Bot.Builder.Expressions
                             references.Add(path);
                         }
                     }
+
                     var idxPath = ReferenceWalk(children[1], references, extension);
                     if (idxPath != null)
                     {
@@ -197,9 +200,8 @@ namespace Microsoft.Bot.Builder.Expressions
                     }
                 }
             }
+
             return path;
         }
-
-        private static Type[] _string = new Type[] { typeof(string) };
     }
 }

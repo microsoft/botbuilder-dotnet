@@ -12,46 +12,39 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class Analyzer : LGFileParserBaseVisitor<List<string>>
     {
         public readonly List<LGTemplate> Templates;
-        private readonly Dictionary<string, LGTemplate> TemplateMap;
+        private readonly Dictionary<string, LGTemplate> templateMap;
 
         private readonly IExpressionParser _expressionParser;
 
         private Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
-        private EvaluationTarget CurrentTarget()
-        {
-            // just don't want to write evaluationTargetStack.Peek() everywhere
-            return evaluationTargetStack.Peek();
-        }
 
         public Analyzer(List<LGTemplate> templates)
         {
-            Templates = templates;
-            TemplateMap = templates.ToDictionary(t => t.Name);
-            _expressionParser = new ExpressionEngine(new GetMethodExtensions(new Evaluator(Templates, null)).GetMethodX);
+            this.Templates = templates;
+            templateMap = templates.ToDictionary(t => t.Name);
+            _expressionParser = new ExpressionEngine(new GetMethodExtensions(new Evaluator(this.Templates, null)).GetMethodX);
         }
 
         public List<string> AnalyzeTemplate(string templateName)
         {
-            if (!TemplateMap.ContainsKey(templateName))
+            if (!templateMap.ContainsKey(templateName))
             {
                 throw new Exception($"No such template: {templateName}");
             }
 
             if (evaluationTargetStack.Any(e => e.TemplateName == templateName))
             {
-                throw new Exception($"Loop detected: {String.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                throw new Exception($"Loop detected: {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
             // Using a stack to track the evalution trace
             evaluationTargetStack.Push(new EvaluationTarget(templateName, null));
-            var rawDependencies = Visit(TemplateMap[templateName].ParseTree);
-
+            var rawDependencies = Visit(templateMap[templateName].ParseTree);
 
             // we don't exclude paratemters any more
             // because given we don't track down for templates have paramters
-            // the only scenario that we are still analyzing an paramterized template is 
+            // the only scenario that we are still analyzing an paramterized template is
             // this template is root template to anaylze, in this we also don't have exclude paramters
-
             var dependencies = rawDependencies.Distinct().ToList();
 
             evaluationTargetStack.Pop();
@@ -69,6 +62,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     return Visit(context.templateBody());
                 }
             }
+
             throw new Exception("template name match failed");
         }
 
@@ -102,7 +96,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     result.AddRange(AnalyzeExpression(expression.GetText()));
                 }
-                if(ifRule.normalTemplateBody() != null)
+
+                if (ifRule.normalTemplateBody() != null)
                 {
                     result.AddRange(Visit(ifRule.normalTemplateBody()));
                 }
@@ -110,7 +105,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             return result;
         }
-
 
         public override List<string> VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
         {
@@ -134,15 +128,22 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         break;
                 }
             }
+
             return result;
+        }
+
+        private EvaluationTarget CurrentTarget()
+        {
+            // just don't want to write evaluationTargetStack.Peek() everywhere
+            return evaluationTargetStack.Peek();
         }
 
         /// <summary>
         /// Extract the templates ref out from an expression
-        /// return only those without paramaters
+        /// return only those without paramaters.
         /// </summary>
-        /// <param name="exp"></param>
-        /// <returns></returns>
+        /// <param name="exp">Expression.</param>
+        /// <returns>template refs.</returns>
         private List<string> GetDirectTemplateRefs(Expression exp)
         {
             if (exp.Type == "lgTemplate" && exp.Children.Length == 1)
@@ -208,7 +209,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             exp = exp.TrimStart('[').TrimEnd(']').Trim();
 
             var argsStartPos = exp.IndexOf('(');
-            if (argsStartPos > 0) // Do have args
+
+            // Do have args
+            if (argsStartPos > 0)
             {
                 // Analyze all arguments using ExpressoinEngine
                 var argsEndPos = exp.LastIndexOf(')');
@@ -216,7 +219,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var args = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(',');
                 var refs = args.Select(arg => AnalyzeExpression(arg)).SelectMany(x => x).ToList();
 
-                // Before we have a matural solution to analyze paramterized template, we stop digging into 
+                // Before we have a matural solution to analyze paramterized template, we stop digging into
                 // templates with paramters, we just analyze it's args.
                 // With this approach we may not get a very fine-grained result
                 // but the result will still be accurate
@@ -231,15 +234,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private List<string> AnalyzeMultiLineText(string exp)
         {
             var result = new List<string>();
-            exp = exp.Substring(3, exp.Length - 6); //remove ``` ```
+
+            // remove ``` ```
+            exp = exp.Substring(3, exp.Length - 6);
 
             var matches = Regex.Matches(exp, @"@\{[^{}]+\}");
             foreach (Match matchItem in matches)
             {
                 if (matchItem.Success)
                 {
-                    var value = matchItem.Value.Substring(1);// remove @
-                    result.AddRange(AnalyzeExpression(value));//{ }
+                    var value = matchItem.Value.Substring(1); // remove @
+                    result.AddRange(AnalyzeExpression(value)); // { }
                 }
             }
 
