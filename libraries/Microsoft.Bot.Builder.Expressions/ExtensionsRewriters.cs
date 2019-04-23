@@ -44,7 +44,6 @@ namespace Microsoft.Bot.Builder.Expressions
                     children.Add(clause);
                 }
             }
-
             if (children.Count == 0)
             {
                 result = Expression.ConstantExpression(false);
@@ -57,7 +56,6 @@ namespace Microsoft.Bot.Builder.Expressions
             {
                 result = Expression.MakeExpression(ExpressionType.Or, children.ToArray());
             }
-
             return result;
         }
 
@@ -69,7 +67,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     {
                         // Each element of SoFar is a conjunction
                         // Need to combine every combination of clauses
-                        var sofar = new List<Expression>();
+                        var soFar = new List<Expression>();
                         var first = true;
                         foreach (var child in expression.Children)
                         {
@@ -77,23 +75,21 @@ namespace Microsoft.Bot.Builder.Expressions
                             if (clauses.Count() == 0)
                             {
                                 // Encountered false
-                                sofar.Clear();
+                                soFar.Clear();
                                 break;
                             }
-
                             if (first)
                             {
                                 foreach (var clause in clauses)
                                 {
-                                    sofar.Add(clause);
+                                    soFar.Add(clause);
                                 }
-
                                 first = false;
                             }
                             else
                             {
                                 var newClauses = new List<Expression>();
-                                foreach (var old in sofar)
+                                foreach (var old in soFar)
                                 {
                                     foreach (var clause in clauses)
                                     {
@@ -110,17 +106,14 @@ namespace Microsoft.Bot.Builder.Expressions
                                         }
                                     }
                                 }
-
-                                sofar = newClauses;
+                                soFar = newClauses;
                             }
                         }
-
-                        foreach (var clause in sofar)
+                        foreach (var clause in soFar)
                         {
                             yield return clause;
                         }
                     }
-
                     break;
                 case ExpressionType.Or:
                     {
@@ -132,7 +125,6 @@ namespace Microsoft.Bot.Builder.Expressions
                             }
                         }
                     }
-
                     break;
                 default:
                     // True becomes empty expression and false drops clause
@@ -147,7 +139,6 @@ namespace Microsoft.Bot.Builder.Expressions
                     {
                         yield return Expression.MakeExpression(ExpressionType.And, expression);
                     }
-
                     break;
             }
         }
@@ -189,10 +180,8 @@ namespace Microsoft.Bot.Builder.Expressions
                             newExpr = Expression.MakeExpression(ExpressionType.Not, expression);
                         }
                     }
-
                     break;
             }
-
             return newExpr;
         }
     }
