@@ -952,7 +952,7 @@ namespace Microsoft.Bot.Builder
         {
             public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
             {
-                if (turnContext.Activity.ChannelId.Equals(Channels.Msteams, StringComparison.InvariantCultureIgnoreCase) && turnContext.Activity.Conversation != null && string.IsNullOrEmpty(turnContext.Activity.Conversation.TenantId))
+                if (Channels.Msteams.Equals(turnContext.Activity.ChannelId, StringComparison.InvariantCultureIgnoreCase) && turnContext.Activity.Conversation != null && string.IsNullOrEmpty(turnContext.Activity.Conversation.TenantId))
                 {
                     var teamsChannelData = JObject.FromObject(turnContext.Activity.ChannelData);
                     if (teamsChannelData["tenant"]?["id"] != null)
