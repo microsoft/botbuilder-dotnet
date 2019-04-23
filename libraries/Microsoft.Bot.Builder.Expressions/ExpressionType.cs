@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string Accessor = "Accessor";
         public const string Element = "Element";
         public const string CreateArray = "createArray";
-        public const string Property = "property";
+        
 
         // Misc
         public const string Constant = "Constant";
@@ -92,6 +92,7 @@ namespace Microsoft.Bot.Builder.Expressions
 
         // Object manipulation and construction functions
         public const string Json = "json";
+        public const string GetProperty = "getProperty";
         public const string AddProperty = "addProperty";
         public const string RemoveProperty = "removeProperty";
         public const string SetProperty = "setProperty";

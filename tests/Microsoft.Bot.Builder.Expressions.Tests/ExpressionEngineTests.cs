@@ -357,15 +357,15 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             # endregion
 
             # region  Memory access
-            Test("property(bag, concat('na','me'))","mybag"),
+            Test("getProperty(bag, concat('na','me'))","mybag"),
             Test("items[2]", "two", new HashSet<string> { "items[2]" }),
             Test("bag.list[bag.index - 2]", "blue", new HashSet<string> {"bag.list", "bag.index" }),
             Test("items[nestedItems[1].x]", "two", new HashSet<string> { "items","nestedItems[1].x" }),
             Test("bag['name']","mybag"),
             Test("bag[substring(concat('na','me','more'), 0, length('name'))]","mybag"),
             Test("items[1+1]","two"),
-            Test("property(null, 'p')", null),
-            Test("(property(null, 'p'))[1]", null),
+            Test("getProperty(null, 'p')", null),
+            Test("(getProperty(null, 'p'))[1]", null),
             # endregion
         };
 

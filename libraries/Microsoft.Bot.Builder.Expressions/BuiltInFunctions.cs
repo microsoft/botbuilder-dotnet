@@ -560,7 +560,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return (value, error);
         }
 
-        private static (object value, string error) Property(Expression expression, object state)
+        private static (object value, string error) GetProperty(Expression expression, object state)
         {
             object value = null;
             string error;
@@ -1275,7 +1275,7 @@ namespace Microsoft.Bot.Builder.Expressions
             
                 // Misc
                 new ExpressionEvaluator(ExpressionType.Accessor, Accessor, ReturnType.Object, ValidateAccessor),
-                new ExpressionEvaluator(ExpressionType.Property, Property, ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
+                new ExpressionEvaluator(ExpressionType.GetProperty, GetProperty, ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
                 new ExpressionEvaluator(ExpressionType.If, (expression, state) => If(expression, state),
                     ReturnType.Object, (expression) => ValidateArityAndAnyType(expression, 3, 3)),
                 new ExpressionEvaluator(ExpressionType.Rand, Apply(args => Randomizer.Next(args[0], args[1]), VerifyInteger),
