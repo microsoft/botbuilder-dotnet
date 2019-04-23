@@ -399,12 +399,12 @@ namespace Microsoft.Bot.Builder
         {
             if (turnContext.Activity.Conversation == null)
             {
-                throw new NullReferenceException("BotFrameworkAdapter.deleteConversationMember(): missing conversation");
+                throw new ArgumentNullException("BotFrameworkAdapter.deleteConversationMember(): missing conversation");
             }
 
             if (string.IsNullOrWhiteSpace(turnContext.Activity.Conversation.Id))
             {
-                throw new NullReferenceException("BotFrameworkAdapter.deleteConversationMember(): missing conversation.id");
+                throw new ArgumentNullException("BotFrameworkAdapter.deleteConversationMember(): missing conversation.id");
             }
 
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
@@ -431,12 +431,12 @@ namespace Microsoft.Bot.Builder
 
             if (turnContext.Activity.Conversation == null)
             {
-                throw new NullReferenceException("BotFrameworkAdapter.GetActivityMembers(): missing conversation");
+                throw new ArgumentNullException("BotFrameworkAdapter.GetActivityMembers(): missing conversation");
             }
 
             if (string.IsNullOrWhiteSpace(turnContext.Activity.Conversation.Id))
             {
-                throw new NullReferenceException("BotFrameworkAdapter.GetActivityMembers(): missing conversation.id");
+                throw new ArgumentNullException("BotFrameworkAdapter.GetActivityMembers(): missing conversation.id");
             }
 
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
@@ -457,12 +457,12 @@ namespace Microsoft.Bot.Builder
         {
             if (turnContext.Activity.Conversation == null)
             {
-                throw new NullReferenceException("BotFrameworkAdapter.GetActivityMembers(): missing conversation");
+                throw new ArgumentNullException("BotFrameworkAdapter.GetActivityMembers(): missing conversation");
             }
 
             if (string.IsNullOrWhiteSpace(turnContext.Activity.Conversation.Id))
             {
-                throw new NullReferenceException("BotFrameworkAdapter.GetActivityMembers(): missing conversation.id");
+                throw new ArgumentNullException("BotFrameworkAdapter.GetActivityMembers(): missing conversation.id");
             }
 
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
@@ -540,12 +540,12 @@ namespace Microsoft.Bot.Builder
             BotAssert.ContextNotNull(turnContext);
             if (turnContext.Activity.From == null || string.IsNullOrWhiteSpace(turnContext.Activity.From.Id))
             {
-                throw new NullReferenceException("BotFrameworkAdapter.GetUserTokenAsync(): missing from or from.id");
+                throw new ArgumentNullException("BotFrameworkAdapter.GetUserTokenAsync(): missing from or from.id");
             }
 
             if (string.IsNullOrWhiteSpace(connectionName))
             {
-                throw new NullReferenceException(nameof(connectionName));
+                throw new ArgumentNullException(nameof(connectionName));
             }
 
             var client = await CreateOAuthApiClientAsync(turnContext).ConfigureAwait(false);
@@ -943,11 +943,16 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Middleware to assign tenantId from channelData to Conversation.TenantId.
         /// </summary>
+        /// <description>
+        /// MS Teams currently sends the tenant ID in channelData and the correct behavior is to expose this value in Activity.Conversation.TenantId.
+        /// This code copies the tenant ID from channelData to Activity.Conversation.TenantId.
+        /// Once MS Teams sends the tenantId in the Conversation property, this middleware can be removed.
+        /// </description>
         internal class TenantIdWorkaroundForTeamsMiddleware : IMiddleware
         {
             public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
             {
-                if (turnContext.Activity.ChannelId == Channels.Msteams && turnContext.Activity.Conversation != null && string.IsNullOrEmpty(turnContext.Activity.Conversation.TenantId))
+                if (turnContext.Activity.ChannelId.Equals(Channels.Msteams, StringComparison.InvariantCultureIgnoreCase) && turnContext.Activity.Conversation != null && string.IsNullOrEmpty(turnContext.Activity.Conversation.TenantId))
                 {
                     var teamsChannelData = JObject.FromObject(turnContext.Activity.ChannelData);
                     if (teamsChannelData["tenant"]?["id"] != null)
