@@ -891,7 +891,7 @@
         },
         "Microsoft.DeleteProperty": {
             "$role": "unionType(Microsoft.IDialog)",
-            "title": "Delete PropertyS",
+            "title": "Delete Property",
             "description": "This is a step which allows you to remove a property from memory",
             "type": "object",
             "properties": {
@@ -1078,7 +1078,8 @@
                 "eventValue": {
                     "type": "object",
                     "title": "Event Value",
-                    "description": "optional value to emit along with the event"
+                    "description": "optional value to emit along with the event",
+                    "additionalProperties": true
                 },
                 "bubbleEvent": {
                     "type": "boolean",
@@ -1452,19 +1453,19 @@
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "minValue": {
-                    "type": "integer",
+                    "type": "number",
                     "title": "Mininum value",
                     "description": "The minimum value that is acceptable.  ",
                     "examples": [
-                        "0"
+                        "0.5"
                     ]
                 },
                 "maxValue": {
-                    "type": "integer",
+                    "type": "number",
                     "title": "Maximum value",
                     "description": "The maximum value that is acceptable.  ",
                     "examples": [
-                        "120"
+                        "12.5"
                     ]
                 }
             },
@@ -2214,7 +2215,10 @@
                 "entities": {
                     "type": "array",
                     "title": "Entities",
-                    "description": "The entities required to trigger this rule"
+                    "description": "The entities required to trigger this rule",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             },
             "additionalProperties": false,
@@ -3312,20 +3316,31 @@
                     "type": "string"
                 },
                 "cases": {
-                    "type": "object",
-                    "propertyNames": {
-                        "title": "Case",
-                        "description": "Case expression to compare to condition",
-                        "$role": "expression",
-                        "type": "string"
-                    },
-                    "additionalProperties": {
-                        "type": "array",
-                        "title": "If True",
-                        "description": "Step to execute if case is equal to condition",
-                        "items": {
-                            "$type": "Microsoft.IDialog",
-                            "$ref": "#/definitions/Microsoft.IDialog"
+                    "type": "array",
+                    "title": "Cases",
+                    "desc": "Cases to evaluate against condition",
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "value",
+                            "case"
+                        ],
+                        "properties": {
+                            "value": {
+                                "$role": "expression",
+                                "title": "Value",
+                                "description": "Value which must match the condition property",
+                                "type": "string"
+                            },
+                            "steps": {
+                                "type": "array",
+                                "title": "Steps",
+                                "description": "Steps to execute if case is equal to condition",
+                                "items": {
+                                    "$type": "Microsoft.IDialog",
+                                    "$ref": "#/definitions/Microsoft.IDialog"
+                                }
+                            }
                         }
                     }
                 },

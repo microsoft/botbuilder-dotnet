@@ -14,19 +14,30 @@
             ]
         },
         "cases": {
-            "type": "object",
-            "propertyNames": {
-                "title": "Case",
-                "description": "Case expression to compare to condition",
-                "$role": "expression"
-            },
-            "additionalProperties": {
-                "type": "array",
-                "items": {
-                    "$type": "Microsoft.IDialog"
+            "type": "array",
+            "title": "Cases",
+            "desc": "Cases to evaluate against condition",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "$role": "expression",
+                        "title": "Value",
+                        "description": "Value which must match the condition property"
+                    },
+                    "steps": {
+                        "type": "array",
+                        "items": {
+                            "$type": "Microsoft.IDialog"
+                        },
+                        "title": "Steps",
+                        "description": "Steps to execute if case is equal to condition"
+                    }
                 },
-                "title": "If True",
-                "description": "Step to execute if case is equal to condition"
+                "required": [
+                    "value",
+                    "case"
+                ]
             }
         },
         "default": {

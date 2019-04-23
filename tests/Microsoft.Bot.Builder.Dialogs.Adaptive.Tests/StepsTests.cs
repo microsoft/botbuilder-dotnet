@@ -167,11 +167,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new SwitchCondition()
                         {
                             Condition = "user.name",
-                            Cases = new Dictionary<string, List<IDialog>>()
+                            Cases = new List<Case>()
                             {
-                                { "'susan'", new List<IDialog>() { new SendActivity("hi susan") } },
-                                { "'bob'", new List<IDialog>() { new SendActivity("hi bob") } },
-                                { "'frank'", new List<IDialog>() { new SendActivity("hi frank") } }
+                                new Case("'susan'", new List<IDialog>() { new SendActivity("hi susan") } ),
+                                new Case("'bob'", new List<IDialog>() { new SendActivity("hi bob") } ),
+                                new Case("'frank'", new List<IDialog>() { new SendActivity("hi frank") } )
                             },
                             Default = new List<IDialog>() { new SendActivity("Who are you?") }
                         },
