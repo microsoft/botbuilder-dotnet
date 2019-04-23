@@ -101,7 +101,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestBasicListSupport()
         {
             var engine = TemplateEngine.FromFiles(GetExampleFilePath("BasicList.lg"));
+            Assert.AreEqual(engine.EvaluateTemplate("BasicJoin", new { items = new[] { "1"} }), "1");
             Assert.AreEqual(engine.EvaluateTemplate("BasicJoin", new { items = new[] { "1", "2" } }), "1, 2");
+            Assert.AreEqual(engine.EvaluateTemplate("BasicJoin", new { items = new[] { "1", "2", "3" } }), "1, 2 and 3");
         }
 
         [TestMethod]
@@ -140,23 +142,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             //var evaled = engine.EvaluateTemplate("ShowAlarmsWithMemberHumanize", new { alarms = alarms });
             //Assert.AreEqual("You have 2 alarms, 7 am at tomorrow and 8 pm at tomorrow", evaled);
 
-        }
-
-        [TestMethod]
-        public void TestBasicLoopRef()
-        {
-            var engine = TemplateEngine.FromFiles(GetExampleFilePath("7.lg"));
-            string evaled;
-            try
-            {
-                evaled = engine.EvaluateTemplate("wPhrase", "");
-                Assert.AreEqual(evaled, "你好");
-            }
-            catch (Exception e)
-            {
-                // Randomly this will detect a loop which is OK.
-                Assert.IsTrue(e.Message.StartsWith("Loop"));
-            }
         }
 
         [TestMethod]
@@ -273,7 +258,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var evaled2 = engine.AnalyzeTemplate("sandwichOrderConfirmation");
             var evaled2Options = new List<string> { "bread", "meat" };
             Assert.IsTrue(evaled2.All(evaled2Options.Contains) && evaled2.Count == evaled2Options.Count);
-
+            
             var evaled3 = engine.AnalyzeTemplate("template1");
             var evaled3Options = new List<string> { "alarms", "customer", "tasks[0]", "age", "city" };
             Assert.IsTrue(evaled3.All(evaled3Options.Contains) && evaled3.Count == evaled3Options.Count);

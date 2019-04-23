@@ -1,6 +1,10 @@
 ﻿﻿# template
 - [templateRef]
 
+# template1
+- [templateRef(a)]
+
+
 # multiLineTemplate
 - ```
 @{lgTemplate('templateRefInMultiLine')}
