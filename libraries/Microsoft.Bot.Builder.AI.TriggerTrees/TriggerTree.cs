@@ -100,6 +100,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             if (type == Optional || type == Ignore)
             {
                 eval = new ExpressionEvaluator(type, null, ReturnType.Boolean, BuiltInFunctions.ValidateUnaryBoolean);
+                eval.Negation = eval;
             }
             else 
             {
@@ -108,7 +109,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             return eval;
         }
 
-        private static IExpressionParser _parser = new ExpressionEngine(LookupFunction);
+        private static readonly IExpressionParser _parser = new ExpressionEngine(LookupFunction);
 
         public static Expression Parse(string expr) => _parser.Parse(expr);
 
@@ -230,16 +231,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             {
                 GenerateGraph(output, child, indent + 2);
             }
-        }
-
-        private static void IWrite(StreamWriter writer, params string[] strings)
-        {
-            writer.Write("  ");
-            foreach (var str in strings)
-            {
-                writer.Write(str);
-            }
-            writer.WriteLine();
         }
 
         /// <summary>
