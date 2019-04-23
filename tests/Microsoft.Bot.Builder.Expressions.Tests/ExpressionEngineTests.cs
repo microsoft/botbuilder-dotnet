@@ -258,7 +258,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("min(4, 5) ", 4),
             Test("min(4) ", 4),
             Test("min(1.0, two) + max(one, 2.0)", 3.0, oneTwo),
-
             Test("sub(2, 1)", 1),
             Test("sub(2, 1, 1)", 0),
             Test("sub(2.0, 0.5)", 1.5),
