@@ -441,17 +441,6 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
-                },
-                "eventName": {
-                    "type": "string",
-                    "title": "Event Name",
-                    "description": "Name of the event which is emitted"
-                },
-                "eventValue": {
-                    "type": "object",
-                    "title": "Event Value",
-                    "description": "object value which is a payload to communicate to the parent dialogs so that they can decide how to process it",
-                    "additionalProperties": true
                 }
             },
             "additionalProperties": false,
