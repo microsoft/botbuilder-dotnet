@@ -1,4 +1,59 @@
 {
   "$schema": "../../app.schema",
-  "$type": "Mic"
+  "$type": "Microsoft.AdaptiveDialog",
+  "recognizer": "OrderSandwichApp.lu",
+  "rules": [
+    {
+      "$type": "Microsoft.EventRule",
+      "events": [
+        "beginDialog"
+      ],
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "[Initial]"
+        }
+      ]
+    },
+    {
+      "$type":"Microsoft.IntentRule",
+      "intent": "SandwichOptions",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "[SandwichOptions]"
+        }
+      ]
+    },
+    {
+      "$type":"Microsoft.IntentRule",
+      "intent": "BreadOptions",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "[BreadOptions]"
+        }
+      ]
+    },
+    {
+      "$type":"Microsoft.IntentRule",
+      "intent": "ToppingOptions",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "[ToppingOptions]"
+        }
+      ]
+    },
+    {
+      "$type":"Microsoft.IntentRule",
+      "intent": "CheeseOptions",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "[CheeseOptions]"
+        }
+      ]
+    }
+  ]
 }

@@ -11,7 +11,8 @@
             "DoStepsIntent": "(?i)steps|intent",
             "BeginDialogIntent": "(?i)call",
             "ExternalLanguageIntent": "(?i)external|lg",
-            "EndDialogIntent": "(?i)end"
+            "EndDialogIntent": "(?i)end",
+            "SandwichIntent": "(?i)sandwich"
         }
     },
     "rules": [
@@ -79,6 +80,13 @@
                     "$type": "Microsoft.SendActivity",
                     "activity": "[help]"
                 }
+            ]
+        },
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "SandwichIntent",
+            "steps": [
+                "Sandwich.main"
             ]
         },
         {
