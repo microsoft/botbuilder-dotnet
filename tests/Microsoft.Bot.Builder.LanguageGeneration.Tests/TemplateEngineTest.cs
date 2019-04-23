@@ -16,8 +16,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         private string GetExampleFilePath(string fileName)
         {
-            //return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "Examples" + Path.DirectorySeparatorChar + fileName;
-            return "D:\\projects\\BotFramework\\botbuilder-dotnet\\tests\\Microsoft.Bot.Builder.LanguageGeneration.Tests\\Examples\\" + fileName;
+            return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "Examples" + Path.DirectorySeparatorChar + fileName;
         }
 
 
