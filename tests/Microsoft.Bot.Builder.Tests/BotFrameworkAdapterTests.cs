@@ -14,21 +14,21 @@ namespace Microsoft.Bot.Builder.Tests
     public class BotFrameworkAdapterTests
     {
         [TestMethod]
-        public async Task TenantIdShouldShowInConversationForTeams()
+        public async Task TenantIdShouldBeSetInConversationForTeams()
         {
             var activity = await ProcessActivity(Channels.Msteams, "theTenantId", null);
             Assert.AreEqual("theTenantId", activity.Conversation.TenantId);
         }
 
         [TestMethod]
-        public async Task TenantIdShouldNotShowInConversationForTeamsIfPresent()
+        public async Task TenantIdShouldNotChangeInConversationForTeamsIfPresent()
         {
             var activity = await ProcessActivity(Channels.Msteams, "theTenantId", "shouldNotBeReplaced");
             Assert.AreEqual("shouldNotBeReplaced", activity.Conversation.TenantId);
         }
 
         [TestMethod]
-        public async Task TenantIdShouldNotShowInConversationIfNotTeams()
+        public async Task TenantIdShouldNotBeSetInConversationIfNotTeams()
         {
             var activity = await ProcessActivity(Channels.Directline, "theTenantId", null);
             Assert.IsNull(activity.Conversation.TenantId);
