@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.BotBuilderSamples.Tests.Utils;
+using Moq;
 using Newtonsoft.Json;
 using Xunit;
 using Xunit.Abstractions;
@@ -39,6 +41,22 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 
             reply = await testBot.SendAsync<IMessageActivity>("tomorrow at 5 PM");
             Assert.Equal("Please confirm, I have you traveling to: Bahamas from: New York on: 2019-04-19T17 (1) Yes or (2) No", reply.Text);
+        }
+
+        [Theory]
+        [InlineData("I want to book a flight", "BookingDialog mock invoked")]
+        [InlineData("What's the weather like?", "GetWeatherDialog mock invoked")]
+        public async Task TaskSelector(string utterance, string invokedDialog)
+        {
+            var intentsAndDialogs = new Dictionary<string, Dialog>
+            {
+                { "bookDialog", new Mock<BookingDialog>().Object },
+                { "getWeather", new Mock<Dialog>().Object },
+            };
+
+            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, intentsAndDialogs);
+
+
         }
 
         [Theory]
