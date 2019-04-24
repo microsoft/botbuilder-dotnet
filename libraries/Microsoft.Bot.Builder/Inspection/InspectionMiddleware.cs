@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder
         public InspectionMiddleware(InspectionState inspectionState, UserState userState = null, ConversationState conversationState = null, MicrosoftAppCredentials credentials = null, ILogger<InspectionMiddleware> logger = null)
             : base(logger)
         {
-            _inspectionState = inspectionState;
+            _inspectionState = inspectionState ?? throw new ArgumentNullException(nameof(inspectionState));
             _userState = userState;
             _conversationState = conversationState;
             _credentials = credentials ?? MicrosoftAppCredentials.Empty;
