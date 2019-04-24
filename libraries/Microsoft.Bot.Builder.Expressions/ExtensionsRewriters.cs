@@ -151,14 +151,20 @@ namespace Microsoft.Bot.Builder.Expressions
             {
                 case ExpressionType.And:
                 case ExpressionType.Or:
-                    newExpr = Expression.MakeExpression(inNot ? ExpressionType.And : ExpressionType.Or, (from child in expression.Children select PushDownNot(child, inNot)).ToArray());
-                        var children = (from child in expression.Children select PushDownNot(child, passThrough, inNot)).ToArray();
+                    {
+                        var children = (from child in expression.Children select PushDownNot(child, inNot)).ToArray();
                         if (children.Length == 1)
+                        {
                             newExpr = children[0];
+                        }
+                        else
+                        {
                             newExpr = Expression.MakeExpression(expression.Type == ExpressionType.And
                                 ? (inNot ? ExpressionType.Or : ExpressionType.And)
                                 : (inNot ? ExpressionType.And : ExpressionType.Or),
                                 children);
+                        }
+                    }
                     break;
                case ExpressionType.Not:
                     newExpr = PushDownNot(expression.Children[0], !inNot);
