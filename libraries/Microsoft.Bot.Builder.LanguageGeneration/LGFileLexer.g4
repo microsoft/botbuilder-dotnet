@@ -23,7 +23,7 @@ COMMENTS
   ;
 
 WS
-  : (' '|'\t')+ -> skip
+  : (' '|'\t'|'\u00a0')+ -> skip
   ;
 
 NEWLINE
@@ -45,7 +45,7 @@ INVALID_TOKEN_DEFAULT_MODE
 mode TEMPLATE_NAME_MODE;
 
 WS_IN_NAME
-  : (' '|'\t')+ -> skip
+  : (' '|'\t'|'\u00a0')+ -> skip
   ;
 
 NEWLINE_IN_NAME
@@ -80,11 +80,11 @@ mode TEMPLATE_BODY_MODE;
 
 // a little tedious on the rules, a big improvement on portability
 WS_IN_BODY_IGNORED
-  : (' '|'\t')+  {ignoreWS}? -> skip
+  : (' '|'\t'|'\u00a0')+  {ignoreWS}? -> skip
   ;
 
 WS_IN_BODY
-  : (' '|'\t')+  -> type(WS)
+  : (' '|'\t'|'\u00a0')+  -> type(WS)
   ;
 
 NEWLINE_IN_BODY

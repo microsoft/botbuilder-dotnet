@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Antlr4.Runtime;
-using System.Linq;
 using System.Text;
+using Antlr4.Runtime;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -62,7 +61,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var newTemplates = filePaths.Select(filePath =>
             {
                 var bytes = File.ReadAllBytes(filePath);
-                bytes = RemoveBomMark(bytes);
+                bytes = RemoveExtraBomMark(bytes);
                 var text = Encoding.UTF8.GetString(bytes);
 
                 return ToTemplates(Parse(text), filePath);
@@ -158,7 +157,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return null;
             }
 
-            text = ChangeUTF8Space(text);
             var input = new AntlrInputStream(text);
             var lexer = new LGFileLexer(input);
             var tokens = new CommonTokenStream(lexer);
@@ -186,7 +184,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return templates.Select(t => new LGTemplate(t, source)).ToList();
         }
 
-        private byte[] RemoveBomMark(byte[] bytes)
+        private byte[] RemoveExtraBomMark(byte[] bytes)
         {
             var bom = new byte[] { 0xEF, 0xBB, 0xBF };
 
@@ -199,22 +197,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return bytes;
-        }
-
-        private string ChangeUTF8Space(string targetStr)
-        {
-            try
-            {
-                var currentStr = string.Empty;
-                var utf8Space = new byte[] { 0xc2, 0xa0 };
-                var tempSpace = Encoding.GetEncoding("UTF-8").GetString(utf8Space);
-                currentStr = targetStr.Replace(tempSpace, " ");
-                return currentStr;
-            }
-            catch (Exception)
-            {
-                return targetStr;
-            }
         }
     }
 }

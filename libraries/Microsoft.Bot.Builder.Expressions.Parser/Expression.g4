@@ -32,7 +32,7 @@ fragment DIGIT : [0-9];
 
 NUMBER : DIGIT + ( '.' DIGIT +)? ;
 
-WHITESPACE : (' '|'\t') -> skip;
+WHITESPACE : (' '|'\t'|'\u00a0') -> skip;
 
 IDENTIFIER : (LETTER | '_' | '#' | '@' | '$') (LETTER | DIGIT | '-' | '_')*;
 
