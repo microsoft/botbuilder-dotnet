@@ -110,16 +110,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 isFail = true;
                 errorMessage = "error occurs when parsing file";
             }
-
-            try
+            if(!isFail)
             {
-                engine.AnalyzeTemplate(templateName);
-                isFail = true;
-                errorMessage = "No exception is thrown.";
-            }
-            catch(Exception e)
-            {
-                TestContext.WriteLine(e.Message);
+                try
+                {
+                    engine.AnalyzeTemplate(templateName);
+                    isFail = true;
+                    errorMessage = "No exception is thrown.";
+                }
+                catch (Exception e)
+                {
+                    TestContext.WriteLine(e.Message);
+                }
             }
 
             if (isFail)
@@ -145,15 +147,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 errorMessage = "error occurs when parsing file";
             }
 
-            try
+            if(!isFail)
             {
-                engine.EvaluateTemplate(templateName, null);
-                isFail = true;
-                errorMessage = "No exception is thrown.";
-            }
-            catch (Exception e)
-            {
-                TestContext.WriteLine(e.Message);
+                try
+                {
+                    engine.EvaluateTemplate(templateName, null);
+                    isFail = true;
+                    errorMessage = "No exception is thrown.";
+                }
+                catch (Exception e)
+                {
+                    TestContext.WriteLine(e.Message);
+                }
             }
 
             if (isFail)
