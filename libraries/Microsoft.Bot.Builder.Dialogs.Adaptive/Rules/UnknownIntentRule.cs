@@ -37,8 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
 
         protected override PlanChangeList OnCreateChangeList(PlanningContext planning, object dialogOptions = null)
         {
-            var recognizerResult = planning.State.GetValue<RecognizerResult>("turn.dialogEvent.value");
-            if (recognizerResult != null)
+            if (planning.State.TryGetValue<RecognizerResult>("turn.dialogEvent.value", out var recognizerResult))
             {
                 return new PlanChangeList()
                 {

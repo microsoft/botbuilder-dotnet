@@ -209,7 +209,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     await Task.Delay(0);
                     Assert.AreEqual("user", step.State.GetValue<string>("user.name"));
-                    Assert.AreEqual(null, step.State.GetValue<string>("user.lastName"));
+                    Assert.AreEqual(false, step.State.HasValue<string>("user.lastName"));
                     Assert.AreEqual("default", step.State.GetValue<string>("user.lastName", "default"));
                     return Dialog.EndOfTurn;
                 }

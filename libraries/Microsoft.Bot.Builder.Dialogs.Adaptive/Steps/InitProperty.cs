@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            var prop = await new TextTemplate(this.Property).BindToData(dc.Context, dc.State, (property, data) => dc.State.GetValue<object>(data, property)).ConfigureAwait(false);
+            var prop = await new TextTemplate(this.Property).BindToData(dc.Context, dc.State, (property, data) => data.GetValue<object>(property)).ConfigureAwait(false);
 
 
             // Ensure planning context

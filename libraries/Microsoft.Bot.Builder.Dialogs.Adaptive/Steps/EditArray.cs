@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 throw new Exception($"EditArray: \"{ ChangeType }\" operation couldn't be performed because the arrayProperty wasn't specified.");
             }
 
-            var prop = await new TextTemplate(this.ArrayProperty).BindToData(dc.Context, dc.State, (property, data) => dc.State.GetValue<object>(data, property)).ConfigureAwait(false);
+            var prop = await new TextTemplate(this.ArrayProperty).BindToData(dc.Context, dc.State, (property, data) => data.GetValue<object>(property)).ConfigureAwait(false);
             var array = dc.State.GetValue(prop, new JArray());
 
             object item = null;
@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     break;
                 case ArrayChangeType.Push:
                     EnsureItemProperty();
-                    item = dc.State.GetValue<object>(ItemProperty);
+                    dc.State.TryGetValue<object>(ItemProperty, out item);
                     lastResult = item != null;
                     if ((bool)lastResult)
                     {
@@ -148,7 +148,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     break;
                 case ArrayChangeType.Remove:
                     EnsureItemProperty();
-                    item = dc.State.GetValue<object>(ItemProperty);
+                    dc.State.TryGetValue<object>(ItemProperty, out item);
                     if (item != null)
                     {
                         lastResult = false;

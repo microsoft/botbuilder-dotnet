@@ -169,76 +169,15 @@ namespace Microsoft.Bot.Builder.Dialogs
             return json.SelectTokens(pathExpression);
         }
 
-        public T GetValue<T>(string pathExpression, T defaultValue = default(T))
+
+        public T GetValue<T>(string pathExpression, T defaultVal)
         {
-            return GetValue<T>(this, pathExpression, defaultValue);
-        }
-
-        public T GetValue<T>(object o, string pathExpression, T defaultValue = default(T))
-        {
-            JToken result = null;
-            if (pathExpression.StartsWith("$"))
+            if (this.TryGetValue<T>(pathExpression, out var value))
             {
-                // jpath
-                if (o != null && o.GetType() == typeof(JArray))
-                {
-                    int index = 0;
-                    if (int.TryParse(pathExpression, out index) && index < JArray.FromObject(o).Count)
-                    {
-                        result = JArray.FromObject(o)[index];
-                    }
-                }
-                else if (o != null && o is JObject)
-                {
-                    result = ((JObject)o).SelectToken(pathExpression);
-                }
-                else
-                {
-                    result = JToken.FromObject(o).SelectToken(pathExpression);
-                }
-            }
-            else
-            {
-                // normal expression
-                var exp = new ExpressionEngine().Parse(pathExpression);
-                var (value, error) = exp.TryEvaluate(o);
-                if (value is JToken)
-                {
-                    result = (JToken)value;
-                }
-                else if (value != null)
-                {
-                    return (T)value;
-                }
+                return value;
             }
 
-            if (result != null)
-            {
-                return result.ToObject<T>();
-            }
-            else
-            {
-                return defaultValue;
-            }
-        }
-
-        public bool HasValue<T>(string pathExpression)
-        {
-            return HasValue<T>(this, pathExpression);
-        }
-
-        public bool HasValue<T>(object o, string pathExpression)
-        {
-            var result = GetValue<T>(o, pathExpression);
-
-            if (result != null)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return defaultVal;
         }
 
         public void SetValue(string pathExpression, object value)

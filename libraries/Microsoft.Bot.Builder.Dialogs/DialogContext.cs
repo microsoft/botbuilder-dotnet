@@ -220,9 +220,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Process dialogs input bindings
             // - If the stack is empty, any 'dialog.*' bindings will be pulled from the active dialog on
             //   the parents stack.
-            var stateBindings = State.GetValue<Dictionary<string, object>>("dialog.result");
-
-            if (stateBindings == null)
+            if (!State.TryGetValue<Dictionary<string, object>>("dialog.result", out var stateBindings))
             {
                 stateBindings = new Dictionary<string, object>();
             }
@@ -232,9 +230,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var bindingKey = option.Key;
                 var bindingValue = option.Value;
 
-                var value = State.GetValue<string>(bindingValue);
-
-                stateBindings[bindingKey] = value;
+                if (State.TryGetValue<string>(bindingValue, out var value))
+                {
+                    stateBindings[bindingKey] = value;
+                }
             }
 
             State.SetValue("dialog.result", stateBindings);

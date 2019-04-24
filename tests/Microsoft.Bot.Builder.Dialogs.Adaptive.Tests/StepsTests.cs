@@ -225,6 +225,46 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Step_NumberInput()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var planningDialog = new AdaptiveDialog("planningTest")
+            {
+                AutoEndDialog = false
+            };
+
+            planningDialog.AddRules(new List<IRule>()
+            {
+                new UnknownIntentRule(
+                    new List<IDialog>()
+                    {
+                        new NumberInput<int>()
+                        {
+                            Prompt = new ActivityTemplate("Please enter your age."),
+                            MinValue = 1,
+                            MaxValue = 150,
+                            RetryPrompt = new ActivityTemplate("The value entered must be greater than 0 and less than 150."),
+                            Property = "user.userProfile.Age"
+                        },
+                        new SendActivity("I have your age as {user.userProfile.Age}."),
+                    })
+            });
+
+            await CreateFlow(planningDialog, convoState, userState)
+            .Send("hi")
+                .AssertReply("Please enter your age.")
+            .Send("1000")
+                .AssertReply("The value entered must be greater than 0 and less than 150.")
+            .Send("15")
+                .AssertReply("I have your age as 15.")
+            .Send("hi")
+                .AssertReply("I have your age as 15.")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task Step_TextInputWithInvalidPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());
