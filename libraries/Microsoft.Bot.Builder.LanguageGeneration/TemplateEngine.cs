@@ -158,6 +158,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return null;
             }
 
+            text = ChangeUTF8Space(text);
             var input = new AntlrInputStream(text);
             var lexer = new LGFileLexer(input);
             var tokens = new CommonTokenStream(lexer);
@@ -198,6 +199,22 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return bytes;
+        }
+
+        private string ChangeUTF8Space(string targetStr)
+        {
+            try
+            {
+                var currentStr = string.Empty;
+                var utf8Space = new byte[] { 0xc2, 0xa0 };
+                var tempSpace = Encoding.GetEncoding("UTF-8").GetString(utf8Space);
+                currentStr = targetStr.Replace(tempSpace, " ");
+                return currentStr;
+            }
+            catch (Exception)
+            {
+                return targetStr;
+            }
         }
     }
 }
