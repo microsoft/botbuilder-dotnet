@@ -12,64 +12,26 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder
 {
-    public class InspectionSession
+    internal class InspectionSession
     {
         private readonly ConversationReference _conversationReference;
-        private readonly MicrosoftAppCredentials _credentials;
-        private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
+        private readonly ConnectorClient _connectorClient;
 
         public InspectionSession(ConversationReference conversationReference, MicrosoftAppCredentials credentials, HttpClient httpClient, ILogger logger)
         {
             _conversationReference = conversationReference;
-            _credentials = credentials;
-            _httpClient = httpClient;
             _logger = logger;
+            _connectorClient = new ConnectorClient(new Uri(_conversationReference.ServiceUrl), credentials, httpClient);
         }
 
-        public Task<bool> SendAsync(Activity activity, CancellationToken cancellationToken)
+        public async Task<bool> SendAsync(Activity activity, CancellationToken cancellationToken)
         {
-            activity.ChannelId = _conversationReference.ChannelId;
-            activity.ServiceUrl = _conversationReference.ServiceUrl;
-            if (activity.From == null)
-            {
-                activity.From = _conversationReference.Bot;
-            }
-
-            if (activity.Recipient == null)
-            {
-                activity.Recipient = _conversationReference.User;
-            }
-
-            if (activity.Conversation == null)
-            {
-                activity.Conversation = _conversationReference.Conversation;
-            }
-
-            return SendToConversationAsync(activity, _conversationReference, cancellationToken);
-        }
-
-        protected async Task<bool> SendToConversationAsync(Activity activity, ConversationReference conversationReference, CancellationToken cancellationToken)
-        {
-            if (activity.Timestamp == null)
-            {
-                activity.Timestamp = DateTime.UtcNow;
-            }
-
-            if (activity.ChannelId != conversationReference.ChannelId && activity.RelatesTo == null)
-            {
-                activity.RelatesTo = activity.GetConversationReference();
-            }
-
-            activity.ChannelId = conversationReference.ChannelId;
-            activity.Conversation = conversationReference.Conversation;
-            activity.ServiceUrl = conversationReference.ServiceUrl;
-
-            var connectorClient = new ConnectorClient(new Uri(conversationReference.ServiceUrl), _credentials, _httpClient);
+            activity.ApplyConversationReference(_conversationReference);
 
             try
             {
-                var resourceResponse = await connectorClient.Conversations.SendToConversationAsync(activity, cancellationToken).ConfigureAwait(false);
+                var resourceResponse = await _connectorClient.Conversations.SendToConversationAsync(activity, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception err)
             {

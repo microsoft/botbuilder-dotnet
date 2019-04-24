@@ -6,7 +6,7 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
 {
-    public class InspectionSessionsByStatus
+    internal class InspectionSessionsByStatus
     {
         public IDictionary<string, ConversationReference> OpenedSessions { get; } = new Dictionary<string, ConversationReference>();
 

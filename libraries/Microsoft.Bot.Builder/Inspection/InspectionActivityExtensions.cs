@@ -1,34 +1,40 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
-using System.Linq;
+using System;
 using Microsoft.Bot.Schema;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder
 {
-    public static class InspectionActivityExtensions
+    internal static class InspectionActivityExtensions
     {
-        private static JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore };
-
-        public static IEnumerable<Activity> Clone(this List<Activity> activities)
+        public static Activity TraceActivity(this BotState state, ITurnContext turnContext)
         {
-            return activities.Select(activity => activity.Clone());
-        }
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
 
-        public static Activity Clone(this Activity activity)
-        {
-            return JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity, jsonSerializerSettings));
-        }
-
-        public static Activity CreateTraceActivity(this BotState state, ITurnContext turnContext)
-        {
             var name = state.GetType().Name;
             var cachedState = turnContext.TurnState.Get<object>(name);
             var obj = JObject.FromObject(cachedState)["State"];
-            return (Activity)Activity.CreateTraceActivity("Interception", value: obj);
+            return (Activity)Activity.CreateTraceActivity("BotState", "https://www.botframework.com/schemas/botState", obj, "Bot State");
+        }
+
+        public static Activity TraceActivity(this Activity activity, string name, string label)
+        {
+            return (Activity)Activity.CreateTraceActivity(name, "https://www.botframework.com/schemas/activity", activity, label);
+        }
+
+        public static Activity TraceActivity(this ConversationReference conversationReference)
+        {
+            return (Activity)Activity.CreateTraceActivity("MessageDelete", "https://www.botframework.com/schemas/conversationReference", conversationReference, "Deleted Message");
+        }
+
+        public static Activity TraceActivity(this Exception exception)
+        {
+            return (Activity)Activity.CreateTraceActivity("TurnError", "https://www.botframework.com/schemas/error", exception.Message, "Turn Error");
         }
     }
 }

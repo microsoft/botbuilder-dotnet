@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -13,7 +14,7 @@ namespace Microsoft.Bot.Builder
 {
     public abstract class InterceptionMiddleware : IMiddleware
     {
-        public InterceptionMiddleware(ILogger logger)
+        internal InterceptionMiddleware(ILogger logger)
         {
             Logger = logger ?? NullLogger.Instance;
         }
@@ -22,26 +23,27 @@ namespace Microsoft.Bot.Builder
 
         async Task IMiddleware.OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
         {
-            var (shouldForwardToApplication, shouldIntercept) = await InboundAsync(turnContext, cancellationToken).ConfigureAwait(false);
+            var (shouldForwardToApplication, shouldIntercept) = await InvokeInboundAsync(turnContext, turnContext.Activity.TraceActivity("ReceivedActivity", "Received Activity"), cancellationToken).ConfigureAwait(false);
 
             if (shouldIntercept)
             {
                 turnContext.OnSendActivities(async (ctx, activities, nextSend) =>
                 {
-                    await OutboundAsync(ctx, activities.Clone(), cancellationToken).ConfigureAwait(false);
+                    var traceActivities = activities.Select(a => a.TraceActivity("SentActivity", "Sent Activity"));
+                    await InvokeOutboundAsync(ctx, traceActivities, cancellationToken).ConfigureAwait(false);
                     return await nextSend().ConfigureAwait(false);
                 });
 
                 turnContext.OnUpdateActivity(async (ctx, activity, nextUpdate) =>
                 {
-                    var traceActivity = (Activity)Activity.CreateTraceActivity($"Update", value: activity);
+                    var traceActivity = activity.TraceActivity("MessageUpdate", "Updated Message");
                     await InvokeOutboundAsync(ctx, traceActivity, cancellationToken).ConfigureAwait(false);
                     return await nextUpdate().ConfigureAwait(false);
                 });
 
                 turnContext.OnDeleteActivity(async (ctx, reference, nextDelete) =>
                 {
-                    var traceActivity = (Activity)Activity.CreateTraceActivity($"Delete", value: reference);
+                    var traceActivity = reference.TraceActivity();
                     await InvokeOutboundAsync(ctx, traceActivity, cancellationToken).ConfigureAwait(false);
                     await nextDelete().ConfigureAwait(false);
                 });
@@ -51,21 +53,29 @@ namespace Microsoft.Bot.Builder
 
             if (shouldForwardToApplication)
             {
-                await next(cancellationToken).ConfigureAwait(false);
+                try
+                {
+                    await next(cancellationToken).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    await InvokeTraceExceptionAsync(turnContext, e.TraceActivity(), cancellationToken).ConfigureAwait(false);
+                    throw e;
+                }
             }
         }
 
-        protected abstract Task<(bool shouldForwardToApplication, bool shouldIntercept)> InboundAsync(ITurnContext turnContext, CancellationToken cancellationToken);
+        protected abstract Task<(bool shouldForwardToApplication, bool shouldIntercept)> InboundAsync(ITurnContext turnContext, Activity traceActivity, CancellationToken cancellationToken);
 
         protected abstract Task OutboundAsync(ITurnContext turnContext, IEnumerable<Activity> clonedActivities, CancellationToken cancellationToken);
 
         protected abstract Task TraceStateAsync(ITurnContext turnContext, CancellationToken cancellationToken);
 
-        private async Task<(bool shouldForwardToApplication, bool shouldIntercept)> InvokeInboundAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+        private async Task<(bool shouldForwardToApplication, bool shouldIntercept)> InvokeInboundAsync(ITurnContext turnContext, Activity traceActivity, CancellationToken cancellationToken)
         {
             try
             {
-                return await InboundAsync(turnContext, cancellationToken).ConfigureAwait(false);
+                return await InboundAsync(turnContext, traceActivity, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -74,11 +84,11 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        private async Task InvokeOutboundAsync(ITurnContext turnContext, IEnumerable<Activity> clonedActivities, CancellationToken cancellationToken)
+        private async Task InvokeOutboundAsync(ITurnContext turnContext, IEnumerable<Activity> traceActivities, CancellationToken cancellationToken)
         {
             try
             {
-                await OutboundAsync(turnContext, clonedActivities, cancellationToken).ConfigureAwait(false);
+                await OutboundAsync(turnContext, traceActivities, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -86,9 +96,9 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        private Task InvokeOutboundAsync(ITurnContext turnContext, Activity clonedActivity, CancellationToken cancellationToken)
+        private Task InvokeOutboundAsync(ITurnContext turnContext, Activity traceActivity, CancellationToken cancellationToken)
         {
-            return InvokeOutboundAsync(turnContext, new Activity[] { clonedActivity }, cancellationToken);
+            return InvokeOutboundAsync(turnContext, new Activity[] { traceActivity }, cancellationToken);
         }
 
         private async Task InvokeTraceStateAsync(ITurnContext turnContext, CancellationToken cancellationToken)
@@ -99,7 +109,19 @@ namespace Microsoft.Bot.Builder
             }
             catch (Exception e)
             {
-                Logger.LogWarning($"Exception in inbound interception {e.Message}");
+                Logger.LogWarning($"Exception in state interception {e.Message}");
+            }
+        }
+
+        private async Task InvokeTraceExceptionAsync(ITurnContext turnContext, Activity traceActivity, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await OutboundAsync(turnContext, new Activity[] { traceActivity }, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                Logger.LogWarning($"Exception in exception interception {e.Message}");
             }
         }
     }

@@ -14,10 +14,13 @@ namespace Microsoft.Bot.Builder
 {
     public class InspectionMiddleware : InterceptionMiddleware
     {
-        private InspectionState _inspectionState;
-        private UserState _userState;
-        private ConversationState _conversationState;
-        private MicrosoftAppCredentials _credentials;
+        private const string Command = "/INSPECT";
+
+        private readonly InspectionState _inspectionState;
+        private readonly UserState _userState;
+        private readonly ConversationState _conversationState;
+        private readonly MicrosoftAppCredentials _credentials;
+        private readonly Lazy<HttpClient> _httpClient;
 
         public InspectionMiddleware(InspectionState inspectionState, UserState userState = null, ConversationState conversationState = null, MicrosoftAppCredentials credentials = null, ILogger<InspectionMiddleware> logger = null)
             : base(logger)
@@ -26,17 +29,15 @@ namespace Microsoft.Bot.Builder
             _userState = userState;
             _conversationState = conversationState;
             _credentials = credentials ?? MicrosoftAppCredentials.Empty;
-            HttpClient = new HttpClient();
+            _httpClient = new Lazy<HttpClient>(() => new HttpClient());
         }
-
-        protected virtual HttpClient HttpClient { get; set; }
 
         public async Task<bool> ProcessCommandAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext.Activity.Type == ActivityTypes.Message)
             {
                 var command = turnContext.Activity.Text.Split(' ');
-                if (command.Length > 1 && command[0] == "/DEBUG")
+                if (command.Length > 1 && command[0] == Command)
                 {
                     if (command.Length == 2 && command[1] == "open")
                     {
@@ -55,7 +56,12 @@ namespace Microsoft.Bot.Builder
             return false;
         }
 
-        protected override async Task<(bool shouldForwardToApplication, bool shouldIntercept)> InboundAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+        protected virtual HttpClient GetHttpClient()
+        {
+            return _httpClient.Value;
+        }
+
+        protected override async Task<(bool shouldForwardToApplication, bool shouldIntercept)> InboundAsync(ITurnContext turnContext, Activity traceActivity, CancellationToken cancellationToken)
         {
             if (await ProcessCommandAsync(turnContext, cancellationToken).ConfigureAwait(false))
             {
@@ -65,7 +71,7 @@ namespace Microsoft.Bot.Builder
             var session = await FindSessionAsync(turnContext, cancellationToken).ConfigureAwait(false);
             if (session != null)
             {
-                if (await InvokeSendAsync(turnContext, session, turnContext.Activity.Clone(), cancellationToken).ConfigureAwait(false))
+                if (await InvokeSendAsync(turnContext, session, traceActivity, cancellationToken).ConfigureAwait(false))
                 {
                     return (shouldForwardToApplication: true, shouldIntercept: true);
                 }
@@ -80,14 +86,14 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        protected override async Task OutboundAsync(ITurnContext turnContext, IEnumerable<Activity> clonedActivities, CancellationToken cancellationToken)
+        protected override async Task OutboundAsync(ITurnContext turnContext, IEnumerable<Activity> traceActivities, CancellationToken cancellationToken)
         {
             var session = await FindSessionAsync(turnContext, cancellationToken).ConfigureAwait(false);
             if (session != null)
             {
-                foreach (var clonedActivity in clonedActivities)
+                foreach (var traceActivity in traceActivities)
                 {
-                    if (!await InvokeSendAsync(turnContext, session, clonedActivity, cancellationToken).ConfigureAwait(false))
+                    if (!await InvokeSendAsync(turnContext, session, traceActivity, cancellationToken).ConfigureAwait(false))
                     {
                         break;
                     }
@@ -106,12 +112,12 @@ namespace Microsoft.Bot.Builder
 
                 if (_userState != null)
                 {
-                    await InvokeSendAsync(turnContext, session, _userState.CreateTraceActivity(turnContext), cancellationToken).ConfigureAwait(false);
+                    await InvokeSendAsync(turnContext, session, _userState.TraceActivity(turnContext), cancellationToken).ConfigureAwait(false);
                 }
 
                 if (_conversationState != null)
                 {
-                    await InvokeSendAsync(turnContext, session, _conversationState.CreateTraceActivity(turnContext), cancellationToken).ConfigureAwait(false);
+                    await InvokeSendAsync(turnContext, session, _conversationState.TraceActivity(turnContext), cancellationToken).ConfigureAwait(false);
                 }
             }
         }
@@ -121,7 +127,7 @@ namespace Microsoft.Bot.Builder
             var accessor = _inspectionState.CreateProperty<InspectionSessionsByStatus>(nameof(InspectionSessionsByStatus));
             var sessions = await accessor.GetAsync(turnContext, () => new InspectionSessionsByStatus()).ConfigureAwait(false);
             var sessionId = OpenCommand(sessions, turnContext.Activity.GetConversationReference());
-            await turnContext.SendActivityAsync(MessageFactory.Text($"/DEBUG attach {sessionId}")).ConfigureAwait(false);
+            await turnContext.SendActivityAsync(MessageFactory.Text($"{Command} attach {sessionId}")).ConfigureAwait(false);
             await _inspectionState.SaveChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
         }
 
@@ -168,7 +174,7 @@ namespace Microsoft.Bot.Builder
 
             if (openSessions.AttachedSessions.TryGetValue(turnContext.Activity.Conversation.Id, out var conversationReference))
             {
-                return new InspectionSession(conversationReference, _credentials, HttpClient, Logger);
+                return new InspectionSession(conversationReference, _credentials, GetHttpClient(), Logger);
             }
 
             return null;
