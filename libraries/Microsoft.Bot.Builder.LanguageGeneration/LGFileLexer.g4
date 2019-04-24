@@ -38,6 +38,10 @@ DASH
   : '-' {expectIfElse = true;} -> pushMode(TEMPLATE_BODY_MODE)
   ;
 
+INVALID_TOKEN_DEFAULT_MODE
+  : .
+  ;
+
 mode TEMPLATE_NAME_MODE;
 
 WS_IN_NAME

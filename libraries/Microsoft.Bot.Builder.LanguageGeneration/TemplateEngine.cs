@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Antlr4.Runtime;
+using System.Linq;
+using System.Text;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -59,7 +61,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var newTemplates = filePaths.Select(filePath =>
             {
-                var text = File.ReadAllText(filePath);
+                var bytes = File.ReadAllBytes(filePath);
+                bytes = RemoveBomMark(bytes);
+                var text = Encoding.UTF8.GetString(bytes);
+
                 return ToTemplates(Parse(text), filePath);
             }).SelectMany(x => x);
 
@@ -178,6 +183,21 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var templates = file.paragraph().Select(x => x.templateDefinition()).Where(x => x != null);
             return templates.Select(t => new LGTemplate(t, source)).ToList();
+        }
+
+        private byte[] RemoveBomMark(byte[] bytes)
+        {
+            var bom = new byte[] { 0xEF, 0xBB, 0xBF };
+
+            while (bytes.Length >= 3
+            && bytes[0] == bom[0]
+            && bytes[1] == bom[1]
+            && bytes[2] == bom[2])
+            {
+                bytes = bytes.Skip(3).ToArray();
+            }
+
+            return bytes;
         }
     }
 }
