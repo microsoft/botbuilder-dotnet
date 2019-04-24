@@ -12,13 +12,12 @@ namespace Microsoft.Bot.Builder.Expressions
         /// Rewrite the expression by pushing not down to the leaves.
         /// </summary>
         /// <remarks>
-        /// This uses DeMorgan's law to push not through and/or/not to the leaves.  
-        /// It also rewrites comparisons to invert them.
+        /// Push down not to the leaves if possible.  For and/or/not this uses DeMorgan's law and rewrites comparisons.  
+        /// You can define your own behavior by setting <see cref="ExpressionEvaluator.Negation"/> to the negated evaluator.
         /// </remarks>
         /// <param name="expression">Expression to rewrite.</param>
-        /// <param name="passThrough">Any functions that do not change with not.</param>
         /// <returns>Rewritten expression.</returns>
-        static public Expression PushDownNot(this Expression expression, HashSet<string> passThrough = null) => PushDownNot(expression, passThrough, false);
+        public static Expression PushDownNot(this Expression expression) => PushDownNot(expression, false);
 
         /// <summary>
         /// Rewrite expression into disjunctive normal form.
@@ -28,21 +27,15 @@ namespace Microsoft.Bot.Builder.Expressions
         /// to leaves.
         /// </remarks>
         /// <param name="expression">Expression to rewrite.</param>
-        /// <param name="passThrough">Any functions that not should pass through.</param>
         /// <returns>Normalized expression.</returns>
-        static public Expression DisjunctiveNormalForm(this Expression expression, HashSet<string> passThrough = null)
+        public static Expression DisjunctiveNormalForm(this Expression expression)
         {
             Expression result;
-            if (passThrough == null)
-            {
-                passThrough = new HashSet<string>();
-            }
-            var clauses = Conjunctions(expression.PushDownNot(passThrough));
+            var clauses = Conjunctions(expression.PushDownNot());
             var children = new List<Expression>();
-            foreach(var clause in clauses)
+            foreach (var clause in clauses)
             {
-                if (clause.Type == ExpressionType.And &&
-                    clause.Children.Length == 1)
+                if (clause.Type == ExpressionType.And && clause.Children.Length == 1)
                 {
                     children.Add(clause.Children[0]);
                 }
@@ -66,7 +59,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return result;
         }
 
-        static private IEnumerable<Expression> Conjunctions(Expression expression)
+        private static IEnumerable<Expression> Conjunctions(Expression expression)
         {
             switch (expression.Type)
             {
@@ -150,81 +143,47 @@ namespace Microsoft.Bot.Builder.Expressions
             }
         }
 
-        static private Expression PushDownNot(Expression expression, HashSet<string> passThrough, bool inNot)
+        private static Expression PushDownNot(Expression expression, bool inNot)
         {
             var newExpr = expression;
+            var negation = expression.Evaluator.Negation;
             switch (expression.Type)
             {
                 case ExpressionType.And:
                 case ExpressionType.Or:
-                    {
+                    newExpr = Expression.MakeExpression(inNot ? ExpressionType.And : ExpressionType.Or, (from child in expression.Children select PushDownNot(child, inNot)).ToArray());
                         var children = (from child in expression.Children select PushDownNot(child, passThrough, inNot)).ToArray();
                         if (children.Length == 1)
-                        {
                             newExpr = children[0];
-                        }
-                        else
-                        {
                             newExpr = Expression.MakeExpression(expression.Type == ExpressionType.And
                                 ? (inNot ? ExpressionType.Or : ExpressionType.And)
                                 : (inNot ? ExpressionType.And : ExpressionType.Or),
                                 children);
-                        }
-                    }
                     break;
                case ExpressionType.Not:
-                    newExpr = PushDownNot(expression.Children[0], passThrough, !inNot);
-                    break;
-                // Rewrite comparison operators
-                case ExpressionType.LessThan:
-                    if (inNot)
-                    {
-                        newExpr = Expression.MakeExpression(ExpressionType.GreaterThanOrEqual, expression.Children);
-                    }
-                    break;
-                case ExpressionType.LessThanOrEqual:
-                    if (inNot)
-                    {
-                        newExpr = Expression.MakeExpression(ExpressionType.GreaterThan, expression.Children);
-                    }
-                    break;
-                case ExpressionType.Equal:
-                    if (inNot)
-                    {
-                        newExpr = Expression.MakeExpression(ExpressionType.NotEqual, expression.Children);
-                    }
-                    break;
-                case ExpressionType.NotEqual:
-                    if (inNot)
-                    {
-                        newExpr = Expression.MakeExpression(ExpressionType.Equal, expression.Children);
-                    }
-                    break;
-                case ExpressionType.GreaterThanOrEqual:
-                    if (inNot)
-                    {
-                        newExpr = Expression.MakeExpression(ExpressionType.LessThan, expression.Children);
-                    }
-                    break;
-                case ExpressionType.GreaterThan:
-                    if (inNot)
-                    {
-                        newExpr = Expression.MakeExpression(ExpressionType.LessThanOrEqual, expression.Children);
-                    }
-                    break;
-                case ExpressionType.Exists:
-                    // Rewrite exists(x) -> x != null
-                    newExpr = Expression.MakeExpression(inNot ? ExpressionType.Equal : ExpressionType.NotEqual, expression.Children[0], Expression.ConstantExpression(null));
+                    newExpr = PushDownNot(expression.Children[0], !inNot);
                     break;
                 default:
-                    if (passThrough.Contains(expression.Type))
+                    if (inNot)
                     {
-                        // Pass through marker functions like optional/ignore to children
-                        newExpr = Expression.MakeExpression(expression.Evaluator, PushDownNot(expression.Children[0], passThrough, inNot));
-                    }
-                    else if (inNot)
-                    {
-                        newExpr = Expression.MakeExpression(ExpressionType.Not, expression);
+                        if (negation != null)
+                        {
+                            if (expression.Type == negation.Type)
+                            {
+                                // Pass through like optional/ignore
+                                newExpr = Expression.MakeExpression(negation, (from child in expression.Children select PushDownNot(child, true)).ToArray());
+                            }
+                            else
+                            {
+                                // Replace with negation and stop
+                                newExpr = Expression.MakeExpression(negation, expression.Children);
+                            }
+                        }
+                        else
+                        {
+                            // Keep not
+                            newExpr = Expression.MakeExpression(ExpressionType.Not, expression);
+                        }
                     }
                     break;
             }

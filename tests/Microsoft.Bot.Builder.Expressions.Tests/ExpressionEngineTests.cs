@@ -14,9 +14,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         public static object[] Test(string input, object value, HashSet<string> paths = null) => new object[] { input, value, paths };
 
         public static HashSet<string> one = new HashSet<string> { "one" };
-        public static HashSet<string> oneTwo = new HashSet<string> {"one", "two" };
+        public static HashSet<string> oneTwo = new HashSet<string> { "one", "two" };
 
-        object scope = new
+        private readonly object scope = new
         {
             one = 1.0,
             two = 2.0,
@@ -240,7 +240,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("bool(0)", true),
             Test("bool(null)", false),
             Test("bool(hello * 5)", false),
-            Test("bool('false')", true), 
+            Test("bool('false')", true),
             Test("bool('hi')", true),
             Test("createArray('h', 'e', 'l', 'l', 'o')", new List<object>{"h", "e", "l", "l", "o" }),
             Test("createArray(1, bool(0), string(bool(1)), float('10'))", new List<object>{1, true, "true", 10.0f }),
@@ -258,7 +258,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("min(4, 5) ", 4),
             Test("min(4) ", 4),
             Test("min(1.0, two) + max(one, 2.0)", 3.0, oneTwo),
-           
             Test("sub(2, 1)", 1),
             Test("sub(2, 1, 1)", 0),
             Test("sub(2.0, 0.5)", 1.5),
@@ -357,15 +356,15 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             # endregion
 
             # region  Memory access
-            Test("property(bag, concat('na','me'))","mybag"),
+            Test("getProperty(bag, concat('na','me'))","mybag"),
             Test("items[2]", "two", new HashSet<string> { "items[2]" }),
             Test("bag.list[bag.index - 2]", "blue", new HashSet<string> {"bag.list", "bag.index" }),
             Test("items[nestedItems[1].x]", "two", new HashSet<string> { "items","nestedItems[1].x" }),
             Test("bag['name']","mybag"),
             Test("bag[substring(concat('na','me','more'), 0, length('name'))]","mybag"),
             Test("items[1+1]","two"),
-            Test("property(null, 'p')", null),
-            Test("(property(null, 'p'))[1]", null),
+            Test("getProperty(null, 'p')", null),
+            Test("(getProperty(null, 'p'))[1]", null),
             # endregion
         };
 
@@ -402,20 +401,18 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             }
         }
 
-        public static bool IsNumber(object value)
-        {
-            return value is sbyte
-                    || value is byte
-                    || value is short
-                    || value is ushort
-                    || value is int
-                    || value is uint
-                    || value is long
-                    || value is ulong
-                    || value is float
-                    || value is double
-                    || value is decimal;
-        }
+        public static bool IsNumber(object value) =>
+            value is sbyte
+            || value is byte
+            || value is short
+            || value is ushort
+            || value is int
+            || value is uint
+            || value is long
+            || value is ulong
+            || value is float
+            || value is double
+            || value is decimal;
 
         private void AssertObjectEquals(object expected, object actual)
         {
@@ -424,7 +421,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 Assert.IsTrue(Convert.ToSingle(actual) == Convert.ToSingle(expected));
             }
             // Compare two lists
-            else if(expected is IList expectedList
+            else if (expected is IList expectedList
                 && actual is IList actualList)
             {
                 Assert.AreEqual(expectedList.Count, actualList.Count);

@@ -15,8 +15,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// </summary>
         public Expression OriginalExpression;
 
-        private TriggerTree _tree;
-        private IEnumerable<Quantifier> _quantifiers;
+        private readonly TriggerTree _tree;
+        private readonly IEnumerable<Quantifier> _quantifiers;
         private List<Clause> _clauses;
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             _quantifiers = quantifiers;
             if (expression != null)
             {
-                var normalForm = expression.PushDownNot(new HashSet<string> { "optional", "ignore" });
+                var normalForm = expression.PushDownNot();
                 _clauses = GenerateClauses(normalForm).ToList();
                 RemoveDuplicatedPredicates();
                 OptimizeClauses();

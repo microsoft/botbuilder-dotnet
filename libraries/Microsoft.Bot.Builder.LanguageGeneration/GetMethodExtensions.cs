@@ -1,20 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-using Microsoft.Bot.Builder.Expressions;
 using System.Linq;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using Microsoft.Bot.Builder.Expressions;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
-    public interface IGetMethod
-    {
-        ExpressionEvaluator GetMethodX(string name);
-    }
-
-    class GetMethodExtensions : IGetMethod
+    internal class GetMethodExtensions : IGetMethod
     {
         // Hold an evaluator instance to make sure all functions have access
         // This ensentially make all functions as closure
@@ -27,7 +18,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             _evaluator = evaluator;
         }
 
-        // 
         public ExpressionEvaluator GetMethodX(string name)
         {
             // TODO: Should add verifiers and validators
@@ -38,9 +28,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 case "join":
                     return new ExpressionEvaluator("join", BuiltInFunctions.Apply(this.Join));
             }
+
             return BuiltInFunctions.Lookup(name);
         }
-
 
         public object LgTemplate(IReadOnlyList<object> args)
         {
@@ -62,7 +52,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception($"lgTemplate expect a string as first argument, acutal {expression.Children[0]}");
             }
 
-            string templateName = (string)(expression.Children[0] as Constant).Value;
+            var templateName = (string)(expression.Children[0] as Constant).Value;
 
             if (!_evaluator.TemplateMap.ContainsKey(templateName))
             {
@@ -83,29 +73,35 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             object result = null;
             if (parameters.Count == 2 &&
                 BuiltInFunctions.TryParseList(parameters[0], out var p0) &&
-                parameters[1] is String sep)
+                parameters[1] is string sep)
             {
-                result = String.Join(sep + " ", p0.OfType<object>().Select(x => x.ToString())); // "," => ", " 
+                result = string.Join(sep + " ", p0.OfType<object>().Select(x => x.ToString())); // "," => ", "
             }
             else if (parameters.Count == 3 &&
                 BuiltInFunctions.TryParseList(parameters[0], out var li) &&
-                parameters[1] is String sep1 &&
-                parameters[2] is String sep2)
+                parameters[1] is string sep1 &&
+                parameters[2] is string sep2)
             {
                 sep1 = sep1 + " "; // "," => ", "
                 sep2 = " " + sep2 + " "; // "and" => " and "
 
                 if (li.Count < 3)
                 {
-                    result = String.Join(sep2, li.OfType<object>().Select(x => x.ToString()));
+                    result = string.Join(sep2, li.OfType<object>().Select(x => x.ToString()));
                 }
                 else
                 {
-                    var firstPart = String.Join(sep1, li.OfType<object>().TakeWhile(o => o != null && o != li.OfType<object>().LastOrDefault()));
+                    var firstPart = string.Join(sep1, li.OfType<object>().TakeWhile(o => o != null && o != li.OfType<object>().LastOrDefault()));
                     result = firstPart + sep2 + li.OfType<object>().Last().ToString();
                 }
             }
+
             return result;
         }
+    }
+
+    public interface IGetMethod
+    {
+        ExpressionEvaluator GetMethodX(string name);
     }
 }

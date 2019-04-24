@@ -443,7 +443,7 @@ namespace Microsoft.Bot.Builder.Expressions
         public static ExpressionEvaluator Comparison(string type, Func<IReadOnlyList<dynamic>, bool> function, ValidateExpressionDelegate validator, VerifyExpression verify = null)
             => new ExpressionEvaluator(type, (expression, state) =>
             {
-                bool result = false;
+                var result = false;
                 string error = null;
                 IReadOnlyList<dynamic> args;
                 (args, error) = EvaluateChildren(expression, state, verify);
@@ -560,7 +560,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return (value, error);
         }
 
-        private static (object value, string error) Property(Expression expression, object state)
+        private static (object value, string error) GetProperty(Expression expression, object state)
         {
             object value = null;
             string error;
@@ -1275,8 +1275,8 @@ namespace Microsoft.Bot.Builder.Expressions
             
                 // Misc
                 new ExpressionEvaluator(ExpressionType.Accessor, Accessor, ReturnType.Object, ValidateAccessor),
-                new ExpressionEvaluator(ExpressionType.Property, Property, ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
-                new ExpressionEvaluator(ExpressionType.If, (expression, state) => If(expression, state), 
+                new ExpressionEvaluator(ExpressionType.GetProperty, GetProperty, ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
+                new ExpressionEvaluator(ExpressionType.If, (expression, state) => If(expression, state),
                     ReturnType.Object, (expression) => ValidateArityAndAnyType(expression, 3, 3)),
                 new ExpressionEvaluator(ExpressionType.Rand, Apply(args => Randomizer.Next(args[0], args[1]), VerifyInteger),
                     ReturnType.Number, ValidateBinaryNumber),
@@ -1311,14 +1311,19 @@ namespace Microsoft.Bot.Builder.Expressions
                 new ExpressionEvaluator(ExpressionType.Foreach, Foreach, ReturnType.Object, ValidateForeach),
             };
 
-        var lookup = new Dictionary<string, ExpressionEvaluator>();
+            var lookup = new Dictionary<string, ExpressionEvaluator>();
             foreach (var function in functions)
             {
                 lookup.Add(function.Type, function);
             }
 
-    // Math aliases
-    lookup.Add("add", lookup[ExpressionType.Add]); // more than 1 params
+            // Attach negations
+            lookup[ExpressionType.LessThan].Negation = lookup[ExpressionType.GreaterThanOrEqual];
+            lookup[ExpressionType.LessThanOrEqual].Negation = lookup[ExpressionType.GreaterThan];
+            lookup[ExpressionType.Equal].Negation = lookup[ExpressionType.NotEqual];
+
+            // Math aliases
+            lookup.Add("add", lookup[ExpressionType.Add]); // more than 1 params
             lookup.Add("div", lookup[ExpressionType.Divide]); // more than 1 params
             lookup.Add("mul", lookup[ExpressionType.Multiply]);// more than 1 params
             lookup.Add("sub", lookup[ExpressionType.Subtract]);// more than 1 params
@@ -1339,9 +1344,9 @@ namespace Microsoft.Bot.Builder.Expressions
             return lookup;
         }
 
-/// <summary>
-/// Dictionary of built-in functions.
-/// </summary>
-public static Dictionary<string, ExpressionEvaluator> _functions = BuildFunctionLookup();
+        /// <summary>
+        /// Dictionary of built-in functions.
+        /// </summary>
+        public static Dictionary<string, ExpressionEvaluator> _functions = BuildFunctionLookup();
     }
 }

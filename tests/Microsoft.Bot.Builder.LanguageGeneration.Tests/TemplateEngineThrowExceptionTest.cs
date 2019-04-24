@@ -21,8 +21,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         public static object[] Test(string input) => new object[] { input };
+        public static object[] TestTemplate(string input, string templateName) => new object[] { input, templateName };
 
-        public static IEnumerable<object[]> ExceptionData => new[]
+        public static IEnumerable<object[]> StaticCheckExceptionData => new[]
         {
             Test("EmptyTemplate.lg"),
             Test("ErrorTemplateParameters.lg"),
@@ -36,18 +37,33 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Test("MultilineVariation.lg"),
             Test("InvalidTemplateName.lg"),
             Test("InvalidTemplateName2.lg"),
+            Test("DuplicatedTemplates.lg"),
+            Test("LgTemplateFunctionError.lg"),
         };
 
-        public static IEnumerable<object[]> WariningData => new[]
+        public static IEnumerable<object[]> StaticCheckWariningData => new[]
         {
             Test("EmptyLGFile.lg"),
             Test("OnlyNoMatchRule.lg"),
             Test("NoMatchRule.lg")
         };
 
+        public static IEnumerable<object[]> AnalyzerExceptionData => new[]
+        {
+            TestTemplate("LoopDetected.lg", "NotExistTemplateName"),
+            TestTemplate("LoopDetected.lg", "wPhrase"),
+        };
+
+        public static IEnumerable<object[]> EvaluatorExceptionData => new[]
+        {
+            TestTemplate("ErrorExpression.lg", "template1"),
+            TestTemplate("LoopDetected.lg", "wPhrase"),
+            TestTemplate("LoopDetected.lg", "NotExistTemplate"),
+        };
+
 
         [DataTestMethod]
-        [DynamicData(nameof(ExceptionData))]
+        [DynamicData(nameof(StaticCheckExceptionData))]
         public void ThrowExceptionTest(string input)
         {
             var isFail = false;
@@ -68,7 +84,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [DataTestMethod]
-        [DynamicData(nameof(WariningData))]
+        [DynamicData(nameof(StaticCheckWariningData))]
         public void WariningTest(string input)
         {
             var engine = TemplateEngine.FromFiles(GetExampleFilePath(input));
@@ -76,6 +92,74 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var report = new StaticChecker(engine.Templates).Check();
 
             TestContext.WriteLine(string.Join("\n", report));
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(AnalyzerExceptionData))]
+        public void AnalyzerThrowExceptionTest(string input, string templateName)
+        {
+            var isFail = false;
+            var errorMessage = "";
+            TemplateEngine engine = null;
+            try
+            {
+                engine = TemplateEngine.FromFiles(GetExampleFilePath(input));
+            }
+            catch (Exception)
+            {
+                isFail = true;
+                errorMessage = "error occurs when parsing file";
+            }
+
+            try
+            {
+                engine.AnalyzeTemplate(templateName);
+                isFail = true;
+                errorMessage = "No exception is thrown.";
+            }
+            catch(Exception e)
+            {
+                TestContext.WriteLine(e.Message);
+            }
+
+            if (isFail)
+            {
+                Assert.Fail(errorMessage);
+            }
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(EvaluatorExceptionData))]
+        public void EvaluatorThrowExceptionTest(string input, string templateName)
+        {
+            var isFail = false;
+            var errorMessage = "";
+            TemplateEngine engine = null;
+            try
+            {
+                engine = TemplateEngine.FromFiles(GetExampleFilePath(input));
+            }
+            catch (Exception)
+            {
+                isFail = true;
+                errorMessage = "error occurs when parsing file";
+            }
+
+            try
+            {
+                engine.EvaluateTemplate(templateName, null);
+                isFail = true;
+                errorMessage = "No exception is thrown.";
+            }
+            catch (Exception e)
+            {
+                TestContext.WriteLine(e.Message);
+            }
+
+            if (isFail)
+            {
+                Assert.Fail(errorMessage);
+            }
         }
     }
 }

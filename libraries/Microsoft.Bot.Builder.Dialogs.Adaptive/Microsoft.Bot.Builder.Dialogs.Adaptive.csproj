@@ -53,6 +53,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Schemas\Dialogs\baseSchema.json" />
     <None Remove="Schemas\Dialogs\Microsoft.AdaptiveDialog.schema" />
     <None Remove="Schemas\Dialogs\Microsoft.ChoiceInput.schema" />
     <None Remove="Schemas\Dialogs\Microsoft.ConfirmInput.schema" />
@@ -94,6 +95,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <Content Include="Schemas\Dialogs\baseSchema.json" />
     <Content Include="Schemas\Dialogs\Microsoft.AdaptiveDialog.schema" />
     <Content Include="Schemas\Dialogs\Microsoft.ChoiceInput.schema" />
     <Content Include="Schemas\Dialogs\Microsoft.ConfirmInput.schema" />

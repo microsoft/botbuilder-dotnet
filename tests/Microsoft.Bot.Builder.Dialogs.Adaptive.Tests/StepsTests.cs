@@ -167,11 +167,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new SwitchCondition()
                         {
                             Condition = "user.name",
-                            Cases = new Dictionary<string, List<IDialog>>()
+                            Cases = new List<Case>()
                             {
-                                { "'susan'", new List<IDialog>() { new SendActivity("hi susan") } },
-                                { "'bob'", new List<IDialog>() { new SendActivity("hi bob") } },
-                                { "'frank'", new List<IDialog>() { new SendActivity("hi frank") } }
+                                new Case("'susan'", new List<IDialog>() { new SendActivity("hi susan") } ),
+                                new Case("'bob'", new List<IDialog>() { new SendActivity("hi bob") } ),
+                                new Case("'frank'", new List<IDialog>() { new SendActivity("hi frank") } )
                             },
                             Default = new List<IDialog>() { new SendActivity("Who are you?") }
                         },
@@ -221,6 +221,46 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("How should I call you?")
             .Send("Carlos")
                 .AssertReply("Hello Carlos, nice to meet you!")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task Step_NumberInput()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var planningDialog = new AdaptiveDialog("planningTest")
+            {
+                AutoEndDialog = false
+            };
+
+            planningDialog.AddRules(new List<IRule>()
+            {
+                new UnknownIntentRule(
+                    new List<IDialog>()
+                    {
+                        new NumberInput<int>()
+                        {
+                            Prompt = new ActivityTemplate("Please enter your age."),
+                            MinValue = 1,
+                            MaxValue = 150,
+                            RetryPrompt = new ActivityTemplate("The value entered must be greater than 0 and less than 150."),
+                            Property = "user.userProfile.Age"
+                        },
+                        new SendActivity("I have your age as {user.userProfile.Age}."),
+                    })
+            });
+
+            await CreateFlow(planningDialog, convoState, userState)
+            .Send("hi")
+                .AssertReply("Please enter your age.")
+            .Send("1000")
+                .AssertReply("The value entered must be greater than 0 and less than 150.")
+            .Send("15")
+                .AssertReply("I have your age as 15.")
+            .Send("hi")
+                .AssertReply("I have your age as 15.")
             .StartTestAsync();
         }
 

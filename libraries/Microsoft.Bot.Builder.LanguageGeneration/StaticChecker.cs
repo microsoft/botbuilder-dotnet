@@ -1,53 +1,41 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
-using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
-    public class ReportEntry
-    {
-        public ReportEntryType Type { get; set; }
-        public string Message { get; set; }
-
-        public ReportEntry(string message, ReportEntryType type = ReportEntryType.ERROR)
-        {
-            Message = message;
-            Type = type;
-        }
-
-        public override string ToString()
-        {
-            var label = Type == ReportEntryType.ERROR ? "[ERROR]" : "[WARN]";
-            return $"{label}: {Message}";
-        }
-    }
-
     public enum ReportEntryType
     {
+        /// <summary>
+        /// Catch Error info.
+        /// </summary>
         ERROR,
-        WARN
+
+        /// <summary>
+        /// Catch Warning info.
+        /// </summary>
+        WARN,
     }
 
     public class StaticChecker : LGFileParserBaseVisitor<List<ReportEntry>>
     {
         public readonly List<LGTemplate> Templates;
 
-        private Dictionary<string, LGTemplate> TemplateMap = new Dictionary<string, LGTemplate>();
+        private Dictionary<string, LGTemplate> templateMap = new Dictionary<string, LGTemplate>();
 
         public StaticChecker(List<LGTemplate> templates)
         {
-            Templates = templates;
+            this.Templates = templates;
         }
 
         /// <summary>
-        /// Return error messaages list
+        /// Return error messaages list.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>report result.</returns>
         public List<ReportEntry> Check()
         {
             var result = new List<ReportEntry>();
@@ -73,12 +61,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             // Covert to dict should be fine after checking dup
-            TemplateMap = Templates.ToDictionary(t => t.Name);
+            templateMap = Templates.ToDictionary(t => t.Name);
 
             if (Templates.Count == 0)
             {
-                result.Add(new ReportEntry("File must have at least one template definition ",
-                                                ReportEntryType.WARN));
+                result.Add(new ReportEntry(
+                    "File must have at least one template definition ",
+                    ReportEntryType.WARN));
             }
 
             Templates.ForEach(t =>
@@ -119,6 +108,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     result.Add(new ReportEntry("Parameters for templates must be separated by comma."));
                 }
             }
+
             return result;
         }
 
@@ -140,7 +130,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var result = new List<ReportEntry>();
 
             var ifRules = context.conditionalTemplateBody().ifConditionRule();
-            for (int idx = 0; idx < ifRules.Length; idx++)
+            for (var idx = 0; idx < ifRules.Length; idx++)
             {
                 // check if rules must start with if and end with else, and have elseif in middle
                 var conditionLabel = ifRules[idx].ifCondition().IFELSE().GetText().ToLower();
@@ -160,7 +150,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     result.Add(new ReportEntry($"condition is not end with else: '{context.conditionalTemplateBody().GetText()}'", ReportEntryType.WARN));
                 }
 
-                if (0 < idx && idx < ifRules.Length - 1 && !string.Equals(conditionLabel, "elseif:"))
+                if (idx > 0 && idx < ifRules.Length - 1 && !string.Equals(conditionLabel, "elseif:"))
                 {
                     result.Add(new ReportEntry($"only elseif is allowed in middle of condition: '{context.conditionalTemplateBody().GetText()}'"));
                 }
@@ -206,9 +196,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 switch (node.Symbol.Type)
                 {
-                    case LGFileParser.ESCAPE_CHARACTER:
-                        result.AddRange(CheckEscapeCharacter(node.GetText()));
-                        break;
                     case LGFileParser.INVALID_ESCAPE:
                         result.Add(new ReportEntry($"escape character {node.GetText()} is invalid"));
                         break;
@@ -228,6 +215,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         break;
                 }
             }
+
             return result;
         }
 
@@ -238,7 +226,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             exp = exp.TrimStart('[').TrimEnd(']').Trim();
 
             var argsStartPos = exp.IndexOf('(');
-            if (argsStartPos > 0) // Do have args
+
+            // Do have args
+            if (argsStartPos > 0)
             {
                 // EvaluateTemplate all arguments using ExpressoinEngine
                 var argsEndPos = exp.LastIndexOf(')');
@@ -249,7 +239,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 else
                 {
                     var templateName = exp.Substring(0, argsStartPos);
-                    if (!TemplateMap.ContainsKey(templateName))
+                    if (!templateMap.ContainsKey(templateName))
                     {
                         result.Add(new ReportEntry($"No such template: {templateName} to ref"));
                     }
@@ -262,11 +252,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
             else
             {
-                if (!TemplateMap.ContainsKey(exp))
+                if (!templateMap.ContainsKey(exp))
                 {
                     result.Add(new ReportEntry($"No such template: {exp}"));
                 }
             }
+
             return result;
         }
 
@@ -274,7 +265,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var result = new List<ReportEntry>();
 
-            exp = exp.Substring(3, exp.Length - 6); //remove ``` ```
+            // remove ``` ```
+            exp = exp.Substring(3, exp.Length - 6);
             var reg = @"@\{[^{}]+\}";
             var mc = Regex.Matches(exp, reg);
 
@@ -283,6 +275,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var newExp = match.Value.Substring(1); // remove @
                 result.AddRange(CheckExpression(newExp));
             }
+
             return result;
         }
 
@@ -291,14 +284,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var result = new List<ReportEntry>();
 
             if (exp.StartsWith("```"))
+            {
                 result.Add(new ReportEntry("Multi line variation must be enclosed in ```"));
+            }
+
             return result;
         }
 
         private List<ReportEntry> CheckTemplateParameters(string templateName, int argsNumber)
         {
             var result = new List<ReportEntry>();
-            var parametersNumber = TemplateMap[templateName].Paramters.Count;
+            var parametersNumber = templateMap[templateName].Paramters.Count;
 
             if (argsNumber != parametersNumber)
             {
@@ -323,20 +319,28 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return result;
+        }
+    }
 
+    /// <summary>
+    /// Error/Warning report when parsing/evaluating template/inlineText.
+    /// </summary>
+    public class ReportEntry
+    {
+        public ReportEntry(string message, ReportEntryType type = ReportEntryType.ERROR)
+        {
+            Message = message;
+            Type = type;
         }
 
-        private List<ReportEntry> CheckEscapeCharacter(string exp)
+        public ReportEntryType Type { get; set; }
+
+        public string Message { get; set; }
+
+        public override string ToString()
         {
-            var result = new List<ReportEntry>();
-            var ValidEscapeCharacters = new List<string> {
-                @"\r", @"\n", @"\t", @"\\", @"\[", @"\]", @"\{", @"\}"
-            };
-
-            if (!ValidEscapeCharacters.Contains(exp))
-                result.Add(new ReportEntry($"escape character {exp} is invalid"));
-
-            return result;
+            var label = Type == ReportEntryType.ERROR ? "[ERROR]" : "[WARN]";
+            return $"{label}: {Message}";
         }
     }
 }

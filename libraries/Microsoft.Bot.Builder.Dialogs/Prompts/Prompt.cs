@@ -53,26 +53,30 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Initialize prompt state
             var state = dc.DialogState;
             state[PersistedOptions] = promptOptions;
-            state[PersistedState] = new ExpandoObject();
+            state[PersistedState] = new Dictionary<string, object>();
 
-            if (!String.IsNullOrEmpty(Property))
+            if (!string.IsNullOrEmpty(Property))
             {
                 var tokens = dc.State.Query(Property);
                 if (tokens.Any())
                 {
-                    var value = dc.State.GetValue<T>(Property);
-                    if (_validator != null)
+                    if (dc.State.TryGetValue<T>(Property, out var value))
                     {
-                        var promptContext = new PromptValidatorContext<T>(dc.Context, new PromptRecognizerResult<T>() { Succeeded = true, Value = value }, state, promptOptions);
-                        var isValid = await _validator(promptContext, cancellationToken).ConfigureAwait(false);
-                        if (isValid)
+                        // if we have the value and it's valid, then EndDialog with the value
+                        if (_validator != null)
                         {
+                            var promptContext = new PromptValidatorContext<T>(dc.Context, new PromptRecognizerResult<T>() { Succeeded = true, Value = value }, state, promptOptions);
+                            var isValid = await _validator(promptContext, cancellationToken).ConfigureAwait(false);
+                            if (isValid)
+                            {
+                                return await dc.EndDialogAsync(value).ConfigureAwait(false);
+                            }
+                        }
+                        else
+                        {
+                            // no validator, so it's valid
                             return await dc.EndDialogAsync(value).ConfigureAwait(false);
                         }
-                    }
-                    else if (value != null)
-                    {
-                        return await dc.EndDialogAsync(value).ConfigureAwait(false);
                     }
                 }
             }

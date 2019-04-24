@@ -15,12 +15,30 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 {
+    public class Case
+    {
+        public Case(string value = null, IEnumerable<IDialog> steps = null)
+        {
+            this.Value = value;
+            this.Steps = steps?.ToList() ?? this.Steps;
+        }
+
+        /// <summary>
+        /// value expression to be compared against condition
+        /// </summary>
+        [JsonProperty("value")]
+        public string Value { get; set; }
+
+        [JsonProperty("steps")]
+        public List<IDialog> Steps { get; set; } = new List<IDialog>();
+    }
+
     /// <summary>
     /// Conditional branch with multiple cases
     /// </summary>
     public class SwitchCondition : DialogCommand, IDialogDependencies
     {
-        private Dictionary<Expression, List<IDialog>> cases = null;
+        private Dictionary<string, Expression> caseExpressions = null;
 
         /// <summary>
         /// Condition expression against memory Example: "user.age"
@@ -30,7 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         /// <summary>
         /// Cases
         /// </summary>
-        public Dictionary<string, List<IDialog>> Cases = new Dictionary<string, List<IDialog>>();
+        public List<Case> Cases = new List<Case>();
 
         /// <summary>
         /// Default case
@@ -57,31 +75,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 {
                     var engine = new ExpressionEngine();
                     Expression condition = engine.Parse(this.Condition);
-                    if (this.cases == null)
+                    if (this.caseExpressions == null)
                     {
-                        this.cases = new Dictionary<Expression, List<IDialog>>();
+                        this.caseExpressions = new Dictionary<string, Expression>();
                         foreach (var c in this.Cases)
                         {
-                            var caseCondition = Expression.EqualsExpression(condition, engine.Parse(c.Key));
+                            var caseCondition = Expression.EqualsExpression(condition, engine.Parse(c.Value));
                             // map of expression to steps
-                            this.cases[caseCondition] = c.Value;
+                            this.caseExpressions[c.Value] = caseCondition;
                         }
                     }
                 }
 
                 List<IDialog> stepsToRun = this.Default;
 
-                foreach (var caseCondition in this.cases)
+                foreach (var caseCondition in this.Cases)
                 {
 
-                    var (value, error) = caseCondition.Key.TryEvaluate(dc.State);
+                    var (value, error) = this.caseExpressions[caseCondition.Value].TryEvaluate(dc.State);
                     if (error != null)
                     {
                         // Do what? 
                     }
                     else if (((bool)value) == true)
                     {
-                        stepsToRun = caseCondition.Value;
+                        stepsToRun = caseCondition.Steps;
                         break;
                     }
                 }
@@ -124,9 +142,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
             if (this.Cases != null)
             {
-                foreach (var steps in this.Cases.Values)
+                foreach (var conidtionalCase in this.Cases)
                 {
-                    dialogs.AddRange(steps);
+                    dialogs.AddRange(conidtionalCase.Steps);
                 }
             }
 

@@ -44,21 +44,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        protected Task OnInitialize(DialogContext dc)
-        {
-            if (this.InitialDialogId == null)
-            {
-                this.InitialDialogId = _dialogs.GetDialogs().FirstOrDefault()?.Id;
-            }
-
-            return Task.CompletedTask;
-        }
-
-        protected Task<DialogTurnResult> OnBeginDialogAsync(DialogContext innerDc, object options, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return innerDc.BeginDialogAsync(InitialDialogId, options, cancellationToken);
-        }
-
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
@@ -122,7 +107,19 @@ namespace Microsoft.Bot.Builder.Dialogs
             return new DialogConsultation()
             {
                 Desire = innerConsultation != null ? innerConsultation.Desire : DialogConsultationDesire.CanProcess,
-                Processor = (dc) => OnContinueDialogAsync(innerDc, innerConsultation),
+                Processor = async (dc) =>
+                {
+                    var turnResult = await OnContinueDialogAsync(innerDc, innerConsultation).ConfigureAwait(false);
+
+                    if (turnResult.Status != DialogTurnStatus.Waiting)
+                    {
+                        return await EndComponentAsync(outerDc, turnResult.Result, cancellationToken).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        return EndOfTurn;
+                    }
+                },
             };
         }
 
@@ -193,6 +190,21 @@ namespace Microsoft.Bot.Builder.Dialogs
         public IDialog FindDialog(string dialogId)
         {
             return _dialogs.Find(dialogId);
+        }
+
+        protected virtual Task OnInitialize(DialogContext dc)
+        {
+            if (this.InitialDialogId == null)
+            {
+                this.InitialDialogId = _dialogs.GetDialogs().FirstOrDefault()?.Id;
+            }
+
+            return Task.CompletedTask;
+        }
+
+        protected virtual Task<DialogTurnResult> OnBeginDialogAsync(DialogContext innerDc, object options, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return innerDc.BeginDialogAsync(InitialDialogId, options, cancellationToken);
         }
 
         protected virtual Task<DialogConsultation> OnConsultDialog(DialogContext innerDc, CancellationToken cancellationToken = default(CancellationToken))

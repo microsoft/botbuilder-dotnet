@@ -291,7 +291,7 @@
                 "recognizer": {
                     "$type": "Microsoft.IRecognizer",
                     "title": "Recognizer",
-                    "decription": "Configured recognizer to generate intent and entites from user utterance",
+                    "description": "Configured recognizer to generate intent and entites from user utterance",
                     "$ref": "#/definitions/Microsoft.IRecognizer"
                 },
                 "selector": {
@@ -441,17 +441,6 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
-                },
-                "eventName": {
-                    "type": "string",
-                    "title": "Event Name",
-                    "description": "Name of the event which is emitted"
-                },
-                "eventValue": {
-                    "type": "object",
-                    "title": "Event Value",
-                    "description": "object value which is a payload to communicate to the parent dialogs so that they can decide how to process it",
-                    "additionalProperties": true
                 }
             },
             "additionalProperties": false,
@@ -607,7 +596,7 @@
                 "choicesProperty": {
                     "type": "string",
                     "title": "Choices Property",
-                    "decription": "unknown ??? "
+                    "description": "unknown ??? "
                 },
                 "choices": {
                     "type": "array",
@@ -3320,20 +3309,31 @@
                     "type": "string"
                 },
                 "cases": {
-                    "type": "object",
-                    "propertyNames": {
-                        "title": "Case",
-                        "description": "Case expression to compare to condition",
-                        "$role": "expression",
-                        "type": "string"
-                    },
-                    "additionalProperties": {
-                        "type": "array",
-                        "title": "If True",
-                        "description": "Step to execute if case is equal to condition",
-                        "items": {
-                            "$type": "Microsoft.IDialog",
-                            "$ref": "#/definitions/Microsoft.IDialog"
+                    "type": "array",
+                    "title": "Cases",
+                    "desc": "Cases to evaluate against condition",
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "value",
+                            "case"
+                        ],
+                        "properties": {
+                            "value": {
+                                "$role": "expression",
+                                "title": "Value",
+                                "description": "Value which must match the condition property",
+                                "type": "string"
+                            },
+                            "steps": {
+                                "type": "array",
+                                "title": "Steps",
+                                "description": "Steps to execute if case is equal to condition",
+                                "items": {
+                                    "$type": "Microsoft.IDialog",
+                                    "$ref": "#/definitions/Microsoft.IDialog"
+                                }
+                            }
                         }
                     }
                 },

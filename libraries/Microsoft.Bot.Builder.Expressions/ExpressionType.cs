@@ -3,7 +3,7 @@
 
 namespace Microsoft.Bot.Builder.Expressions
 {
-    // NOTE: If you add a built-in type here, you also need to make sure it can be evaluated as well either by adding to BuiltInFunctions or when you construct the expression.
+    /// NOTE: If you add a built-in type here, you also need to make sure it can be evaluated as well either by adding to BuiltInFunctions or when you construct the expression.
     /// <summary>
     /// Built-in expression types.
     /// </summary>
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string GreaterThan = ">";
         public const string GreaterThanOrEqual = ">=";
         public const string Exists = "exists";
-       
+
         // Logic
         public const string And = "&&";
         public const string Or = "||";
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string ToLower = "toLower";
         public const string ToUpper = "toUpper";
         public const string Trim = "trim";
-        
+
         // Collection
         public const string Count = "count";
         public const string Contains = "contains";
@@ -82,8 +82,7 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string Accessor = "Accessor";
         public const string Element = "Element";
         public const string CreateArray = "createArray";
-        public const string Property = "property";
-
+        
 
         // Misc
         public const string Constant = "Constant";
@@ -93,6 +92,7 @@ namespace Microsoft.Bot.Builder.Expressions
 
         // Object manipulation and construction functions
         public const string Json = "json";
+        public const string GetProperty = "getProperty";
         public const string AddProperty = "addProperty";
         public const string RemoveProperty = "removeProperty";
         public const string SetProperty = "setProperty";

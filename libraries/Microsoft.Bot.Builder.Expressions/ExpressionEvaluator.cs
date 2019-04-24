@@ -29,6 +29,10 @@ namespace Microsoft.Bot.Builder.Expressions
     /// </summary>
     public class ExpressionEvaluator
     {
+        private readonly ValidateExpressionDelegate _validator;
+        private readonly EvaluateExpressionDelegate _evaluator;
+        private ExpressionEvaluator _negation;
+
         /// <summary>
         /// Constructor for expression information.
         /// </summary>
@@ -46,8 +50,7 @@ namespace Microsoft.Bot.Builder.Expressions
             _validator = validator ?? new ValidateExpressionDelegate((expr) => { });
         }
 
-        private ValidateExpressionDelegate _validator;
-        private EvaluateExpressionDelegate _evaluator;
+        public override string ToString() => $"{Type} => {ReturnType}";
 
         /// <summary>
         /// Expression type for evaluator.
@@ -74,5 +77,24 @@ namespace Microsoft.Bot.Builder.Expressions
         /// Type expected by evaluating the expression.
         /// </summary>
         public ReturnType ReturnType { get; set; }
+
+        /// <summary>
+        /// Define the evaluator that is a negation of this one.
+        /// </summary>
+        /// <remarks>
+        /// When doing <see cref="Extensions.PushDownNot(Expression)"/> then negations will replace an expression and remove not parent.
+        /// By default no negation is defined and not parent will remain.
+        /// If a negation is defined then this is automatically set as its negation.
+        /// If an evaluator is its own negation, then the negation will be passed through to children.
+        /// </remarks>
+        public ExpressionEvaluator Negation
+        {
+            get => _negation;
+            set
+            {
+                value._negation = this;
+                _negation = value;
+            }
+        }
     }
 }

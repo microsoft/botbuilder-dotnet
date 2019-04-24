@@ -237,7 +237,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
            # endregion
 
             # region Memory access test
-            Test("property(bag, 1)"),// second param should be string
+            Test("getProperty(bag, 1)"),// second param should be string
             Test("Accessor(1)"),// first param should be string
             Test("Accessor(bag, 1)"),// second should be object
             Test("one[0]"),  // one is not list
