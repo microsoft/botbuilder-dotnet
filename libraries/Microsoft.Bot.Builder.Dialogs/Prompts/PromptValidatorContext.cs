@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Gets the number of times the prompt has been executed.
         /// </summary>
-        /// <value>A number indicating how many times the prompt was invoked (starting at 1 for the first time it was invoked).</value>
+        /// <value>A number indicating how many times the prompt was invoked (starting at 1 for the first time it was called).</value>
         public int AttemptCount => (int)State[Prompt<T>.AttemptCountKey];
     }
 }
