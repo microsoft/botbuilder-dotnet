@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             state[PersistedOptions] = opt;
             state[PersistedState] = new Dictionary<string, object>
             {
-                { NumberOfAttemptsKey, 1 },
+                { NumberOfAttemptsKey, 0 },
             };
 
             // Send initial prompt
@@ -86,15 +86,15 @@ namespace Microsoft.Bot.Builder.Dialogs
             var options = (PromptOptions)instance.State[PersistedOptions];
             var recognized = await OnRecognizeAsync(dc.Context, state, options, cancellationToken).ConfigureAwait(false);
 
+            // Increment attempt count
+            state[NumberOfAttemptsKey] = (int)state[NumberOfAttemptsKey] + 1;
+
             // Validate the return value
             var isValid = false;
             if (_validator != null)
             {
                 var promptContext = new PromptValidatorContext<T>(dc.Context, recognized, state, options);
                 isValid = await _validator(promptContext, cancellationToken).ConfigureAwait(false);
-
-                // Increment attempt count
-                state[NumberOfAttemptsKey] = (int)state[NumberOfAttemptsKey] + 1;
             }
             else if (recognized.Succeeded)
             {
