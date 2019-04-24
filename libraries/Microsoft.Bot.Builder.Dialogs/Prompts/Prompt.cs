@@ -19,9 +19,9 @@ namespace Microsoft.Bot.Builder.Dialogs
     public abstract class Prompt<T> : Dialog
     {
         internal const string NumberOfAttemptsKey = "NumberOfAttempts";
-        internal const string PersistedState = "state";
 
         private const string PersistedOptions = "options";
+        private const string PersistedState = "state";
         private readonly PromptValidator<T> _validator;
 
         public Prompt(string dialogId, PromptValidator<T> validator = null)
