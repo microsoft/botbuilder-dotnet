@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <typeparam name="T">The type of the <see cref="Prompt{T}"/>.</typeparam>
     public abstract class Prompt<T> : Dialog
     {
-        internal const string NumberOfAttemptsKey = "NumberOfAttempts";
+        internal const string AttemptCountKey = "AttemptCount";
 
         private const string PersistedOptions = "options";
         private const string PersistedState = "state";
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             state[PersistedOptions] = opt;
             state[PersistedState] = new Dictionary<string, object>
             {
-                { NumberOfAttemptsKey, 0 },
+                { AttemptCountKey, 0 },
             };
 
             // Send initial prompt
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var recognized = await OnRecognizeAsync(dc.Context, state, options, cancellationToken).ConfigureAwait(false);
 
             // Increment attempt count
-            state[NumberOfAttemptsKey] = (int)state[NumberOfAttemptsKey] + 1;
+            state[AttemptCountKey] = (int)state[AttemptCountKey] + 1;
 
             // Validate the return value
             var isValid = false;

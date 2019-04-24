@@ -140,12 +140,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var result = promptContext.Recognized.Value;
                 if (result.Length > 3)
                 {
-                    var succeededMessage = MessageFactory.Text($"You got it at the {promptContext.NumberOfAttempts}th try!");
+                    var succeededMessage = MessageFactory.Text($"You got it at the {promptContext.AttemptCount}th try!");
                     await promptContext.Context.SendActivityAsync(succeededMessage, cancellationToken);
                     return true;
                 }
 
-                var reply = MessageFactory.Text($"Please send a name that is longer than 3 characters. {promptContext.NumberOfAttempts}");
+                var reply = MessageFactory.Text($"Please send a name that is longer than 3 characters. {promptContext.AttemptCount}");
                 await promptContext.Context.SendActivityAsync(reply, cancellationToken);
 
                 return false;
