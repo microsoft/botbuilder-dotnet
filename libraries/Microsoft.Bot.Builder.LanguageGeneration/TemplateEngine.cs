@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -62,7 +63,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 var bytes = File.ReadAllBytes(filePath);
                 bytes = RemoveExtraBomMark(bytes);
-                var text = Encoding.UTF8.GetString(bytes);
+                var text = new UTF8Encoding(false).GetString(bytes);
 
                 return ToTemplates(Parse(text), filePath);
             }).SelectMany(x => x);
@@ -186,14 +187,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private byte[] RemoveExtraBomMark(byte[] bytes)
         {
-            var bom = new byte[] { 0xEF, 0xBB, 0xBF };
-
-            while (bytes.Length >= 3
-            && bytes[0] == bom[0]
-            && bytes[1] == bom[1]
-            && bytes[2] == bom[2])
+            var bom = new UTF8Encoding(true).GetPreamble();
+            var boomLength = bom.Length;
+            while (bytes.Length >= bom.Length
+            && bom.SequenceEqual(bytes.Take(boomLength).ToArray()))
             {
-                bytes = bytes.Skip(3).ToArray();
+                bytes = bytes.Skip(boomLength).ToArray();
             }
 
             return bytes;
