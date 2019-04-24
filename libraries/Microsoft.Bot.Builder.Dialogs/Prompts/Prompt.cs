@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             state[PersistedOptions] = opt;
             state[PersistedState] = new Dictionary<string, object>
             {
-                { NumberOfAttemptsKey, 0 },
+                { NumberOfAttemptsKey, 1 },
             };
 
             // Send initial prompt

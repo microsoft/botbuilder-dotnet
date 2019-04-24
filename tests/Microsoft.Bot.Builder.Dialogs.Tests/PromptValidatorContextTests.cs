@@ -140,6 +140,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var result = promptContext.Recognized.Value;
                 if (result.Length > 3)
                 {
+                    var succeededMessage = MessageFactory.Text($"You got it at the {promptContext.NumberOfAttempts}th try!");
+                    await promptContext.Context.SendActivityAsync(succeededMessage, cancellationToken);
                     return true;
                 }
 
@@ -178,12 +180,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .Send("hello")
                 .AssertReply("Please type your name.")
                 .Send("hi")
-                .AssertReply("Please send a name that is longer than 3 characters. 0")
-                .Send("hi")
                 .AssertReply("Please send a name that is longer than 3 characters. 1")
                 .Send("hi")
                 .AssertReply("Please send a name that is longer than 3 characters. 2")
+                .Send("hi")
+                .AssertReply("Please send a name that is longer than 3 characters. 3")
                 .Send("John")
+                .AssertReply("You got it at the 4th try!")
                 .AssertReply("John is a great name!")
                 .StartTestAsync();
         }
