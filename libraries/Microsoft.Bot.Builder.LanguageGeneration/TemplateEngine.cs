@@ -188,11 +188,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private byte[] RemoveExtraBomMark(byte[] bytes)
         {
             var bom = new UTF8Encoding(true).GetPreamble();
-            var boomLength = bom.Length;
             while (bytes.Length >= bom.Length
-            && bom.SequenceEqual(bytes.Take(boomLength).ToArray()))
+            && bom.SequenceEqual(bytes.Take(bom.Length).ToArray()))
             {
-                bytes = bytes.Skip(boomLength).ToArray();
+                bytes = bytes.Skip(bom.Length).ToArray();
             }
 
             return bytes;
