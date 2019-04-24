@@ -170,14 +170,29 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
 
+        public T GetValue<T>(string pathExpression)
+        {
+            return ObjectPath.GetValue<T>(this, pathExpression);
+        }
+
         public T GetValue<T>(string pathExpression, T defaultVal)
         {
-            if (this.TryGetValue<T>(pathExpression, out var value))
+            if (ObjectPath.TryGetValue<T>(this, pathExpression, out var val))
             {
-                return value;
+                return val;
             }
 
             return defaultVal;
+        }
+
+        public bool TryGetValue<T>(string pathExpression, out T val)
+        {
+            return ObjectPath.TryGetValue(this, pathExpression, out val);
+        }
+
+        public bool HasValue(string pathExpression)
+        {
+            return ObjectPath.HasValue(this, pathExpression);
         }
 
         public void SetValue(string pathExpression, object value)

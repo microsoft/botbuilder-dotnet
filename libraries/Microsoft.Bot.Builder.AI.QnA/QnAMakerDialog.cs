@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 if (topResult != null && topResult.Score > 0)
                 {
                     var template = new ActivityTemplate(topResult.Answer);
-                    var activity = await template.BindToData(dc.Context, dc.State, (property, data) => data.GetValue<object>(property)).ConfigureAwait(false);
+                    var activity = await template.BindToData(dc.Context, dc.State, (property, data) => ObjectPath.GetValue<object>(data, property)).ConfigureAwait(false);
                     var response = await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
                     return await dc.EndDialogAsync(true, cancellationToken).ConfigureAwait(false);
                 }

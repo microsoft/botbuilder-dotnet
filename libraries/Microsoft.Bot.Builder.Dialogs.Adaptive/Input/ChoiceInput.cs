@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             // Check value in state and only call if missing or required by AlwaysPrompt
-            var hasValue = Property == null ? false : dc.State.HasValue<FoundChoice>(Property);
+            var hasValue = Property == null ? false : dc.State.HasValue(Property);
 
             if (hasValue == false || AlwaysPrompt)
             {
