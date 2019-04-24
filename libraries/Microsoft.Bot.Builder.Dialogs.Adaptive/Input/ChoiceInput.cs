@@ -51,8 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
                 if (!string.IsNullOrEmpty(this.ChoicesProperty))
                 {
-                    var choiceValue = dc.State.GetValue<object>(this.ChoicesProperty);
-                    if (choiceValue != null)
+                    if (dc.State.TryGetValue<object>(this.ChoicesProperty, out var choiceValue))
                     {
                         try
                         {

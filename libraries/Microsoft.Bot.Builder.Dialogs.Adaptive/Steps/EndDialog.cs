@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            var result = Property != null ? dc.State.GetValue<string>(Property) : null;
+            dc.State.TryGetValue<string>(Property, out var result);
             return await EndParentDialogAsync(dc, result, cancellationToken).ConfigureAwait(false);
         }
 
