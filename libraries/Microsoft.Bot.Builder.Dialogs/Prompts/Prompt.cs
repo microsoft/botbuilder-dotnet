@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             _validator = validator;
         }
 
-        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
             {
