@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
             var botAnswer = await StartBotConversationAsync();
 
-            Assert.AreEqual($"Turn 1: You sent '{input}'\n", botAnswer);
+            Assert.AreEqual($"Echo: {input}", botAnswer);
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 // Analyze each activity in the activity set.
                 foreach (Activity activity in activities)
                 {
-                    if (activity.Type == ActivityTypes.Message && activity.Text != "conversationUpdate event detected")
+                    if (activity.Type == ActivityTypes.Message && activity.Text != "Welcome to Echo Bot.")
                     {
                         answer = activity.Text;
                     }
