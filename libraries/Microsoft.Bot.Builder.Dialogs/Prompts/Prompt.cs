@@ -18,9 +18,10 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <typeparam name="T">The type of the <see cref="Prompt{T}"/>.</typeparam>
     public abstract class Prompt<T> : Dialog
     {
-        private const string PersistedOptions = "options";
-        private const string PersistedState = "state";
+        internal const string NumberOfAttemptsKey = "NumberOfAttempts";
+        internal const string PersistedState = "state";
 
+        private const string PersistedOptions = "options";
         private readonly PromptValidator<T> _validator;
 
         public Prompt(string dialogId, PromptValidator<T> validator = null)
@@ -29,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             _validator = validator;
         }
 
-        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
             {
@@ -56,11 +57,14 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Initialize prompt state
             var state = dc.ActiveDialog.State;
             state[PersistedOptions] = opt;
-            state[PersistedState] = new Dictionary<string, object>();
+            state[PersistedState] = new Dictionary<string, object>
+            {
+                { NumberOfAttemptsKey, 0 },
+            };
 
             // Send initial prompt
             await OnPromptAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions], false, cancellationToken).ConfigureAwait(false);
-            return Dialog.EndOfTurn;
+            return EndOfTurn;
         }
 
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
@@ -73,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Don't do anything for non-message activities
             if (dc.Context.Activity.Type != ActivityTypes.Message)
             {
-                return Dialog.EndOfTurn;
+                return EndOfTurn;
             }
 
             // Perform base recognition
@@ -88,7 +92,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 var promptContext = new PromptValidatorContext<T>(dc.Context, recognized, state, options);
                 isValid = await _validator(promptContext, cancellationToken).ConfigureAwait(false);
-                options.NumberOfAttempts++;
+
+                // Increment attempt count
+                state[NumberOfAttemptsKey] = (int)state[NumberOfAttemptsKey] + 1;
             }
             else if (recognized.Succeeded)
             {
@@ -98,17 +104,15 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Return recognized value or re-prompt
             if (isValid)
             {
-                return await dc.EndDialogAsync(recognized.Value).ConfigureAwait(false);
+                return await dc.EndDialogAsync(recognized.Value, cancellationToken).ConfigureAwait(false);
             }
-            else
-            {
-                if (!dc.Context.Responded)
-                {
-                    await OnPromptAsync(dc.Context, state, options, true).ConfigureAwait(false);
-                }
 
-                return Dialog.EndOfTurn;
+            if (!dc.Context.Responded)
+            {
+                await OnPromptAsync(dc.Context, state, options, true, cancellationToken).ConfigureAwait(false);
             }
+
+            return EndOfTurn;
         }
 
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -118,15 +122,15 @@ namespace Microsoft.Bot.Builder.Dialogs
             // dialogResume() when the pushed on dialog ends.
             // To avoid the prompt prematurely ending we need to implement this method and
             // simply re-prompt the user.
-            await RepromptDialogAsync(dc.Context, dc.ActiveDialog).ConfigureAwait(false);
-            return Dialog.EndOfTurn;
+            await RepromptDialogAsync(dc.Context, dc.ActiveDialog, cancellationToken).ConfigureAwait(false);
+            return EndOfTurn;
         }
 
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
             var state = (IDictionary<string, object>)instance.State[PersistedState];
             var options = (PromptOptions)instance.State[PersistedOptions];
-            await OnPromptAsync(turnContext, state, options, false).ConfigureAwait(false);
+            await OnPromptAsync(turnContext, state, options, false, cancellationToken).ConfigureAwait(false);
         }
 
         protected abstract Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken));
@@ -176,7 +180,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 prompt.Text = msg.Text;
 
-                if (msg.SuggestedActions != null && msg.SuggestedActions.Actions != null && msg.SuggestedActions.Actions.Count > 0)
+                if (msg.SuggestedActions?.Actions != null && msg.SuggestedActions.Actions.Count > 0)
                 {
                     prompt.SuggestedActions = msg.SuggestedActions;
                 }
