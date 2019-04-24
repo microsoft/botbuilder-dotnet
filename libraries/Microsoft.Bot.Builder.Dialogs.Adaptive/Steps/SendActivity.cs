@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
             var activity = await Activity.BindToData(dc.Context, dc.State, (property, data) =>
             {
-                if (data.TryGetValue<object>(property, out object val))
+                if (ObjectPath.TryGetValue<object>(data, property, out object val))
                     return val;
                 return null;
             }).ConfigureAwait(false);
