@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             object originalOptions;
             bool originalOptionsFound = dc.State.Dialog.TryGetValue("options", out originalOptions);
 
-            options = options == null ? originalOptions : options.Merge(originalOptions ?? new object());
+            options = options == null ? originalOptions : ObjectPath.Merge(options, originalOptions ?? new object());
             return await RepeatParentDialogAsync(dc, options, cancellationToken).ConfigureAwait(false);
         }
 

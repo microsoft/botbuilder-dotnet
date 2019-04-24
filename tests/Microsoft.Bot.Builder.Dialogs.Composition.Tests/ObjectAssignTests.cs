@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
             };
             var overlay = new Options() { };
 
-            var result = defaultOptions.Merge(overlay);
+            var result = ObjectPath.Merge(defaultOptions,overlay);
             Assert.AreEqual(result.LastName, defaultOptions.LastName);
             Assert.AreEqual(result.FirstName, defaultOptions.FirstName);
             Assert.AreEqual(result.Age, defaultOptions.Age);
@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
                 Location = new Location() { Lat = 1.2312312F, Long = 3.234234F }
             };
 
-            var result = defaultOptions.Merge(overlay);
+            var result = ObjectPath.Merge(defaultOptions, overlay);
 
             Assert.AreEqual(result.LastName, overlay.LastName);
             Assert.AreEqual(result.FirstName, overlay.FirstName);
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
                 Location = new Location() { Lat = 2.2312312F, Long = 2.234234F }
             };
 
-            var result = defaultOptions.Merge(overlay);
+            var result = ObjectPath.Merge(defaultOptions, overlay);
 
             Assert.AreEqual(result.LastName, overlay.LastName);
             Assert.AreEqual(result.FirstName, overlay.FirstName);
@@ -112,7 +112,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
                 LastName = "Grant"
             };
 
-            var result = defaultOptions.Merge(overlay);
+            var result = ObjectPath.Merge(defaultOptions, overlay);
 
             Assert.AreEqual(result.LastName, overlay.LastName);
             Assert.AreEqual(result.FirstName, defaultOptions.FirstName);
@@ -135,7 +135,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
             };
             dynamic overlay = new { };
 
-            var result = Object.Assign<Options>(defaultOptions, overlay);
+            var result = ObjectPath.Assign<Options>(defaultOptions, overlay);
             Assert.AreEqual(result.LastName, defaultOptions.LastName);
             Assert.AreEqual(result.FirstName, defaultOptions.FirstName);
             Assert.AreEqual(result.Age, defaultOptions.Age);
@@ -158,7 +158,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
                 Location = new { Lat = 1.2312312F, Long = 3.234234F }
             };
 
-            var result = Object.Assign<Options>(defaultOptions, overlay);
+            var result = ObjectPath.Assign<Options>(defaultOptions, overlay);
 
             Assert.AreEqual(result.LastName, overlay.LastName);
             Assert.AreEqual(result.FirstName, overlay.FirstName);
@@ -189,7 +189,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
                 Location = new { Lat = 2.2312312F, Long = 2.234234F }
             };
 
-            var result = Object.Assign<Options>(defaultOptions, overlay);
+            var result = ObjectPath.Assign<Options>(defaultOptions, overlay);
 
             Assert.AreEqual(result.LastName, overlay.LastName);
             Assert.AreEqual(result.FirstName, overlay.FirstName);
@@ -215,7 +215,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
             {
                 LastName = "Grant"
             };
-            var result = Object.Assign<Options>(defaultOptions, overlay);
+            var result = ObjectPath.Assign<Options>(defaultOptions, overlay);
 
             Assert.AreEqual(result.LastName, overlay.LastName);
             Assert.AreEqual(result.FirstName, defaultOptions.FirstName);
@@ -237,7 +237,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
             });
             dynamic overlay = JObject.FromObject(new Options() { });
 
-            var result = Object.Assign<Options>(defaultOptions, overlay);
+            var result = ObjectPath.Assign<Options>(defaultOptions, overlay);
             Assert.AreEqual(result.LastName, (string)defaultOptions.LastName);
             Assert.AreEqual(result.FirstName, (string)defaultOptions.FirstName);
             Assert.AreEqual(result.Age, (int?)defaultOptions.Age);
@@ -259,7 +259,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
                 Location = new Location() { Lat = 1.2312312F, Long = 3.234234F }
             });
 
-            var result = Object.Assign<Options>(defaultOptions, overlay);
+            var result = ObjectPath.Assign<Options>(defaultOptions, overlay);
 
             Assert.AreEqual(result.LastName, (string)overlay.LastName);
             Assert.AreEqual(result.FirstName, (string)overlay.FirstName);
@@ -289,7 +289,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
                 Location = new Location() { Lat = 2.2312312F, Long = 2.234234F }
             });
 
-            var result = Object.Assign<Options>(defaultOptions, overlay);
+            var result = ObjectPath.Assign<Options>(defaultOptions, overlay);
 
             Assert.AreEqual(result.LastName, (string)overlay.LastName);
             Assert.AreEqual(result.FirstName, (string)overlay.FirstName);
@@ -315,7 +315,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
                 LastName = "Grant"
             });
 
-            var result = Object.Assign<Options>(defaultOptions, overlay);
+            var result = ObjectPath.Assign<Options>(defaultOptions, overlay);
 
             Assert.AreEqual(result.LastName, (string)overlay.LastName);
             Assert.AreEqual(result.FirstName, (string)defaultOptions.FirstName);
@@ -336,7 +336,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
                 Location = new Location() { Lat = 1.2312312F, Long = 3.234234F }
             };
 
-            var result = Object.Assign<Options>(null, defaultOptions);
+            var result = ObjectPath.Assign<Options>(null, defaultOptions);
             Assert.AreEqual(result.LastName, defaultOptions.LastName);
             Assert.AreEqual(result.FirstName, defaultOptions.FirstName);
             Assert.AreEqual(result.Age, defaultOptions.Age);
@@ -356,7 +356,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
                 Location = new Location() { Lat = 1.2312312F, Long = 3.234234F }
             };
 
-            var result = Object.Assign<Options>(defaultOptions, null);
+            var result = ObjectPath.Assign<Options>(defaultOptions, null);
             Assert.AreEqual(result.LastName, defaultOptions.LastName);
             Assert.AreEqual(result.FirstName, defaultOptions.FirstName);
             Assert.AreEqual(result.Age, defaultOptions.Age);

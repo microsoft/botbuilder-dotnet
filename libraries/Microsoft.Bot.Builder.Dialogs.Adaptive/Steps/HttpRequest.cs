@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 default:
                     if (token.Type == JTokenType.String)
                     {
-                        token.Replace(await new TextTemplate(token.ToString()).BindToData(dc.Context, dc.State, (property, data) => data.GetValue<object>(property)));
+                        token.Replace(await new TextTemplate(token.ToString()).BindToData(dc.Context, dc.State, (property, data) => ObjectPath.GetValue<object>(data, property)));
                     }
                     break;
             }
@@ -141,7 +141,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             var instanceHeader = Header == null ? null : new Dictionary<string, string>(Header);
             var instanceUrl = this.Url;
 
-            instanceUrl = await new TextTemplate(this.Url).BindToData(dc.Context, dc.State, (property, data) => data.GetValue<object>(property)).ConfigureAwait(false);
+            instanceUrl = await new TextTemplate(this.Url).BindToData(dc.Context, dc.State, (property, data) => ObjectPath.GetValue<object>(data, property)).ConfigureAwait(false);
 
             // Bind each string token to the data in state
             if (instanceBody != null)
@@ -155,8 +155,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 foreach (var unit in instanceHeader)
                 {
                     client.DefaultRequestHeaders.Add(
-                        await new TextTemplate(unit.Key).BindToData(dc.Context, dc.State, (property, data) => data.GetValue<object>(property)),
-                        await new TextTemplate(unit.Value).BindToData(dc.Context, dc.State, (property, data) => data.GetValue<object>(property)));
+                        await new TextTemplate(unit.Key).BindToData(dc.Context, dc.State, (property, data) => ObjectPath.GetValue<object>(data, property)),
+                        await new TextTemplate(unit.Value).BindToData(dc.Context, dc.State, (property, data) => ObjectPath.GetValue<object>(data, property)));
                 }
             }
 

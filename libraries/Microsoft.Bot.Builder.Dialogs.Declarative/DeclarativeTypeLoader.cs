@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                     path = path.Substring(9);
                 }
                 // just use configurations ability to query for x:y:z
-                value = configuration.GetValue<string>(path);
+                value = ConfigurationBinder.GetValue<string>(configuration, path);
             }
             return value;
         }
