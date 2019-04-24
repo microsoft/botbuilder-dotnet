@@ -156,30 +156,23 @@ namespace Microsoft.Bot.Builder.Expressions
             switch (expression.Type)
             {
                 case ExpressionType.And:
-                    {
-                        if (inNot)
-                        {
-                            newExpr = Expression.MakeExpression(ExpressionType.Or, (from child in expression.Children select PushDownNot(child, passThrough, true)).ToArray());
-                        }
-                        else
-                        {
-                            newExpr = Expression.MakeExpression(ExpressionType.And, (from child in expression.Children select PushDownNot(child, passThrough, false)).ToArray());
-                        }
-                    }
-                    break;
                 case ExpressionType.Or:
                     {
-                        if (inNot)
+                        var children = (from child in expression.Children select PushDownNot(child, passThrough, inNot)).ToArray();
+                        if (children.Length == 1)
                         {
-                            newExpr = Expression.MakeExpression(ExpressionType.And, (from child in expression.Children select PushDownNot(child, passThrough, true)).ToArray());
+                            newExpr = children[0];
                         }
                         else
                         {
-                            newExpr = Expression.MakeExpression(ExpressionType.Or, (from child in expression.Children select PushDownNot(child, passThrough, false)).ToArray());
+                            newExpr = Expression.MakeExpression(expression.Type == ExpressionType.And
+                                ? (inNot ? ExpressionType.Or : ExpressionType.And)
+                                : (inNot ? ExpressionType.And : ExpressionType.Or),
+                                children);
                         }
                     }
                     break;
-                case ExpressionType.Not:
+               case ExpressionType.Not:
                     newExpr = PushDownNot(expression.Children[0], passThrough, !inNot);
                     break;
                 // Rewrite comparison operators

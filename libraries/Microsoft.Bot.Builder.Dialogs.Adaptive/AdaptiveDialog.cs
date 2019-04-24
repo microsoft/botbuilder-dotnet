@@ -22,6 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     public class AdaptiveDialog : Dialog
     {
         private bool installedDependencies = false;
+        private bool initializedSelector = false;
         protected readonly DialogSet dialogs = new DialogSet();
         protected DialogSet runDialogs = new DialogSet(); // Used by the Run method
 
@@ -122,7 +123,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     Selector = new FirstSelector()
                 };
             }
-            await this.Selector.Initialize(planning, this.Rules, true, cancellationToken).ConfigureAwait(false);
+            if (!initializedSelector)
+            {
+                initializedSelector = true;
+                await this.Selector.Initialize(planning, this.Rules, true, cancellationToken).ConfigureAwait(false);
+            }
 
             if (this.Steps.Any())
             {

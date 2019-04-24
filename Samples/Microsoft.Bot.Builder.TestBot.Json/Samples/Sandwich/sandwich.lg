@@ -20,4 +20,16 @@
 - I don't understand that, but I can help you order a sandwich
 
 # FurtherHelp
-Try saying 'Order a sandwich'
+- Try saying 'Order a sandwich'
+
+# MeatAndBread
+- Which type of meat and bread do you want for your sandwich?
+
+# CheeseAndToppingsWithMeatAndBread
+- What kind of cheese and toppings would you like on your {Meat} on {Bread} bread sandwich?
+
+# BreadAndToppingsWithMeatAndCheese
+- What bread or toppings do you want on your {Meat} with {Cheese} sandwich?
+
+# MeatWithBread
+- What kind of meat would you like in your {Bread} bread sandwich?
