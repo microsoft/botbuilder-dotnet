@@ -16,11 +16,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         private bool _evaluate;
         private readonly IExpressionParser _parser = new ExpressionEngine();
 
-        public Task Initialize(PlanningContext context, IEnumerable<IRule> rules, bool evaluate, CancellationToken cancel)
+        public void Initialize(IEnumerable<IRule> rules, bool evaluate)
         {
             _rules = rules.ToList();
             _evaluate = evaluate;
-            return Task.CompletedTask;
         }
 
         public Task<IReadOnlyList<int>> Select(PlanningContext context, CancellationToken cancel)

@@ -14,10 +14,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <summary>
         /// Initialize the selector with the set of rules.
         /// </summary>
-        /// <param name="context">Dialog context.</param>
-        /// <param name="cancel">Cancellation token.</param>
         /// <param name="rules">Possible rules to match.</param>
-        Task Initialize(PlanningContext context, IEnumerable<IRule> rules, bool evaluate = true, CancellationToken cancel = default(CancellationToken));
+        /// <param name="evaluate">True if rules should be evaluated on select.</param>
+        void Initialize(IEnumerable<IRule> rules, bool evaluate = true);
 
         /// <summary>
         /// Select the best rule to execute.

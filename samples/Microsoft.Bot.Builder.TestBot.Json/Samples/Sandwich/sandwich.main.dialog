@@ -8,7 +8,7 @@
       "$comment": "**** Start of slot mapping ****",
       "$type": "Microsoft.EventRule",
       "events": [
-        "activityReceived"
+        "recognizedIntent"
       ],
       "constraint": "@meat",
       "steps": [
@@ -20,20 +20,6 @@
           "$type": "Microsoft.SetProperty",
           "property": "dialog.meat",
           "value": "@meat"
-        }
-      ]
-    },
-    {
-      "$comment": "**** This is the start of prompts ****",
-      "$type": "Microsoft.EventRule",
-      "events": [
-        "activityReceived"
-      ],
-      "constraint": "!meat and !bread",
-      "steps": [
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "[MeatAndBread]"
         }
       ]
     },
@@ -87,6 +73,20 @@
         {
           "$type": "Microsoft.SendActivity",
           "activity": "[Initial]"
+        }
+      ]
+    },
+    {
+      "$comment": "**** This is the start of prompts ****",
+      "$type": "Microsoft.EventRule",
+      "events": [
+        "recognizedIntent"
+      ],
+      "constraint": "!meat and !bread",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "[MeatAndBread]"
         }
       ]
     }

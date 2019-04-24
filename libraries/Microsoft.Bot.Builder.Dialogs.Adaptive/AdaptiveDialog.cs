@@ -22,7 +22,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     public class AdaptiveDialog : Dialog
     {
         private bool installedDependencies = false;
-        private bool initializedSelector = false;
         protected readonly DialogSet dialogs = new DialogSet();
         protected DialogSet runDialogs = new DialogSet(); // Used by the Run method
 
@@ -86,18 +85,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 throw new ArgumentException($"{nameof(options)} should not ever be a cancellation token");
             }
 
-            if (!installedDependencies)
+            lock (this)
             {
-                installedDependencies = true;
-
-                AddDialog(this.Steps.ToArray());
-
-                foreach (var rule in this.Rules)
+                if (!installedDependencies)
                 {
-                    AddDialog(rule.Steps.ToArray());
+                    installedDependencies = true;
+
+                    AddDialog(this.Steps.ToArray());
+
+                    foreach (var rule in this.Rules)
+                    {
+                        AddDialog(rule.Steps.ToArray());
+                    }
+
+                    // Wire up selector
+                    if (this.Selector == null)
+                    {
+                        // Default to most specific then first
+                        this.Selector = new MostSpecificSelector
+                        {
+                            Selector = new FirstSelector()
+                        };
+                    }
+                    this.Selector.Initialize(this.Rules, true);
                 }
             }
-
 
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
             activeDialogState["planningState"] = new PlanningState();
@@ -115,19 +127,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Create a new planning context
             var planning = PlanningContext.Create(dc, state);
 
-            if (this.Selector == null)
-            {
-                // Default to most specific then first
-                this.Selector = new MostSpecificSelector
-                {
-                    Selector = new FirstSelector()
-                };
-            }
-            if (!initializedSelector)
-            {
-                initializedSelector = true;
-                await this.Selector.Initialize(planning, this.Rules, true, cancellationToken).ConfigureAwait(false);
-            }
 
             if (this.Steps.Any())
             {

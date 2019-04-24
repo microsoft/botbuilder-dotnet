@@ -31,11 +31,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// </summary>
         public IRuleSelector IfFalse { get; set; }
 
-        public Task Initialize(PlanningContext context, IEnumerable<IRule> rules, bool evaluate = true, CancellationToken cancel = default(CancellationToken))
+        public void Initialize(IEnumerable<IRule> rules, bool evaluate = true)
         {
             _rules = rules.ToList();
             _evaluate = evaluate;
-            return Task.CompletedTask;
         }
 
         public async Task<IReadOnlyList<int>> Select(PlanningContext context, CancellationToken cancel = default(CancellationToken))
@@ -46,12 +45,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             if (eval)
             {
                 selector = IfTrue;
-                await IfTrue.Initialize(context, _rules, _evaluate, cancel).ConfigureAwait(false);
+                IfTrue.Initialize(_rules, _evaluate);
             }
             else
             {
                 selector = IfFalse;
-                await IfFalse.Initialize(context, _rules, _evaluate, cancel).ConfigureAwait(false);
+                IfFalse.Initialize(_rules, _evaluate);
             }
             return await selector.Select(context, cancel).ConfigureAwait(false);
         }
