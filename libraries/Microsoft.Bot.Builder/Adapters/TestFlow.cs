@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </summary>
         /// <param name="testTask">The exchange to add to the exchanges in the existing flow.</param>
         /// <param name="flow">The flow to build up from. This provides the test adapter to use,
-        /// the bot turn processing locig to test, and a set of exchanges to model and test.</param>
+        /// the bot turn processing logic to test, and a set of exchanges to model and test.</param>
         public TestFlow(Task testTask, TestFlow flow)
         {
             _testTask = testTask ?? Task.CompletedTask;
@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </summary>
         /// <returns>Runs the exchange between the user and the bot.</returns>
         /// <remarks>This methods sends the activities from the user to the bot and
-        /// checks the responses from the bot based on the activiies described in the
+        /// checks the responses from the bot based on the activities described in the
         /// current test flow.</remarks>
         public Task StartTestAsync() => _testTask;
 
@@ -309,7 +309,7 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Shorcut for adding an arbitray exchange between the user and bot.
+        /// Shortcut for adding an arbitrary exchange between the user and bot.
         /// Each activity with a <see cref="IActivity.From"/>.<see cref="ChannelAccount.Role"/> equals to "bot"
         /// will be processed with the <see cref="AssertReply(IActivity, string, uint)"/> method.
         /// Every other activity will be processed as user's message via the <see cref="Send(IActivity)"/> method.
@@ -337,7 +337,7 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Shorcut for adding an arbitray exchange between the user and bot.
+        /// Shortcut for adding an arbitrary exchange between the user and bot.
         /// Each activity with a <see cref="IActivity.From"/>.<see cref="ChannelAccount.Role"/> equals to "bot"
         /// will be processed with the <see cref="AssertReply(IActivity, string, uint)"/> method.
         /// Every other activity will be processed as user's message via the <see cref="Send(IActivity)"/> method.
@@ -371,7 +371,7 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Adds an assertion that the bot's response is contained within a set of acceptable responses.
+        /// Adds an assertion that the bots response is contained within a set of acceptable responses.
         /// </summary>
         /// <param name="candidates">The set of acceptable messages.</param>
         /// <param name="description">A message to send if the actual response is not as expected.</param>
