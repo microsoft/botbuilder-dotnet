@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Antlr4.Runtime;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -62,7 +60,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var newTemplates = filePaths.Select(filePath =>
             {
                 var text = File.ReadAllText(filePath);
-
                 return ToTemplates(Parse(text), filePath);
             }).SelectMany(x => x);
 
