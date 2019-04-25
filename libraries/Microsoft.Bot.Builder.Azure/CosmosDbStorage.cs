@@ -242,7 +242,7 @@ namespace Microsoft.Bot.Builder.Azure
                     }
 
                     // doc.Id cannot be used since it is escaped, read it from RealId property instead
-                    storeItems.Add(doc.ReadlId, item);
+                    storeItems.Add(doc.RealId, item);
                 }
             }
 
@@ -284,7 +284,7 @@ namespace Microsoft.Bot.Builder.Azure
                 var documentChange = new DocumentStoreItem
                 {
                     Id = CosmosDbKeyEscape.EscapeKey(change.Key),
-                    ReadlId = change.Key,
+                    RealId = change.Key,
                     Document = json,
                 };
 
@@ -378,7 +378,7 @@ namespace Microsoft.Bot.Builder.Azure
             /// Gets or sets the un-sanitized Id/Key.
             /// </summary>
             [JsonProperty("realId")]
-            public string ReadlId { get; internal set; }
+            public string RealId { get; internal set; }
 
             /// <summary>
             /// Gets or sets the persisted object.
