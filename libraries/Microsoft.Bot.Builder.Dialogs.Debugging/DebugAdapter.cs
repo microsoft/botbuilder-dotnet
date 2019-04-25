@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 CodeModel = codeModel;
             }
             public ITurnContext TurnContext { get; }
-            public ICodeModel  CodeModel { get; }
+            public ICodeModel CodeModel { get; }
             public string Name => TurnContext.Activity.Text;
             public IReadOnlyList<ICodePoint> Frames => CodeModel.PointsFor(LastContext, LastItem, LastMore);
             public RunModel Run { get; } = new RunModel();
@@ -308,6 +308,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     supportsConfigurationDoneRequest = true,
                     supportsSetVariable = true,
                     supportsEvaluateForHovers = true,
+                    supportTerminateDebuggee = this.terminate != null,
+                    supportsTerminateRequest = this.terminate != null,
                 };
                 var response = Protocol.Response.From(NextSeq, initialize, body);
                 await SendAsync(response, cancellationToken).ConfigureAwait(false);
@@ -477,7 +479,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                 return Protocol.Response.From(NextSeq, next, new { });
             }
-            else if (message is Protocol.Request<Protocol.Disconnect> terminate)
+            else if (message is Protocol.Request<Protocol.Terminate> terminate)
             {
                 if (this.terminate != null)
                 {
@@ -488,6 +490,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
             else if (message is Protocol.Request<Protocol.Disconnect> disconnect)
             {
+                var arguments = disconnect.arguments;
+                if (arguments.terminateDebuggee && this.terminate != null)
+                {
+                    this.terminate();
+                }
+
                 // if attach, possibly run all threads
                 return Protocol.Response.From(NextSeq, disconnect, new { });
             }

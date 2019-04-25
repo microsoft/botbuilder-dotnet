@@ -75,6 +75,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             public bool supportsEvaluateForHovers { get; set; }
             public bool supportsFunctionBreakpoints { get; set; }
             public ExceptionBreakpointFilter[] exceptionBreakpointFilters { get; set; }
+            public bool supportTerminateDebuggee { get; set; }
+            public bool supportsTerminateRequest { get; set; }
         }
         public class ExceptionBreakpointFilter
         {
