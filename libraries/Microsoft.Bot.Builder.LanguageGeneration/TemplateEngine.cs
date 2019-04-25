@@ -61,9 +61,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var newTemplates = filePaths.Select(filePath =>
             {
-                var bytes = File.ReadAllBytes(filePath);
-                bytes = RemoveBomMark(bytes);
-                var text = new UTF8Encoding(false).GetString(bytes);
+                var text = File.ReadAllText(filePath);
 
                 return ToTemplates(Parse(text), filePath);
             }).SelectMany(x => x);
@@ -183,18 +181,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var templates = file.paragraph().Select(x => x.templateDefinition()).Where(x => x != null);
             return templates.Select(t => new LGTemplate(t, source)).ToList();
-        }
-
-        private byte[] RemoveBomMark(byte[] bytes)
-        {
-            var bom = new UTF8Encoding(true).GetPreamble();
-            while (bytes.Length >= bom.Length
-            && bom.SequenceEqual(bytes.Take(bom.Length).ToArray()))
-            {
-                bytes = bytes.Skip(bom.Length).ToArray();
-            }
-
-            return bytes;
         }
     }
 }
