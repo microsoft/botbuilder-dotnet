@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     .AssertReply("What is your age?")
                 .Send("15")
                     .AssertReply("15 is a good age to be!")
-                    .AssertReply("your name is joe!")
+                    .AssertReply("your name is Joe!")
                 .StartTestAsync();
         }
 
