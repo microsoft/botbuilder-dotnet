@@ -178,7 +178,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         protected virtual string OnComputeId()
         {
-            return $"${this.GetType().Name}[{this.Id}:{this.BindingPath()}]";
+            return $"{this.GetType().Name}[{this.BindingPath()}]";
         }
 
         protected virtual string BindingPath()
