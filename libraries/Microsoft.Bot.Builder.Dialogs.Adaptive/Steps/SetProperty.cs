@@ -39,7 +39,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             {
                 // SetProperty evaluates the "Value" expression and returns it as the result of the dialog
                 var (value, error) = Value.TryEvaluate(dc.State);
-                // what to do with error
+
+
+                if (error == null)
+                {
+                    PlanningContext pc = dc as PlanningContext;
+
+                    // if this step interrupted a step in the active plan
+                    if (pc != null && pc.Plan.Steps.Count > 1 && pc.Plan.Steps[1].DialogStack.Count > 0)
+                    {
+                        // reset the next step's dialog stack so that when the plan continues it reevaluates new changed state
+                        pc.Plan.Steps[1].DialogStack.Clear();
+                    }
+                }
 
                 return await planning.EndDialogAsync(value, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
