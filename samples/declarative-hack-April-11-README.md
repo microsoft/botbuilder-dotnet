@@ -1,116 +1,62 @@
 # Bot Framework SDK Hack
 
-Welcome and thank you for taking part at a Bot Framework hack.
+Welcome and thank you for taking part at today Conversational-AI hack.
 
-We are looking for feedback on several topics we plan to release as preview at Build – May 2019. Your help is highly appreciated.  We are looking for feedback on few topics: 1) Language Generation; 2) Memory and Expressions; 3) a set of new dialogs; 4) declarative format for writing dialogs.
+Today's hack includes the following topics:
+- Virtual Assistant and Skills
+- Adaptive dialogs 
+- DirectLine Speech
+- Conversation Designer 
 
 ## Prerequisites:
+For today's hack you will need 
 -	Visual Studio or VS Code 
 -	[Bot Framework Emulator](https://github.com/Microsoft/BotFramework-Emulator/releases). Get the latest [here](https://github.com/Microsoft/BotFramework-Emulator/releases)   
 
-For the purpose of this hack you will use the C# version of the SDK. To participate in this hack, you will need: 
-- [Composable Dialog](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog) branch from BotBuilder-dotnet. The Composable Dialog branch has the latest bits for the SDK including LG, Memory, expression and decelerative.
--  [SchemaGen](https://github.com/Microsoft/botbuilder-tools/tree/SchemaGen) branch from BotFramework-tools for the set of tools needed for working with the JSON declarative dialogs. 
-
-> Note: We recommend you fork the BotBuilder-dotnet to work without worrying about any potential code changes. 
-
-## Samples 
-Currently, we are light on documentation. However, there are few samples to help you bootstrap and get started using the new dialogs, LG, memory, and decelrative. 
--	The csharp [samples](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog/samples) folder include basic documentation for Memory, Input prompts and dialogs, and Rule base dialog system. 
-- We also created a version of the samples that uses packaged nuget pckages. [TestBot.Json as sample based on nuget packages called 60-AdaptiveBot](https://github.com/Microsoft/BotBuilder-Samples/blob/4.next/samples/csharp_dotnetcore/60.AdaptiveBot/README.md).  [Here](https://botbuilder.myget.org/F/botbuilder-declarative/api/v3/index.json )  the nuget feed for C# packages. 
--	The [Microsoft.Bot.Bbuilder.Testbot.Json](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog/samples/Microsoft.Bot.Builder.TestBot.Json) folder include samples for LG and declarative dialogs.
--	In Microsoft.Bot.Bbuilder.Testbot.Json , the [samples](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog/samples/Microsoft.Bot.Builder.TestBot.Json/Samples) folder includes a series of bots defined declaratively, showing the different dialog/ prompts and available steps. 
--	The [LG](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog/samples/Microsoft.Bot.Builder.TestBot.Json/LG) folder includes list of .lg files explaining various features and functionality  of the new local LG library
+> Please note, that some topics reuqires additional prerequisistes. Read each topic instruction carefuly.
 
 
-## Docs
--   See [here](../doc/LanguageGeneration/readme.md) for Language Generation documentation. 
--   See [here](../doc/CommonExpressionLanguage/redme.md) for common expression language.
--   See [here](../doc/AdaptiveDialog/readme.md) for overview of Adaptive dialogs.
--	Checkout the [Supported types Cheat sheet](../doc/AdaptiveDialog/cheatSheet.md)
+## Virtual Assistent and SKills
+For BUild, we are releasing a new version of Virtual Assistant, which includes the ability to use Skills. A Skill is a V4 bot with a manifest file. 
 
-## Reporting Bugs 
--	Simply create a new issue on the botbuilder-dotnet repo. Use this [link](https://github.com/Microsoft/botbuilder-dotnet/issues/new?template=-net-sdk-bug.md) 
--	Make sure you add **[declarative-hack]** a prefix to both the issue title and main content 
+To get start - http://aka.ms/VABugBash
 
+File Bugs: https://aka.ms/vaskillsnewbug 
 
-## What bot should I build?
-We would like you to try either using the Adaptive Dialog using code or using JSON. While using these dialogs, feel free to explore and follow any scenario you want. If you are looking for inspiration, we would like you to pick one of the skills in the [Virtual Assistent solution](https://github.com/Microsoft/AI/tree/master/solutions/Virtual-Assistant/src), identify one or two dialogs, and try to convert these dialogs to the new Adaptive Dialog. All VA skills includes full LUIS models that you can use and code (using Waterfall) 
+## Adaptive dialogs
+Adaptive dialog is a new dialog type to model conversations. It improves the current waterfall dialogs and simplifies sophisticated conversation modelling primitives such as dialog dispatcher and handle interruptions elegantly. An Adaptive dialog is a derevite of a Dialog and interacts with the rest of the SDK dialog system.
 
+Get staretd with [initial set of docs](https://github.com/Microsoft/BotBuilder-Samples/tree/master/experimental/adaptive-dialog#Why-Adaptive-Dialog)
 
-## How to use AdaptiveDialog in NodeJs
+Adapdtive dialog samples are [here](https://github.com/Microsoft/BotBuilder-Samples/blob/master/experimental/adaptive-dialog/csharp_dotnetcore)
 
-- Enlist in botbuilder-js
-- Checkout [4.next](https://github.com/Microsoft/botbuilder-js/tree/4.next) branch
-- AdaptiveDialog samples can be found [here](https://github.com/Microsoft/botbuilder-js/tree/4.next/samples)
-- From the root of the entire repo, make sure lerna is installed globally by using ```npm install -g lerna```
-- From the root of the entire repo, run ```lerna bootstrap --hoist``` to setup dependencies
-- From the root of the entire repo, run ```npm run build``` to setup dependencies
-- Choose your favorite sample under the samples directory
-- Navigate to the selected sample in a command line
-- On the sample directory ```npm run build```
-- On the sample directory ```npm run start``` to start the bot
+File bugs:
+- [BotBuilder C# repo](https://github.com/microsoft/botbuilder-dotnet/issues), use [hackathon] as a prefix
+- [BotBuilder JS repo](https://github.com/microsoft/botbuilder-js/issues), use [hackathon] as a prefix
 
-## How to use AdaptiveDialog in Json
+A good exercise will be to build a To Do bot or a Reminder bot (without actually reminding anything) 
 
-- Enlist in botbuilder-dotnet
-- Checkout the [ComposableDialog](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog) branch
-- Open solution in Visual Studio
-- We also created a version of the samples that uses packaged nuget pckages. [TestBot.Json as sample based on nuget packages called 60-AdaptiveBot](https://github.com/Microsoft/BotBuilder-Samples/blob/4.next/samples/csharp_dotnetcore/60.AdaptiveBot/README.md).  [Here](https://botbuilder.myget.org/F/botbuilder-declarative/api/v3/index.json )  the nuget feed for C# packages. 
-- There is a test bot ready to adapt to your needs: Microsoft.Bot.Builder.TestBot.Json
-- Select a sample in the samples folder that best matches what you want to achieve
-- Open TestBot.cs and replace the line below with a pointer to the root dialog you want for your bot:
+### Language Generation
+LG is a new package in the SDK that help developer generate sophisticated responses. At the core of language generation lies template expansion and entity substitution. You can provide one-of variation for expansion as well as conditionally expand a template. The output from language generation can be a simple text string or multi-line response or a complex object payload that a layer above language generation will use to construct a full blown activity.
 
-```csharp
- var rootFile = resourceExplorer.GetResource(@"ToDoBot.main.dialog");
-```
-- Run the project and open in the emulator!
-- *Editor hint:* Visual Studio does not support our json schemas. Use Visual Studio Code to edit json files!
-- *Troubleshooting:* If your bot does not respond, double check that the port in which your bot is running matches the bot file in the project.
+- Get started with LG - [here](https://github.com/Microsoft/BotBuilder-Samples/tree/master/experimental/language-generation)
+- LG [Docs](https://github.com/Microsoft/BotBuilder-Samples/tree/master/experimental/language-generation/docs)
+- LG [Samples](https://github.com/Microsoft/BotBuilder-Samples/tree/master/experimental/language-generation/csharp_dotnetcore)
 
-## How to use AdaptiveDialog in C#
+### Common Expression Langague
+The Common Expression Langauge is a new library in the SDK to support the ability to evalute logical expression and condition. This is reuqried to support conditional evaluation for LG as well as Declerative dialogs. 
 
-- Enlist in botbuilder-dotnet
-- Checkout the ComposableDialog branch
-- Open solution in Visual Studio
-- There is a test bot ready to adapt to your needs: Microsoft.Bot.Builder.TestBot
-- Create a new AdaptiveDialog and start hacking! Example:
+To learn more about the [Common Expression Langauge](https://github.com/Microsoft/BotBuilder-Samples/tree/master/experimental/common-expression-language)
 
 
-# Trying the LG sample
+## DirectLine speech
+[Getting started](https://cognitionwiki.com/pages/viewpage.action?pageId=61671091)
 
-The [Microsoft.Bot.Bbuilder.Testbot.Json](https://github.com/Microsoft/botbuilder-dotnet/tree/ComposableDialog/samples/Microsoft.Bot.Builder.TestBot.Json) folder include samples for LG, see [here](./LG-file-format.md) for an overivew of the LG file format. 
+## Conversation Designer 
+The Bot Framework Conversation Designer (code name Composer) provides a tool for 1st and 3rd party professional conversation creators with an extensible framework to build compelling Conversational AI solutions for Microsoft customers. The Composer conversatio modeling is based on the Bot Framework SDK Declarative dialogs. See [supported types Cheat sheet](../doc/AdaptiveDialog/cheatSheet.md). While it is important to understand the capabilaties of the SDK, the Composer role is to abstract the SDK complexity and the need to directly manipulate JSON objects. 
 
-The code include a TestBotLG.cs that you can use to run and experiment with LG.  As this test botproject  is also used for running declarative dialogs, you will need to change Startup.cs and switch between which bot is used.  To do so, comment the line that return a new TestBot, and uncomment the line that returns TestBotLG. 
+- To get started, clone the [BotFramework-Composer repo] (https://github.com/Microsoft/BotFramework-Composer/)
+- Follow the [installation instructions](https://github.com/Microsoft/BotFramework-Composer/tree/master/Composer#instructions)
+- file bugs [here](https://github.com/Microsoft/BotFramework-Composer/issues) - use [hackathon] prefix
 
-```
-            services.AddBot<IBot>(
-                (IServiceProvider sp) =>
-                {
-                    // declarative Adaptive dialogs bot sample
-                    return new TestBot(accessors, botResourceManager);
-
-                    // LG bot sample
-                    // return new TestBotLG(accessors);
-                },
-
-```
-
-
-## Building the SDK tools locally
-To use DialogLint, DialogSchema, and DialogTracker tools, you will need to build the Botbuilder-tools SDK locally. 
-
-- Enlist in [botbuilder-tools](https://github.com/Microsoft/botbuilder-tools/tree/SchemaGen)
-- Checkout the SchemaGen branch
-- from root, run *npm run build*
-- from the tool folder, install the tool. For example: *npm i -g .* 
-
-```
-cd botbuilder-tools
-
-npm run build 
-
-cd .\packages\DialogLint\
-
-npm i -g .
-```
+For the purpose of today's hack, you will be able to edit existing bots (you can't create new one yet) from the Composer *samples* directory.  Just click the Open button at the top of the Composer window, it should point to the Sample Bots folder. In each sample folder, you will find a bot.botproj file, which is the one you want to select. 
