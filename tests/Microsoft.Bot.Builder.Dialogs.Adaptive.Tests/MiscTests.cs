@@ -71,8 +71,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name" },
                     new SendActivity("Hello {user.name}, nice to meet you!"),
-                    new EndTurn(),
-                    new RepeatDialog()
+                    new NumberInput() { MinValue=1, MaxValue = 110, Prompt = new ActivityTemplate("What is your age?"), OutputBinding = "user.age" },
+                    new SendActivity("{user.age} is a good age to be!"),
                 },
                 Rules = new List<IRule>()
                 {
@@ -81,7 +81,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         Steps = new List<IDialog>()
                         {
                             new SaveEntity("name", "user.name"),
-                            //new RepeatDialog()
                         }
                     }
                 }
@@ -93,8 +92,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     .AssertReply("Hello, what is your name?")
                 .Send("my name is Carlos")
                     .AssertReply("Hello Carlos, nice to meet you!")
-                .Send("hi")
-                    .AssertReply("Hello Carlos, nice to meet you!")
+                    .AssertReply("What is your age?")
+                .Send("my name is Joe")
+                    .AssertReply("What is your age?")
+                .Send("15")
+                    .AssertReply("15 is a good age to be!")
                 .StartTestAsync();
         }
 
