@@ -8,35 +8,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     /// <summary>
     /// Generic declarative number input for gathering number information from users
     /// </summary>
-    /// <typeparam name="TNumber"></typeparam>
-    public class NumberInput<TNumber> : InputWrapper<NumberPrompt<TNumber>, TNumber> where TNumber : struct, IComparable<TNumber>
+    /// <typeparam name="float"></typeparam>
+    public class NumberInput : InputWrapper<NumberPrompt<float>, float> 
     {
         /// <summary>
         /// Minimum value expected for number
         /// </summary>
-        public TNumber MinValue { get; set; }
+        public float MinValue { get; set; } = float.MinValue;
 
         /// <summary>
         /// Maximum value expected for number
         /// </summary>
-        public TNumber MaxValue { get; set; }
+        public float MaxValue { get; set; } = float.MaxValue;
+
+        /// <summary>
+        /// Precision
+        /// </summary>
+        public int Precision { get; set; } = 0;
 
         public NumberInput()
         {
         }
 
-        protected override NumberPrompt<TNumber> CreatePrompt()
+        protected override NumberPrompt<float> CreatePrompt()
         {
             // We override the default constructor behavior from base class to add custom validation around min and max values.
-            return new NumberPrompt<TNumber>(null, new PromptValidator<TNumber>(async (promptContext, cancel) =>
+            return new NumberPrompt<float>(null, new PromptValidator<float>(async (promptContext, cancel) =>
             {
                 if (!promptContext.Recognized.Succeeded)
                 {
                     return false;
                 }
 
-                var result = (IComparable<TNumber>)promptContext.Recognized.Value; 
-
+                promptContext.Recognized.Value = (float)Math.Round(promptContext.Recognized.Value, Precision);
+                var result = (IComparable<float>)promptContext.Recognized.Value;
                 if (result.CompareTo(MinValue) < 0 || result.CompareTo(MaxValue) > 0)
                 {
                     if (InvalidPrompt != null)

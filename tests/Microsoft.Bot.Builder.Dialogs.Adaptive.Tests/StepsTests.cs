@@ -15,6 +15,7 @@ using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Schema;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -225,6 +226,112 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Step_ConfirmInput()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var planningDialog = new AdaptiveDialog("planningTest")
+            {
+                AutoEndDialog = false,
+                Steps = new List<IDialog>()
+                {
+                    new ConfirmInput()
+                    {
+                        Prompt = new ActivityTemplate("yes or no"),
+                        RetryPrompt = new ActivityTemplate("I need a yes or no."),
+                        Property = "user.confirmed"
+                    },
+                    new SendActivity("confirmation: {user.confirmed}"),
+                    new ConfirmInput()
+                    {
+                        Prompt = new ActivityTemplate("yes or no"),
+                        RetryPrompt = new ActivityTemplate("I need a yes or no."),
+                        Property = "user.confirmed"
+                    },
+                    new SendActivity("confirmation: {user.confirmed}"),
+                    new ConfirmInput()
+                    {
+                        Prompt = new ActivityTemplate("yes or no"),
+                        RetryPrompt = new ActivityTemplate("I need a yes or no."),
+                        Property = "user.confirmed",
+                        AlwaysPrompt = true
+                    },
+                    new SendActivity("confirmation: {user.confirmed}"),
+                }
+            };
+
+            await CreateFlow(planningDialog, convoState, userState)
+            .Send("hi")
+                .AssertReply("yes or no")
+            .Send("asdasd")
+                .AssertReply("I need a yes or no.")
+            .Send("yes")
+                .AssertReply("confirmation: True")
+                .AssertReply("confirmation: True")
+                .AssertReply("yes or no")
+            .Send("nope")
+                .AssertReply("confirmation: False")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task Step_ChoiceInput()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var planningDialog = new AdaptiveDialog("planningTest")
+            {
+                AutoEndDialog = false,
+                Steps = new List<IDialog>()
+                {
+                    new ChoiceInput()
+                    {
+                        Property = "user.color",
+                        Prompt = new ActivityTemplate("Please select a color:"),
+                        RetryPrompt = new ActivityTemplate("Not a color. Please select a color:"),
+                        Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
+                        Style = ListStyle.Inline
+                    },
+                    new SendActivity("{user.color.value}"),
+                    new ChoiceInput()
+                    {
+                        Property = "user.color",
+                        Prompt = new ActivityTemplate("Please select a color:"),
+                        RetryPrompt = new ActivityTemplate("Please select a color:"),
+                        Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
+                        Style = ListStyle.Inline
+                    },
+                    new SendActivity("{user.color.value}"),
+                    new ChoiceInput()
+                    {
+                        Property = "user.color",
+                        Prompt = new ActivityTemplate("Please select a color:"),
+                        RetryPrompt = new ActivityTemplate("Please select a color:"),
+                        Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
+                        AlwaysPrompt = true,
+                        Style = ListStyle.Inline
+                    },
+                    new SendActivity("{user.color.value}"),
+                }
+            };
+
+            await CreateFlow(planningDialog, convoState, userState)
+            .Send("hi")
+                .AssertReply("Please select a color: (1) red, (2) green, or (3) blue")
+            .Send("asdasd")
+                .AssertReply("Not a color. Please select a color: (1) red, (2) green, or (3) blue")
+            .Send("blue")
+                .AssertReply("blue")
+                .AssertReply("blue")
+                .AssertReply("Please select a color: (1) red, (2) green, or (3) blue")
+            .Send("red")
+                .AssertReply("red")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task Step_NumberInput()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -240,11 +347,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 new UnknownIntentRule(
                     new List<IDialog>()
                     {
-                        new NumberInput<int>()
+                        new NumberInput()
                         {
                             Prompt = new ActivityTemplate("Please enter your age."),
                             MinValue = 1,
                             MaxValue = 150,
+                            Precision = 0,
                             RetryPrompt = new ActivityTemplate("The value entered must be greater than 0 and less than 150."),
                             Property = "user.userProfile.Age"
                         },
@@ -257,10 +365,51 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("Please enter your age.")
             .Send("1000")
                 .AssertReply("The value entered must be greater than 0 and less than 150.")
-            .Send("15")
+            .Send("15.3")
                 .AssertReply("I have your age as 15.")
             .Send("hi")
                 .AssertReply("I have your age as 15.")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task Step_NumberInputPrecision()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var planningDialog = new AdaptiveDialog("planningTest")
+            {
+                AutoEndDialog = false
+            };
+
+            planningDialog.AddRules(new List<IRule>()
+            {
+                new UnknownIntentRule(
+                    new List<IDialog>()
+                    {
+                        new NumberInput()
+                        {
+                            Prompt = new ActivityTemplate("Please enter your dollars."),
+                            MinValue = 10.00f,
+                            MaxValue = 100.00f,
+                            Precision = 2,
+                            RetryPrompt = new ActivityTemplate("The value entered must be greater than 10.00 and less than 100.00."),
+                            Property = "user.userProfile.dollars"
+                        },
+                        new SendActivity("I have your dollars as {user.userProfile.dollars}."),
+                    })
+            });
+
+            await CreateFlow(planningDialog, convoState, userState)
+            .Send("hi")
+                .AssertReply("Please enter your dollars.")
+            .Send("1.345")
+                .AssertReply("The value entered must be greater than 10.00 and less than 100.00.")
+            .Send("15.348")
+                .AssertReply("I have your dollars as 15.35.")
+            .Send("hi")
+                .AssertReply("I have your dollars as 15.35.")
             .StartTestAsync();
         }
 

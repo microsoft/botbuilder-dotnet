@@ -38,6 +38,7 @@
                     "type": "number",
                     "title": "Mininum value",
                     "description": "The minimum value that is acceptable.  ",
+                    "default": "-2147483648",
                     "examples": [
                         "0.1"
                     ]
@@ -46,9 +47,26 @@
                     "type": "number",
                     "title": "Maximum value",
                     "description": "The maximum value that is acceptable.  ",
+                    "default": "2147483647",
                     "examples": [
                         "12.5"
                     ]
+                },
+                "precision": {
+                    "type": "number",
+                    "title": "Precision",
+                    "description": "The precision of decimal points you want. Default is zero, which integers.",
+                    "default": "0",
+                    "examples": [
+                        "2"
+                    ]
+                },
+                "alwaysPrompt": {
+                    "type": "boolean",
+                    "title": "Always Prompt",
+                    "description": "If set to true this will always prompt the user regardless if you already have the value or not.",
+                    "default": "false",
+                    "examples": [ "false" ]
                 }
             }
         }

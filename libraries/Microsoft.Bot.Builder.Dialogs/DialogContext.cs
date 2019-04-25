@@ -230,7 +230,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var bindingKey = option.Key;
                 var bindingValue = option.Value;
 
-                if (State.TryGetValue<string>(bindingValue, out var value))
+                if (State.TryGetValue<object>(bindingValue, out var value))
                 {
                     stateBindings[bindingKey] = value;
                 }

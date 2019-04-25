@@ -57,8 +57,6 @@
     <None Remove="Schemas\Dialogs\Microsoft.AdaptiveDialog.schema" />
     <None Remove="Schemas\Dialogs\Microsoft.ChoiceInput.schema" />
     <None Remove="Schemas\Dialogs\Microsoft.ConfirmInput.schema" />
-    <None Remove="Schemas\Dialogs\Microsoft.FloatInput.schema" />
-    <None Remove="Schemas\Dialogs\Microsoft.IntegerInput.schema" />
     <None Remove="Schemas\Dialogs\Microsoft.NumberInput.schema" />
     <None Remove="Schemas\Dialogs\Microsoft.TextInput.schema" />
     <None Remove="Schemas\Microsoft.IRuleSelector.schema" />
@@ -99,8 +97,6 @@
     <Content Include="Schemas\Dialogs\Microsoft.AdaptiveDialog.schema" />
     <Content Include="Schemas\Dialogs\Microsoft.ChoiceInput.schema" />
     <Content Include="Schemas\Dialogs\Microsoft.ConfirmInput.schema" />
-    <Content Include="Schemas\Dialogs\Microsoft.FloatInput.schema" />
-    <Content Include="Schemas\Dialogs\Microsoft.IntegerInput.schema" />
     <Content Include="Schemas\Dialogs\Microsoft.NumberInput.schema" />
     <Content Include="Schemas\Dialogs\Microsoft.TextInput.schema" />
     <Content Include="Schemas\Microsoft.IRule.schema" />
