@@ -3,9 +3,8 @@
     "$type": "Microsoft.AdaptiveDialog",
     "steps": [
         {
-            "$type": "Microsoft.IntegerInput",
+            "$type": "Microsoft.NumberInput",
             "property": "user.age",
-            "alwaysPrompt": true,
             "prompt": "What is your age?",
             "invalidPrompt": "Please input a number."
         },
@@ -14,9 +13,9 @@
             "activity": "Hello, your age is {user.age}!"
         },
         {
-            "$type": "Microsoft.FloatInput",
+            "$type": "Microsoft.NumberInput",
             "property": "user.result",
-            "alwaysPrompt": true,
+            "precision": 2,
             "prompt": "2 * 2.2 equals?"
         },
         {

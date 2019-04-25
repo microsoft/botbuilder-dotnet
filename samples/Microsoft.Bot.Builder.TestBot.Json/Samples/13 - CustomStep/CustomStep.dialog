@@ -3,8 +3,7 @@
     "$type": "Microsoft.AdaptiveDialog",
     "steps": [
         {
-            "$type": "Microsoft.IntegerInput",
-            "alwaysPrompt": true,
+            "$type": "Microsoft.NumberInput",
             "property": "user.age",
             "prompt": "What is your age?"
         },

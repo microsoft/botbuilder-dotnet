@@ -133,8 +133,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
 
             // Inputs
             Register("Microsoft.ConfirmInput", typeof(ConfirmInput));
-            Register("Microsoft.FloatInput", typeof(FloatInput));
-            Register("Microsoft.IntegerInput", typeof(IntegerInput));
+            Register("Microsoft.NumberInput", typeof(NumberInput));
             Register("Microsoft.TextInput", typeof(TextInput));
             Register("Microsoft.ChoiceInput", typeof(ChoiceInput));
             Register("Microsoft.DateTimeInput", typeof(DateTimeInput));
