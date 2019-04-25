@@ -37,7 +37,5 @@ namespace Microsoft.Bot.Builder.Dialogs
         public ListStyle? Style { get; set; }
 
         public object Validations { get; set; }
-
-        public int NumberOfAttempts { get; set; }
     }
 }
