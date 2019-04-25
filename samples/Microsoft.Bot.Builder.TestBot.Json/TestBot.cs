@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             System.Diagnostics.Trace.TraceInformation("Loading resources...");
             //var rootFile = resourceExplorer.GetResource(@"VARootDialog.main.dialog");
             // var rootFile = resourceExplorer.GetResource("ToDoLuisBot.main.dialog");
-            var rootFile = resourceExplorer.GetResource(@"ToDoBot.main.dialog");
+            // var rootFile = resourceExplorer.GetResource(@"ToDoBot.main.dialog");
             //var rootFile = resourceExplorer.GetResource("NoMatchRule.main.dialog");
             //var rootFile = resourceExplorer.GetResource("EndTurn.main.dialog");
             //var rootFile = resourceExplorer.GetResource("IfCondition.main.dialog");
@@ -62,6 +62,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             //var rootFile = resourceExplorer.GetResource("BeginDialog.main.dialog");
             //var rootFile = resourceExplorer.GetResource("ExternalLanguage.main.dialog");
             //var rootFile = resourceExplorer.GetResource("CustomStep.dialog");
+            var rootFile = resourceExplorer.GetResource("sandwich.main.dialog");
 
             rootDialog = DeclarativeTypeLoader.Load<IDialog>(rootFile, resourceExplorer, registry);
             //rootDialog = LoadCodeDialog();

@@ -16,11 +16,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         private List<IRule> _rules;
         private bool _evaluate;
 
-        public Task Initialize(PlanningContext context, IEnumerable<IRule> rules, bool evaluate = true, CancellationToken cancel = default(CancellationToken))
+        public void Initialize(IEnumerable<IRule> rules, bool evaluate = true)
         {
             _rules = rules.ToList();
             _evaluate = evaluate;
-            return Task.CompletedTask;
         }
 
         public Task<IReadOnlyList<int>> Select(PlanningContext context, CancellationToken cancel = default(CancellationToken))

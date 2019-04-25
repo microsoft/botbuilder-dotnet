@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// </summary>
         public IRuleSelector Selector { get; set; }
 
-        public Task Initialize(PlanningContext context, IEnumerable<IRule> rules, bool evaluate, CancellationToken cancel)
+        public void Initialize(IEnumerable<IRule> rules, bool evaluate)
         {
             var i = 0;
             var parser = new ExpressionEngine(TriggerTree.LookupFunction);
@@ -29,7 +29,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 _tree.AddTrigger(rule.GetExpression(parser), (i, rule));
                 ++i;
             }
-            return Task.CompletedTask;
         }
 
         public async Task<IReadOnlyList<int>> Select(PlanningContext context, CancellationToken cancel)
@@ -62,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 }
                 // Sort rules by original order and then pass to child selector
                 matches = (from candidate in matches orderby candidate.Item1 ascending select candidate).ToList();
-                await Selector.Initialize(context, matches.Select(m => m.Item2), false, cancel).ConfigureAwait(false);
+                Selector.Initialize(matches.Select(m => m.Item2), false);
                 selections = (from match in await Selector.Select(context, cancel).ConfigureAwait(false) select matches[match].Item1).ToList();
             }
             return selections;

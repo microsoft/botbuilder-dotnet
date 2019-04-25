@@ -1,0 +1,35 @@
+# Initial
+- What do you want in your sandwich?, for example you can order a sandwich with white bread, ham, swiss cheese and mayo
+
+# SandwichOptions
+- Some of the most popular options are roast beef, turkey, ham, chicken and vegetarian sandwiches
+
+# BreadOptions
+- You can chose these types of bread: white, wheat, multi grain and rye
+
+# ToppingOptions
+- Some of the most popular toppings are <GetAvailableToppings.list>
+
+# CheeseOptions
+- Some of types of cheese available are swiss, gouda, feta, jack and american
+
+# Greeting
+- Hi! How can I help you?
+
+# Help
+- I don't understand that, but I can help you order a sandwich
+
+# FurtherHelp
+- Try saying 'Order a sandwich'
+
+# MeatAndBread
+- Which type of meat and bread do you want for your sandwich?
+
+# CheeseAndToppingsWithMeatAndBread
+- What kind of cheese and toppings would you like on your {Meat} on {Bread} bread sandwich?
+
+# BreadAndToppingsWithMeatAndCheese
+- What bread or toppings do you want on your {Meat} with {Cheese} sandwich?
+
+# MeatWithBread
+- What kind of meat would you like in your {Bread} bread sandwich?

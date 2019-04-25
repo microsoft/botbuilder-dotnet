@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             }
         }
 
-        public Task Initialize(PlanningContext context, IEnumerable<IRule> rules, bool evaluate, CancellationToken cancel = default(CancellationToken))
+        public void Initialize(IEnumerable<IRule> rules, bool evaluate)
         {
             _rules = rules.ToList();
             _evaluate = evaluate;
@@ -41,7 +41,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             {
                 _rand = _seed == -1 ? new Random() : new Random(_seed);
             }
-            return Task.CompletedTask;
         }
 
         public Task<IReadOnlyList<int>> Select(PlanningContext context, CancellationToken cancel = default(CancellationToken))

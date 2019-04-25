@@ -1796,6 +1796,10 @@
                     "title": "Microsoft.RegexRecognizer",
                     "description": "Recognizer which uses regex expressions to generate intents and entities.",
                     "$ref": "#/definitions/Microsoft.RegexRecognizer"
+                },
+                {
+                    "type": "string",
+                    "title": "string"
                 }
             ]
         },

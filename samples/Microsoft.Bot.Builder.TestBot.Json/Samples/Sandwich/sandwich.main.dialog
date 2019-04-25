@@ -1,0 +1,94 @@
+{
+  "$schema": "../../app.schema",
+  "$type": "Microsoft.AdaptiveDialog",
+  "recognizer": "OrderSandwichApp.lu",
+  "autoEndDialog": false,
+  "rules": [
+    {
+      "$comment": "**** Start of slot mapping ****",
+      "$type": "Microsoft.EventRule",
+      "events": [
+        "recognizedIntent"
+      ],
+      "constraint": "@meat",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "Set dialog.meat to {@meat}"
+        },
+        {
+          "$type": "Microsoft.SetProperty",
+          "property": "dialog.meat",
+          "value": "@meat"
+        }
+      ]
+    },
+    {
+      "$comment": "**** This is the start of intent rules ****",
+      "$type": "Microsoft.IntentRule",
+      "intent": "SandwichOptions",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "[SandwichOptions]"
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "BreadOptions",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "[BreadOptions]"
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "ToppingOptions",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "[ToppingOptions]"
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "CheeseOptions",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "[CheeseOptions]"
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.EventRule",
+      "events": [
+        "beginDialog"
+      ],
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "[Initial]"
+        }
+      ]
+    },
+    {
+      "$comment": "**** This is the start of prompts ****",
+      "$type": "Microsoft.EventRule",
+      "events": [
+        "recognizedIntent"
+      ],
+      "constraint": "!meat and !bread",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "[MeatAndBread]"
+        }
+      ]
+    }
+  ]
+}
