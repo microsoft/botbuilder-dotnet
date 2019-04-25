@@ -303,7 +303,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
             if (message is Protocol.Request<Protocol.Initialize> initialize)
             {
-                var body = new
+                var body = new Protocol.Capabilities()
                 {
                     supportsConfigurationDoneRequest = true,
                     supportsSetVariable = true,

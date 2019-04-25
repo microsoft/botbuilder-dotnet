@@ -57,8 +57,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             public SourceBreakpoint[] breakpoints { get; set; }
             public bool sourceModified { get; set; }
         }
+        public class SetFunctionBreakpoints
+        {
+            public FunctionBreakpoint[] breakpoints { get; set; }
+        }
+        public class SetExceptionBreakpoints
+        {
+            public string[] filters { get; set; }
+        }
         public class Threads
         {
+        }
+        public class Capabilities
+        {
+            public bool supportsConfigurationDoneRequest { get; set; }
+            public bool supportsSetVariable { get; set; }
+            public bool supportsEvaluateForHovers { get; set; }
+            public bool supportsFunctionBreakpoints { get; set; }
+            public ExceptionBreakpointFilter[] exceptionBreakpointFilters { get; set; }
+        }
+        public class ExceptionBreakpointFilter
+        {
+            public string filter { get; set; }
+            public string label { get; set; }
+            public bool @default { get; set; }
         }
         public abstract class PerThread
         {
@@ -200,6 +222,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         public sealed class SourceBreakpoint
         {
             public int line { get; set; }
+        }
+        public sealed class FunctionBreakpoint
+        {
+            public string name { get; set; }
         }
 
         public static Request Parse(JToken token)
