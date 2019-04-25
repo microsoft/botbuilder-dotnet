@@ -59,4 +59,4 @@ The Bot Framework Conversation Designer (code name Composer) provides a tool for
 - Follow the [installation instructions](https://github.com/Microsoft/BotFramework-Composer/tree/master/Composer#instructions)
 - file bugs [here](https://github.com/Microsoft/BotFramework-Composer/issues) - use [hackathon] prefix
 
-The Composer comes with a working Bot Runtime, which is a V4 SDK bot that is used to run the dialogs you create in Composer. For the purpose of today's hack, you will be able to edit existing bots (you can't create new one yet) from the Composer *samples* directory. 
+For the purpose of today's hack, you will be able to edit existing bots (you can't create new one yet) from the Composer *samples* directory.  Just click the Open button at the top of the Composer window, it should point to the Sample Bots folder. In each sample folder, you will find a bot.botproj file, which is the one you want to select. 
