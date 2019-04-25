@@ -60,6 +60,13 @@
                     "examples": [
                         "2"
                     ]
+                },
+                "alwaysPrompt": {
+                    "type": "boolean",
+                    "title": "Always Prompt",
+                    "description": "If set to true this will always prompt the user regardless if you already have the value or not.",
+                    "default": "false",
+                    "examples": [ "false" ]
                 }
             }
         }
