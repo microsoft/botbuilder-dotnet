@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Microsoft.Bot.Connector.Authentication
 {
     /// <summary>
-    /// Values and Constants used for Authentication and Authrization by the Bot Framework Protocol to US Government DataCenters.
+    /// Values and Constants used for Authentication and Authorization by the Bot Framework Protocol to US Government DataCenters.
     /// </summary>
     public static class GovernmentAuthenticationConstants
     {
