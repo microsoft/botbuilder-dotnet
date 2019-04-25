@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var newTemplates = filePaths.Select(filePath =>
             {
                 var bytes = File.ReadAllBytes(filePath);
-                bytes = RemoveExtraBomMark(bytes);
+                bytes = RemoveBomMark(bytes);
                 var text = new UTF8Encoding(false).GetString(bytes);
 
                 return ToTemplates(Parse(text), filePath);
@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return templates.Select(t => new LGTemplate(t, source)).ToList();
         }
 
-        private byte[] RemoveExtraBomMark(byte[] bytes)
+        private byte[] RemoveBomMark(byte[] bytes)
         {
             var bom = new UTF8Encoding(true).GetPreamble();
             while (bytes.Length >= bom.Length
