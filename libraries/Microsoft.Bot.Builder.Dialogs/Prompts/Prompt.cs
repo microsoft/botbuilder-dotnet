@@ -158,7 +158,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             var state = (IDictionary<string, object>)((Dictionary<string, object>)instance.State)[PersistedState];
             var options = (PromptOptions)((Dictionary<string, object>)instance.State)[PersistedOptions];
-            await OnPromptAsync(turnContext, state, options, false).ConfigureAwait(false);
+            await OnPromptAsync(turnContext, state, options, isRetry: true).ConfigureAwait(false);
         }
 
         protected abstract Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken));
