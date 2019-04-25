@@ -78,6 +78,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken);
             }
         }
+
+        public override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
+        {
+            if (result is FoundChoice foundChoice)
+            {
+                // return value insted of FoundChoice object
+                return base.ResumeDialogAsync(dc, reason, foundChoice.Value, cancellationToken);
+            }
+            return base.ResumeDialogAsync(dc, reason, result, cancellationToken);
+        }
+
         protected override string OnComputeId()
         {
             return $"ChoiceInput[{BindingPath()}]";

@@ -294,7 +294,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
                         Style = ListStyle.Inline
                     },
-                    new SendActivity("{user.color.value}"),
+                    new SendActivity("{user.color}"),
                     new ChoiceInput()
                     {
                         Property = "user.color",
@@ -303,7 +303,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
                         Style = ListStyle.Inline
                     },
-                    new SendActivity("{user.color.value}"),
+                    new SendActivity("{user.color}"),
                     new ChoiceInput()
                     {
                         Property = "user.color",
@@ -313,7 +313,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         AlwaysPrompt = true,
                         Style = ListStyle.Inline
                     },
-                    new SendActivity("{user.color.value}"),
+                    new SendActivity("{user.color}"),
                 }
             };
 
