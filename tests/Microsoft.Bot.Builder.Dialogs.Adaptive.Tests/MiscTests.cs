@@ -73,6 +73,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new SendActivity("Hello {user.name}, nice to meet you!"),
                     new NumberInput() { MinValue=1, MaxValue = 110, Prompt = new ActivityTemplate("What is your age?"), OutputBinding = "user.age" },
                     new SendActivity("{user.age} is a good age to be!"),
+                    new SendActivity("your name is {user.name}!"),
                 },
                 Rules = new List<IRule>()
                 {
@@ -97,6 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     .AssertReply("What is your age?")
                 .Send("15")
                     .AssertReply("15 is a good age to be!")
+                    .AssertReply("your name is joe!")
                 .StartTestAsync();
         }
 
