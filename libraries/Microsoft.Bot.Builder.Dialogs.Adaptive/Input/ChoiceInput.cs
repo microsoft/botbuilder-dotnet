@@ -81,7 +81,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         public override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
         {
-            if (result is FoundChoice foundChoice)
+            FoundChoice foundChoice = result as FoundChoice;
+            if (foundChoice != null)
             {
                 // return value insted of FoundChoice object
                 return base.ResumeDialogAsync(dc, reason, foundChoice.Value, cancellationToken);
