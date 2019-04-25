@@ -239,7 +239,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             State.SetValue("dialog.result", stateBindings);
 
-
             // Call dialogs BeginAsync() method.
             await DebuggerStepAsync(dialog, cancellationToken).ConfigureAwait(false);
             return await dialog.BeginDialogAsync(this, options: options, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -620,10 +619,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     return this.GetActiveDialogState(dialogContext.Parent, null, -stackIndex - 1);
                 }
-                else
-                {
-                    throw new Exception("DialogContext.ActiveDialog: Can't find inherited state. No parent DialogContext.");
-                }
+
+                return state;
             }
             else
             {
