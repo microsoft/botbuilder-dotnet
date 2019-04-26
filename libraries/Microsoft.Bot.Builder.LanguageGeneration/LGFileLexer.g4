@@ -18,12 +18,8 @@ lexer grammar LGFileLexer;
 fragment LETTER: 'a'..'z' | 'A'..'Z';
 fragment NUMBER: '0'..'9';
 
-fragment UNICODE_BOM
-  : '\ufeff'
-  ;
-
-fragment NON_BREAKING_SPACE
-  : '\u00a0'
+fragment WHITESPACE
+  : ' '|'\t'|'\ufeff'|'\u00a0'
   ;
 
 COMMENTS
@@ -31,7 +27,7 @@ COMMENTS
   ;
 
 WS
-  : (' '|'\t'|NON_BREAKING_SPACE|UNICODE_BOM)+ -> skip
+  : WHITESPACE+ -> skip
   ;
 
 NEWLINE
@@ -53,7 +49,7 @@ INVALID_TOKEN_DEFAULT_MODE
 mode TEMPLATE_NAME_MODE;
 
 WS_IN_NAME
-  : (' '|'\t'|NON_BREAKING_SPACE|UNICODE_BOM)+ -> skip
+  : WHITESPACE+ -> skip
   ;
 
 NEWLINE_IN_NAME
@@ -88,11 +84,11 @@ mode TEMPLATE_BODY_MODE;
 
 // a little tedious on the rules, a big improvement on portability
 WS_IN_BODY_IGNORED
-  : (' '|'\t'|NON_BREAKING_SPACE|UNICODE_BOM)+  {ignoreWS}? -> skip
+  : WHITESPACE+  {ignoreWS}? -> skip
   ;
 
 WS_IN_BODY
-  : (' '|'\t'|NON_BREAKING_SPACE|UNICODE_BOM)+  -> type(WS)
+  : WHITESPACE+  -> type(WS)
   ;
 
 NEWLINE_IN_BODY
