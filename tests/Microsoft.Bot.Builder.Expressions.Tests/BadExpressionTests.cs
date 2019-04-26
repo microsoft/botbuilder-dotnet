@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("'1' % 2"), // params should be number
             Test("'1' ^ 2"), // params should be number
             Test("'string'&one"), // $ can only accept string parameter
-             Test("1/0"), // $ can not divide 0
+            Test("1/0"), // $ can not divide 0
             # endregion
             
             # region String functions test
@@ -310,7 +310,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             try
             {
                 var (value, error) = new ExpressionEngine().Parse(exp).TryEvaluate(scope);
-                if(error == null)
+                if (error == null)
                 {
                     isFail = true;
                 }
