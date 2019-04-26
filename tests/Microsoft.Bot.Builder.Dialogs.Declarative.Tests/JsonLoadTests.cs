@@ -163,7 +163,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         public async Task JsonDialogLoad_BeginDialog()
         {
             await BuildTestFlow("BeginDialog.main.dialog")
-            .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
+            .Send(new Activity(ActivityTypes.ConversationUpdate, 
+                membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot")}))
             .SendConversationUpdate()
                 .AssertReply("Hello, I'm Zoidberg. What is your name?")
             .Send("Carlos")
