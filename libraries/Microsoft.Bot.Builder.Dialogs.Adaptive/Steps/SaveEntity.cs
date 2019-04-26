@@ -44,16 +44,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
             if (dc.State.TryGetValue<object>($"turn.entities.{Entity}", out var values))
             {
+                object result = null;
                 if (values.GetType() == typeof(JArray))
                 {
-                    dc.State.SetValue(Property, ((JArray)values)[0]);
+                    result = ((JArray)values)[0];
                 }
                 else
                 {
-                    dc.State.SetValue(Property, values);
+                    result = values;
                 }
+
+                PlanningContext pc = dc as PlanningContext;
+
+                // if this step interrupted a step in the active plan
+                if (pc != null && pc.Plan.Steps.Count > 1 && pc.Plan.Steps[1].DialogStack.Count > 0)
+                {
+                    // reset the next step's dialog stack so that when the plan continues it reevaluates new changed state
+                    pc.Plan.Steps[1].DialogStack.Clear();
+                }
+
+                return await dc.EndDialogAsync(result: result, cancellationToken: cancellationToken);
             }
-            return await dc.EndDialogAsync();
+            return await dc.EndDialogAsync(cancellationToken: cancellationToken);
+        }
+
+        protected override string OnComputeId()
+        {
+            return $"SaveEntity({Entity?.ToString()})";
         }
     }
 }

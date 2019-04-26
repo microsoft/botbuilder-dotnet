@@ -9,9 +9,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -21,153 +23,77 @@ using static Microsoft.Bot.Builder.Dialogs.Debugging.Source;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
-    public class TestBot : IBot
+    public class TestBot : ActivityHandler
     {
-        private DialogSet _dialogs;
-        private IDialog rootDialog;
+        private IStatePropertyAccessor<DialogState> dialogStateAccessor;
+        private AdaptiveDialog rootDialog;
         private readonly ResourceExplorer resourceExplorer;
 
-        public TestBot(ConversationState conversationState, ResourceExplorer resourceExplorer, Source.IRegistry registry = null)
+        public TestBot(ConversationState conversationState, ResourceExplorer resourceExplorer)
         {
-            _dialogs = new DialogSet(conversationState.CreateProperty<DialogState>("DialogState"));
-
+            this.dialogStateAccessor = conversationState.CreateProperty<DialogState>("RootDialogState");
             this.resourceExplorer = resourceExplorer;
-            registry = registry ?? NullRegistry.Instance;
 
             // auto reload dialogs when file changes
             this.resourceExplorer.Changed += (paths) =>
             {
                 if (paths.Any(p => Path.GetExtension(p) == ".dialog"))
                 {
-                    Task.Run(() => this.LoadRootDialogAsync(registry));
+                    Task.Run(() => this.LoadDialogs());
                 }
             };
 
-            LoadRootDialogAsync(registry);
+            LoadDialogs();
         }
 
-        
-        private void LoadRootDialogAsync(IRegistry registry)
+
+        private void LoadDialogs()
         {
             System.Diagnostics.Trace.TraceInformation("Loading resources...");
-            //var rootFile = resourceExplorer.GetResource(@"VARootDialog.main.dialog");
-            // var rootFile = resourceExplorer.GetResource("ToDoLuisBot.main.dialog");
-            // var rootFile = resourceExplorer.GetResource(@"ToDoBot.main.dialog");
-            //var rootFile = resourceExplorer.GetResource("NoMatchRule.main.dialog");
-            //var rootFile = resourceExplorer.GetResource("EndTurn.main.dialog");
-            //var rootFile = resourceExplorer.GetResource("IfCondition.main.dialog");
-            //var rootFile = resourceExplorer.GetResource("TextInput.main.dialog");
-            //var rootFile = resourceExplorer.GetResource("WelcomeRule.main.dialog");
-            //var rootFile = resourceExplorer.GetResource("DoSteps.main.dialog");
-            //var rootFile = resourceExplorer.GetResource("BeginDialog.main.dialog");
-            //var rootFile = resourceExplorer.GetResource("ExternalLanguage.main.dialog");
-            //var rootFile = resourceExplorer.GetResource("CustomStep.dialog");
-            var rootFile = resourceExplorer.GetResource("sandwich.main.dialog");
 
-            rootDialog = DeclarativeTypeLoader.Load<IDialog>(rootFile, resourceExplorer, registry);
-            //rootDialog = LoadCodeDialog();
+            this.rootDialog = new AdaptiveDialog()
+            {
+                AutoEndDialog = false,
+                Steps = new List<IDialog>()
+            };
+            var choiceInput = new ChoiceInput()
+            {
+                Prompt = new ActivityTemplate("What declarative sample do you want to run?"),
+                OutputBinding = "conversation.dialogChoice",
+                AlwaysPrompt = true,
+                Choices = new List<Choice>()
+            };
 
-            _dialogs.Add(rootDialog);
+            var handleChoice = new SwitchCondition()
+            {
+                Condition = "conversation.dialogChoice",
+                Cases = new List<Case>()
+            };
+
+            foreach (var resource in this.resourceExplorer.GetResources(".dialog").Where(r => r.Id.EndsWith(".main.dialog")))
+            {
+                var name = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(resource.Id));
+                choiceInput.Choices.Add(new Choice(name));
+                var dialog = DeclarativeTypeLoader.Load<IDialog>(resource, this.resourceExplorer, DebugSupport.SourceRegistry);
+                handleChoice.Cases.Add(new Case($"'{name}'", new List<IDialog>() { dialog }));
+            }
+            choiceInput.Style = ListStyle.Auto;
+            this.rootDialog.Steps.Add(choiceInput);
+            this.rootDialog.Steps.Add(new SendActivity("# Running {conversation.dialogChoice}.main.dialog"));
+            this.rootDialog.Steps.Add(handleChoice);
+            this.rootDialog.Steps.Add(new RepeatDialog());
 
             System.Diagnostics.Trace.TraceInformation("Done loading resources.");
         }
 
-        private AdaptiveDialog LoadCodeDialog()
+        protected override Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
-            var expressionParser = new ExpressionEngine();
-            var dialog = new AdaptiveDialog()
-            {
-                AutoEndDialog = false,
-                Recognizer = new RegexRecognizer()
-                {
-                    Intents = new Dictionary<string, string>()
-                    {
-                        { "Intent1", "intent1" },
-                        { "Intent2", "intent2" },
-                        { "Intent3", "intent3" },
-                        { "Intent4", "intent4" },
-                    }
-                },
-                Steps = new List<IDialog>()
-                {
-                    new SendActivity("hello1"),
-                    new SendActivity("hello2"),
-                    new IfCondition()
-                    {
-                        Condition = expressionParser.Parse("user.name == null"),
-                        Steps = new List<IDialog>()
-                        {
-                            new SendActivity("name is null"),
-                        },
-                        ElseSteps = new List<IDialog>()
-                        {
-                            new SendActivity("name is not null"),
-                        }
-                    },
-                    new SendActivity("hello4")
-                },
-                Rules = new List<IRule>()
-                {
-                    new IntentRule("Intent1")
-                    {
-                        Steps = new List<IDialog>()
-                        {
-                            new SendActivity("Intent 1 triggered")
-                        }
-                    },
-                    new IntentRule("Intent2")
-                    {
-                        Steps = new List<IDialog>()
-                        {
-                            new SendActivity("Intent 2 triggered")
-                        }
-                    },
-                    new IntentRule("Intent3")
-                    {
-                        Steps = new List<IDialog>()
-                        {
-                            new SendActivity("Intent 3 triggered")
-                        }
-                    },
-                    new UnknownIntentRule()
-                    {
-                        Steps = new List<IDialog>()
-                        {
-                            new SendActivity("Wha?")
-                        }
-                    },
-                }
-            };
-
-            return dialog;
+            return rootDialog.OnTurnAsync((ITurnContext)turnContext, null, cancellationToken);
         }
 
-        public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
+        protected async override Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            if (rootDialog is AdaptiveDialog planningDialog)
-            {
-                await planningDialog.OnTurnAsync(turnContext, null, cancellationToken).ConfigureAwait(false);
-            }
-            else
-            {
-                if (turnContext.Activity.Type == ActivityTypes.Message && turnContext.Activity.Text == "throw")
-                {
-                    throw new Exception("oh dear");
-                }
-
-                if (turnContext.Activity.Type == ActivityTypes.Message)
-                {
-                    // run the DialogSet - let the framework identify the current state of the dialog from 
-                    // the dialog stack and figure out what (if any) is the active dialog
-                    var dialogContext = await _dialogs.CreateContextAsync(turnContext, cancellationToken);
-                    var results = await dialogContext.ContinueDialogAsync(cancellationToken);
-
-                    if (results.Status == DialogTurnStatus.Empty || results.Status == DialogTurnStatus.Complete)
-                    {
-                        await dialogContext.BeginDialogAsync(rootDialog.Id, null, cancellationToken);
-                    }
-                }
-            }
+            await rootDialog.OnTurnAsync(turnContext, null, cancellationToken).ConfigureAwait(false);
         }
     }
 }

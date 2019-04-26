@@ -375,11 +375,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 // Create DialogContext
                 this.runDialogs.Add(this);
-
-                foreach (var rule in Rules)
-                {
-                    rule.Steps.ForEach(s => dialogs.Add(s));
-                }
             }
 
             var dc = new DialogContext(runDialogs,
@@ -666,8 +661,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 }
                 else if (dialogEvent.Name == AdaptiveEvents.ActivityReceived.ToString())
                 {
-                    planning.State.SetValue($"turn.activity", dialogEvent.Value);
-
                     // Emit event
                     handled = await QueueFirstMatchAsync(planning, dialogEvent, cancellationToken).ConfigureAwait(false);
 

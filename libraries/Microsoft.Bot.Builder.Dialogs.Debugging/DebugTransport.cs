@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Logging.Debug;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -28,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         protected DebugTransport(ILogger logger)
         {
-            this.logger = logger ?? NullLogger.Instance;
+            this.logger = logger ?? new DebugLogger("debug");
         }
 
         protected async Task ListenAsync(IPEndPoint point, CancellationToken cancellationToken)

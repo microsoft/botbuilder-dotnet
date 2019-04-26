@@ -112,11 +112,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         {
             await BuildTestFlow("RepeatDialog.main.dialog")
             .SendConversationUpdate()
+                .AssertReply("RepeatDialog.main.dialog starting")
                 .AssertReply("Hello, what is your name?")
             .Send("Carlos")
-                .AssertReply("Hello Carlos, nice to meet you!")
+                .AssertReply("Hello Carlos, nice to meet you! (type cancel to end this)")
             .Send("hi")
-                .AssertReply("Hello Carlos, nice to meet you!")
+                .AssertReply("RepeatDialog.main.dialog starting")
+                .AssertReply("Hello Carlos, nice to meet you! (type cancel to end this)")
             .StartTestAsync();
         }
 
@@ -145,6 +147,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                 .AssertReply("Hello, I'm Zoidberg. What is your name?")
             .Send("Carlos")
                 .AssertReply("Hello Carlos, nice to talk to you!")
+                .AssertReply("Hey, I can tell you a joke, or tell your fortune")
             .Send("Do you know a joke?")
                 .AssertReply("Why did the chicken cross the road?")
             .Send("Why?")
@@ -160,11 +163,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         public async Task JsonDialogLoad_BeginDialog()
         {
             await BuildTestFlow("BeginDialog.main.dialog")
-            .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
+            .Send(new Activity(ActivityTypes.ConversationUpdate, 
+                membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot")}))
             .SendConversationUpdate()
                 .AssertReply("Hello, I'm Zoidberg. What is your name?")
             .Send("Carlos")
                 .AssertReply("Hello Carlos, nice to talk to you!")
+                .AssertReply("Hey, I can tell you a joke, or tell your fortune")
             .Send("Do you know a joke?")
                 .AssertReply("Why did the chicken cross the road?")
             .Send("Why?")

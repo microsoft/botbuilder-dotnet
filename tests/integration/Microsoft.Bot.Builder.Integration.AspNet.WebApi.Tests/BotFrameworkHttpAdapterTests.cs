@@ -26,6 +26,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests
 
             var httpResponse = new HttpResponseMessage();
 
+            // mock
             var botMock = new Mock<IBot>();
             botMock.Setup(b => b.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 

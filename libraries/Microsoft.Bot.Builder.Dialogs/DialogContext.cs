@@ -39,6 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             State = new DialogContextState(this, settings: settings, userState: userState, conversationState: conversationState, turnState: turnState as Dictionary<string, object>);
+            State.SetValue($"turn.activity", Context.Activity);
         }
 
         public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state, Dictionary<string, object> conversationState = null, Dictionary<string, object> userState = null, Dictionary<string, object> settings = null)
@@ -57,6 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             State = new DialogContextState(this, settings: settings, userState: userState, conversationState: conversationState, turnState: turnState as Dictionary<string, object>);
+            State.SetValue($"turn.activity", Context.Activity);
         }
 
         public DialogContext Parent { get; protected set; }
@@ -237,7 +239,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             State.SetValue("dialog.result", stateBindings);
-
 
             // Call dialogs BeginAsync() method.
             await DebuggerStepAsync(dialog, cancellationToken).ConfigureAwait(false);
@@ -619,10 +620,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     return this.GetActiveDialogState(dialogContext.Parent, null, -stackIndex - 1);
                 }
-                else
-                {
-                    throw new Exception("DialogContext.ActiveDialog: Can't find inherited state. No parent DialogContext.");
-                }
+
+                return state;
             }
             else
             {

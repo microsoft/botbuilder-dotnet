@@ -22,18 +22,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     {
         public TestContext TestContext { get; set; }
 
-        private TestFlow CreateFlow(AdaptiveDialog ruleDialog, ConversationState convoState, UserState userState)
+        private TestFlow CreateFlow(AdaptiveDialog ruleDialog)
         {
             var explorer = new ResourceExplorer();
             var lg = new LGLanguageGenerator(explorer);
+            var storage = new MemoryStorage();
+            var convoState = new ConversationState(storage);
+            var userState = new UserState(storage);
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
-                .Use(new RegisterClassMiddleware<IExpressionParser>(new ExpressionEngine()))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            adapter
+                .UseStorage(storage)
+                .UseState(userState, convoState)
                 .Use(new RegisterClassMiddleware<ResourceExplorer>(explorer))
-                .Use(new RegisterClassMiddleware<ILanguageGenerator>(lg))
-                .Use(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)))
-                .Use(new AutoSaveStateMiddleware(convoState, userState))
+                .UseLanguageGenerator(lg)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             var convoStateProperty = convoState.CreateProperty<Dictionary<string, object>>("conversation");
@@ -54,9 +56,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task AdaptiveDialog_TopLevelFallback()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
             var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.AddRule(new UnknownIntentRule(
@@ -65,7 +64,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new SendActivity("Hello Planning!")
                     }));
 
-            await CreateFlow(ruleDialog, convoState, userState)
+            await CreateFlow(ruleDialog)
             .Send("start")
                 .AssertReply("Hello Planning!")
             .StartTestAsync();
@@ -74,9 +73,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task AdaptiveDialog_TopLevelFallbackMultipleActivities()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
             var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.AddRule(new UnknownIntentRule(new List<IDialog>()
@@ -85,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new SendActivity("Howdy awain")
                     }));
 
-            await CreateFlow(ruleDialog, convoState, userState)
+            await CreateFlow(ruleDialog)
             .Send("start")
                 .AssertReply("Hello Planning!")
                 .AssertReply("Howdy awain")
@@ -95,9 +91,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task AdaptiveDialog_EndTurn()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
             var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.AddRule(
@@ -112,7 +105,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new SendActivity("Hello {user.name}, nice to meet you!"),
                     }));
 
-            await CreateFlow(ruleDialog, convoState, userState)
+            await CreateFlow(ruleDialog)
             .Send("hi")
                 .AssertReply("Hello, what is your name?")
             .Send("Carlos")
@@ -123,9 +116,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task AdaptiveDialog_EditArray()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
             var dialog = new AdaptiveDialog("planningTest");
             dialog.Steps = new List<IDialog>()
             {
@@ -185,7 +175,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
             };
 
-            await CreateFlow(dialog, convoState, userState)
+            await CreateFlow(dialog)
             .Send("hi")
                 .AssertReply("Please add an item to todos.")
             .Send("todo1")
@@ -209,9 +199,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task AdaptiveDialog_IfProperty()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
             var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.AddRule(new UnknownIntentRule(
@@ -231,7 +218,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new SendActivity("Hello {user.name}, nice to meet you!")
                     }));
 
-            await CreateFlow(ruleDialog, convoState, userState)
+            await CreateFlow(ruleDialog)
             .Send("hi")
                 .AssertReply("Hello, what is your name?")
             .Send("Carlos")
@@ -242,9 +229,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task AdaptiveDialog_TextInput()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
             var ruleDialog = new AdaptiveDialog("planningTest")
             {
                 Steps = new List<IDialog>()
@@ -265,7 +249,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
 
-            await CreateFlow(ruleDialog, convoState, userState)
+            await CreateFlow(ruleDialog)
                 .Send("hi")
                     .AssertReply("Hello, what is your name?")
                 .Send("Carlos")
@@ -278,9 +262,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task AdaptiveDialog_StringLiteralInExpression()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
             var ruleDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
@@ -317,7 +298,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
 
-            await CreateFlow(ruleDialog, convoState, userState)
+            await CreateFlow(ruleDialog)
             .Send(new Activity() { Type = ActivityTypes.ConversationUpdate, MembersAdded = new List<ChannelAccount>() { new ChannelAccount("bot", "Bot"), new ChannelAccount("user", "User") } })
             .Send("hi")
                 .AssertReply("Hello, what is your name?")
@@ -331,9 +312,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task AdaptiveDialog_DoSteps()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
             var ruleDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
@@ -384,7 +362,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 },
             };
 
-            await CreateFlow(ruleDialog, convoState, userState)
+            await CreateFlow(ruleDialog)
                .SendConversationUpdate()
                    .AssertReply("Hello, what is your name?")
                .Send("Carlos")
@@ -401,9 +379,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task AdaptiveDialog_ReplacePlan()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
             var ruleDialog = new AdaptiveDialog("planningTest");
             ruleDialog.AutoEndDialog = false;
             ruleDialog.Recognizer = new RegexRecognizer()
@@ -455,7 +430,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     }),
             });
 
-            await CreateFlow(ruleDialog, convoState, userState)
+            await CreateFlow(ruleDialog)
             .SendConversationUpdate()
                 .AssertReply("Hello, what is your name?")
             .Send("Carlos")
@@ -472,9 +447,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task AdaptiveDialog_NestedInlineSequences()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
             var ruleDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
@@ -531,7 +503,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
 
-            await CreateFlow(ruleDialog, convoState, userState)
+            await CreateFlow(ruleDialog)
             .Send("hi")
                 .AssertReply("Hello, what is your name?")
             .Send("Carlos")
@@ -552,9 +524,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task AdaptiveDialog_BeginDialog()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
             var innerDialog = new AdaptiveDialog("innerDialog")
             {
                 AutoEndDialog = false,
@@ -681,7 +650,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             outerDialog.AddDialog(new List<IDialog>() { innerDialog });
 
 
-            await CreateFlow(outerDialog, convoState, userState)
+            await CreateFlow(outerDialog)
             .Send("hi")
                 .AssertReply("Hi, type 'begin' to start a dialog, type 'help' to get help.")
             .Send("begin")
@@ -711,9 +680,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task AdaptiveDialog_IntentRule()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
             var planningDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
@@ -740,7 +706,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
 
-            await CreateFlow(planningDialog, convoState, userState)
+            await CreateFlow(planningDialog)
             .SendConversationUpdate()
                 .AssertReply("I'm a joke bot. To get started say 'tell me a joke'")
             .Send("Do you know a joke?")
@@ -750,48 +716,84 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task AdaptiveDialog_NestedRecognizers()
+        {
+            var outerDialog = new AdaptiveDialog("outer")
+            {
+                AutoEndDialog = false,
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>()
+                    {
+                        { "SideIntent", "side" },
+                        { "CancelIntent", "cancel" },
+                    }
+                },
+                Steps = new List<IDialog>()
+                {
+                    new TextInput()
+                    {
+                        Prompt = new ActivityTemplate("name?"),
+                        Property = "user.name"
+                    },
+                    new SendActivity("{user.name}"),
+                    new NumberInput()
+                    {
+                        Prompt = new ActivityTemplate("age?"),
+                        Property = "user.age"
+                    },
+                    new SendActivity("{user.age}"),
+                },
+                Rules = new List<IRule>()
+                {
+                    new IntentRule("SideIntent") { Steps = new List<IDialog>() { new SendActivity("sideintent") } },
+                    new IntentRule("CancelIntent") { Steps = new List<IDialog>() { new EndDialog() } },
+                    new UnknownIntentRule() { Steps = new List<IDialog>() { new SendActivity("outerWhat") } }
+                }
+            };
 
-        //[TestMethod]
-        //public async Task RuleSetTests()
-        //{
-        //    var convoState = new ConversationState(new MemoryStorage());
-        //    var userState = new UserState(new MemoryStorage());
+            var ruleDialog = new AdaptiveDialog("root")
+            {
+                AutoEndDialog = false,
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>()
+                    {
+                        { "StartOuterIntent", "start" },
+                        { "RootIntent", "root" },
+                    }
+                },
+                Rules = new List<IRule>()
+                {
+                    new IntentRule("StartOuterIntent", steps: new List<IDialog>() { outerDialog }),
+                    new IntentRule("RootIntent", steps: new List<IDialog>() { new SendActivity("rootintent") }),
+                    new UnknownIntentRule( new List<IDialog>() { new SendActivity("rootunknown") })
+                }
+            };
 
-        //    var planningDialog = new AdaptiveDialog("planningTest")
-        //    {
-        //        Rules = new List<IRule>()
-        //        {
-        //            new RuleSet()
-        //            {
-        //                Constraint = "user.age > 13",
-        //                Rules = new List<IRule>()
-        //                {
-        //                    new IntentRule()
-        //                    {
-        //                        Intent = "SubTest"
-        //                    },
-        //                    new RuleSet()
-        //                    {
-        //                        Rules = new List<IRule>()
-        //                        {
-        //                            new IntentRule()
-        //                            {
-        //                                Intent = "SubSubTest"
-        //                            },
-        //                        }
-        //                    }
-        //                }
-        //            },
-        //            new IntentRule()
-        //            {
-        //                Intent = "Test"
-        //            }
-        //        }
-        //    };
-
-        //    var rules = planningDialog.GetAllRules(planningDialog.Rules).ToList();
-        //    Assert.AreEqual(3, rules.Count(), "rules collapsing failed");
-        //}
+            await CreateFlow(ruleDialog)
+            .Send("start")
+                .AssertReply("name?")
+            .Send("side")
+                .AssertReply("sideintent")
+                .AssertReply("name?")
+            .Send("root")
+                .AssertReply("rootintent")
+                .AssertReply("name?")
+            .Send("Carlos")
+                .AssertReply("Carlos")
+                .AssertReply("age?")
+            .Send("root")
+                .AssertReply("rootintent")
+                .AssertReply("age?")
+            .Send("side")
+                .AssertReply("sideintent")
+                .AssertReply("age?")
+            .Send("10")
+                .AssertReply("10")
+            .StartTestAsync();
+        }
 
     }
 }

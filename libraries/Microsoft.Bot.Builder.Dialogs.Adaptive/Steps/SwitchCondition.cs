@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
         protected override string OnComputeId()
         {
-            return $"conditional({this.Condition})";
+            return $"Switch({this.Condition})";
         }
 
         public override List<IDialog> ListDependencies()

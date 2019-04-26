@@ -1,8 +1,5 @@
-﻿using Jurassic;
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
+﻿using Microsoft.Bot.Builder.Dialogs;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -10,12 +7,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.Scripting;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Dynamic;
-using System.Linq;
+using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -29,7 +24,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         private Script<object> compiledScript;
 
         /// <summary>
-        /// Javascript bound to memory run function(user, conversation, dialog, turn)
+        /// CSHarp script bound to memory (user, conversation, dialog, turn)
         /// </summary>
         /// <example>
         /// Example: inline
@@ -46,6 +41,8 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         /// }
         /// </example>
         public string Script { get { return script; } set { LoadScript(value); } }
+
+        public string OutputProperty { get { return this.OutputBinding; } set { this.OutputBinding = value; } }
 
         [JsonConstructor]
         public CSharpStep([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)

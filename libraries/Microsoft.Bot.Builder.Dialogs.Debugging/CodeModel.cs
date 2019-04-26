@@ -1,48 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public sealed class CodeModel
+    public interface ICodeModel
     {
-        public CodeModel(DialogContext dialogContext, string name, object item, object scopes)
-        {
-            DialogContext = dialogContext;
-            Name = name;
-            Item = item;
-            Scopes = scopes;
-        }
-        internal DialogContext DialogContext { get; }
-        public string Name { get; }
-        public object Item { get; }
-        public object Scopes { get; }
-        public override string ToString() => $"{Name}:{Item}";
+        string NameFor(object item);
+        IReadOnlyList<ICodePoint> PointsFor(DialogContext dialogContext, object item, string more);
+    }
 
-        public static string NameFor(object item) => item.GetType().Name;
-
-        public static object ScopesFor(DialogContext dialogContext)
+    public sealed class CodeModel : ICodeModel
+    {
+        string ICodeModel.NameFor(object item)
         {
-            var state = dialogContext.State;
-            return new
+            var type = item.GetType().Name;
+            if (item is IDialog dialog)
             {
-                user = state.User,
-                conversation = state.Conversation,
-                dialog = dialogContext.ActiveDialog != null ? state.Dialog : null,
-                turn = state.Turn,
-                tags = dialogContext.ActiveTags,
-            };
+                var name = dialog.Id;
+                return name.StartsWith(type) ? name : $"{type}:{name}";
+            }
+
+            return type;
         }
 
-        public static IReadOnlyList<CodeModel> FramesFor(DialogContext dialogContext, object item, string more)
+        IReadOnlyList<ICodePoint> ICodeModel.PointsFor(DialogContext dialogContext, object item, string more)
         {
-            var frames = new List<CodeModel>();
+            var frames = new List<CodePoint>();
 
             if (item != null)
             {
-                var name = $"{CodeModel.NameFor(item)}:{more}";
-                var scopes = ScopesFor(dialogContext);
-                var frame = new CodeModel(dialogContext, name, item, scopes);
+                var frame = new CodePoint(this, dialogContext, item, more);
                 frames.Add(frame);
             }
 
@@ -50,9 +39,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             {
                 foreach (var instance in dialogContext.Stack)
                 {
-                    var scopes = ScopesFor(dialogContext);
                     var dialog = dialogContext.FindDialog(instance.Id);
-                    var frame = new CodeModel(dialogContext, instance.Id, dialog, scopes);
+                    var frame = new CodePoint(this, dialogContext, dialog, null);
                     frames.Add(frame);
                 }
 
@@ -61,5 +49,51 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
             return frames;
         }
+    }
+
+    public interface ICodePoint
+    {
+        object Item { get; }
+        string More { get; }
+        string Name { get; }
+        object Data { get; }
+        object Evaluate(string expression);
+    }
+
+    public sealed class CodePoint : ICodePoint
+    {
+        public CodePoint(ICodeModel codeModel, DialogContext dialogContext, object item, string more)
+        {
+            CodeModel = codeModel ?? throw new ArgumentNullException(nameof(codeModel));
+            DialogContext = dialogContext ?? throw new ArgumentNullException(nameof(dialogContext));
+            Item = item ?? throw new ArgumentNullException(nameof(item));
+            More = more;
+        }
+
+        private ICodeModel CodeModel { get; }
+        private DialogContext DialogContext { get; }
+        public object Item { get; }
+        public string More { get; }
+
+        public string Name => CodeModel.NameFor(Item) + (More != null ? ":" + More : string.Empty);
+        public object Data
+        {
+            get
+            {
+                var state = DialogContext.State;
+                return new
+                {
+                    user = state.User,
+                    conversation = state.Conversation,
+                    dialog = DialogContext.ActiveDialog != null ? state.Dialog : null,
+                    turn = state.Turn,
+                    tags = DialogContext.ActiveTags,
+                };
+            }
+        }
+
+        public override string ToString() => Name;
+
+        object ICodePoint.Evaluate(string expression) => DialogContext.State.GetValue<JToken>(expression);
     }
 }

@@ -21,21 +21,10 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             {
                 var env = hostingContext.HostingEnvironment;
                 var luisAuthoringRegion = Environment.GetEnvironmentVariable("LUIS_AUTHORING_REGION") ?? "westus";
+
                 config
-                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                    .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
                     .AddJsonFile($"luis.settings.{env.EnvironmentName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: true)
                     .AddJsonFile($"luis.settings.{Environment.UserName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: true);
-
-                if (env.IsDevelopment())
-                {
-                    config.AddUserSecrets<Startup>();
-                }
-
-                config
-                    .AddEnvironmentVariables()
-                    .AddCommandLine(args);
-
             }).UseStartup<Startup>()
             .Build();
     }

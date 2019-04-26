@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using static Microsoft.Bot.Builder.Dialogs.Debugging.Source;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
@@ -19,7 +18,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     {
         private readonly CancellationTokenSource cancellationToken = new CancellationTokenSource();
 
-        private readonly IDataModel model;
+        private readonly ICodeModel codeModel;
+        private readonly IDataModel dataModel;
         private readonly Source.IRegistry registry;
         private readonly IBreakpoints breakpoints;
         private readonly Action terminate;
@@ -30,15 +30,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         private sealed class ThreadModel
         {
-            public ThreadModel(ITurnContext turnContext)
+            public ThreadModel(ITurnContext turnContext, ICodeModel codeModel)
             {
                 TurnContext = turnContext;
+                CodeModel = codeModel;
             }
             public ITurnContext TurnContext { get; }
+            public ICodeModel CodeModel { get; }
             public string Name => TurnContext.Activity.Text;
-            public IReadOnlyList<CodeModel> Frames => CodeModel.FramesFor(LastContext, LastItem, LastMore);
+            public IReadOnlyList<ICodePoint> Frames => CodeModel.PointsFor(LastContext, LastItem, LastMore);
             public RunModel Run { get; } = new RunModel();
-            public Identifier<CodeModel> FrameCodes { get; } = new Identifier<CodeModel>();
+            public Identifier<ICodePoint> FrameCodes { get; } = new Identifier<ICodePoint>();
             public Identifier<object> ValueCodes { get; } = new Identifier<object>();
             public DialogContext LastContext { get; set; }
             public object LastItem { get; set; }
@@ -70,7 +72,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         private ulong EncodeValue(ThreadModel thread, object value)
         {
-            if (model.IsScalar(value))
+            if (dataModel.IsScalar(value))
             {
                 return 0;
             }
@@ -87,14 +89,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             value = thread.ValueCodes[valueCode];
         }
 
-        private ulong EncodeFrame(ThreadModel thread, CodeModel frame)
+        private ulong EncodeFrame(ThreadModel thread, ICodePoint frame)
         {
             var threadCode = threads[thread];
             var valueCode = thread.FrameCodes.Add(frame);
             return Identifier.Encode(threadCode, valueCode);
         }
 
-        private void DecodeFrame(ulong frameCode, out ThreadModel thread, out CodeModel frame)
+        private void DecodeFrame(ulong frameCode, out ThreadModel thread, out ICodePoint frame)
         {
             Identifier.Decode(frameCode, out var threadCode, out var valueCode);
             thread = this.threads[threadCode];
@@ -103,10 +105,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         private readonly Task task;
 
-        public DebugAdapter(int port, Source.IRegistry registry, IBreakpoints breakpoints, Action terminate, IDataModel model = null, ILogger logger = null, ICoercion coercion = null)
+        public DebugAdapter(int port, Source.IRegistry registry, IBreakpoints breakpoints, Action terminate, ICodeModel codeModel = null, IDataModel dataModel = null, ILogger logger = null, ICoercion coercion = null)
             : base(logger)
         {
-            this.model = model ?? new DataModel(coercion ?? new Coercion());
+            this.codeModel = codeModel ?? new CodeModel();
+            this.dataModel = dataModel ?? new DataModel(coercion ?? new Coercion());
             this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
             this.breakpoints = breakpoints ?? throw new ArgumentNullException(nameof(breakpoints));
             this.terminate = terminate ?? new Action(() => Environment.Exit(0));
@@ -125,7 +128,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         async Task IMiddleware.OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
         {
-            var thread = new ThreadModel(turnContext);
+            var thread = new ThreadModel(turnContext, codeModel);
             var threadId = threads.Add(thread);
             threadByContext.TryAdd(turnContext, thread);
             try
@@ -151,11 +154,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
             try
             {
-                if (item is Dialog)
-                {
-                    System.Diagnostics.Trace.TraceInformation($"{CodeModel.NameFor(item)} {((Dialog)item).Id} {more}");
-                }
-                await OutputAsync($"Step: {CodeModel.NameFor(item)} {more}", item, cancellationToken).ConfigureAwait(false);
+                await OutputAsync($"Step: {codeModel.NameFor(item)} {more}", item, cancellationToken).ConfigureAwait(false);
 
                 await UpdateBreakpointsAsync(cancellationToken).ConfigureAwait(false);
 
@@ -220,7 +219,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 if (breakpoint.verified)
                 {
                     var item = this.breakpoints.ItemFor(breakpoint);
-                    await OutputAsync($"Set breakpoint at {CodeModel.NameFor(item)}", item, cancellationToken).ConfigureAwait(false);
+                    await OutputAsync($"Set breakpoint at {codeModel.NameFor(item)}", item, cancellationToken).ConfigureAwait(false);
                 }
 
                 var body = new { reason = "changed", breakpoint };
@@ -237,7 +236,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
 
             var phase = run.Phase;
-            var suffix = item != null ? $" at {CodeModel.NameFor(item)}" : string.Empty;
+            var suffix = item != null ? $" at {codeModel.NameFor(item)}" : string.Empty;
             var description = $"'{thread.Name}' is {phase}{suffix}";
 
             await OutputAsync(description, item, cancellationToken).ConfigureAwait(false);
@@ -304,11 +303,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
             if (message is Protocol.Request<Protocol.Initialize> initialize)
             {
-                var body = new
+                var body = new Protocol.Capabilities()
                 {
                     supportsConfigurationDoneRequest = true,
                     supportsSetVariable = true,
                     supportsEvaluateForHovers = true,
+                    supportsFunctionBreakpoints = true,
+                    supportTerminateDebuggee = this.terminate != null,
+                    supportsTerminateRequest = this.terminate != null,
                 };
                 var response = Protocol.Response.From(NextSeq, initialize, body);
                 await SendAsync(response, cancellationToken).ConfigureAwait(false);
@@ -334,11 +336,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     if (breakpoint.verified)
                     {
                         var item = this.breakpoints.ItemFor(breakpoint);
-                        await OutputAsync($"Set breakpoint at {CodeModel.NameFor(item)}", item, cancellationToken).ConfigureAwait(false);
+                        await OutputAsync($"Set breakpoint at {codeModel.NameFor(item)}", item, cancellationToken).ConfigureAwait(false);
                     }
                 }
 
                 return Protocol.Response.From(NextSeq, setBreakpoints, new { breakpoints });
+            }
+            else if (message is Protocol.Request<Protocol.SetFunctionBreakpoints> setFunctionBreakpoints)
+            {
+                var arguments = setFunctionBreakpoints.arguments;
+                await OutputAsync($"Set function breakpoints.", null, cancellationToken).ConfigureAwait(false);
+                var breakpoints = this.breakpoints.SetBreakpoints(arguments.breakpoints);
+                foreach (var breakpoint in breakpoints)
+                {
+                    if (breakpoint.verified)
+                    {
+                        var item = this.breakpoints.ItemFor(breakpoint);
+                        await OutputAsync($"Set breakpoint at {codeModel.NameFor(item)}", item, cancellationToken).ConfigureAwait(false);
+                    }
+                }
+
+                return Protocol.Response.From(NextSeq, setFunctionBreakpoints, new { breakpoints });
             }
             else if (message is Protocol.Request<Protocol.Threads> threads)
             {
@@ -388,7 +406,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 {
                     scopes = new[]
                     {
-                        new { expensive, name = frame.Name, variablesReference = EncodeValue(thread, frame.Scopes) }
+                        new { expensive, name = frame.Name, variablesReference = EncodeValue(thread, frame.Data) }
                     }
                 };
 
@@ -399,14 +417,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 var arguments = vars.arguments;
                 DecodeValue(arguments.variablesReference, out var thread, out var context);
 
-                var names = this.model.Names(context);
+                var names = this.dataModel.Names(context);
 
                 var body = new
                 {
                     variables = (from name in names
-                                 let value = model[context, name]
+                                 let value = dataModel[context, name]
                                  let variablesReference = EncodeValue(thread, value)
-                                 select new { name = model.ToString(name), value = model.ToString(value), variablesReference }
+                                 select new { name = dataModel.ToString(name), value = dataModel.ToString(value), variablesReference }
                                 ).ToArray()
                 };
 
@@ -417,11 +435,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 var arguments = setVariable.arguments;
                 DecodeValue(arguments.variablesReference, out var thread, out var context);
 
-                var value = this.model[context, arguments.name] = JToken.Parse(arguments.value);
+                var value = this.dataModel[context, arguments.name] = JToken.Parse(arguments.value);
 
                 var body = new
                 {
-                    value = model.ToString(value),
+                    value = dataModel.ToString(value),
                     variablesReference = EncodeValue(thread, value)
                 };
 
@@ -432,12 +450,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 var arguments = evaluate.arguments;
                 DecodeFrame(arguments.frameId, out var thread, out var frame);
                 var expression = arguments.expression.Trim('"');
-                var result = frame.DialogContext.State.GetValue<JToken>(expression);
+                var result = frame.Evaluate(expression);
                 if (result != null)
                 {
                     var body = new
                     {
-                        result = model.ToString(result),
+                        result = dataModel.ToString(result),
                         variablesReference = EncodeValue(thread, result),
                     };
 
@@ -478,7 +496,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                 return Protocol.Response.From(NextSeq, next, new { });
             }
-            else if (message is Protocol.Request<Protocol.Disconnect> terminate)
+            else if (message is Protocol.Request<Protocol.Terminate> terminate)
             {
                 if (this.terminate != null)
                 {
@@ -489,6 +507,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
             else if (message is Protocol.Request<Protocol.Disconnect> disconnect)
             {
+                var arguments = disconnect.arguments;
+                if (arguments.terminateDebuggee && this.terminate != null)
+                {
+                    this.terminate();
+                }
+
                 // if attach, possibly run all threads
                 return Protocol.Response.From(NextSeq, disconnect, new { });
             }

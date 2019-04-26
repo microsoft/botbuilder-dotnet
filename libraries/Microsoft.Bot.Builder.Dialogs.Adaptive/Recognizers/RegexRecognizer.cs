@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// </summary>
         [JsonProperty("intents")]
         public Dictionary<string, string> Intents = new Dictionary<string, string>();
-        
+
         public RegexRecognizer()
         {
 
@@ -52,10 +52,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             {
                 var intent = kv.Key;
                 Regex regex;
-                if (!patterns.TryGetValue(intent, out regex))
+                lock (patterns)
                 {
-                    regex = new Regex(kv.Value, RegexOptions.Compiled);
-                    patterns.Add(intent, regex);
+                    if (!patterns.TryGetValue(intent, out regex))
+                    {
+                        regex = new Regex(kv.Value, RegexOptions.Compiled);
+                        patterns.Add(intent, regex);
+                    }
                 }
 
                 var match = regex.Match(utterance);
@@ -63,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 if (match.Success)
                 {
                     // TODO length weighted match and multiple intents
-                    result.Intents.Add(intent.Replace(" ","_"), new IntentScore() { Score = 1.0 });
+                    result.Intents.Add(intent.Replace(" ", "_"), new IntentScore() { Score = 1.0 });
 
                     // Check for named capture groups
                     var entities = new Dictionary<string, string>();
@@ -82,7 +85,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             // if no match return None intent
             if (!result.Intents.Keys.Any())
             {
-                result.Intents.Add("None", new IntentScore() { Score = 0.0 });
+                result.Intents.Add("None", new IntentScore() { Score = 1.0 });
                 result.Entities = new JObject();
             }
 

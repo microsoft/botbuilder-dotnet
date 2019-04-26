@@ -98,8 +98,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new TraceActivity()
                         {
                             Name = "test",
-                            ValueType = "user.name",
-                            ValueProperty = "user.name"
+                            ValueType = "user",
+                            Value = "user"
+                        },
+                        new TraceActivity()
+                        {
+                            Name = "test",
+                            ValueType = "memory"
                         }
                     })});
 
@@ -109,8 +114,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     var traceActivity = (ITraceActivity)activity;
                     Assert.AreEqual(ActivityTypes.Trace, traceActivity.Type, "type doesn't match");
-                    Assert.AreEqual("user.name", traceActivity.ValueType, "ValueType doesn't match");
-                    Assert.AreEqual("frank", traceActivity.Value, "Value doesn't match");
+                    Assert.AreEqual("user", traceActivity.ValueType, "ValueType doesn't match");
+                    Assert.AreEqual("frank", (string)((dynamic)traceActivity.Value).name, "Value doesn't match");
+                })
+                .AssertReply((activity) =>
+                {
+                    var traceActivity = (ITraceActivity)activity;
+                    Assert.AreEqual(ActivityTypes.Trace, traceActivity.Type, "type doesn't match");
+                    Assert.AreEqual("memory", traceActivity.ValueType, "ValueType doesn't match");
+                    Assert.AreEqual("frank", (string)((dynamic)traceActivity.Value).user.name, "Value doesn't match");
                 })
                 .StartTestAsync();
         }

@@ -122,6 +122,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<KeyValuePair<ulong, T>>)this).GetEnumerator();
 
+        public IEnumerable<T> Items
+        {
+            get
+            {
+                lock (gate)
+                {
+                    return this.itemByCode.Values.ToArray();
+                }
+            }
+        }
+
         public T this[ulong code]
         {
             get

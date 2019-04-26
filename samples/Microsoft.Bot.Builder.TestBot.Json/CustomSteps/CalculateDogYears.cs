@@ -12,6 +12,9 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
+    /// <summary>
+    /// Custom command which takes the input property and performs a calculation, returning it back to the caller
+    /// </summary>
     public class CalculateDogYears : DialogCommand
     {
 
@@ -25,7 +28,9 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
 
         public string InputProperty { get; set; }
-        
+
+        public string OutputProperty { get { return this.OutputBinding; } set { this.OutputBinding = value; } }
+
         protected override Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var value = dc.State.GetValue<int>(this.InputProperty);

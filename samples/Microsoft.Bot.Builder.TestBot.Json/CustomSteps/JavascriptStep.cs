@@ -21,9 +21,16 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         /// Javascript bound to memory run function(user, conversation, dialog, turn)
         /// </summary>
         /// <example>
-        /// if (user.age > 18)
-        ///     return dialog.lastResult;
-        /// return null;
+        /// example inline script:
+        ///        if (user.age > 18)
+        ///              return dialog.lastResult;
+        ///          return null;
+        /// Example file script.js:
+        /// function doStep(user, conversation, dialog, turn) {
+        ///    if (user.age)
+        ///        return user.age* 7;
+        ///    return 0;
+        /// }
         /// </example>
         public string Script { get { return script; } set { LoadScript(value); } }
 

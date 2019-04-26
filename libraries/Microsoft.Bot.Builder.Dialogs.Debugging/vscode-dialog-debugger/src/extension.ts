@@ -16,6 +16,7 @@ export const activate = (context: vscode.ExtensionContext) => {
 export const deactivate = () => {
 }
 
+// make sure these are kept in sync with contributes.debuggers from the extension's package.json.
 export interface AttachConfiguration extends vscode.DebugConfiguration {
     request: 'attach';
 }
@@ -50,7 +51,7 @@ class DialogDebugAdapterDescriptorFactory implements vscode.DebugAdapterDescript
         }
     }
 
-    private launch(session: vscode.DebugSession, executable: vscode.DebugAdapterExecutable | undefined): Promise<vscode.DebugAdapterDescriptor> {
+    private launch(session: vscode.DebugSession, executable: vscode.DebugAdapterExecutable | undefined, configuration: LaunchConfiguration): Promise<vscode.DebugAdapterDescriptor> {
         return new Promise<vscode.DebugAdapterDescriptor>((resolve, reject) => {
             let options: cp.SpawnOptionsWithoutStdio = {};
 
@@ -60,7 +61,6 @@ class DialogDebugAdapterDescriptorFactory implements vscode.DebugAdapterDescript
                 options.cwd = workspaceFolder.uri.fsPath;
             }
 
-            const configuration = session.configuration as LaunchConfiguration;
             const { command, args } = configuration;
             this.handle = cp.spawn(command, args, options);
 
@@ -95,7 +95,7 @@ class DialogDebugAdapterDescriptorFactory implements vscode.DebugAdapterDescript
         });
     }
 
-    private attach(session: vscode.DebugSession, executable: vscode.DebugAdapterExecutable | undefined): Promise<vscode.DebugAdapterDescriptor> {
+    private attach(session: vscode.DebugSession, executable: vscode.DebugAdapterExecutable | undefined, configuration: AttachConfiguration): Promise<vscode.DebugAdapterDescriptor> {
         // note: we don't see attach here is debugServer is set
         return new Promise<vscode.DebugAdapterDescriptor>((resolve, reject) => {
             resolve(new vscode.DebugAdapterServer(4712));
@@ -107,11 +107,11 @@ class DialogDebugAdapterDescriptorFactory implements vscode.DebugAdapterDescript
         this.output.clear();
         this.output.show();
 
-        const { configuration: { request } } = session;
-        switch (request) {
-            case 'attach': return await this.attach(session, executable);
-            case 'launch': return await this.launch(session, executable);
-            default: throw new Error(request);
+        const configuration = session.configuration as Configuration;
+        switch (configuration.request) {
+            case 'attach': return await this.attach(session, executable, configuration);
+            case 'launch': return await this.launch(session, executable, configuration);
+            default: throw new Error();
         }
     }
 

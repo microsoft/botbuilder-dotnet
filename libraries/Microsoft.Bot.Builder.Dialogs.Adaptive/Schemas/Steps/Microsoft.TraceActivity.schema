@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "title": "Trace Activity Step",
     "description": "This is a step which sends an TraceActivity to the transcript",
@@ -15,9 +15,9 @@
             "title": "Value Type",
             "description": "Value type of the trace activity"
         },
-        "valueProperty": {
+        "value": {
             "$role": "memoryPath",
-            "title": "Value Property",
+            "title": "Value",
             "description": "Property path to memory object to send as the value of the trace activity"
         }
     }
