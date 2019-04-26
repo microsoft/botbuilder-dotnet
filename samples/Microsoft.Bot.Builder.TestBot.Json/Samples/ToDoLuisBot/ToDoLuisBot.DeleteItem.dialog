@@ -4,7 +4,7 @@
   "steps": [
     {
       "$type": "Microsoft.SaveEntity",
-      "entity": "TaskContentML",
+      "entity": "promptContentML",
       "property": "dialog.item"
     },
     {
@@ -52,6 +52,11 @@
           "prompt": "Which list do you want to remove?",
           "style": "SuggestedAction",
           "alwaysPrompt": true
+        },
+        {
+          "$type": "Microsoft.SetProperty",
+          "property": "dialog.listName",
+          "value": "dialog.listName.Value"
         }
       ]
     },

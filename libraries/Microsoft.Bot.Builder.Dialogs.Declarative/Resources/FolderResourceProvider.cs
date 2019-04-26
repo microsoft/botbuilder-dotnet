@@ -33,7 +33,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 this.Watcher.Created += Watcher_Changed;
                 this.Watcher.Changed += Watcher_Changed;
                 this.Watcher.Deleted += Watcher_Changed;
+                this.Watcher.Renamed += Watcher_Renamed;
 
+            }
+        }
+
+        private void Watcher_Renamed(object sender, RenamedEventArgs e)
+        {
+            if (this.Changed != null)
+            {
+                this.Changed(new string[] { e.Name, e.OldName });
             }
         }
 

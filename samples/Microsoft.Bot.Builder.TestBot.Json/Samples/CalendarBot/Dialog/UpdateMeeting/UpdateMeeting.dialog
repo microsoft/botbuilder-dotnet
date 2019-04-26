@@ -13,7 +13,7 @@
         },
         {
           "$type": "Microsoft.TextInput",
-          "Prompt": "OK, please choose a meeting to update, you can choose meeting by 1, 2, 3...",
+          "prompt": "OK, please choose a meeting to update, you can choose meeting by 1, 2, 3...",
           "property": "dialog.choice"
         },
         {
@@ -57,7 +57,7 @@
       "steps": [
         {
           "$type": "Microsoft.DateTimeInput",
-          "Prompt": "OK, please enter the new start date time of meeting.",
+          "prompt": "OK, please enter the new start date time of meeting.",
           "property": "user.startDateTime"
         }
       ]
@@ -69,7 +69,7 @@
       "steps": [
         {
           "$type": "Microsoft.DateTimeInput",
-          "Prompt": "OK, please enter the new end date time of meeting.",
+          "prompt": "OK, please enter the new end date time of meeting.",
           "property": "user.endDateTime"
         }
       ]

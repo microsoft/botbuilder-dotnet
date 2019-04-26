@@ -1,13 +1,15 @@
 {
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
+    "autoEndDialog": false,
     "recognizer": {
         "$type": "Microsoft.RegexRecognizer",
       "intents": {
         "ToDoIntent": "(?i)todo",
         "EmailIntent": "(?i)email",
         "CalendarIntent": "(?i)meeting",
-        "HelpIntent": "(?i)help"
+        "HelpIntent": "(?i)help",
+        "CancelIntent":"(?i)cancel"
       }
     },
   "rules": [
@@ -39,6 +41,15 @@
         {
           "$type": "Microsoft.SendActivity",
           "activity": "[help]"
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "CancelIntent",
+      "steps": [
+        {
+          "$type": "Microsoft.EndDialog"
         }
       ]
     },

@@ -5,6 +5,7 @@
         {
             "$type": "Microsoft.NumberInput",
             "property": "user.age",
+            "alwaysPrompt": true,
             "prompt": "What is your age?",
             "invalidPrompt": "Please input a number."
         },
@@ -15,6 +16,7 @@
         {
             "$type": "Microsoft.NumberInput",
             "property": "user.result",
+            "alwaysPrompt": true,
             "precision": 2,
             "prompt": "2 * 2.2 equals?"
         },

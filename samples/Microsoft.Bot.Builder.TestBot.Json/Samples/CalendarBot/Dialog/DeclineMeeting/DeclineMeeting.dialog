@@ -13,7 +13,7 @@
         },
         {
           "$type": "Microsoft.TextInput",
-          "Prompt": "OK, please choose a meeting to decline, you can choose meeting by 1, 2, 3...",
+          "prompt": "OK, please choose a meeting to decline, you can choose meeting by 1, 2, 3...",
           "property": "dialog.choice"
         },
         {

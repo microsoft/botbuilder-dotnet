@@ -58,6 +58,11 @@
           "prompt": "Which list do you want to show?",
           "style": "SuggestedAction",
           "alwaysPrompt": true
+        },
+        {
+          "$type": "Microsoft.SetProperty",
+          "property": "dialog.listName",
+          "value": "dialog.listName.Value"
         }
       ]
     },

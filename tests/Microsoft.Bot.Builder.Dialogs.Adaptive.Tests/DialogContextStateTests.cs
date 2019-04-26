@@ -194,6 +194,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var testDialog = new AdaptiveDialog("testDialog")
             {
+                AutoEndDialog = false,
                 Recognizer = new RegexRecognizer()
                 {
                     Intents = new Dictionary<string, string>()
@@ -201,6 +202,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         { "IntentNumber1", "intent1" },
                         { "NameIntent", ".*name is (?<name>.*)" }
                     }
+                },
+                Steps = new List<IDialog>()
+                {
+                    new SendActivity("{turn.activity.text}"),
                 },
                 Rules = new List<IRule>()
                 {
@@ -222,6 +227,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             };
 
             await CreateFlow(testDialog, convoState, userState)
+                .Send("hi")
+                    .AssertReply("hi")
                 .Send("intent1")
                     .AssertReply("intent1")
                     .AssertReply("1")

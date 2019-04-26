@@ -1,6 +1,7 @@
 {
-  "$schema": "../../app.schema",
+  "$schema": "../../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
+  "autoEndDialog": false,
   "recognizer": {
     "$type": "Microsoft.RegexRecognizer",
     "intents": {
@@ -10,7 +11,8 @@
       "ShowNextPageIntent": "(?i)next page meeting",
       "UpdateMeetingIntent": "(?i)update meeting",
       "AcceptMeetingIntent": "(?i)accept meeting",
-      "DeclineMeetingIntent": "(?i)decline meeting"
+      "DeclineMeetingIntent": "(?i)decline meeting",
+      "CancelIntent":"(?i)cancel"
     }
   },
   "rules": [
@@ -80,6 +82,15 @@
         {
           "$type": "Microsoft.SendActivity",
           "activity": "This is help"
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.IntentRule",
+      "intent": "CancelIntent",
+      "steps": [
+        {
+          "$type": "Microsoft.EndDialog"
         }
       ]
     },

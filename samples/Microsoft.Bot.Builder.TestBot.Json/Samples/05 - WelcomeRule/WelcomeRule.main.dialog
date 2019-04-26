@@ -17,16 +17,5 @@
             "$type": "Microsoft.SendActivity",
             "activity": "Hello {user.name}, nice to talk to you!"
         }
-    ],
-    "rules": [
-        {
-            "$type": "Microsoft.BeginDialogRule",
-            "steps": [
-                {
-                    "$type": "Microsoft.SendActivity",
-                    "activity": "Welcome!"
-                }
-            ]
-        }
     ]
 }
