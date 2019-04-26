@@ -55,7 +55,7 @@ To learn more about the [Common Expression Langauge](https://github.com/Microsof
 ## Conversation Designer 
 The Bot Framework Conversation Designer (code name Composer) provides a tool for 1st and 3rd party professional conversation creators with an extensible framework to build compelling Conversational AI solutions for Microsoft customers. The Composer conversatio modeling is based on the Bot Framework SDK Declarative dialogs. See [supported types Cheat sheet](../doc/AdaptiveDialog/cheatSheet.md). While it is important to understand the capabilaties of the SDK, the Composer role is to abstract the SDK complexity and the need to directly manipulate JSON objects. 
 
-- To get started, clone the [BotFramework-Composer repo] (https://github.com/Microsoft/BotFramework-Composer/)
+- To get started, clone the [BotFramework-Composer repo](https://github.com/Microsoft/BotFramework-Composer/)
 - Follow the [installation instructions](https://github.com/Microsoft/BotFramework-Composer/tree/master/Composer#instructions)
 - file bugs [here](https://github.com/Microsoft/BotFramework-Composer/issues) - use [hackathon] prefix
 
