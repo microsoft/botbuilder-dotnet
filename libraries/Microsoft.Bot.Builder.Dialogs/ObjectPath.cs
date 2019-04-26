@@ -73,6 +73,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                     return false;
                 }
 
+                if (val == null)
+                {
+                    return false;
+                }
+
                 if (val is JToken)
                 {
                     result = (JToken)val;
@@ -82,7 +87,18 @@ namespace Microsoft.Bot.Builder.Dialogs
                     value = (T)val;
                     return true;
                 }
-
+                else
+                {
+                    try
+                    {
+                        value = (T)Convert.ChangeType(val, typeof(T));
+                        return true;
+                    }
+                    catch (Exception)
+                    {
+                        // we don't know what type it is?
+                    }
+                }
             }
 
             if (result != null)
