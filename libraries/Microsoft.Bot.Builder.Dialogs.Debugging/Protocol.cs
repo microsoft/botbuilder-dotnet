@@ -241,6 +241,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                         case "attach": return token.ToObject<Request<Attach>>();
                         case "initialize": return token.ToObject<Request<Initialize>>();
                         case "setBreakpoints": return token.ToObject<Request<SetBreakpoints>>();
+                        case "setFunctionBreakpoints": return token.ToObject<Request<SetFunctionBreakpoints>>();
+                        case "configurationDone": return token.ToObject<Request<ConfigurationDone>>();
                         case "threads": return token.ToObject<Request<Threads>>();
                         case "stackTrace": return token.ToObject<Request<StackTrace>>();
                         case "scopes": return token.ToObject<Request<Scopes>>();
@@ -252,10 +254,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                         case "next": return token.ToObject<Request<Next>>();
                         case "stepIn": return token.ToObject<Request<Next>>();
                         case "stepOut": return token.ToObject<Request<Next>>();
-                        case "configurationDone": return token.ToObject<Request<ConfigurationDone>>();
                         case "terminate": return token.ToObject<Request<Terminate>>();
                         case "disconnect": return token.ToObject<Request<Disconnect>>();
-                        case "setFunctionBreakpoints":
                         case "setExceptionBreakpoints":
                         default: return token.ToObject<Request>();
                     }

@@ -308,6 +308,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     supportsConfigurationDoneRequest = true,
                     supportsSetVariable = true,
                     supportsEvaluateForHovers = true,
+                    supportsFunctionBreakpoints = true,
                     supportTerminateDebuggee = this.terminate != null,
                     supportsTerminateRequest = this.terminate != null,
                 };
@@ -340,6 +341,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 }
 
                 return Protocol.Response.From(NextSeq, setBreakpoints, new { breakpoints });
+            }
+            else if (message is Protocol.Request<Protocol.SetFunctionBreakpoints> setFunctionBreakpoints)
+            {
+                var arguments = setFunctionBreakpoints.arguments;
+                await OutputAsync($"Set function breakpoints.", null, cancellationToken).ConfigureAwait(false);
+                var breakpoints = this.breakpoints.SetBreakpoints(arguments.breakpoints);
+                foreach (var breakpoint in breakpoints)
+                {
+                    if (breakpoint.verified)
+                    {
+                        var item = this.breakpoints.ItemFor(breakpoint);
+                        await OutputAsync($"Set breakpoint at {codeModel.NameFor(item)}", item, cancellationToken).ConfigureAwait(false);
+                    }
+                }
+
+                return Protocol.Response.From(NextSeq, setFunctionBreakpoints, new { breakpoints });
             }
             else if (message is Protocol.Request<Protocol.Threads> threads)
             {

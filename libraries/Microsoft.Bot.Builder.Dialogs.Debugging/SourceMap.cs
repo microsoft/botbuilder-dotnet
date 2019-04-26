@@ -11,14 +11,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         bool IsBreakPoint(object item);
         object ItemFor(Protocol.Breakpoint breakpoint);
         IReadOnlyList<Protocol.Breakpoint> SetBreakpoints(Protocol.Source source, IReadOnlyList<Protocol.SourceBreakpoint> sourceBreakpoints);
+        IReadOnlyList<Protocol.Breakpoint> SetBreakpoints(IReadOnlyList<Protocol.FunctionBreakpoint> functionBreakpoints);
         IReadOnlyList<Protocol.Breakpoint> ApplyUpdates();
     }
 
     public sealed class SourceMap : Source.IRegistry, IBreakpoints
     {
+        private readonly ICodeModel codeModel;
         private readonly object gate = new object();
         private readonly Dictionary<object, Source.Range> sourceByItem = new Dictionary<object, Source.Range>(ReferenceEquality<object>.Instance);
         private bool dirty = true;
+
+        public SourceMap(ICodeModel codeModel)
+        {
+            this.codeModel = codeModel ?? throw new ArgumentNullException(nameof(codeModel));
+        }
 
         void Source.IRegistry.Add(object item, Source.Range range)
         {
@@ -52,15 +59,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         public sealed class Row
         {
-            public Row(Protocol.Source source, Protocol.SourceBreakpoint sourceBreakpoint, Protocol.Breakpoint breakpoint)
+            public Row(Protocol.Source source, Protocol.SourceBreakpoint sourceBreakpoint)
             {
                 Source = source;
                 SourceBreakpoint = sourceBreakpoint;
-                Breakpoint = breakpoint;
+            }
+            public Row(Protocol.FunctionBreakpoint functionBreakpoint)
+            {
+                FunctionBreakpoint = functionBreakpoint;
             }
             public Protocol.Source Source { get; }
             public Protocol.SourceBreakpoint SourceBreakpoint { get; }
-            public Protocol.Breakpoint Breakpoint { get; }
+            public Protocol.FunctionBreakpoint FunctionBreakpoint { get; }
+            public Protocol.Breakpoint Breakpoint { get; } = new Protocol.Breakpoint();
             public object item { get; set; }
         }
 
@@ -72,54 +83,120 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private static bool PathEquals(string one, string two) =>
             string.Equals(one, two, StringComparison.CurrentCultureIgnoreCase);
 
-        private IReadOnlyList<Protocol.Breakpoint> Update()
+        public static bool Equals(Protocol.Breakpoint breakpoint, Source.Range range) =>
+            (breakpoint.source == null && range == null)
+            || (breakpoint.source.path == range.Path
+                && breakpoint.line == range.Start.LineIndex
+                && breakpoint.endLine == range.After.LineIndex
+                && breakpoint.column == range.Start.CharIndex
+                && breakpoint.endColumn == range.After.CharIndex);
+
+        public static void Assign(Protocol.Breakpoint breakpoint, Source.Range range)
+        {
+            if (range != null)
+            {
+                breakpoint.verified = true;
+                breakpoint.source = new Protocol.Source(range.Path);
+                breakpoint.line = range.Start.LineIndex;
+                breakpoint.endLine = range.After.LineIndex;
+                breakpoint.column = range.Start.CharIndex;
+                breakpoint.endColumn = range.After.CharIndex;
+            }
+            else
+            {
+                breakpoint.verified = false;
+                breakpoint.source = null;
+                breakpoint.line = null;
+                breakpoint.endLine = null;
+                breakpoint.column = null;
+                breakpoint.endColumn = null;
+            }
+        }
+
+        private bool TryUpdate(Row row, KeyValuePair<object, Source.Range> sourceItem)
+        {
+            var item = sourceItem.Key;
+            var source = sourceItem.Value;
+            if (object.Equals(row.item, item) && Equals(row.Breakpoint, source))
+            {
+                return false;
+            }
+
+            row.item = item;
+            Assign(row.Breakpoint, source);
+            return true;
+        }
+
+        private bool TryUpdate(Row row)
+        {
+            var breakpoint = row.Breakpoint;
+            if (breakpoint.id == 0)
+            {
+                breakpoint.id = this.rows.Add(row);
+            }
+
+            IEnumerable<KeyValuePair<object, Source.Range>> options;
+
+            var functionBreakpoint = row.FunctionBreakpoint;
+            if (functionBreakpoint != null)
+            {
+                options = from sourceItem in sourceByItem
+                          let item = sourceItem.Key
+                          let name = codeModel.NameFor(item)
+                          where name.IndexOf(functionBreakpoint.name, StringComparison.CurrentCultureIgnoreCase) >= 0
+                          orderby name.Length
+                          select sourceItem;
+            }
+            else
+            {
+                options = from sourceItem in sourceByItem
+                          let source = sourceItem.Value
+                          where PathEquals(source.Path, row.Source.path)
+                          where source.Start.LineIndex >= row.SourceBreakpoint.line
+                          let distance = Math.Abs(source.Start.LineIndex - row.SourceBreakpoint.line)
+                          orderby distance
+                          select sourceItem;
+            }
+
+            options = options.ToArray();
+            var best = options.FirstOrDefault();
+
+            return TryUpdate(row, best);
+        }
+
+        private void RebuildItems()
         {
             lock (gate)
             {
                 items.Clear();
-
-                var changes = new List<Protocol.Breakpoint>();
-                foreach (var kv in rows)
+                foreach (var row in rows.Items)
                 {
-                    var row = kv.Value;
+                    var item = row.item;
+                    if (item != null)
+                    {
+                        items.Add(item);
+                    }
+                }
+            }
+        }
 
-                    var options = from sourceItem in sourceByItem
-                                  let source = sourceItem.Value
-                                  where PathEquals(source.Path, row.Source.path)
-                                  where source.Start.LineIndex >= row.SourceBreakpoint.line
-                                  let distance = Math.Abs(source.Start.LineIndex - row.SourceBreakpoint.line)
-                                  orderby distance
-                                  select sourceItem;
+        private IReadOnlyList<Protocol.Breakpoint> Update()
+        {
+            lock (gate)
+            {
+                var changes = new List<Protocol.Breakpoint>();
 
-                    options = options.ToArray();
-
-                    var best = options.FirstOrDefault();
-                    var itemNew = best.Key;
-                    var verifiedNew = itemNew != null;
-                    var lineNew = verifiedNew
-                        ? best.Value.Start.LineIndex
-                        : row.SourceBreakpoint.line;
-
-                    var itemOld = row.item;
-                    var verifiedOld = row.Breakpoint.verified;
-                    var lineOld = row.Breakpoint.line;
-
-                    var changed = itemNew != itemOld
-                        || verifiedNew != verifiedOld
-                        || lineNew != lineOld;
-
-                    if (changed)
+                foreach (var row in rows.Items)
+                {
+                    if (TryUpdate(row))
                     {
                         changes.Add(row.Breakpoint);
-                        row.item = itemNew;
-                        row.Breakpoint.verified = verifiedNew;
-                        row.Breakpoint.line = lineNew;
                     }
+                }
 
-                    if (itemNew != null)
-                    {
-                        items.Add(itemNew);
-                    }
+                if (changes.Count > 0)
+                {
+                    RebuildItems();
                 }
 
                 return changes;
@@ -131,23 +208,53 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             lock (gate)
             {
                 var path = source.path;
-                foreach (var kv in rows)
+                foreach (var row in rows.Items)
                 {
-                    var row = kv.Value;
-                    if (PathEquals(row.Source.path, path))
+                    if (row.FunctionBreakpoint == null && PathEquals(row.Source.path, path))
                     {
                         rows.Remove(row);
                     }
                 }
 
+                var breakpoints = new List<Protocol.Breakpoint>(sourceBreakpoints.Count);
+
                 foreach (var sourceBreakpoint in sourceBreakpoints)
                 {
-                    var breakpoint = new Protocol.Breakpoint() { source = source };
-                    var row = new Row(source, sourceBreakpoint, breakpoint);
-                    breakpoint.id = this.rows.Add(row);
+                    var row = new Row(source, sourceBreakpoint);
+                    TryUpdate(row);
+                    breakpoints.Add(row.Breakpoint);
                 }
 
-                return Update();
+                RebuildItems();
+
+                return breakpoints;
+            }
+        }
+
+        IReadOnlyList<Protocol.Breakpoint> IBreakpoints.SetBreakpoints(IReadOnlyList<Protocol.FunctionBreakpoint> functionBreakpoints)
+        {
+            lock (gate)
+            {
+                foreach (var row in rows.Items)
+                {
+                    if (row.FunctionBreakpoint != null)
+                    {
+                        rows.Remove(row);
+                    }
+                }
+
+                var breakpoints = new List<Protocol.Breakpoint>(functionBreakpoints.Count);
+
+                foreach (var functionBreakpoint in functionBreakpoints)
+                {
+                    var row = new Row(functionBreakpoint);
+                    TryUpdate(row);
+                    breakpoints.Add(row.Breakpoint);
+                }
+
+                RebuildItems();
+
+                return breakpoints;
             }
         }
 

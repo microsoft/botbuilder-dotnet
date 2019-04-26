@@ -22,7 +22,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         /// <returns></returns>
         public static BotAdapter UseDebugger(this BotAdapter botAdapter, int port, Source.IRegistry registry = null, IBreakpoints breakpoints = null, Action terminate = null, ICodeModel codeModel = null, IDataModel dataModel = null, ILogger logger = null, ICoercion coercion = null)
         {
-            var sourceMap = new SourceMap();
+            codeModel = codeModel ?? new CodeModel();
+            var sourceMap = new SourceMap(codeModel);
             DebugSupport.SourceRegistry = registry ?? sourceMap;
             return botAdapter.Use(new DebugAdapter(port: port, 
                 registry: registry ?? sourceMap, 
