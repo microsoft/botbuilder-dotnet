@@ -15,9 +15,9 @@
             "title": "Value Type",
             "description": "Value type of the trace activity"
         },
-        "valueProperty": {
+        "value": {
             "$role": "memoryPath",
-            "title": "Value Property",
+            "title": "Value",
             "description": "Property path to memory object to send as the value of the trace activity"
         }
     }

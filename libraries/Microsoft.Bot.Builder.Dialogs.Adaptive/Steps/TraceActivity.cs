@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 {
@@ -29,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         /// <summary>
         /// Property binding to memory to send as the value 
         /// </summary>
-        public string ValueProperty { get; set; }
+        public string Value { get; set; }
 
         [JsonConstructor]
         public TraceActivity([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -45,12 +46,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             }
 
             object value = null;
-            if (!string.IsNullOrEmpty(this.ValueProperty))
+            if (!string.IsNullOrEmpty(this.Value))
             {
-                value = dc.State.GetValue<object>(this.ValueProperty);
+                value = JObject.FromObject(dc.State.GetValue<object>(this.Value));
+            }
+            else
+            {
+                value = JObject.FromObject(dc.State);
             }
 
-            var traceActivity = Activity.CreateTraceActivity(this.Name, this.ValueType, value);
+            var traceActivity = Activity.CreateTraceActivity(this.Name, valueType: this.ValueType, value: value);
             await dc.Context.SendActivityAsync(traceActivity, cancellationToken).ConfigureAwait(false);
 
             return await dc.EndDialogAsync(traceActivity, cancellationToken: cancellationToken).ConfigureAwait(false);
