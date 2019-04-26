@@ -1,5 +1,5 @@
 ﻿{
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
     "title": "Microsoft IRuleSelector",
     "description": "Union of components which implement the IRuleSelector interface",
     "$role": "unionType"

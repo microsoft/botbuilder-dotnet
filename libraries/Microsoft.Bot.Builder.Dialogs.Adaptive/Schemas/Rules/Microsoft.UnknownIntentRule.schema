@@ -1,5 +1,5 @@
 ﻿{
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
     "$ref": "./Microsoft.Rule.schema#",
     "title": "This defines the steps to take when an utterence is not recognized (aka, the None Intent). NOTE: UnknownIntent will defer to any specific intent that fires in a parent dialog",
     "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
