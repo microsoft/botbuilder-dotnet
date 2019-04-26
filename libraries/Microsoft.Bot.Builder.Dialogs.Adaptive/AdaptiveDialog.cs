@@ -661,8 +661,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 }
                 else if (dialogEvent.Name == AdaptiveEvents.ActivityReceived.ToString())
                 {
-                    planning.State.SetValue($"turn.activity", dialogEvent.Value);
-
                     // Emit event
                     handled = await QueueFirstMatchAsync(planning, dialogEvent, cancellationToken).ConfigureAwait(false);
 

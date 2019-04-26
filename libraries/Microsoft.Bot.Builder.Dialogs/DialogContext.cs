@@ -39,6 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             State = new DialogContextState(this, settings: settings, userState: userState, conversationState: conversationState, turnState: turnState as Dictionary<string, object>);
+            State.SetValue($"turn.activity", Context.Activity);
         }
 
         public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state, Dictionary<string, object> conversationState = null, Dictionary<string, object> userState = null, Dictionary<string, object> settings = null)
@@ -57,6 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             State = new DialogContextState(this, settings: settings, userState: userState, conversationState: conversationState, turnState: turnState as Dictionary<string, object>);
+            State.SetValue($"turn.activity", Context.Activity);
         }
 
         public DialogContext Parent { get; protected set; }
