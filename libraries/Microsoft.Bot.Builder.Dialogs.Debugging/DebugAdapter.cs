@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private readonly Action terminate;
 
         // lifetime scoped to IMiddleware.OnTurnAsync
-        private readonly ConcurrentDictionary<ITurnContext, ThreadModel> threadByContext = new ConcurrentDictionary<ITurnContext, ThreadModel>();
+        private readonly ConcurrentDictionary<string, ThreadModel> threadByContext = new ConcurrentDictionary<string, ThreadModel>();
         private readonly Identifier<ThreadModel> threads = new Identifier<ThreadModel>();
 
         private sealed class ThreadModel
@@ -130,7 +130,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
             var thread = new ThreadModel(turnContext, codeModel);
             var threadId = threads.Add(thread);
-            threadByContext.TryAdd(turnContext, thread);
+            threadByContext.TryAdd(getThreadId(turnContext), thread);
             try
             {
                 thread.Run.Post(Phase.Started);
@@ -145,9 +145,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 thread.Run.Post(Phase.Exited);
                 await UpdateThreadPhaseAsync(thread, null, cancellationToken).ConfigureAwait(false);
 
-                threadByContext.TryRemove(turnContext, out var ignored);
+                threadByContext.TryRemove(getThreadId(turnContext), out var ignored);
                 threads.Remove(thread);
             }
+        }
+
+        private static string getThreadId(ITurnContext turnContext)
+        {
+            return $"{turnContext.Activity.ChannelId}-{turnContext.Activity.Id}";
         }
 
         async Task DebugSupport.IDebugger.StepAsync(DialogContext context, object item, string more, CancellationToken cancellationToken)
@@ -158,7 +163,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                 await UpdateBreakpointsAsync(cancellationToken).ConfigureAwait(false);
 
-                if (threadByContext.TryGetValue(context.Context, out ThreadModel thread))
+                if (threadByContext.TryGetValue(getThreadId(context.Context), out ThreadModel thread))
                 {
                     thread.LastContext = context;
                     thread.LastItem = item;
