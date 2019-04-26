@@ -12,6 +12,9 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
+    /// <summary>
+    /// Custom command which takes the input property and performs a calculation, returning it back to the caller
+    /// </summary>
     public class CalculateDogYears : DialogCommand
     {
 

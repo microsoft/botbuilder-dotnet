@@ -18,67 +18,50 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env, IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
-            this.HostingEnvironment = env;
             this.Configuration = configuration;
+            this.HostingEnvironment = env;
+
+            // TODO get rid of this dependency
+            TypeFactory.Configuration = Configuration;
         }
 
-        public IHostingEnvironment HostingEnvironment { get; }
+        IConfiguration Configuration { get; set; }
 
-        public IConfiguration Configuration { get; }
+        IHostingEnvironment HostingEnvironment { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            services.AddSingleton<IConfiguration>(this.Configuration);
-
             // Create the credential provider to be used with the Bot Framework Adapter.
             services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
 
-            IStorage storage = new MemoryStorage();
-            var userState = new UserState(storage);
-            var conversationState = new ConversationState(storage);
-            var resourceExplorer = ResourceExplorer
-                .LoadProject(HostingEnvironment.ContentRootPath);
-            
-            // TODO get rid of this dependency
-            TypeFactory.Configuration = this.Configuration;
+            // Create the Bot Framework Adapter with error handling enabled.
+            services.AddSingleton<IBotFrameworkHttpAdapter, TestBotHttpAdapter>();
 
-            // set up bot framework runtime environment (Aka the adapter)
-            services.AddSingleton<IBotFrameworkHttpAdapter, BotFrameworkHttpAdapter>((s) =>
-            {
-                var adapter = new BotFrameworkHttpAdapter();
-                adapter
-                    .UseStorage(storage)
-                    .UseState(userState, conversationState)
-                    .UseResourceExplorer(resourceExplorer, () =>
-                    {
-                        TypeFactory.Register("Testbot.CalculateDogYears", typeof(CalculateDogYears));
-                        TypeFactory.Register("Testbot.JavascriptStep", typeof(JavascriptStep));
-                        TypeFactory.Register("Testbot.CSharpStep", typeof(CSharpStep));
-                    })
-                    .UseLanguageGenerator(new LGLanguageGenerator(resourceExplorer))
-                    .UseDebugger(Configuration.GetValue<int>("debugport", 4712));
+            // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
+            services.AddSingleton<IStorage, MemoryStorage>();
 
-                adapter.OnTurnError = async (turnContext, exception) =>
-                {
-                    await turnContext.SendActivityAsync(exception.Message).ConfigureAwait(false);
+            // Create the User state. (Used in this bot's Dialog implementation.)
+            services.AddSingleton<UserState>();
 
-                    await conversationState.ClearStateAsync(turnContext).ConfigureAwait(false);
-                    await conversationState.SaveChangesAsync(turnContext).ConfigureAwait(false);
-                };
-                return adapter;
-            });
+            // Create the Conversation state. (Used by the Dialog system itself.)
+            services.AddSingleton<ConversationState>();
 
-            services.AddSingleton<IBot, TestBot>((sp) => new TestBot(conversationState, resourceExplorer, DebugSupport.SourceRegistry));
+            var resourceExplorer = ResourceExplorer.LoadProject(this.HostingEnvironment.ContentRootPath);
+            services.AddSingleton(resourceExplorer);
+
+            // Create the bot  In this case the ASP Controller is expecting an IBot.
+            services.AddSingleton<IBot, TestBot>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,5 +1,5 @@
 {
-  "$schema": "../../app.schema",
+  "$schema": "../../../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
   "steps": [
     "CalendarFindContact",
@@ -9,7 +9,7 @@
       "steps": [
         {
           "$type": "Microsoft.TextInput",
-          "Prompt": "OK, please enter the subject of your meeting.",
+          "prompt": "OK, please enter the subject of your meeting.",
           "property": "user.subject"
         }
       ]
@@ -20,7 +20,7 @@
       "steps": [
         {
           "$type": "Microsoft.TextInput",
-          "Prompt": "OK, please enter the body of your meeting.",
+          "prompt": "OK, please enter the body of your meeting.",
           "property": "user.body"
         }
       ]
@@ -31,7 +31,7 @@
       "steps": [
         {
           "$type": "Microsoft.DateTimeInput",
-          "Prompt": "OK, please enter the start date of meeting.",
+          "prompt": "OK, please enter the start date of meeting.",
           "property": "user.startDate"
         }
       ]
@@ -48,7 +48,7 @@
       "steps": [
         {
           "$type": "Microsoft.DateTimeInput",
-          "Prompt": "OK, please enter the start time of meeting.",
+          "prompt": "OK, please enter the start time of meeting.",
           "property": "user.startTime"
         }
       ]
@@ -70,7 +70,7 @@
       "steps": [
         {
           "$type": "Microsoft.DateTimeInput",
-          "Prompt": "OK, please enter the duration of meeting",
+          "prompt": "OK, please enter the duration of meeting",
           "property": "user.duration"
         }
       ]
@@ -86,7 +86,7 @@
       "steps": [
         {
           "$type": "Microsoft.TextInput",
-          "Prompt": "OK, please enter the location of your meeting.",
+          "prompt": "OK, please enter the location of your meeting.",
           "property": "user.location"
         }
       ]

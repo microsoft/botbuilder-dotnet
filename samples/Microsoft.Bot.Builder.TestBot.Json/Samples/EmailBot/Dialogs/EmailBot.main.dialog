@@ -1,6 +1,7 @@
 {
-  "$schema": "../../app.schema",
+  "$schema": "../../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
+  "autoEndDialog": false,
   "recognizer": {
     "$type": "Microsoft.RegexRecognizer",
     "intents": {
