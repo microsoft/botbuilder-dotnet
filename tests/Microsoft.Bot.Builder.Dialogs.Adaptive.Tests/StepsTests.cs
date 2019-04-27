@@ -16,6 +16,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Builder.Dialogs.Choices;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -24,29 +26,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     {
         public TestContext TestContext { get; set; }
 
-        private TestFlow CreateFlow(AdaptiveDialog planningDialog, ConversationState convoState, UserState userState, bool sendTrace = false)
+        private TestFlow CreateFlow(AdaptiveDialog testDialog, bool sendTrace = false)
         {
-            var botResourceManager = new ResourceExplorer();
-            var lg = new LGLanguageGenerator(botResourceManager);
-
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace)
-                .Use(new RegisterClassMiddleware<ResourceExplorer>(botResourceManager))
-                .Use(new RegisterClassMiddleware<ILanguageGenerator>(lg))
-                .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
-                .Use(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)))
-                .Use(new AutoSaveStateMiddleware(convoState, userState))
+            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+            var storage = new MemoryStorage();
+            var convoState = new ConversationState(storage);
+            var userState = new UserState(storage);
+            var resourceExplorer = new ResourceExplorer();
+            var lg = new LGLanguageGenerator(resourceExplorer);
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace);
+            adapter
+                .UseStorage(storage)
+                .UseState(userState, convoState)
+                .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGenerator(lg)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
-
-            var userStateProperty = userState.CreateProperty<Dictionary<string, object>>("user");
-            var convoStateProperty = convoState.CreateProperty<Dictionary<string, object>>("conversation");
-
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-            var dialogs = new DialogSet(dialogState);
-
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                await planningDialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
+                await testDialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
             });
         }
 
@@ -54,12 +52,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task Step_WaitForInput()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
+            var testDialog = new AdaptiveDialog("planningTest");
 
-            var planningDialog = new AdaptiveDialog("planningTest");
-
-            planningDialog.AddRules(new List<IRule>()
+            testDialog.AddRules(new List<IRule>()
             {
                 new UnknownIntentRule(
                     new List<IDialog>()
@@ -68,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new SendActivity("Hello {user.name}, nice to meet you!"),
                     })});
 
-            await CreateFlow(planningDialog, convoState, userState)
+            await CreateFlow(testDialog)
             .Send("hi")
                 .AssertReply("Hello, what is your name?")
             .Send("Carlos")
@@ -80,9 +75,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task Step_TraceActivity()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
             var dialog = new AdaptiveDialog("traceActivity");
 
             dialog.AddRules(new List<IRule>()
@@ -108,7 +100,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         }
                     })});
 
-            await CreateFlow(dialog, convoState, userState, sendTrace: true)
+            await CreateFlow(dialog, sendTrace: true)
             .Send("hi")
                 .AssertReply((activity) =>
                 {
@@ -130,12 +122,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task Step_IfCondition()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
-            var planningDialog = new AdaptiveDialog("planningTest");
-
-            planningDialog.AddRules(new List<IRule>()
+            var testDialog = new AdaptiveDialog("planningTest");
+            testDialog.AddRules(new List<IRule>()
             {
                 new UnknownIntentRule(
                     new List<IDialog>()
@@ -149,26 +137,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     Prompt  = new ActivityTemplate("Hello, what is your name?"),
                                     OutputBinding = "user.name"
                                 },
+                                new SendActivity("Hello {user.name}, nice to meet you!")
+                            },
+                            ElseSteps = new List<IDialog>()
+                            {
+                                new SendActivity("Hello {user.name}, nice to see you again!")
                             }
                         },
-                        new SendActivity("Hello {user.name}, nice to meet you!")
                     })});
 
-            await CreateFlow(planningDialog, convoState, userState)
+            await CreateFlow(testDialog)
             .Send("hi")
                 .AssertReply("Hello, what is your name?")
             .Send("Carlos")
                 .AssertReply("Hello Carlos, nice to meet you!")
+            .Send("hi")
+                .AssertReply("Hello Carlos, nice to see you again!")
             .StartTestAsync();
         }
 
         [TestMethod]
         public async Task Step_Switch()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
-            var planningDialog = new AdaptiveDialog("planningTest")
+            var testDialog = new AdaptiveDialog("planningTest")
             {
                 Steps = new List<IDialog>()
                     {
@@ -191,7 +182,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     }
             };
 
-            await CreateFlow(planningDialog, convoState, userState)
+            await CreateFlow(testDialog)
             .Send("hi")
                 .AssertReply("hi frank")
             .StartTestAsync();
@@ -200,12 +191,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task Step_TextInput()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
+            var testDialog = new AdaptiveDialog("planningTest");
 
-            var planningDialog = new AdaptiveDialog("planningTest");
-
-            planningDialog.AddRules(new List<IRule>()
+            testDialog.AddRules(new List<IRule>()
             {
                 new UnknownIntentRule(
                     new List<IDialog>()
@@ -227,7 +215,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new SendActivity("Hello {user.name}, nice to meet you!")
                     })});
 
-            await CreateFlow(planningDialog, convoState, userState)
+            await CreateFlow(testDialog)
             .Send("hi")
                 .AssertReply("Hello, what is your name?")
             .Send("c")
@@ -240,10 +228,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task Step_ConfirmInput()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
-            var planningDialog = new AdaptiveDialog("planningTest")
+            var testDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
                 Steps = new List<IDialog>()
@@ -273,7 +258,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
 
-            await CreateFlow(planningDialog, convoState, userState)
+            await CreateFlow(testDialog)
             .Send("hi")
                 .AssertReply("yes or no")
             .Send("asdasd")
@@ -290,10 +275,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task Step_ChoiceInput()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
-            var planningDialog = new AdaptiveDialog("planningTest")
+            var testDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
                 Steps = new List<IDialog>()
@@ -329,7 +311,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
 
-            await CreateFlow(planningDialog, convoState, userState)
+            await CreateFlow(testDialog)
             .Send("hi")
                 .AssertReply("Please select a color: (1) red, (2) green, or (3) blue")
             .Send("asdasd")
@@ -346,15 +328,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task Step_NumberInput()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
-            var planningDialog = new AdaptiveDialog("planningTest")
+            var testDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false
             };
 
-            planningDialog.AddRules(new List<IRule>()
+            testDialog.AddRules(new List<IRule>()
             {
                 new UnknownIntentRule(
                     new List<IDialog>()
@@ -372,7 +351,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     })
             });
 
-            await CreateFlow(planningDialog, convoState, userState)
+            await CreateFlow(testDialog)
             .Send("hi")
                 .AssertReply("Please enter your age.")
             .Send("1000")
@@ -387,15 +366,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task Step_NumberInputPrecision()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
-            var planningDialog = new AdaptiveDialog("planningTest")
+            var testDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false
             };
 
-            planningDialog.AddRules(new List<IRule>()
+            testDialog.AddRules(new List<IRule>()
             {
                 new UnknownIntentRule(
                     new List<IDialog>()
@@ -413,7 +389,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     })
             });
 
-            await CreateFlow(planningDialog, convoState, userState)
+            await CreateFlow(testDialog)
             .Send("hi")
                 .AssertReply("Please enter your dollars.")
             .Send("1.345")
@@ -428,12 +404,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task Step_TextInputWithInvalidPrompt()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
+            var testDialog = new AdaptiveDialog("planningTest");
 
-            var planningDialog = new AdaptiveDialog("planningTest");
-
-            planningDialog.AddRules(new List<IRule>()
+            testDialog.AddRules(new List<IRule>()
             {
                 new UnknownIntentRule(
                     new List<IDialog>()
@@ -456,7 +429,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new SendActivity("Hello {user.name}, nice to meet you!")
                     })});
 
-            await CreateFlow(planningDialog, convoState, userState)
+            await CreateFlow(testDialog)
             .Send("hi")
                 .AssertReply("Hello, what is your name?")
             .Send("c")
@@ -469,14 +442,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task Step_DoSteps()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
+            var testDialog = new AdaptiveDialog("planningTest");
 
-            var planningDialog = new AdaptiveDialog("planningTest");
+            testDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 
-            planningDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
-
-            planningDialog.AddRules(new List<IRule>()
+            testDialog.AddRules(new List<IRule>()
             {
                 new IntentRule("JokeIntent",
                     steps: new List<IDialog>()
@@ -503,7 +473,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new SendActivity("Hello {user.name}, nice to meet you!")
                     })});
 
-            await CreateFlow(planningDialog, convoState, userState)
+            await CreateFlow(testDialog)
             .Send("hi")
                 .AssertReply("Hello, what is your name?")
             .Send("Carlos")
@@ -521,9 +491,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task Step_BeginDialog()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
             var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
             tellJokeDialog.AddRules(new List<IRule>()
             {
@@ -558,18 +525,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             };
 
 
-            var planningDialog = new AdaptiveDialog("planningTest");
-            planningDialog.AutoEndDialog = false;
+            var testDialog = new AdaptiveDialog("planningTest");
+            testDialog.AutoEndDialog = false;
 
-            planningDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
+            testDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 
-            planningDialog.Steps = new List<IDialog>()
+            testDialog.Steps = new List<IDialog>()
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'"),
                         new BeginDialog() { Dialog = askNameDialog }
                     };
 
-            planningDialog.AddRules(new List<IRule>()
+            testDialog.AddRules(new List<IRule>()
             {
                 new IntentRule("JokeIntent",
                     steps: new List<IDialog>()
@@ -583,7 +550,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     }),
             });
 
-            await CreateFlow(planningDialog, convoState, userState)
+            await CreateFlow(testDialog)
             .SendConversationUpdate()
                 .AssertReply("I'm a joke bot. To get started say 'tell me a joke'")
                 .AssertReply("Hello, what is your name?")
@@ -597,9 +564,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task Step_ReplaceDialog()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
             var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
             tellJokeDialog.AddRules(new List<IRule>()
             {
@@ -636,16 +600,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
 
-            var planningDialog = new AdaptiveDialog("planningTest");
-            planningDialog.AutoEndDialog = false;
-            planningDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
-            planningDialog.Steps = new List<IDialog>()
+            var testDialog = new AdaptiveDialog("planningTest");
+            testDialog.AutoEndDialog = false;
+            testDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
+            testDialog.Steps = new List<IDialog>()
             {
                 new SendActivity("I'm a joke bot. To get started say 'tell me a joke'"),
                 new ReplaceDialog("AskNameDialog")
             };
 
-            planningDialog.AddRules(new List<IRule>()
+            testDialog.AddRules(new List<IRule>()
             {
                 new IntentRule("JokeIntent",
                     steps: new List<IDialog>()
@@ -654,13 +618,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     }),
             });
 
-            planningDialog.AddDialog(new List<IDialog>()
+            testDialog.AddDialog(new List<IDialog>()
             {
                 tellJokeDialog,
                 askNameDialog
             });
 
-            await CreateFlow(planningDialog, convoState, userState)
+            await CreateFlow(testDialog)
             .SendConversationUpdate()
                 .AssertReply("I'm a joke bot. To get started say 'tell me a joke'")
                 .AssertReply("Hello, what is your name?")
@@ -676,12 +640,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task Step_EndDialog()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
+            var testDialog = new AdaptiveDialog("planningTest");
 
-            var planningDialog = new AdaptiveDialog("planningTest");
-
-            planningDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "EndIntent", "end" } } };
+            testDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "EndIntent", "end" } } };
 
             var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
             tellJokeDialog.AddRules(new List<IRule>()
@@ -702,7 +663,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             });
             tellJokeDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "EndIntent", "end" } } };
 
-            planningDialog.AddRules(new List<IRule>()
+            testDialog.AddRules(new List<IRule>()
             {
                 new UnknownIntentRule(
                     new List<IDialog>()
@@ -712,7 +673,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     })
             });
 
-            await CreateFlow(planningDialog, convoState, userState)
+            await CreateFlow(testDialog)
             .Send("hi")
                 .AssertReply("Why did the chicken cross the road?")
             .Send("end")
@@ -723,9 +684,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task Step_RepeatDialog()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
             var testDialog = new AdaptiveDialog("testDialog")
             {
                 Steps = new List<IDialog>()
@@ -737,7 +695,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
 
-            await CreateFlow(testDialog, convoState, userState)
+            await CreateFlow(testDialog)
                 .Send("hi")
                     .AssertReply("Hello, what is your name?")
                 .Send("Carlos")
@@ -810,7 +768,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             };
 
 
-            await CreateFlow(rootDialog, convoState, userState)
+            await CreateFlow(rootDialog)
             .Send("moo")
                 .AssertReply("Yippee ki-yay!")
             .Send("emit")

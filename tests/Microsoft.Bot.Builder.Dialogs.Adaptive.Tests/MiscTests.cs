@@ -16,6 +16,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Builder.Dialogs.Choices;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -24,39 +26,94 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     {
         public TestContext TestContext { get; set; }
 
-        private TestFlow CreateFlow(AdaptiveDialog planningDialog, ConversationState convoState, UserState userState, bool sendTrace = false)
+        private TestFlow CreateFlow(AdaptiveDialog dialog, bool sendTrace = false)
         {
-            var botResourceManager = new ResourceExplorer();
-            var lg = new LGLanguageGenerator(botResourceManager);
-
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace)
-                .Use(new RegisterClassMiddleware<ResourceExplorer>(botResourceManager))
-                .Use(new RegisterClassMiddleware<ILanguageGenerator>(lg))
-                .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
-                .Use(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)))
-                .Use(new AutoSaveStateMiddleware(convoState, userState))
+            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+            var resourceExplorer = new ResourceExplorer();
+            var lg = new LGLanguageGenerator(resourceExplorer);
+            var storage = new MemoryStorage();
+            var convoState = new ConversationState(storage);
+            var userState = new UserState(storage);
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace);
+            adapter
+                .UseStorage(storage)
+                .UseState(userState, convoState)
+                .UseLanguageGenerator(lg)
+                .UseResourceExplorer(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
-
-            var userStateProperty = userState.CreateProperty<Dictionary<string, object>>("user");
-            var convoStateProperty = convoState.CreateProperty<Dictionary<string, object>>("conversation");
-
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-            var dialogs = new DialogSet(dialogState);
-
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                await planningDialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
+                await dialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
             });
         }
 
+        [TestMethod]
+        public async Task IfCondition_EndDialog()
+        {
+            var testDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            {
+                Steps = new List<IDialog>()
+                {
+                    new TextInput()
+                    {
+                        Property = "user.name",
+                        Prompt = new ActivityTemplate("name?")
+                    },
+                    new SendActivity("Hello, {user.name}")
+                },
+                Rules = new List<IRule>()
+                {
+                    new IntentRule("CancelIntent")
+                    {
+                        Steps = new List<IDialog>()
+                        {
+                            new ConfirmInput()
+                            {
+                                Property = "conversation.addTodo.cancelConfirmation",
+                                Prompt = new ActivityTemplate("cancel?")
+                            },
+                            new IfCondition()
+                            {
+                                Condition = new ExpressionEngine().Parse("conversation.addTodo.cancelConfirmation == true"),
+                                Steps = new List<IDialog>()
+                                {
+                                    new SendActivity("canceling"),
+                                    new EndDialog()
+                                },
+                                ElseSteps = new List<IDialog>()
+                                {
+                                    new SendActivity("notcanceling")
+                                }
+                                // We do not need to specify an else block here since if user said no,
+                                // the control flow will automatically return to the last active step (if any)
+                            }
+                        }
+                    }
+                },
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>()
+                    {
+                        { "HelpIntent", "(?i)help" },
+                        { "CancelIntent", "(?i)cancel" }
+                    }
+                }
+            };
+
+            await CreateFlow(testDialog)
+                .Send("hi")
+                    .AssertReply("name?")
+                .Send("cancel")
+                    .AssertReply("cancel?")
+                .Send("yes")
+                    .AssertReply("canceling")
+                .StartTestAsync();
+        }
 
         [TestMethod]
         public async Task Rule_Reprompt()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
             var testDialog = new AdaptiveDialog("testDialog")
             {
                 AutoEndDialog = false,
@@ -88,7 +145,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             };
 
-            await CreateFlow(testDialog, convoState, userState)
+            await CreateFlow(testDialog)
                 .Send("hi")
                     .AssertReply("Hello, what is your name?")
                 .Send("my name is Carlos")
@@ -101,7 +158,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     .AssertReply("your name is Joe!")
                 .StartTestAsync();
         }
-
-
     }
 }
