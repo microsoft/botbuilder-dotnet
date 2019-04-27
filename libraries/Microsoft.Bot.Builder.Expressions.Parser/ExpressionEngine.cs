@@ -33,10 +33,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
         /// </summary>
         /// <param name="expression">Expression to parse.</param>
         /// <returns>Expresion tree.</returns>
-        public Expression Parse(string expression)
-        {
-            return new ExpressionTransformer(_lookup).Transform(AntlrParse(expression));
-        }
+        public Expression Parse(string expression) => new ExpressionTransformer(_lookup).Transform(AntlrParse(expression));
 
         private IParseTree AntlrParse(string expression)
         {
@@ -59,10 +56,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                 _lookup = lookup;
             }
 
-            public Expression Transform(IParseTree context)
-            {
-                return Visit(context);
-            }
+            public Expression Transform(IParseTree context) => Visit(context);
 
             public override Expression VisitUnaryOpExp([NotNull] ExpressionParser.UnaryOpExpContext context)
             {
@@ -189,9 +183,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             }
 
             private Expression MakeExpression(string type, params Expression[] children)
-            {
-                return Expression.MakeExpression(_lookup(type), children);
-            }
+                => Expression.MakeExpression(_lookup(type), children);
 
             private IEnumerable<Expression> ProcessArgsList(ExpressionParser.ArgsListContext context)
             {
@@ -205,9 +197,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             }
 
             private bool IsShortHandExpression(string name)
-            {
-                return name.StartsWith("#") || name.StartsWith("@") || name.StartsWith("$");
-            }
+                => name.StartsWith("#") || name.StartsWith("@") || name.StartsWith("$");
 
             private Expression MakeShortHandExpression(string name)
             {
