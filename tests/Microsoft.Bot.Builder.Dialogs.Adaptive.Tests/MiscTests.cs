@@ -138,7 +138,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         Steps = new List<IDialog>()
                         {
-                            new SaveEntity("name", "user.name"),
+                            new SaveEntity("@name", "user.name"),
                         }
                     }
                 }
