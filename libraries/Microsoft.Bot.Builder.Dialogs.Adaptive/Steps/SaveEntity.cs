@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (dc.State.TryGetValue<object>($"turn.entities.{Entity}", out var values))
+            if (dc.State.TryGetValue<object>($"turn.entities.{Entity.TrimStart('@')}", out var values))
             {
                 object result = null;
                 if (values.GetType() == typeof(JArray))
