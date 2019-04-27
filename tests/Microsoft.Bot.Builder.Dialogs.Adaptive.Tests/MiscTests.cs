@@ -78,7 +78,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Condition = new ExpressionEngine().Parse("conversation.addTodo.cancelConfirmation == true"),
                                 Steps = new List<IDialog>()
                                 {
-                                    new DebugBreak(),
                                     new SendActivity("canceling"),
                                     new EndDialog()
                                 },
@@ -88,8 +87,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 }
                                 // We do not need to specify an else block here since if user said no,
                                 // the control flow will automatically return to the last active step (if any)
-                            },
-                            // new SendActivity("Test")
+                            }
                         }
                     }
                 },

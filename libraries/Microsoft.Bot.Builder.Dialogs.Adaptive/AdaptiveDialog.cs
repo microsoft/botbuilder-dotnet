@@ -516,28 +516,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         // Process step results
                         if (!result.ParentEnded)
                         {
-                            // Is step waiting?
+                            // end the current step
+                            if (result.Status != DialogTurnStatus.Waiting)
+                            {
+                                await planning.EndStepAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+                            }
+
+                            // do we have any queued up changes
+                            if (planning.Changes?.Count > 0)
+                            {
+                                // apply changes and continue execution
+                                return await this.ContinuePlanAsync(planning, cancellationToken: cancellationToken).ConfigureAwait(false);
+                            }
+
+                            // if step is waiting?
                             if (result.Status == DialogTurnStatus.Waiting)
                             {
                                 return result;
                             }
 
-                            // Was step cancelled?
-                            if (result.Status == DialogTurnStatus.Cancelled)
-                            {
-                                // End the current plan
-                                await planning.EndPlanAsync(null, cancellationToken).ConfigureAwait(false);
-                            }
-                            else
-                            {
-                                // End the current step
-                                await planning.EndStepAsync(cancellationToken).ConfigureAwait(false);
-                            }
-
                             // Continue plan execution
                             var plan = planning.Plan;
 
-                            if (plan?.Steps[0].DialogStack?.Count > 0)
+                            if (plan != null && plan.Steps.Count > 0 && plan?.Steps[0].DialogStack?.Count > 0)
                             {
                                 // Tell step to re-prompt
                                 await RepromptDialogAsync(dc.Context, dc.ActiveDialog).ConfigureAwait(false);
@@ -545,7 +546,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             }
                             else
                             {
-                                return await ContinuePlanAsync(planning, cancellationToken).ConfigureAwait(false);
+                                return await ContinuePlanAsync(planning, cancellationToken: cancellationToken).ConfigureAwait(false);
                             }
                         }
                         else
