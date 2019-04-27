@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/SchemaGen/packages/DialogSchema/src/dialogSchema.schema",
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
     "$id": "app.schema",
     "type": "object",
     "title": "Component types",
@@ -1057,19 +1057,26 @@
                     "description": "Extra information for the Bot Framework Designer."
                 },
                 "eventName": {
-                    "type": "string",
                     "title": "Event Name",
                     "description": "The name of event to emit",
-                    "enum": [
-                        "BeginDialog",
-                        "ConsultDialog",
-                        "ActivityReceived",
-                        "UtteranceRecognized",
-                        "Fallback",
-                        "PlanStarted",
-                        "PlanSaved",
-                        "PlanEnded",
-                        "PlanResumed"
+                    "anyOf": [
+                        {
+                            "enum": [
+                                "beginDialog",
+                                "consultDialog",
+                                "cancelDialog",
+                                "activityReceived",
+                                "recognizedIntent",
+                                "unknownIntent",
+                                "stepsStarted",
+                                "stepsSaved",
+                                "stepsEnded",
+                                "stepsResumed"
+                            ]
+                        },
+                        {
+                            "type": "string"
+                        }
                     ]
                 },
                 "eventValue": {
@@ -1819,7 +1826,7 @@
                 {
                     "title": "Type",
                     "required": [
-                        "expression",
+                        "condition",
                         "steps",
                         "$type"
                     ]

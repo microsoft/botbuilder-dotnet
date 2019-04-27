@@ -6,19 +6,26 @@
     "type": "object",
     "properties": {
         "eventName": {
-            "type": "string",
             "title": "Event Name",
             "description": "The name of event to emit",
-            "enum": [
-                "BeginDialog",
-                "ConsultDialog",
-                "ActivityReceived",
-                "UtteranceRecognized",
-                "Fallback",
-                "PlanStarted",
-                "PlanSaved",
-                "PlanEnded",
-                "PlanResumed"
+            "anyOf": [
+                {
+                    "enum": [
+                        "beginDialog",
+                        "consultDialog",
+                        "cancelDialog",
+                        "activityReceived",
+                        "recognizedIntent",
+                        "unknownIntent",
+                        "stepsStarted",
+                        "stepsSaved",
+                        "stepsEnded",
+                        "stepsResumed"
+                    ]
+                },
+                {
+                    "type": "string"
+                }
             ]
         },
         "eventValue": {
