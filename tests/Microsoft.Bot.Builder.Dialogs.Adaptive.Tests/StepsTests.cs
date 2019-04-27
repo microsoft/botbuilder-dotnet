@@ -748,7 +748,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
 
-#if EMIT
         [TestMethod]
         public async Task Step_EmitEvent()
         {
@@ -819,7 +818,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("Yippee ki-yay!")
             .StartTestAsync();
         }
-#endif
-
     }
 }

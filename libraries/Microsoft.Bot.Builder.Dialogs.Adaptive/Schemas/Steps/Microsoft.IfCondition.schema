@@ -32,7 +32,7 @@
 
     },
     "required": [
-        "expression",
+        "condition",
         "steps"
     ]
 }

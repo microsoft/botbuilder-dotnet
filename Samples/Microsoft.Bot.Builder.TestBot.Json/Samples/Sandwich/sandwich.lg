@@ -22,6 +22,18 @@
 # FurtherHelp
 - Try saying 'Order a sandwich'
 
+# Meat
+- What kind of meat do you want on your sandwich?
+
+# Cheese
+- What kind of cheese do you want on your sandwich?
+
+# Bread
+- What kind of bread do you want on your sandwich?
+
+# Toppings
+- What kind of toppings do you want on your sandwich?
+
 # MeatAndBread
 - Which type of meat and bread do you want for your sandwich?
 

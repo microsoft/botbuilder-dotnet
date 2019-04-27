@@ -371,10 +371,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 saveState = true;
             }
 
-            if (runDialogs.GetDialogs().Count() == 0)
+            lock (runDialogs)
             {
-                // Create DialogContext
-                this.runDialogs.Add(this);
+                if (runDialogs.GetDialogs().Count() == 0)
+                {
+                    // Create DialogContext
+                    this.runDialogs.Add(this);
+                }
             }
 
             var dc = new DialogContext(runDialogs,

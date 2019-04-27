@@ -5,26 +5,159 @@
   "autoEndDialog": false,
   "rules": [
     {
-      "$comment": "**** Start of slot mapping ****",
-      "$type": "Microsoft.EventRule",
-      "events": [
-        "recognizedIntent"
-      ],
-      "constraint": "@meat",
+      "$comment": "**** This is the start of top-level intent rules ****",
+      "$type": "Microsoft.IntentRule",
+      "intent": "OrderSandwich",
       "steps": [
         {
-          "$type": "Microsoft.SendActivity",
-          "activity": "Set dialog.meat to {@meat}"
+          "$type": "Microsoft.IfCondition",
+          "condition": "user.name == null",
+          "steps": [
+            {
+              "$type": "Microsoft.SendActivity",
+              "activity": "Hi"
+            }
+          ],
+          "elseSteps": [
+            {
+              "$type": "Microsoft.SendActivity",
+              "activity": "bye"
+            }
+          ]
         },
         {
-          "$type": "Microsoft.SetProperty",
-          "property": "dialog.meat",
-          "value": "@meat"
+          "$comment": "**** Primary ordering dialog ****",
+          "$type": "Microsoft.AdaptiveDialog",
+          "rules": [
+            {
+              "$comment": "**** Start of slot mapping ****",
+              "$type": "Microsoft.EventRule",
+              "events": [
+                "recognizedIntent"
+              ],
+              "constraint": "@meat && ignore(!dialog.meat.last || count > dialog.meat.last)",
+              "steps": [
+                {
+                  "$type": "Microsoft.SendActivity",
+                  "activity": "Set dialog.meat to {first(@meat)}"
+                },
+                {
+                  "$type": "Microsoft.SetProperty",
+                  "property": "dialog.meat",
+                  "value": "first(@meat)"
+                },
+                {
+                  "$type": "Microsoft.SetProperty",
+                  "property": "dialog.meat.last",
+                  "value": "count"
+                },
+                {
+                  "$type": "Microsoft.EmitEvent",
+                  "eventName": "recognizedIntent",
+                  "bubbleEvent": true
+                }
+              ]
+            },
+            {
+              "$type": "Microsoft.EventRule",
+              "events": [
+                "recognizedIntent"
+              ],
+              "constraint": "@cheese && ignore(!dialog.cheese.last || count > dialog.cheese.last)",
+              "steps": [
+                {
+                  "$type": "Microsoft.SendActivity",
+                  "activity": "Set dialog.cheese to {first(@cheese)}"
+                },
+                {
+                  "$type": "Microsoft.SetProperty",
+                  "property": "dialog.cheese",
+                  "value": "first(@cheese)"
+                },
+                {
+                  "$type": "Microsoft.SetProperty",
+                  "property": "dialog.cheese.last",
+                  "value": "count"
+                },
+                {
+                  "$type": "Microsoft.EmitEvent",
+                  "eventName": "recognizedIntent",
+                  "bubbleEvent": true
+                }
+              ]
+            },
+            {
+              "$comment": "**** This is the start of prompts ****",
+              "$type": "Microsoft.EventRule",
+              "events": [
+                "recognizedIntent"
+              ],
+              "constraint": "!dialog.meat && !dialog.bread",
+              "steps": [
+                {
+                  "$type": "Microsoft.SendActivity",
+                  "activity": "[MeatAndBread]"
+                }
+              ]
+            },
+            {
+              "$comment": "Ideally these would be a generic template rule against any slot value.",
+              "$type": "Microsoft.EventRule",
+              "events": [
+                "recognizedIntent"
+              ],
+              "constraint": "!dialog.meat",
+              "steps": [
+                {
+                  "$type": "Microsoft.SendActivity",
+                  "activity": "[Meat]"
+                }
+              ]
+            },
+            {
+              "$type": "Microsoft.EventRule",
+              "events": [
+                "recognizedIntent"
+              ],
+              "constraint": "!dialog.cheese",
+              "steps": [
+                {
+                  "$type": "Microsoft.SendActivity",
+                  "activity": "[Cheese]"
+                }
+              ]
+            },
+            {
+              "$type": "Microsoft.EventRule",
+              "events": [
+                "recognizedIntent"
+              ],
+              "constraint": "!dialog.bread",
+              "steps": [
+                {
+                  "$type": "Microsoft.SendActivity",
+                  "activity": "[Bread]"
+                }
+              ]
+            },
+            {
+              "$type": "Microsoft.EventRule",
+              "events": [
+                "recognizedIntent"
+              ],
+              "constraint": "!dialog.toppings",
+              "steps": [
+                {
+                  "$type": "Microsoft.SendActivity",
+                  "activity": "[Toppings]"
+                }
+              ]
+            }
+          ]
         }
       ]
     },
     {
-      "$comment": "**** This is the start of intent rules ****",
       "$type": "Microsoft.IntentRule",
       "intent": "SandwichOptions",
       "steps": [
@@ -73,20 +206,6 @@
         {
           "$type": "Microsoft.SendActivity",
           "activity": "[Initial]"
-        }
-      ]
-    },
-    {
-      "$comment": "**** This is the start of prompts ****",
-      "$type": "Microsoft.EventRule",
-      "events": [
-        "recognizedIntent"
-      ],
-      "constraint": "!meat and !bread",
-      "steps": [
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "[MeatAndBread]"
         }
       ]
     }
