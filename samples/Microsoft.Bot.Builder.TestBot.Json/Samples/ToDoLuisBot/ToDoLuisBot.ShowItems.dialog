@@ -58,17 +58,24 @@
           "prompt": "Which list do you want to show?",
           "style": "SuggestedAction",
           "alwaysPrompt": true
-        },
-        {
-          "$type": "Microsoft.SetProperty",
-          "property": "dialog.listName",
-          "value": "dialog.listName.Value"
         }
       ]
     },
     {
-      "$type": "Microsoft.SendActivity",
-      "activity": "[ShowItems(user, dialog.listName)]"
+      "$type": "Microsoft.IfCondition",
+      "condition": "(dialog.listName == \"shopping\" && user.lists.shopping == null) || (dialog.listName == \"grocery\" && user.lists.grocery == null) || (dialog.listName == \"todo\" && user.lists.todo == null)",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "Your have no items in your {dialog.listName} list."
+        }
+      ],
+      "elseSteps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "[ShowItems(user, dialog.listName)]"
+        }
+      ]
     }
   ]
 }
