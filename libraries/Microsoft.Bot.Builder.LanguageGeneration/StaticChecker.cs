@@ -132,9 +132,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var ifRules = context.conditionalTemplateBody().ifConditionRule();
             for (var idx = 0; idx < ifRules.Length; idx++)
             {
-                var ifExpr = ifRules[idx].ifCondition().IF() != null;
-                var elseIfExpr = ifRules[idx].ifCondition().ELSEIF() != null;
-                var elseExpr = ifRules[idx].ifCondition().ELSE() != null;
+                var conditionNode = ifRules[idx].ifCondition();
+                var ifExpr = conditionNode.IF() != null;
+                var elseIfExpr = conditionNode.ELSEIF() != null;
+                var elseExpr = conditionNode.ELSE() != null;
+
+                var node = ifExpr ? conditionNode.IF() :
+                           elseIfExpr ? conditionNode.ELSEIF() :
+                           conditionNode.ELSE();
+
+                if (node.GetText().Count(u => u == ' ') > 1)
+                {
+                    result.Add(new ReportEntry($"At most 1 whitespace is allowed between IF/ELSEIF/ELSE and :. expression: '{context.conditionalTemplateBody().GetText()}", ReportEntryType.ERROR));
+                }
 
                 if (idx == 0 && !ifExpr)
                 {

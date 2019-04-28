@@ -96,15 +96,15 @@ NEWLINE_IN_BODY
   ;
 
 IF
-  : ('if:' | 'IF:' | 'if :' | 'IF :') {expectIfElse}? { ignoreWS = true;}
+  : ('if'|'IF') WHITESPACE* ':'  {expectIfElse}? { ignoreWS = true;}
   ;
 
 ELSEIF
-  : ('elseif:' | 'ELSEIF:' | 'elseif :' | 'ELSEIF :') {expectIfElse}? { ignoreWS = true;}
+  : ('elseif'|'ELSEIF') WHITESPACE* ':' {expectIfElse}? { ignoreWS = true;}
   ;
 
 ELSE
-  : ('else:' | 'ELSE:' | 'else :' | 'ELSE :') {expectIfElse}? { ignoreWS = true;}
+  : ('else'|'ELSE') WHITESPACE* ':' {expectIfElse}? { ignoreWS = true;}
   ;
 
 MULTI_LINE_TEXT
