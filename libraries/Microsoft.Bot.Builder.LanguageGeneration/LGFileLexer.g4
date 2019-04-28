@@ -95,11 +95,17 @@ NEWLINE_IN_BODY
   : '\r'? '\n' {ignoreWS = true;} -> type(NEWLINE), popMode
   ;
 
-// only if/else makes ignoreWS = true
-IFELSE
-  : ('if:' | 'IF:' | 'elseif:' | 'ELSEIF:' | 'else:' | 'ELSE:') {expectIfElse}? { ignoreWS = true;}
+IF
+  : ('if:' | 'IF:' | 'if :' | 'IF :') {expectIfElse}? { ignoreWS = true;}
   ;
 
+ELSEIF
+  : ('elseif:' | 'ELSEIF:' | 'elseif :' | 'ELSEIF :') {expectIfElse}? { ignoreWS = true;}
+  ;
+
+ELSE
+  : ('else:' | 'ELSE:' | 'else :' | 'ELSE :') {expectIfElse}? { ignoreWS = true;}
+  ;
 
 MULTI_LINE_TEXT
   : '```' .*? '```' { ignoreWS = false; expectIfElse = false;}

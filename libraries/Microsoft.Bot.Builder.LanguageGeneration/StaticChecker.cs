@@ -132,31 +132,32 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var ifRules = context.conditionalTemplateBody().ifConditionRule();
             for (var idx = 0; idx < ifRules.Length; idx++)
             {
-                // check if rules must start with if and end with else, and have elseif in middle
-                var conditionLabel = ifRules[idx].ifCondition().IFELSE().GetText().ToLower();
+                var ifExpr = ifRules[idx].ifCondition().IF() != null;
+                var elseIfExpr = ifRules[idx].ifCondition().ELSEIF() != null;
+                var elseExpr = ifRules[idx].ifCondition().ELSE() != null;
 
-                if (idx == 0 && !string.Equals(conditionLabel, "if:"))
+                if (idx == 0 && !ifExpr)
                 {
                     result.Add(new ReportEntry($"condition is not start with if: '{context.conditionalTemplateBody().GetText()}'", ReportEntryType.WARN));
                 }
 
-                if (idx > 0 && string.Equals(conditionLabel, "if:"))
+                if (idx > 0 && ifExpr)
                 {
                     result.Add(new ReportEntry($"condition can't have more than one if: '{context.conditionalTemplateBody().GetText()}'"));
                 }
 
-                if (idx == ifRules.Length - 1 && !string.Equals(conditionLabel, "else:"))
+                if (idx == ifRules.Length - 1 && !elseExpr)
                 {
                     result.Add(new ReportEntry($"condition is not end with else: '{context.conditionalTemplateBody().GetText()}'", ReportEntryType.WARN));
                 }
 
-                if (idx > 0 && idx < ifRules.Length - 1 && !string.Equals(conditionLabel, "elseif:"))
+                if (idx > 0 && idx < ifRules.Length - 1 && !elseIfExpr)
                 {
                     result.Add(new ReportEntry($"only elseif is allowed in middle of condition: '{context.conditionalTemplateBody().GetText()}'"));
                 }
 
                 // check rule should should with one and only expression
-                if (conditionLabel != "else:")
+                if (!elseExpr)
                 {
                     if (ifRules[idx].ifCondition().EXPRESSION().Length != 1)
                     {
