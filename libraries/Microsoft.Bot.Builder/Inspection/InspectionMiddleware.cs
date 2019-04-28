@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder
         {
             if (turnContext.Activity.Type == ActivityTypes.Message)
             {
-                var command = turnContext.Activity.Text.Split(' ');
+                var command = turnContext.Activity.Text.Trim().Split(' ');
                 if (command.Length > 1 && command[0] == Command)
                 {
                     if (command.Length == 2 && command[1] == "open")
