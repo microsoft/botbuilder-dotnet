@@ -1,6 +1,7 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
@@ -16,6 +17,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Regex Match expression to match.
         /// </summary>
         public string Pattern { get { return _patternMatcher?.ToString(); } set { _patternMatcher = new Regex(value); } }
+
+
+        public TextInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        {
+            this.RegisterSourceLocation(callerPath, callerLine);
+        }
 
         protected override TextPrompt CreatePrompt()
         {

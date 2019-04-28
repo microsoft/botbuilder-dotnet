@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Runtime.CompilerServices;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
@@ -26,8 +27,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// </summary>
         public int Precision { get; set; } = 0;
 
-        public NumberInput()
+        public NumberInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
+            this.RegisterSourceLocation(callerPath, callerLine);
         }
 
         protected override NumberPrompt<float> CreatePrompt()
