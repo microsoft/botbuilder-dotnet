@@ -145,7 +145,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
 
                 if (IsShortHandExpression(property))
                 {
-                    throw new Exception($"shorthand like {property} is not allowed in an accessor");
+                    throw new Exception($"shorthand like {property} is not allowed in an accessor in context '{context.GetText()}'");
                 }
 
                 return MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(property), instance);
