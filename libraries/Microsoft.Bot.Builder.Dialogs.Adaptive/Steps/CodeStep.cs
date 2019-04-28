@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,8 +17,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     {
         private readonly CodeStepHandler codeHandler;
 
-        public CodeStep(CodeStepHandler codeHandler) : base()
+        public CodeStep(CodeStepHandler codeHandler, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0) : base()
         {
+            this.RegisterSourceLocation(callerPath, callerLine);
             this.codeHandler = codeHandler ?? throw new ArgumentNullException(nameof(codeHandler));
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -7,6 +8,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
     public class DateTimeInput : InputWrapper<DateTimePrompt, IList<DateTimeResolution>>
     {
+        public DateTimeInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        {
+            this.RegisterSourceLocation(callerPath, callerLine);
+        }
+
         protected override DateTimePrompt CreatePrompt()
         {
             return new DateTimePrompt(null, new PromptValidator<IList<DateTimeResolution>>(async (promptContext, cancel) =>
