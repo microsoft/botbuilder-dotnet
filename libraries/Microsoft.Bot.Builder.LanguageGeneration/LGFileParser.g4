@@ -57,5 +57,5 @@ ifConditionRule
     ;
 
 ifCondition
-    : DASH IFELSE (WS|TEXT|EXPRESSION)*
+    : DASH (IF|ELSE|ELSEIF) (WS|TEXT|EXPRESSION)*
     ;
