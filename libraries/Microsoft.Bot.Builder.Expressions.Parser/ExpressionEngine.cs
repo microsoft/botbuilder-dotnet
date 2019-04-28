@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                     return MakeExpression(functionName, parameters.ToArray());
                 }
 
-                throw new Exception("This format is wrong.");
+                throw new Exception($"This format is wrong in expression '{context.GetText()}'");
             }
 
             public override Expression VisitIdAtom([NotNull] ExpressionParser.IdAtomContext context)
@@ -145,7 +145,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
 
                 if (IsShortHandExpression(property))
                 {
-                    throw new Exception($"shorthand like {property} is not allowed in an accessor");
+                    throw new Exception($"shorthand like {property} is not allowed in an accessor in expression '{context.GetText()}'");
                 }
 
                 return MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(property), instance);
@@ -163,7 +163,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                     return Expression.ConstantExpression(doubleValue);
                 }
 
-                throw new Exception($"{context.GetText()} is not a number.");
+                throw new Exception($"{context.GetText()} is not a number in expression '{context.GetText()}'");
             }
 
             public override Expression VisitParenthesisExp([NotNull] ExpressionParser.ParenthesisExpContext context) => Visit(context.expression());
