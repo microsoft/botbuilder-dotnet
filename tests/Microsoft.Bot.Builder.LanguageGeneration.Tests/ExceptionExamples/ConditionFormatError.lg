@@ -30,7 +30,5 @@
 # template5
 - IF  : {true}
   - hi
-- IF  : {true}
-  - hi
 - ELSE  : 
  - hi
