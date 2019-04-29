@@ -272,7 +272,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     threadId,
                     text = description,
                     preserveFocusHint = false,
-                    allThreadsStopped = true,
+                    allThreadsStopped = false,
                 };
 
                 await SendAsync(Protocol.Event.From(NextSeq, "stopped", body), cancellationToken).ConfigureAwait(false);
