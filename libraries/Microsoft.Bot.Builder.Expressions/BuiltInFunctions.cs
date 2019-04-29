@@ -1150,7 +1150,7 @@ namespace Microsoft.Bot.Builder.Expressions
             }
         }
 
-        private static (Func<DateTime, DateTime>, string) GetPastDateTime(long interval, string timeUnit)
+        private static (Func<DateTime, DateTime>, string) pastDateTimeConverter(long interval, string timeUnit)
         {
             Func<DateTime, DateTime> result = (dateTime) => dateTime;
             string error = null;
@@ -1435,11 +1435,11 @@ namespace Microsoft.Bot.Builder.Expressions
                             if (args[0] is string string0 && args[1] is int int1 && args[2] is string string2)
                             {
                                 var format = (args.Count() == 4) ? (string)args[3] : DefaultDateTimeFormat;
-                                Func<DateTime, DateTime> pastDateTimeFunc;
-                                (pastDateTimeFunc, error) = GetPastDateTime(int1, string2);
+                                Func<DateTime, DateTime> timeConverter;
+                                (timeConverter, error) = pastDateTimeConverter(int1, string2);
                                 if (error == null)
                                 {
-                                    (value, error) = ParseTimestamp(string0, dt => pastDateTimeFunc(dt).ToString(format));
+                                    (value, error) = ParseTimestamp(string0, dt => timeConverter(dt).ToString(format));
                                 }
                             }
                             else
