@@ -1152,20 +1152,20 @@ namespace Microsoft.Bot.Builder.Expressions
 
         private static (Func<DateTime, DateTime>, string) pastDateTimeConverter(long interval, string timeUnit)
         {
-            Func<DateTime, DateTime> result = (dateTime) => dateTime;
+            Func<DateTime, DateTime> converter = (dateTime) => dateTime;
             string error = null;
             switch (timeUnit.ToLower())
             {
-                case "second": result = (dateTime) => dateTime.AddSeconds(-interval); break;
-                case "minute": result = (dateTime) => dateTime.AddMinutes(-interval); break;
-                case "hour": result = (dateTime) => dateTime.AddHours(-interval); break;
-                case "day": result = (dateTime) => dateTime.AddDays(-interval); break;
-                case "week": result = (dateTime) => dateTime.AddDays(-(interval * 7)); break;
-                case "month": result = (dateTime) => dateTime.AddMonths(-(int)interval); break;
-                case "year": result = (dateTime) => dateTime.AddYears(-(int)interval); break;
+                case "second": converter = (dateTime) => dateTime.AddSeconds(-interval); break;
+                case "minute": converter = (dateTime) => dateTime.AddMinutes(-interval); break;
+                case "hour": converter = (dateTime) => dateTime.AddHours(-interval); break;
+                case "day": converter = (dateTime) => dateTime.AddDays(-interval); break;
+                case "week": converter = (dateTime) => dateTime.AddDays(-(interval * 7)); break;
+                case "month": converter = (dateTime) => dateTime.AddMonths(-(int)interval); break;
+                case "year": converter = (dateTime) => dateTime.AddYears(-(int)interval); break;
                 default: error = $"{timeUnit} is not a valid time unit."; break;
             }
-            return (result, error);
+            return (converter, error);
         }
 
         private static (object, string) ParseTimestamp(string timeStamp, Func<DateTime, object> transform = null)
