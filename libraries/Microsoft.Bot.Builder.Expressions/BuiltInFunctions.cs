@@ -1152,7 +1152,7 @@ namespace Microsoft.Bot.Builder.Expressions
 
         private static (Func<DateTime, DateTime>, string) GetPastDateTime(long interval, string timeUnit)
         {
-            Func<DateTime, DateTime> result = (dateTime) => { return DateTime.Now; };
+            Func<DateTime, DateTime> result = (dateTime) => dateTime;
             string error = null;
             switch (timeUnit.ToLower())
             {
