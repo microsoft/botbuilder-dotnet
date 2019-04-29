@@ -41,6 +41,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             {
                 this.stateByFilter.TryAdd(filter, true);
             }
+
+            this.stateByFilter[DialogContext.DialogEvents.EndDialog] = false;
         }
 
         void IEvents.Reset(IEnumerable<string> filters)
