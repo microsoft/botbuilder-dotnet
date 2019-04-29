@@ -33,10 +33,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
         /// </summary>
         /// <param name="expression">Expression to parse.</param>
         /// <returns>Expresion tree.</returns>
-        public Expression Parse(string expression)
-        {
-            return new ExpressionTransformer(_lookup).Transform(AntlrParse(expression));
-        }
+        public Expression Parse(string expression) => new ExpressionTransformer(_lookup).Transform(AntlrParse(expression));
 
         private IParseTree AntlrParse(string expression)
         {
@@ -59,10 +56,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                 _lookup = lookup;
             }
 
-            public Expression Transform(IParseTree context)
-            {
-                return Visit(context);
-            }
+            public Expression Transform(IParseTree context) => Visit(context);
 
             public override Expression VisitUnaryOpExp([NotNull] ExpressionParser.UnaryOpExpContext context)
             {
@@ -106,7 +100,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                     return MakeExpression(functionName, parameters.ToArray());
                 }
 
-                throw new Exception("This format is wrong.");
+                throw new Exception($"This format is wrong in expression '{context.GetText()}'");
             }
 
             public override Expression VisitIdAtom([NotNull] ExpressionParser.IdAtomContext context)
@@ -151,7 +145,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
 
                 if (IsShortHandExpression(property))
                 {
-                    throw new Exception($"shorthand like {property} is not allowed in an accessor");
+                    throw new Exception($"shorthand like {property} is not allowed in an accessor in expression '{context.GetText()}'");
                 }
 
                 return MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(property), instance);
@@ -169,7 +163,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                     return Expression.ConstantExpression(doubleValue);
                 }
 
-                throw new Exception($"{context.GetText()} is not a number.");
+                throw new Exception($"{context.GetText()} is not a number in expression '{context.GetText()}'");
             }
 
             public override Expression VisitParenthesisExp([NotNull] ExpressionParser.ParenthesisExpContext context) => Visit(context.expression());
@@ -189,9 +183,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             }
 
             private Expression MakeExpression(string type, params Expression[] children)
-            {
-                return Expression.MakeExpression(_lookup(type), children);
-            }
+                => Expression.MakeExpression(_lookup(type), children);
 
             private IEnumerable<Expression> ProcessArgsList(ExpressionParser.ArgsListContext context)
             {
@@ -205,9 +197,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             }
 
             private bool IsShortHandExpression(string name)
-            {
-                return name.StartsWith("#") || name.StartsWith("@") || name.StartsWith("$");
-            }
+                => name.StartsWith("#") || name.StartsWith("@") || name.StartsWith("$");
 
             private Expression MakeShortHandExpression(string name)
             {

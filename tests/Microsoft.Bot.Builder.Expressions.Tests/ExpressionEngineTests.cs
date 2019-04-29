@@ -123,6 +123,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("'string'&'builder'","stringbuilder"),
             Test("\"string\"&\"builder\"","stringbuilder"),
             Test("one > 0.5 && two < 2.5", true, oneTwo),
+            Test("notThere > 4", false), 
             Test("float(5.5) && float(0.0)", true),
             Test("hello && \"hello\"", true),
             Test("items || ((2 + 2) <= (4 - 1))", true), // true || false

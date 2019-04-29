@@ -37,9 +37,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
                 loader = new DefaultLoader();
             }
 
-            types.Add(name, type);
-            names.Add(type, name);
-            builders.Add(type, loader);
+            lock (types)
+            {
+                if (!types.ContainsKey(name))
+                {
+                    types.Add(name, type);
+                }
+            }
+            lock(names)
+            {
+                if (!names.ContainsKey(type))
+                {
+                    names.Add(type, name);
+                }
+            }
+
+            lock(builders)
+            {
+                if (!builders.ContainsKey(type))
+                {
+                    builders.Add(type, loader);
+                }
+            }
         }
 
         public static async Task RegisterPlugin(IPlugin plugin)

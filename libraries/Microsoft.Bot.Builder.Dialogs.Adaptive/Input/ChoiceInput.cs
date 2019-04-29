@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,6 +24,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public string ChoicesProperty { get; set; }
 
         public ListStyle Style { get; set; }
+
+        public ChoiceInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        {
+            this.RegisterSourceLocation(callerPath, callerLine);
+        }
 
         // Override the base method since we need to pass choices to the prompt options
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))

@@ -25,3 +25,10 @@
   - hi
 - ELSE: 
  - hi
+
+> at most one space is allowed between if/else/elseif and :
+# template5
+- IF  : {true}
+  - hi
+- ELSE  : 
+ - hi

@@ -6,8 +6,11 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.LanguageGeneration.Renderer;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
@@ -19,8 +22,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         private TestFlow CreateFlow(IRuleSelector selector)
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
+            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+            var storage = new MemoryStorage();
+            var convoState = new ConversationState(storage);
+            var userState = new UserState(storage);
+            var resourceExplorer = new ResourceExplorer();
+            var lg = new LGLanguageGenerator(resourceExplorer);
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            adapter
+                .UseStorage(storage)
+                .UseState(userState, convoState)
+                .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGenerator(lg)
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+
             var planningDialog = new AdaptiveDialog() { Selector = selector };
             planningDialog.Recognizer = new RegexRecognizer
             {
@@ -43,23 +58,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 new IntentRule("trigger", steps: new List<IDialog> { new SendActivity("default")})
             });
             planningDialog.AutoEndDialog = false;
-
-            var botResourceManager = new ResourceExplorer();
-            var lg = new LGLanguageGenerator(botResourceManager);
-
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new RegisterClassMiddleware<ResourceExplorer>(botResourceManager))
-                .Use(new RegisterClassMiddleware<ILanguageGenerator>(lg))
-                .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
-                .Use(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)))
-                .Use(new AutoSaveStateMiddleware(convoState, userState))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
-
-            var userStateProperty = userState.CreateProperty<Dictionary<string, object>>("user");
-            var convoStateProperty = convoState.CreateProperty<Dictionary<string, object>>("conversation");
-
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-            var dialogs = new DialogSet(dialogState);
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {

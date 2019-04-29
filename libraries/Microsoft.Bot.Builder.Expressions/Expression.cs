@@ -229,30 +229,40 @@ namespace Microsoft.Bot.Builder.Expressions
         public override string ToString()
         {
             var builder = new StringBuilder();
+            var valid = false;
 
             // Special support for memory paths
-            if (Type == ExpressionType.Accessor)
+            if (Type == ExpressionType.Accessor && Children.Length >= 1)
             {
-                var prop = (Children[0] as Constant).Value;
-                if (Children.Count() == 1)
+                if (Children[0] is Constant cnst
+                    && cnst.Value is string prop)
                 {
-                    builder.Append(prop);
-                }
-                else
-                {
-                    builder.Append(Children[1].ToString());
-                    builder.Append('.');
-                    builder.Append(prop);
+                    if (Children.Length == 1)
+                    {
+                        valid = true;
+                        builder.Append(prop);
+                    }
+                    else if (Children.Length == 2)
+                    {
+                        valid = true;
+                        builder.Append(Children[1].ToString());
+                        builder.Append('.');
+                        builder.Append(prop);
+                    }
                 }
             }
-            else if (Type == ExpressionType.Element)
+            // Element support
+            else if (Type == ExpressionType.Element && Children.Length == 2)
             {
+                valid = true;
                 builder.Append(Children[0].ToString());
                 builder.Append('[');
                 builder.Append(Children[1].ToString());
                 builder.Append(']');
             }
-            else
+
+            // Generic version
+            if (!valid)
             {
                 var infix = Type.Length > 0 && !char.IsLetter(Type[0]) && Children.Count() >= 2;
                 if (!infix)
