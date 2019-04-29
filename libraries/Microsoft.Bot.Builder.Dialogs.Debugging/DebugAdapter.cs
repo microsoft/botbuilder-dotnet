@@ -22,10 +22,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private readonly IDataModel dataModel;
         private readonly Source.IRegistry registry;
         private readonly IBreakpoints breakpoints;
+        private readonly IEvents events;
         private readonly Action terminate;
 
         // lifetime scoped to IMiddleware.OnTurnAsync
-        private readonly ConcurrentDictionary<string, ThreadModel> threadByContext = new ConcurrentDictionary<string, ThreadModel>();
+        private readonly ConcurrentDictionary<string, ThreadModel> threadByTurnId = new ConcurrentDictionary<string, ThreadModel>();
         private readonly Identifier<ThreadModel> threads = new Identifier<ThreadModel>();
 
         private sealed class ThreadModel
@@ -105,9 +106,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         private readonly Task task;
 
-        public DebugAdapter(int port, Source.IRegistry registry, IBreakpoints breakpoints, Action terminate, ICodeModel codeModel = null, IDataModel dataModel = null, ILogger logger = null, ICoercion coercion = null)
+        public DebugAdapter(int port, Source.IRegistry registry, IBreakpoints breakpoints, Action terminate, IEvents events = null,ICodeModel codeModel = null, IDataModel dataModel = null, ILogger logger = null, ICoercion coercion = null)
             : base(logger)
         {
+            this.events = events ?? new Events();
             this.codeModel = codeModel ?? new CodeModel();
             this.dataModel = dataModel ?? new DataModel(coercion ?? new Coercion());
             this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
@@ -130,7 +132,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
             var thread = new ThreadModel(turnContext, codeModel);
             var threadId = threads.Add(thread);
-            threadByContext.TryAdd(getThreadId(turnContext), thread);
+            threadByTurnId.TryAdd(TurnIdFor(turnContext), thread);
             try
             {
                 thread.Run.Post(Phase.Started);
@@ -145,12 +147,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 thread.Run.Post(Phase.Exited);
                 await UpdateThreadPhaseAsync(thread, null, cancellationToken).ConfigureAwait(false);
 
-                threadByContext.TryRemove(getThreadId(turnContext), out var ignored);
+                threadByTurnId.TryRemove(TurnIdFor(turnContext), out var ignored);
                 threads.Remove(thread);
             }
         }
 
-        private static string getThreadId(ITurnContext turnContext)
+        private static string TurnIdFor(ITurnContext turnContext)
         {
             return $"{turnContext.Activity.ChannelId}-{turnContext.Activity.Id}";
         }
@@ -163,14 +165,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                 await UpdateBreakpointsAsync(cancellationToken).ConfigureAwait(false);
 
-                if (threadByContext.TryGetValue(getThreadId(context.Context), out ThreadModel thread))
+                if (threadByTurnId.TryGetValue(TurnIdFor(context.Context), out ThreadModel thread))
                 {
                     thread.LastContext = context;
                     thread.LastItem = item;
                     thread.LastMore = more;
 
                     var run = thread.Run;
-                    if (breakpoints.IsBreakPoint(item))
+                    if (breakpoints.IsBreakPoint(item) && events[more])
                     {
                         run.Post(Phase.Breakpoint);
                     }
@@ -307,19 +309,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private int sequence = 0;
         private int NextSeq => Interlocked.Increment(ref sequence);
 
+        private Protocol.Capabilities MakeCapabilities()
+        {
+            // TODO: there is a "capabilities" event for dynamic updates, but exceptionBreakpointFilters does not seem to be dynamically updateable
+            return new Protocol.Capabilities()
+            {
+                supportsConfigurationDoneRequest = true,
+                supportsSetVariable = true,
+                supportsEvaluateForHovers = true,
+                supportsFunctionBreakpoints = true,
+                exceptionBreakpointFilters = this.events.Filters,
+                supportTerminateDebuggee = this.terminate != null,
+                supportsTerminateRequest = this.terminate != null,
+            };
+        }
+
         private async Task<Protocol.Message> DispatchAsync(Protocol.Message message, CancellationToken cancellationToken)
         {
             if (message is Protocol.Request<Protocol.Initialize> initialize)
             {
-                var body = new Protocol.Capabilities()
-                {
-                    supportsConfigurationDoneRequest = true,
-                    supportsSetVariable = true,
-                    supportsEvaluateForHovers = true,
-                    supportsFunctionBreakpoints = true,
-                    supportTerminateDebuggee = this.terminate != null,
-                    supportsTerminateRequest = this.terminate != null,
-                };
+                var body = MakeCapabilities();
                 var response = Protocol.Response.From(NextSeq, initialize, body);
                 await SendAsync(response, cancellationToken).ConfigureAwait(false);
                 return Protocol.Event.From(NextSeq, "initialized", new { });
@@ -365,6 +374,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 }
 
                 return Protocol.Response.From(NextSeq, setFunctionBreakpoints, new { breakpoints });
+            }
+            else if (message is Protocol.Request<Protocol.SetExceptionBreakpoints> setExceptionBreakpoints)
+            {
+                var arguments = setExceptionBreakpoints.arguments;
+                this.events.Reset(arguments.filters);
+
+                return Protocol.Response.From(NextSeq, setExceptionBreakpoints, new { });
             }
             else if (message is Protocol.Request<Protocol.Threads> threads)
             {

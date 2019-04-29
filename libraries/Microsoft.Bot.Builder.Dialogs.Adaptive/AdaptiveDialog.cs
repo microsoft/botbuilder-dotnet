@@ -9,9 +9,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
+using static Microsoft.Bot.Builder.Dialogs.Debugging.DebugSupport;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
@@ -605,7 +607,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var context = planning.Context;
             if (Recognizer != null)
             {
-                await planning.DebuggerStepAsync(Recognizer, cancellationToken).ConfigureAwait(false);
+                await planning.DebuggerStepAsync(Recognizer, DialogContext.DialogEvents.OnRecognize, cancellationToken).ConfigureAwait(false);
                 var result = await Recognizer.RecognizeAsync(context, cancellationToken).ConfigureAwait(false);
                 // only allow one intent 
                 var topIntent = result.GetTopScoringIntent();

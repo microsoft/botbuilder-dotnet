@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Extensions.Configuration;
+using static Microsoft.Bot.Builder.Dialogs.Debugging.DebugSupport;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -241,7 +242,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             State.SetValue("dialog.result", stateBindings);
 
             // Call dialogs BeginAsync() method.
-            await DebuggerStepAsync(dialog, cancellationToken).ConfigureAwait(false);
+            await this.DebuggerStepAsync(dialog, DialogEvents.BeginDialog, cancellationToken).ConfigureAwait(false);
             return await dialog.BeginDialogAsync(this, options: options, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
@@ -327,7 +328,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
 
                 // Return result to previous dialog
-                await DebuggerStepAsync(dialog, cancellationToken).ConfigureAwait(false);
+                await this.DebuggerStepAsync(dialog, DialogEvents.ResumeDialog, cancellationToken).ConfigureAwait(false);
                 return await dialog.ResumeDialogAsync(this, DialogReason.EndCalled, result, cancellationToken).ConfigureAwait(false);
             }
             else
@@ -343,10 +344,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>The dialog context.</returns>
         public Task<DialogTurnResult> CancelAllDialogsAsync(CancellationToken cancellationToken)
         {
-            return CancelAllDialogsAsync("cancelDialog", null, cancellationToken);
+            return CancelAllDialogsAsync(DialogEvents.CancelDialog, null, cancellationToken);
         }
 
-        public async Task<DialogTurnResult> CancelAllDialogsAsync(string eventName = "cancelDialog", object eventValue = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<DialogTurnResult> CancelAllDialogsAsync(string eventName = DialogEvents.CancelDialog, object eventValue = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (eventValue is CancellationToken)
             {
@@ -430,7 +431,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public async Task RepromptDialogAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             // Emit 'RepromptDialog' event
-            var handled = await EmitEventAsync("repromptDialog", null, false, cancellationToken).ConfigureAwait(false);
+            var handled = await EmitEventAsync(DialogEvents.RepromptDialog, null, false, cancellationToken).ConfigureAwait(false);
 
             if (!handled)
             {
@@ -445,7 +446,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
 
                     // Ask dialog to re-prompt if supported
-                    await DebuggerStepAsync(dialog, cancellationToken).ConfigureAwait(false);
+                    await this.DebuggerStepAsync(dialog, DialogEvents.RepromptDialog, cancellationToken).ConfigureAwait(false);
                     await dialog.RepromptDialogAsync(Context, ActiveDialog, cancellationToken).ConfigureAwait(false);
                 }
             }
@@ -473,6 +474,17 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return null;
+        }
+
+        public class DialogEvents
+        {
+            public const string BeginDialog = "beginDialog";
+            public const string ResumeDialog = "resumeDialog";
+            public const string RepromptDialog = "repromptDialog";
+            public const string ConsultDialog = "consultDialog";
+            public const string CancelDialog = "cancelDialog";
+            public const string EndDialog = "endDialog";
+            public const string OnRecognize = "onRecognize";
         }
 
         /// <summary>
@@ -508,6 +520,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                     if (dialog != null)
                     {
+                        await this.DebuggerStepAsync(dialog, name, cancellationToken).ConfigureAwait(false);
                         handled = await dialog.OnDialogEventAsync(dc, dialogEvent, cancellationToken).ConfigureAwait(false);
                     }
                 }
@@ -548,18 +561,13 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
 
                 // Consult dialog
-                await DebuggerStepAsync(dialog, cancellationToken).ConfigureAwait(false);
+                await this.DebuggerStepAsync(dialog, DialogEvents.ConsultDialog, cancellationToken).ConfigureAwait(false);
                 return await dialog.ConsultDialogAsync(this, cancellationToken).ConfigureAwait(false);
             }
             else
             {
                 return null;
             }
-        }
-
-        public async Task DebuggerStepAsync(object item, CancellationToken cancellationToken, [CallerMemberName]string memberName = null)
-        {
-            await Context.GetDebugger().StepAsync(this, item, memberName, cancellationToken).ConfigureAwait(false);
         }
 
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -577,7 +585,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 if (dialog != null)
                 {
                     // Notify dialog of end
-                    await DebuggerStepAsync(dialog, cancellationToken).ConfigureAwait(false);
+                    await this.DebuggerStepAsync(dialog, DialogEvents.EndDialog, cancellationToken).ConfigureAwait(false);
                     await dialog.EndDialogAsync(Context, instance, reason, cancellationToken).ConfigureAwait(false);
                 }
 
