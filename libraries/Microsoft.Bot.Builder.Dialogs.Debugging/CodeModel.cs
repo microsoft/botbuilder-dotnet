@@ -94,6 +94,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         public override string ToString() => Name;
 
-        object ICodePoint.Evaluate(string expression) => DialogContext.State.GetValue<JToken>(expression);
+        object ICodePoint.Evaluate(string expression) => DialogContext.State.GetValue<object>(expression);
     }
 }
