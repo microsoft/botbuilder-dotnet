@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.TestBot.Json
+namespace Microsoft.BotBuilderSamples
 {
     public class JavascriptStep : DialogCommand
     {
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                         payload.state.conversation, 
                         payload.state.dialog, 
                         payload.state.turn);
-	                
+
                     return JSON.stringify(payload, null, 4);
                 }");
 
