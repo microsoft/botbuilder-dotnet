@@ -110,7 +110,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.LanguageGeneration.Tests", "tests\Microsoft.Bot.Builder.LanguageGeneration.Tests\Microsoft.Bot.Builder.LanguageGeneration.Tests.csproj", "{72EE26E2-E8BE-4169-82AD-93E021539C34}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.LanguageGeneration.Renderer.Tests", "tests\Microsoft.Bot.Builder.LanguageGeneration.Renderer.Tests\Microsoft.Bot.Builder.LanguageGeneration.Renderer.Tests.csproj", "{240646C5-EFCB-4CF1-AF8E-7036558CD78C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.LanguageGeneration.Renderer.Tests", "tests\Microsoft.Bot.Builder.LanguageGeneration.Renderer.Tests\Microsoft.Bot.Builder.LanguageGeneration.Renderer.Tests.csproj", "{240646C5-EFCB-4CF1-AF8E-7036558CD78C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
