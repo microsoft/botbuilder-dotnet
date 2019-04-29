@@ -53,7 +53,7 @@ namespace Microsoft.BotBuilderSamples
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             switch (chosenBot)
             {
-                case "MyBot":
+                case "EchoBot":
                     services.AddTransient<IBot, MyBot>();
                     break;
 
