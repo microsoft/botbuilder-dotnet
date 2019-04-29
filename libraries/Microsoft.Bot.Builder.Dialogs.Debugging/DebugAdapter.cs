@@ -182,11 +182,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                         // TODO: remove synchronous waits
                         UpdateThreadPhaseAsync(thread, item, cancellationToken).GetAwaiter().GetResult();
 
+                        // while the stopped condition is true, atomically release the mutex
                         while (!(run.Phase == Phase.Started || run.Phase == Phase.Continue || run.Phase == Phase.Next))
                         {
                             Monitor.Wait(run.Gate);
                         }
 
+                        // started is just use the signal to Visual Studio Code that there is a new thread
                         if (run.Phase == Phase.Started)
                         {
                             run.Phase = Phase.Continue;
@@ -195,6 +197,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                         // TODO: remove synchronous waits
                         UpdateThreadPhaseAsync(thread, item, cancellationToken).GetAwaiter().GetResult();
 
+                        // allow one step to progress since next was requested
                         if (run.Phase == Phase.Next)
                         {
                             run.Phase = Phase.Step;
