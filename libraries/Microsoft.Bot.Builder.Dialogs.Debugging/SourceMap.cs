@@ -83,33 +83,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private static bool PathEquals(string one, string two) =>
             string.Equals(one, two, StringComparison.CurrentCultureIgnoreCase);
 
-        public static bool Equals(Protocol.Breakpoint breakpoint, Source.Range range) =>
-            (breakpoint.source == null && range == null)
-            || (PathEquals(breakpoint.source.path, range.Path)
-                && breakpoint.line == range.Start.LineIndex
-                && breakpoint.endLine == range.After.LineIndex
-                && breakpoint.column == range.Start.CharIndex
-                && breakpoint.endColumn == range.After.CharIndex);
+        public static bool Equals(Protocol.Range target, Source.Range source) =>
+            (target.source == null && source == null)
+            || (PathEquals(target.source.path, source.Path)
+                && target.line == source.Start.LineIndex
+                && target.endLine == source.After.LineIndex
+                && target.column == source.Start.CharIndex
+                && target.endColumn == source.After.CharIndex);
 
-        public static void Assign(Protocol.Breakpoint breakpoint, Source.Range range)
+        public static void Assign(Protocol.Range target, Source.Range source)
         {
-            if (range != null)
+            if (source != null)
             {
-                breakpoint.verified = true;
-                breakpoint.source = new Protocol.Source(range.Path);
-                breakpoint.line = range.Start.LineIndex;
-                breakpoint.endLine = range.After.LineIndex;
-                breakpoint.column = range.Start.CharIndex;
-                breakpoint.endColumn = range.After.CharIndex;
+                target.source = new Protocol.Source(source.Path);
+                target.line = source.Start.LineIndex;
+                target.endLine = source.After.LineIndex;
+                target.column = source.Start.CharIndex;
+                target.endColumn = source.After.CharIndex;
             }
             else
             {
-                breakpoint.verified = false;
-                breakpoint.source = null;
-                breakpoint.line = null;
-                breakpoint.endLine = null;
-                breakpoint.column = null;
-                breakpoint.endColumn = null;
+                target.source = null;
+                target.line = null;
+                target.endLine = null;
+                target.column = null;
+                target.endColumn = null;
             }
         }
 
@@ -123,6 +121,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
 
             row.item = item;
+            row.Breakpoint.verified = source != null;
             Assign(row.Breakpoint, source);
             return true;
         }

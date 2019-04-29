@@ -389,11 +389,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                     if (this.registry.TryGetValue(frame.Item, out var range))
                     {
-                        stackFrame.source = new Protocol.Source(range.Path);
-                        stackFrame.line = range.Start.LineIndex;
-                        stackFrame.column = range.Start.CharIndex;
-                        stackFrame.endLine = range.After.LineIndex;
-                        stackFrame.endColumn = range.After.CharIndex;
+                        SourceMap.Assign(stackFrame, range);
                     }
 
                     stackFrames.Add(stackFrame);
