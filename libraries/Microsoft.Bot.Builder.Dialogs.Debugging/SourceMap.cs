@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         public static bool Equals(Protocol.Breakpoint breakpoint, Source.Range range) =>
             (breakpoint.source == null && range == null)
-            || (breakpoint.source.path == range.Path
+            || (PathEquals(breakpoint.source.path, range.Path)
                 && breakpoint.line == range.Start.LineIndex
                 && breakpoint.endLine == range.After.LineIndex
                 && breakpoint.column == range.Start.CharIndex
