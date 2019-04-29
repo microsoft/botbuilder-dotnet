@@ -2,13 +2,25 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.Bot.Builder.LanguageGeneration.Renderer;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -24,6 +36,155 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         private const string _hostname = "https://dummy-hostname.azurewebsites.net/qnamaker";
 
         public TestContext TestContext { get; set; }
+
+        private TestFlow CreateFlow(AdaptiveDialog ruleDialog)
+        {
+            var explorer = new ResourceExplorer();
+            var lg = new LGLanguageGenerator(explorer);
+            var storage = new MemoryStorage();
+            var userState = new UserState(storage);
+            var conversationState = new ConversationState(storage);
+
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            adapter
+                .UseStorage(storage)
+                .UseState(userState, conversationState)
+                .UseResourceExplorer(explorer)
+                .UseLanguageGenerator(lg)
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+
+            var convoStateProperty = conversationState.CreateProperty<Dictionary<string, object>>("conversation");
+
+            var dialogState = conversationState.CreateProperty<DialogState>("dialogState");
+
+            ruleDialog.BotState = conversationState.CreateProperty<Microsoft.Bot.Builder.Dialogs.Adaptive.BotState>("bot");
+            ruleDialog.UserState = userState.CreateProperty<Dictionary<string, object>>("user"); ;
+
+            var dialogs = new DialogSet(dialogState);
+
+            return new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                await ruleDialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
+            });
+        }
+
+
+        [TestMethod]
+        public async Task QnAMakerDialog_Answers()
+        {
+            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+
+            var rootDialog = createDialog(mockHttp);
+
+            await CreateFlow(rootDialog)
+            .Send("moo")
+                .AssertReply("Yippee ki-yay!")
+            .Send("how do I clean the stove?")
+                .AssertReply("BaseCamp: You can use a damp rag to clean around the Power Pack")
+            .Send("moo")
+                .AssertReply("Yippee ki-yay!")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task QnAMakerDialog_NoAnswers()
+        {
+            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_TestThreshold.json"));
+
+            var rootDialog = createDialog(mockHttp);
+
+            await CreateFlow(rootDialog)
+            .Send("moo")
+                .AssertReply("Yippee ki-yay!")
+            .Send("how do I clean the stove?")
+                .AssertReply("I didn't understand that.")
+            .Send("moo")
+                .AssertReply("Yippee ki-yay!")
+            .StartTestAsync();
+        }
+
+        private AdaptiveDialog createDialog(MockHttpMessageHandler mockHttp)
+        {
+            var qna = GetQnAMaker(mockHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname
+                },
+                new QnAMakerOptions
+                {
+                    Top = 1
+                });
+
+            var rootDialog = new AdaptiveDialog("root")
+            {
+                Steps = new List<IDialog>()
+                {
+                    new BeginDialog()
+                    {
+                        Dialog = new AdaptiveDialog("outer")
+                        {
+                            AutoEndDialog = false,
+                            Recognizer = new RegexRecognizer()
+                            {
+                                Intents = new Dictionary<string, string>()
+                                {
+                                    { "CowboyIntent" , "moo" }
+                                }
+                            },
+                            Rules = new List<IRule>()
+                            {
+                                new IntentRule(intent: "CowboyIntent")
+                                {
+                                    Steps = new List<IDialog>()
+                                    {
+                                        new SendActivity("Yippee ki-yay!")
+                                    }
+                                },
+                                new UnknownIntentRule()
+                                {
+                                    Steps = new List<IDialog>()
+                                    {
+                                        new QnAMakerDialog(qnamaker:qna )
+                                        {
+                                            OutputBinding = "turn.LastResult"
+                                        },
+                                        new IfCondition()
+                                        {
+                                             Condition = new ExpressionEngine().Parse("turn.LastResult == false"),
+                                             Steps =   new List<IDialog>()
+                                             {
+                                                 new SendActivity("I didn't understand that.")
+                                             }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                Rules = new List<IRule>()
+                {
+                    new EventRule()
+                    {
+                        Events = new List<string>() { "UnhandledUnknownIntent"},
+                        Steps = new List<IDialog>()
+                        {
+                            new EditArray(),
+                            new SendActivity("magenta")
+                        }
+                    }
+                }
+            };
+            return rootDialog;
+        }
 
         [TestMethod]
         [TestCategory("AI")]
@@ -311,7 +472,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
                 .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
-            
+
             var qnaWithZeroValueThreshold = GetQnAMaker(mockHttp,
                 new QnAMakerEndpoint
                 {
@@ -323,10 +484,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 {
                     ScoreThreshold = 0.0F
                 });
-            
+
             var results = await qnaWithZeroValueThreshold
                 .GetAnswersAsync(GetContext("how do I clean the stove?"), new QnAMakerOptions() { Top = 1 });
-            
+
             Assert.IsNotNull(results);
             Assert.AreEqual(1, results.Length);
         }
@@ -513,7 +674,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetV2LegacyRequestUrl())
                 .Respond("application/json", GetResponse("QnaMaker_LegacyEndpointAnswer.json"));
-            
+
             var v2LegacyEndpoint = new QnAMakerEndpoint
             {
                 KnowledgeBaseId = _knowlegeBaseId,
@@ -522,7 +683,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             };
 
             var v2Qna = GetQnAMaker(mockHttp, v2LegacyEndpoint);
-            
+
             var v2legacyResult = await v2Qna.GetAnswersAsync(GetContext("How do I be the best?"));
 
             Assert.IsNotNull(v2legacyResult);
@@ -537,7 +698,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetV3LegacyRequestUrl())
                 .Respond("application/json", GetResponse("QnaMaker_LegacyEndpointAnswer.json"));
-            
+
             var v3LegacyEndpoint = new QnAMakerEndpoint
             {
                 KnowledgeBaseId = _knowlegeBaseId,
@@ -546,7 +707,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             };
 
             var v3Qna = GetQnAMaker(mockHttp, v3LegacyEndpoint);
-            
+
             var v3legacyResult = await v3Qna.GetAnswersAsync(GetContext("How do I be the best?"));
 
             Assert.IsNotNull(v3legacyResult);
@@ -572,7 +733,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     EndpointKey = _endpointKey,
                     Host = _hostname
                 });
-            
+
             var options = new QnAMakerOptions
             {
                 MetadataBoost = new Metadata[]
@@ -583,7 +744,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             };
 
             var results = await qna.GetAnswersAsync(GetContext("who loves me?"), options);
-            
+
             Assert.IsNotNull(results);
             Assert.AreEqual(results.Length, 1, "should get one result");
             StringAssert.StartsWith(results[0].Answer, "Kiki");
@@ -599,18 +760,18 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
                 .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_GivenScoreThresholdQueryOption.json"));
-            
+
             var interceptHttp = new InterceptRequestHandler(mockHttp);
 
             var qna = GetQnAMaker(
-                interceptHttp, 
+                interceptHttp,
                 new QnAMakerEndpoint()
                 {
                     KnowledgeBaseId = _knowlegeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname
                 });
-            
+
             var queryOptionsWithScoreThreshold = new QnAMakerOptions()
             {
                 ScoreThreshold = 0.5F,
@@ -618,7 +779,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             };
 
             var result = await qna.GetAnswersAsync(
-                    GetContext("What happens when you hug a porcupine?"), 
+                    GetContext("What happens when you hug a porcupine?"),
                     queryOptionsWithScoreThreshold
             );
 
@@ -638,7 +799,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
                 .Respond(System.Net.HttpStatusCode.BadGateway);
-            
+
             var qna = GetQnAMaker(
                 mockHttp,
                 new QnAMakerEndpoint()
@@ -647,9 +808,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     EndpointKey = _endpointKey,
                     Host = _hostname
                 });
-            
+
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
-        }        
+        }
 
         private string GetV2LegacyRequestUrl() => $"{_hostname}/v2.0/knowledgebases/{_knowlegeBaseId}/generateanswer";
         private string GetV3LegacyRequestUrl() => $"{_hostname}/v3.0/knowledgebases/{_knowlegeBaseId}/generateanswer";
