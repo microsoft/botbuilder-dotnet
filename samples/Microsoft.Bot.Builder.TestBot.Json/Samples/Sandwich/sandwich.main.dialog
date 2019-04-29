@@ -97,6 +97,9 @@
                 {
                   "$type": "Microsoft.SendActivity",
                   "activity": "[MeatAndBread]"
+                },
+                {
+                  "$type":"Microsoft.EndTurn",
                 }
               ]
             },
@@ -111,6 +114,9 @@
                 {
                   "$type": "Microsoft.SendActivity",
                   "activity": "[Meat]"
+                },
+                {
+                  "$type":"Microsoft.EndTurn",
                 }
               ]
             },
@@ -124,6 +130,9 @@
                 {
                   "$type": "Microsoft.SendActivity",
                   "activity": "[Cheese]"
+                },
+                {
+                  "$type":"Microsoft.EndTurn",
                 }
               ]
             },
@@ -137,6 +146,9 @@
                 {
                   "$type": "Microsoft.SendActivity",
                   "activity": "[Bread]"
+                },
+                {
+                  "$type":"Microsoft.EndTurn",
                 }
               ]
             },
@@ -150,6 +162,9 @@
                 {
                   "$type": "Microsoft.SendActivity",
                   "activity": "[Toppings]"
+                },
+                {
+                  "$type":"Microsoft.EndTurn",
                 }
               ]
             }
