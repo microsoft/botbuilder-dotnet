@@ -1150,21 +1150,22 @@ namespace Microsoft.Bot.Builder.Expressions
             }
         }
 
-        private static (TimeSpan, string) GetTimeSpan(long interval, string timeUnit)
+        private static (Func<DateTime, DateTime>, string) pastDateTimeConverter(long interval, string timeUnit)
         {
-            TimeSpan span;
+            Func<DateTime, DateTime> converter = (dateTime) => dateTime;
             string error = null;
             switch (timeUnit.ToLower())
             {
-                // TODO: support month and year
-                case "second": span = TimeSpan.FromSeconds(interval); break;
-                case "minute": span = TimeSpan.FromMinutes(interval); break;
-                case "hour": span = TimeSpan.FromHours(interval); break;
-                case "day": span = TimeSpan.FromDays(interval); break;
-                case "week": span = TimeSpan.FromDays(interval * 7); break;
+                case "second": converter = (dateTime) => dateTime.AddSeconds(-interval); break;
+                case "minute": converter = (dateTime) => dateTime.AddMinutes(-interval); break;
+                case "hour": converter = (dateTime) => dateTime.AddHours(-interval); break;
+                case "day": converter = (dateTime) => dateTime.AddDays(-interval); break;
+                case "week": converter = (dateTime) => dateTime.AddDays(-(interval * 7)); break;
+                case "month": converter = (dateTime) => dateTime.AddMonths(-(int)interval); break;
+                case "year": converter = (dateTime) => dateTime.AddYears(-(int)interval); break;
                 default: error = $"{timeUnit} is not a valid time unit."; break;
             }
-            return (span, error);
+            return (converter, error);
         }
 
         private static (object, string) ParseTimestamp(string timeStamp, Func<DateTime, object> transform = null)
@@ -1434,11 +1435,11 @@ namespace Microsoft.Bot.Builder.Expressions
                             if (args[0] is string string0 && args[1] is int int1 && args[2] is string string2)
                             {
                                 var format = (args.Count() == 4) ? (string)args[3] : DefaultDateTimeFormat;
-                                TimeSpan span;
-                                (span, error) = GetTimeSpan(int1, string2);
+                                Func<DateTime, DateTime> timeConverter;
+                                (timeConverter, error) = pastDateTimeConverter(int1, string2);
                                 if (error == null)
                                 {
-                                    (value, error) = ParseTimestamp(string0, dt => dt.Subtract(span).ToString(format));
+                                    (value, error) = ParseTimestamp(string0, dt => timeConverter(dt).ToString(format));
                                 }
                             }
                             else
