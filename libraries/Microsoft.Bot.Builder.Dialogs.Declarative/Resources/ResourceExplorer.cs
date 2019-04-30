@@ -40,6 +40,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         {
             resourceProvider.Changed += ResourceProvider_Changed;
 
+            if (this.resourceProviders.Any(r => r.Id == resourceProvider.Id))
+            {
+                throw new ArgumentException($"{resourceProvider.Id} has already been added as a resource");
+            }
+
             this.resourceProviders.Add(resourceProvider);
             return this;
         }
@@ -76,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <param name="manager"></param>
         /// <param name="projectFile"></param>
         /// <returns></returns>
-        public static ResourceExplorer LoadProject(string projectFile, string[] ignoreFolders = null)
+        public static ResourceExplorer LoadProject(string projectFile, string[] ignoreFolders = null, bool monitorChanges = true)
         {
             var explorer = new ResourceExplorer();
             if (!File.Exists(projectFile))
@@ -95,11 +100,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             // add folder for the project
             if (ignoreFolders != null)
             {
-                explorer.AddFolders(projectFolder, ignoreFolders, monitorChanges: true);
+                explorer.AddFolders(projectFolder, ignoreFolders, monitorChanges: monitorChanges);
             }
             else
             {
-                explorer.AddResourceProvider(new FolderResourceProvider(projectFolder, includeSubFolders: true, monitorChanges: true));
+                explorer.AddResourceProvider(new FolderResourceProvider(projectFolder, includeSubFolders: true, monitorChanges: monitorChanges));
             }
 
             // add project references
@@ -108,7 +113,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 var path = Path.Combine(projectFolder, PlatformPath(node.Attributes["Include"].Value));
                 path = Path.GetFullPath(path);
                 path = Path.GetDirectoryName(path);
-                explorer.AddResourceProvider(new FolderResourceProvider(path, includeSubFolders: true, monitorChanges: true));
+                explorer.AddResourceProvider(new FolderResourceProvider(path, includeSubFolders: true, monitorChanges: monitorChanges));
             }
 
             var packages = Path.GetFullPath("packages");
@@ -134,7 +139,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     var folder = Path.Combine(packages, PlatformPath(pathResolver.GetPackageDirectoryName(package)));
                     if (Directory.Exists(folder))
                     {
-                        explorer.AddResourceProvider(new FolderResourceProvider(folder, includeSubFolders: true, monitorChanges: false));
+                        explorer.AddResourceProvider(new FolderResourceProvider(folder, includeSubFolders: true, monitorChanges: monitorChanges));
                     }
                 }
             }
@@ -146,11 +151,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                return path.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+                return path.Replace("/", "\\");
             }
             else
             {
-                return path.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                return path.Replace("\\", "/");
             }
         }
 
@@ -177,7 +182,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <returns></returns>
         public IResource GetResource(string filename)
         {
-            return GetResources(Path.GetExtension(filename)).Where(resource => resource.Id == filename).SingleOrDefault();
+            try
+            {
+                return GetResources(Path.GetExtension(filename)).Where(resource => resource.Id == filename).SingleOrDefault();
+            }
+            catch(InvalidOperationException err)
+            {
+                throw new Exception($"{filename} duplicates found.\n{String.Join("\n", GetResources(Path.GetExtension(filename)).Where(resource => resource.Id == filename).Select(resource => resource.Id))}", err);
+            }
         }
 
         public void Dispose()

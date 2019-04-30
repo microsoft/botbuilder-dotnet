@@ -940,7 +940,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         private string GetRequestUrl() => $"{_endpoint}/luis/v2.0/apps/{_luisAppId}";
 
         // Access the checked-in oracles so that if they are changed you can compare the changes and easily modify them.
-        private const string _testData = @"..\..\..\TestData\";
+        private string _testData = Path.Combine("..","..","..","TestData");
 
         private Stream GetResponse(string fileName)
         {

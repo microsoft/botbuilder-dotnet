@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -9,7 +10,9 @@ namespace Microsoft.Bot.Configuration.Tests
     [TestClass]
     public class ConnectionTests
     {
-        private const string TestBotFileName = @"..\..\..\test.bot";
+        private string TestBotFileName = getOsPath(@"..\..\..\test.bot");
+
+        private static string getOsPath(string path) => Path.Combine(path.TrimEnd('\\').Split('\\'));
 
         [TestMethod]
         public async Task ConnectAssignsUniqueIds()

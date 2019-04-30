@@ -151,8 +151,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     logger.LogTrace($"SEND: {json}");
                     var buffer = Encoding.GetBytes(json);
                     await writer.WriteAsync(Prefix + buffer.Length).ConfigureAwait(false);
-                    await writer.WriteLineAsync().ConfigureAwait(false);
-                    await writer.WriteLineAsync().ConfigureAwait(false);
+                    await writer.WriteAsync("\r\n\r\n").ConfigureAwait(false);
                     await writer.WriteAsync(json).ConfigureAwait(false);
                     await writer.FlushAsync().ConfigureAwait(false);
                 }

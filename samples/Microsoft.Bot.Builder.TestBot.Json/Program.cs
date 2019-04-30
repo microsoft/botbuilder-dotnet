@@ -5,6 +5,7 @@ using System;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.UserSecrets;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -23,6 +24,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 var luisAuthoringRegion = Environment.GetEnvironmentVariable("LUIS_AUTHORING_REGION") ?? "westus";
 
                 config
+                    .AddUserSecrets<Startup>()
                     .AddJsonFile($"luis.settings.{env.EnvironmentName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: true)
                     .AddJsonFile($"luis.settings.{Environment.UserName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: true);
             }).UseStartup<Startup>()
