@@ -178,39 +178,39 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     case "animation":
                         attachment.ContentType = AnimationCard.ContentType;
-                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale, data, types, tags, binder).ConfigureAwait(false);
+                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale: locale, data: data, types: types, tags: tags, binder: binder).ConfigureAwait(false);
                         break;
                     case "audio":
                         attachment.ContentType = AudioCard.ContentType;
-                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale, data, types, tags, binder).ConfigureAwait(false);
+                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale: locale, data: data, types: types, tags: tags, binder: binder).ConfigureAwait(false);
                         break;
                     case "hero":
                         attachment.ContentType = HeroCard.ContentType;
-                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale, data, types, tags, binder).ConfigureAwait(false);
+                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale: locale, data: data, types: types, tags: tags, binder: binder).ConfigureAwait(false);
                         break;
                     case "receipt":
                         attachment.ContentType = ReceiptCard.ContentType;
-                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale, data, types, tags, binder).ConfigureAwait(false);
+                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale: locale, data: data, types: types, tags: tags, binder: binder).ConfigureAwait(false);
                         break;
                     case "thumbnail":
                         attachment.ContentType = ThumbnailCard.ContentType;
-                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale, data, types, tags, binder).ConfigureAwait(false);
+                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale: locale, data: data, types: types, tags: tags, binder: binder).ConfigureAwait(false);
                         break;
                     case "signin":
                         attachment.ContentType = SigninCard.ContentType;
-                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale, data, types, tags, binder).ConfigureAwait(false);
+                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale: locale, data: data, types: types, tags: tags, binder: binder).ConfigureAwait(false);
                         break;
                     case "video":
                         attachment.ContentType = VideoCard.ContentType;
-                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale, data, types, tags, binder).ConfigureAwait(false);
+                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale: locale, data: data, types: types, tags: tags, binder: binder).ConfigureAwait(false);
                         break;
                     case "adaptivecard":
                         attachment.ContentType = "application/vnd.microsoft.card.adaptive";
-                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale, data, types, tags, binder).ConfigureAwait(false);
+                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale: locale, data: data, types: types, tags: tags, binder: binder).ConfigureAwait(false);
                         break;
                     default:
                         attachment.ContentType = parts2[1].Trim();
-                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: false, locale, data, types, tags, binder).ConfigureAwait(false);
+                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: false, locale: locale, data: data, types: types, tags: tags, binder: binder).ConfigureAwait(false);
                         break;
                 }
             }
