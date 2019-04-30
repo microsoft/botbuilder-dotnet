@@ -152,6 +152,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
 
         [TestMethod]
+        public async Task TestLocalImageAttachment()
+        {
+            var mg = GetGenerator();
+
+            IMessageActivity activity = await mg.Generate("", "[ImageAttachmentLocal]", id: null, data: null, types: null, tags: null);
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Text));
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Speak));
+            Assert.AreEqual(1, activity.Attachments.Count);
+            Assert.AreEqual("image/jpg", activity.Attachments[0].ContentType);
+            Assert.IsTrue(activity.Attachments[0].ContentUrl.StartsWith("data:"));
+            var content = activity.Attachments[0].ContentUrl.Substring(activity.Attachments[0].ContentUrl.IndexOf("base64, ") + 8);
+            var bytes = Convert.FromBase64String(content);
+            Assert.AreEqual(237449, bytes.Length);
+        }
+
+
+        [TestMethod]
         public async Task TestAdaptiveCard()
         {
             var mg = GetGenerator();
