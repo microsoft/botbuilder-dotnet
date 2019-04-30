@@ -433,6 +433,24 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             Assert.AreEqual(1, result.Entities["$instance"]["datetime_time"].Count());
         }
 
+        [TestMethod]
+        public async Task UnknownResolution()
+        {
+            const string utterance = "unknown";
+            const string responsePath = "UnknownResolution.json";
+
+            GetEnvironmentVarsLuis();
+            var mockHttp = GetMockHttpClientHandler(utterance, responsePath);
+            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true });
+            var context = GetContext(utterance);
+            var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
+
+            Assert.IsNotNull(result.Entities["something_unknown"]);
+            Assert.AreEqual(1, result.Entities["something_unknown"].Count());
+            Assert.AreEqual(1, (int)result.Entities["something_unknown"][0]["number"]);
+            Assert.AreEqual("string", (string)result.Entities["something_unknown"][0]["string"]);
+        }
+
         // To create a file to test:
         // 1) Create a <name>.json file with an object { Text:<query> } in it.
         // 2) Run this test which will fail and generate a <name>.json.new file.

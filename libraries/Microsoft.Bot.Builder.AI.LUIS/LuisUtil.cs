@@ -115,6 +115,17 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 {
                     case "builtin.number":
                     case "builtin.ordinal": return Number(resolution.value);
+                    case "builtin.ordinal.relative":
+                        {
+                            var offset = Number(resolution.offset);
+                            var relativeTo = (string)resolution.relativeTo;
+                            return new JObject
+                            {
+                                { "offset", offset },
+                                { "relativeTo", relativeTo },
+                            };
+                        }
+
                     case "builtin.percentage":
                         {
                             var svalue = (string)resolution.value;
@@ -144,7 +155,19 @@ namespace Microsoft.Bot.Builder.AI.Luis
                         }
 
                     default:
-                        return resolution.value ?? JArray.FromObject(resolution.values);
+                        {
+                            if (resolution.value != null)
+                            {
+                                return resolution.value;
+                            }
+
+                            if (resolution.values != null)
+                            {
+                                return JArray.FromObject(resolution.values);
+                            }
+
+                            return JObject.FromObject(resolution);
+                        }
                 }
             }
         }

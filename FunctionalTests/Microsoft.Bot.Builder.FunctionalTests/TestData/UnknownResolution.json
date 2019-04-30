@@ -1,0 +1,19 @@
+﻿{
+  "query": "unknown",
+  "topScoringIntent": {
+    "intent": "None",
+    "score": 0.8575135
+  },
+  "entities": [
+    {
+      "entity": "unknown",
+      "type": "builtin.something.unknown",
+      "startIndex": 0,
+      "endIndex": 6,
+      "resolution": {
+        "number": 1,
+        "string": "string"
+      }
+    }
+  ]
+}
