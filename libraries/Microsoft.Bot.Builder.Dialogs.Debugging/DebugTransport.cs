@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         protected DebugTransport(ILogger logger)
         {
-            this.logger = logger ?? new DebugLogger("debug");
+            this.logger = logger ?? new DebugLogger("Dialog");
         }
 
         protected async Task ListenAsync(IPEndPoint point, CancellationToken cancellationToken)
