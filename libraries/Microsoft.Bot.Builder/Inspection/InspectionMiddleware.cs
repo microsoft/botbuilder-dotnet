@@ -149,7 +149,7 @@ namespace Microsoft.Bot.Builder
 
             if (AttachCommand(turnContext.Activity.Conversation.Id, sessions, sessionId))
             {
-                await turnContext.SendActivityAsync(MessageFactory.Text($"Attached to session, all traffic is being relicated for inspection."), cancellationToken).ConfigureAwait(false);
+                await turnContext.SendActivityAsync(MessageFactory.Text($"Attached to session, all traffic is being replicated for inspection."), cancellationToken).ConfigureAwait(false);
             }
             else
             {
