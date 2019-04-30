@@ -369,11 +369,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         }
     }
 
-    public class AdaptiveEvents
+    public class AdaptiveEvents : DialogContext.DialogEvents
     {
-        public const string BeginDialog = "beginDialog";
-        public const string ConsultDialog = "consultDialog";
-        public const string CancelDialog = "cancelDialog";
         public const string ActivityReceived = "activityReceived";
         public const string RecognizedIntent = "recognizedIntent";
         public const string UnknownIntent = "unknownIntent";

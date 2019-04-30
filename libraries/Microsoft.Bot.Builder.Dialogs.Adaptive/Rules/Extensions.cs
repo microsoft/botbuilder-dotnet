@@ -12,9 +12,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
 {
     public static partial class Extensions
     {
-        public static async Task DebuggerStepAsync(this DialogContext context, IRule rule, DialogEvent dialogEvent, CancellationToken cancellationToken, [CallerMemberName]string memberName = null)
+        public static async Task DebuggerStepAsync(this DialogContext context, IRule rule, DialogEvent dialogEvent,  CancellationToken cancellationToken)
         {
-            var more = $"{memberName}-{dialogEvent.Name}";
+            var more = dialogEvent.Name;
             await context.GetDebugger().StepAsync(context, rule, more, cancellationToken).ConfigureAwait(false);
         }
     }

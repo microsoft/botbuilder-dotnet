@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
     public static partial class DebugSupport
     {
-        public static Source.IRegistry SourceRegistry { get; set; } = NullRegistry.Instance;
+        public static IRegistry SourceRegistry { get; set; } = NullRegistry.Instance;
 
         public interface IDebugger
         {
@@ -23,14 +23,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         public static IDebugger GetDebugger(this DialogContext context) =>
             context.Context.GetDebugger();
 
-        public static async Task DebuggerStepAsync(this DialogContext context, IDialog dialog, CancellationToken cancellationToken, [CallerMemberName]string memberName = null)
+        public static async Task DebuggerStepAsync(this DialogContext context, IDialog dialog, string more, CancellationToken cancellationToken)
         {
-            await context.GetDebugger().StepAsync(context, dialog, memberName, cancellationToken).ConfigureAwait(false);
+            await context.GetDebugger().StepAsync(context, dialog, more, cancellationToken).ConfigureAwait(false);
         }
 
-        public static async Task DebuggerStepAsync(this DialogContext context, IRecognizer recognizer, CancellationToken cancellationToken, [CallerMemberName]string memberName = null)
+        public static async Task DebuggerStepAsync(this DialogContext context, IRecognizer recognizer, string more, CancellationToken cancellationToken)
         {
-            await context.GetDebugger().StepAsync(context, recognizer, memberName, cancellationToken).ConfigureAwait(false);
+            await context.GetDebugger().StepAsync(context, recognizer, more, cancellationToken).ConfigureAwait(false);
         }
 
         private sealed class NullDebugger : IDebugger
@@ -43,11 +43,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
             Task IDebugger.StepAsync(DialogContext context, object item, string more, CancellationToken cancellationToken)
             {
-                if (item is Dialog)
-                {
-                    System.Diagnostics.Trace.TraceInformation($"{item.GetType().Name} {((Dialog)item).Id} {more}");
-                }
-
                 return Task.CompletedTask;
             }
         }
