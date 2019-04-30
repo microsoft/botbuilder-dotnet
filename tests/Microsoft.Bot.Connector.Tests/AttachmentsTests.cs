@@ -206,7 +206,7 @@ namespace Connector.Tests
 
         private static byte[] ReadFile(string fileName)
         {
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "resources", fileName);
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "Resources", fileName);
             return File.ReadAllBytes(path);
         }
     }

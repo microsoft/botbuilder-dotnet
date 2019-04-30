@@ -22,6 +22,8 @@ namespace Microsoft.Bot.Builder.Tests
         private const string DefaultTranscriptRepositoryZipLocation = "https://github.com/Microsoft/BotBuilder/archive/master.zip";
         private const string TranscriptsZipFolder = "/Common/Transcripts/"; // Folder within the repo/zip
 
+        private static string getOsPath(string path) => Path.Combine(path.TrimEnd('\\').Split('\\'));
+        
         /// <summary>
         /// Loads a list of activities from a transcript file.
         /// Use the context of the test to find the transcript file
@@ -81,7 +83,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         private static readonly object _syncRoot = new object();
-        private static string TranscriptsLocalPath { get; set; } = @"..\..\..\..\..\tests\Transcripts\";
+        private static string TranscriptsLocalPath { get; set; } = getOsPath(@"..\..\..\..\..\tests\Transcripts\");
 
         public static string EnsureTranscriptsDownload()
         {
