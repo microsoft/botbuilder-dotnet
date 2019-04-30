@@ -103,7 +103,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     text=This is some text describing the card, it's cool because it's cool 
     images=https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg 
     buttons=Option 1| Option 2| Option 3]";
-            var activity = TextMessageActivityGenerator.CreateActivityFromText(text);
+            var botResourceManager = new ResourceExplorer();
+            var lg = new LGLanguageGenerator(botResourceManager);
+            var gen = new TextMessageActivityGenerator(lg);
+            var activity = await gen.CreateActivityFromText(text);
 
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
             Assert.IsTrue(string.IsNullOrEmpty(activity.Text));
@@ -163,6 +166,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("test", (string)((dynamic)activity.Attachments[0].Content).body[0].text);
         }
 
+        [TestMethod]
+        public async Task TextExternalAdaptiveCard()
+        {
+            var mg = GetGenerator();
+            dynamic data = new JObject();
+            data.adaptiveCardTitle = "test";
+            IMessageActivity activity = await mg.Generate("", "[externalAdaptiveCardTemplate]", id: null, data: data, types: null, tags: null);
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Text));
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Speak));
+            Assert.AreEqual(1, activity.Attachments.Count);
+            Assert.AreEqual("application/vnd.microsoft.card.adaptive", activity.Attachments[0].ContentType);
+            Assert.AreEqual("test", (string)((dynamic)activity.Attachments[0].Content).body[0].text);
+        }
 
         [TestMethod]
         public async Task TestMultipleAttachments()
