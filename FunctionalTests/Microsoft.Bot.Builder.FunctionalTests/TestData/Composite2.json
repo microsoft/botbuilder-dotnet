@@ -47,24 +47,6 @@
     "Composite2": [
       {
         "$instance": {
-          "To": [
-            {
-              "startIndex": 52,
-              "endIndex": 58,
-              "text": "dallas",
-              "type": "City::To",
-              "score": 0.9924016
-            }
-          ],
-          "From": [
-            {
-              "startIndex": 41,
-              "endIndex": 48,
-              "text": "seattle",
-              "type": "City::From",
-              "score": 0.995012
-            }
-          ],
           "City": [
             {
               "startIndex": 63,
@@ -81,19 +63,37 @@
               "text": "http://foo.com",
               "type": "builtin.url"
             }
+          ],
+          "From": [
+            {
+              "startIndex": 41,
+              "endIndex": 48,
+              "text": "seattle",
+              "type": "City::From",
+              "score": 0.995012
+            }
+          ],
+          "To": [
+            {
+              "startIndex": 52,
+              "endIndex": 58,
+              "text": "dallas",
+              "type": "City::To",
+              "score": 0.9924016
+            }
           ]
         },
-        "To": [
-          "dallas"
-        ],
-        "From": [
-          "seattle"
-        ],
         "City": [
           "denver"
         ],
         "url": [
           "http://foo.com"
+        ],
+        "From": [
+          "seattle"
+        ],
+        "To": [
+          "dallas"
         ]
       }
     ]
@@ -195,20 +195,20 @@
         "value": "http : / / foo . com is where you can fly from seattle to dallas via denver",
         "children": [
           {
-            "type": "City::To",
-            "value": "dallas"
-          },
-          {
-            "type": "City::From",
-            "value": "seattle"
-          },
-          {
             "type": "City",
             "value": "denver"
           },
           {
             "type": "builtin.url",
             "value": "http://foo.com"
+          },
+          {
+            "type": "City::From",
+            "value": "seattle"
+          },
+          {
+            "type": "City::To",
+            "value": "dallas"
           }
         ]
       }
