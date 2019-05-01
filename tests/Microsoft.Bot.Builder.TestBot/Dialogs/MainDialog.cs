@@ -2,8 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
@@ -15,16 +17,30 @@ namespace Microsoft.BotBuilderSamples
     public class MainDialog : ComponentDialog
     {
         private readonly IConfiguration _configuration;
+        private readonly Dictionary<string, Dialog> _intentsAndDialogs;
         private readonly ILogger _logger;
 
-        public MainDialog(IConfiguration configuration, ILogger<MainDialog> logger, BookingDialog bookingDialog)
+        public MainDialog(IConfiguration configuration, ILogger<MainDialog> logger)
+            : this(configuration, logger, new Dictionary<string, Dialog> { { "book_flight", new BookingDialog() }, })
+        {
+        }
+
+        public MainDialog(IConfiguration configuration, ILogger<MainDialog> logger, Dictionary<string, Dialog> intentsAndDialogs)
             : base(nameof(MainDialog))
         {
             _configuration = configuration;
             _logger = logger;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
-            AddDialog(bookingDialog);
+
+            // Add dialogs for intents
+            _intentsAndDialogs = intentsAndDialogs;
+            foreach (var dialog in intentsAndDialogs.Values)
+            {
+                AddDialog(dialog);
+            }
+
+            // Create and add waterfall for main conversation loop
             var steps = new WaterfallStep[]
             {
                 IntroStepAsync,
@@ -37,11 +53,6 @@ namespace Microsoft.BotBuilderSamples
             InitialDialogId = nameof(WaterfallDialog);
         }
 
-        public MainDialog(IConfiguration configuration, ILogger<MainDialog> logger)
-            : this(configuration, logger, new BookingDialog())
-        {
-        }
-
         private async Task<DialogTurnResult> IntroStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(_configuration["LuisAppId"]) || string.IsNullOrEmpty(_configuration["LuisAPIKey"]) || string.IsNullOrEmpty(_configuration["LuisAPIHostName"]))
@@ -51,10 +62,8 @@ namespace Microsoft.BotBuilderSamples
 
                 return await stepContext.NextAsync(null, cancellationToken);
             }
-            else
-            {
-                return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("What can I help you with today?") }, cancellationToken);
-            }
+
+            return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("What can I help you with today?") }, cancellationToken);
         }
 
         private async Task<DialogTurnResult> ActStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -64,7 +73,7 @@ namespace Microsoft.BotBuilderSamples
                 ? await LuisHelper.ExecuteLuisQuery(_configuration, _logger, stepContext.Context, cancellationToken)
                 : new BookingDetails();
 
-            // In this sample we only have a single Intent we are concerned with. However, typically a scneario
+            // In this sample we only have a single Intent we are concerned with. However, typically a scenario
             // will have multiple different Intents each corresponding to starting a different child Dialog.
 
             // Run the BookingDialog giving it whatever details we have from the LUIS call, it will fill out the remainder.

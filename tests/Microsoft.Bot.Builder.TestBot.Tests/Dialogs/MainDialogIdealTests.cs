@@ -55,7 +55,10 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             };
 
             var sut = new MainDialog(MockConfig.Object, MockLogger.Object, intentsAndDialogs);
+            var testBot = new DialogsTestBot(sut, Output);
 
+            var reply = await testBot.SendAsync<IMessageActivity>(utterance);
+            Assert.Equal(invokedDialog, reply.Text);
 
         }
 
@@ -68,7 +71,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             var expectedResult = bookingResult == null ? null : JsonConvert.DeserializeObject<BookingDetails>(bookingResult);
             var mockBookingDialog = DialogUtils.CreateMockDialog<BookingDialog>(expectedResult);
 
-            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, mockBookingDialog.Object);
+            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, new Dictionary<string, Dialog> { { "book_flight", mockBookingDialog.Object}});
             var testBot = new DialogsTestBot(sut, Output);
 
             // Act/Assert
@@ -113,7 +116,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             // Arrange
             var mockBookingDialog = DialogUtils.CreateMockDialog<BookingDialog>(expectedResult);
 
-            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, mockBookingDialog.Object);
+            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, new Dictionary<string, Dialog> { { "book_flight", mockBookingDialog.Object}});
             var testBot = new DialogsTestBot(sut, Output);
 
             // Act/Assert

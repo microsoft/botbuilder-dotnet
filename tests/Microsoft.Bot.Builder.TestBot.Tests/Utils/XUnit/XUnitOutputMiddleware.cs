@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Xunit.Abstractions;
 using Activity = Microsoft.Bot.Schema.Activity;
 
-namespace Microsoft.BotBuilderSamples.Tests.Utils
+namespace Microsoft.BotBuilderSamples.Tests.Utils.XUnit
 {
     public class XUnitOutputMiddleware : IMiddleware
     {
