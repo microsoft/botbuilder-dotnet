@@ -38,5 +38,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
             return Expression.AndExpression(Expression.OrExpression(expressions.ToArray()), base.BuildExpression(factory));
         }
 
+        public override string GetIdentity()
+        {
+            return $"{this.GetType().Name}({string.Join(",", Events)})";
+        }
     }
 }

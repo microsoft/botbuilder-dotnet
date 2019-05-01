@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -359,7 +360,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        protected override string OnComputeId() => $"AdaptiveDialog[{this.BindingPath()}]";
+        protected override string OnComputeId()
+        {
+            if (DebugSupport.SourceRegistry.TryGetValue(this, out var range))
+            {
+                return $"AdaptiveDialog({Path.GetFileName(range.Path)}:{range.Start.LineIndex})";
+            }
+            return $"AdaptiveDialog[{this.BindingPath()}]";
+        }
 
         public async Task<BotTurnResult> OnTurnAsync(ITurnContext context, StoredBotState storedState, CancellationToken cancellationToken = default(CancellationToken))
         {

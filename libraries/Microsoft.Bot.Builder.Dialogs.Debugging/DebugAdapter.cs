@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         private readonly Task task;
 
-        public DebugAdapter(int port, Source.IRegistry registry, IBreakpoints breakpoints, Action terminate, IEvents events = null,ICodeModel codeModel = null, IDataModel dataModel = null, ILogger logger = null, ICoercion coercion = null)
+        public DebugAdapter(int port, Source.IRegistry registry, IBreakpoints breakpoints, Action terminate, IEvents events = null, ICodeModel codeModel = null, IDataModel dataModel = null, ILogger logger = null, ICoercion coercion = null)
             : base(logger)
         {
             this.events = events ?? new Events();
@@ -157,11 +157,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             return $"{turnContext.Activity.ChannelId}-{turnContext.Activity.Id}";
         }
 
+        static public string Ellipsis(string text, int length)
+        {
+            if (text == null)
+                return String.Empty;
+
+            if (text.Length <= length) return text;
+            int pos = text.IndexOf(" ", length);
+            if (pos >= 0)
+                return text.Substring(0, pos) + "...";
+            return text;
+        }
+
         async Task DebugSupport.IDebugger.StepAsync(DialogContext context, object item, string more, CancellationToken cancellationToken)
         {
             try
             {
-                await OutputAsync($"Step: {codeModel.NameFor(item)} {more}", item, cancellationToken).ConfigureAwait(false);
+                var turnText = context.Context.Activity.Text.Trim();
+                if (turnText.Length == 0)
+                    turnText = context.Context.Activity.Type;
+                var threadText = $"'{Ellipsis(turnText, 18)}'";
+                await OutputAsync($"{threadText} ==> {more?.PadRight(16) ?? ""} ==> {codeModel.NameFor(item)} ", item, cancellationToken).ConfigureAwait(false);
 
                 await UpdateBreakpointsAsync(cancellationToken).ConfigureAwait(false);
 
@@ -246,8 +262,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
 
             var phase = run.Phase;
-            var suffix = item != null ? $" at {codeModel.NameFor(item)}" : string.Empty;
-            var description = $"'{thread.Name}' is {phase}{suffix}";
+            var suffix = item != null ? $" ==> {codeModel.NameFor(item)}" : string.Empty;
+            var threadText = $"'{Ellipsis(thread?.Name, 18)}'";
+            if (threadText.Length <= 2)
+                threadText = thread.TurnContext.Activity.Type;
+            var description = $"{threadText} ==> {phase.ToString().PadRight(16)}{suffix}";
 
             await OutputAsync(description, item, cancellationToken).ConfigureAwait(false);
 

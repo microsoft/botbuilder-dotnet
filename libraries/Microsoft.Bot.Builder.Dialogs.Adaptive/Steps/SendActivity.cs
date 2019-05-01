@@ -44,9 +44,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             return await dc.EndDialogAsync(response, cancellationToken).ConfigureAwait(false);
         }
 
+        static public string Ellipsis(string text, int length)
+        {
+            if (text.Length <= length) return text;
+            int pos = text.IndexOf(" ", length);
+            if (pos >= 0)
+                return text.Substring(0, pos) + "...";
+            return text;
+        }
+
         protected override string OnComputeId()
         {
-            return $"SendActivity({Activity?.ToString()})";
+            if (Activity is ActivityTemplate at)
+                return $"SendActivity({Ellipsis(at.Template.Trim(), 30)})";
+            return $"SendActivity('{Ellipsis(Activity?.ToString().Trim(), 30)}')";
         }
     }
 }

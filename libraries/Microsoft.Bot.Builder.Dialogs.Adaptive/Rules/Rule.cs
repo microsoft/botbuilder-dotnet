@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
     /// <summary>
     /// Defines basic Rule contract
     /// </summary>
-    public abstract class Rule : IRule
+    public abstract class Rule : IRule, IItemIdentity
     {
         private Expression constraint;
 
@@ -155,6 +155,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
                     After = new Source.Point() { LineIndex = lineNumber + 1, CharIndex = 0 },
                 });
             }
+        }
+
+        public virtual string GetIdentity()
+        {
+            return $"{this.GetType().Name}()";
         }
     }
 }
