@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 namespace Microsoft.BotBuilderSamples.Tests.Utils
 {
     /// <summary>
-    /// A set of helper methods that wrap ludown and LUIS calls
+    /// A set of helper methods that wrap ludown and LUIS calls.
     /// </summary>
     public static class LuisCommandRunner
     {

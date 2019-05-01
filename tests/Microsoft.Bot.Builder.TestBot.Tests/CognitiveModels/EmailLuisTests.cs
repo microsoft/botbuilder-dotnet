@@ -28,14 +28,14 @@ namespace Microsoft.BotBuilderSamples.Tests.CognitiveModels
     // assume local LUIS in container or full model somewhere
     // pure xunit Theories
     // LUDown files as source
-    public class CalendarLuisTests : IClassFixture<CalendarLuisTests.LuisTesterFixture>
+    public class EmailLuisTests : IClassFixture<EmailLuisTests.LuisTesterFixture>
     {
-        private const string _sourceLuFile = "calendar.lu";
+        private const string _sourceLuFile = "email.lu";
         private const string _relativePath = @"CognitiveModels\Data";
         private readonly LuisTesterFixture _luisTester;
         private readonly ITestOutputHelper _output;
 
-        public CalendarLuisTests(ITestOutputHelper output, LuisTesterFixture luisTester)
+        public EmailLuisTests(ITestOutputHelper output, LuisTesterFixture luisTester)
         {
             _luisTester = luisTester;
             _output = output;
@@ -74,9 +74,9 @@ namespace Microsoft.BotBuilderSamples.Tests.CognitiveModels
 
                 // Create LuisRecognizer instance
                 var luisApplication = new LuisApplication(
-                    Configuration.GetSection("cognitiveModels:calendar:luisAppId").Value,
-                    Configuration.GetSection("cognitiveModels:calendar:luisEndpointKey").Value,
-                    Configuration.GetSection("cognitiveModels:calendar:luisEndpoint").Value);
+                    Configuration.GetSection("cognitiveModels:email:luisAppId").Value,
+                    Configuration.GetSection("cognitiveModels:email:luisEndpointKey").Value,
+                    Configuration.GetSection("cognitiveModels:email:luisEndpoint").Value);
 
                 // Create Recognizer instance
                 LuisRecognizer = new LuisRecognizer(luisApplication, null, false, null);

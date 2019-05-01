@@ -12,10 +12,14 @@
 
   <ItemGroup>
     <None Remove="appsettings.json" />
+    <None Remove="CognitiveModels\Data\TestUtterances.json" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CognitiveModels\Data\TestUtterances.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -42,6 +46,12 @@
 
   <ItemGroup>
     <None Update="CognitiveModels\Data\calendar.lu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="CognitiveModels\Data\email.lu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="CognitiveModels\Data\pointofinterest.lu">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="CognitiveModels\Data\todo.lu">
