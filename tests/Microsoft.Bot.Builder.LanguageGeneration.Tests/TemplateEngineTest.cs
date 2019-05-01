@@ -148,8 +148,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestListWithOnlyOneElement()
         {
             var engine = TemplateEngine.FromFiles(GetExampleFilePath("8.lg"));
-            var evaled = engine.EvaluateTemplate("RecentTasks", new { recentTasks = new[] { "Task1" } });
-            Assert.AreEqual(evaled, "Your most recent task is Task1. You can let me know if you want to add or complete a task.");
+            var evaled = engine.EvaluateTemplate("ShowTasks", new { recentTasks = new[] { "Task1" } });
+            Assert.AreEqual("Your most recent task is Task1. You can let me know if you want to add or complete a task.", evaled);
         }
 
         [TestMethod]
