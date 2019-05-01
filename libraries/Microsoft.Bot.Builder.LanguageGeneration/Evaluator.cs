@@ -118,6 +118,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var paramters = TemplateMap[templateName].Paramters;
 
+            if (args.Count == 0)
+            {
+                // no args to construct, inherit from current scope
+                return CurrentTarget().Scope;
+            }
+
             if (args.Count == 1 && paramters.Count == 0)
             {
                 // Special case, if no parameters defined, and only one arg, don't wrap
