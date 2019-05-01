@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder
             }
             catch (Exception err)
             {
-                _logger.LogWarning($"Exception sending to inspection endpoint {err.ToString()}");
+                _logger.LogWarning($"Exception '{err.ToString()}' while attempting to call Emulator for inspection, check it is running, and you have correct credentials in the Emulator and the InspectionMiddleware.");
                 return false;
             }
 
