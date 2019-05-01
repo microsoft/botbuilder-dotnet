@@ -14,18 +14,17 @@ namespace Microsoft.BotBuilderSamples.Tests.Utils
     /// </summary>
     public static class LuisCommandRunner
     {
-        public static async Task LuToLuisJson(string command)
+        public static void LuToLuisJson(string sourceLuFile, string sourcePath)
         {
             using (var ps = System.Management.Automation.PowerShell.Create())
             {
-                var sourcePath = @"C:\Projects\Repos\FuseAI\solutions\Virtual-Assistant\src\csharp\skills\calendarskill\calendarskill\CognitiveModels\LUIS\en";
-                var targetPath = @"C:\Projects\Repos\FuseAI\solutions\Virtual-Assistant\src\csharp\skills\calendarskill\calendarskill\CognitiveModels\LUIS\en";
-                var sourceLuFile = "calendar.lu";
+                var targetPath = EnsureTargetPath(sourcePath);
                 var sourceFile = Path.Combine(sourcePath, sourceLuFile);
                 ps.AddScript($"ludown parse toluis --in {sourceFile} -o {targetPath}");
-                var r = await ps.InvokeAsync();
+                var r = ps.InvokeAsync().Result;
                 if (r.Count > 0)
                 {
+                    // TODO: improve exception management
                     throw new InvalidOperationException();
                 }
             }
@@ -35,12 +34,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Utils
         {
             using (var ps = System.Management.Automation.PowerShell.Create())
             {
-                var targetPath = Path.Combine(sourcePath, "Temp");
-                if (!Directory.Exists(targetPath))
-                {
-                    Directory.CreateDirectory(targetPath);
-                }
-
+                var targetPath = EnsureTargetPath(sourcePath);
                 var sourceFile = Path.Combine(sourcePath, sourceLuFile);
                 ps.AddScript($"ludown parse toluis --write_luis_batch_tests --in {sourceFile} -o {targetPath}");
                 var r = ps.InvokeAsync().Result;
@@ -54,6 +48,17 @@ namespace Microsoft.BotBuilderSamples.Tests.Utils
                 var batchTest = JsonConvert.DeserializeObject<BatchTestItem[]>(File.ReadAllText($"{targetPath}\\{batchFilePrefix}_LUISBatchTest.json"));
                 return batchTest;
             }
+        }
+
+        private static string EnsureTargetPath(string sourcePath)
+        {
+            var targetPath = Path.Combine(sourcePath, "Temp");
+            if (!Directory.Exists(targetPath))
+            {
+                Directory.CreateDirectory(targetPath);
+            }
+
+            return targetPath;
         }
     }
 }
