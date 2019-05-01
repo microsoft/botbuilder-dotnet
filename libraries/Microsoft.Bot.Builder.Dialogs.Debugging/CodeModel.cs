@@ -18,8 +18,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             var type = item.GetType().Name;
             if (item is IDialog dialog)
             {
-                var name = dialog.Id;
-                return name.StartsWith(type) ? name : $"{type}:{name}";
+                return dialog.Id;
+            }
+
+            if (item is IItemIdentity identity)
+            {
+                return identity.GetIdentity();
             }
 
             return type;

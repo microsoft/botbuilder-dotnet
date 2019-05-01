@@ -104,5 +104,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
                 }).ToList()
             };
         }
+
+        public override string GetIdentity()
+        {
+            return $"IntentRule({this.Intent})[{String.Join(",", this.Entities)}]";
+        }
     }
 }
