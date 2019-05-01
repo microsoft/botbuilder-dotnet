@@ -186,8 +186,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="turnContext">Context for the current turn of the conversation with the user.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="code">(Optional) login code received from the user.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, string code = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken), string code = null)
         {
             if (!(turnContext.Adapter is IUserTokenProvider adapter))
             {
