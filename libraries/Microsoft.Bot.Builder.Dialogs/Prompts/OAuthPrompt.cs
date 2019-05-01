@@ -182,6 +182,22 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
+        /// Get a token for a user signed in.
+        /// </summary>
+        /// <param name="turnContext">Context for the current turn of the conversation with the user.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, string code = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (!(turnContext.Adapter is IUserTokenProvider adapter))
+            {
+                throw new InvalidOperationException("OAuthPrompt.GetUserToken(): not supported by the current adapter");
+            }
+
+            return await adapter.GetUserTokenAsync(turnContext, _settings.ConnectionName, code, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Sign Out the User.
         /// </summary>
         /// <param name="turnContext">Context for the current turn of the conversation with the user.</param>
