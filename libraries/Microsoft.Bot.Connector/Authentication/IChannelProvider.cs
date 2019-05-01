@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Connector.Authentication
         Task<string> GetChannelServiceAsync();
 
         /// <summary>
-        /// Gets a value of whether this provider represents a channel on Governmant Azure.
+        /// Gets a value of whether this provider represents a channel on Government Azure.
         /// </summary>
         /// <returns>True if this channel provider represents a channel on Government Azure.</returns>
         bool IsGovernment();
@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// Gets a value of whether this provider represents a channel on Public Azure.
         /// </summary>
-        /// <returns>True if this channel provider represents a channel on Public Azure.l.</returns>
+        /// <returns>True if this channel provider represents a channel on Public Azure.</returns>
         bool IsPublicAzure();
     }
 }

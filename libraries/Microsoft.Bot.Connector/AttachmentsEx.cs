@@ -16,12 +16,12 @@ namespace Microsoft.Bot.Connector
     {
         /// <summary>
         /// The attachment code uses this client. Ideally, this would be passed in or set via a DI system to
-        /// allow developer control over behavior / headers / timesouts and such. Unfortunatly this is buried
+        /// allow developer control over behavior / headers / timesouts and such. Unfortunately this is buried
         /// pretty deep, the static solution used here is much cleaner. If this becomes an issue we could
         /// consider circling back and exposing developer control over this HttpClient.
         /// </summary>
         /// <remarks>
-        /// Relativly few bots use attachments, so rather than paying the startup cost, this is
+        /// Relatively few bots use attachments, so rather than paying the startup cost, this is
         /// a <see cref="Lazy{T}"/> simply to avoid paying a static initialization penalty for every bot.
         /// </remarks>
         private static Lazy<HttpClient> _httpClient = new Lazy<HttpClient>();

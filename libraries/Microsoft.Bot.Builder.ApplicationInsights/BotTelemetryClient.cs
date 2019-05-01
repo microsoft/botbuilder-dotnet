@@ -141,7 +141,7 @@ namespace Microsoft.Bot.Builder.ApplicationInsights
         /// Send a trace message.
         /// </summary>
         /// <param name="message">Message to display.</param>
-        /// <param name="severityLevel">Trace severaity level <see cref="Severity"/>.</param>
+        /// <param name="severityLevel">Trace severity level <see cref="Severity"/>.</param>
         /// <param name="properties">Named string values you can use to search and classify events.</param>
         public virtual void TrackTrace(string message, Severity severityLevel, IDictionary<string, string> properties)
         {
