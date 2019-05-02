@@ -196,19 +196,14 @@
             "$ref": "#/definitions/Microsoft.UnknownIntentRule"
         },
         {
-            "title": "Testbot.CSharpStep",
-            "description": "This gives you the ability to define a CSharp function to manipulate memory.  State variables are global",
-            "$ref": "#/definitions/Testbot.CSharpStep"
-        },
-        {
-            "title": "Testbot.CalculateDogYears",
-            "description": "This will take the property and return as the dialog result ",
-            "$ref": "#/definitions/Testbot.CalculateDogYears"
-        },
-        {
             "title": "Testbot.JavascriptStep",
             "description": "This gives you the ability to execute javascript to manipulate memory",
             "$ref": "#/definitions/Testbot.JavascriptStep"
+        },
+        {
+            "title": "Testbot.Multiply",
+            "description": "This will return the result of arg1*arg2",
+            "$ref": "#/definitions/Testbot.Multiply"
         }
     ],
     "definitions": {
@@ -252,9 +247,9 @@
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
-                "inputProperties": {
+                "inputBindings": {
                     "type": "object",
-                    "title": "Input Properties",
+                    "title": "Input Bindings",
                     "description": "This defines properties which be passed as arguments to this dialog",
                     "examples": [
                         "value.birthday"
@@ -263,9 +258,9 @@
                         "type": "string"
                     }
                 },
-                "outputProperty": {
+                "outputBinding": {
                     "$role": "memoryPath",
-                    "title": "Output Property",
+                    "title": "Output Property binding",
                     "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
                     "examples": [
                         "value.birthday"
@@ -522,9 +517,9 @@
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
-                "inputProperties": {
+                "inputBindings": {
                     "type": "object",
-                    "title": "Input Properties",
+                    "title": "Input Bindings",
                     "description": "This defines properties which be passed as arguments to this dialog",
                     "examples": [
                         "value.birthday"
@@ -533,9 +528,9 @@
                         "type": "string"
                     }
                 },
-                "outputProperty": {
+                "outputBinding": {
                     "$role": "memoryPath",
-                    "title": "Output Property",
+                    "title": "Output Property binding",
                     "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
                     "examples": [
                         "value.birthday"
@@ -755,9 +750,9 @@
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
-                "inputProperties": {
+                "inputBindings": {
                     "type": "object",
-                    "title": "Input Properties",
+                    "title": "Input Bindings",
                     "description": "This defines properties which be passed as arguments to this dialog",
                     "examples": [
                         "value.birthday"
@@ -766,9 +761,9 @@
                         "type": "string"
                     }
                 },
-                "outputProperty": {
+                "outputBinding": {
                     "$role": "memoryPath",
-                    "title": "Output Property",
+                    "title": "Output Property binding",
                     "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
                     "examples": [
                         "value.birthday"
@@ -1624,19 +1619,14 @@
                     "title": "string"
                 },
                 {
-                    "title": "Testbot.CalculateDogYears",
-                    "description": "This will take the property and return as the dialog result ",
-                    "$ref": "#/definitions/Testbot.CalculateDogYears"
-                },
-                {
-                    "title": "Testbot.CSharpStep",
-                    "description": "This gives you the ability to define a CSharp function to manipulate memory.  State variables are global",
-                    "$ref": "#/definitions/Testbot.CSharpStep"
-                },
-                {
                     "title": "Testbot.JavascriptStep",
                     "description": "This gives you the ability to execute javascript to manipulate memory",
                     "$ref": "#/definitions/Testbot.JavascriptStep"
+                },
+                {
+                    "title": "Testbot.Multiply",
+                    "description": "This will return the result of arg1*arg2",
+                    "$ref": "#/definitions/Testbot.Multiply"
                 }
             ]
         },
@@ -2334,9 +2324,9 @@
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
-                "inputProperties": {
+                "inputBindings": {
                     "type": "object",
-                    "title": "Input Properties",
+                    "title": "Input Bindings",
                     "description": "This defines properties which be passed as arguments to this dialog",
                     "examples": [
                         "value.birthday"
@@ -2345,9 +2335,9 @@
                         "type": "string"
                     }
                 },
-                "outputProperty": {
+                "outputBinding": {
                     "$role": "memoryPath",
-                    "title": "Output Property",
+                    "title": "Output Property binding",
                     "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
                     "examples": [
                         "value.birthday"
@@ -3182,9 +3172,9 @@
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
-                "inputProperties": {
+                "inputBindings": {
                     "type": "object",
-                    "title": "Input Properties",
+                    "title": "Input Bindings",
                     "description": "This defines properties which be passed as arguments to this dialog",
                     "examples": [
                         "value.birthday"
@@ -3193,9 +3183,9 @@
                         "type": "string"
                     }
                 },
-                "outputProperty": {
+                "outputBinding": {
                     "$role": "memoryPath",
-                    "title": "Output Property",
+                    "title": "Output Property binding",
                     "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
                     "examples": [
                         "value.birthday"
@@ -3460,141 +3450,6 @@
                 }
             ]
         },
-        "Testbot.CSharpStep": {
-            "$role": "unionType(Microsoft.IDialog)",
-            "title": "CSharp Step",
-            "description": "This gives you the ability to define a CSharp function to manipulate memory.  State variables are global",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Testbot.CSharpStep"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$designer": {
-                    "title": "$designer",
-                    "type": "object",
-                    "description": "Extra information for the Bot Framework Designer."
-                },
-                "property": {
-                    "type": "string",
-                    "title": "Property",
-                    "description": "This will be the property passed in",
-                    "examples": [
-                        "value.birthday"
-                    ]
-                },
-                "outputProperty": {
-                    "type": "string",
-                    "title": "Output Property",
-                    "description": "This will be the property which the result will be put into",
-                    "examples": [
-                        "value.birthday"
-                    ]
-                },
-                "script": {
-                    "type": "string",
-                    "title": "Script",
-                    "description": "name of the script file"
-                }
-            },
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "$type"
-                    ]
-                }
-            ]
-        },
-        "Testbot.CalculateDogYears": {
-            "$role": "unionType(Microsoft.IDialog)",
-            "title": "Calculate Dog Years",
-            "description": "This will take the property and return as the dialog result ",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Testbot.CalculateDogYears"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$designer": {
-                    "title": "$designer",
-                    "type": "object",
-                    "description": "Extra information for the Bot Framework Designer."
-                },
-                "inputProperty": {
-                    "type": "string",
-                    "title": "Input Property",
-                    "description": "This will be the property passed in"
-                },
-                "outputProperty": {
-                    "type": "string",
-                    "title": "Output Property",
-                    "description": "Property to put the result into"
-                }
-            },
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "$type"
-                    ]
-                }
-            ]
-        },
         "Testbot.JavascriptStep": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Javascript Step",
@@ -3626,26 +3481,99 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "property": {
-                    "type": "string",
-                    "title": "Property",
-                    "description": "This will be the property passed in",
+                "inputBindings": {
+                    "type": "object",
+                    "title": "Input Bindings",
+                    "description": "map of named arguments and the property path to bind to them",
                     "examples": [
-                        "value.birthday"
-                    ]
+                        {
+                            "name": "user.name",
+                            "problemId": "conversation.problem.id"
+                        }
+                    ],
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 },
-                "outputProperty": {
+                "outputBinding": {
                     "type": "string",
-                    "title": "Output Property",
+                    "title": "Output Binding",
                     "description": "This will be the property which the result will be put into",
                     "examples": [
-                        "value.birthday"
+                        "conversation.resolution"
                     ]
                 },
                 "script": {
                     "type": "string",
                     "title": "Script",
                     "description": "name of the script file"
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Testbot.Multiply": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Multiply",
+            "description": "This will return the result of arg1*arg2",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Testbot.Multiply"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "arg1": {
+                    "type": "number",
+                    "title": "Arg1",
+                    "description": "Value from callers memory to use as arg 1"
+                },
+                "arg2": {
+                    "type": "number",
+                    "title": "Arg2",
+                    "description": "Value from callers memory to use as arg 2"
+                },
+                "result": {
+                    "type": "number",
+                    "title": "Result",
+                    "description": "Value from callers memory to store the result"
                 }
             },
             "patternProperties": {
