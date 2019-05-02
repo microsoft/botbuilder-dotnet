@@ -19,6 +19,17 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public TestContext TestContext { get; set; }
 
         [TestMethod]
+        [ExpectedException(typeof(Exception))]
+        public async Task TestNotFoundTemplate()
+        {
+            var resourceManager = new ResourceExplorer()
+                .AddFolder(GetFallbackFolder());
+            var lg = new LGLanguageGenerator(resourceManager);
+
+            await lg.Generate("en-us", id: "tesdfdfsst");
+        }
+
+        [TestMethod]
         public async Task TestExactLanguageLookup()
         {
             var resourceManager = new ResourceExplorer()

@@ -46,11 +46,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="types">type hierarchy for type inheritence.</param>
         /// <param name="tags">contextual tags.</param>
         /// <returns>message activity</returns>
-        public async Task<IMessageActivity> Generate(string locale, string inlineTemplate, string id, object data, string[] types, string[] tags, Func<string, object, object> binder = null)
+        public async Task<IMessageActivity> Generate(string locale, string inlineTemplate, string id, object data, string[] types, string[] tags)
         {
-            var result = await this.LanguageGenerator.Generate(locale, inlineTemplate, id, data, types, tags, binder).ConfigureAwait(false);
-
-            return await CreateActivityFromText(result, locale, data, types, tags, binder).ConfigureAwait(false);
+            var result = await this.LanguageGenerator.Generate(locale, inlineTemplate, id, data, types, tags).ConfigureAwait(false);
+            return await CreateActivityFromText(result, locale, data, types, tags).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -64,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </remarks>
         /// <param name="text">text</param>
         /// <returns>MessageActivity for it</returns>
-        public async Task<IMessageActivity> CreateActivityFromText(string text, string locale = null, object data = null, string[] types = null, string[] tags = null, Func<string, object, object> binder = null)
+        public async Task<IMessageActivity> CreateActivityFromText(string text, string locale = null, object data = null, string[] types = null, string[] tags = null)
         {
             var activity = Activity.CreateMessageActivity();
             activity.TextFormat = TextFormatTypes.Markdown;
@@ -126,8 +125,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                             }
                             else if (lowerLine.StartsWith("[attachment="))
                             {
-
-                                await AddAttachment(activity, line, locale, data, types, tags, binder).ConfigureAwait(false);
+                                await AddAttachment(activity, line, locale, data, types, tags).ConfigureAwait(false);
                                 break;
                             }
                         }
@@ -159,7 +157,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return activity;
         }
 
-        private async Task AddAttachment(IMessageActivity activity, string line, string locale, object data, string[] types, string[] tags, Func<string, object, object> binder = null)
+        private async Task AddAttachment(IMessageActivity activity, string line, string locale, object data, string[] types, string[] tags)
         {
             var parts = line.Split('=');
             if (parts.Length == 1)
@@ -178,39 +176,39 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     case "animation":
                         attachment.ContentType = AnimationCard.ContentType;
-                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale: locale, data: data, types: types, tags: tags, binder: binder).ConfigureAwait(false);
+                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale: locale, data: data, types: types, tags: tags).ConfigureAwait(false);
                         break;
                     case "audio":
                         attachment.ContentType = AudioCard.ContentType;
-                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale: locale, data: data, types: types, tags: tags, binder: binder).ConfigureAwait(false);
+                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale: locale, data: data, types: types, tags: tags).ConfigureAwait(false);
                         break;
                     case "hero":
                         attachment.ContentType = HeroCard.ContentType;
-                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale: locale, data: data, types: types, tags: tags, binder: binder).ConfigureAwait(false);
+                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale: locale, data: data, types: types, tags: tags).ConfigureAwait(false);
                         break;
                     case "receipt":
                         attachment.ContentType = ReceiptCard.ContentType;
-                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale: locale, data: data, types: types, tags: tags, binder: binder).ConfigureAwait(false);
+                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale: locale, data: data, types: types, tags: tags).ConfigureAwait(false);
                         break;
                     case "thumbnail":
                         attachment.ContentType = ThumbnailCard.ContentType;
-                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale: locale, data: data, types: types, tags: tags, binder: binder).ConfigureAwait(false);
+                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale: locale, data: data, types: types, tags: tags).ConfigureAwait(false);
                         break;
                     case "signin":
                         attachment.ContentType = SigninCard.ContentType;
-                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale: locale, data: data, types: types, tags: tags, binder: binder).ConfigureAwait(false);
+                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale: locale, data: data, types: types, tags: tags).ConfigureAwait(false);
                         break;
                     case "video":
                         attachment.ContentType = VideoCard.ContentType;
-                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale: locale, data: data, types: types, tags: tags, binder: binder).ConfigureAwait(false);
+                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale: locale, data: data, types: types, tags: tags).ConfigureAwait(false);
                         break;
                     case "adaptivecard":
                         attachment.ContentType = "application/vnd.microsoft.card.adaptive";
-                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale: locale, data: data, types: types, tags: tags, binder: binder).ConfigureAwait(false);
+                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: true, locale: locale, data: data, types: types, tags: tags).ConfigureAwait(false);
                         break;
                     default:
                         attachment.ContentType = parts2[1].Trim();
-                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: false, locale: locale, data: data, types: types, tags: tags, binder: binder).ConfigureAwait(false);
+                        attachment.Content = await readAttachmentFile(contentUrl, attachment.ContentType, isCard: false, locale: locale, data: data, types: types, tags: tags).ConfigureAwait(false);
                         break;
                 }
             }
@@ -230,7 +228,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             activity.Attachments.Add(attachment);
         }
 
-        protected async Task<object> readAttachmentFile(string fileLocation, string contentType, bool isCard, string locale, object data, string[] types, string[] tags, Func<string, object, object> binder = null)
+        protected async Task<object> readAttachmentFile(string fileLocation, string contentType, bool isCard, string locale, object data, string[] types, string[] tags)
         {
             if (Uri.TryCreate(fileLocation, UriKind.Absolute, out Uri uri))
             {
@@ -250,9 +248,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (contentType.ToLower().IndexOf("json") > 0 || isCard)
             {
                 var inlineTemplate = $"```\n{File.ReadAllText(resolvedFileLocation)}\n```";
-                var result = await this.LanguageGenerator.Generate(locale, inlineTemplate, null, data, types, tags, binder).ConfigureAwait(false);
-
-                return JsonConvert.DeserializeObject(result);
+                var result = await this.LanguageGenerator.Generate(locale, inlineTemplate, null, data, types, tags).ConfigureAwait(false);
+                if (result != null)
+                {
+                    return JsonConvert.DeserializeObject(result);
+                }
+                throw new Exception("No template found!");
             }
             else
             {

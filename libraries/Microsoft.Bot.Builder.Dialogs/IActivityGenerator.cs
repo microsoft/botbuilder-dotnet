@@ -21,6 +21,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="types">types to try.</param>
         /// <param name="tags">tags to try.</param>
         /// <returns></returns>
-        Task<T> Generate(string locale, string inlineTemplate, string id, object data, string[] types, string[] tags, Func<string, object, object> binder = null);
+        Task<T> Generate(string locale, string inlineTemplate, string id, object data, string[] types, string[] tags);
     }
 }

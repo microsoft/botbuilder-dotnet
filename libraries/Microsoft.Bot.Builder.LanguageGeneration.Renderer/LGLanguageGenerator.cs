@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Renderer
             }
         }
 
-        public async Task<string> Generate(string targetLocale, string inlineTemplate = null, string id = null, object data = null, string[] types = null, string[] tags = null, Func<string, object, object> valueBinder = null)
+        public async Task<string> Generate(string targetLocale, string inlineTemplate = null, string id = null, object data = null, string[] types = null, string[] tags = null)
         {
             await LoadResources().ConfigureAwait(false);
 
@@ -75,22 +75,24 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Renderer
             {
                 if (!this.LanguagePolicy.TryGetValue(String.Empty, out languagePolicy))
                 {
-                    return null;
+                    throw new Exception($"No supported language found for {targetLocale}");
                 }
             }
 
+            List<string> errors = new List<string>();
             foreach (var locale in languagePolicy)
             {
                 if (this.engines.TryGetValue(locale, out TemplateEngine engine))
                 {
-                    var lgResult = BindToTemplate(engine, inlineTemplate, id, data, types, tags, valueBinder);
-                    if (lgResult != null)
+                    var (result, errs) = BindToTemplate(engine, inlineTemplate, id, data, types, tags);
+                    if (result != null)
                     {
-                        return lgResult;
+                        return result;
                     }
+                    errors.AddRange(errs);
                 }
             }
-            return null;
+            throw new Exception(String.Join(",\n", errors.Distinct()));
         }
 
         private string FileLocale(string filename)
@@ -111,13 +113,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Renderer
             return "";
         }
 
-        private string BindToTemplate(TemplateEngine engine, string inline, string id, object data, string[] types, string[] tags, Func<string, object, object> valueBinder)
+        private (string, string[]) BindToTemplate(TemplateEngine engine, string inline, string id, object data, string[] types, string[] tags)
         {
+            List<string> errors = new List<string>();
             string result;
+            string error;
             if (!String.IsNullOrEmpty(inline))
             {
                 // do inline evaluation first
-                return this.TryEvaluate(engine, inline, data, valueBinder);
+                if (this.TryEvaluate(engine, inline, data, out result, out error))
+                {
+                    return (result, null);
+                }
+                errors.Add(error);
+                return (null, errors.ToArray());
             }
             else if (!String.IsNullOrEmpty(id))
             {
@@ -128,9 +137,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Renderer
                     {
                         foreach (var type in types)
                         {
-                            result = this.TryEvaluate(engine, $"[{tag}-{type}-{id}]", data, valueBinder);
-                            if (result != null)
-                                return result;
+                            if (this.TryEvaluate(engine, $"[{tag}-{type}-{id}]", data, out result, out error))
+                            {
+                                return (result, null);
+                            }
+                            errors.Add(error);
                         }
                     }
                 }
@@ -140,9 +151,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Renderer
                 {
                     foreach (var type in types)
                     {
-                        result = this.TryEvaluate(engine, $"[{type}-{id}]", data, valueBinder);
-                        if (result != null)
-                            return result;
+                        if (this.TryEvaluate(engine, $"[{type}-{id}]", data, out result, out error))
+                        {
+                            return (result, null);
+                        }
+                        errors.Add(error);
                     }
                 }
 
@@ -151,33 +164,41 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Renderer
                 {
                     foreach (var tag in tags)
                     {
-                        result = this.TryEvaluate(engine, $"[{tag}-{id}]", data, valueBinder);
-                        if (result != null)
-                            return result;
+                        if (this.TryEvaluate(engine, $"[{tag}-{id}]", data, out result, out error))
+                        {
+                            return (result, null);
+                        }
+                        errors.Add(error);
                     }
                 }
 
                 // try exact match on id 
-                result = this.TryEvaluate(engine, $"[{id}]", data, valueBinder);
-                if (result != null)
-                    return result;
+                if (this.TryEvaluate(engine, $"[{id}]", data, out result, out error))
+                {
+                    return (result, null);
+                }
+                errors.Add(error);
 
-                return null;
+                return (null, errors.ToArray());
             }
             throw new ArgumentException("One of Inline or Id needs to be set");
         }
 
-        private string TryEvaluate(TemplateEngine engine, string text, object data, Func<string, object, object> valueBinder)
+        private bool TryEvaluate(TemplateEngine engine, string text, object data, out string result, out string error)
         {
+            result = null;
+            error = null;
             try
             {
                 // do inline evaluation first
-                return engine.Evaluate(text, data, null);
+                result = engine.Evaluate(text, data, null);
+                return true;
             }
-            catch (Exception)
+            catch (Exception err)
             {
-                return null;
+                error = err.Message;
             }
+            return false;
         }
     }
 }

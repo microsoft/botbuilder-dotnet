@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public Activity Activity { get; set; }
 
-        public Task<Activity> BindToData(ITurnContext context, object data, Func<string, object, object> binder = null)
+        public Task<Activity> BindToData(ITurnContext context, object data)
         {
             return Task.FromResult(Activity);
         }

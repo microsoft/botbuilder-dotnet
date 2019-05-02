@@ -252,7 +252,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var templateName = exp.Substring(0, argsStartPos);
                     if (!templateMap.ContainsKey(templateName))
                     {
-                        result.Add(new ReportEntry($"No such template: {templateName} to ref"));
+                        result.Add(new ReportEntry($"[{templateName}] template not found"));
                     }
                     else
                     {
@@ -265,7 +265,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 if (!templateMap.ContainsKey(exp))
                 {
-                    result.Add(new ReportEntry($"No such template: {exp}"));
+                    result.Add(new ReportEntry($"[{exp}] template not found"));
                 }
             }
 
@@ -350,7 +350,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override string ToString()
         {
-            var label = Type == ReportEntryType.ERROR ? "[ERROR]" : "[WARN]";
+            var label = Type == ReportEntryType.ERROR ? "ERROR" : "WARNING";
             return $"{label}: {Message}";
         }
     }
