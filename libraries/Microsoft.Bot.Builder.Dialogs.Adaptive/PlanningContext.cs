@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -402,6 +403,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public object Result { get; set; }
     }
 
+    [DebuggerDisplay("{DialogId}")]
     public class PlanStepState : DialogState
     {
         public PlanStepState()
@@ -421,6 +423,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public object Options { get; set; }
     }
 
+    [DebuggerDisplay("{Title}")]
     public class PlanState
     {
         [JsonProperty(PropertyName = "title")]
@@ -440,6 +443,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         ReplacePlan
     }
 
+    [DebuggerDisplay("{ChangeType}:{Desire}")]
     public class PlanChangeList
     {
         [JsonProperty(PropertyName = "changeType")]

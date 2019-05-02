@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -7,6 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Defines an text Template where the template expression is local aka "inline".
     /// </summary>
+    [DebuggerDisplay("{Template}")]
     public class TextTemplate : ITextTemplate
     {
         // Fixed text constructor for inline template

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
@@ -9,6 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Defines an activity Template where the template expression is local aka "inline".
     /// </summary>
+    [DebuggerDisplay("{Template}")]
     public class ActivityTemplate : IActivityTemplate
     {
         // Fixed text constructor for inline template
