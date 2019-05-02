@@ -24,6 +24,8 @@ namespace Microsoft.Bot.Builder.Adapters
 
         private int _nextId = 0;
 
+        public string Locale { get; set; } = "en-us";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TestAdapter"/> class.
         /// </summary>

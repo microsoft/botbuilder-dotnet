@@ -26,50 +26,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             new Choice { Value = "blue" },
         };
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void ChoicePromptWithEmptyIdShouldFail()
-        {
-            var choicePrompt = new ChoicePrompt(string.Empty);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void ChoicePromptWithNullIdShouldFail()
-        {
-            var choicePrompt = new ChoicePrompt(null);
-        }
-
-        [TestMethod]
-        public async Task ChoicePromptWithCardActionAndNoValueShouldNotFail()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            // Create new DialogSet.
-            var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English));
-
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-                {
-                    var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                    var results = await dc.ContinueDialogAsync(cancellationToken);
-                    if (results.Status == DialogTurnStatus.Empty)
-                    {
-                        var choice = new Choice()
-                        {
-                            Action = new CardAction()
-                            {
-                                Type = "imBack",
-                                Value = "value",
-                                Title = "title",
-                            },
-                        };
-
         public TestContext TestContext { get; set; }
 
         [TestMethod]

@@ -19,8 +19,17 @@
         {
             "type": "endpoint",
             "endpoint": "http://localhost:3978/api/messages",
-            "name": "http://localhost:3978/api/messages",
-            "id": "154"
+            "id": "154",
+            "name": "http://localhost:3978/api/messages"
+        },
+        {
+            "type": "qna",
+            "endpointKey": "0d550978-7c33-4731-943c-ceb68a936846",
+            "hostname": "https://videotutorialhomeimprovement-qnahost.azurewebsites.net",
+            "id": "ddf8f9d5-f01e-42cf-b00d-d4b7e8cfd399",
+            "kbId": "ddf8f9d5-f01e-42cf-b00d-d4b7e8cfd399",
+            "name": "FAQ",
+            "subscriptionKey": "ed0871f8cb73492ab0108ead2aaeba13"
         }
     ],
     "padlock": "",

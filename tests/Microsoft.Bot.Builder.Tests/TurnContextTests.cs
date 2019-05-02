@@ -489,49 +489,6 @@ namespace Microsoft.Bot.Builder.Tests
             }
         }
 
-        [TestMethod]
-        public void TurnContextStateNoDispose()
-        {
-            // Verify any ConnectorClient in TurnContextCollection doesn't get disposed.
-            // - Adapter caches ConnectorClient.
-            // - Adapter lifetime is singleton.
-            // - ConnectorClient implements IDisposable.
-            // - ConnectorClient added in turnContet.TurnCollection.
-            // - TurnContextCollection disposes elements after each turn.
-            var connector = new ConnectorClientThrowExceptionOnDispose();
-            Assert.IsTrue(connector is IDisposable);
-            Assert.IsTrue(connector is IConnectorClient);
-
-            var stateCollection = new TurnContextStateCollection();
-            stateCollection.Add("connector", connector);
-            stateCollection.Dispose();
-        }
-
-        [TestMethod]
-        public void TurnContextStateDisposeNonConnectorClient()
-        {
-            var disposableObject1 = new TrackDisposed();
-            var disposableObject2 = new TrackDisposed();
-            var disposableObject3 = new TrackDisposed();
-            Assert.IsFalse(disposableObject1.Disposed);
-            Assert.IsTrue(disposableObject1 is IDisposable);
-
-            var connector = new ConnectorClientThrowExceptionOnDispose();
-            Assert.IsTrue(connector is IDisposable);
-            Assert.IsTrue(connector is IConnectorClient);
-
-            var stateCollection = new TurnContextStateCollection();
-            stateCollection.Add("disposable1", disposableObject1);
-            stateCollection.Add("disposable2", disposableObject2);
-            stateCollection.Add("disposable3", disposableObject3);
-            stateCollection.Add("connector", connector);
-            stateCollection.Dispose();
-
-            Assert.IsTrue(disposableObject1.Disposed);
-            Assert.IsTrue(disposableObject2.Disposed);
-            Assert.IsTrue(disposableObject3.Disposed);
-        }
-
         public async Task MyBotLogic(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             switch (turnContext.Activity.AsMessageActivity().Text)

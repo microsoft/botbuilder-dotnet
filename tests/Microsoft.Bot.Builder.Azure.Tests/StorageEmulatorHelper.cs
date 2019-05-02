@@ -18,6 +18,24 @@ using Activity = Microsoft.Bot.Schema.Activity;
 // More info: https://docs.microsoft.com/azure/storage/common/storage-use-emulator
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
+    [TestClass]
+    public class StorageTestClass
+    {
+        // These tests require Azure Storage Emulator v5.7
+        [AssemblyInitialize]
+        public static void AssemblyInit(TestContext context)
+        {
+            StorageEmulatorHelper.StartStorageEmulator();
+        }
+
+        // These tests require Azure Storage Emulator v5.7
+        [AssemblyCleanup]
+        public static void AssemblyCleanup()
+        {
+            StorageEmulatorHelper.StopStorageEmulator();
+        }
+    }
+
     public static class StorageEmulatorHelper
     {
         /* Usage:

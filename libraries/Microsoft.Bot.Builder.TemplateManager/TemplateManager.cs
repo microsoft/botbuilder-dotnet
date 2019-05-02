@@ -37,6 +37,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
         public TemplateManager Register(ITemplateRenderer renderer)
         {
             if (!this.Renderers.Contains(renderer))
+            {
                 this.Renderers.Add(renderer);
             }
 

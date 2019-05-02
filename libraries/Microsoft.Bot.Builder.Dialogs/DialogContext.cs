@@ -412,11 +412,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            // Pop stack
-            if (Stack.Any())
-            {
-                Stack.RemoveAt(0);
-            }
+            await EndActiveDialogAsync(DialogReason.ReplaceCalled, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             this.State.Turn["__repeatDialogId"] = dialogId;
             // Start replacement dialog

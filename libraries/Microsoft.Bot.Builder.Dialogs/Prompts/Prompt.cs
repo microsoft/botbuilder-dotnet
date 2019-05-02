@@ -53,8 +53,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Initialize prompt state
-            var state = dc.ActiveDialog.State;
-            state[PersistedOptions] = opt;
+            var state = dc.DialogState;
+            state[PersistedOptions] = promptOptions;
             state[PersistedState] = new Dictionary<string, object>
             {
                 { AttemptCountKey, 0 },
@@ -113,8 +113,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                 Desire = recognized.Succeeded && !recognized.AllowInterruption ? DialogConsultationDesire.ShouldProcess : DialogConsultationDesire.CanProcess,
                 Processor = async (dialogContext) =>
                 {
+
+                    var ds = (IDictionary<string, object>)dc.DialogState[PersistedState];
                     // Increment attempt count
-                    state[AttemptCountKey] = (int)state[AttemptCountKey] + 1;
+                    ds[AttemptCountKey] = (int)ds[AttemptCountKey] + 1;
 
                     // Validate the return value
                     bool isValid = false;
@@ -159,7 +161,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // To avoid the prompt prematurely ending we need to implement this method and
             // simply re-prompt the user.
             await RepromptDialogAsync(dc.Context, dc.ActiveDialog, cancellationToken).ConfigureAwait(false);
-            return EndOfTurn;
+            return Dialog.EndOfTurn;
         }
 
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
@@ -216,7 +218,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 prompt.Text = msg.Text;
 
-                if (msg.SuggestedActions?.Actions != null && msg.SuggestedActions.Actions.Count > 0)
+                if (msg.SuggestedActions != null && msg.SuggestedActions.Actions != null && msg.SuggestedActions.Actions.Count > 0)
                 {
                     prompt.SuggestedActions = msg.SuggestedActions;
                 }

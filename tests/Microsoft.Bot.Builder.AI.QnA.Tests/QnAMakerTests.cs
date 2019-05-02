@@ -211,7 +211,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             // Invoke flow which uses mock
             var transcriptStore = new MemoryTranscriptStore();
-            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter()
                 .Use(new TranscriptLoggerMiddleware(transcriptStore));
             string conversationId = null;
 
@@ -273,7 +273,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var qna = QnaReturnsAnswer();
 
             // No text
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            var adapter = new TestAdapter();
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
@@ -297,7 +297,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var qna = QnaReturnsAnswer();
 
             // No text
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            var adapter = new TestAdapter();
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
@@ -333,7 +333,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var qna = QnaReturnsAnswer();
 
             // No text
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            var adapter = new TestAdapter();
             var activity = new Activity
             {
                 Type = ActivityTypes.Trace,
@@ -357,7 +357,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var qna = QnaReturnsAnswer();
 
             // No text
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            var adapter = new TestAdapter();
             var context = new MyTurnContext(adapter, null);
 
             var results = await qna.GetAnswersAsync(context);
@@ -473,7 +473,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
                 .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
 
-            var qnaWithZeroValueThreshold = GetQnAMaker(mockHttp,
+            var qnaWithZeroValueThreshold = GetQnAMaker(
+                mockHttp,
                 new QnAMakerEndpoint
                 {
                     KnowledgeBaseId = _knowlegeBaseId,
@@ -776,8 +777,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var result = await qna.GetAnswersAsync(
                     GetContext("What happens when you hug a porcupine?"),
-                    queryOptionsWithScoreThreshold
-            );
+                    queryOptionsWithScoreThreshold);
 
             Assert.IsNotNull(result);
 
@@ -949,7 +949,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         [TestCategory("QnAMaker")]
         [TestCategory("Telemetry")]
         public async Task Telemetry_Override()
-        private TurnContext GetContext(string utterance)
         {
             // Arrange
             var mockHttp = new MockHttpMessageHandler();
@@ -959,8 +958,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var client = new HttpClient(mockHttp);
 
             var endpoint = new QnAMakerEndpoint
-            var b = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
-            var a = new Activity
             {
                 KnowledgeBaseId = _knowlegeBaseId,
                 EndpointKey = _endpointKey,

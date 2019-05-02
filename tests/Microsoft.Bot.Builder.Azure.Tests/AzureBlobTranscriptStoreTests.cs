@@ -53,15 +53,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestInitialize]
         public void TestInit()
         {
-            StorageEmulatorHelper.StartStorageEmulator();
             _transcriptStore = new AzureBlobTranscriptStore(ConnectionString, ContainerName);
-        }
-
-        // These tests require Azure Storage Emulator v5.7
-        [TestCleanup]
-        public void TestCleanUp()
-        {
-            StorageEmulatorHelper.StopStorageEmulator();
         }
 
         // These tests require Azure Storage Emulator v5.7
