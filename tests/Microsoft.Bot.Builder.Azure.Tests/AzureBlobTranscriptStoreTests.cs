@@ -53,6 +53,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestInitialize]
         public void TestInit()
         {
+            StorageEmulatorHelper.StartStorageEmulator();
+
             _transcriptStore = new AzureBlobTranscriptStore(ConnectionString, ContainerName);
         }
 
