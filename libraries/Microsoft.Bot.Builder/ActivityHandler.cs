@@ -52,6 +52,7 @@ namespace Microsoft.Bot.Builder
                 case ActivityTypes.ConversationUpdate:
                     return OnConversationUpdateActivityAsync(new DelegatingTurnContext<IConversationUpdateActivity>(turnContext), cancellationToken);
 
+                case ActivityTypes.Invoke:
                 case ActivityTypes.Event:
                     return OnEventActivityAsync(new DelegatingTurnContext<IEventActivity>(turnContext), cancellationToken);
 
@@ -145,7 +146,7 @@ namespace Microsoft.Bot.Builder
         /// <see cref="OnTurnAsync(ITurnContext{IConversationUpdateActivity}, CancellationToken)"/> is used.
         /// Event activities can be used to communicate many different things.
         /// By default, this method will call <see cref="OnTokenResponseEventAsync(ITurnContext{IEventActivity}, CancellationToken)"/> if the
-        /// activity's name is <c>tokens/response</c> or <see cref="OnEventAsync(ITurnContext{IEventActivity}, CancellationToken)"/> otherwise.
+        /// activity's name is <c>tokens/response</c> or <c>signin/verifyState</c> and <see cref="OnEventAsync(ITurnContext{IEventActivity}, CancellationToken)"/> otherwise.
         /// A <c>tokens/response</c> event can be triggered by an <see cref="OAuthCard"/>.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
@@ -154,7 +155,8 @@ namespace Microsoft.Bot.Builder
         /// <returns>A task that represents the work queued to execute.</returns>
         protected virtual Task OnEventActivityAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
         {
-            if (turnContext.Activity.Name == "tokens/response")
+            if (turnContext.Activity.Name == "tokens/response" ||
+                turnContext.Activity.Name == "signin/verifyState")
             {
                 return OnTokenResponseEventAsync(turnContext, cancellationToken);
             }
