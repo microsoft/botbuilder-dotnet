@@ -4,10 +4,9 @@
 using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using Microsoft.Bot.Connector.Authentication;
 using Xunit;
 
-namespace Microsoft.Bot.Connector.Tests.Authentication
+namespace Microsoft.Bot.Connector.Authentication.Tests
 {
     public class EndorsementsValidatorTests
     {
@@ -49,7 +48,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         [Fact]
         public void EndorsedChannelIdShouldPassWithTwoEndorsements()
         {
-            var isEndorsed = EndorsementsValidator.Validate("right", new HashSet<string>(new [] { "right", "wrong" }));
+            var isEndorsed = EndorsementsValidator.Validate("right", new HashSet<string>(new[] { "right", "wrong" }));
             isEndorsed.Should().BeTrue();
         }
 

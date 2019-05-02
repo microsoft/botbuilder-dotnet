@@ -18,14 +18,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public void TextPromptWithEmptyIdShouldNotFail()
         {
-            var emptyId = "";
+            var emptyId = string.Empty;
             var textPrompt = new TextPrompt(emptyId);
         }
 
         [TestMethod]
         public void TextPromptWithNullIdShouldNotFail()
         {
-            var nullId = "";
+            var nullId = string.Empty;
             nullId = null;
             var textPrompt = new TextPrompt(nullId);
         }
@@ -141,6 +141,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     return Task.FromResult(true);
                 }
+
                 return Task.FromResult(false);
             };
             var textPrompt = new TextPrompt("TextPrompt", validator);

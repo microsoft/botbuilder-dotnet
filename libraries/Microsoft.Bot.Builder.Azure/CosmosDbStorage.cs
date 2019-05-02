@@ -20,14 +20,15 @@ namespace Microsoft.Bot.Builder.Azure
     /// </summary>
     public class CosmosDbStorage : IStorage
     {
-        private static readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
-
         // When setting up the database, calls are made to CosmosDB. If multiple calls are made, we'll end up setting the
         // collectionLink member variable more than once. The semaphore is for making sure the initialization of the
         // database is done only once.
         private static SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
+        private readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+
         private readonly string _databaseId;
+        private readonly string _partitionKey;
         private readonly string _collectionId;
         private readonly RequestOptions _documentCollectionCreationRequestOptions = null;
         private readonly RequestOptions _databaseCreationRequestOptions = null;
@@ -68,6 +69,7 @@ namespace Microsoft.Bot.Builder.Azure
 
             _databaseId = cosmosDbStorageOptions.DatabaseId;
             _collectionId = cosmosDbStorageOptions.CollectionId;
+            _partitionKey = cosmosDbStorageOptions.PartitionKey;
             _documentCollectionCreationRequestOptions = cosmosDbStorageOptions.DocumentCollectionRequestOptions;
             _databaseCreationRequestOptions = cosmosDbStorageOptions.DatabaseCreationRequestOptions;
 
@@ -78,6 +80,27 @@ namespace Microsoft.Bot.Builder.Azure
             // Invoke CollectionPolicy delegate to further customize settings
             cosmosDbStorageOptions.ConnectionPolicyConfigurator?.Invoke(connectionPolicy);
             _client = new DocumentClient(cosmosDbStorageOptions.CosmosDBEndpoint, cosmosDbStorageOptions.AuthKey, connectionPolicy);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CosmosDbStorage"/> class.
+        /// using the provided CosmosDB credentials, database ID, and collection ID.
+        /// </summary>
+        /// <param name="cosmosDbStorageOptions">Cosmos DB storage configuration options.</param>
+        /// <param name="jsonSerializer">If passing in a custom JsonSerializer, we recommend the following settings:
+        /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.All.</para>
+        /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
+        /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
+        /// </param>
+        public CosmosDbStorage(CosmosDbStorageOptions cosmosDbStorageOptions, JsonSerializer jsonSerializer)
+            : this(cosmosDbStorageOptions)
+        {
+            if (jsonSerializer == null)
+            {
+                throw new ArgumentNullException(nameof(jsonSerializer));
+            }
+
+            _jsonSerializer = jsonSerializer;
         }
 
         /// <summary>
@@ -129,6 +152,8 @@ namespace Microsoft.Bot.Builder.Azure
         /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
         public async Task DeleteAsync(string[] keys, CancellationToken cancellationToken)
         {
+            RequestOptions options = null;
+
             if (keys == null)
             {
                 throw new ArgumentNullException(nameof(keys));
@@ -142,10 +167,19 @@ namespace Microsoft.Bot.Builder.Azure
             // Ensure Initialization has been run
             await InitializeAsync().ConfigureAwait(false);
 
+            if (!string.IsNullOrEmpty(this._partitionKey))
+            {
+                options = new RequestOptions() { PartitionKey = new PartitionKey(this._partitionKey) };
+            }
+
             // Parallelize deletion
             var tasks = keys.Select(key =>
                 _client.DeleteDocumentAsync(
-                    UriFactory.CreateDocumentUri(_databaseId, _collectionId, CosmosDbKeyEscape.EscapeKey(key)),
+                    UriFactory.CreateDocumentUri(
+                        _databaseId,
+                        _collectionId,
+                        CosmosDbKeyEscape.EscapeKey(key)),
+                    options,
                     cancellationToken: cancellationToken));
 
             // await to deletion tasks to complete
@@ -165,6 +199,8 @@ namespace Microsoft.Bot.Builder.Azure
         /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
         public async Task<IDictionary<string, object>> ReadAsync(string[] keys, CancellationToken cancellationToken)
         {
+            FeedOptions options = null;
+
             if (keys == null)
             {
                 throw new ArgumentNullException(nameof(keys));
@@ -179,6 +215,11 @@ namespace Microsoft.Bot.Builder.Azure
             // Ensure Initialization has been run
             await InitializeAsync().ConfigureAwait(false);
 
+            if (!string.IsNullOrEmpty(this._partitionKey))
+            {
+                options = new FeedOptions() { PartitionKey = new PartitionKey(this._partitionKey) };
+            }
+
             var storeItems = new Dictionary<string, object>(keys.Length);
 
             var parameterSequence = string.Join(",", Enumerable.Range(0, keys.Length).Select(i => $"@id{i}"));
@@ -189,7 +230,7 @@ namespace Microsoft.Bot.Builder.Azure
                 Parameters = new SqlParameterCollection(parameterValues),
             };
 
-            var query = _client.CreateDocumentQuery<DocumentStoreItem>(_collectionLink, querySpec).AsDocumentQuery();
+            var query = _client.CreateDocumentQuery<DocumentStoreItem>(_collectionLink, querySpec, options).AsDocumentQuery();
             while (query.HasMoreResults)
             {
                 foreach (var doc in await query.ExecuteNextAsync<DocumentStoreItem>(cancellationToken).ConfigureAwait(false))

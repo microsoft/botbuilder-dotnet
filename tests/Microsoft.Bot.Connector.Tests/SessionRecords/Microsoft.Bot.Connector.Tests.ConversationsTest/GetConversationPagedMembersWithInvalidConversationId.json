@@ -1,0 +1,96 @@
+{
+  "Entries": [
+    {
+      "RequestUri": "/v3/conversations",
+      "RequestMethod": "POST",
+      "RequestBody": "{\r\n  \"bot\": {\r\n    \"id\": \"B21UTEF8S:T03CWQ0QB\"\r\n  },\r\n  \"members\": [\r\n    {\r\n      \"id\": \"U19KH8EHJ:T03CWQ0QB\"\r\n    }\r\n  ]\r\n}",
+      "RequestHeaders": {
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Content-Length": [
+          "125"
+        ],
+        "User-Agent": [
+          "FxVersion/4.6.26814.03",
+          "Microsoft.Bot.Connector.ConnectorClient/4.0.0.0",
+          "Microsoft-BotFramework/3.1",
+          "BotBuilder/4.0.0.0",
+          "(.NETCoreApp,Version=v1.0; Microsoft Windows 10.0.17134 ; X64)"
+        ]
+      },
+      "ResponseBody": "{\r\n  \"id\": \"B21UTEF8S:T03CWQ0QB:DD6UM0YHW\"\r\n}",
+      "ResponseHeaders": {
+        "Content-Length": [
+          "45"
+        ],
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Expires": [
+          "-1"
+        ],
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Pragma": [
+          "no-cache"
+        ],
+        "Server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000"
+        ],
+        "Date": [
+          "Tue, 09 Oct 2018 18:35:49 GMT"
+        ]
+      },
+      "StatusCode": 200
+    },
+    {
+      "RequestUri": "/v3/conversations/B21UTEF8S%3AT03CWQ0QB%3ADD6UM0YHWM/pagedmembers",
+      "RequestMethod": "GET",
+      "RequestBody": "",
+      "RequestHeaders": {
+        "User-Agent": [
+          "FxVersion/4.6.26814.03",
+          "Microsoft.Bot.Connector.ConnectorClient/4.0.0.0",
+          "Microsoft-BotFramework/3.1",
+          "BotBuilder/4.0.0.0",
+          "(.NETCoreApp,Version=v1.0; Microsoft Windows 10.0.17134 ; X64)"
+        ]
+      },
+      "ResponseBody": "{\r\n  \"error\": {\r\n    \"code\": \"ServiceError\",\r\n    \"message\": \"ExecuteWithActivityContext FAILED: The specified channel was not found\"\r\n  }\r\n}",
+      "ResponseHeaders": {
+        "Content-Length": [
+          "141"
+        ],
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Expires": [
+          "-1"
+        ],
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Pragma": [
+          "no-cache"
+        ],
+        "Server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000"
+        ],
+        "Date": [
+          "Tue, 09 Oct 2018 18:35:49 GMT"
+        ]
+      },
+      "StatusCode": 400
+    }
+  ],
+  "Names": {},
+  "Variables": {}
+}

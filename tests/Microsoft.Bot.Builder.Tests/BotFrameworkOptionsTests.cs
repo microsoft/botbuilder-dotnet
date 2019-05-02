@@ -1,5 +1,4 @@
-﻿
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -9,7 +8,7 @@ using Microsoft.Bot.Builder.Integration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 /// <summary>
-/// Technically should be buried under Integration folder, but options are independent 
+/// Technically should be buried under Integration folder, but options are independent
 /// of any specific integration (at the moment).
 /// </summary>
 namespace Microsoft.Bot.Builder.Tests
@@ -27,10 +26,10 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.IsNotNull(options.Middleware);
             Assert.IsNull(options.OnTurnError);
             Assert.IsNotNull(options.Paths);
-#pragma warning disable 0618 // Disable the warning, as this test needs to be here. 
+#pragma warning disable 0618 // Disable the warning, as this test needs to be here.
             Assert.IsNotNull(options.State);
 #pragma warning restore 0618
-            Assert.IsNull(options.ConnectorClientRetryPolicy);            
+            Assert.IsNull(options.ConnectorClientRetryPolicy);
         }
 
         [TestMethod]

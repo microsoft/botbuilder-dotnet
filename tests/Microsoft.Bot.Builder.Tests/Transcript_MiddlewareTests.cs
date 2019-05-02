@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Tests
                     var typingActivity = new Activity
                     {
                         Type = ActivityTypes.Typing,
-                        RelatesTo = context.Activity.RelatesTo
+                        RelatesTo = context.Activity.RelatesTo,
                     };
                     await context.SendActivityAsync(typingActivity);
                     await Task.Delay(500);
@@ -106,7 +106,6 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var dateTimeStartOffset1 = new DateTimeOffset(DateTime.Now);
             var dateTimeStartOffset2 = new DateTimeOffset(DateTime.UtcNow);
-            
 
             var transcriptStore = new MemoryTranscriptStore();
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
@@ -137,7 +136,7 @@ namespace Microsoft.Bot.Builder.Tests
                     .AssertReply("new response")
                 .StartTestAsync();
             await Task.Delay(500);
-            
+
             // Perform some queries
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync("test", conversationId, null, dateTimeStartOffset1.DateTime);
             Assert.AreEqual(4, pagedResult.Items.Length);
@@ -146,6 +145,7 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual("new response", pagedResult.Items[2].AsMessageUpdateActivity().Text);
             Assert.AreEqual("update", pagedResult.Items[3].AsMessageActivity().Text);
             Assert.AreEqual(pagedResult.Items[1].Id, pagedResult.Items[2].Id);
+
             // Perform some queries
             pagedResult = await transcriptStore.GetTranscriptActivitiesAsync("test", conversationId, null, DateTimeOffset.MinValue);
             Assert.AreEqual(4, pagedResult.Items.Length);
@@ -154,10 +154,10 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual("new response", pagedResult.Items[2].AsMessageUpdateActivity().Text);
             Assert.AreEqual("update", pagedResult.Items[3].AsMessageActivity().Text);
             Assert.AreEqual(pagedResult.Items[1].Id, pagedResult.Items[2].Id);
+
             // Perform some queries
             pagedResult = await transcriptStore.GetTranscriptActivitiesAsync("test", conversationId, null, DateTimeOffset.MaxValue);
             Assert.AreEqual(0, pagedResult.Items.Length);
-
         }
 
         [TestMethod]

@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Builder
             TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgDeleteEvent, await FillDeleteEventPropertiesAsync(activity).ConfigureAwait(false));
             return;
         }
- 
+
         /// <summary>
         /// Fills the event properties for the BotMessageReceived.
         /// Adheres to the LogPersonalInformation flag to filter Name, Text and Speak properties.

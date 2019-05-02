@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Tests
                 {
                     new ChannelAccount { Id = "b" },
                 },
-                Recipient = new ChannelAccount { Id = "b" }
+                Recipient = new ChannelAccount { Id = "b" },
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Tests
                     new ChannelAccount { Id = "a" },
                     new ChannelAccount { Id = "b" },
                 },
-                Recipient = new ChannelAccount { Id = "b" }
+                Recipient = new ChannelAccount { Id = "b" },
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.Tests
                     new ChannelAccount { Id = "b" },
                     new ChannelAccount { Id = "c" },
                 },
-                Recipient = new ChannelAccount {  Id = "b" }
+                Recipient = new ChannelAccount { Id = "b" },
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -121,7 +121,7 @@ namespace Microsoft.Bot.Builder.Tests
                 {
                     new ChannelAccount { Id = "c" },
                 },
-                Recipient = new ChannelAccount { Id = "c" }
+                Recipient = new ChannelAccount { Id = "c" },
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -146,7 +146,7 @@ namespace Microsoft.Bot.Builder.Tests
                     new ChannelAccount { Id = "a" },
                     new ChannelAccount { Id = "c" },
                 },
-                Recipient = new ChannelAccount { Id = "c" }
+                Recipient = new ChannelAccount { Id = "c" },
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -173,7 +173,7 @@ namespace Microsoft.Bot.Builder.Tests
                     new ChannelAccount { Id = "b" },
                     new ChannelAccount { Id = "c" },
                 },
-                Recipient = new ChannelAccount { Id = "c" }
+                Recipient = new ChannelAccount { Id = "c" },
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -198,7 +198,7 @@ namespace Microsoft.Bot.Builder.Tests
                 {
                     new ChannelAccount { Id = "b" },
                 },
-                Recipient = new ChannelAccount { Id = "b" }
+                Recipient = new ChannelAccount { Id = "b" },
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -222,7 +222,7 @@ namespace Microsoft.Bot.Builder.Tests
                 {
                     new ChannelAccount { Id = "c" },
                 },
-                Recipient = new ChannelAccount { Id = "c" }
+                Recipient = new ChannelAccount { Id = "c" },
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -283,7 +283,7 @@ namespace Microsoft.Bot.Builder.Tests
             // Arrange
             var activity = new Activity
             {
-                Type = ActivityTypes.Event
+                Type = ActivityTypes.Event,
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -303,7 +303,7 @@ namespace Microsoft.Bot.Builder.Tests
             // Arrange
             var activity = new Activity
             {
-                Type = "shall.not.pass"
+                Type = "shall.not.pass",
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -368,6 +368,7 @@ namespace Microsoft.Bot.Builder.Tests
                 throw new NotImplementedException();
             }
         }
+
         private class TestInvokeAdapter : NotImplementedAdapter
         {
             public IActivity Activity { get; private set; }
@@ -436,7 +437,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
             {
-                // touch every 
+                // touch every
                 var activity = turnContext.Activity;
                 var adapter = turnContext.Adapter;
                 var turnState = turnContext.TurnState;

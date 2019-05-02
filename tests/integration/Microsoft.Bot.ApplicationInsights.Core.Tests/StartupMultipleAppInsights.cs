@@ -34,12 +34,9 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 
             services.AddBotApplicationInsights(botConfig, "instance2");
 
-
-            // Adding IConfiguration in sample test server.  Otherwise this appears to be 
+            // Adding IConfiguration in sample test server.  Otherwise this appears to be
             // registered.
             services.AddSingleton<IConfiguration>(this.Configuration);
-
-
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -49,6 +46,5 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             Assert.IsNotNull(telemetryClient);
             Assert.IsTrue(telemetryClient is BotTelemetryClient);
         }
-
     }
 }

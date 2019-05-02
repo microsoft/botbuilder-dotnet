@@ -39,12 +39,119 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         public const string ContentType = "application/vnd.microsoft.activity";
 
-        partial void CustomInit()
+        /// <summary>
+        /// Gets or sets properties that are not otherwise defined by the <see cref="Activity"/> type but that
+        /// might appear in the REST JSON object.
+        /// </summary>
+        /// <value>The extended properties for the object.</value>
+        /// <remarks>With this, properties not represented in the defined type are not dropped when
+        /// the JSON object is deserialized, but are instead stored in this property. Such properties
+        /// will be written to a JSON object when the instance is serialized.</remarks>
+        [JsonExtensionData(ReadData = true, WriteData = true)]
+        public JObject Properties { get; set; } = new JObject();
+
+        /// <summary>
+        /// Create an instance of the Activity class with IMessageActivity masking.
+        /// </summary>
+        /// <returns>message activity.</returns>
+        public static IMessageActivity CreateMessageActivity()
         {
+            return new Activity(ActivityTypes.Message)
+            {
+                Attachments = new List<Attachment>(),
+                Entities = new List<Entity>(),
+            };
         }
 
         /// <summary>
-        /// Creates a reply message to this message and set up the routing information 
+        /// Create an instance of the Activity class with IContactRelationUpdateActivity masking.
+        /// </summary>
+        /// <returns>contact relation update activity.</returns>
+        public static IContactRelationUpdateActivity CreateContactRelationUpdateActivity()
+        {
+            return new Activity(ActivityTypes.ContactRelationUpdate);
+        }
+
+        /// <summary>
+        /// Creates a conversation update activity.
+        /// </summary>
+        /// <returns>conversation update activity.</returns>
+        public static IConversationUpdateActivity CreateConversationUpdateActivity()
+        {
+            return new Activity(ActivityTypes.ConversationUpdate)
+            {
+                MembersAdded = new List<ChannelAccount>(),
+                MembersRemoved = new List<ChannelAccount>(),
+            };
+        }
+
+        /// <summary>
+        /// Creates a typing activity.
+        /// </summary>
+        /// <returns>typing activity.</returns>
+        public static ITypingActivity CreateTypingActivity()
+        {
+            return new Activity(ActivityTypes.Typing);
+        }
+
+        /// <summary>
+        /// Create a Handoff activity.
+        /// </summary>
+        /// <returns>hand off activity.</returns>
+        public static IHandoffActivity CreateHandoffActivity()
+        {
+            return new Activity(ActivityTypes.Handoff);
+        }
+
+        /// <summary>
+        /// Creates an end of conversation activity.
+        /// </summary>
+        /// <returns>End of Conversation activity.</returns>
+        public static IEndOfConversationActivity CreateEndOfConversationActivity()
+        {
+            return new Activity(ActivityTypes.EndOfConversation);
+        }
+
+        /// <summary>
+        /// Creates an event activity.
+        /// </summary>
+        /// <returns>Event activity.</returns>
+        public static IEventActivity CreateEventActivity()
+        {
+            return new Activity(ActivityTypes.Event);
+        }
+
+        /// <summary>
+        /// Creates an invoke activity.
+        /// </summary>
+        /// <returns>Invoke activity.</returns>
+        public static IInvokeActivity CreateInvokeActivity()
+        {
+            return new Activity(ActivityTypes.Invoke);
+        }
+
+        /// <summary>
+        /// Creates a trace activity.
+        /// </summary>
+        /// <param name="name">The value to assign to the new activity's <see cref="Activity.Name"/> property.</param>
+        /// <param name="valueType">The value to assign to the new activity's <see cref="Activity.ValueType"/> property.</param>
+        /// <param name="value">The value to assign to the new activity's <see cref="Activity.Value"/> property
+        /// Default is the type name of the <paramref name="value"/> parameter.</param>
+        /// <param name="label">The value to assign to the new activity's <see cref="Activity.Label"/> property.</param>
+        /// <returns>Trace activity.</returns>
+        public static ITraceActivity CreateTraceActivity(string name, string valueType = null, object value = null, [CallerMemberName] string label = null)
+        {
+            return new Activity(ActivityTypes.Trace)
+            {
+                Name = name,
+                Label = label,
+                ValueType = valueType ?? value?.GetType().Name,
+                Value = value,
+            };
+        }
+
+        /// <summary>
+        /// Creates a reply message to this message and set up the routing information
         /// as a reply to the source message.
         /// </summary>
         /// <param name="text">The text of the reply.</param>
@@ -56,7 +163,7 @@ namespace Microsoft.Bot.Schema
             {
                 Type = ActivityTypes.Message,
                 Timestamp = DateTime.UtcNow,
-                From = new ChannelAccount(id: this.Recipient.Id, name: this.Recipient.Name),
+                From = new ChannelAccount(id: this.Recipient?.Id, name: this.Recipient?.Name),
                 Recipient = new ChannelAccount(id: this.From.Id, name: this.From.Name),
                 ReplyToId = this.Id,
                 ServiceUrl = this.ServiceUrl,
@@ -78,122 +185,332 @@ namespace Microsoft.Bot.Schema
         /// <param name="valueType">The value to assign to the trace activity's <see cref="Activity.ValueType"/> property.</param>
         /// <param name="label">The value to assign to the trace activity's <see cref="Activity.Label"/> property.</param>
         /// <returns>The created trace activity.</returns>
-        public ITraceActivity CreateTrace(string name, object value=null, string valueType = null, [CallerMemberName] string label=null)
+        public ITraceActivity CreateTrace(string name, object value = null, string valueType = null, [CallerMemberName] string label = null)
         {
             var reply = new Activity
             {
                 Type = ActivityTypes.Trace,
                 Timestamp = DateTime.UtcNow,
-                From = new ChannelAccount(id: this.Recipient.Id, name: this.Recipient.Name),
+                From = new ChannelAccount(id: this.Recipient?.Id, name: this.Recipient?.Name),
                 Recipient = new ChannelAccount(id: this.From.Id, name: this.From.Name),
                 ReplyToId = this.Id,
                 ServiceUrl = this.ServiceUrl,
                 ChannelId = this.ChannelId,
                 Conversation = new ConversationAccount(isGroup: this.Conversation.IsGroup, id: this.Conversation.Id, name: this.Conversation.Name),
                 Name = name,
-                Label = label, 
+                Label = label,
                 ValueType = valueType ?? value?.GetType().Name,
-                Value = value
+                Value = value,
             }.AsTraceActivity();
             return reply;
         }
 
         /// <summary>
-        /// Gets or sets properties that are not otherwise defined by the <see cref="Activity"/> type but that
-        /// might appear in the REST JSON object.
+        /// Returns this activity as a message activity type; or null, if this is not that type of activity.
         /// </summary>
-        /// <value>The extended properties for the object.</value>
-        /// <remarks>With this, properties not represented in the defined type are not dropped when
-        /// the JSON object is deserialized, but are instead stored in this property. Such properties
-        /// will be written to a JSON object when the instance is serialized.</remarks>
-        [JsonExtensionData(ReadData = true, WriteData = true)]
-        public JObject Properties { get; set; } = new JObject();
-
-        /// <summary>
-        /// Create an instance of the Activity class with IMessageActivity masking
-        /// </summary>
-        public static IMessageActivity CreateMessageActivity()
+        /// <returns>IMessageActivity or null.</returns>
+        public IMessageActivity AsMessageActivity()
         {
-            return new Activity(ActivityTypes.Message)
-            {
-                Attachments = new List<Attachment>(),
-                Entities = new List<Entity>(),
-            };
+            return IsActivity(ActivityTypes.Message) ? this : null;
         }
 
         /// <summary>
-        /// Create an instance of the Activity class with IContactRelationUpdateActivity masking
+        /// Returns this activity as a contact relation update activity type; or null, if this is not that type of activity.
         /// </summary>
-        public static IContactRelationUpdateActivity CreateContactRelationUpdateActivity() { return new Activity(ActivityTypes.ContactRelationUpdate); }
-
-        /// <summary>
-        /// Creates a conversation update activity.
-        /// </summary>
-        public static IConversationUpdateActivity CreateConversationUpdateActivity()
+        /// <returns>IContactRelationUpdateActivity or null.</returns>
+        public IContactRelationUpdateActivity AsContactRelationUpdateActivity()
         {
-            return new Activity(ActivityTypes.ConversationUpdate)
-            {
-                MembersAdded = new List<ChannelAccount>(),
-                MembersRemoved = new List<ChannelAccount>(),
-            };
+            return IsActivity(ActivityTypes.ContactRelationUpdate) ? this : null;
         }
 
         /// <summary>
-        /// Creates a typing activity.
+        /// Returns this activity as an installation update activity type; or null, if this is not that type of activity.
         /// </summary>
-        public static ITypingActivity CreateTypingActivity() { return new Activity(ActivityTypes.Typing); }
-
-        /// <summary>
-        /// Create a Handoff activity.
-        /// </summary>
-        public static IHandoffActivity CreateHandoffActivity() { return new Activity(ActivityTypes.Handoff); }
-
-        /// <summary>
-        /// Creates an end of conversation activity.
-        /// </summary>
-        public static IEndOfConversationActivity CreateEndOfConversationActivity() { return new Activity(ActivityTypes.EndOfConversation); }
-
-        /// <summary>
-        /// Creates an event activity.
-        /// </summary>
-        public static IEventActivity CreateEventActivity() { return new Activity(ActivityTypes.Event); }
-
-        /// <summary>
-        /// Creates an invoke activity.
-        /// </summary>
-        public static IInvokeActivity CreateInvokeActivity() { return new Activity(ActivityTypes.Invoke); }
-
-        /// <summary>
-        /// Creates a trace activity.
-        /// </summary>
-        /// <param name="name">The value to assign to the new activity's <see cref="Activity.Name"/> property.</param>
-        /// <param name="value">The value to assign to the new activity's <see cref="Activity.Value"/> property.</param>
-        /// <param name="valueType">The value to assign to the new activity's <see cref="Activity.ValueType"/> property.
-        /// Default is the type name of the <paramref name="value"/> parameter.</param>
-        /// <param name="label">The value to assign to the new activity's <see cref="Activity.Label"/> property.</param>
-        public static ITraceActivity CreateTraceActivity(string name, string valueType = null, object value = null, [CallerMemberName] string label=null)
+        /// <returns>IInstallationUpdateActivity or null.</returns>
+        public IInstallationUpdateActivity AsInstallationUpdateActivity()
         {
-            return new Activity(ActivityTypes.Trace)
+            return IsActivity(ActivityTypes.InstallationUpdate) ? this : null;
+        }
+
+        /// <summary>
+        /// Returns this activity as a conversation update activity type; or null, if this is not that type of activity.
+        /// </summary>
+        /// <returns>IConversationUpdateActivity or null.</returns>
+        public IConversationUpdateActivity AsConversationUpdateActivity()
+        {
+            return IsActivity(ActivityTypes.ConversationUpdate) ? this : null;
+        }
+
+        /// <summary>
+        /// Returns this activity as a typing activity type; or null, if this is not that type of activity.
+        /// </summary>
+        /// <returns>ITypingActivity or null.</returns>
+        public ITypingActivity AsTypingActivity()
+        {
+            return IsActivity(ActivityTypes.Typing) ? this : null;
+        }
+
+        /// <summary>
+        /// Returns this activity as an end of conversation activity type; or null, if this is not that type of activity.
+        /// </summary>
+        /// <returns>IEndOfConversationActivity or null.</returns>
+        public IEndOfConversationActivity AsEndOfConversationActivity()
+        {
+            return IsActivity(ActivityTypes.EndOfConversation) ? this : null;
+        }
+
+        /// <summary>
+        /// Returns this activity as an event activity type; or null, if this is not that type of activity.
+        /// </summary>
+        public IEventActivity AsEventActivity()
+        {
+            return IsActivity(ActivityTypes.Event) ? this : null;
+        }
+
+        /// <summary>
+        /// Returns this activity as an invoke activity type; or null, if this is not that type of activity.
+        /// </summary>
+        /// <returns>IInvokeActivity or null.</returns>
+        public IInvokeActivity AsInvokeActivity()
+        {
+            return IsActivity(ActivityTypes.Invoke) ? this : null;
+        }
+
+        /// <summary>
+        /// Returns this activity as a message update activity type; or null, if this is not that type of activity.
+        /// </summary>
+        /// <returns>IMessageUpdateActivity or null.</returns>
+        public IMessageUpdateActivity AsMessageUpdateActivity()
+        {
+            return IsActivity(ActivityTypes.MessageUpdate) ? this : null;
+        }
+
+        /// <summary>
+        /// Returns this activity as a message delete activity type; or null, if this is not that type of activity.
+        /// </summary>
+        /// <returns>IMessageDeleteActivity or null.</returns>
+        public IMessageDeleteActivity AsMessageDeleteActivity()
+        {
+            return IsActivity(ActivityTypes.MessageDelete) ? this : null;
+        }
+
+        /// <summary>
+        /// Returns this activity as a message reaction activity type; or null, if this is not that type of activity.
+        /// </summary>
+        /// <returns>IMessageReactionActivity or null.</returns>
+        public IMessageReactionActivity AsMessageReactionActivity()
+        {
+            return IsActivity(ActivityTypes.MessageReaction) ? this : null;
+        }
+
+        /// <summary>
+        /// Returns this activity as a suggestion activity type; or null, if this is not that type of activity.
+        /// </summary>
+        /// <returns>ISuggestionActivity or null.</returns>
+        public ISuggestionActivity AsSuggestionActivity()
+        {
+            return IsActivity(ActivityTypes.Suggestion) ? this : null;
+        }
+
+        /// <summary>
+        /// Returns this activity as a trace activity type; or null, if this is not that type of activity.
+        /// </summary>
+        /// <returns>ITraceActivity or null.</returns>
+        public ITraceActivity AsTraceActivity()
+        {
+            return IsActivity(ActivityTypes.Trace) ? this : null;
+        }
+
+        /// <summary>
+        /// Returns this activity as a handoff activity type; or null, if this is not that type of activity.
+        /// </summary>
+        /// <returns>IHandoffActivity or null.</returns>
+        public IHandoffActivity AsHandoffActivity()
+        {
+            return IsActivity(ActivityTypes.Handoff) ? this : null;
+        }
+
+        /// <summary>
+        /// Checks whether this message activity has content.
+        /// </summary>
+        /// <returns>True, if this message activity has any content to send; otherwise, false.</returns>
+        /// <remarks>This method is defined on the <see cref="Activity"/> class, but is only intended
+        /// for use on an activity of <see cref="Activity.Type"/> <see cref="ActivityTypes.Message"/>.</remarks>
+        public bool HasContent()
+        {
+            if (!string.IsNullOrWhiteSpace(this.Text))
             {
-                Name = name,
-                Label = label,
-                ValueType = valueType ?? value?.GetType().Name,
-                Value = value
+                return true;
+            }
+
+            if (!string.IsNullOrWhiteSpace(this.Summary))
+            {
+                return true;
+            }
+
+            if (this.Attachments != null && this.Attachments.Any())
+            {
+                return true;
+            }
+
+            if (this.ChannelData != null)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Resolves the mentions from the entities of this (message) activity.
+        /// </summary>
+        /// <returns>The array of mentions; or an empty array, if none are found.</returns>
+        public Mention[] GetMentions()
+        {
+            return this.Entities?.Where(entity => string.Compare(entity.Type, "mention", ignoreCase: true) == 0)
+                .Select(e => e.Properties.ToObject<Mention>()).ToArray() ?? new Mention[0];
+        }
+
+        /// <summary>
+        /// Gets the channel data as a strongly-typed object.
+        /// </summary>
+        /// <typeparam name="TypeT">The type of the object to return.</typeparam>
+        /// <returns>The strongly-typed object; or the type's default value, if the <see cref="ChannelData"/> is null.</returns>
+        /// <seealso cref="ChannelData"/>
+        /// <seealso cref="TryGetChannelData{TypeT}(out TypeT)"/>
+        public TypeT GetChannelData<TypeT>()
+        {
+            if (this.ChannelData == null)
+            {
+                return default(TypeT);
+            }
+
+            if (this.ChannelData.GetType() == typeof(TypeT))
+            {
+                return (TypeT)this.ChannelData;
+            }
+
+            return ((JObject)this.ChannelData).ToObject<TypeT>();
+        }
+
+        /// <summary>
+        /// Gets the channel data as a strongly-typed object.. A return value idicates whether the operation succeeded.
+        /// </summary>
+        /// <typeparam name="TypeT">The type of the object to return.</typeparam>
+        /// <param name="instance">When this method returns, contains the strongly-typed object if the operation succeeded,
+        /// or the type's default value if the operation failed.</param>
+        /// <returns>
+        /// <c>true</c> if the operation succeeded; otherwise, <c>false</c>.
+        /// </returns>
+        /// <seealso cref="ChannelData"/>
+        /// <seealso cref="GetChannelData{TypeT}"/>
+        public bool TryGetChannelData<TypeT>(out TypeT instance)
+        {
+            instance = default(TypeT);
+
+            try
+            {
+                if (this.ChannelData == null)
+                {
+                    return false;
+                }
+
+                instance = this.GetChannelData<TypeT>();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Creates a conversation reference from an activity.
+        /// </summary>
+        /// <returns>A conversation reference for the conversation that contains the activity.</returns>
+        public ConversationReference GetConversationReference()
+        {
+            ConversationReference reference = new ConversationReference
+            {
+                ActivityId = this.Id,
+                User = this.From,
+                Bot = this.Recipient,
+                Conversation = this.Conversation,
+                ChannelId = this.ChannelId,
+                ServiceUrl = this.ServiceUrl,
             };
+
+            return reference;
+        }
+
+        /// <summary>
+        /// Create a ConversationReference based on this Activity's Conversation info and the ResourceResponse from sending an activity.
+        /// </summary>
+        /// <param name="reply">ResourceResponse returned from sendActivity.</param>
+        /// <returns>A ConversationReference that can be stored and used later to delete or update the activity.</returns>
+        public ConversationReference GetReplyConversationReference(ResourceResponse reply)
+        {
+            var reference = GetConversationReference();
+
+            // Update the reference with the new outgoing Activity's id.
+            reference.ActivityId = reply.Id;
+            return reference;
+        }
+
+        /// <summary>
+        /// Updates this activity with the delivery information from an existing
+        /// conversation reference.
+        /// </summary>
+        /// <param name="reference">The conversation reference.</param>
+        /// <param name="isIncoming">(Optional) <c>true</c> to treat the activity as an
+        /// incoming activity, where the bot is the recipient; otherwaire <c>false</c>.
+        /// Default is <c>false</c>, and the activity will show the bot as the sender.</param>
+        /// <remarks>Call <see cref="GetConversationReference()"/> on an incoming
+        /// activity to get a conversation reference that you can then use to update an
+        /// outgoing activity with the correct delivery information.
+        /// </remarks>
+        /// <returns>this.</returns>
+        public Activity ApplyConversationReference(ConversationReference reference, bool isIncoming = false)
+        {
+            this.ChannelId = reference.ChannelId;
+            this.ServiceUrl = reference.ServiceUrl;
+            this.Conversation = reference.Conversation;
+
+            if (isIncoming)
+            {
+                this.From = reference.User;
+                this.Recipient = reference.Bot;
+                if (reference.ActivityId != null)
+                {
+                    this.Id = reference.ActivityId;
+                }
+            }
+            else
+            {// Outgoing
+                this.From = reference.Bot;
+                this.Recipient = reference.User;
+                if (reference.ActivityId != null)
+                {
+                    this.ReplyToId = reference.ActivityId;
+                }
+            }
+
+            return this;
         }
 
         /// <summary>
         /// Indicates whether this activity is of a specified activity type.
         /// </summary>
         /// <param name="activityType">The activity type to check for.</param>
+        /// <returns>true of false according the activity type.</returns>
         protected bool IsActivity(string activityType)
         {
             /*
-             * NOTE: While it is possible to come up with a fancy looking "one-liner" to solve 
-             * this problem, this code is purposefully more verbose due to optimizations. 
-             * 
-             * This main goal of the optimizations was to make zero allocations because it is called 
-             * by all of the .AsXXXActivity methods which are used in a pattern heavily upstream to 
+             * NOTE: While it is possible to come up with a fancy looking "one-liner" to solve
+             * this problem, this code is purposefully more verbose due to optimizations.
+             *
+             * This main goal of the optimizations was to make zero allocations because it is called
+             * by all of the .AsXXXActivity methods which are used in a pattern heavily upstream to
              * "pseudo-cast" the activity based on its type.
              */
 
@@ -226,228 +543,8 @@ namespace Microsoft.Bot.Schema
             return result;
         }
 
-        /// <summary>
-        /// Returns this activity as a message activity type; or null, if this is not that type of activity.
-        /// </summary>
-        public IMessageActivity AsMessageActivity() { return IsActivity(ActivityTypes.Message) ? this : null; }
-
-        /// <summary>
-        /// Returns this activity as a contact relation update activity type; or null, if this is not that type of activity.
-        /// </summary>
-        public IContactRelationUpdateActivity AsContactRelationUpdateActivity() { return IsActivity(ActivityTypes.ContactRelationUpdate) ? this : null; }
-
-        /// <summary>
-        /// Returns this activity as an installation update activity type; or null, if this is not that type of activity.
-        /// </summary>
-        public IInstallationUpdateActivity AsInstallationUpdateActivity() { return IsActivity(ActivityTypes.InstallationUpdate) ? this : null; }
-
-        /// <summary>
-        /// Returns this activity as a conversation update activity type; or null, if this is not that type of activity.
-        /// </summary>
-        public IConversationUpdateActivity AsConversationUpdateActivity() { return IsActivity(ActivityTypes.ConversationUpdate) ? this : null; }
-
-        /// <summary>
-        /// Returns this activity as a typing activity type; or null, if this is not that type of activity.
-        /// </summary>
-        public ITypingActivity AsTypingActivity() { return IsActivity(ActivityTypes.Typing) ? this : null; }
-
-        /// <summary>
-        /// Returns this activity as an end of conversation activity type; or null, if this is not that type of activity.
-        /// </summary>
-        public IEndOfConversationActivity AsEndOfConversationActivity() { return IsActivity(ActivityTypes.EndOfConversation) ? this : null; }
-
-        /// <summary>
-        /// Returns this activity as an event activity type; or null, if this is not that type of activity.
-        /// </summary>
-        public IEventActivity AsEventActivity() { return IsActivity(ActivityTypes.Event) ? this : null; }
-
-        /// <summary>
-        /// Returns this activity as an invoke activity type; or null, if this is not that type of activity.
-        /// </summary>
-        public IInvokeActivity AsInvokeActivity() { return IsActivity(ActivityTypes.Invoke) ? this : null; }
-
-        /// <summary>
-        /// Returns this activity as a message update activity type; or null, if this is not that type of activity.
-        /// </summary>
-        /// <returns></returns>
-        public IMessageUpdateActivity AsMessageUpdateActivity() { return IsActivity(ActivityTypes.MessageUpdate) ? this : null; }
-
-        /// <summary>
-        /// Returns this activity as a message delete activity type; or null, if this is not that type of activity.
-        /// </summary>
-        /// <returns></returns>
-        public IMessageDeleteActivity AsMessageDeleteActivity() { return IsActivity(ActivityTypes.MessageDelete) ? this : null; }
-
-        /// <summary>
-        /// Returns this activity as a message reaction activity type; or null, if this is not that type of activity.
-        /// </summary>
-        /// <returns></returns>
-        public IMessageReactionActivity AsMessageReactionActivity() { return IsActivity(ActivityTypes.MessageReaction) ? this : null; }
-
-        /// <summary>
-        /// Returns this activity as a suggestion activity type; or null, if this is not that type of activity.
-        /// </summary>
-        /// <returns></returns>
-        public ISuggestionActivity AsSuggestionActivity() { return IsActivity(ActivityTypes.Suggestion) ? this : null; }
-
-        /// <summary>
-        /// Returns this activity as a trace activity type; or null, if this is not that type of activity.
-        /// </summary>
-        /// <returns></returns>
-        public ITraceActivity AsTraceActivity() { return IsActivity(ActivityTypes.Trace) ? this : null; }
-
-        /// <summary>
-        /// Returns this activity as a handoff activity type; or null, if this is not that type of activity.
-        /// </summary>
-        public IHandoffActivity AsHandoffActivity() { return IsActivity(ActivityTypes.Handoff) ? this : null; }
-
-
-        /// <summary>
-        /// Checks whether this message activity has content.
-        /// </summary>
-        /// <returns>True, if this message activity has any content to send; otherwise, false.</returns>
-        /// <remarks>This method is defined on the <see cref="Activity"/> class, but is only intended
-        /// for use on an activity of <see cref="Activity.Type"/> <see cref="ActivityTypes.Message"/>.</remarks>
-        public bool HasContent()
+        partial void CustomInit()
         {
-            if (!string.IsNullOrWhiteSpace(this.Text))
-                return true;
-
-            if (!string.IsNullOrWhiteSpace(this.Summary))
-                return true;
-
-            if (this.Attachments != null && this.Attachments.Any())
-                return true;
-
-            if (this.ChannelData != null)
-                return true;
-
-            return false;
-        }
-
-        /// <summary>
-        /// Resolves the mentions from the entities of this (message) activity.
-        /// </summary>
-        /// <returns>The array of mentions; or an empty array, if none are found.</returns>
-        public Mention[] GetMentions()
-        {
-            return this.Entities?.Where(entity => string.Compare(entity.Type, "mention", ignoreCase: true) == 0)
-                .Select(e => e.Properties.ToObject<Mention>()).ToArray() ?? new Mention[0];
-        }
-
-        /// <summary>
-        /// Gets the channel data as a strongly-typed object.
-        /// </summary>
-        /// <typeparam name="TypeT">The type of the object to return.</typeparam>
-        /// <returns>The strongly-typed object; or the type's default value, if the <see cref="ChannelData"/> is null.</returns>
-        /// <seealso cref="ChannelData"/>
-        /// <seealso cref="TryGetChannelData{TypeT}(out TypeT)"/>
-        public TypeT GetChannelData<TypeT>()
-        {
-            if (this.ChannelData == null)
-                return default(TypeT);
-            if (this.ChannelData.GetType() == typeof(TypeT))
-                return (TypeT)this.ChannelData;
-            return ((JObject)this.ChannelData).ToObject<TypeT>();
-        }
-
-        /// <summary>
-        /// Gets the channel data as a strongly-typed object.. A return value idicates whether the operation succeeded.
-        /// </summary>
-        /// <typeparam name="TypeT">The type of the object to return.</typeparam>
-        /// <param name="instance">When this method returns, contains the strongly-typed object if the operation succeeded,
-        /// or the type's default value if the operation failed.</param>
-        /// <returns>
-        /// <c>true</c> if the operation succeeded; otherwise, <c>false</c>.
-        /// </returns>
-        /// <seealso cref="ChannelData"/>
-        /// <seealso cref="GetChannelData{TypeT}"/>
-        public bool TryGetChannelData<TypeT>(out TypeT instance)
-        {
-            instance = default(TypeT);
-
-            try
-            {
-                if (this.ChannelData == null)
-                    return false;
-
-                instance = this.GetChannelData<TypeT>();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Creates a conversation reference from an activity.
-        /// </summary>
-        /// <returns>A conversation reference for the conversation that contains the activity.</returns>
-        /// <exception cref="ArgumentNullException"/>
-        public ConversationReference GetConversationReference()
-        {
-            ConversationReference reference = new ConversationReference
-            {
-                ActivityId = this.Id,
-                User = this.From,
-                Bot = this.Recipient,
-                Conversation = this.Conversation,
-                ChannelId = this.ChannelId,
-                ServiceUrl = this.ServiceUrl
-            };
-
-            return reference;
-        }
-
-        /// <summary>
-        /// Create a ConversationReference based on this Activity's Conversation info and the ResourceResponse from sending an activity.
-        /// </summary>
-        /// <param name="reply">ResourceResponse returned from sendActivity</param>
-        /// <returns>A ConversationReference that can be stored and used later to delete or update the activity.</returns>
-        /// <exception cref="ArgumentNullException"/>
-        public ConversationReference GetReplyConversationReference(ResourceResponse reply)
-        {
-            var reference = GetConversationReference();
-
-            // Update the reference with the new outgoing Activity's id.
-            reference.ActivityId = reply.Id;
-            return reference;
-        }
-
-        /// <summary>
-        /// Updates this activity with the delivery information from an existing 
-        /// conversation reference.
-        /// </summary>
-        /// <param name="reference">The conversation reference.</param>
-        /// <param name="isIncoming">(Optional) <c>true</c> to treat the activity as an 
-        /// incoming activity, where the bot is the recipient; otherwaire <c>false</c>.
-        /// Default is <c>false</c>, and the activity will show the bot as the sender.</param>
-        /// <remarks>Call <see cref="GetConversationReference()"/> on an incoming
-        /// activity to get a conversation reference that you can then use to update an
-        /// outgoing activity with the correct delivery information.
-        /// </remarks>
-        public Activity ApplyConversationReference(ConversationReference reference, bool isIncoming = false)
-        {
-            this.ChannelId = reference.ChannelId;
-            this.ServiceUrl = reference.ServiceUrl;
-            this.Conversation = reference.Conversation;
-
-            if (isIncoming)
-            {
-                this.From = reference.User;
-                this.Recipient = reference.Bot;
-                if (reference.ActivityId != null)
-                    this.Id = reference.ActivityId;
-            }
-            else  // Outgoing
-            {
-                this.From = reference.Bot;
-                this.Recipient = reference.User;
-                if (reference.ActivityId != null)
-                    this.ReplyToId = reference.ActivityId;
-            }
-            return this;
         }
     }
 }

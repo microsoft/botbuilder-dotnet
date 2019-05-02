@@ -9,52 +9,52 @@ namespace Microsoft.Bot.Builder.Tests
     [TestClass]
     public class MemoryTranscriptTests : TranscriptBaseTests
     {
-        public MemoryTranscriptTests() : base()
+        public MemoryTranscriptTests()
+            : base()
         {
-            this.store = new MemoryTranscriptStore();
+            this.Store = new MemoryTranscriptStore();
         }
 
         [TestMethod]
         public async Task MemoryTranscript_BadArgs()
         {
-            await base._BadArgs();
+            await BadArgs();
         }
 
         [TestMethod]
         public async Task MemoryTranscript_LogActivity()
         {
-            await base._LogActivity();
+            await LogActivity();
         }
 
         [TestMethod]
         public async Task MemoryTranscript_LogMultipleActivities()
         {
-            await base._LogMultipleActivities();
+            await LogMultipleActivities();
         }
 
         [TestMethod]
         public async Task MemoryTranscript_GetConversationActivities()
         {
-            await base._GetTranscriptActivities();
+            await GetTranscriptActivities();
         }
 
         [TestMethod]
         public async Task MemoryTranscript_GetConversationActivitiesStartDate()
         {
-            await base._GetTranscriptActivitiesStartDate();
+            await GetTranscriptActivitiesStartDate();
         }
 
         [TestMethod]
         public async Task MemoryTranscript_ListConversations()
         {
-            await base._ListTranscripts();
+            await ListTranscripts();
         }
 
         [TestMethod]
         public async Task MemoryTranscript_DeleteConversation()
         {
-            await base._DeleteTranscript();
+            await DeleteTranscript();
         }
-
     }
 }

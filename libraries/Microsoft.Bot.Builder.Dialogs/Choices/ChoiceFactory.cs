@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             var maxTitleLength = 0;
             foreach (var choice in list)
             {
-                var l = choice.Action != null && string.IsNullOrEmpty(choice.Action.Title) ? choice.Action.Title.Length : choice.Value.Length;
+                var l = choice.Action != null && !string.IsNullOrEmpty(choice.Action.Title) ? choice.Action.Title.Length : choice.Value.Length;
                 if (l > maxTitleLength)
                 {
                     maxTitleLength = l;

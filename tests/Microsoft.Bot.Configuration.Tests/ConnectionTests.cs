@@ -46,7 +46,8 @@ namespace Microsoft.Bot.Configuration.Tests
             Assert.IsNotNull(service, "Should find a service with this type and name.");
             Assert.IsTrue(service.Id.Equals("12"), "Should find the correct service.");
 
-            Assert.IsNull(config.FindServiceByNameOrId<CosmosDbService>("testAbs"),
+            Assert.IsNull(
+                config.FindServiceByNameOrId<CosmosDbService>("testAbs"),
                 "Should not find a service of this type and name.");
         }
 
@@ -66,6 +67,7 @@ namespace Microsoft.Bot.Configuration.Tests
             {
                 config2.DisconnectService(key);
             }
+
             Assert.AreEqual(config2.Services.Count, 0, "didn't remove all services");
         }
 
@@ -78,12 +80,14 @@ namespace Microsoft.Bot.Configuration.Tests
             {
                 config2.ConnectService(service);
             }
+
             var servicesIds = config2.Services.Select(s => s.Id).ToArray();
 
             foreach (var id in servicesIds)
             {
                 config2.DisconnectServiceByNameOrId(id);
             }
+
             Assert.AreEqual(config2.Services.Count, 0, "didn't remove all services");
         }
 
@@ -96,12 +100,14 @@ namespace Microsoft.Bot.Configuration.Tests
             {
                 config2.ConnectService(service);
             }
+
             var serviceNames = config2.Services.Select(s => s.Name).ToArray();
 
             foreach (var name in serviceNames)
             {
                 config2.DisconnectServiceByNameOrId(name);
             }
+
             Assert.AreEqual(config2.Services.Count, 0, "didn't remove all services");
         }
 
@@ -119,8 +125,7 @@ namespace Microsoft.Bot.Configuration.Tests
             // We should have at least an ABS and generic service with the name "testAbs".
             const string name = "testAbs";
             var duplicateServices = config2.Services.Where(s => s.Name.Equals(name)).ToArray();
-            Assert.IsTrue(duplicateServices.Length > 1,
-                "Should have at least two services with this name.");
+            Assert.IsTrue(duplicateServices.Length > 1, "Should have at least two services with this name.");
 
             var botService = config2.DisconnectServiceByNameOrId<BotService>(name);
             Assert.IsNotNull(botService, "Should have removed an ABS service.");
@@ -152,18 +157,19 @@ namespace Microsoft.Bot.Configuration.Tests
                     uniqueNames.Add(name);
                 }
             }
-            Assert.IsTrue(duplicatedNames.Count > 0,
-                "The config file should have at least one duplicated service name.");
+
+            Assert.IsTrue(duplicatedNames.Count > 0, "The config file should have at least one duplicated service name.");
             foreach (var name in uniqueNames)
             {
                 config2.DisconnectServiceByNameOrId(name);
             }
-            Assert.AreEqual(config2.Services.Count, duplicatedNames.Count,
-                "Extra services (with a duplicated name) should still be connected.");
+
+            Assert.AreEqual(config2.Services.Count, duplicatedNames.Count, "Extra services (with a duplicated name) should still be connected.");
             foreach (var name in duplicatedNames)
             {
                 config2.DisconnectServiceByNameOrId(name);
             }
+
             Assert.AreEqual(config2.Services.Count, 0, "Didn't remove remaining services.");
         }
 
@@ -282,7 +288,6 @@ namespace Microsoft.Bot.Configuration.Tests
             {
                 Assert.Fail("endpoint failed with empty values");
             }
-
         }
 
         [TestMethod]
@@ -307,7 +312,7 @@ namespace Microsoft.Bot.Configuration.Tests
             {
                 var file = new FileService
                 {
-                    Path = string.Empty
+                    Path = string.Empty,
                 };
                 file.Encrypt(secret);
                 file.Decrypt(secret);
@@ -321,7 +326,7 @@ namespace Microsoft.Bot.Configuration.Tests
             {
                 var luis = new LuisService
                 {
-                    SubscriptionKey = string.Empty
+                    SubscriptionKey = string.Empty,
                 };
                 luis.Encrypt(secret);
                 luis.Decrypt(secret);
@@ -335,7 +340,7 @@ namespace Microsoft.Bot.Configuration.Tests
             {
                 var dispatch = new DispatchService
                 {
-                    SubscriptionKey = string.Empty
+                    SubscriptionKey = string.Empty,
                 };
                 dispatch.Encrypt(secret);
                 dispatch.Decrypt(secret);
@@ -349,7 +354,7 @@ namespace Microsoft.Bot.Configuration.Tests
             {
                 var insights = new AppInsightsService
                 {
-                    InstrumentationKey = string.Empty
+                    InstrumentationKey = string.Empty,
                 };
                 insights.Encrypt(secret);
                 insights.Decrypt(secret);
@@ -374,7 +379,7 @@ namespace Microsoft.Bot.Configuration.Tests
             {
                 var cosmos = new CosmosDbService
                 {
-                    Key = string.Empty
+                    Key = string.Empty,
                 };
                 cosmos.Encrypt(secret);
                 cosmos.Decrypt(secret);
@@ -388,7 +393,7 @@ namespace Microsoft.Bot.Configuration.Tests
             {
                 var qna = new QnAMakerService
                 {
-                    SubscriptionKey = string.Empty
+                    SubscriptionKey = string.Empty,
                 };
                 qna.Encrypt(secret);
                 qna.Decrypt(secret);
@@ -402,7 +407,7 @@ namespace Microsoft.Bot.Configuration.Tests
             {
                 var blob = new BlobStorageService
                 {
-                    ConnectionString = string.Empty
+                    ConnectionString = string.Empty,
                 };
                 blob.Encrypt(secret);
                 blob.Decrypt(secret);
@@ -416,7 +421,7 @@ namespace Microsoft.Bot.Configuration.Tests
             {
                 var endpoint = new EndpointService
                 {
-                    AppPassword = string.Empty
+                    AppPassword = string.Empty,
                 };
                 endpoint.Encrypt(secret);
                 endpoint.Decrypt(secret);
@@ -425,7 +430,6 @@ namespace Microsoft.Bot.Configuration.Tests
             {
                 Assert.Fail("endpoint failed with empty values");
             }
-
         }
 
         [TestMethod]

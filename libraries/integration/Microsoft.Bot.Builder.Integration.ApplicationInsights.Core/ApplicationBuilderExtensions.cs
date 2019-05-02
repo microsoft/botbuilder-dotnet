@@ -26,6 +26,5 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
 
             return applicationBuilder;
         }
-
     }
 }

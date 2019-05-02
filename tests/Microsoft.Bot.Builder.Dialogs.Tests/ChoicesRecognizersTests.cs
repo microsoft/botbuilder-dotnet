@@ -12,26 +12,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestCategory("Choice Tests")]
     public class ChoicesRecognizersTests
     {
-        private static List<SortedValue> colorValues = new List<SortedValue> {
+        // FindChoices
+        private static List<string> colorChoices = new List<string> { "red", "green", "blue" };
+        private static List<string> overlappingChoices = new List<string> { "bread", "bread pudding", "pudding" };
+
+        private static List<SortedValue> colorValues = new List<SortedValue>
+        {
             new SortedValue { Value = "red", Index = 0 },
             new SortedValue { Value = "green", Index = 1 },
-            new SortedValue { Value = "blue", Index = 2 }
+            new SortedValue { Value = "blue", Index = 2 },
         };
 
-        private static List<SortedValue> overlappingValues = new List<SortedValue> {
+        private static List<SortedValue> overlappingValues = new List<SortedValue>
+        {
             new SortedValue { Value = "bread", Index = 0 },
             new SortedValue { Value = "bread pudding", Index = 1 },
-            new SortedValue { Value = "pudding", Index = 2 }
+            new SortedValue { Value = "pudding", Index = 2 },
         };
 
-        private static List<SortedValue> similarValues = new List<SortedValue> {
+        private static List<SortedValue> similarValues = new List<SortedValue>
+        {
             new SortedValue { Value = "option A", Index = 0 },
             new SortedValue { Value = "option B", Index = 1 },
-            new SortedValue { Value = "option C", Index = 2 }
+            new SortedValue { Value = "option C", Index = 2 },
         };
 
         // FindValues
-    
         [TestMethod]
         public void ShouldFindASimpleValueInAnSingleWordUtterance()
         {
@@ -78,11 +84,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             AssertValue(found[0], "option B", 1, 1.0f);
         }
 
-        // FindChoices
-
-        private static List<string> colorChoices = new List<string> { "red", "green", "blue" };
-        private static List<string> overlappingChoices = new List<string> { "bread", "bread pudding", "pudding" };
-
         [TestMethod]
         public void ShouldFindASingleChoiceInAnUtterance()
         {
@@ -120,7 +121,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         // RecognizeChoices
-
         [TestMethod]
         public void ShouldFindAChoiceInAnUtteranceByName()
         {
@@ -183,7 +183,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         // Helper functions
-
         private static void AssertResult<T>(ModelResult<T> result, int start, int end, string text)
         {
             Assert.AreEqual(start, result.Start);

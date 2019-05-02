@@ -19,6 +19,8 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <typeparam name="T">The type of the <see cref="Prompt{T}"/>.</typeparam>
     public abstract class Prompt<T> : Dialog
     {
+        internal const string AttemptCountKey = "AttemptCount";
+
         private const string PersistedOptions = "options";
         private const string PersistedState = "state";
 
@@ -51,9 +53,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Initialize prompt state
-            var state = dc.DialogState;
-            state[PersistedOptions] = promptOptions;
-            state[PersistedState] = new Dictionary<string, object>();
+            var state = dc.ActiveDialog.State;
+            state[PersistedOptions] = opt;
+            state[PersistedState] = new Dictionary<string, object>
+            {
+                { AttemptCountKey, 0 },
+            };
 
             if (!string.IsNullOrEmpty(Property))
             {
@@ -108,6 +113,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 Desire = recognized.Succeeded && !recognized.AllowInterruption ? DialogConsultationDesire.ShouldProcess : DialogConsultationDesire.CanProcess,
                 Processor = async (dialogContext) =>
                 {
+                    // Increment attempt count
+                    state[AttemptCountKey] = (int)state[AttemptCountKey] + 1;
+
                     // Validate the return value
                     bool isValid = false;
                     if (this._validator != null)
@@ -150,8 +158,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             // dialogResume() when the pushed on dialog ends.
             // To avoid the prompt prematurely ending we need to implement this method and
             // simply re-prompt the user.
-            await RepromptDialogAsync(dc.Context, dc.ActiveDialog).ConfigureAwait(false);
-            return Dialog.EndOfTurn;
+            await RepromptDialogAsync(dc.Context, dc.ActiveDialog, cancellationToken).ConfigureAwait(false);
+            return EndOfTurn;
         }
 
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
@@ -208,7 +216,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 prompt.Text = msg.Text;
 
-                if (msg.SuggestedActions != null && msg.SuggestedActions.Actions != null && msg.SuggestedActions.Actions.Count > 0)
+                if (msg.SuggestedActions?.Actions != null && msg.SuggestedActions.Actions.Count > 0)
                 {
                     prompt.SuggestedActions = msg.SuggestedActions;
                 }
