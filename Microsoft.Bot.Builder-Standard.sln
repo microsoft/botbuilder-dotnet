@@ -60,7 +60,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.ApplicationIn
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.ApplicationInsights.Tests", "tests\Microsoft.Bot.Builder.ApplicationInsights.Tests\Microsoft.Bot.Builder.ApplicationInsights.Tests.csproj", "{D790A4BB-D8AC-4AAE-B3FE-0CF432CA8031}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Composition", "libraries/Microsoft.Bot.Builder.Dialogs.Composition/Microsoft.Bot.Builder.Dialogs.Composition.csproj", "{2255FF5B-8010-4C8D-897E-BDDEBB629967}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Composition", "libraries\Microsoft.Bot.Builder.Dialogs.Composition\Microsoft.Bot.Builder.Dialogs.Composition.csproj", "{2255FF5B-8010-4C8D-897E-BDDEBB629967}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Composition.Tests", "tests\Microsoft.Bot.Builder.Dialogs.Composition.Tests\Microsoft.Bot.Builder.Dialogs.Composition.Tests.csproj", "{78D16CCC-6184-4678-87D8-E8C4299317CE}"
 EndProject
