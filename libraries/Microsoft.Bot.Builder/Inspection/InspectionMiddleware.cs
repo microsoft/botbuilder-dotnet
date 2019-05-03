@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder
 
         public async Task<bool> ProcessCommandAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (turnContext.Activity.Type == ActivityTypes.Message)
+            if (turnContext.Activity.Type == ActivityTypes.Message && turnContext.Activity.Text != null)
             {
                 var command = turnContext.Activity.Text.Trim().Split(' ');
                 if (command.Length > 1 && command[0] == Command)
