@@ -87,6 +87,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("herocard", card.Subtitle, "card subtitle should be data bound ");
             Assert.AreEqual("This is some text describing the card, it's cool because it's cool", card.Text, "card text should be set");
             Assert.AreEqual("https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg", card.Images[0].Url, "image should be set");
+            Assert.AreEqual("https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg", card.Images[1].Url, "image should be set");
+            Assert.AreEqual(3, card.Buttons.Count, "card buttons should be set");
+            for (int i = 0; i <= 2; i++)
+                Assert.AreEqual($"Option {i + 1}", card.Buttons[i].Title, "card buttons should be set");
+            // TODO add all of the other property types
+        }
+
+        [TestMethod]
+        public async Task TestThmbnailCard()
+        {
+            var mg = GetGenerator();
+            dynamic data = new JObject();
+            data.type = "thumbnailcard";
+            IMessageActivity activity = await mg.Generate("", "[ThumbnailCardTemplate]", id: null, data: data, types: null, tags: null);
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Text));
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Speak));
+            Assert.AreEqual(1, activity.Attachments.Count);
+            Assert.AreEqual(ThumbnailCard.ContentType, activity.Attachments[0].ContentType);
+            var card = ((JObject)activity.Attachments[0].Content).ToObject<ThumbnailCard>();
+            Assert.IsNotNull(card, "should have herocard");
+            Assert.AreEqual("Cheese gromit!", card.Title, "card title should be set");
+            Assert.AreEqual("thumbnailcard", card.Subtitle, "card subtitle should be data bound ");
+            Assert.AreEqual("This is some text describing the card, it's cool because it's cool", card.Text, "card text should be set");
+            Assert.AreEqual("https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg", card.Images[0].Url, "image should be set");
+            Assert.AreEqual("https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg", card.Images[1].Url, "image should be set");
             Assert.AreEqual(3, card.Buttons.Count, "card buttons should be set");
             for (int i = 0; i <= 2; i++)
                 Assert.AreEqual($"Option {i + 1}", card.Buttons[i].Title, "card buttons should be set");
