@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using static Microsoft.Bot.Builder.Dialogs.DialogContext;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
@@ -109,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         public DebugAdapter(int port, Source.IRegistry registry, IBreakpoints breakpoints, Action terminate, IEvents events = null, ICodeModel codeModel = null, IDataModel dataModel = null, ILogger logger = null, ICoercion coercion = null)
             : base(logger)
         {
-            this.events = events ?? new Events();
+            this.events = events ?? new Events<DialogEvents>();
             this.codeModel = codeModel ?? new CodeModel();
             this.dataModel = dataModel ?? new DataModel(coercion ?? new Coercion());
             this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
@@ -173,7 +174,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
             try
             {
-                var turnText = context.Context.Activity.Text.Trim();
+                var turnText = context.Context.Activity.Text?.Trim() ?? String.Empty;
                 if (turnText.Length == 0)
                     turnText = context.Context.Activity.Type;
                 var threadText = $"'{Ellipsis(turnText, 18)}'";
@@ -263,7 +264,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
             var phase = run.Phase;
             var suffix = item != null ? $" ==> {codeModel.NameFor(item)}" : string.Empty;
-            var threadText = $"'{Ellipsis(thread?.Name, 18)}'";
+            var threadText = $"{Ellipsis(thread?.Name, 18)}";
             if (threadText.Length <= 2)
                 threadText = thread.TurnContext.Activity.Type;
             var description = $"{threadText} ==> {phase.ToString().PadRight(16)}{suffix}";

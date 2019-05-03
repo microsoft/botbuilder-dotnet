@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             if (!TemplateMap.ContainsKey(templateName))
             {
-                throw new Exception($"No such template: {templateName}");
+                throw new Exception($"[{templateName}] not found");
             }
 
             if (evaluationTargetStack.Any(e => e.TemplateName == templateName))

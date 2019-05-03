@@ -8,33 +8,24 @@
             "appPassword": "",
             "endpoint": "http://localhost:54082/api/messages",
             "id": "98fd9150-a278-11e8-90fe-f92f88ed2f78",
-            "name": "http://localhost:54082/api/messages"
+            "name": "VS (port:54082)"
         },
         {
             "type": "endpoint",
             "endpoint": "http://localhost:54084/api/messages",
             "id": "189",
-            "name": "http://localhost:54084/api/messages"
+            "name": "VS Code (Port:54084)"
         },
         {
             "type": "endpoint",
             "endpoint": "http://localhost:3978/api/messages",
             "id": "154",
             "name": "http://localhost:3978/api/messages"
-        },
-        {
-            "type": "qna",
-            "endpointKey": "0d550978-7c33-4731-943c-ceb68a936846",
-            "hostname": "https://videotutorialhomeimprovement-qnahost.azurewebsites.net",
-            "id": "ddf8f9d5-f01e-42cf-b00d-d4b7e8cfd399",
-            "kbId": "ddf8f9d5-f01e-42cf-b00d-d4b7e8cfd399",
-            "name": "FAQ",
-            "subscriptionKey": "ed0871f8cb73492ab0108ead2aaeba13"
         }
     ],
     "padlock": "",
     "version": "2.0",
-    "overrides": null,
     "path": "C:\\source\\GitHub\\botbuilder-dotnet\\samples\\Microsoft.Bot.Builder.TestBot.Json\\BotBuilderTestBot.bot",
+    "overrides": null,
     "secretKey": ""
 }

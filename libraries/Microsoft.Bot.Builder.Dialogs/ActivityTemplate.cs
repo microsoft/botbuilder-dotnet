@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
@@ -9,6 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Defines an activity Template where the template expression is local aka "inline".
     /// </summary>
+    [DebuggerDisplay("{Template}")]
     public class ActivityTemplate : IActivityTemplate
     {
         // Fixed text constructor for inline template
@@ -22,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         public string Template { get; set; }
 
-        public async Task<Activity> BindToData(ITurnContext context, object data, Func<string, object, object> binder)
+        public async Task<Activity> BindToData(ITurnContext context, object data)
         {
             if (!string.IsNullOrEmpty(this.Template))
             {
@@ -36,8 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         id: null,
                         data: data,
                         tags: null,
-                        types: null,
-                        binder: binder).ConfigureAwait(false);
+                        types: null).ConfigureAwait(false);
                     return result as Activity;
                 }
 
@@ -55,8 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         id: null,
                         data: data,
                         tags: null,
-                        types: null,
-                        valueBinder: binder).ConfigureAwait(false);
+                        types: null).ConfigureAwait(false);
                     if (result != null)
                     {
                         message.Text = result;

@@ -2,7 +2,9 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using static Microsoft.Bot.Builder.Dialogs.DialogContext;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
@@ -22,7 +24,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         }
     }
 
-    public sealed class Events : IEvents
+    public sealed class Events<DialogEventsT> : IEvents
+        where DialogEventsT : DialogEvents
     {
         private readonly ConcurrentDictionary<string, bool> stateByFilter = new ConcurrentDictionary<string, bool>();
 
@@ -30,7 +33,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
             if (filters == null)
             {
-                filters = from field in typeof(DialogContext.DialogEvents).GetFields()
+                filters = from field in typeof(DialogEventsT)
+                          .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
                           where field.FieldType == typeof(string)
                           select (string)field.GetValue(null);
 

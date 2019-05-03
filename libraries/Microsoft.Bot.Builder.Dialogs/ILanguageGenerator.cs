@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="data">data to bind to.</param>
         /// <param name="types">array of prefixes to try.</param>
         /// <param name="tags">array of tags to capture context.</param>
-        /// <returns>text.</returns>
-        Task<string> Generate(string locale, string inlineTemplate, string id, object data, string[] types, string[] tags, Func<string, object, object> valueBinder);
+        /// <returns>text or errors</returns>
+        Task<string> Generate(string locale, string inlineTemplate, string id, object data, string[] types, string[] tags);
     }
 }

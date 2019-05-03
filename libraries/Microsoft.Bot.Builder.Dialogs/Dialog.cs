@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
@@ -12,6 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Base class for all dialogs.
     /// </summary>
+    [DebuggerDisplay("{Id}")]
     public abstract class Dialog : IDialog
     {
         public static readonly DialogTurnResult EndOfTurn = new DialogTurnResult(DialogTurnStatus.Waiting);

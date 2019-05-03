@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public string Property { get; set; }
 
-        public async Task<string> BindToData(ITurnContext context, object data, Func<string, object, object> binder = null)
+        public async Task<string> BindToData(ITurnContext context, object data)
         {
             ILanguageGenerator languageGenerator = context.TurnState.Get<ILanguageGenerator>();
             if (languageGenerator != null)
@@ -41,13 +41,12 @@ namespace Microsoft.Bot.Builder.Dialogs
                     id: this.Property,
                     data: data,
                     tags: null,
-                    types: this.Types.ToArray(),
-                    valueBinder: binder).ConfigureAwait(false);
+                    types: this.Types.ToArray()).ConfigureAwait(false);
                 return result;
             }
 
             throw new Exception("There is no global ILanguageGenerator registered with the application! are you missing a .Use(new RegisterClasMiddleware(new LanguageGenerator())); in your middleware?");
         }
-        
+
     }
 }
