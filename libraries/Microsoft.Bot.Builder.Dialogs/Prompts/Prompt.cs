@@ -86,8 +86,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             var options = (PromptOptions)instance.State[PersistedOptions];
             var recognized = await OnRecognizeAsync(dc.Context, state, options, cancellationToken).ConfigureAwait(false);
 
+            // Convert.ToInt32 For issue https://github.com/Microsoft/botbuilder-dotnet/issues/1859
             // Increment attempt count
-            state[AttemptCountKey] = (int)state[AttemptCountKey] + 1;
+            state[AttemptCountKey] = Convert.ToInt32(state[AttemptCountKey]) + 1;
 
             // Validate the return value
             var isValid = false;
