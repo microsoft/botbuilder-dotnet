@@ -1,3 +1,5 @@
+Import-Module ".\Microsoft.PowerShell.Archive.psm1" -Verbose
+
 #
 # This extracts contents from or recompresses them back into NuGet .nupkg files.
 # Run this to extract before, then recompress after signing assemblies in the packages.
@@ -9,6 +11,10 @@ param
     [switch]$compress
 )
 pushd $path
+
+# Download temporary version of Archive module that fixes issue on macOS/Linux with path separator
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/PowerShell/Microsoft.PowerShell.Archive/master/Microsoft.PowerShell.Archive/Microsoft.PowerShell.Archive.psm1" -OutFile .\archive.psm1
+Import-Module .\archive.psm1
 
 [int]$itemsProcessed = 0
 if ($extract) {
