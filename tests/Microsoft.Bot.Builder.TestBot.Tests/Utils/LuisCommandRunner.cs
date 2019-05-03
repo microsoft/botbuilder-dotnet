@@ -30,7 +30,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Utils
             }
         }
 
-        public static BatchTestItem[] LuToBatchTest(string sourceLuFile, string sourcePath)
+        public static LuisTestItem[] LuToBatchTest(string sourceLuFile, string sourcePath)
         {
             using (var ps = System.Management.Automation.PowerShell.Create())
             {
@@ -45,7 +45,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Utils
                 }
 
                 var batchFilePrefix = Path.GetFileNameWithoutExtension(sourceFile);
-                var batchTest = JsonConvert.DeserializeObject<BatchTestItem[]>(File.ReadAllText($"{targetPath}\\{batchFilePrefix}_LUISBatchTest.json"));
+                var batchTest = JsonConvert.DeserializeObject<LuisTestItem[]>(File.ReadAllText($"{targetPath}\\{batchFilePrefix}_LUISBatchTest.json"));
                 return batchTest;
             }
         }

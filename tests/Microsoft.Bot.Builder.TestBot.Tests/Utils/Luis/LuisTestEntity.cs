@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.BotBuilderSamples.Tests.Utils.Luis
 {
-    public class BatchTestEntity
+    public class LuisTestEntity
     {
         [JsonProperty("entity")]
         public string Entity { get; set; }

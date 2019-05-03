@@ -12,14 +12,14 @@
 
   <ItemGroup>
     <None Remove="appsettings.json" />
-    <None Remove="CognitiveModels\Data\TestUtterances.json" />
+    <None Remove="CognitiveModels\Data\TodoUnlabeledUtterances.json" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="CognitiveModels\Data\TestUtterances.json">
+    <Content Include="CognitiveModels\Data\TodoUnlabeledUtterances.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

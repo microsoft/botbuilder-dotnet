@@ -16,36 +16,31 @@ namespace Microsoft.BotBuilderSamples.Tests.Utils.XUnit
     /// decorated test method.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public class FileDataAttribute : DataAttribute
+    public class LuDownDataAttribute : DataAttribute
     {
-        private readonly string _fileName;
+        private readonly string _luDownFileName;
         private readonly string _relativePath;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FileDataAttribute"/> class.
+        /// Initializes a new instance of the <see cref="LuDownDataAttribute"/> class.
         /// </summary>
         /// <param name="class">The class that provides the data.</param>
-        public FileDataAttribute(Type @class, string fileName, string relativePath)
+        public LuDownDataAttribute(string luDownFileName, string relativePath)
         {
-            Class = @class;
-            _fileName = fileName;
+            _luDownFileName = luDownFileName;
             _relativePath = relativePath;
         }
-
-        /// <summary>
-        /// Gets the type of the class that provides the data.
-        /// </summary>
-        public Type Class { get; }
 
         /// <inheritdoc/>
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
         {
-            if (!(Activator.CreateInstance(Class, _fileName, _relativePath) is IEnumerable<object[]> data))
-            {
-                throw new ArgumentException($"{Class.FullName} must implement IEnumerable<object[]> to be used as ClassData for the test method named '{testMethod.Name}' on {testMethod.DeclaringType.FullName}");
-            }
+            return new LuDownDataGenerator(_luDownFileName, _relativePath);
+            //if (!(Activator.CreateInstance(Class, _luDownFileName, _relativePath) is IEnumerable<object[]> data))
+            //{
+            //    throw new ArgumentException($"{Class.FullName} must implement IEnumerable<object[]> to be used as ClassData for the test method named '{testMethod.Name}' on {testMethod.DeclaringType.FullName}");
+            //}
 
-            return data;
+            //return data;
         }
     }
 }

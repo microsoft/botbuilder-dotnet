@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
@@ -41,12 +41,7 @@ namespace Microsoft.BotBuilderSamples
             }
 
             // Create and add waterfall for main conversation loop
-            var steps = new WaterfallStep[]
-            {
-                IntroStepAsync,
-                ActStepAsync,
-                FinalStepAsync,
-            };
+            var steps = new WaterfallStep[] { IntroStepAsync, ActStepAsync, FinalStepAsync, };
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), steps));
 
             // The initial child Dialog to run.
@@ -57,10 +52,10 @@ namespace Microsoft.BotBuilderSamples
         {
             if (string.IsNullOrEmpty(_configuration["LuisAppId"]) || string.IsNullOrEmpty(_configuration["LuisAPIKey"]) || string.IsNullOrEmpty(_configuration["LuisAPIHostName"]))
             {
+                var activity = MessageFactory.Text("NOTE: LUIS is not configured. To enable all capabilities, add 'LuisAppId', 'LuisAPIKey' and 'LuisAPIHostName' to the appsettings.json file.");
+                activity.InputHint = InputHints.IgnoringInput;
                 await stepContext.Context.SendActivityAsync(
-                    MessageFactory.Text("NOTE: LUIS is not configured. To enable all capabilities, add 'LuisAppId', 'LuisAPIKey' and 'LuisAPIHostName' to the appsettings.json file."), cancellationToken);
-
-                return await stepContext.NextAsync(null, cancellationToken);
+                    activity, cancellationToken);
             }
 
             return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("What can I help you with today?") }, cancellationToken);

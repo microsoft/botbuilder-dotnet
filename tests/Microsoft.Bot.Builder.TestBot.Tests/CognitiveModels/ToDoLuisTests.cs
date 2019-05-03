@@ -30,8 +30,8 @@ namespace Microsoft.BotBuilderSamples.Tests.CognitiveModels
     // LUDown files as source
     public class ToDoLuisTests : IClassFixture<ToDoLuisTests.LuisTesterFixture>
     {
-        private const string _sourceLuFile = "todo.lu";
-        private const string _relativePath = @"CognitiveModels\Data";
+        private const string SourceLuFile = "todo.lu";
+        private const string RelativePath = @"CognitiveModels/Data";
         private readonly LuisTesterFixture _luisTester;
         private readonly ITestOutputHelper _output;
 
@@ -42,21 +42,42 @@ namespace Microsoft.BotBuilderSamples.Tests.CognitiveModels
         }
 
         [Theory]
-        [FileData(typeof(LuDownDataGenerator), _sourceLuFile, _relativePath)]
-        public async Task BatchTestFromLuFile(BatchTestItem batchTestItem)
+        [LuDownData(SourceLuFile, RelativePath)]
+        public async Task BatchTestFromLuFile(LuisTestItem luisTestItem)
         {
             _output.WriteLine("Expected:");
-            _output.WriteAsFormattedJson(batchTestItem);
-            var luisResult = await _luisTester.LuisRecognizer.RecognizeAsync(batchTestItem.Text, CancellationToken.None);
+            _output.WriteAsFormattedJson(luisTestItem);
+            var luisResult = await _luisTester.LuisRecognizer.RecognizeAsync(luisTestItem.Utterance, CancellationToken.None);
 
             _output.WriteLine("\r\nActual:");
             _output.WriteAsFormattedJson(luisResult);
 
             // Assert intent
-            Assert.Equal(batchTestItem.Intent, luisResult.GetTopScoringIntent().intent);
-            foreach (var entity in batchTestItem.BatchTestEntities)
+            Assert.Equal(luisTestItem.ExpectedIntent, luisResult.GetTopScoringIntent().intent);
+            foreach (var entity in luisTestItem.ExpectedEntities)
             {
-                var expectedEntityValue = batchTestItem.Text.Substring(entity.StartPos, entity.EndPos - entity.StartPos + 1);
+                var expectedEntityValue = luisTestItem.Utterance.Substring(entity.StartPos, entity.EndPos - entity.StartPos + 1);
+                var actual = luisResult.Entities[entity.Entity].FirstOrDefault()?.ToString();
+                Assert.Equal(expectedEntityValue, actual);
+            }
+        }
+
+        [Theory]
+        [JsonLuisData("TodoUnlabeledUtterances.json", RelativePath)]
+        public async Task BatchTestFromJsonFile(LuisTestItem luisTestItem)
+        {
+            _output.WriteLine("Expected:");
+            _output.WriteAsFormattedJson(luisTestItem);
+            var luisResult = await _luisTester.LuisRecognizer.RecognizeAsync(luisTestItem.Utterance, CancellationToken.None);
+
+            _output.WriteLine("\r\nActual:");
+            _output.WriteAsFormattedJson(luisResult);
+
+            // Assert intent
+            Assert.Equal(luisTestItem.ExpectedIntent, luisResult.GetTopScoringIntent().intent);
+            foreach (var entity in luisTestItem.ExpectedEntities)
+            {
+                var expectedEntityValue = luisTestItem.Utterance.Substring(entity.StartPos, entity.EndPos - entity.StartPos + 1);
                 var actual = luisResult.Entities[entity.Entity].FirstOrDefault()?.ToString();
                 Assert.Equal(expectedEntityValue, actual);
             }
@@ -70,7 +91,7 @@ namespace Microsoft.BotBuilderSamples.Tests.CognitiveModels
             public LuisTesterFixture()
             {
                 // Provision Model
-                LuisCommandRunner.LuToLuisJson(_sourceLuFile, Path.Combine(Directory.GetCurrentDirectory(), _relativePath));
+                LuisCommandRunner.LuToLuisJson(SourceLuFile, Path.Combine(Directory.GetCurrentDirectory(), RelativePath));
 
                 // Create LuisRecognizer instance
                 var luisApplication = new LuisApplication(
