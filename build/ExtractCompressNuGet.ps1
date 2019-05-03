@@ -1,5 +1,3 @@
-Import-Module ".\Microsoft.PowerShell.Archive.psm1" -Verbose
-
 #
 # This extracts contents from or recompresses them back into NuGet .nupkg files.
 # Run this to extract before, then recompress after signing assemblies in the packages.
