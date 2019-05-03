@@ -21,6 +21,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             Greeting, 
             Help, 
             None, 
+            Roles, 
             search, 
             SpecifyName, 
             Travel, 
@@ -32,33 +33,61 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         {
             // Simple entities
             public string[] Name;
+            public string[] liker;
+            public string[] likee;
             public string[] State;
             public string[] Weather_Location;
+            public string[] source;
+            public string[] destination;
             public string[] City;
             public string[] To;
             public string[] From;
 
             // Built-in entities
             public Age[] age;
+            public Age[] end;
+            public Age[] begin;
             public DateTimeSpec[] datetime;
+            public DateTimeSpec[] leave;
+            public DateTimeSpec[] arrive;
             public Dimension[] dimension;
+            public Dimension[] length;
+            public Dimension[] width;
             public string[] email;
+            public string[] sender;
+            public string[] receiver;
             public Money[] money;
+            public Money[] max;
+            public Money[] min;
             public double[] number;
             public double[] ordinal;
+            public double[] start;
             public double[] percentage;
+            public double[] minimum;
+            public double[] maximum;
             public string[] phonenumber;
+            public string[] newPhone;
+            public string[] old;
             public Temperature[] temperature;
+            public Temperature[] b;
+            public Temperature[] a;
             public string[] url;
+            public string[] oldURL;
 
             // Lists
             public string[][] Airline;
+            public string[][] Buyer;
+            public string[][] Seller;
 
             // Regex entities
             public string[] Part;
+            public string[] buy;
+            public string[] sell;
 
             // Pattern.any
             public string[] person;
+            public string[] to;
+            public string[] from;
             public string[] subject;
             public string[] extra;
 
@@ -133,30 +162,58 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             public class _Instance
             {
                 public InstanceData[] Name;
+                public InstanceData[] liker;
+                public InstanceData[] likee;
                 public InstanceData[] State;
                 public InstanceData[] Weather_Location;
+                public InstanceData[] source;
+                public InstanceData[] destination;
                 public InstanceData[] City;
                 public InstanceData[] To;
                 public InstanceData[] From;
                 public InstanceData[] age;
+                public InstanceData[] end;
+                public InstanceData[] begin;
                 public InstanceData[] datetime;
+                public InstanceData[] leave;
+                public InstanceData[] arrive;
                 public InstanceData[] dimension;
+                public InstanceData[] length;
+                public InstanceData[] width;
                 public InstanceData[] email;
+                public InstanceData[] sender;
+                public InstanceData[] receiver;
                 public InstanceData[] money;
+                public InstanceData[] max;
+                public InstanceData[] min;
                 public InstanceData[] number;
                 public InstanceData[] ordinal;
+                public InstanceData[] start;
                 public InstanceData[] percentage;
+                public InstanceData[] minimum;
+                public InstanceData[] maximum;
                 public InstanceData[] phonenumber;
+                public InstanceData[] newPhone;
+                public InstanceData[] old;
                 public InstanceData[] temperature;
+                public InstanceData[] b;
+                public InstanceData[] a;
                 public InstanceData[] url;
+                public InstanceData[] oldURL;
                 public InstanceData[] Airline;
+                public InstanceData[] Buyer;
+                public InstanceData[] Seller;
                 public InstanceData[] Part;
+                public InstanceData[] buy;
+                public InstanceData[] sell;
                 public InstanceData[] person;
+                public InstanceData[] to;
+                public InstanceData[] from;
                 public InstanceData[] subject;
                 public InstanceData[] extra;
                 public InstanceData[] Address;
-                public InstanceData[] Source;
                 public InstanceData[] Destination;
+                public InstanceData[] Source;
                 public InstanceData[] Composite1;
                 public InstanceData[] Composite2;
             }
