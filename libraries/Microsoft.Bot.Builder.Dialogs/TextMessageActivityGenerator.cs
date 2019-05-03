@@ -315,12 +315,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         private static int AddGenericCardAtttachment(IMessageActivity activity, string type, string[] lines, int iLine)
         {
             var attachment = new Attachment(type, content: new JObject());
-            iLine = BuildGenericCard(attachment.Content, lines, iLine);
+            iLine = BuildGenericCard(attachment.Content, type, lines, iLine);
             activity.Attachments.Add(attachment);
             return iLine;
         }
 
-        private static int BuildGenericCard(dynamic card, string[] lines, int iLine)
+        private static int BuildGenericCard(dynamic card, string type, string[] lines, int iLine)
         {
             bool lastLine = false;
 
@@ -350,18 +350,24 @@ namespace Microsoft.Bot.Builder.Dialogs
                             break;
 
                         case "image":
-                            var urlObj = new JObject() { { "url", value } };
-                            card.Add(property, urlObj);
-                            break;
-
                         case "images":
-                            if (card[property] == null)
+                            if (type == HeroCard.ContentType || type == ThumbnailCard.ContentType)
                             {
-                                card[property] = new JArray();
-                            }
+                                // then it's images
+                                if (card["images"] == null)
+                                {
+                                    card["images"] = new JArray();
+                                }
 
-                            urlObj = new JObject() { { "url", value } };
-                            ((JArray)card[property]).Add(urlObj);
+                                var urlObj = new JObject() { { "url", value } };
+                                ((JArray)card["images"]).Add(urlObj);
+                            }
+                            else
+                            {
+                                // then it's image
+                                var urlObj = new JObject() { { "url", value } };
+                                card["image"] = urlObj;
+                            }
                             break;
 
                         case "media":
@@ -369,6 +375,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                             {
                                 card[property] = new JArray();
                             }
+
                             var mediaObj = new JObject() { { "url", value } };
                             ((JArray)card[property]).Add(mediaObj);
                             break;
