@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var text = await Text.BindToData(dc.Context, dc.State, (property, data) => ObjectPath.GetValue<object>(data, property)).ConfigureAwait(false);
+            var text = await Text.BindToData(dc.Context, dc.State).ConfigureAwait(false);
 
             System.Diagnostics.Trace.TraceInformation(text);
 

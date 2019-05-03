@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         public string Template { get; set; }
 
-        public async Task<Activity> BindToData(ITurnContext context, object data, Func<string, object, object> binder)
+        public async Task<Activity> BindToData(ITurnContext context, object data)
         {
             if (!string.IsNullOrEmpty(this.Template))
             {
@@ -38,8 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         id: null,
                         data: data,
                         tags: null,
-                        types: null,
-                        binder: binder).ConfigureAwait(false);
+                        types: null).ConfigureAwait(false);
                     return result as Activity;
                 }
 
@@ -57,8 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         id: null,
                         data: data,
                         tags: null,
-                        types: null,
-                        valueBinder: binder).ConfigureAwait(false);
+                        types: null).ConfigureAwait(false);
                     if (result != null)
                     {
                         message.Text = result;

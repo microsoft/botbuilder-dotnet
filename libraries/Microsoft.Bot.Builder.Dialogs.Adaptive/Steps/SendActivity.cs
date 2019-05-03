@@ -34,12 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            var activity = await Activity.BindToData(dc.Context, dc.State, (property, data) =>
-            {
-                if (ObjectPath.TryGetValue<object>(data, property, out object val))
-                    return val;
-                return null;
-            }).ConfigureAwait(false);
+            var activity = await Activity.BindToData(dc.Context, dc.State).ConfigureAwait(false);
             var response = await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
             return await dc.EndDialogAsync(response, cancellationToken).ConfigureAwait(false);
         }

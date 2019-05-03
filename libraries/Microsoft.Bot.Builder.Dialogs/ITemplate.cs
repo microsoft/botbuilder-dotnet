@@ -15,6 +15,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="turnContext">TurnContext</param>
         /// <param name="data">data to bind to </param>
         /// <returns>instance of T</returns>
-        Task<T> BindToData(ITurnContext turnContext, object data, Func<string, object, object> binder = null);
+        Task<T> BindToData(ITurnContext turnContext, object data);
     }
 }
