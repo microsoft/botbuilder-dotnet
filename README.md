@@ -6,6 +6,10 @@ This repository contains code for the .NET version of the [Microsoft Bot Framewo
 
 This repo is part the [Microsoft Bot Framework](https://github.com/Microsoft/botframework) - a comprehensive framework for building enterprise-grade conversational AI experiences.
 
+> See [here][whats-new] to learn more about the new preview features for Bot Framework V4 SDK. 
+
+> See [here][build-2019-whats-new] for a summary of all new features announced at //BUILD 2019
+
  | Branch | Description        | Build Status | Coverage Status | Functional Tests Status |
  |----|---------------|--------------|-----------------|--|
  |Master | 4.5.* Preview Builds |[![Build status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/Bot.Builder-DotNet?branchName=master)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=215&branchName=master) |[![Coverage Status](https://coveralls.io/repos/github/Microsoft/botbuilder-dotnet/badge.svg?branch=master)](https://coveralls.io/github/Microsoft/botbuilder-dotnet?branch=master) | [![Build status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/DotNet/BotBuilder-DotNet%20master%20Functional%20Tests?branchName=master)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=484&branchName=master)
