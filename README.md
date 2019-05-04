@@ -1,5 +1,5 @@
 
-# ![Bot Framework for dotnet](./doc/media/FrameWorkSDK_C.png)
+# ![Bot Framework for dotnet](./doc/media/FrameWorkSDK_header.png)
 
 # Bot Framework SDK v4 for .NET 
 This repository contains code for the .NET version of the [Microsoft Bot Framework SDK](https://github.com/Microsoft/botbuilder). The Bot Framework SDK v4 enable developers to model conversation and build sophisticated bot applications using .NET.
