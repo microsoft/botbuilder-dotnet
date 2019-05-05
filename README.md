@@ -1,16 +1,12 @@
 
-# ![Bot Framework for dotnet](./doc/media/FrameWorkSDK_header.png)
+# ![Bot Framework for dotnet](./doc/media/BotFrameworkDotnet_header.png)
 
 ### [Click here to find out what's new for //build2019!](https://github.com/Microsoft/botframework/blob/master/whats-new.md#whats-new)
 
-# Bot Framework SDK v4 for .NET 
+# Bot Framework SDK v4 for .NET
 This repository contains code for the .NET version of the [Microsoft Bot Framework SDK](https://github.com/Microsoft/botbuilder). The Bot Framework SDK v4 enable developers to model conversation and build sophisticated bot applications using .NET.
 
 This repo is part the [Microsoft Bot Framework](https://github.com/Microsoft/botframework) - a comprehensive framework for building enterprise-grade conversational AI experiences.
-
-> See [here][whats-new] to learn more about the new preview features for Bot Framework V4 SDK. 
-
-> See [here][build-2019-whats-new] for a summary of all new features announced at //BUILD 2019
 
  | Branch | Description        | Build Status | Coverage Status | Functional Tests Status |
  |----|---------------|--------------|-----------------|--|
@@ -67,6 +63,5 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 ## Reporting Security Issues
 Security issues and bugs should be reported privately, via email, to the Microsoft Security Response Center (MSRC) at [secure@microsoft.com](mailto:secure@microsoft.com). You should receive a response within 24 hours. If for some reason you do not, please follow up via email to ensure we received your original message. Further information, including the [MSRC PGP](https://technet.microsoft.com/en-us/security/dn606155) key, can be found in the [Security TechCenter](https://technet.microsoft.com/en-us/security/default).
 
-## License
 Copyright (c) Microsoft Corporation. All rights reserved.
 
