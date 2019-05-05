@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.329
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{4269F3C3-6B42-419B-B64A-3E6DC0F1574A}"
 EndProject
@@ -110,7 +110,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.LanguageGeneration.Tests", "tests\Microsoft.Bot.Builder.LanguageGeneration.Tests\Microsoft.Bot.Builder.LanguageGeneration.Tests.csproj", "{72EE26E2-E8BE-4169-82AD-93E021539C34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.LanguageGeneration.Renderer.Tests", "tests\Microsoft.Bot.Builder.LanguageGeneration.Renderer.Tests\Microsoft.Bot.Builder.LanguageGeneration.Renderer.Tests.csproj", "{240646C5-EFCB-4CF1-AF8E-7036558CD78C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.LanguageGeneration.Renderer.Tests", "tests\Microsoft.Bot.Builder.LanguageGeneration.Renderer.Tests\Microsoft.Bot.Builder.LanguageGeneration.Renderer.Tests.csproj", "{240646C5-EFCB-4CF1-AF8E-7036558CD78C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.LanguageGeneration.GrmCheckers", "libraries\Microsoft.Bot.Builder.LanguageGeneration.GrmCheckers\Microsoft.Bot.Builder.LanguageGeneration.GrmCheckers.csproj", "{0EE00B4D-7746-4057-B819-E58DCB40A182}"
+	ProjectSection(ProjectDependencies) = postProject
+		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946} = {52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -511,6 +516,14 @@ Global
 		{240646C5-EFCB-4CF1-AF8E-7036558CD78C}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{240646C5-EFCB-4CF1-AF8E-7036558CD78C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{240646C5-EFCB-4CF1-AF8E-7036558CD78C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0EE00B4D-7746-4057-B819-E58DCB40A182}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EE00B4D-7746-4057-B819-E58DCB40A182}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{0EE00B4D-7746-4057-B819-E58DCB40A182}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EE00B4D-7746-4057-B819-E58DCB40A182}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EE00B4D-7746-4057-B819-E58DCB40A182}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EE00B4D-7746-4057-B819-E58DCB40A182}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{0EE00B4D-7746-4057-B819-E58DCB40A182}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EE00B4D-7746-4057-B819-E58DCB40A182}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -568,6 +581,7 @@ Global
 		{F59673EA-2D0D-441A-BB85-CD343DE6BE45} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{72EE26E2-E8BE-4169-82AD-93E021539C34} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{240646C5-EFCB-4CF1-AF8E-7036558CD78C} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{0EE00B4D-7746-4057-B819-E58DCB40A182} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
