@@ -4,4 +4,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Bot.Builder.LanguageGeneration\Microsoft.Bot.Builder.LanguageGeneration.csproj" />
+  </ItemGroup>
+
 </Project>

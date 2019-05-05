@@ -6,7 +6,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public interface ITemplateEngineMiddleware
     {
-        string OnReplace(string rawResult, List<Tuple<int, int>> replacements);
+        string Replace(string previous, TemplateReplacementContext context);
+    }
+
+    public class TemplateReplacementContext
+    {
+        public List<string> History { get; set; }
+
+        public Dictionary<string, object> Properties { get; set; }
     }
 
 }

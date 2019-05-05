@@ -16,6 +16,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         public List<LGTemplate> Templates = new List<LGTemplate>();
 
+        public List<ITemplateEngineMiddleware> Middlewares { get; set; } = new List<ITemplateEngineMiddleware>();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngine"/> class.
         /// Return an empty engine, you can then use AddFile\AddFiles to add files to it,
@@ -107,7 +109,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Evaluate result.</returns>
         public string EvaluateTemplate(string templateName, object scope, IGetMethod methodBinder = null)
         {
-            var evaluator = new Evaluator(Templates, methodBinder);
+            var evaluator = new Evaluator(Templates, methodBinder, Middlewares);
             return evaluator.EvaluateTemplate(templateName, scope);
         }
 

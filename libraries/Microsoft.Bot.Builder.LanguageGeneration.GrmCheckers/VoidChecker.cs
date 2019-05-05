@@ -7,10 +7,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.GrmCheckers
 {
     public class VoidChecker : ITemplateEngineMiddleware
     {
-        // a VoidChecker don't do anything, just return the rawResult
-        public string OnReplace(string rawResult, List<Tuple<int, int>> replacements)
+        // a VoidChecker don't do anything, just return the previous result
+        public string Replace(string previous, TemplateReplacementContext context)
         {
-            return rawResult;
+            return previous;
         }
     }
 }
