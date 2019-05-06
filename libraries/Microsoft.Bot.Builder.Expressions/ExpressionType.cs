@@ -45,6 +45,10 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string ToLower = "toLower";
         public const string ToUpper = "toUpper";
         public const string Trim = "trim";
+        public const string EndsWith = "endsWith";
+        public const string StartsWith = "startsWith";
+        public const string CountWord = "countWord";
+        public const string AddOrdinal = "addOrdinal";
 
         // Collection
         public const string Count = "count";
@@ -54,6 +58,8 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string First = "first";
         public const string Last = "last";
         public const string Foreach = "foreach";
+        public const string Union = "union";
+        public const string Intersection = "intersection";
 
         // DateTime
         public const string AddDays = "addDays";
@@ -71,6 +77,8 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string SubtractFromTime = "subtractFromTime";
         public const string DateReadBack = "dateReadBack";
         public const string GetTimeOfDay = "getTimeOfDay";
+        public const string GetFeatureTime = "getFeatureTime";
+        public const string GetPastTime = "getPastTime";
 
         // Conversions
         public const string Float = "float";

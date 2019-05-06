@@ -53,14 +53,12 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
         public static IEnumerable<object[]> BadExpressions => new[]
         {
-            Test("length(func())"), // no such function in children
             # region General test
+            Test("length(func())"), // no such function in children
             Test("func()"), // no such func
             Test("a.func()"), // no such function
             Test("(1.foreach)()"),// error func
             Test("('str'.foreach)()"),// error func
-
-
             # endregion
 
             # region Operators test
@@ -101,6 +99,17 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("toUpper('hi', 1)"), // should have 1 param
             Test("trim(one)"), // the parameter of trim must be string
             Test("trim('hi', 1)"), // should have 1 param
+            Test("endsWith(hello, one)"),// should have string params
+            Test("endsWith(one, hello)"),// should have string params
+            Test("endsWith(hello)"),// should have two params
+            Test("startsWith(hello, one)"),// should have string params
+            Test("startsWith(one, hello)"),// should have string params
+            Test("startsWith(hello)"),// should have two params
+            Test("countWord(hello, 1)"),// should have one param
+            Test("countWord(one)"),// should have string param
+            Test("countWord(one)"),// should have string param
+            Test("addOrdinal(one)"),// should have Integer param
+            Test("addOrdinal(one, two)"),// should have one param
             # endregion
 
             # region Logical comparison functions test
@@ -192,12 +201,19 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("subtractFromTime(timestamp, 1, 'W')"),// error time unit
             Test("subtractFromTime(timestamp, timestamp, 'W')"),// error parameters format
             Test("subtractFromTime(timestamp, 'yyyy', '1')"), // third param should be integer
-            Test("subtractFromTime(timestamp, 'yyyy', 1, 1)"), // should have 3 params
+            Test("subtractFromTime(timestamp, 'yyyy')"), // should have 3 or 4 params
             Test("dateReadBack('errortime', 'errortime')"), // error datetime format
             Test("dateReadBack(timestamp)"), // shold have two params
             Test("getTimeOfDay('errortime')"), // error datetime format
             Test("getTimeOfDay(timestamp, timestamp)"), // should have 1 param
-
+            Test("getPastTime(1, 'W')"),// error time unit
+            Test("getPastTime(timestamp, 'W')"),// error parameters format
+            Test("getPastTime('yyyy', '1')"),// second param should be integer
+            Test("getPastTime('yyyy')"),// should have 2 or 3 params
+            Test("getFeatureTime(1, 'W')"),// error time unit
+            Test("getFeatureTime(timestamp, 'W')"),// error parameters format
+            Test("getFeatureTime('yyyy', '1')"),// second param should be integer
+            Test("getFeatureTime('yyyy')"),// should have 2 or 3 params
             # endregion
 
             # region collection functions test
@@ -222,6 +238,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("foreach(items, add(1), item)"),// Second paramter of foreach is not an identifier
             Test("foreach(items, 1, item)"),// Second paramter error
             Test("foreach(items, x, sum(x))"),// third paramter error
+            Test("union(one, two)"),// should have collection param
+            Test("intersection(one, two)"),// should have collection param
             # endregion
 
             # region Object manipulation and construction functions test

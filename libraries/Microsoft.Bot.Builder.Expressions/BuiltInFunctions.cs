@@ -280,6 +280,22 @@ namespace Microsoft.Bot.Builder.Expressions
         }
 
         /// <summary>
+        /// Verify value contains elements.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <param name="expression">Expression that led to value.</param>
+        /// <returns>Error or null if valid.</returns>
+        public static string VerifyList(object value, Expression expression, int _)
+        {
+            string error = null;
+            if (!TryParseList(value, out var list))
+            {
+                error = $"{expression} must be a list.";
+            }
+            return error;
+        }
+
+        /// <summary>
         /// Try to coerce object to IList.
         /// </summary>
         /// <param name="value">Value to coerce.</param>
@@ -1146,19 +1162,20 @@ namespace Microsoft.Bot.Builder.Expressions
             }
         }
 
-        private static (Func<DateTime, DateTime>, string) PastDateTimeConverter(long interval, string timeUnit)
+        private static (Func<DateTime, DateTime>, string) DateTimeConverter(long interval, string timeUnit, bool isPast = true)
         {
             Func<DateTime, DateTime> converter = (dateTime) => dateTime;
             string error = null;
+            var multiFlag = isPast ? -1 : 1;
             switch (timeUnit.ToLower())
             {
-                case "second": converter = (dateTime) => dateTime.AddSeconds(-interval); break;
-                case "minute": converter = (dateTime) => dateTime.AddMinutes(-interval); break;
-                case "hour": converter = (dateTime) => dateTime.AddHours(-interval); break;
-                case "day": converter = (dateTime) => dateTime.AddDays(-interval); break;
-                case "week": converter = (dateTime) => dateTime.AddDays(-(interval * 7)); break;
-                case "month": converter = (dateTime) => dateTime.AddMonths(-(int)interval); break;
-                case "year": converter = (dateTime) => dateTime.AddYears(-(int)interval); break;
+                case "second": converter = (dateTime) => dateTime.AddSeconds(multiFlag * interval); break;
+                case "minute": converter = (dateTime) => dateTime.AddMinutes(multiFlag * interval); break;
+                case "hour": converter = (dateTime) => dateTime.AddHours(multiFlag * interval); break;
+                case "day": converter = (dateTime) => dateTime.AddDays(multiFlag * interval); break;
+                case "week": converter = (dateTime) => dateTime.AddDays(multiFlag * (interval * 7)); break;
+                case "month": converter = (dateTime) => dateTime.AddMonths(multiFlag * (int)interval); break;
+                case "year": converter = (dateTime) => dateTime.AddYears(multiFlag * (int)interval); break;
                 default: error = $"{timeUnit} is not a valid time unit."; break;
             }
             return (converter, error);
@@ -1181,6 +1198,45 @@ namespace Microsoft.Bot.Builder.Expressions
                 error = $"Could not parse {timeStamp}";
             }
             return (result, error);
+        }
+
+        private static string AddOrdinal(int num)
+        {
+            var hasResult = false;
+            var ordinalResult = num.ToString();
+            if (num > 0)
+            {
+                switch (num % 100)
+                {
+                    case 11:
+                    case 12:
+                    case 13:
+                        ordinalResult = num + "th";
+                        hasResult = true;
+                        break;
+                }
+
+                if (!hasResult)
+                {
+                    switch (num % 10)
+                    {
+                        case 1:
+                            ordinalResult = num + "st";
+                            break;
+                        case 2:
+                            ordinalResult = num + "nd";
+                            break;
+                        case 3:
+                            ordinalResult = num + "rd";
+                            break;
+                        default:
+                            ordinalResult = num + "th";
+                            break;
+                    }
+                }
+            }
+
+            return ordinalResult;
         }
 
         private static bool IsSameDay(DateTime date1, DateTime date2) => date1.Year == date2.Year && date1.Month == date2.Month && date1.Day == date2.Day;
@@ -1270,6 +1326,36 @@ namespace Microsoft.Bot.Builder.Expressions
                         }, VerifyContainer),
                     ReturnType.Number,
                     ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.Union,
+                    Apply(
+                        args =>
+                        {
+                        IEnumerable<object> result = args[0];
+                        for (var i = 1; i < args.Count; i++)
+                        {
+                            IEnumerable<object> nextItem = args[i];
+                            result = result.Union(nextItem);
+                        }
+                        return result.ToList();
+                        }, VerifyList),
+                    ReturnType.Object,
+                    ValidateAtLeastOne),
+                new ExpressionEvaluator(
+                    ExpressionType.Intersection,
+                    Apply(
+                        args =>
+                        {
+                        IEnumerable<object> result = args[0];
+                        for (var i = 1; i < args.Count; i++)
+                        {
+                            IEnumerable<object> nextItem = args[i];
+                            result = result.Intersect(nextItem);
+                        }
+                        return result.ToList();
+                        }, VerifyList),
+                    ReturnType.Object,
+                    ValidateAtLeastOne),
 
                 // Booleans
                 Comparison(ExpressionType.LessThan, args => args[0] < args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
@@ -1353,6 +1439,26 @@ namespace Microsoft.Bot.Builder.Expressions
                 StringTransform(ExpressionType.ToUpper, args => args[0].ToUpper()),
                 StringTransform(ExpressionType.Trim, args => args[0].Trim()),
                 new ExpressionEvaluator(
+                    ExpressionType.StartsWith,
+                    Apply(args => args[0].StartsWith(args[1]), VerifyString),
+                    ReturnType.Boolean,
+                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.EndsWith,
+                    Apply(args => args[0].EndsWith(args[1]), VerifyString),
+                    ReturnType.Boolean,
+                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.CountWord,
+                    Apply(args => Regex.Split(args[0].Trim(), @"\s{1,}").Length, VerifyString),
+                    ReturnType.Number,
+                    ValidateUnaryString),
+                new ExpressionEvaluator(
+                    ExpressionType.AddOrdinal,
+                    Apply(args => AddOrdinal(args[0]), VerifyInteger),
+                    ReturnType.Number,
+                    (expression) => ValidateArityAndAnyType(expression, 1, 1, ReturnType.Number)),
+                new ExpressionEvaluator(
                     ExpressionType.Join,
                     (expression, state) =>
                     {
@@ -1432,7 +1538,7 @@ namespace Microsoft.Bot.Builder.Expressions
                             {
                                 var format = (args.Count() == 4) ? (string)args[3] : DefaultDateTimeFormat;
                                 Func<DateTime, DateTime> timeConverter;
-                                (timeConverter, error) = PastDateTimeConverter(int1, string2);
+                                (timeConverter, error) = DateTimeConverter(int1, string2);
                                 if (error == null)
                                 {
                                     (value, error) = ParseTimestamp(string0, dt => timeConverter(dt).ToString(format));
@@ -1512,6 +1618,64 @@ namespace Microsoft.Bot.Builder.Expressions
                         VerifyString),
                     ReturnType.String,
                     expr => ValidateOrder(expr, null, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.GetFeatureTime,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            if (args[0] is int int1 && args[1] is string string1)
+                            {
+                                var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
+                                Func<DateTime, DateTime> timeConverter;
+                                (timeConverter, error) = DateTimeConverter(int1, string1, false);
+                                if (error == null)
+                                {
+                                    value = timeConverter(DateTime.Now).ToString(format);
+                                }
+                            }
+                            else
+                            {
+                                error = $"{expr} can't evaluate.";
+                            }
+                        }
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Number, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.GetPastTime,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            if (args[0] is int int1 && args[1] is string string1)
+                            {
+                                var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
+                                Func<DateTime, DateTime> timeConverter;
+                                (timeConverter, error) = DateTimeConverter(int1, string1);
+                                if (error == null)
+                                {
+                                    value = timeConverter(DateTime.Now).ToString(format);
+                                }
+                            }
+                            else
+                            {
+                                error = $"{expr} can't evaluate.";
+                            }
+                        }
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Number, ReturnType.String)),
 
                 // Conversions
                 new ExpressionEvaluator(ExpressionType.Float, Apply(args => (float) Convert.ToDouble(args[0])), ReturnType.Number, ValidateUnary),
