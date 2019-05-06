@@ -9,17 +9,14 @@ namespace Microsoft.Bot.Builder
 {
     internal static class InspectionActivityExtensions
     {
-        public static Activity TraceActivity(this BotState state, ITurnContext turnContext)
+        public static Activity MakeCommandActivity(this string command)
         {
-            if (turnContext == null)
-            {
-                throw new ArgumentNullException(nameof(turnContext));
-            }
+            return (Activity)Activity.CreateTraceActivity("Command", "https://www.botframework.com/schemas/command", command, "Command");
+        }
 
-            var name = state.GetType().Name;
-            var cachedState = turnContext.TurnState.Get<object>(name);
-            var obj = JObject.FromObject(cachedState)["State"];
-            return (Activity)Activity.CreateTraceActivity("BotState", "https://www.botframework.com/schemas/botState", obj, "Bot State");
+        public static Activity TraceActivity(this JObject state)
+        {
+            return (Activity)Activity.CreateTraceActivity("BotState", "https://www.botframework.com/schemas/botState", state, "Bot State");
         }
 
         public static Activity TraceActivity(this Activity activity, string name, string label)

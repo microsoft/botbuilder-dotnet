@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder
 {
@@ -34,7 +35,7 @@ namespace Microsoft.Bot.Builder
 
         public async Task<bool> ProcessCommandAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (turnContext.Activity.Type == ActivityTypes.Message)
+            if (turnContext.Activity.Type == ActivityTypes.Message && turnContext.Activity.Text != null)
             {
                 var command = turnContext.Activity.Text.Trim().Split(' ');
                 if (command.Length > 1 && command[0] == Command)
@@ -110,15 +111,25 @@ namespace Microsoft.Bot.Builder
                 var task2 = _conversationState?.LoadAsync(turnContext, false, cancellationToken) ?? Task.CompletedTask;
                 await Task.WhenAll(task1, task2).ConfigureAwait(false);
 
+                var botState = new JObject();
+
                 if (_userState != null)
                 {
-                    await InvokeSendAsync(turnContext, session, _userState.TraceActivity(turnContext), cancellationToken).ConfigureAwait(false);
+                    var name = _userState.GetType().Name;
+                    var cachedState = turnContext.TurnState.Get<object>(name);
+                    var obj = JObject.FromObject(cachedState)["State"];
+                    botState.Add("userState", obj);
                 }
 
                 if (_conversationState != null)
                 {
-                    await InvokeSendAsync(turnContext, session, _conversationState.TraceActivity(turnContext), cancellationToken).ConfigureAwait(false);
+                    var name = _conversationState.GetType().Name;
+                    var cachedState = turnContext.TurnState.Get<object>(name);
+                    var obj = JObject.FromObject(cachedState)["State"];
+                    botState.Add("conversationState", obj);
                 }
+
+                await InvokeSendAsync(turnContext, session, botState.TraceActivity(), cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -127,7 +138,7 @@ namespace Microsoft.Bot.Builder
             var accessor = _inspectionState.CreateProperty<InspectionSessionsByStatus>(nameof(InspectionSessionsByStatus));
             var sessions = await accessor.GetAsync(turnContext, () => new InspectionSessionsByStatus()).ConfigureAwait(false);
             var sessionId = OpenCommand(sessions, turnContext.Activity.GetConversationReference());
-            await turnContext.SendActivityAsync(MessageFactory.Text($"{Command} attach {sessionId}")).ConfigureAwait(false);
+            await turnContext.SendActivityAsync($"{Command} attach {sessionId}".MakeCommandActivity()).ConfigureAwait(false);
             await _inspectionState.SaveChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
         }
 
@@ -138,7 +149,7 @@ namespace Microsoft.Bot.Builder
 
             if (AttachCommand(turnContext.Activity.Conversation.Id, sessions, sessionId))
             {
-                await turnContext.SendActivityAsync(MessageFactory.Text($"Attached to session, all traffic is being relicated for inspection."), cancellationToken).ConfigureAwait(false);
+                await turnContext.SendActivityAsync(MessageFactory.Text($"Attached to session, all traffic is being replicated for inspection."), cancellationToken).ConfigureAwait(false);
             }
             else
             {

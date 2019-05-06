@@ -47,8 +47,6 @@ namespace Microsoft.Bot.Builder
                     await InvokeOutboundAsync(ctx, traceActivity, cancellationToken).ConfigureAwait(false);
                     await nextDelete().ConfigureAwait(false);
                 });
-
-                await InvokeTraceStateAsync(turnContext, cancellationToken).ConfigureAwait(false);
             }
 
             if (shouldForwardToApplication)
@@ -62,6 +60,11 @@ namespace Microsoft.Bot.Builder
                     await InvokeTraceExceptionAsync(turnContext, e.TraceActivity(), cancellationToken).ConfigureAwait(false);
                     throw e;
                 }
+            }
+
+            if (shouldIntercept)
+            {
+                await InvokeTraceStateAsync(turnContext, cancellationToken).ConfigureAwait(false);
             }
         }
 
