@@ -15,7 +15,7 @@ namespace Microsoft.BotBuilderSamples.Tests
     /// </summary>
     public sealed class TestConfiguration
     {
-        private static readonly Lazy<TestConfiguration> _lazy = new Lazy<TestConfiguration>(() =>
+        private static readonly Lazy<TestConfiguration> _configurationLazy = new Lazy<TestConfiguration>(() =>
         {
             LoadLaunchSettingsIntoEnvVariables("Properties\\launchSettings.json");
 
@@ -31,7 +31,7 @@ namespace Microsoft.BotBuilderSamples.Tests
             Configuration = configuration;
         }
 
-        public static TestConfiguration Instance => _lazy.Value;
+        public static TestConfiguration Instance => _configurationLazy.Value;
 
         public IConfiguration Configuration { get; }
 

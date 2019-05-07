@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.BotBuilderSamples.Tests.Extensions;
-using Microsoft.BotBuilderSamples.Tests.Utils;
 using Microsoft.BotBuilderSamples.Tests.Utils.Luis;
 using Microsoft.BotBuilderSamples.Tests.Utils.XUnit;
 using Microsoft.Extensions.Configuration;
@@ -20,9 +19,12 @@ namespace Microsoft.BotBuilderSamples.Tests.CognitiveModels
 {
     // Scenarios
     // intent, entity, utterance, role, version.
-    // given a lu file for a LUIS model ensure that the labeled utterances and entities resolve as expected
-    // given a json file and a LUIS model, I would like to be able to ensure the utterances and entities defined in the json file resolve as expected
+    // given a lu model I want to make sure it can be imported, trained and published
+    // Xgiven a lu file for a LUIS model ensure that the labeled utterances and entities resolve as expected
+    // Xgiven a json file and a LUIS model, I would like to be able to ensure the utterances and entities defined in the json file resolve as expected
     // given a set of utterances, I would like to assert that they map to the expected intent
+    // Xgive a deployed model, I want to assert that the intents I need for my bot to work do exists.
+    // given a dispatch model I want to assert the child model utterances resolve to my target model through dispatch
     //
     // Assumptions
     // assume local LUIS in container or full model somewhere
@@ -32,6 +34,21 @@ namespace Microsoft.BotBuilderSamples.Tests.CognitiveModels
     {
         private const string SourceLuFile = "calendar.lu";
         private const string RelativePath = @"CognitiveModels/Data";
+
+        private static readonly Lazy<LuisRecognizer> _luisRecognizerLazy = new Lazy<LuisRecognizer>(() =>
+        {
+            var configuration = TestConfiguration.Instance.Configuration;
+
+            // Create LuisRecognizer instance
+            var luisApplication = new LuisApplication(
+                configuration.GetSection("cognitiveModels:calendar:luisAppId").Value,
+                configuration.GetSection("cognitiveModels:calendar:luisEndpointKey").Value,
+                configuration.GetSection("cognitiveModels:calendar:luisEndpoint").Value);
+
+            // Create Recognizer instance
+            return new LuisRecognizer(luisApplication, null, false, null);
+        });
+
         private readonly LuisTesterFixture _luisTester;
         private readonly ITestOutputHelper _output;
 
@@ -42,23 +59,48 @@ namespace Microsoft.BotBuilderSamples.Tests.CognitiveModels
         }
 
         [Theory]
+        [LuDownData("calendarSample.lu", RelativePath)]
+        public async Task CalendarSampleTests(LuisTestItem luisTestItem)
+        {
+            var luisResult = await _luisRecognizerLazy.Value.RecognizeAsync(luisTestItem.Utterance, CancellationToken.None);
+            Assert.Equal(luisTestItem.ExpectedIntent, luisResult.GetTopScoringIntent().intent);
+        }
+
+        [Theory]
         [LuDownData(SourceLuFile, RelativePath)]
         public async Task BatchTestFromLuFile(LuisTestItem luisTestItem)
         {
             _output.WriteLine("Expected:");
             _output.WriteAsFormattedJson(luisTestItem);
-            var luisResult = await _luisTester.LuisRecognizer.RecognizeAsync(luisTestItem.Utterance, CancellationToken.None);
+            var luisResult = await _luisRecognizerLazy.Value.RecognizeAsync(luisTestItem.Utterance, CancellationToken.None);
 
             _output.WriteLine("\r\nActual:");
             _output.WriteAsFormattedJson(luisResult);
 
             // Assert intent
             Assert.Equal(luisTestItem.ExpectedIntent, luisResult.GetTopScoringIntent().intent);
+
+            // Assert entities
+            var resultEntities = luisResult.Entities["$instance"];
             foreach (var entity in luisTestItem.ExpectedEntities)
             {
+                // assert the entity is there
+                var entityValues = resultEntities[entity.Entity];
+                Assert.True(entityValues != null, $"{entity.Entity} found in results");
+
+                // assert the value for the entity matches.
                 var expectedEntityValue = luisTestItem.Utterance.Substring(entity.StartPos, entity.EndPos - entity.StartPos + 1);
-                var actual = luisResult.Entities[entity.Entity].FirstOrDefault()?.ToString();
-                Assert.Equal(expectedEntityValue, actual);
+
+                Assert.Equal(expectedEntityValue, entityValues.FirstOrDefault()?["text"].ToString());
+
+                //foreach (var entityValue in entityValues)
+                //{
+
+                //}
+
+                ////Assert.True(resultEntities.ContainsKey(entity.Entity), is);
+                //var actual = resultEntities[entity.Entity].FirstOrDefault()?.ToString();
+                //Assert.Equal(expectedEntityValue, actual);
             }
         }
 

@@ -35,12 +35,6 @@ namespace Microsoft.BotBuilderSamples.Tests.Utils.XUnit
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
         {
             return new LuDownDataGenerator(_luDownFileName, _relativePath);
-            //if (!(Activator.CreateInstance(Class, _luDownFileName, _relativePath) is IEnumerable<object[]> data))
-            //{
-            //    throw new ArgumentException($"{Class.FullName} must implement IEnumerable<object[]> to be used as ClassData for the test method named '{testMethod.Name}' on {testMethod.DeclaringType.FullName}");
-            //}
-
-            //return data;
         }
     }
 }

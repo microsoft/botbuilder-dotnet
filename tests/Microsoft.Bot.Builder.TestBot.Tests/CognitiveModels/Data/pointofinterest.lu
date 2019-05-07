@@ -1,7 +1,7 @@
-﻿[Navigation Cancel Route](./poi_navigation_cancel_route.lu)
-[Navigation Find PoI](./poi_navigation_find_poi.lu)
-[Navigation Route From X To Y](./poi_navigation_route_fromxtoy.lu)
-[Navigation Find Parking](./poi_navigation_find_parking.lu)
+﻿[Navigation Cancel Route](./secondary/poi_navigation_cancel_route.lu)
+[Navigation Find PoI](./secondary/poi_navigation_find_poi.lu)
+[Navigation Route From X To Y](./secondary/poi_navigation_route_fromxtoy.lu)
+[Navigation Find Parking](./secondary/poi_navigation_find_parking.lu)
 
 ## None
 - are you married

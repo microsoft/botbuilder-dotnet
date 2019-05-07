@@ -3,11 +3,9 @@
 
 using System;
 using System.IO;
-using System.Threading.Tasks;
-using Microsoft.BotBuilderSamples.Tests.Utils.Luis;
 using Newtonsoft.Json;
 
-namespace Microsoft.BotBuilderSamples.Tests.Utils
+namespace Microsoft.BotBuilderSamples.Tests.Utils.Luis
 {
     /// <summary>
     /// A set of helper methods that wrap ludown and LUIS calls.

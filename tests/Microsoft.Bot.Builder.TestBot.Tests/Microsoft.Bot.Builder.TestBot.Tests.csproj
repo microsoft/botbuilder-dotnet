@@ -45,6 +45,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="CognitiveModels\Data\calendarSample.lu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="CognitiveModels\Data\calendar.lu">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
