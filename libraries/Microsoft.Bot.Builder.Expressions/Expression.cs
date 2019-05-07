@@ -251,6 +251,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     }
                 }
             }
+
             // Element support
             else if (Type == ExpressionType.Element && Children.Length == 2)
             {

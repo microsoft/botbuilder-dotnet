@@ -12,11 +12,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class TemplateEngine
     {
         /// <summary>
-        /// Parsed LG templates.
-        /// </summary>
-        public List<LGTemplate> Templates = new List<LGTemplate>();
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngine"/> class.
         /// Return an empty engine, you can then use AddFile\AddFiles to add files to it,
         /// or you can just use this empty engine to evaluate inline template.
@@ -26,15 +21,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
+        /// Gets or sets parsed LG templates.
+        /// </summary>
+        /// <value>
+        /// Parsed LG templates.
+        /// </value>
+        public List<LGTemplate> Templates { get; set; } = new List<LGTemplate>();
+
+        /// <summary>
         /// Create a template engine from files, a shorthand for.
         ///    new TemplateEngine().AddFiles(filePath).
         /// </summary>
         /// <param name="filePaths">paths to LG files.</param>
         /// <returns>Engine created.</returns>
-        public static TemplateEngine FromFiles(params string[] filePaths)
-        {
-            return new TemplateEngine().AddFiles(filePaths);
-        }
+        public static TemplateEngine FromFiles(params string[] filePaths) => new TemplateEngine().AddFiles(filePaths);
 
         /// <summary>
         /// Create a template engine from text, equivalent to.
@@ -42,10 +42,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="text">Content of lg file.</param>
         /// <returns>Engine created.</returns>
-        public static TemplateEngine FromText(string text)
-        {
-            return new TemplateEngine().AddText(text);
-        }
+        public static TemplateEngine FromText(string text) => new TemplateEngine().AddText(text);
 
         /// <summary>
         /// Load .lg files into template engine

@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Expressions
     /// <summary>
     /// Delegate to lookup function information from the type.
     /// </summary>
-    /// <param name="type">Name to lookup, usually from <see cref="ExpressionType"/></param>
+    /// <param name="type">Name to lookup, usually from <see cref="ExpressionType"/>.</param>
     /// <returns>Expression evaluation information.</returns>
     public delegate ExpressionEvaluator EvaluatorLookup(string type);
 
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="returnType">Type expected from evaluation.</param>
         /// <param name="validator">Static validation of expression.</param>
         public ExpressionEvaluator(
-            string type, 
+            string type,
             EvaluateExpressionDelegate evaluator,
             ReturnType returnType = ReturnType.Object,
             ValidateExpressionDelegate validator = null)
