@@ -568,7 +568,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (instance != null)
             {
                 // Lookup dialog
-                var dialog = Dialogs.Find(instance.Id);
+                var dialog = FindDialog(instance.Id);
                 if (dialog != null)
                 {
                     // Notify dialog of end

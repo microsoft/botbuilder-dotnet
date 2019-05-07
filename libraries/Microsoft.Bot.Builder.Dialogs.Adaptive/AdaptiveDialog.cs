@@ -9,17 +9,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
-using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
-
     /// <summary>
     /// The Adaptive Dialog models conversation using events and rules to adapt dynamicaly to changing conversation flow
     /// </summary>
-    public class AdaptiveDialog : Dialog
+    public class AdaptiveDialog : Dialog, IDialogDependencies
     {
         private bool installedDependencies = false;
         protected readonly DialogSet dialogs = new DialogSet();
@@ -30,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public IStatePropertyAccessor<Dictionary<string, object>> UserState { get; set; }
 
         /// <summary>
-        /// Recognizer for processing incoming user input 
+        /// Recognizer for processing incoming user input
         /// </summary>
         public IRecognizer Recognizer { get; set; }
 
@@ -40,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public List<IDialog> Steps { get; set; } = new List<IDialog>();
 
         /// <summary>
-        /// Rules for handling events to dynamic modifying the executing plan 
+        /// Rules for handling events to dynamic modifying the executing plan
         /// </summary>
         public virtual List<IRule> Rules { get; set; } = new List<IRule>();
 
@@ -56,7 +54,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <summary>
         /// Gets or sets the selector for picking the possible rules to execute.
         /// </summary>
-        public IRuleSelector Selector { get; set; }
+        public IRuleSelector Selector { get; set; } = new MostSpecificSelector
+        {
+            Selector = new FirstSelector()
+        };
 
         public override IBotTelemetryClient TelemetryClient
         {
@@ -85,18 +86,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 throw new ArgumentException($"{nameof(options)} should not ever be a cancellation token");
             }
 
-            if (!installedDependencies)
-            {
-                installedDependencies = true;
+            //if (!installedDependencies)
+            //{
+            //    installedDependencies = true;
 
-                AddDialog(this.Steps.ToArray());
+            //    AddDialog(this.Steps.ToArray());
 
-                foreach (var rule in this.Rules)
-                {
-                    AddDialog(rule.Steps.ToArray());
-                }
-            }
-
+            //    foreach (var rule in this.Rules)
+            //    {
+            //        AddDialog(rule.Steps.ToArray());
+            //    }
+            //}
 
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
             activeDialogState["planningState"] = new PlanningState();
@@ -114,14 +114,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Create a new planning context
             var planning = PlanningContext.Create(dc, state);
 
-            if (this.Selector == null)
-            {
-                // Default to most specific then first
-                this.Selector = new MostSpecificSelector
-                {
-                    Selector = new FirstSelector()
-                };
-            }
             await this.Selector.Initialize(planning, this.Rules, true, cancellationToken).ConfigureAwait(false);
 
             if (this.Steps.Any())
@@ -153,6 +145,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             state.Changes = new List<PlanChangeList>();
 
             var planning = PlanningContext.Create(dc, state);
+
+            await this.Selector.Initialize(planning, this.Rules, true, cancellationToken).ConfigureAwait(false);
 
             // First consult plan
             var consultation = await ConsultPlanAsync(planning, cancellationToken).ConfigureAwait(false);
@@ -314,7 +308,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     }
 
                     state.SavedPlans = null;
-
                 }
             }
         }
@@ -557,7 +550,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         }
                     }
                 };
-
             }
             else
             {
@@ -607,7 +599,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 await planning.DebuggerStepAsync(Recognizer, cancellationToken).ConfigureAwait(false);
                 var result = await Recognizer.RecognizeAsync(context, cancellationToken).ConfigureAwait(false);
-                // only allow one intent 
+                // only allow one intent
                 var topIntent = result.GetTopScoringIntent();
                 result.Intents.Clear();
                 result.Intents.Add(topIntent.intent, new IntentScore() { Score = topIntent.score });
@@ -624,7 +616,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     },
                     Entities = JObject.Parse("{}")
                 };
-
             }
         }
 
@@ -734,6 +725,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 }
             }
             return false;
+        }
+
+        public List<IDialog> ListDependencies()
+        {
+            return this.Steps.Union(this.Rules.SelectMany(r => r.Steps)).ToList();
         }
     }
 }
