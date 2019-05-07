@@ -2,34 +2,37 @@
   "text": "http://foo.com is where you can fly from seattle to dallas via denver",
   "intents": {
     "EntityTests": {
-      "score": 0.915071368
+      "score": 0.9513557
+    },
+    "Roles": {
+      "score": 0.05937675
     },
     "Weather_GetForecast": {
-      "score": 0.103456922
+      "score": 0.0246020257
     },
     "Travel": {
-      "score": 0.0230268724
+      "score": 0.0182663873
     },
     "search": {
-      "score": 0.0197850317
+      "score": 0.0149017535
     },
     "None": {
-      "score": 0.01063211
-    },
-    "Delivery": {
-      "score": 0.004947166
+      "score": 0.004570498
     },
     "SpecifyName": {
-      "score": 0.00322066387
+      "score": 0.00189947966
+    },
+    "Delivery": {
+      "score": 0.00140795356
     },
     "Help": {
-      "score": 0.00182514545
+      "score": 0.0005772592
     },
     "Cancel": {
-      "score": 0.0008727567
+      "score": 0.00024834834
     },
     "Greeting": {
-      "score": 0.000494661159
+      "score": 0.000163752949
     }
   },
   "entities": {
@@ -40,38 +43,20 @@
           "endIndex": 69,
           "text": "http : / / foo . com is where you can fly from seattle to dallas via denver",
           "type": "Composite2",
-          "score": 0.91574204
+          "score": 0.950585246
         }
       ]
     },
     "Composite2": [
       {
         "$instance": {
-          "To": [
-            {
-              "startIndex": 52,
-              "endIndex": 58,
-              "text": "dallas",
-              "type": "City::To",
-              "score": 0.9924016
-            }
-          ],
-          "From": [
-            {
-              "startIndex": 41,
-              "endIndex": 48,
-              "text": "seattle",
-              "type": "City::From",
-              "score": 0.995012
-            }
-          ],
           "City": [
             {
               "startIndex": 63,
               "endIndex": 69,
               "text": "denver",
               "type": "City",
-              "score": 0.8450125
+              "score": 0.983408
             }
           ],
           "url": [
@@ -81,19 +66,37 @@
               "text": "http://foo.com",
               "type": "builtin.url"
             }
+          ],
+          "From": [
+            {
+              "startIndex": 41,
+              "endIndex": 48,
+              "text": "seattle",
+              "type": "City::From",
+              "score": 0.9981071
+            }
+          ],
+          "To": [
+            {
+              "startIndex": 52,
+              "endIndex": 58,
+              "text": "dallas",
+              "type": "City::To",
+              "score": 0.996769965
+            }
           ]
         },
-        "To": [
-          "dallas"
-        ],
-        "From": [
-          "seattle"
-        ],
         "City": [
           "denver"
         ],
         "url": [
           "http://foo.com"
+        ],
+        "From": [
+          "seattle"
+        ],
+        "To": [
+          "dallas"
         ]
       }
     ]
@@ -106,48 +109,52 @@
     "query": "http://foo.com is where you can fly from seattle to dallas via denver",
     "topScoringIntent": {
       "intent": "EntityTests",
-      "score": 0.915071368
+      "score": 0.9513557
     },
     "intents": [
       {
         "intent": "EntityTests",
-        "score": 0.915071368
+        "score": 0.9513557
+      },
+      {
+        "intent": "Roles",
+        "score": 0.05937675
       },
       {
         "intent": "Weather.GetForecast",
-        "score": 0.103456922
+        "score": 0.0246020257
       },
       {
         "intent": "Travel",
-        "score": 0.0230268724
+        "score": 0.0182663873
       },
       {
         "intent": "search",
-        "score": 0.0197850317
+        "score": 0.0149017535
       },
       {
         "intent": "None",
-        "score": 0.01063211
-      },
-      {
-        "intent": "Delivery",
-        "score": 0.004947166
+        "score": 0.004570498
       },
       {
         "intent": "SpecifyName",
-        "score": 0.00322066387
+        "score": 0.00189947966
+      },
+      {
+        "intent": "Delivery",
+        "score": 0.00140795356
       },
       {
         "intent": "Help",
-        "score": 0.00182514545
+        "score": 0.0005772592
       },
       {
         "intent": "Cancel",
-        "score": 0.0008727567
+        "score": 0.00024834834
       },
       {
         "intent": "Greeting",
-        "score": 0.000494661159
+        "score": 0.000163752949
       }
     ],
     "entities": [
@@ -156,28 +163,28 @@
         "type": "City::To",
         "startIndex": 52,
         "endIndex": 57,
-        "score": 0.9924016
+        "score": 0.996769965
       },
       {
         "entity": "seattle",
         "type": "City::From",
         "startIndex": 41,
         "endIndex": 47,
-        "score": 0.995012
+        "score": 0.9981071
       },
       {
         "entity": "denver",
         "type": "City",
         "startIndex": 63,
         "endIndex": 68,
-        "score": 0.8450125
+        "score": 0.983408
       },
       {
         "entity": "http : / / foo . com is where you can fly from seattle to dallas via denver",
         "type": "Composite2",
         "startIndex": 0,
         "endIndex": 68,
-        "score": 0.91574204
+        "score": 0.950585246
       },
       {
         "entity": "http://foo.com",
@@ -195,20 +202,20 @@
         "value": "http : / / foo . com is where you can fly from seattle to dallas via denver",
         "children": [
           {
-            "type": "City::To",
-            "value": "dallas"
-          },
-          {
-            "type": "City::From",
-            "value": "seattle"
-          },
-          {
             "type": "City",
             "value": "denver"
           },
           {
             "type": "builtin.url",
             "value": "http://foo.com"
+          },
+          {
+            "type": "City::From",
+            "value": "seattle"
+          },
+          {
+            "type": "City::To",
+            "value": "dallas"
           }
         ]
       }

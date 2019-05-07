@@ -71,9 +71,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (httpClient == null)
             {
-                // assign DefaultHttpClient to _httpClient to expose Timeout in unit tests
-                // and keep HttpClient usage as a singleton by default
-                DefaultHttpClient.Timeout = TimeSpan.FromMilliseconds(_options.Timeout);
                 _httpClient = DefaultHttpClient;
             }
             else

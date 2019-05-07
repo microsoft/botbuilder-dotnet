@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -27,6 +28,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Gets the number of times the prompt has been executed.
         /// </summary>
         /// <value>A number indicating how many times the prompt was invoked (starting at 1 for the first time it was called).</value>
-        public int AttemptCount => (int)State[Prompt<T>.AttemptCountKey];
+        public int AttemptCount => Convert.ToInt32(State[Prompt<T>.AttemptCountKey]);
     }
 }

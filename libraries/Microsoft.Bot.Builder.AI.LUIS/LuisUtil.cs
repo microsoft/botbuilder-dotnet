@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                         }
 
                     default:
-                        return resolution.value ?? JArray.FromObject(resolution.values);
+                        return resolution.value ?? (resolution.values != null ? JArray.FromObject(resolution.values) : resolution);
                 }
             }
         }
@@ -275,13 +275,16 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         internal static void AddProperty(JObject obj, string key, JToken value)
         {
-            if (((IDictionary<string, JToken>)obj).ContainsKey(key))
+            if (value != null)
             {
-                ((JArray)obj[key]).Add(value);
-            }
-            else
-            {
-                obj[key] = new JArray(value);
+                if (((IDictionary<string, JToken>)obj).ContainsKey(key))
+                {
+                    ((JArray)obj[key]).Add(value);
+                }
+                else
+                {
+                    obj[key] = new JArray(value);
+                }
             }
         }
 

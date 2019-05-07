@@ -1025,37 +1025,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2])["score"], 3.14159);
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        public void QnaMaker_Timeout()
-        {
-            var endpoint = new QnAMakerEndpoint
-            {
-                KnowledgeBaseId = _knowlegeBaseId,
-                EndpointKey = _endpointKey,
-                Host = _hostname,
-            };
-
-            var optionsWithTimeout = new QnAMakerOptions()
-            {
-                Timeout = 300000,
-            };
-            var qna = new QnAMaker(endpoint, optionsWithTimeout);
-            var expectedTimeout = 300000;
-
-            Assert.AreEqual(expectedTimeout, QnAMaker.DefaultHttpClient.Timeout.TotalMilliseconds);
-
-            var optionsWithNewTimeout = new QnAMakerOptions()
-            {
-                Timeout = 200000,
-            };
-            var qnaWithOverwrittenTimeout = new QnAMaker(endpoint, optionsWithNewTimeout);
-            var newExpectedTimeout = 200000;
-
-            Assert.AreEqual(newExpectedTimeout, QnAMaker.DefaultHttpClient.Timeout.TotalMilliseconds);
-        }
-
         private static TurnContext GetContext(string utterance)
         {
             var b = new TestAdapter();
