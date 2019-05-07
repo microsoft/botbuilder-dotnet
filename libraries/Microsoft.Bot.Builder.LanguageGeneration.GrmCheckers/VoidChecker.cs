@@ -5,10 +5,10 @@ using Microsoft.Bot.Builder.LanguageGeneration;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration.GrmCheckers
 {
-    public class VoidChecker : ITemplateEngineMiddleware
+    public class VoidChecker : IOutputTransformer
     {
         // a VoidChecker don't do anything, just return the previous result
-        public string Replace(string previous, TemplateReplacementContext context)
+        public string Transform(string previous, OutputTransformationContext context)
         {
             return previous;
         }

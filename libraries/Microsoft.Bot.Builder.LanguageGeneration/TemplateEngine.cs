@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         public List<LGTemplate> Templates = new List<LGTemplate>();
 
-        public List<ITemplateEngineMiddleware> Middlewares { get; set; } = new List<ITemplateEngineMiddleware>();
+        public List<IOutputTransformer> OutputTransformers { get; set; } = new List<IOutputTransformer>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngine"/> class.
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Evaluate result.</returns>
         public string EvaluateTemplate(string templateName, object scope, IGetMethod methodBinder = null)
         {
-            var evaluator = new Evaluator(Templates, methodBinder, Middlewares);
+            var evaluator = new Evaluator(Templates, methodBinder, OutputTransformers);
             return evaluator.EvaluateTemplate(templateName, scope);
         }
 

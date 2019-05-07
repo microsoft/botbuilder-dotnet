@@ -4,16 +4,14 @@ using System.Text;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
-    public interface ITemplateEngineMiddleware
+    public interface IOutputTransformer
     {
-        string Replace(string previous, TemplateReplacementContext context);
+        string Transform(string orignial, OutputTransformationContext context);
     }
 
-    public class TemplateReplacementContext
-    {
+    public class OutputTransformationContext
+    { 
         public List<string> History { get; set; }
-
         public Dictionary<string, object> Properties { get; set; }
     }
-
 }

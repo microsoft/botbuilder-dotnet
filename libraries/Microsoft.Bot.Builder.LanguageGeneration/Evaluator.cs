@@ -18,16 +18,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private readonly IGetMethod getMethodX;
 
-        private readonly List<ITemplateEngineMiddleware> middlewares;
+        private readonly List<IOutputTransformer> transformers;
 
         private Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
-        public Evaluator(List<LGTemplate> templates, IGetMethod getMethod, List<ITemplateEngineMiddleware> middlewares = null)
+        public Evaluator(List<LGTemplate> templates, IGetMethod getMethod, List<IOutputTransformer> transformers = null)
         {
             this.Templates = templates;
             TemplateMap = templates.ToDictionary(x => x.Name);
             getMethodX = getMethod ?? new GetMethodExtensions(this);
-            this.middlewares = middlewares ?? new List<ITemplateEngineMiddleware>();
+            this.transformers = transformers ?? new List<IOutputTransformer>();
         }
 
         public string EvaluateTemplate(string templateName, object scope)
@@ -115,15 +115,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             var result = builder.ToString();
-            var cxt = new TemplateReplacementContext
+            var cxt = new OutputTransformationContext
             {
                 History = new List<string>() { context.GetText(), result },
                 Properties = new Dictionary<string, object>(),
             };
 
-            foreach (var middleware in this.middlewares)
+            foreach (var transformer in this.transformers)
             {
-                result = middleware.Replace(result, cxt);
+                result = transformer.Transform(result, cxt);
                 cxt.History.Add(result);
             }
 

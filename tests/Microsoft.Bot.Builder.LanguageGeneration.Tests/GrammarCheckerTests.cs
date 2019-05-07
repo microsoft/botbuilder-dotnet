@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
         public void TestVoidGrammarChecker()
         {
             var engine = TemplateEngine.FromFiles(GetExampleFilePath("2.lg"));
-            engine.Middlewares.Add(new VoidChecker());
+            engine.OutputTransformers.Add(new VoidChecker());
 
             var evaled = engine.EvaluateTemplate("wPhrase", null);
             var options = new List<string> { "Hi", "Hello", "Hiya " };
