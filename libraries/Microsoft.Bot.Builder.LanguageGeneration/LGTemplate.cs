@@ -52,6 +52,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Body = ExtractBody(parseTree);
         }
 
+        public static IList<LGTemplate> AddSource(IList<LGTemplate> lgtemplates, string source)
+        {
+            if (lgtemplates == null)
+            {
+                return null;
+            }
+
+            return lgtemplates.Select(u =>
+            {
+                u.Source = source;
+                return u;
+            }).ToList();
+        }
+
         private string ExtractBody(LGFileParser.TemplateDefinitionContext parseTree) => parseTree.templateBody().GetText();
 
         private string ExtractName(LGFileParser.TemplateDefinitionContext parseTree)
