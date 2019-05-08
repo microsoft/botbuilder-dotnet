@@ -60,8 +60,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var newTemplates = filePaths.Select(filePath =>
             {
                 var text = File.ReadAllText(filePath);
-                var templates = LGFileParser.Parse(text);
-                return LGTemplate.AddSource(templates, filePath);
+                return LGParser.Parse(text).MarkSource(filePath);
             }).SelectMany(x => x);
 
             var mergedTemplates = Templates.Concat(newTemplates).ToList();
@@ -80,8 +79,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Template engine with the parsed content.</returns>
         public TemplateEngine AddText(string text)
         {
-            var templates = LGFileParser.Parse(text);
-            templates = LGTemplate.AddSource(templates, "text");
+            var templates = LGParser.Parse(text).MarkSource("text");
             Templates.AddRange(templates);
 
             RunStaticCheck();
@@ -133,8 +131,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var fakeTemplateId = "__temp__";
             var wrappedStr = $"# {fakeTemplateId} \r\n - {inlineStr}";
 
-            var parsedTemplates = LGFileParser.Parse(wrappedStr);
-            parsedTemplates = LGTemplate.AddSource(parsedTemplates, "inline");
+            var parsedTemplates = LGParser.Parse(wrappedStr).MarkSource("inline");
 
             // merge the existing templates and this new template as a whole for evaluation
             var mergedTemplates = Templates.Concat(parsedTemplates).ToList();

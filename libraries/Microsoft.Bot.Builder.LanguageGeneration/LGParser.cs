@@ -5,13 +5,12 @@ using Antlr4.Runtime;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
-    public partial class LGFileParser
+    public class LGParser
     {
         /// <summary>
         /// Get LG template list from input string.
         /// </summary>
         /// <param name="text">LG file content or inline text.</param>
-        /// <param name="source">template sdource mark.</param>
         /// <returns>LG template list.</returns>
         public static IList<LGTemplate> Parse(string text)
         {
@@ -19,7 +18,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return ToTemplates(fileContentContext);
         }
 
-        private static FileContext GetFileContentContext(string text)
+        private static LGFileParser.FileContext GetFileContentContext(string text)
         {
             if (string.IsNullOrEmpty(text))
             {
@@ -42,7 +41,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Convert a file parse tree to a list of LG templates.
         /// </summary>
-        private static IList<LGTemplate> ToTemplates(FileContext file)
+        private static IList<LGTemplate> ToTemplates(LGFileParser.FileContext file)
         {
             if (file == null)
             {
