@@ -6,10 +6,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public static class LGExtension
     {
-        public static IList<LGTemplate> MarkSource(this IList<LGTemplate> templates, string source) => templates.Select(u =>
-                                                                                                                 {
-                                                                                                                     u.Source = source;
-                                                                                                                     return u;
-                                                                                                                 }).ToList();
+        public static IList<LGTemplate> MarkSource(this IList<LGTemplate> templates, string source)
+        {
+            return templates.Select(u =>
+            {
+                u.Source = source;
+                return u;
+            }).ToList();
+        }
     }
 }

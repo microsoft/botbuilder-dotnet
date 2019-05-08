@@ -79,8 +79,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Template engine with the parsed content.</returns>
         public TemplateEngine AddText(string text)
         {
-            var templates = LGParser.Parse(text).MarkSource("text");
-            Templates.AddRange(templates);
+            Templates.AddRange(LGParser.Parse(text).MarkSource("text"));
 
             RunStaticCheck();
             return this;
