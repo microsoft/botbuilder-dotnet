@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -235,7 +237,7 @@ namespace Microsoft.Bot.Builder.Azure
             {
                 foreach (var doc in await query.ExecuteNextAsync<DocumentStoreItem>(cancellationToken).ConfigureAwait(false))
                 {
-                    var item = doc.Document.ToObject(typeof(object), _jsonSerializer);
+                    var item = Deserialize(doc.Document).ToObject(typeof(object), _jsonSerializer);
                     if (item is IStoreItem storeItem)
                     {
                         storeItem.ETag = doc.ETag;
@@ -285,7 +287,7 @@ namespace Microsoft.Bot.Builder.Azure
                 {
                     Id = CosmosDbKeyEscape.EscapeKey(change.Key),
                     ReadlId = change.Key,
-                    Document = json,
+                    Document = Serialize(json),
                 };
 
                 var etag = (change.Value as IStoreItem)?.ETag;
@@ -363,6 +365,30 @@ namespace Microsoft.Bot.Builder.Azure
             }
         }
 
+        private byte[] Serialize(object data)
+        {
+            using (var cmpStream = new MemoryStream())
+            using (var stream = new GZipStream(cmpStream, CompressionMode.Compress))
+            using (var streamWriter = new StreamWriter(stream))
+            {
+                var serializedJSon = JsonConvert.SerializeObject(data);
+                streamWriter.Write(serializedJSon);
+                streamWriter.Close();
+                stream.Close();
+                return cmpStream.ToArray();
+            }
+        }
+
+        private JObject Deserialize(byte[] bytes)
+        {
+            using (var stream = new MemoryStream(bytes))
+            using (var gz = new GZipStream(stream, CompressionMode.Decompress))
+            using (var streamReader = new StreamReader(gz))
+            {
+                return JsonConvert.DeserializeObject<JObject>(streamReader.ReadToEnd());
+            }
+        }
+
         /// <summary>
         /// Internal data structure for storing items in a CosmosDB Collection.
         /// </summary>
@@ -384,7 +410,7 @@ namespace Microsoft.Bot.Builder.Azure
             /// Gets or sets the persisted object.
             /// </summary>
             [JsonProperty("document")]
-            public JObject Document { get; set; }
+            public byte[] Document { get; set; }
 
             /// <summary>
             /// Gets or sets the ETag information for handling optimistic concurrency updates.
