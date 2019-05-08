@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var newTemplates = filePaths.Select(filePath =>
             {
                 var text = File.ReadAllText(filePath);
-                return ToTemplates(Parse(text), filePath);
+                return LGFileParser.Parse(text, filePath);
             }).SelectMany(x => x);
 
             var mergedTemplates = Templates.Concat(newTemplates).ToList();
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Template engine with the parsed content.</returns>
         public TemplateEngine AddText(string text)
         {
-            Templates.AddRange(ToTemplates(Parse(text), "text"));
+            Templates.AddRange(LGFileParser.Parse(text, "text"));
 
             RunStaticCheck();
             return this;
@@ -130,7 +130,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var fakeTemplateId = "__temp__";
             var wrappedStr = $"# {fakeTemplateId} \r\n - {inlineStr}";
 
-            var parsedTemplates = ToTemplates(Parse(wrappedStr), "inline");
+            var parsedTemplates = LGFileParser.Parse(wrappedStr, "inline");
 
             // merge the existing templates and this new template as a whole for evaluation
             var mergedTemplates = Templates.Concat(parsedTemplates).ToList();
@@ -139,45 +139,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var evaluator = new Evaluator(mergedTemplates, methodBinder);
             return evaluator.EvaluateTemplate(fakeTemplateId, scope);
-        }
-
-        /// <summary>
-        /// Parse text as a LG file using antlr.
-        /// </summary>
-        /// <param name="text">text to parse.</param>
-        /// <returns>ParseTree of the LG file.</returns>
-        private LGFileParser.FileContext Parse(string text)
-        {
-            if (string.IsNullOrEmpty(text))
-            {
-                return null;
-            }
-
-            var input = new AntlrInputStream(text);
-            var lexer = new LGFileLexer(input);
-            var tokens = new CommonTokenStream(lexer);
-            var parser = new LGFileParser(tokens);
-            parser.RemoveErrorListeners();
-            var listener = new ErrorListener();
-
-            parser.AddErrorListener(listener);
-            parser.BuildParseTree = true;
-
-            return parser.file();
-        }
-
-        /// <summary>
-        /// Convert a file parse tree to a list of LG templates.
-        /// </summary>
-        private List<LGTemplate> ToTemplates(LGFileParser.FileContext file, string source = "")
-        {
-            if (file == null)
-            {
-                return new List<LGTemplate>();
-            }
-
-            var templates = file.paragraph().Select(x => x.templateDefinition()).Where(x => x != null);
-            return templates.Select(t => new LGTemplate(t, source)).ToList();
         }
     }
 }

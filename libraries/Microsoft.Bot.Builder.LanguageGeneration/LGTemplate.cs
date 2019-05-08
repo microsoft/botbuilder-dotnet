@@ -25,6 +25,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public string Source;
 
         /// <summary>
+        /// Gets or sets text format of Body of this template. All content except Name and Parameters.
+        /// </summary>
+        /// <value>
+        /// Text format of Body of this template. All content except Name and Parameters.
+        /// </value>
+        public string Body { get; set; }
+
+        /// <summary>
         /// The parse tree of this template.
         /// </summary>
         public LGFileParser.TemplateDefinitionContext ParseTree;
@@ -41,7 +49,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             Name = ExtractName(parseTree);
             Paramters = ExtractParameters(parseTree);
+            Body = ExtractBody(parseTree);
         }
+
+        private string ExtractBody(LGFileParser.TemplateDefinitionContext parseTree) => parseTree.templateBody().GetText();
 
         private string ExtractName(LGFileParser.TemplateDefinitionContext parseTree)
         {
