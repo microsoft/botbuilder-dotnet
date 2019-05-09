@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,7 +12,6 @@ using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
@@ -362,9 +362,13 @@ namespace Microsoft.Bot.Builder.Azure
         private byte[] Serialize(object data)
         {
             using (var ms = new MemoryStream())
-            using (var writer = new BsonDataWriter(ms))
+            using (var gs = new GZipStream(ms, CompressionMode.Compress))
+            using (var sw = new StreamWriter(gs))
             {
-                _jsonSerializer.Serialize(writer, data);
+                var serializedJSon = JsonConvert.SerializeObject(data, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+                sw.Write(serializedJSon);
+                sw.Close();
+                gs.Close();
                 return ms.ToArray();
             }
         }
@@ -372,9 +376,10 @@ namespace Microsoft.Bot.Builder.Azure
         private object Deserialize(byte[] bytes)
         {
             using (var ms = new MemoryStream(bytes))
-            using (var reader = new BsonDataReader(ms))
+            using (var gs = new GZipStream(ms, CompressionMode.Decompress))
+            using (var sr = new StreamReader(gs))
             {
-                return _jsonSerializer.Deserialize(reader);
+                return JsonConvert.DeserializeObject(sr.ReadToEnd(), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
             }
         }
 
