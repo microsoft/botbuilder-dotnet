@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public static IList<LGTemplate> Parse(string text, string source = "")
         {
             var fileContentContext = GetFileContentContext(text);
-            return ToLGTemplates(fileContentContext);
+            return ToLGTemplates(fileContentContext, source);
         }
 
         private static LGFileParser.FileContext GetFileContentContext(string text)
