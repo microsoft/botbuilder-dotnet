@@ -35,21 +35,22 @@
               "events": [
                 "recognizedIntent"
               ],
-              "constraint": "@meat && ignore(!dialog.meat.last || count > dialog.meat.last)",
+              "constraint": "@meat && ignore(!turn.setmeat)",
               "steps": [
                 {
                   "$type": "Microsoft.SendActivity",
-                  "activity": "Set dialog.meat to {first(@meat)}"
+                  "activity": "Set dialog.meat to {first(@meat[0])}"
                 },
                 {
                   "$type": "Microsoft.SetProperty",
                   "property": "dialog.meat",
-                  "value": "first(@meat)"
+                  "value": "first(@meat[0])"
                 },
                 {
+                  "$comment": "This is a mechanism to keep the rule from running more than once per turn.",
                   "$type": "Microsoft.SetProperty",
-                  "property": "dialog.meat.last",
-                  "value": "count"
+                  "property": "turn.setmeat",
+                  "value": "true"
                 },
                 {
                   "$type": "Microsoft.EmitEvent",
@@ -63,21 +64,77 @@
               "events": [
                 "recognizedIntent"
               ],
-              "constraint": "@cheese && ignore(!dialog.cheese.last || count > dialog.cheese.last)",
+              "constraint": "@cheese && ignore(!turn.setcheese)",
               "steps": [
                 {
                   "$type": "Microsoft.SendActivity",
-                  "activity": "Set dialog.cheese to {first(@cheese)}"
+                  "activity": "Set dialog.cheese to {first(@cheese[0])}"
                 },
                 {
                   "$type": "Microsoft.SetProperty",
                   "property": "dialog.cheese",
-                  "value": "first(@cheese)"
+                  "value": "first(@cheese[0])"
                 },
                 {
                   "$type": "Microsoft.SetProperty",
-                  "property": "dialog.cheese.last",
-                  "value": "count"
+                  "property": "turn.setcheese",
+                  "value": "true"
+                },
+                {
+                  "$type": "Microsoft.EmitEvent",
+                  "eventName": "recognizedIntent",
+                  "bubbleEvent": true
+                }
+              ]
+            },
+            {
+              "$type": "Microsoft.EventRule",
+              "events": [
+                "recognizedIntent"
+              ],
+              "constraint": "@bread && ignore(!turn.setbread)",
+              "steps": [
+                {
+                  "$type": "Microsoft.SendActivity",
+                  "activity": "Set dialog.bread to {first(@bread[0])}"
+                },
+                {
+                  "$type": "Microsoft.SetProperty",
+                  "property": "dialog.bread",
+                  "value": "first(@bread[0])"
+                },
+                {
+                  "$type": "Microsoft.SetProperty",
+                  "property": "turn.setbread",
+                  "value": "true"
+                },
+                {
+                  "$type": "Microsoft.EmitEvent",
+                  "eventName": "recognizedIntent",
+                  "bubbleEvent": true
+                }
+              ]
+            },
+            {
+              "$type": "Microsoft.EventRule",
+              "events": [
+                "recognizedIntent"
+              ],
+              "constraint": "@topping && ignore(!turn.settopping)",
+              "steps": [
+                {
+                  "$type": "Microsoft.SendActivity",
+                  "activity": "Set dialog.topping to {foreach(@topping, list, first(list)}"
+                },
+                {
+                  "$type": "Microsoft.SetProperty",
+                  "property": "dialog.topping",
+                  "value": "first(@topping[0])"
+                },
+                {
+                  "$type": "Microsoft.SetProperty",
+                  "property": "turn.settopping",
+                  "value": "true"
                 },
                 {
                   "$type": "Microsoft.EmitEvent",
@@ -97,14 +154,50 @@
                 {
                   "$type": "Microsoft.SendActivity",
                   "activity": "[MeatAndBread]"
-                },
-                {
-                  "$type":"Microsoft.EndTurn",
                 }
               ]
             },
             {
-              "$comment": "Ideally these would be a generic template rule against any slot value.",
+              "$type": "Microsoft.EventRule",
+              "events": [
+                "recognizedIntent"
+              ],
+              "constraint": "dialog.meat && dialog.bread && !dialog.cheese && !dialog.topping",
+              "steps": [
+                {
+                  "$type": "Microsoft.SendActivity",
+                  "activity": "[CheeseAndToppingsWithMeatAndBread]"
+                }
+              ]
+            },
+            {
+              "$type": "Microsoft.EventRule",
+              "events": [
+                "recognizedIntent"
+              ],
+              "constraint": "dialog.meat && dialog.cheese && !dialog.bread && !dialog.topping",
+              "steps": [
+                {
+                  "$type": "Microsoft.SendActivity",
+                  "activity": "[BreadAndToppingsWithMeatAndCheese]"
+                }
+              ]
+            },
+            {
+              "$type": "Microsoft.EventRule",
+              "events": [
+                "recognizedIntent"
+              ],
+              "constraint": "!dialog.meat && dialog.bread",
+              "steps": [
+                {
+                  "$type": "Microsoft.SendActivity",
+                  "activity": "[MeatWithBread]"
+                }
+              ]
+            },
+            {
+              "$comment": "*** Ideally these would be a generic template rule against any slot value. ***",
               "$type": "Microsoft.EventRule",
               "events": [
                 "recognizedIntent"
@@ -116,7 +209,7 @@
                   "activity": "[Meat]"
                 },
                 {
-                  "$type":"Microsoft.EndTurn",
+                  "$type": "Microsoft.EndTurn"
                 }
               ]
             },
@@ -130,9 +223,6 @@
                 {
                   "$type": "Microsoft.SendActivity",
                   "activity": "[Cheese]"
-                },
-                {
-                  "$type":"Microsoft.EndTurn",
                 }
               ]
             },
@@ -146,9 +236,6 @@
                 {
                   "$type": "Microsoft.SendActivity",
                   "activity": "[Bread]"
-                },
-                {
-                  "$type":"Microsoft.EndTurn",
                 }
               ]
             },
@@ -162,9 +249,6 @@
                 {
                   "$type": "Microsoft.SendActivity",
                   "activity": "[Toppings]"
-                },
-                {
-                  "$type":"Microsoft.EndTurn",
                 }
               ]
             }
