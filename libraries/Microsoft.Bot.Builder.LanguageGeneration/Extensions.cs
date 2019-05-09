@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="file">LGFile context from antlr parser.</param>
         /// <param name="source">text source.</param>
         /// <returns>lg template list.</returns>
-        public static IList<LGTemplate> ToTemplates(this LGFileParser.FileContext file, string source = "")
+        public static IList<LGTemplate> ToLGTemplates(this LGFileParser.FileContext file, string source = "")
         {
             if (file == null)
             {
