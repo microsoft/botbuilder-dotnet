@@ -5,7 +5,7 @@ using Antlr4.Runtime;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
-    public class AntlrParser
+    public partial class LGFileParser
     {
         /// <summary>
         /// Get LG template list from input string.
@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return fileContentContext.ToLGTemplates(source);
         }
 
-        private static LGFileParser.FileContext GetFileContentContext(string text)
+        private static FileContext GetFileContentContext(string text)
         {
             if (string.IsNullOrEmpty(text))
             {
