@@ -2,12 +2,14 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
     /// Tracking information for a dialog on the stack.
     /// </summary>
+    [DebuggerDisplay("{Id}")]
     public class DialogInstance
     {
         /// <summary>

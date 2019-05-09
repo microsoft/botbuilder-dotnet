@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -18,7 +19,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
     /// <summary>
     /// Defines basic Rule contract
     /// </summary>
-    public abstract class Rule : IRule
+    [DebuggerDisplay("{GetIdentity()}")]
+    public abstract class Rule : IRule, IItemIdentity
     {
         private Expression constraint;
 
@@ -155,6 +157,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
                     After = new Source.Point() { LineIndex = lineNumber + 1, CharIndex = 0 },
                 });
             }
+        }
+
+        public virtual string GetIdentity()
+        {
+            return $"{this.GetType().Name}()";
         }
     }
 }

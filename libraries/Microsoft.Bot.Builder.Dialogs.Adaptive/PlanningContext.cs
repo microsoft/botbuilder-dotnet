@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -369,11 +370,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         }
     }
 
-    public class AdaptiveEvents
+    public class AdaptiveEvents : DialogContext.DialogEvents
     {
-        public const string BeginDialog = "beginDialog";
-        public const string ConsultDialog = "consultDialog";
-        public const string CancelDialog = "cancelDialog";
         public const string ActivityReceived = "activityReceived";
         public const string RecognizedIntent = "recognizedIntent";
         public const string UnknownIntent = "unknownIntent";
@@ -405,6 +403,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public object Result { get; set; }
     }
 
+    [DebuggerDisplay("{DialogId}")]
     public class PlanStepState : DialogState
     {
         public PlanStepState()
@@ -424,6 +423,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public object Options { get; set; }
     }
 
+    [DebuggerDisplay("{Title}")]
     public class PlanState
     {
         [JsonProperty(PropertyName = "title")]
@@ -443,6 +443,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         ReplacePlan
     }
 
+    [DebuggerDisplay("{ChangeType}:{Desire}")]
     public class PlanChangeList
     {
         [JsonProperty(PropertyName = "changeType")]

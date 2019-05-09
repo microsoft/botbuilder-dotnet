@@ -21,9 +21,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
     {
         private QnAMaker qnamaker;
 
-        public QnAMakerDialog(string dialogId = null)
+        public QnAMakerDialog(string dialogId = null, QnAMaker qnamaker=null)
             : base(dialogId)
         {
+            this.qnamaker = qnamaker;
         }
 
         [JsonProperty("endpoint")]
@@ -47,7 +48,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 if (topResult != null && topResult.Score > 0)
                 {
                     var template = new ActivityTemplate(topResult.Answer);
-                    var activity = await template.BindToData(dc.Context, dc.State, (property, data) => ObjectPath.GetValue<object>(data, property)).ConfigureAwait(false);
+                    var activity = await template.BindToData(dc.Context, dc.State).ConfigureAwait(false);
                     var response = await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
                     return await dc.EndDialogAsync(true, cancellationToken).ConfigureAwait(false);
                 }

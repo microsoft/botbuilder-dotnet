@@ -1,4 +1,7 @@
-﻿# adaptiveCardTemplate
+﻿# externalAdaptiveCardTemplate
+- ```[Attachment=lg/adaptiveCard.json adaptivecard]```
+
+# adaptiveCardTemplate
 - ```
 [AdaptiveCard
 {

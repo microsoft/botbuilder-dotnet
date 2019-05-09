@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using static Microsoft.Bot.Builder.Dialogs.DialogContext;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
@@ -22,10 +23,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private readonly IDataModel dataModel;
         private readonly Source.IRegistry registry;
         private readonly IBreakpoints breakpoints;
+        private readonly IEvents events;
         private readonly Action terminate;
 
         // lifetime scoped to IMiddleware.OnTurnAsync
-        private readonly ConcurrentDictionary<string, ThreadModel> threadByContext = new ConcurrentDictionary<string, ThreadModel>();
+        private readonly ConcurrentDictionary<string, ThreadModel> threadByTurnId = new ConcurrentDictionary<string, ThreadModel>();
         private readonly Identifier<ThreadModel> threads = new Identifier<ThreadModel>();
 
         private sealed class ThreadModel
@@ -105,9 +107,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         private readonly Task task;
 
-        public DebugAdapter(int port, Source.IRegistry registry, IBreakpoints breakpoints, Action terminate, ICodeModel codeModel = null, IDataModel dataModel = null, ILogger logger = null, ICoercion coercion = null)
+        public DebugAdapter(int port, Source.IRegistry registry, IBreakpoints breakpoints, Action terminate, IEvents events = null, ICodeModel codeModel = null, IDataModel dataModel = null, ILogger logger = null, ICoercion coercion = null)
             : base(logger)
         {
+            this.events = events ?? new Events<DialogEvents>();
             this.codeModel = codeModel ?? new CodeModel();
             this.dataModel = dataModel ?? new DataModel(coercion ?? new Coercion());
             this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
@@ -130,7 +133,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
             var thread = new ThreadModel(turnContext, codeModel);
             var threadId = threads.Add(thread);
-            threadByContext.TryAdd(getThreadId(turnContext), thread);
+            threadByTurnId.TryAdd(TurnIdFor(turnContext), thread);
             try
             {
                 thread.Run.Post(Phase.Started);
@@ -145,32 +148,48 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 thread.Run.Post(Phase.Exited);
                 await UpdateThreadPhaseAsync(thread, null, cancellationToken).ConfigureAwait(false);
 
-                threadByContext.TryRemove(getThreadId(turnContext), out var ignored);
+                threadByTurnId.TryRemove(TurnIdFor(turnContext), out var ignored);
                 threads.Remove(thread);
             }
         }
 
-        private static string getThreadId(ITurnContext turnContext)
+        private static string TurnIdFor(ITurnContext turnContext)
         {
             return $"{turnContext.Activity.ChannelId}-{turnContext.Activity.Id}";
+        }
+
+        static public string Ellipsis(string text, int length)
+        {
+            if (text == null)
+                return String.Empty;
+
+            if (text.Length <= length) return text;
+            int pos = text.IndexOf(" ", length);
+            if (pos >= 0)
+                return text.Substring(0, pos) + "...";
+            return text;
         }
 
         async Task DebugSupport.IDebugger.StepAsync(DialogContext context, object item, string more, CancellationToken cancellationToken)
         {
             try
             {
-                await OutputAsync($"Step: {codeModel.NameFor(item)} {more}", item, cancellationToken).ConfigureAwait(false);
+                var turnText = context.Context.Activity.Text?.Trim() ?? String.Empty;
+                if (turnText.Length == 0)
+                    turnText = context.Context.Activity.Type;
+                var threadText = $"'{Ellipsis(turnText, 18)}'";
+                await OutputAsync($"{threadText} ==> {more?.PadRight(16) ?? ""} ==> {codeModel.NameFor(item)} ", item, cancellationToken).ConfigureAwait(false);
 
                 await UpdateBreakpointsAsync(cancellationToken).ConfigureAwait(false);
 
-                if (threadByContext.TryGetValue(getThreadId(context.Context), out ThreadModel thread))
+                if (threadByTurnId.TryGetValue(TurnIdFor(context.Context), out ThreadModel thread))
                 {
                     thread.LastContext = context;
                     thread.LastItem = item;
                     thread.LastMore = more;
 
                     var run = thread.Run;
-                    if (breakpoints.IsBreakPoint(item))
+                    if (breakpoints.IsBreakPoint(item) && events[more])
                     {
                         run.Post(Phase.Breakpoint);
                     }
@@ -182,11 +201,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                         // TODO: remove synchronous waits
                         UpdateThreadPhaseAsync(thread, item, cancellationToken).GetAwaiter().GetResult();
 
+                        // while the stopped condition is true, atomically release the mutex
                         while (!(run.Phase == Phase.Started || run.Phase == Phase.Continue || run.Phase == Phase.Next))
                         {
                             Monitor.Wait(run.Gate);
                         }
 
+                        // started is just use the signal to Visual Studio Code that there is a new thread
                         if (run.Phase == Phase.Started)
                         {
                             run.Phase = Phase.Continue;
@@ -195,6 +216,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                         // TODO: remove synchronous waits
                         UpdateThreadPhaseAsync(thread, item, cancellationToken).GetAwaiter().GetResult();
 
+                        // allow one step to progress since next was requested
                         if (run.Phase == Phase.Next)
                         {
                             run.Phase = Phase.Step;
@@ -241,8 +263,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
 
             var phase = run.Phase;
-            var suffix = item != null ? $" at {codeModel.NameFor(item)}" : string.Empty;
-            var description = $"'{thread.Name}' is {phase}{suffix}";
+            var suffix = item != null ? $" ==> {codeModel.NameFor(item)}" : string.Empty;
+            var threadText = $"{Ellipsis(thread?.Name, 18)}";
+            if (threadText.Length <= 2)
+                threadText = thread.TurnContext.Activity.Type;
+            var description = $"{threadText} ==> {phase.ToString().PadRight(16)}{suffix}";
 
             await OutputAsync(description, item, cancellationToken).ConfigureAwait(false);
 
@@ -272,7 +297,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     threadId,
                     text = description,
                     preserveFocusHint = false,
-                    allThreadsStopped = true,
+                    allThreadsStopped = false,
                 };
 
                 await SendAsync(Protocol.Event.From(NextSeq, "stopped", body), cancellationToken).ConfigureAwait(false);
@@ -304,19 +329,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private int sequence = 0;
         private int NextSeq => Interlocked.Increment(ref sequence);
 
+        private Protocol.Capabilities MakeCapabilities()
+        {
+            // TODO: there is a "capabilities" event for dynamic updates, but exceptionBreakpointFilters does not seem to be dynamically updateable
+            return new Protocol.Capabilities()
+            {
+                supportsConfigurationDoneRequest = true,
+                supportsSetVariable = true,
+                supportsEvaluateForHovers = true,
+                supportsFunctionBreakpoints = true,
+                exceptionBreakpointFilters = this.events.Filters,
+                supportTerminateDebuggee = this.terminate != null,
+                supportsTerminateRequest = this.terminate != null,
+            };
+        }
+
         private async Task<Protocol.Message> DispatchAsync(Protocol.Message message, CancellationToken cancellationToken)
         {
             if (message is Protocol.Request<Protocol.Initialize> initialize)
             {
-                var body = new Protocol.Capabilities()
-                {
-                    supportsConfigurationDoneRequest = true,
-                    supportsSetVariable = true,
-                    supportsEvaluateForHovers = true,
-                    supportsFunctionBreakpoints = true,
-                    supportTerminateDebuggee = this.terminate != null,
-                    supportsTerminateRequest = this.terminate != null,
-                };
+                var body = MakeCapabilities();
                 var response = Protocol.Response.From(NextSeq, initialize, body);
                 await SendAsync(response, cancellationToken).ConfigureAwait(false);
                 return Protocol.Event.From(NextSeq, "initialized", new { });
@@ -363,6 +395,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                 return Protocol.Response.From(NextSeq, setFunctionBreakpoints, new { breakpoints });
             }
+            else if (message is Protocol.Request<Protocol.SetExceptionBreakpoints> setExceptionBreakpoints)
+            {
+                var arguments = setExceptionBreakpoints.arguments;
+                this.events.Reset(arguments.filters);
+
+                return Protocol.Response.From(NextSeq, setExceptionBreakpoints, new { });
+            }
             else if (message is Protocol.Request<Protocol.Threads> threads)
             {
                 var body = new
@@ -389,11 +428,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                     if (this.registry.TryGetValue(frame.Item, out var range))
                     {
-                        stackFrame.source = new Protocol.Source(range.Path);
-                        stackFrame.line = range.Start.LineIndex;
-                        stackFrame.column = range.Start.CharIndex;
-                        stackFrame.endLine = range.After.LineIndex;
-                        stackFrame.endColumn = range.After.CharIndex;
+                        SourceMap.Assign(stackFrame, range);
                     }
 
                     stackFrames.Add(stackFrame);

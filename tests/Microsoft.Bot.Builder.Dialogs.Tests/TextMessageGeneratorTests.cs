@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
     public class MockLanguageGenator : ILanguageGenerator
     {
-        public Task<string> Generate(string locale, string inlineTemplate, string id, object data, string[] types, string[] tags, Func<string, object, object> valueBinder)
+        public Task<string> Generate(string locale, string inlineTemplate, string id, object data, string[] types, string[] tags)
         {
             if (!String.IsNullOrEmpty(inlineTemplate))
             {
@@ -87,6 +87,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("herocard", card.Subtitle, "card subtitle should be data bound ");
             Assert.AreEqual("This is some text describing the card, it's cool because it's cool", card.Text, "card text should be set");
             Assert.AreEqual("https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg", card.Images[0].Url, "image should be set");
+            Assert.AreEqual("https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg", card.Images[1].Url, "image should be set");
+            Assert.AreEqual(3, card.Buttons.Count, "card buttons should be set");
+            for (int i = 0; i <= 2; i++)
+                Assert.AreEqual($"Option {i + 1}", card.Buttons[i].Title, "card buttons should be set");
+            // TODO add all of the other property types
+        }
+
+        [TestMethod]
+        public async Task TestThmbnailCard()
+        {
+            var mg = GetGenerator();
+            dynamic data = new JObject();
+            data.type = "thumbnailcard";
+            IMessageActivity activity = await mg.Generate("", "[ThumbnailCardTemplate]", id: null, data: data, types: null, tags: null);
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Text));
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Speak));
+            Assert.AreEqual(1, activity.Attachments.Count);
+            Assert.AreEqual(ThumbnailCard.ContentType, activity.Attachments[0].ContentType);
+            var card = ((JObject)activity.Attachments[0].Content).ToObject<ThumbnailCard>();
+            Assert.IsNotNull(card, "should have herocard");
+            Assert.AreEqual("Cheese gromit!", card.Title, "card title should be set");
+            Assert.AreEqual("thumbnailcard", card.Subtitle, "card subtitle should be data bound ");
+            Assert.AreEqual("This is some text describing the card, it's cool because it's cool", card.Text, "card text should be set");
+            Assert.AreEqual("https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg", card.Images[0].Url, "image should be set");
+            Assert.AreEqual("https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg", card.Images[1].Url, "image should be set");
             Assert.AreEqual(3, card.Buttons.Count, "card buttons should be set");
             for (int i = 0; i <= 2; i++)
                 Assert.AreEqual($"Option {i + 1}", card.Buttons[i].Title, "card buttons should be set");
@@ -103,7 +129,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     text=This is some text describing the card, it's cool because it's cool 
     images=https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg 
     buttons=Option 1| Option 2| Option 3]";
-            var activity = TextMessageActivityGenerator.CreateActivityFromText(text);
+            var botResourceManager = new ResourceExplorer();
+            var lg = new LGLanguageGenerator(botResourceManager);
+            var gen = new TextMessageActivityGenerator(lg);
+            var activity = await gen.CreateActivityFromText(text);
 
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
             Assert.IsTrue(string.IsNullOrEmpty(activity.Text));
@@ -149,6 +178,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
 
         [TestMethod]
+        public async Task TestLocalImageAttachment()
+        {
+            var mg = GetGenerator();
+
+            IMessageActivity activity = await mg.Generate("", "[ImageAttachmentLocal]", id: null, data: null, types: null, tags: null);
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Text));
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Speak));
+            Assert.AreEqual(1, activity.Attachments.Count);
+            Assert.AreEqual("image/jpg", activity.Attachments[0].ContentType);
+            Assert.IsTrue(activity.Attachments[0].ContentUrl.StartsWith("data:"));
+            var content = activity.Attachments[0].ContentUrl.Substring(activity.Attachments[0].ContentUrl.IndexOf("base64, ") + 8);
+            var bytes = Convert.FromBase64String(content);
+            Assert.AreEqual(237449, bytes.Length);
+        }
+
+
+        [TestMethod]
         public async Task TestAdaptiveCard()
         {
             var mg = GetGenerator();
@@ -163,6 +210,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("test", (string)((dynamic)activity.Attachments[0].Content).body[0].text);
         }
 
+        [TestMethod]
+        public async Task TextExternalAdaptiveCard()
+        {
+            var mg = GetGenerator();
+            dynamic data = new JObject();
+            data.adaptiveCardTitle = "test";
+            IMessageActivity activity = await mg.Generate("", "[externalAdaptiveCardTemplate]", id: null, data: data, types: null, tags: null);
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Text));
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Speak));
+            Assert.AreEqual(1, activity.Attachments.Count);
+            Assert.AreEqual("application/vnd.microsoft.card.adaptive", activity.Attachments[0].ContentType);
+            Assert.AreEqual("test", (string)((dynamic)activity.Attachments[0].Content).body[0].text);
+        }
 
         [TestMethod]
         public async Task TestMultipleAttachments()

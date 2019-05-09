@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         private string GetExampleFilePath(string fileName)
         {
-            return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "Examples" + Path.DirectorySeparatorChar + fileName;
+            return Path.Combine(AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")), "Examples" , fileName);
         }
 
 
@@ -148,8 +148,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestListWithOnlyOneElement()
         {
             var engine = TemplateEngine.FromFiles(GetExampleFilePath("8.lg"));
-            var evaled = engine.EvaluateTemplate("RecentTasks", new { recentTasks = new[] { "Task1" } });
-            Assert.AreEqual(evaled, "Your most recent task is Task1. You can let me know if you want to add or complete a task.");
+            var evaled = engine.EvaluateTemplate("ShowTasks", new { recentTasks = new[] { "Task1" } });
+            Assert.AreEqual("Your most recent task is Task1. You can let me know if you want to add or complete a task.", evaled);
         }
 
         [TestMethod]
@@ -250,7 +250,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestAnalyzer()
         {
-            var engine = TemplateEngine.FromFiles(GetExampleFilePath("Analyzer.lg"));
+            var engine = TemplateEngine.FromFiles(GetExampleFilePath("analyzer.lg"));
             var evaled1 = engine.AnalyzeTemplate("orderReadOut");
             var evaled1Options = new List<string> { "orderType", "userName", "base", "topping", "bread", "meat" };
             Assert.IsTrue(evaled1.All(evaled1Options.Contains) && evaled1.Count == evaled1Options.Count);

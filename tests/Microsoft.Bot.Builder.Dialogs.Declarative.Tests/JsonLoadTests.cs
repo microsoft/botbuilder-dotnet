@@ -22,14 +22,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
     [TestClass]
     public class JsonLoadTests
     {
-        private readonly string samplesDirectory = @"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Samples\";
+        private static string getOsPath(string path) => Path.Combine(path.TrimEnd('\\').Split('\\'));
+        
+        private readonly string samplesDirectory = getOsPath(@"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Samples\");
+
+        private static ResourceExplorer resourceExplorer;
 
         [ClassInitialize]
-        public static void ClassInitilize(TestContext context)
+        public static void ClassInitialize(TestContext context)
         {
             TypeFactory.Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
             TypeFactory.RegisterAdaptiveTypes();
             TypeFactory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
+            string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, getOsPath($@"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj")));
+            resourceExplorer = ResourceExplorer.LoadProject(projPath);
+        }
+
+        [ClassCleanup]
+        public static void ClassCleanup()
+        {
+            resourceExplorer.Dispose();
         }
 
         public TestContext TestContext { get; set; }
@@ -275,8 +287,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         private TestFlow BuildTestFlow(string resourceName, bool sendTrace = false)
         {
             TypeFactory.Configuration = new ConfigurationBuilder().Build();
-            string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, $@"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj"));
-            var resourceExplorer = ResourceExplorer.LoadProject(projPath);
             var lg = new LGLanguageGenerator(resourceExplorer);
             var storage = new MemoryStorage();
             var convoState = new ConversationState(storage);

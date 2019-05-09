@@ -4,6 +4,18 @@
         title=Cheese gromit!
         subtitle=@{type}
         text=This is some text describing the card, it's cool because it's cool
+        image=https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg
+        images=https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg
+        buttons=Option 1| Option 2| Option 3]
+    ```
+
+# ThumbnailCardTemplate
+-   ```
+    [ThumbnailCard 
+        title=Cheese gromit!
+        subtitle=@{type}
+        text=This is some text describing the card, it's cool because it's cool
+        image=https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg
         images=https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg
         buttons=Option 1| Option 2| Option 3]
     ```
@@ -15,6 +27,8 @@
         Subtitle=look at it animate 
         autostart=true
         autoloop=true
+        Image=https://docs.microsoft.com/en-us/bot-framework/media/how-it-works/architecture-resize.png
+        Image=https://docs.microsoft.com/en-us/bot-framework/media/how-it-works/architecture-resize.png
         Image=https://docs.microsoft.com/en-us/bot-framework/media/how-it-works/architecture-resize.png
         Media=http://oi42.tinypic.com/1rchlx.jpg]
     ```
@@ -41,4 +55,8 @@
     [Attachment=http://4.bp.blogspot.com/--cFa6t-x4qY/UAqEgUvPd2I/AAAAAAAANIg/pMLE080Zjh4/s1600/turtle.jpg]
     ```
 
+# ImageAttachmentLocal
+-   ```
+    [attachment=lg/turtle.jpg image/jpg]
+    ```
 

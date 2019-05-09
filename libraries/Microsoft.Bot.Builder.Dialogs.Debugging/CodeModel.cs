@@ -18,8 +18,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             var type = item.GetType().Name;
             if (item is IDialog dialog)
             {
-                var name = dialog.Id;
-                return name.StartsWith(type) ? name : $"{type}:{name}";
+                return dialog.Id;
+            }
+
+            if (item is IItemIdentity identity)
+            {
+                return identity.GetIdentity();
             }
 
             return type;
@@ -94,6 +98,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         public override string ToString() => Name;
 
-        object ICodePoint.Evaluate(string expression) => DialogContext.State.GetValue<JToken>(expression);
+        object ICodePoint.Evaluate(string expression) => DialogContext.State.GetValue<object>(expression);
     }
 }

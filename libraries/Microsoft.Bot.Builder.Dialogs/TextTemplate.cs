@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -7,6 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Defines an text Template where the template expression is local aka "inline".
     /// </summary>
+    [DebuggerDisplay("{Template}")]
     public class TextTemplate : ITextTemplate
     {
         // Fixed text constructor for inline template
@@ -20,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         public string Template { get; set; }
 
-        public async Task<string> BindToData(ITurnContext context, object data, Func<string, object, object> binder = null)
+        public async Task<string> BindToData(ITurnContext context, object data)
         {
             if (string.IsNullOrEmpty(this.Template))
             {
@@ -36,8 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     id: null,
                     data: data,
                     tags: null,
-                    types: null,
-                    valueBinder: binder).ConfigureAwait(false);
+                    types: null).ConfigureAwait(false);
                 return result;
             }
 

@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             if (!TemplateMap.ContainsKey(templateName))
             {
-                throw new Exception($"No such template: {templateName}");
+                throw new Exception($"[{templateName}] not found");
             }
 
             if (evaluationTargetStack.Any(e => e.TemplateName == templateName))
@@ -117,6 +117,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public object ConstructScope(string templateName, List<object> args)
         {
             var paramters = TemplateMap[templateName].Paramters;
+
+            if (args.Count == 0)
+            {
+                // no args to construct, inherit from current scope
+                return CurrentTarget().Scope;
+            }
 
             if (args.Count == 1 && paramters.Count == 0)
             {

@@ -3,15 +3,18 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
+using static Microsoft.Bot.Builder.Dialogs.Debugging.DebugSupport;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
@@ -357,7 +360,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        protected override string OnComputeId() => $"AdaptiveDialog[{this.BindingPath()}]";
+        protected override string OnComputeId()
+        {
+            if (DebugSupport.SourceRegistry.TryGetValue(this, out var range))
+            {
+                return $"AdaptiveDialog({Path.GetFileName(range.Path)}:{range.Start.LineIndex})";
+            }
+            return $"AdaptiveDialog[{this.BindingPath()}]";
+        }
 
         public async Task<BotTurnResult> OnTurnAsync(ITurnContext context, StoredBotState storedState, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -608,7 +618,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var context = planning.Context;
             if (Recognizer != null)
             {
-                await planning.DebuggerStepAsync(Recognizer, cancellationToken).ConfigureAwait(false);
+                await planning.DebuggerStepAsync(Recognizer, DialogContext.DialogEvents.OnRecognize, cancellationToken).ConfigureAwait(false);
                 var result = await Recognizer.RecognizeAsync(context, cancellationToken).ConfigureAwait(false);
                 // only allow one intent 
                 var topIntent = result.GetTopScoringIntent();
