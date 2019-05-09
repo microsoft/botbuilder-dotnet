@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +11,7 @@ using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
@@ -237,7 +237,7 @@ namespace Microsoft.Bot.Builder.Azure
             {
                 foreach (var doc in await query.ExecuteNextAsync<DocumentStoreItem>(cancellationToken).ConfigureAwait(false))
                 {
-                    var item = Deserialize(doc.Document).ToObject(typeof(object), _jsonSerializer);
+                    var item = Deserialize(doc.Document);
                     if (item is IStoreItem storeItem)
                     {
                         storeItem.ETag = doc.ETag;
@@ -277,17 +277,11 @@ namespace Microsoft.Bot.Builder.Azure
 
             foreach (var change in changes)
             {
-                var json = JObject.FromObject(change.Value, _jsonSerializer);
-
-                // Remove etag from JSON object that was copied from IStoreItem.
-                // The ETag information is updated as an _etag attribute in the document metadata.
-                json.Remove("eTag");
-
                 var documentChange = new DocumentStoreItem
                 {
                     Id = CosmosDbKeyEscape.EscapeKey(change.Key),
                     ReadlId = change.Key,
-                    Document = Serialize(json),
+                    Document = Serialize(change.Value),
                 };
 
                 var etag = (change.Value as IStoreItem)?.ETag;
@@ -367,25 +361,20 @@ namespace Microsoft.Bot.Builder.Azure
 
         private byte[] Serialize(object data)
         {
-            using (var cmpStream = new MemoryStream())
-            using (var stream = new GZipStream(cmpStream, CompressionMode.Compress))
-            using (var streamWriter = new StreamWriter(stream))
+            using (var ms = new MemoryStream())
+            using (var writer = new BsonDataWriter(ms))
             {
-                var serializedJSon = JsonConvert.SerializeObject(data);
-                streamWriter.Write(serializedJSon);
-                streamWriter.Close();
-                stream.Close();
-                return cmpStream.ToArray();
+                _jsonSerializer.Serialize(writer, data);
+                return ms.ToArray();
             }
         }
 
-        private JObject Deserialize(byte[] bytes)
+        private object Deserialize(byte[] bytes)
         {
-            using (var stream = new MemoryStream(bytes))
-            using (var gz = new GZipStream(stream, CompressionMode.Decompress))
-            using (var streamReader = new StreamReader(gz))
+            using (var ms = new MemoryStream(bytes))
+            using (var reader = new BsonDataReader(ms))
             {
-                return JsonConvert.DeserializeObject<JObject>(streamReader.ReadToEnd());
+                return _jsonSerializer.Deserialize(reader);
             }
         }
 
