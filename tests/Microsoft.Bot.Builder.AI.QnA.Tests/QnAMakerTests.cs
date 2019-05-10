@@ -1259,7 +1259,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             }
         }
 
-        public class CapturedRequest
+        private class CapturedRequest
         {
             public string[] Questions { get; set; }
 
