@@ -8,7 +8,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// <summary>
     /// Defines options for the QnA Maker knowledge base.
     /// </summary>
-    [Serializable]
     public class QnAMakerOptions
     {
         public QnAMakerOptions()
