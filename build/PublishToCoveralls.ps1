@@ -4,7 +4,8 @@
 #
 Param(
     [string]$coverallsToken,
-    [string]$pathToCoverageFiles
+    [string]$pathToCoverageFiles,
+    [string]$serviceName = 'Azure DevOps'
 )
 
 Write-Host Install tools
@@ -37,7 +38,8 @@ $uploadArgs = @(
     "--commitId ""$env:Build_SourceVersion""",
     "--commitAuthor ""$env:Build_RequestedFor""",
     "--commitEmail ""$env:Build_RequestedForEmail""",
-    "--commitMessage ""$env:Build_SourceVersionMessage"""
+    "--commitMessage ""$env:Build_SourceVersionMessage""",
+    "--serviceName ""$serviceName"""
 );
 if (Test-Path env:System_PullRequest_SourceBranch)
 {
