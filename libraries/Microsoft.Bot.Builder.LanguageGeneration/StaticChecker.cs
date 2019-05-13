@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Microsoft.Bot.Builder.Expressions.Parser;
@@ -85,7 +86,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (context.templateBody() == null)
             {
-                result.Add(new ReportEntry($"There is no template body in template {templateName}"));
+                result.Add(new ReportEntry($"There is no template body in template {templateName}", context: context.templateNameLine()));
             }
             else
             {
@@ -98,14 +99,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 if (parameters.CLOSE_PARENTHESIS() == null
                        || parameters.OPEN_PARENTHESIS() == null)
                 {
-                    result.Add(new ReportEntry($"parameters: {parameters.GetText()} format error"));
+                    result.Add(new ReportEntry($"parameters: {parameters.GetText()} format error", context: context.templateNameLine()));
                 }
 
                 var invalidSeperateCharacters = parameters.INVALID_SEPERATE_CHAR();
                 if (invalidSeperateCharacters != null
                     && invalidSeperateCharacters.Length > 0)
                 {
-                    result.Add(new ReportEntry("Parameters for templates must be separated by comma."));
+                    result.Add(new ReportEntry("Parameters for templates must be separated by comma.", context: context.templateNameLine()));
                 }
             }
 
@@ -143,27 +144,27 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 if (node.GetText().Count(u => u == ' ') > 1)
                 {
-                    result.Add(new ReportEntry($"At most 1 whitespace is allowed between IF/ELSEIF/ELSE and :. expression: '{context.conditionalTemplateBody().GetText()}", ReportEntryType.ERROR));
+                    result.Add(new ReportEntry($"At most 1 whitespace is allowed between IF/ELSEIF/ELSE and :. expression: '{context.conditionalTemplateBody().GetText()}", ReportEntryType.ERROR, conditionNode));
                 }
 
                 if (idx == 0 && !ifExpr)
                 {
-                    result.Add(new ReportEntry($"condition is not start with if: '{context.conditionalTemplateBody().GetText()}'", ReportEntryType.WARN));
+                    result.Add(new ReportEntry($"condition is not start with if: '{context.conditionalTemplateBody().GetText()}'", ReportEntryType.WARN, conditionNode));
                 }
 
                 if (idx > 0 && ifExpr)
                 {
-                    result.Add(new ReportEntry($"condition can't have more than one if: '{context.conditionalTemplateBody().GetText()}'"));
+                    result.Add(new ReportEntry($"condition can't have more than one if: '{context.conditionalTemplateBody().GetText()}'", context: conditionNode));
                 }
 
                 if (idx == ifRules.Length - 1 && !elseExpr)
                 {
-                    result.Add(new ReportEntry($"condition is not end with else: '{context.conditionalTemplateBody().GetText()}'", ReportEntryType.WARN));
+                    result.Add(new ReportEntry($"condition is not end with else: '{context.conditionalTemplateBody().GetText()}'", ReportEntryType.WARN, conditionNode));
                 }
 
                 if (idx > 0 && idx < ifRules.Length - 1 && !elseIfExpr)
                 {
-                    result.Add(new ReportEntry($"only elseif is allowed in middle of condition: '{context.conditionalTemplateBody().GetText()}'"));
+                    result.Add(new ReportEntry($"only elseif is allowed in middle of condition: '{context.conditionalTemplateBody().GetText()}'", context: conditionNode));
                 }
 
                 // check rule should should with one and only expression
@@ -171,18 +172,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     if (ifRules[idx].ifCondition().EXPRESSION().Length != 1)
                     {
-                        result.Add(new ReportEntry($"if and elseif should followed by one valid expression: '{ifRules[idx].GetText()}'"));
+                        result.Add(new ReportEntry($"if and elseif should followed by one valid expression: '{ifRules[idx].GetText()}'", context: conditionNode));
                     }
                     else
                     {
-                        result.AddRange(CheckExpression(ifRules[idx].ifCondition().EXPRESSION(0).GetText()));
+                        result.AddRange(CheckExpression(ifRules[idx].ifCondition().EXPRESSION(0).GetText(), conditionNode));
                     }
                 }
                 else
                 {
                     if (ifRules[idx].ifCondition().EXPRESSION().Length != 0)
                     {
-                        result.Add(new ReportEntry($"else should not followed by any expression: '{ifRules[idx].GetText()}'"));
+                        result.Add(new ReportEntry($"else should not followed by any expression: '{ifRules[idx].GetText()}'", context: conditionNode));
                     }
                 }
 
@@ -192,7 +193,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 else
                 {
-                    result.Add(new ReportEntry($"no normal template body in condition block: '{ifRules[idx].GetText()}'"));
+                    result.Add(new ReportEntry($"no normal template body in condition block: '{ifRules[idx].GetText()}'", context: conditionNode));
                 }
             }
 
@@ -208,19 +209,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 switch (node.Symbol.Type)
                 {
                     case LGFileParser.INVALID_ESCAPE:
-                        result.Add(new ReportEntry($"escape character {node.GetText()} is invalid"));
+                        result.Add(new ReportEntry($"escape character {node.GetText()} is invalid", context: context));
                         break;
                     case LGFileParser.TEMPLATE_REF:
-                        result.AddRange(CheckTemplateRef(node.GetText()));
+                        result.AddRange(CheckTemplateRef(node.GetText(), context));
                         break;
                     case LGFileParser.EXPRESSION:
-                        result.AddRange(CheckExpression(node.GetText()));
+                        result.AddRange(CheckExpression(node.GetText(), context));
                         break;
                     case LGFileLexer.MULTI_LINE_TEXT:
-                        result.AddRange(CheckMultiLineText(node.GetText()));
+                        result.AddRange(CheckMultiLineText(node.GetText(), context));
                         break;
                     case LGFileLexer.TEXT:
-                        result.AddRange(CheckText(node.GetText()));
+                        result.AddRange(CheckText(node.GetText(), context));
                         break;
                     default:
                         break;
@@ -230,7 +231,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        public List<ReportEntry> CheckTemplateRef(string exp)
+        public List<ReportEntry> CheckTemplateRef(string exp, ParserRuleContext context)
         {
             var result = new List<ReportEntry>();
 
@@ -245,19 +246,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var argsEndPos = exp.LastIndexOf(')');
                 if (argsEndPos < 0 || argsEndPos < argsStartPos + 1)
                 {
-                    result.Add(new ReportEntry($"Not a valid template ref: {exp}"));
+                    result.Add(new ReportEntry($"Not a valid template ref: {exp}", context: context));
                 }
                 else
                 {
                     var templateName = exp.Substring(0, argsStartPos);
                     if (!templateMap.ContainsKey(templateName))
                     {
-                        result.Add(new ReportEntry($"[{templateName}] template not found"));
+                        result.Add(new ReportEntry($"[{templateName}] template not found", context: context));
                     }
                     else
                     {
                         var argsNumber = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(',').Length;
-                        result.AddRange(CheckTemplateParameters(templateName, argsNumber));
+                        result.AddRange(CheckTemplateParameters(templateName, argsNumber, context));
                     }
                 }
             }
@@ -265,14 +266,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 if (!templateMap.ContainsKey(exp))
                 {
-                    result.Add(new ReportEntry($"[{exp}] template not found"));
+                    result.Add(new ReportEntry($"[{exp}] template not found", context: context));
                 }
             }
 
             return result;
         }
 
-        private List<ReportEntry> CheckMultiLineText(string exp)
+        private List<ReportEntry> CheckMultiLineText(string exp, ParserRuleContext context)
         {
             var result = new List<ReportEntry>();
 
@@ -284,38 +285,38 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             foreach (Match match in mc)
             {
                 var newExp = match.Value.Substring(1); // remove @
-                result.AddRange(CheckExpression(newExp));
+                result.AddRange(CheckExpression(newExp, context));
             }
 
             return result;
         }
 
-        private List<ReportEntry> CheckText(string exp)
+        private List<ReportEntry> CheckText(string exp, ParserRuleContext context)
         {
             var result = new List<ReportEntry>();
 
             if (exp.StartsWith("```"))
             {
-                result.Add(new ReportEntry("Multi line variation must be enclosed in ```"));
+                result.Add(new ReportEntry("Multi line variation must be enclosed in ```", context: context));
             }
 
             return result;
         }
 
-        private List<ReportEntry> CheckTemplateParameters(string templateName, int argsNumber)
+        private List<ReportEntry> CheckTemplateParameters(string templateName, int argsNumber, ParserRuleContext context)
         {
             var result = new List<ReportEntry>();
             var parametersNumber = templateMap[templateName].Paramters.Count;
 
             if (argsNumber != parametersNumber)
             {
-                result.Add(new ReportEntry($"Arguments count mismatch for template ref {templateName}, expected {parametersNumber}, actual {argsNumber}"));
+                result.Add(new ReportEntry($"Arguments count mismatch for template ref {templateName}, expected {parametersNumber}, actual {argsNumber}", context: context));
             }
 
             return result;
         }
 
-        private List<ReportEntry> CheckExpression(string exp)
+        private List<ReportEntry> CheckExpression(string exp, ParserRuleContext context)
         {
             var result = new List<ReportEntry>();
             exp = exp.TrimStart('{').TrimEnd('}');
@@ -325,7 +326,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
             catch (Exception e)
             {
-                result.Add(new ReportEntry(e.Message + $" in expression `{exp}`"));
+                result.Add(new ReportEntry(e.Message + $" in expression `{exp}`", context: context));
                 return result;
             }
 
@@ -338,13 +339,33 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     public class ReportEntry
     {
-        public ReportEntry(string message, ReportEntryType type = ReportEntryType.ERROR)
+        public ReportEntry(
+            string message,
+            ReportEntryType type = ReportEntryType.ERROR,
+            ParserRuleContext context = null,
+            Tuple<int, int> start = null,
+            Tuple<int, int> stop = null)
         {
             Message = message;
             Type = type;
+
+            if (context != null)
+            {
+                Start = new Tuple<int, int>(context.Start.Line - 1, context.Start.Column);
+                Stop = new Tuple<int, int>(context.Stop.Line - 1, context.Stop.Column);
+            }
+            else
+            {
+                Start = start ?? new Tuple<int, int>(0, 0);
+                Stop = stop ?? new Tuple<int, int>(0, 0);
+            }
         }
 
-        public ReportEntryType Type { get; }
+        public Tuple<int, int> Start { get; } = new Tuple<int, int>(0, 0);
+
+        public Tuple<int, int> Stop { get; } = new Tuple<int, int>(0, 0);
+
+        public ReportEntryType Type { get; set; }
 
         public string Message { get; }
 
