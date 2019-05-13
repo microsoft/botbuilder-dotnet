@@ -23,14 +23,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
     public class StaticChecker : LGFileParserBaseVisitor<List<ReportEntry>>
     {
-        public readonly List<LGTemplate> Templates;
-
         private Dictionary<string, LGTemplate> templateMap = new Dictionary<string, LGTemplate>();
 
         public StaticChecker(List<LGTemplate> templates)
         {
-            this.Templates = templates;
+            Templates = templates;
         }
+
+        public List<LGTemplate> Templates { get; }
 
         /// <summary>
         /// Return error messaages list.
@@ -344,9 +344,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Type = type;
         }
 
-        public ReportEntryType Type { get; set; }
+        public ReportEntryType Type { get; }
 
-        public string Message { get; set; }
+        public string Message { get; }
 
         public override string ToString()
         {

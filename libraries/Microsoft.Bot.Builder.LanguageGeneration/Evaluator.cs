@@ -12,20 +12,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class Evaluator : LGFileParserBaseVisitor<string>
     {
-        public readonly List<LGTemplate> Templates;
-
-        public readonly Dictionary<string, LGTemplate> TemplateMap;
-
         private readonly IGetMethod getMethodX;
-
         private Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
         public Evaluator(List<LGTemplate> templates, IGetMethod getMethod)
         {
-            this.Templates = templates;
+            Templates = templates;
             TemplateMap = templates.ToDictionary(x => x.Name);
             getMethodX = getMethod ?? new GetMethodExtensions(this);
         }
+
+        public List<LGTemplate> Templates { get; }
+
+        public Dictionary<string, LGTemplate> TemplateMap { get; }
 
         public string EvaluateTemplate(string templateName, object scope)
         {
@@ -58,10 +57,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return null;
         }
 
-        public override string VisitNormalBody([NotNull] LGFileParser.NormalBodyContext context)
-        {
-            return Visit(context.normalTemplateBody());
-        }
+        public override string VisitNormalBody([NotNull] LGFileParser.NormalBodyContext context) => Visit(context.normalTemplateBody());
 
         public override string VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
         {
@@ -238,11 +234,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return EvaluateTemplate(exp, CurrentTarget().Scope);
         }
 
-        private EvaluationTarget CurrentTarget()
-        {
+        private EvaluationTarget CurrentTarget() =>
+
             // just don't want to write evaluationTargetStack.Peek() everywhere
-            return evaluationTargetStack.Peek();
-        }
+            evaluationTargetStack.Peek();
 
         private string EvalMultiLineText(string exp)
         {

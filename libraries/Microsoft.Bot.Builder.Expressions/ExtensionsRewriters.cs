@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// Rewrite the expression by pushing not down to the leaves.
         /// </summary>
         /// <remarks>
-        /// Push down not to the leaves if possible.  For and/or/not this uses DeMorgan's law and rewrites comparisons.  
+        /// Push down not to the leaves if possible.  For and/or/not this uses DeMorgan's law and rewrites comparisons.
         /// You can define your own behavior by setting <see cref="ExpressionEvaluator.Negation"/> to the negated evaluator.
         /// </remarks>
         /// <param name="expression">Expression to rewrite.</param>
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     {
                         // Each element of SoFar is a conjunction
                         // Need to combine every combination of clauses
-                        var soFar = new List<Expression>();
+                        var sofar = new List<Expression>();
                         var first = true;
                         foreach (var child in expression.Children)
                         {
@@ -75,21 +75,21 @@ namespace Microsoft.Bot.Builder.Expressions
                             if (clauses.Count() == 0)
                             {
                                 // Encountered false
-                                soFar.Clear();
+                                sofar.Clear();
                                 break;
                             }
                             if (first)
                             {
                                 foreach (var clause in clauses)
                                 {
-                                    soFar.Add(clause);
+                                    sofar.Add(clause);
                                 }
                                 first = false;
                             }
                             else
                             {
                                 var newClauses = new List<Expression>();
-                                foreach (var old in soFar)
+                                foreach (var old in sofar)
                                 {
                                     foreach (var clause in clauses)
                                     {
@@ -106,10 +106,10 @@ namespace Microsoft.Bot.Builder.Expressions
                                         }
                                     }
                                 }
-                                soFar = newClauses;
+                                sofar = newClauses;
                             }
                         }
-                        foreach (var clause in soFar)
+                        foreach (var clause in sofar)
                         {
                             yield return clause;
                         }
@@ -159,14 +159,15 @@ namespace Microsoft.Bot.Builder.Expressions
                         }
                         else
                         {
-                            newExpr = Expression.MakeExpression(expression.Type == ExpressionType.And
+                            newExpr = Expression.MakeExpression(
+                                expression.Type == ExpressionType.And
                                 ? (inNot ? ExpressionType.Or : ExpressionType.And)
                                 : (inNot ? ExpressionType.And : ExpressionType.Or),
                                 children);
                         }
                     }
                     break;
-               case ExpressionType.Not:
+                case ExpressionType.Not:
                     newExpr = PushDownNot(expression.Children[0], !inNot);
                     break;
                 default:
