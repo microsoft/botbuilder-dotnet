@@ -1,19 +1,13 @@
 {
-  "luis_schema_version": "3.2.0",
-  "versionId": "0.1",
-  "name": "Airline Reservation",
-  "desc": "A LUIS model that uses intent and entities.",
-  "culture": "en-us",
-  "tokenizerVersion": "1.0.0",
   "intents": [
     {
       "name": "BookFlight"
     },
     {
-      "name": "GetWeather"
+      "name": "Cancel"
     },
     {
-      "name": "Cancel"
+      "name": "GetWeather"
     },
     {
       "name": "None"
@@ -63,36 +57,39 @@
           "list": [
             "new york"
           ]
+        },
+        {
+          "canonicalForm": "Seattle",
+          "list": [
+            "seattle"
+          ]
         }
       ],
       "roles": []
     }
   ],
-  "patternAnyEntities": [],
   "regex_entities": [],
-  "prebuiltEntities": [
-    {
-      "name": "datetimeV2",
-      "roles": []
-    }
-  ],
   "model_features": [],
   "regex_features": [],
-  "patterns": [],
   "utterances": [
+    {
+      "text": "book a flight",
+      "intent": "BookFlight",
+      "entities": []
+    },
     {
       "text": "book flight from london to paris on feb 14th",
       "intent": "BookFlight",
       "entities": [
         {
-          "entity": "To",
-          "startPos": 27,
-          "endPos": 31
-        },
-        {
           "entity": "From",
           "startPos": 17,
           "endPos": 22
+        },
+        {
+          "entity": "To",
+          "startPos": 27,
+          "endPos": 31
         }
       ]
     },
@@ -122,21 +119,6 @@
           "endPos": 36
         }
       ]
-    },
-    {
-      "text": "bye",
-      "intent": "Cancel",
-      "entities": []
-    },
-    {
-      "text": "cancel booking",
-      "intent": "Cancel",
-      "entities": []
-    },
-    {
-      "text": "exit",
-      "intent": "Cancel",
-      "entities": []
     },
     {
       "text": "flight to paris",
@@ -170,14 +152,14 @@
       "intent": "BookFlight",
       "entities": [
         {
-          "entity": "To",
-          "startPos": 19,
-          "endPos": 23
-        },
-        {
           "entity": "From",
           "startPos": 9,
           "endPos": 14
+        },
+        {
+          "entity": "To",
+          "startPos": 19,
+          "endPos": 23
         }
       ]
     },
@@ -197,21 +179,43 @@
       "intent": "BookFlight",
       "entities": [
         {
-          "entity": "To",
-          "startPos": 20,
-          "endPos": 25
-        },
-        {
           "entity": "From",
           "startPos": 11,
           "endPos": 15
+        },
+        {
+          "entity": "To",
+          "startPos": 20,
+          "endPos": 25
         }
       ]
     },
     {
-      "text": "ignore",
-      "intent": "Cancel",
-      "entities": []
+      "text": "travel from new york to paris",
+      "intent": "BookFlight",
+      "entities": [
+        {
+          "entity": "From",
+          "startPos": 12,
+          "endPos": 19
+        },
+        {
+          "entity": "To",
+          "startPos": 24,
+          "endPos": 28
+        }
+      ]
+    },
+    {
+      "text": "travel to new york",
+      "intent": "BookFlight",
+      "entities": [
+        {
+          "entity": "To",
+          "startPos": 10,
+          "endPos": 17
+        }
+      ]
     },
     {
       "text": "travel to paris",
@@ -223,7 +227,89 @@
           "endPos": 14
         }
       ]
+    },
+    {
+      "text": "bye",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "cancel booking",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "exit",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "ignore",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "what's the forecast for this friday?",
+      "intent": "GetWeather",
+      "entities": []
+    },
+    {
+      "text": "what's the weather like for tomorrow",
+      "intent": "GetWeather",
+      "entities": []
+    },
+    {
+      "text": "what's the weather like in new york",
+      "intent": "GetWeather",
+      "entities": []
+    },
+    {
+      "text": "what's the weather like?",
+      "intent": "GetWeather",
+      "entities": []
+    },
+    {
+      "text": "book a hotel in new york",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "book a restaurant",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "find an airport near me",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "i'd like to rent a car",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "what's in my pocket",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "winter is coming",
+      "intent": "None",
+      "entities": []
     }
   ],
-  "settings": []
+  "patterns": [],
+  "patternAnyEntities": [],
+  "prebuiltEntities": [
+    {
+      "name": "datetimeV2",
+      "roles": []
+    }
+  ],
+  "luis_schema_version": "3.0.0",
+  "versionId": "0.1",
+  "name": "FlightBooking",
+  "desc": "",
+  "culture": "en-us"
 }

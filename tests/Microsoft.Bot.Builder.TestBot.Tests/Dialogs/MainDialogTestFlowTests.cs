@@ -1,17 +1,28 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
+using Microsoft.BotBuilderSamples.CognitiveModels;
+using Microsoft.BotBuilderSamples.Dialogs;
 using Microsoft.BotBuilderSamples.Tests.Utils;
+using Moq;
 using Xunit;
 
 namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 {
+    /// <summary>
+    /// This sample uses the current classes and approach for testing bot conversations.
+    /// </summary>
     public class MainDialogTestFlowTests : DialogTestsBase
     {
         [Fact]
         public async Task WholeEnchilada()
         {
-            var sut = new MainDialog(MockConfig.Object, MockLogger.Object);
+            var intentsAndDialogs = new IntentDialogMap
+            {
+                { FlightBooking.Intent.BookFlight, new Mock<BookingDialog>().Object },
+                { FlightBooking.Intent.GetWeather, new Mock<Dialog>("mockweather").Object },
+            };
+            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, null, intentsAndDialogs);
 
             var testFlow = BuildTestFlow(sut);
 

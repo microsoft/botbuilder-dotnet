@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.BotBuilderSamples;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 
 namespace Microsoft.BotBuilderSamples
@@ -61,10 +62,8 @@ namespace Microsoft.BotBuilderSamples
             {
                 return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Where are you traveling from?") }, cancellationToken);
             }
-            else
-            {
-                return await stepContext.NextAsync(bookingDetails.Origin, cancellationToken);
-            }
+
+            return await stepContext.NextAsync(bookingDetails.Origin, cancellationToken);
         }
 
         private async Task<DialogTurnResult> TravelDateStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -77,10 +76,8 @@ namespace Microsoft.BotBuilderSamples
             {
                 return await stepContext.BeginDialogAsync(nameof(DateResolverDialog), bookingDetails.TravelDate, cancellationToken);
             }
-            else
-            {
-                return await stepContext.NextAsync(bookingDetails.TravelDate, cancellationToken);
-            }
+
+            return await stepContext.NextAsync(bookingDetails.TravelDate, cancellationToken);
         }
 
         private async Task<DialogTurnResult> ConfirmStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -102,10 +99,8 @@ namespace Microsoft.BotBuilderSamples
 
                 return await stepContext.EndDialogAsync(bookingDetails, cancellationToken);
             }
-            else
-            {
-                return await stepContext.EndDialogAsync(null, cancellationToken);
-            }
+
+            return await stepContext.EndDialogAsync(null, cancellationToken);
         }
     }
 }

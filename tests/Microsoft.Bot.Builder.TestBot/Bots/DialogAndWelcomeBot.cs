@@ -32,6 +32,7 @@ namespace Microsoft.BotBuilderSamples
                     var welcomeCard = CreateAdaptiveCardAttachment();
                     var response = CreateResponse(turnContext.Activity, welcomeCard);
                     await turnContext.SendActivityAsync(response, cancellationToken);
+                    await Dialog.Run(turnContext, ConversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
                 }
             }
         }
