@@ -29,10 +29,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public string Message { get; }
 
-        public override string ToString()
-        {
-            return $"{Severity}: {Message}";
-        }
+        public override string ToString() => $"[{Severity}] {Range}: {Message}";
     }
 
     /// <summary>
@@ -49,6 +46,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public Position Start { get; set; }
 
         public Position End { get; set; }
+
+        public override string ToString()
+        {
+            var result = Start.ToString();
+            if (Start.Line <= End.Line && Start.Character < End.Character)
+            {
+                result += " - ";
+                result += End.ToString();
+            }
+            return result;
+        }
     }
 
     /// <summary>
@@ -66,6 +74,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public int Line { get; set; }
 
         public int Character { get; set; }
+
+        public override string ToString() => $"line {Line}:{Character}";
     }
 
     /// <summary>

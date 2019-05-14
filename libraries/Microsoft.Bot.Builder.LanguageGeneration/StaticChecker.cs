@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var sources = string.Join(":", g.Select(x => x.Source));
 
                     var msg = $"Duplicated definitions found for template: {name} in {sources}";
-                    result.Add(BuildBotDiagnostic(msg));
+                    result.Add(BuildLGDiagnostic(msg));
                 });
 
                 return result;
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (Templates.Count == 0)
             {
-                result.Add(BuildBotDiagnostic(
+                result.Add(BuildLGDiagnostic(
                     "File must have at least one template definition ",
                     DiagnosticSeverity.Warning));
             }
@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (context.templateBody() == null)
             {
-                result.Add(BuildBotDiagnostic($"There is no template body in template {templateName}", context: context.templateNameLine()));
+                result.Add(BuildLGDiagnostic($"There is no template body in template {templateName}", context: context.templateNameLine()));
             }
             else
             {
@@ -86,14 +86,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 if (parameters.CLOSE_PARENTHESIS() == null
                        || parameters.OPEN_PARENTHESIS() == null)
                 {
-                    result.Add(BuildBotDiagnostic($"parameters: {parameters.GetText()} format error", context: context.templateNameLine()));
+                    result.Add(BuildLGDiagnostic($"parameters: {parameters.GetText()} format error", context: context.templateNameLine()));
                 }
 
                 var invalidSeperateCharacters = parameters.INVALID_SEPERATE_CHAR();
                 if (invalidSeperateCharacters != null
                     && invalidSeperateCharacters.Length > 0)
                 {
-                    result.Add(BuildBotDiagnostic("Parameters for templates must be separated by comma.", context: context.templateNameLine()));
+                    result.Add(BuildLGDiagnostic("Parameters for templates must be separated by comma.", context: context.templateNameLine()));
                 }
             }
 
@@ -131,27 +131,27 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 if (node.GetText().Count(u => u == ' ') > 1)
                 {
-                    result.Add(BuildBotDiagnostic($"At most 1 whitespace is allowed between IF/ELSEIF/ELSE and :. expression: '{context.conditionalTemplateBody().GetText()}", context: conditionNode));
+                    result.Add(BuildLGDiagnostic($"At most 1 whitespace is allowed between IF/ELSEIF/ELSE and :. expression: '{context.conditionalTemplateBody().GetText()}", context: conditionNode));
                 }
 
                 if (idx == 0 && !ifExpr)
                 {
-                    result.Add(BuildBotDiagnostic($"condition is not start with if: '{context.conditionalTemplateBody().GetText()}'", DiagnosticSeverity.Warning, conditionNode));
+                    result.Add(BuildLGDiagnostic($"condition is not start with if: '{context.conditionalTemplateBody().GetText()}'", DiagnosticSeverity.Warning, conditionNode));
                 }
 
                 if (idx > 0 && ifExpr)
                 {
-                    result.Add(BuildBotDiagnostic($"condition can't have more than one if: '{context.conditionalTemplateBody().GetText()}'", context: conditionNode));
+                    result.Add(BuildLGDiagnostic($"condition can't have more than one if: '{context.conditionalTemplateBody().GetText()}'", context: conditionNode));
                 }
 
                 if (idx == ifRules.Length - 1 && !elseExpr)
                 {
-                    result.Add(BuildBotDiagnostic($"condition is not end with else: '{context.conditionalTemplateBody().GetText()}'", DiagnosticSeverity.Warning, conditionNode));
+                    result.Add(BuildLGDiagnostic($"condition is not end with else: '{context.conditionalTemplateBody().GetText()}'", DiagnosticSeverity.Warning, conditionNode));
                 }
 
                 if (idx > 0 && idx < ifRules.Length - 1 && !elseIfExpr)
                 {
-                    result.Add(BuildBotDiagnostic($"only elseif is allowed in middle of condition: '{context.conditionalTemplateBody().GetText()}'", context: conditionNode));
+                    result.Add(BuildLGDiagnostic($"only elseif is allowed in middle of condition: '{context.conditionalTemplateBody().GetText()}'", context: conditionNode));
                 }
 
                 // check rule should should with one and only expression
@@ -159,7 +159,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     if (ifRules[idx].ifCondition().EXPRESSION().Length != 1)
                     {
-                        result.Add(BuildBotDiagnostic($"if and elseif should followed by one valid expression: '{ifRules[idx].GetText()}'", context: conditionNode));
+                        result.Add(BuildLGDiagnostic($"if and elseif should followed by one valid expression: '{ifRules[idx].GetText()}'", context: conditionNode));
                     }
                     else
                     {
@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     if (ifRules[idx].ifCondition().EXPRESSION().Length != 0)
                     {
-                        result.Add(BuildBotDiagnostic($"else should not followed by any expression: '{ifRules[idx].GetText()}'", context: conditionNode));
+                        result.Add(BuildLGDiagnostic($"else should not followed by any expression: '{ifRules[idx].GetText()}'", context: conditionNode));
                     }
                 }
 
@@ -180,7 +180,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 else
                 {
-                    result.Add(BuildBotDiagnostic($"no normal template body in condition block: '{ifRules[idx].GetText()}'", context: conditionNode));
+                    result.Add(BuildLGDiagnostic($"no normal template body in condition block: '{ifRules[idx].GetText()}'", context: conditionNode));
                 }
             }
 
@@ -196,7 +196,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 switch (node.Symbol.Type)
                 {
                     case LGFileParser.INVALID_ESCAPE:
-                        result.Add(BuildBotDiagnostic($"escape character {node.GetText()} is invalid", context: context));
+                        result.Add(BuildLGDiagnostic($"escape character {node.GetText()} is invalid", context: context));
                         break;
                     case LGFileParser.TEMPLATE_REF:
                         result.AddRange(CheckTemplateRef(node.GetText(), context));
@@ -233,14 +233,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var argsEndPos = exp.LastIndexOf(')');
                 if (argsEndPos < 0 || argsEndPos < argsStartPos + 1)
                 {
-                    result.Add(BuildBotDiagnostic($"Not a valid template ref: {exp}", context: context));
+                    result.Add(BuildLGDiagnostic($"Not a valid template ref: {exp}", context: context));
                 }
                 else
                 {
                     var templateName = exp.Substring(0, argsStartPos);
                     if (!templateMap.ContainsKey(templateName))
                     {
-                        result.Add(BuildBotDiagnostic($"[{templateName}] template not found", context: context));
+                        result.Add(BuildLGDiagnostic($"[{templateName}] template not found", context: context));
                     }
                     else
                     {
@@ -253,7 +253,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 if (!templateMap.ContainsKey(exp))
                 {
-                    result.Add(BuildBotDiagnostic($"[{exp}] template not found", context: context));
+                    result.Add(BuildLGDiagnostic($"[{exp}] template not found", context: context));
                 }
             }
 
@@ -284,7 +284,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (exp.StartsWith("```"))
             {
-                result.Add(BuildBotDiagnostic("Multi line variation must be enclosed in ```", context: context));
+                result.Add(BuildLGDiagnostic("Multi line variation must be enclosed in ```", context: context));
             }
 
             return result;
@@ -297,7 +297,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (argsNumber != parametersNumber)
             {
-                result.Add(BuildBotDiagnostic($"Arguments count mismatch for template ref {templateName}, expected {parametersNumber}, actual {argsNumber}", context: context));
+                result.Add(BuildLGDiagnostic($"Arguments count mismatch for template ref {templateName}, expected {parametersNumber}, actual {argsNumber}", context: context));
             }
 
             return result;
@@ -313,14 +313,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
             catch (Exception e)
             {
-                result.Add(BuildBotDiagnostic(e.Message + $" in expression `{exp}`", context: context));
+                result.Add(BuildLGDiagnostic(e.Message + $" in expression `{exp}`", context: context));
                 return result;
             }
 
             return result;
         }
 
-        private Diagnostic BuildBotDiagnostic(
+        private Diagnostic BuildLGDiagnostic(
             string message,
             DiagnosticSeverity severity = DiagnosticSeverity.Error,
             ParserRuleContext context = null)

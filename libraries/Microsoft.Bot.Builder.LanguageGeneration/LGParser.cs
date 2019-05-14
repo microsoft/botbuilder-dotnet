@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Antlr4.Runtime;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -15,8 +16,41 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>LG template list.</returns>
         public static IList<LGTemplate> Parse(string text, string source = "")
         {
-            var fileContentContext = GetFileContentContext(text);
-            return ToLGTemplates(fileContentContext, source);
+            var parseSuccess = TryParse(text, out var templates, out var diagnostic, source);
+            if (parseSuccess)
+            {
+                return templates;
+            }
+
+            throw new Exception(diagnostic.ToString());
+        }
+
+        /// <summary>
+        /// Try Get LG template list from input string.
+        /// </summary>
+        /// <param name="text">LG file content or inline text.</param>
+        /// <param name="templates">LG template list.</param>
+        /// <param name="diagnostic">error/warning list.</param>
+        /// <param name="source">text source.</param>
+        /// <returns>LG template if parse success.</returns>
+        public static bool TryParse(string text, out IList<LGTemplate> templates, out Diagnostic diagnostic, string source = "")
+        {
+            LGFileParser.FileContext fileContext = null;
+            diagnostic = null;
+            templates = new List<LGTemplate>();
+
+            try
+            {
+                fileContext = GetFileContentContext(text);
+            }
+            catch (Exception e)
+            {
+                diagnostic = JsonConvert.DeserializeObject<Diagnostic>(e.Message);
+            }
+
+            templates = ToLGTemplates(fileContext, source);
+
+            return diagnostic == null;
         }
 
         private static LGFileParser.FileContext GetFileContentContext(string text)
