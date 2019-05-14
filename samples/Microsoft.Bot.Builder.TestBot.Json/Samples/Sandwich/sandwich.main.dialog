@@ -1,30 +1,18 @@
 {
-  "$schema": "../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
-  "recognizer": "OrderSandwichApp.lu",
   "autoEndDialog": false,
+  "recognizer": {
+    "$commment": "should really be 'OrderSandwichApp.lu', but composer does not support",
+    "$type": "Microsoft.MultiLanguageRecognizer",
+    "recognizers": {
+      "en-us": "OrderSandwichApp.en-us.lu",
+      "": "OrderSandwichApp.en-us.lu"
+    }
+  },
   "rules": [
     {
-      "$comment": "**** This is the start of top-level intent rules ****",
       "$type": "Microsoft.IntentRule",
-      "intent": "OrderSandwich",
       "steps": [
-        {
-          "$type": "Microsoft.IfCondition",
-          "condition": "user.name == null",
-          "steps": [
-            {
-              "$type": "Microsoft.SendActivity",
-              "activity": "Hi"
-            }
-          ],
-          "elseSteps": [
-            {
-              "$type": "Microsoft.SendActivity",
-              "activity": "bye"
-            }
-          ]
-        },
         {
           "$comment": "**** Primary ordering dialog ****",
           "$type": "Microsoft.AdaptiveDialog",
@@ -39,11 +27,11 @@
               "steps": [
                 {
                   "$type": "Microsoft.SendActivity",
-                  "activity": "Set dialog.meat to {first(@meat[0])}"
+                  "activity": "Set conversation.meat to {first(@meat[0])}"
                 },
                 {
                   "$type": "Microsoft.SetProperty",
-                  "property": "dialog.meat",
+                  "property": "conversation.meat",
                   "value": "first(@meat[0])"
                 },
                 {
@@ -68,11 +56,11 @@
               "steps": [
                 {
                   "$type": "Microsoft.SendActivity",
-                  "activity": "Set dialog.cheese to {first(@cheese[0])}"
+                  "activity": "Set conversation.cheese to {first(@cheese[0])}"
                 },
                 {
                   "$type": "Microsoft.SetProperty",
-                  "property": "dialog.cheese",
+                  "property": "conversation.cheese",
                   "value": "first(@cheese[0])"
                 },
                 {
@@ -96,11 +84,11 @@
               "steps": [
                 {
                   "$type": "Microsoft.SendActivity",
-                  "activity": "Set dialog.bread to {first(@bread[0])}"
+                  "activity": "Set conversation.bread to {first(@bread[0])}"
                 },
                 {
                   "$type": "Microsoft.SetProperty",
-                  "property": "dialog.bread",
+                  "property": "conversation.bread",
                   "value": "first(@bread[0])"
                 },
                 {
@@ -124,16 +112,44 @@
               "steps": [
                 {
                   "$type": "Microsoft.SendActivity",
-                  "activity": "Set dialog.topping to {foreach(@topping, list, first(list)}"
+                  "activity": "Set conversation.topping to {join(foreach(@topping, list, first(list)), ', ')}"
                 },
                 {
                   "$type": "Microsoft.SetProperty",
-                  "property": "dialog.topping",
-                  "value": "first(@topping[0])"
+                  "property": "conversation.topping",
+                  "value": "foreach(@topping, list, first(list))"
                 },
                 {
                   "$type": "Microsoft.SetProperty",
                   "property": "turn.settopping",
+                  "value": "true"
+                },
+                {
+                  "$type": "Microsoft.EmitEvent",
+                  "eventName": "recognizedIntent",
+                  "bubbleEvent": true
+                }
+              ]
+            },
+            {
+              "$type": "Microsoft.EventRule",
+              "events": [
+                "recognizedIntent"
+              ],
+              "constraint": "@confirmation && ignore(!turn.setconfirmation)",
+              "steps": [
+                {
+                  "$type": "Microsoft.SendActivity",
+                  "activity": "Set conversation.confirmation to {first(@confirmation[0])}"
+                },
+                {
+                  "$type": "Microsoft.SetProperty",
+                  "property": "conversation.confirmation",
+                  "value": "first(@confirmation[0])"
+                },
+                {
+                  "$type": "Microsoft.SetProperty",
+                  "property": "turn.setconfirmation",
                   "value": "true"
                 },
                 {
@@ -149,7 +165,7 @@
               "events": [
                 "recognizedIntent"
               ],
-              "constraint": "!dialog.meat && !dialog.bread",
+              "constraint": "!conversation.meat && !conversation.bread",
               "steps": [
                 {
                   "$type": "Microsoft.SendActivity",
@@ -162,7 +178,7 @@
               "events": [
                 "recognizedIntent"
               ],
-              "constraint": "dialog.meat && dialog.bread && !dialog.cheese && !dialog.topping",
+              "constraint": "conversation.meat && conversation.bread && !conversation.cheese && !conversation.topping",
               "steps": [
                 {
                   "$type": "Microsoft.SendActivity",
@@ -175,7 +191,89 @@
               "events": [
                 "recognizedIntent"
               ],
-              "constraint": "dialog.meat && dialog.cheese && !dialog.bread && !dialog.topping",
+              "constraint": "!conversation.confirmation && conversation.meat && conversation.bread && conversation.cheese && conversation.topping",
+              "steps": [
+                {
+                  "$type": "Microsoft.SendActivity",
+                  "activity": "[Confirmation]"
+                }
+              ]
+            },
+            {
+              "$type": "Microsoft.EventRule",
+              "$comment": "Should update this to use actual http with failure.",
+              "events": [
+                "recognizedIntent"
+              ],
+              "constraint": "conversation.confirmation == 'yes' && !conversation.alldone",
+              "steps": [
+                {
+                  "$type": "Microsoft.SendActivity",
+                  "activity": "[BeingProcessed]"
+                },
+                {
+                  "$type": "Microsoft.SetProperty",
+                  "property": "conversation.alldone",
+                  "value": "true"
+                }
+              ]
+            },
+            {
+              "$type": "Microsoft.EventRule",
+              "events": [
+                "recognizedIntent"
+              ],
+              "constraint": "conversation.confirmation == 'no'",
+              "steps": [
+                {
+                  "$type": "Microsoft.SendActivity",
+                  "activity": "[StartAgain]"
+                },
+                {
+                  "$type": "Microsoft.DeleteProperty",
+                  "property": "conversation.meat"
+                },
+                {
+                  "$type": "Microsoft.DeleteProperty",
+                  "property": "conversation.cheese"
+                },
+                {
+                  "$type": "Microsoft.DeleteProperty",
+                  "property": "conversation.topping"
+                },
+                {
+                  "$type": "Microsoft.DeleteProperty",
+                  "property": "conversation.bread"
+                },
+                {
+                  "$type": "Microsoft.DeleteProperty",
+                  "property": "conversation.confirmation"
+                },
+                {
+                  "$type": "Microsoft.DeleteProperty",
+                  "property": "conversation.alldone"
+                }
+              ]
+            },
+            {
+              "$type": "Microsoft.EventRule",
+              "$comment": "This is the kind of thing we should build in a default for.",
+              "events": [
+                "recognizedIntent"
+              ],
+              "steps": [
+                {
+                  "$type": "Microsoft.SendActivity",
+                  "activity": "[NoIntent]"
+                }
+              ]
+            },
+            {
+              "$type": "Microsoft.EventRule",
+              "events": [
+                "recognizedIntent"
+              ],
+              "constraint": "conversation.meat && conversation.cheese && !conversation.bread && !conversation.topping",
               "steps": [
                 {
                   "$type": "Microsoft.SendActivity",
@@ -188,7 +286,7 @@
               "events": [
                 "recognizedIntent"
               ],
-              "constraint": "!dialog.meat && dialog.bread",
+              "constraint": "!conversation.meat && conversation.bread",
               "steps": [
                 {
                   "$type": "Microsoft.SendActivity",
@@ -202,7 +300,7 @@
               "events": [
                 "recognizedIntent"
               ],
-              "constraint": "!dialog.meat",
+              "constraint": "!conversation.meat",
               "steps": [
                 {
                   "$type": "Microsoft.SendActivity",
@@ -218,7 +316,7 @@
               "events": [
                 "recognizedIntent"
               ],
-              "constraint": "!dialog.cheese",
+              "constraint": "!conversation.cheese",
               "steps": [
                 {
                   "$type": "Microsoft.SendActivity",
@@ -231,7 +329,7 @@
               "events": [
                 "recognizedIntent"
               ],
-              "constraint": "!dialog.bread",
+              "constraint": "!conversation.bread",
               "steps": [
                 {
                   "$type": "Microsoft.SendActivity",
@@ -244,7 +342,7 @@
               "events": [
                 "recognizedIntent"
               ],
-              "constraint": "!dialog.toppings",
+              "constraint": "!conversation.topping",
               "steps": [
                 {
                   "$type": "Microsoft.SendActivity",
@@ -254,7 +352,14 @@
             }
           ]
         }
-      ]
+      ],
+      "intent": "OrderSandwich",
+      "$comment": "**** This is the start of top-level intent rules ****",
+      "$designer": {
+        "createdAt": "2019-05-14T20:33:33.353Z",
+        "updatedAt": "2019-05-14T20:33:33.451Z",
+        "id": "155376"
+      }
     },
     {
       "$type": "Microsoft.IntentRule",
@@ -297,6 +402,16 @@
       ]
     },
     {
+      "$type": "Microsoft.IntentRule",
+      "intent": "Greeting",
+      "steps": [
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "[Greeting]"
+        }
+      ]
+    },
+    {
       "$type": "Microsoft.EventRule",
       "events": [
         "beginDialog"
@@ -308,5 +423,6 @@
         }
       ]
     }
-  ]
+  ],
+  "$schema": "../../app.schema"
 }

@@ -99,7 +99,7 @@
 - i want a sub with {Bread} bread, {Meat} and {Topping}
 - {Meat} sandwich with {Bread} and {Cheese}
 - i want a {Meat} sandwich with {Topping}, {Topping}, {Topping} and {Topping}
-
+- {Cheese} [cheese]
 
 ## SandwichOptions
 - i don't know which sandwiches do you have

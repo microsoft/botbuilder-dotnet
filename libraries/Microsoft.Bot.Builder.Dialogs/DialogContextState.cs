@@ -237,7 +237,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else
             {
-                current[segments.Last()] = (JObject)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(value, expressionCaseSettings));
+                current[segments.Last()] = (JToken)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(value, expressionCaseSettings));
             }
         }
 
