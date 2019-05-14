@@ -16,10 +16,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>LG template list.</returns>
         public static IList<LGTemplate> Parse(string text, string source = "")
         {
-            var parseSuccess = TryParse(text, out var templates, out var diagnostic, source);
+            var parseSuccess = TryParse(text, out var templates, out var error, source);
             if (!parseSuccess)
             {
-                throw new Exception(diagnostic.ToString());
+                throw new Exception(error.ToString());
             }
 
             return templates;
@@ -30,13 +30,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="text">LG file content or inline text.</param>
         /// <param name="templates">LG template list.</param>
-        /// <param name="diagnostic">error/warning list.</param>
+        /// <param name="error">error/warning list.</param>
         /// <param name="source">text source.</param>
         /// <returns>LG template if parse success.</returns>
-        public static bool TryParse(string text, out IList<LGTemplate> templates, out Diagnostic diagnostic, string source = "")
+        public static bool TryParse(string text, out IList<LGTemplate> templates, out Diagnostic error, string source = "")
         {
             LGFileParser.FileContext fileContext = null;
-            diagnostic = null;
+            error = null;
             templates = new List<LGTemplate>();
 
             try
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
             catch (Exception e)
             {
-                diagnostic = JsonConvert.DeserializeObject<Diagnostic>(e.Message);
+                error = JsonConvert.DeserializeObject<Diagnostic>(e.Message);
                 return false;
             }
 

@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public TemplateEngine AddText(string text)
         {
             Templates.AddRange(LGParser.Parse(text, "text"));
-            RunStaticCheck(text: text);
+            RunStaticCheck();
             return this;
         }
 
@@ -85,41 +85,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Check templates/text to match LG format.
         /// </summary>
         /// <param name="templates">the templates which should be checked.</param>
-        /// <param name="text">the original text which should be checked.</param>
-        public void RunStaticCheck(List<LGTemplate> templates = null, string text = null)
+        public void RunStaticCheck(List<LGTemplate> templates = null)
         {
-            var diagnostics = GetAllDiagnostics(templates, text);
+            var teamplatesToCheck = templates ?? this.Templates;
+            var checker = new StaticChecker(teamplatesToCheck);
+            var diagnostics = checker.Check();
 
             var errors = diagnostics.Where(u => u.Severity == DiagnosticSeverity.Error).ToList();
             if (errors.Count != 0)
             {
                 throw new Exception(string.Join("\n", errors));
             }
-        }
-
-        /// <summary>
-        /// Get all diagnostic including Errors/Warnings from template/texts.
-        /// Everyone should use this function to get all code suggestions.
-        /// </summary>
-        /// <param name="templates">the templates which should be checked.</param>
-        /// <param name="text">the original text which should be checked.</param>
-        /// <returns>Diagnostic list.</returns>
-        public IList<Diagnostic> GetAllDiagnostics(List<LGTemplate> templates = null, string text = null)
-        {
-            var teamplatesToCheck = templates ?? this.Templates;
-            var checker = new StaticChecker(teamplatesToCheck);
-            var diagnostics = checker.Check();
-
-            if (!string.IsNullOrWhiteSpace(text))
-            {
-                var parseSuccess = LGParser.TryParse(text, out var _, out var syntaxError, "text");
-                if (!parseSuccess)
-                {
-                    diagnostics.Add(syntaxError);
-                }
-            }
-
-            return diagnostics;
         }
 
         /// <summary>
