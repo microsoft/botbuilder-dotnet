@@ -54,6 +54,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return true;
         }
 
+        /// <summary>
+        /// Get parsed tree node from text by antlr4 engine.
+        /// </summary>
+        /// <param name="text">Original text which will be parsed.</param>
+        /// <returns>Parsed tree node.</returns>
         private static LGFileParser.FileContext GetFileContentContext(string text)
         {
             if (string.IsNullOrEmpty(text))

@@ -19,14 +19,45 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Severity = severity;
         }
 
+        /// <summary>
+        ///  Gets or sets a code or identifier for this diagnostics.
+        /// </summary>
+        /// <value>
+        /// A code or identifier for this diagnostics.
+        /// </value>
         public string Code { get; set; }
 
+        /// <summary>
+        ///  Gets or sets the range to which this diagnostic applies.
+        /// </summary>
+        /// <value>
+        /// The range to which this diagnostic applies.
+        /// </value>
         public Range Range { get; set; }
 
+        /// <summary>
+        /// Gets or sets the severity, default is <see cref="DiagnosticSeverity.Error"/>.
+        /// </summary>
+        /// <value>
+        /// The severity, default is <see cref="DiagnosticSeverity.Error"/>.
+        /// </value>
         public DiagnosticSeverity Severity { get; set; }
 
+        /// <summary>
+        /// Gets or sets a human-readable string describing the source of this
+        /// diagnostic, e.g. 'typescript' or 'super lint'.
+        /// </summary>
+        /// <value>
+        /// A human-readable string describing the source.
+        /// </value>
         public string Source { get; set; }
 
+        /// <summary>
+        /// Gets the human-readable message.
+        /// </summary>
+        /// <value>
+        /// The human-readable message.
+        /// </value>
         public string Message { get; }
 
         public override string ToString() => $"[{Severity}] {Range}: {Message}";
@@ -43,8 +74,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             End = end;
         }
 
+        /// <summary>
+        /// Gets or sets the start position. It is before or equal to <see cref="End"/>.
+        /// </summary>
+        /// <value>
+        /// The start position. It is before or equal to <see cref="End"/>.
+        /// </value>
         public Position Start { get; set; }
 
+        /// <summary>
+        /// Gets or sets the end position. It is after or equal to <see cref="Start"/>.
+        /// </summary>
+        /// <value>
+        /// The end position. It is after or equal to <see cref="Start"/>.
+        /// </value>
         public Position End { get; set; }
 
         public override string ToString()
@@ -71,8 +114,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Character = character;
         }
 
+        /// <summary>
+        /// Gets or sets the zero-based line value.
+        /// </summary>
+        /// <value>
+        /// The zero-based line value.
+        /// </value>
         public int Line { get; set; }
 
+        /// <summary>
+        /// Gets or sets the zero-based character value.
+        /// </summary>
+        /// <value>
+        /// The zero-based character value.
+        /// </value>
         public int Character { get; set; }
 
         public override string ToString() => $"line {Line}:{Character}";

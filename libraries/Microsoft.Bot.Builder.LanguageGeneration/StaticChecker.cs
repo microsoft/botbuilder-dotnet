@@ -320,6 +320,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
+        /// <summary>
+        /// Build LG diagnostic with antlr tree node context.
+        /// </summary>
+        /// <param name="message">error/warning message. <see cref="Diagnostic.Message"/>.</param>
+        /// <param name="severity">diagnostic Severity <see cref="DiagnosticSeverity"/> to get more info.</param>
+        /// <param name="context">the parsed tree node context of the diagnostic.</param>
+        /// <returns>new Diagnostic object.</returns>
         private Diagnostic BuildLGDiagnostic(
             string message,
             DiagnosticSeverity severity = DiagnosticSeverity.Error,
