@@ -9,20 +9,7 @@ using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
-    public enum ReportEntryType
-    {
-        /// <summary>
-        /// Catch Error info.
-        /// </summary>
-        ERROR,
-
-        /// <summary>
-        /// Catch Warning info.
-        /// </summary>
-        WARN,
-    }
-
-    public class StaticChecker : LGFileParserBaseVisitor<List<ReportEntry>>
+    public class StaticChecker : LGFileParserBaseVisitor<List<Diagnostic>>
     {
         private Dictionary<string, LGTemplate> templateMap = new Dictionary<string, LGTemplate>();
 
@@ -37,9 +24,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Return error messaages list.
         /// </summary>
         /// <returns>report result.</returns>
-        public List<ReportEntry> Check()
+        public List<Diagnostic> Check()
         {
-            var result = new List<ReportEntry>();
+            var result = new List<Diagnostic>();
 
             // check dup first
             var duplicatedTemplates = Templates
@@ -55,7 +42,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var sources = string.Join(":", g.Select(x => x.Source));
 
                     var msg = $"Duplicated definitions found for template: {name} in {sources}";
-                    result.Add(new ReportEntry(msg));
+                    result.Add(BuildBotDiagnostic(msg));
                 });
 
                 return result;
@@ -66,9 +53,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (Templates.Count == 0)
             {
-                result.Add(new ReportEntry(
+                result.Add(BuildBotDiagnostic(
                     "File must have at least one template definition ",
-                    ReportEntryType.WARN));
+                    DiagnosticSeverity.Warning));
             }
 
             Templates.ForEach(t =>
@@ -79,14 +66,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        public override List<ReportEntry> VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
+        public override List<Diagnostic> VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
         {
-            var result = new List<ReportEntry>();
+            var result = new List<Diagnostic>();
             var templateName = context.templateNameLine().templateName().GetText();
 
             if (context.templateBody() == null)
             {
-                result.Add(new ReportEntry($"There is no template body in template {templateName}", context: context.templateNameLine()));
+                result.Add(BuildBotDiagnostic($"There is no template body in template {templateName}", context: context.templateNameLine()));
             }
             else
             {
@@ -99,23 +86,23 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 if (parameters.CLOSE_PARENTHESIS() == null
                        || parameters.OPEN_PARENTHESIS() == null)
                 {
-                    result.Add(new ReportEntry($"parameters: {parameters.GetText()} format error", context: context.templateNameLine()));
+                    result.Add(BuildBotDiagnostic($"parameters: {parameters.GetText()} format error", context: context.templateNameLine()));
                 }
 
                 var invalidSeperateCharacters = parameters.INVALID_SEPERATE_CHAR();
                 if (invalidSeperateCharacters != null
                     && invalidSeperateCharacters.Length > 0)
                 {
-                    result.Add(new ReportEntry("Parameters for templates must be separated by comma.", context: context.templateNameLine()));
+                    result.Add(BuildBotDiagnostic("Parameters for templates must be separated by comma.", context: context.templateNameLine()));
                 }
             }
 
             return result;
         }
 
-        public override List<ReportEntry> VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
+        public override List<Diagnostic> VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
         {
-            var result = new List<ReportEntry>();
+            var result = new List<Diagnostic>();
 
             foreach (var templateStr in context.normalTemplateString())
             {
@@ -126,9 +113,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        public override List<ReportEntry> VisitConditionalBody([NotNull] LGFileParser.ConditionalBodyContext context)
+        public override List<Diagnostic> VisitConditionalBody([NotNull] LGFileParser.ConditionalBodyContext context)
         {
-            var result = new List<ReportEntry>();
+            var result = new List<Diagnostic>();
 
             var ifRules = context.conditionalTemplateBody().ifConditionRule();
             for (var idx = 0; idx < ifRules.Length; idx++)
@@ -144,27 +131,27 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 if (node.GetText().Count(u => u == ' ') > 1)
                 {
-                    result.Add(new ReportEntry($"At most 1 whitespace is allowed between IF/ELSEIF/ELSE and :. expression: '{context.conditionalTemplateBody().GetText()}", ReportEntryType.ERROR, conditionNode));
+                    result.Add(BuildBotDiagnostic($"At most 1 whitespace is allowed between IF/ELSEIF/ELSE and :. expression: '{context.conditionalTemplateBody().GetText()}", context: conditionNode));
                 }
 
                 if (idx == 0 && !ifExpr)
                 {
-                    result.Add(new ReportEntry($"condition is not start with if: '{context.conditionalTemplateBody().GetText()}'", ReportEntryType.WARN, conditionNode));
+                    result.Add(BuildBotDiagnostic($"condition is not start with if: '{context.conditionalTemplateBody().GetText()}'", DiagnosticSeverity.Warning, conditionNode));
                 }
 
                 if (idx > 0 && ifExpr)
                 {
-                    result.Add(new ReportEntry($"condition can't have more than one if: '{context.conditionalTemplateBody().GetText()}'", context: conditionNode));
+                    result.Add(BuildBotDiagnostic($"condition can't have more than one if: '{context.conditionalTemplateBody().GetText()}'", context: conditionNode));
                 }
 
                 if (idx == ifRules.Length - 1 && !elseExpr)
                 {
-                    result.Add(new ReportEntry($"condition is not end with else: '{context.conditionalTemplateBody().GetText()}'", ReportEntryType.WARN, conditionNode));
+                    result.Add(BuildBotDiagnostic($"condition is not end with else: '{context.conditionalTemplateBody().GetText()}'", DiagnosticSeverity.Warning, conditionNode));
                 }
 
                 if (idx > 0 && idx < ifRules.Length - 1 && !elseIfExpr)
                 {
-                    result.Add(new ReportEntry($"only elseif is allowed in middle of condition: '{context.conditionalTemplateBody().GetText()}'", context: conditionNode));
+                    result.Add(BuildBotDiagnostic($"only elseif is allowed in middle of condition: '{context.conditionalTemplateBody().GetText()}'", context: conditionNode));
                 }
 
                 // check rule should should with one and only expression
@@ -172,7 +159,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     if (ifRules[idx].ifCondition().EXPRESSION().Length != 1)
                     {
-                        result.Add(new ReportEntry($"if and elseif should followed by one valid expression: '{ifRules[idx].GetText()}'", context: conditionNode));
+                        result.Add(BuildBotDiagnostic($"if and elseif should followed by one valid expression: '{ifRules[idx].GetText()}'", context: conditionNode));
                     }
                     else
                     {
@@ -183,7 +170,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     if (ifRules[idx].ifCondition().EXPRESSION().Length != 0)
                     {
-                        result.Add(new ReportEntry($"else should not followed by any expression: '{ifRules[idx].GetText()}'", context: conditionNode));
+                        result.Add(BuildBotDiagnostic($"else should not followed by any expression: '{ifRules[idx].GetText()}'", context: conditionNode));
                     }
                 }
 
@@ -193,23 +180,23 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 else
                 {
-                    result.Add(new ReportEntry($"no normal template body in condition block: '{ifRules[idx].GetText()}'", context: conditionNode));
+                    result.Add(BuildBotDiagnostic($"no normal template body in condition block: '{ifRules[idx].GetText()}'", context: conditionNode));
                 }
             }
 
             return result;
         }
 
-        public override List<ReportEntry> VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
+        public override List<Diagnostic> VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
         {
-            var result = new List<ReportEntry>();
+            var result = new List<Diagnostic>();
 
             foreach (ITerminalNode node in context.children)
             {
                 switch (node.Symbol.Type)
                 {
                     case LGFileParser.INVALID_ESCAPE:
-                        result.Add(new ReportEntry($"escape character {node.GetText()} is invalid", context: context));
+                        result.Add(BuildBotDiagnostic($"escape character {node.GetText()} is invalid", context: context));
                         break;
                     case LGFileParser.TEMPLATE_REF:
                         result.AddRange(CheckTemplateRef(node.GetText(), context));
@@ -231,9 +218,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        public List<ReportEntry> CheckTemplateRef(string exp, ParserRuleContext context)
+        public List<Diagnostic> CheckTemplateRef(string exp, ParserRuleContext context)
         {
-            var result = new List<ReportEntry>();
+            var result = new List<Diagnostic>();
 
             exp = exp.TrimStart('[').TrimEnd(']').Trim();
 
@@ -246,14 +233,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var argsEndPos = exp.LastIndexOf(')');
                 if (argsEndPos < 0 || argsEndPos < argsStartPos + 1)
                 {
-                    result.Add(new ReportEntry($"Not a valid template ref: {exp}", context: context));
+                    result.Add(BuildBotDiagnostic($"Not a valid template ref: {exp}", context: context));
                 }
                 else
                 {
                     var templateName = exp.Substring(0, argsStartPos);
                     if (!templateMap.ContainsKey(templateName))
                     {
-                        result.Add(new ReportEntry($"[{templateName}] template not found", context: context));
+                        result.Add(BuildBotDiagnostic($"[{templateName}] template not found", context: context));
                     }
                     else
                     {
@@ -266,16 +253,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 if (!templateMap.ContainsKey(exp))
                 {
-                    result.Add(new ReportEntry($"[{exp}] template not found", context: context));
+                    result.Add(BuildBotDiagnostic($"[{exp}] template not found", context: context));
                 }
             }
 
             return result;
         }
 
-        private List<ReportEntry> CheckMultiLineText(string exp, ParserRuleContext context)
+        private List<Diagnostic> CheckMultiLineText(string exp, ParserRuleContext context)
         {
-            var result = new List<ReportEntry>();
+            var result = new List<Diagnostic>();
 
             // remove ``` ```
             exp = exp.Substring(3, exp.Length - 6);
@@ -291,34 +278,34 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        private List<ReportEntry> CheckText(string exp, ParserRuleContext context)
+        private List<Diagnostic> CheckText(string exp, ParserRuleContext context)
         {
-            var result = new List<ReportEntry>();
+            var result = new List<Diagnostic>();
 
             if (exp.StartsWith("```"))
             {
-                result.Add(new ReportEntry("Multi line variation must be enclosed in ```", context: context));
+                result.Add(BuildBotDiagnostic("Multi line variation must be enclosed in ```", context: context));
             }
 
             return result;
         }
 
-        private List<ReportEntry> CheckTemplateParameters(string templateName, int argsNumber, ParserRuleContext context)
+        private List<Diagnostic> CheckTemplateParameters(string templateName, int argsNumber, ParserRuleContext context)
         {
-            var result = new List<ReportEntry>();
+            var result = new List<Diagnostic>();
             var parametersNumber = templateMap[templateName].Paramters.Count;
 
             if (argsNumber != parametersNumber)
             {
-                result.Add(new ReportEntry($"Arguments count mismatch for template ref {templateName}, expected {parametersNumber}, actual {argsNumber}", context: context));
+                result.Add(BuildBotDiagnostic($"Arguments count mismatch for template ref {templateName}, expected {parametersNumber}, actual {argsNumber}", context: context));
             }
 
             return result;
         }
 
-        private List<ReportEntry> CheckExpression(string exp, ParserRuleContext context)
+        private List<Diagnostic> CheckExpression(string exp, ParserRuleContext context)
         {
-            var result = new List<ReportEntry>();
+            var result = new List<Diagnostic>();
             exp = exp.TrimStart('{').TrimEnd('}');
             try
             {
@@ -326,53 +313,22 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
             catch (Exception e)
             {
-                result.Add(new ReportEntry(e.Message + $" in expression `{exp}`", context: context));
+                result.Add(BuildBotDiagnostic(e.Message + $" in expression `{exp}`", context: context));
                 return result;
             }
 
             return result;
         }
-    }
 
-    /// <summary>
-    /// Error/Warning report when parsing/evaluating template/inlineText.
-    /// </summary>
-    public class ReportEntry
-    {
-        public ReportEntry(
+        private Diagnostic BuildBotDiagnostic(
             string message,
-            ReportEntryType type = ReportEntryType.ERROR,
-            ParserRuleContext context = null,
-            Tuple<int, int> start = null,
-            Tuple<int, int> stop = null)
+            DiagnosticSeverity severity = DiagnosticSeverity.Error,
+            ParserRuleContext context = null)
         {
-            Message = message;
-            Type = type;
-
-            if (context != null)
-            {
-                Start = new Tuple<int, int>(context.Start.Line - 1, context.Start.Column);
-                Stop = new Tuple<int, int>(context.Stop.Line - 1, context.Stop.Column);
-            }
-            else
-            {
-                Start = start ?? new Tuple<int, int>(0, 0);
-                Stop = stop ?? new Tuple<int, int>(0, 0);
-            }
-        }
-
-        public Tuple<int, int> Start { get; } = new Tuple<int, int>(0, 0);
-
-        public Tuple<int, int> Stop { get; } = new Tuple<int, int>(0, 0);
-
-        public ReportEntryType Type { get; set; }
-
-        public string Message { get; }
-
-        public override string ToString()
-        {
-            var label = Type == ReportEntryType.ERROR ? "ERROR" : "WARNING";
-            return $"{label}: {Message}";
+            var start = context == null ? new Position(0, 0) : new Position(context.Start.Line - 1, context.Start.Column);
+            var stop = context == null ? new Position(0, 0) : new Position(context.Stop.Line - 1, context.Stop.Column);
+            var range = new Range(start, stop);
+            return new Diagnostic(range, message, severity);
         }
     }
 }

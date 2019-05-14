@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var checker = new StaticChecker(teamplatesToCheck);
             var report = checker.Check();
 
-            var errors = report.Where(u => u.Type == ReportEntryType.ERROR).ToList();
+            var errors = report.Where(u => u.Severity == DiagnosticSeverity.Error).ToList();
             if (errors.Count != 0)
             {
                 throw new Exception(string.Join("\n", errors));
