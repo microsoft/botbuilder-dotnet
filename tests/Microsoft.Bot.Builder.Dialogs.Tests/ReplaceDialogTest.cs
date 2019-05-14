@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
@@ -59,6 +60,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("prompt four")
             .Send("hello")
             .AssertReply("prompt five")
+            .Send("hello")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task ReplaceDialogTelemetryClientNotNull()
+        {
+            var conversationState = new ConversationState(new MemoryStorage());
+            var dialogStateAccessor = conversationState.CreateProperty<DialogState>("dialogState");
+            var botTelemetryClient = new Mock<IBotTelemetryClient>();
+            var adapter = new TestAdapter();
+            var dialog = new FirstDialog()
+            {
+                TelemetryClient = botTelemetryClient.Object,
+            };
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                await dialog.RunAsync(turnContext, dialogStateAccessor, cancellationToken);
+                await conversationState.SaveChangesAsync(turnContext, false, cancellationToken);
+
+                Assert.AreEqual(dialog.TelemetryClient, botTelemetryClient.Object);
+            })
             .Send("hello")
             .StartTestAsync();
         }
