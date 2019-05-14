@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
@@ -11,6 +10,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.BotBuilderSamples.CognitiveModels;
 using Microsoft.BotBuilderSamples.Dialogs;
 using Microsoft.BotBuilderSamples.Tests.Utils;
+using Microsoft.BotBuilderSamples.Tests.Utils.XUnit;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Xunit;
@@ -21,7 +21,6 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
     public class MainDialogTests : DialogTestsBase
     {
         private readonly IntentDialogMap _intentsAndDialogs;
-
         private readonly Mock<IRecognizer> _mockLuisRecognizer;
 
         public MainDialogTests(ITestOutputHelper output)
@@ -30,7 +29,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             _mockLuisRecognizer = new Mock<IRecognizer>();
             _intentsAndDialogs = new IntentDialogMap
             {
-                { FlightBooking.Intent.BookFlight, DialogUtils.CreateMockDialog<BookingDialog>(null).Object },
+                { FlightBooking.Intent.BookFlight, DialogUtils.CreateMockDialog<BookingDialog>().Object },
                 { FlightBooking.Intent.GetWeather, DialogUtils.CreateMockDialog<Dialog>(null, "GetWeatherDialog").Object },
             };
         }
@@ -80,7 +79,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         [InlineData("A", "B", "")]
         [InlineData("A", "", "C")]
         [InlineData("", "B", "C")]
-        public async Task MessageIfLuisNotConfigured(string luisAppId, string luisApiKey, string luisApiHostName)
+        public async Task ShowsMessageIfLuisNotConfigured(string luisAppId, string luisApiKey, string luisApiHostName)
         {
             // Arrange
             var luisMockConfig = new Mock<IConfiguration>();
@@ -100,7 +99,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         }
 
         [Fact]
-        public async Task ShowPromptIfLuisIsConfigured()
+        public async Task ShowsPromptIfLuisIsConfigured()
         {
             // Arrange
             var sut = new MainDialog(MockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _intentsAndDialogs);
@@ -114,48 +113,71 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         [Theory]
         [InlineData("I want to book a flight", "BookFlight", "BookingDialog mock invoked")]
         [InlineData("What's the weather like?", "GetWeather", "TODO: get weather flow here")]
+        [InlineData("bananas", "None", "Sorry Dave, I didn't get that (intent was None)")]
         public async Task TaskSelector(string utterance, string intent, string invokedDialog)
         {
-            _mockLuisRecognizer
-                .Setup(x => x.RecognizeAsync<FlightBooking>(It.IsAny<ITurnContext>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult(
-                    new FlightBooking
+            _mockLuisRecognizer.SetupRecognizeAsync(
+                new FlightBooking
+                {
+                    Intents = new Dictionary<FlightBooking.Intent, IntentScore>
                     {
-                        Intents = new Dictionary<FlightBooking.Intent, IntentScore>
-                        {
-                            { Enum.Parse<FlightBooking.Intent>(intent), new IntentScore() { Score = 1 } },
-                        },
-                    }));
+                        { Enum.Parse<FlightBooking.Intent>(intent), new IntentScore() { Score = 1 } },
+                    },
+                });
 
-            _mockLuisRecognizer
-                .Setup(x => x.RecognizeAsync<BookingDetails>(It.IsAny<ITurnContext>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult(
-                    new BookingDetails
-                    {
-                        Origin = "irrelevant",
-                        Destination = "irrelevant",
-                        TravelDate = "irrelevant",
-                    }));
+            _mockLuisRecognizer.SetupRecognizeAsync(
+                new BookingDetails
+                {
+                    Origin = "irrelevant",
+                    Destination = "irrelevant",
+                    TravelDate = "irrelevant",
+                });
+
+            // Alternative syntax using native Mock
+            //_mockLuisRecognizer
+            //    .Setup(x => x.RecognizeAsync<BookingDetails>(It.IsAny<ITurnContext>(), It.IsAny<CancellationToken>()))
+            //    .Returns(() => Task.FromResult(
+            //        new BookingDetails
+            //        {
+            //            Origin = "irrelevant",
+            //            Destination = "irrelevant",
+            //            TravelDate = "irrelevant",
+            //        }));
 
             var sut = new MainDialog(MockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _intentsAndDialogs);
             var testBot = new DialogsTestBot(sut, Output);
 
-            await testBot.SendAsync<IMessageActivity>("irrelevant");
-            var reply = await testBot.SendAsync<IMessageActivity>(utterance);
+            var reply = await testBot.SendAsync<IMessageActivity>("irrelevant");
+            Assert.Equal("What can I help you with today?", reply.Text);
+            reply = await testBot.SendAsync<IMessageActivity>(utterance);
             Assert.Equal(invokedDialog, reply.Text);
+            reply = await testBot.GetNextReplyAsync<IMessageActivity>();
+            Assert.Equal("What else can I do for you?", reply.Text);
         }
 
         [Theory]
         [MemberData(nameof(MainDialogDataSource))]
-        public async Task MainDialogWithMockBookingAndMemberData(BookingDetails expectedResult, string endMessage)
+        public async Task TaskSelectorWithMemberData(BookingDetails expectedResult, string endMessage)
         {
-            // Arrange
-            var mockBookingDialog = DialogUtils.CreateMockDialog<BookingDialog>(expectedResult);
+            _mockLuisRecognizer.SetupRecognizeAsync(
+                new FlightBooking
+                {
+                    Intents = new Dictionary<FlightBooking.Intent, IntentScore>
+                    {
+                        { FlightBooking.Intent.BookFlight, new IntentScore { Score = 1 } },
+                    },
+                });
 
-            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, new IntentDialogMap
-            {
-                { FlightBooking.Intent.BookFlight, mockBookingDialog.Object },
-            });
+            _mockLuisRecognizer.SetupRecognizeAsync(
+                new BookingDetails
+                {
+                    Origin = "irrelevant",
+                    Destination = "irrelevant",
+                    TravelDate = "irrelevant",
+                });
+
+            // Arrange
+            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _intentsAndDialogs);
             var testBot = new DialogsTestBot(sut, Output);
 
             // Act/Assert

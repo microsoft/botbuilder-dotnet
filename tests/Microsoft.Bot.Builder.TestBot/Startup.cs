@@ -77,7 +77,7 @@ namespace Microsoft.BotBuilderSamples
                 "https://" + Configuration["LuisAPIHostName"]);
 
             var recognizer = new LuisRecognizer(luisApplication, null, false, null);
-            services.AddSingleton(recognizer);
+            services.AddSingleton<IRecognizer>(recognizer);
 
             // The Dialog that will be run by the bot.
             services.AddSingleton<MainDialog>();
