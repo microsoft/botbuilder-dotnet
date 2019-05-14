@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string SubtractFromTime = "subtractFromTime";
         public const string DateReadBack = "dateReadBack";
         public const string GetTimeOfDay = "getTimeOfDay";
-        public const string GetFeatureTime = "getFeatureTime";
+        public const string GetFutureTime = "getFutureTime";
         public const string GetPastTime = "getPastTime";
 
         // Conversions

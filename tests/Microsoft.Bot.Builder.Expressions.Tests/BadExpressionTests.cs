@@ -210,10 +210,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("getPastTime(timestamp, 'W')"),// error parameters format
             Test("getPastTime('yyyy', '1')"),// second param should be integer
             Test("getPastTime('yyyy')"),// should have 2 or 3 params
-            Test("getFeatureTime(1, 'W')"),// error time unit
-            Test("getFeatureTime(timestamp, 'W')"),// error parameters format
-            Test("getFeatureTime('yyyy', '1')"),// second param should be integer
-            Test("getFeatureTime('yyyy')"),// should have 2 or 3 params
+            Test("getFutureTime(1, 'W')"),// error time unit
+            Test("getFutureTime(timestamp, 'W')"),// error parameters format
+            Test("getFutureTime('yyyy', '1')"),// second param should be integer
+            Test("getFutureTime('yyyy')"),// should have 2 or 3 params
             # endregion
 
             # region collection functions test

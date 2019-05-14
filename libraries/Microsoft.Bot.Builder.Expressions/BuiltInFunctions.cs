@@ -1619,7 +1619,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     ReturnType.String,
                     expr => ValidateOrder(expr, null, ReturnType.String)),
                 new ExpressionEvaluator(
-                    ExpressionType.GetFeatureTime,
+                    ExpressionType.GetFutureTime,
                     (expr, state) =>
                     {
                         object value = null;
