@@ -17,12 +17,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public static IList<LGTemplate> Parse(string text, string source = "")
         {
             var parseSuccess = TryParse(text, out var templates, out var diagnostic, source);
-            if (parseSuccess)
+            if (!parseSuccess)
             {
-                return templates;
+                throw new Exception(diagnostic.ToString());
             }
 
-            throw new Exception(diagnostic.ToString());
+            return templates;
         }
 
         /// <summary>
@@ -46,11 +46,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             catch (Exception e)
             {
                 diagnostic = JsonConvert.DeserializeObject<Diagnostic>(e.Message);
+                return false;
             }
 
             templates = ToLGTemplates(fileContext, source);
 
-            return diagnostic == null;
+            return true;
         }
 
         private static LGFileParser.FileContext GetFileContentContext(string text)
