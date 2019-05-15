@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
@@ -18,11 +19,44 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         {
         }
 
-        public static BookingDialogData<BookingDetails, string, string> BookingDialogDataSource =>
-            new BookingDialogData<BookingDetails, string,  string>
+        public static BookingDialogData<BookingDetails, List<Tuple<string, string>>> BookingDialogDataSource =>
+            new BookingDialogData<BookingDetails, List<Tuple<string, string>>>
             {
-                { null, null, "Where would you like to travel to?" },
-                { new BookingDetails(), null, "Where would you like to travel to?" },
+                {
+                    new BookingDetails(),
+                    new List<Tuple<string, string>>
+                    {
+                        new Tuple<string, string>("irrelevant", "Where would you like to travel to?"),
+                        new Tuple<string, string>("Seattle", "Where are you traveling from?"),
+                        new Tuple<string, string>("New York", "When would you like to travel?"),
+                        new Tuple<string, string>("tomorrow", $"Please confirm, I have you traveling to: Seattle from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No"),
+                        new Tuple<string, string>("yes", "I have you booked to Seattle from New York on tomorrow"),
+                    }
+                },
+                {
+                    new BookingDetails
+                    {
+                        Destination = "Bahamas",
+                        Origin = null,
+                        TravelDate = null,
+                    },
+                    new List<Tuple<string, string>>
+                    {
+                        new Tuple<string, string>("irrelevant", "Where are you traveling from?"),
+                    }
+                },
+                {
+                    new BookingDetails
+                    {
+                        Destination = "Bahamas",
+                        Origin = "New York",
+                        TravelDate = null,
+                    },
+                    new List<Tuple<string, string>>
+                    {
+                        new Tuple<string, string>("irrelevant", "When would you like to travel?"),
+                    }
+                },
                 {
                     new BookingDetails
                     {
@@ -30,8 +64,11 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                         Origin = "New York",
                         TravelDate = $"{DateTime.UtcNow.AddDays(1):yyyy-MM-dd}",
                     },
-                    null,
-                    "I have you booked to Bahamas from New York on tomorrow"
+                    new List<Tuple<string, string>>
+                    {
+                        new Tuple<string, string>("irrelevant", $"Please confirm, I have you traveling to: Bahamas from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No"),
+                        new Tuple<string, string>("yes", "I have you booked to Bahamas from New York on tomorrow"),
+                    }
                 },
                 {
                     new BookingDetails
@@ -40,8 +77,11 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                         Origin = "Bahamas",
                         TravelDate = $"{DateTime.UtcNow:yyyy-MM-dd}",
                     },
-                    null,
-                    "I have you booked to Seattle from Bahamas on today"
+                    new List<Tuple<string, string>>
+                    {
+                        new Tuple<string, string>("irrelevant", $"Please confirm, I have you traveling to: Seattle from: Bahamas on: {DateTime.UtcNow:yyyy-MM-dd} (1) Yes or (2) No"),
+                        new Tuple<string, string>("yes", "I have you booked to Seattle from Bahamas on today"),
+                    }
                 },
             };
 
@@ -59,24 +99,24 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 
         [Theory]
         [MemberData(nameof(BookingDialogDataSource))]
-        public async Task TaskSelectorWithMemberData(BookingDetails inputBookingInfo, string expectedMessage)
+        public async Task TaskSelectorWithMemberData(BookingDetails inputBookingInfo, List<Tuple<string, string>> utterancesAndReplies)
         {
             var sut = new BookingDialog();
             var testBot = new DialogsTestBot(sut, Output, inputBookingInfo);
 
-            var reply = await testBot.SendAsync<IMessageActivity>("irrelevant");
-            Assert.Equal("Please confirm, I have you traveling to:", reply.Text);
-            reply = await testBot.SendAsync<IMessageActivity>("yes");
-            Assert.Equal(expectedMessage, reply.Text);
-
+            foreach (var utterancesAndReply in utterancesAndReplies)
+            {
+                var reply = await testBot.SendAsync<IMessageActivity>(utterancesAndReply.Item1);
+                Assert.Equal(utterancesAndReply.Item2, reply.Text);
+            }
         }
 
-        public class BookingDialogData<TBookingDetails, TConfirmationPrompt, TExpectedReply> : TheoryData
+        public class BookingDialogData<TBookingDetails, TUtterancesAndReplies> : TheoryData
             where TBookingDetails : BookingDetails
         {
-            public void Add(TBookingDetails bookingDetails, TConfirmationPrompt confirmationPrompt, TExpectedReply expectedReply)
+            public void Add(TBookingDetails bookingDetails, TUtterancesAndReplies utterancesAndReplies)
             {
-                AddRow(bookingDetails, confirmationPrompt, expectedReply);
+                AddRow(bookingDetails, utterancesAndReplies);
             }
         }
     }
