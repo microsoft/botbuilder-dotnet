@@ -72,20 +72,6 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     }
                 },
                 {
-                    "All booking details given for tomorrow",
-                    new BookingDetails
-                    {
-                        Destination = "Bahamas",
-                        Origin = "New York",
-                        TravelDate = $"{DateTime.UtcNow.AddDays(1):yyyy-MM-dd}",
-                    },
-                    new[,]
-                    {
-                        { "irrelevant", $"Please confirm, I have you traveling to: Bahamas from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
-                        { "yes", "I have you booked to Bahamas from New York on tomorrow" },
-                    }
-                },
-                {
                     "All booking details given for today",
                     new BookingDetails
                     {
@@ -97,6 +83,20 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     {
                         { "irrelevant", $"Please confirm, I have you traveling to: Seattle from: Bahamas on: {DateTime.UtcNow:yyyy-MM-dd} (1) Yes or (2) No" },
                         { "yes", "I have you booked to Seattle from Bahamas on today" },
+                    }
+                },
+                {
+                    "All booking details given for tomorrow",
+                    new BookingDetails
+                    {
+                        Destination = "Bahamas",
+                        Origin = "New York",
+                        TravelDate = $"{DateTime.UtcNow.AddDays(1):yyyy-MM-dd}",
+                    },
+                    new[,]
+                    {
+                        { "irrelevant", $"Please confirm, I have you traveling to: Bahamas from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
+                        { "yes", "I have you booked to Bahamas from New York on tomorrow" },
                     }
                 },
             };
@@ -115,7 +115,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 
         [Theory]
         [MemberData(nameof(BookingDialogDataSource))]
-        public async Task FlowScenarios(string useCaseName, BookingDetails inputBookingInfo, string[,] utterancesAndReplies)
+        public async Task DialogFlowUseCases(string useCaseName, BookingDetails inputBookingInfo, string[,] utterancesAndReplies)
         {
             var sut = new BookingDialog();
             var testBot = new DialogsTestBot(sut, Output, inputBookingInfo);
