@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
     public class LuisRecognizerTests
     {
         // Access the checked-in oracles so that if they are changed you can compare the changes and easily modify them.
-        private const string _testData = @"..\..\..\TestData\";
+        private const string _testData = @"../../../TestData/";
 
         // By default (when the Mocks are being used), the subscription key used can be any GUID. Only if the tests
         // are connecting to LUIS is an actual key needed.
