@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Configuration.Tests
     [TestClass]
     public class ConfigurationLoadAndSaveTests
     {
-        private const string TestBotFileName = @"..\..\..\test.bot";
+        private const string TestBotFileName = @"../../../test.bot";
         private const string OutputBotFileName = "save.bot";
 
         [TestMethod]
@@ -417,7 +417,7 @@ namespace Microsoft.Bot.Configuration.Tests
         public async Task LegacyEncryption()
         {
             var secretKey = "d+Mhts8yQIJIj9P/l1pO7n1fQExss7vvE8t9rg8qXsc=";
-            var config = await BotConfiguration.LoadAsync(@"..\..\..\legacy.bot", secretKey);
+            var config = await BotConfiguration.LoadAsync(@"../../../legacy.bot", secretKey);
             Assert.AreEqual("xyzpdq", ((EndpointService)config.Services[0]).AppPassword, "value should be unencrypted");
             Assert.IsTrue(!string.IsNullOrEmpty(config.Padlock), "padlock should exist");
             Assert.IsNull(config.Properties["secretKey"], "secretKey should not exist");
@@ -437,7 +437,7 @@ namespace Microsoft.Bot.Configuration.Tests
             Assert.IsNotNull(endpointSvc);
             Assert.IsNull(endpointSvc.ChannelService);
 
-            var govConfig = BotConfiguration.Load(@"..\..\..\govTest.bot");
+            var govConfig = BotConfiguration.Load(@"../../../govTest.bot");
             endpointSvc = govConfig.Services.Single(x => x.Type == ServiceTypes.Endpoint) as EndpointService;
             Assert.IsNotNull(endpointSvc);
             Assert.AreEqual("https://botframework.azure.us", endpointSvc.ChannelService);
