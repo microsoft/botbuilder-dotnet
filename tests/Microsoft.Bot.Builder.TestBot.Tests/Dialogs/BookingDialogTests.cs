@@ -26,7 +26,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     new BookingDetails(),
                     new[,]
                     {
-                        { "irrelevant", "Where would you like to travel to?"},
+                        { "irrelevant", "Where would you like to travel to?" },
                         { "Seattle", "Where are you traveling from?" },
                         { "New York", "When would you like to travel?" },
                         { "tomorrow", $"Please confirm, I have you traveling to: Seattle from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
@@ -38,7 +38,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     new BookingDetails(),
                     new[,]
                     {
-                        { "irrelevant", "Where would you like to travel to?"},
+                        { "irrelevant", "Where would you like to travel to?" },
                         { "Seattle", "Where are you traveling from?" },
                         { "New York", "When would you like to travel?" },
                         { "tomorrow", $"Please confirm, I have you traveling to: Seattle from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
@@ -115,7 +115,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 
         [Theory]
         [MemberData(nameof(BookingDialogDataSource))]
-        public async Task TaskSelectorWithMemberData(string useCaseName, BookingDetails inputBookingInfo, string[,] utterancesAndReplies)
+        public async Task FlowScenarios(string useCaseName, BookingDetails inputBookingInfo, string[,] utterancesAndReplies)
         {
             var sut = new BookingDialog();
             var testBot = new DialogsTestBot(sut, Output, inputBookingInfo);
@@ -126,6 +126,12 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 var reply = await testBot.SendAsync<IMessageActivity>(utterancesAndReplies[i, 0]);
                 Assert.Equal(utterancesAndReplies[i, 1], reply.Text);
             }
+        }
+
+        [Fact]
+        public void ShouldBeAbleToCancelAtAnyTime()
+        {
+            // TODO
         }
 
         public class BookingDialogData<TUseCaseName, TBookingDetails, TUtterancesAndReplies> : TheoryData
