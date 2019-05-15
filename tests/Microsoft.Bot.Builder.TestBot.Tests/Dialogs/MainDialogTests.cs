@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
@@ -116,7 +117,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         [InlineData("bananas", "None", "Sorry Dave, I didn't get that (intent was None)")]
         public async Task TaskSelector(string utterance, string intent, string invokedDialog)
         {
-            _mockLuisRecognizer.SetupRecognizeAsync(
+            _mockLuisRecognizer.SetupRecognizeAsync<FlightBooking>(
                 new FlightBooking
                 {
                     Intents = new Dictionary<FlightBooking.Intent, IntentScore>
@@ -125,7 +126,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     },
                 });
 
-            _mockLuisRecognizer.SetupRecognizeAsync(
+            _mockLuisRecognizer.SetupRecognizeAsync<BookingDetails>(
                 new BookingDetails
                 {
                     Origin = "irrelevant",
@@ -133,16 +134,6 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     TravelDate = "irrelevant",
                 });
 
-            // Alternative syntax using native Mock
-            //_mockLuisRecognizer
-            //    .Setup(x => x.RecognizeAsync<BookingDetails>(It.IsAny<ITurnContext>(), It.IsAny<CancellationToken>()))
-            //    .Returns(() => Task.FromResult(
-            //        new BookingDetails
-            //        {
-            //            Origin = "irrelevant",
-            //            Destination = "irrelevant",
-            //            TravelDate = "irrelevant",
-            //        }));
 
             var sut = new MainDialog(MockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _intentsAndDialogs);
             var testBot = new DialogsTestBot(sut, Output);

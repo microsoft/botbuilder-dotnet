@@ -37,7 +37,7 @@ namespace Microsoft.BotBuilderSamples
             }
         }
 
-        // Load attachment from file.
+        // Load attachment from embedded resource.
         private Attachment CreateAdaptiveCardAttachment()
         {
             var rootNamespace = typeof(Startup).Namespace;

@@ -19,7 +19,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Utils
         private readonly BotCallbackHandler _callback;
         private readonly TestAdapter _testAdapter;
 
-        public DialogsTestBot(Dialog targetDialog, ITestOutputHelper outputHelper = null)
+        public DialogsTestBot(Dialog targetDialog, ITestOutputHelper outputHelper = null, object initialDialogOptions = null)
         {
             var convoState = new ConversationState(new MemoryStorage());
             _testAdapter = new TestAdapter()
@@ -44,7 +44,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Utils
                 switch (results.Status)
                 {
                     case DialogTurnStatus.Empty:
-                        await dc.BeginDialogAsync(targetDialog.Id, null, cancellationToken);
+                        await dc.BeginDialogAsync(targetDialog.Id, initialDialogOptions, cancellationToken);
                         break;
                     case DialogTurnStatus.Complete:
                     {

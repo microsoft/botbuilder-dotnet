@@ -40,7 +40,7 @@ namespace Microsoft.BotBuilderSamples
 
         private async Task<DialogTurnResult> DestinationStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var bookingDetails = (BookingDetails)stepContext.Options;
+            var bookingDetails = (BookingDetails)stepContext.Options ?? new BookingDetails();
 
             if (bookingDetails.Destination == null)
             {
