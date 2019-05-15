@@ -1,12 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.TestBot.Bots;
 using Microsoft.Bot.Builder.TestBot.Debugging;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,9 +17,13 @@ namespace Microsoft.BotBuilderSamples
 {
     public class Startup
     {
+        private string chosenBot = string.Empty;
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            GetEnvironmentVariables();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Create the credential provider to be used with the Bot Framework Adapter.
@@ -45,7 +51,20 @@ namespace Microsoft.BotBuilderSamples
             services.AddSingleton<MainDialog>();
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
-            services.AddTransient<IBot, DialogAndWelcomeBot<MainDialog>>();
+            switch (chosenBot)
+            {
+                case "EchoBot":
+                    services.AddTransient<IBot, MyBot>();
+                    break;
+
+                case "DialogBot":
+                    services.AddTransient<IBot, DialogBot<MainDialog>>();
+                    break;
+
+                default:
+                    services.AddTransient<IBot, DialogAndWelcomeBot<MainDialog>>();
+                    break;
+            }
 
             // We can also run the inspection at a different endpoint. Just uncomment these lines.
             // services.AddSingleton<DebugAdapter>();
@@ -69,6 +88,18 @@ namespace Microsoft.BotBuilderSamples
 
             // app.UseHttpsRedirection();
             app.UseMvc();
+        }
+
+        public void GetEnvironmentVariables()
+        {
+            if (string.IsNullOrWhiteSpace(chosenBot))
+            {
+                chosenBot = Environment.GetEnvironmentVariable("CHOSENBOT");
+                if (string.IsNullOrWhiteSpace(chosenBot))
+                {
+                    chosenBot = "DialogAndWelcomeBot";
+                }
+            }
         }
     }
 }
