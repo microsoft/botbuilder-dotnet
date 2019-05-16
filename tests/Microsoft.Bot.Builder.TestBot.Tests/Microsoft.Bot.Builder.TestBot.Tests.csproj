@@ -13,6 +13,7 @@
   <ItemGroup>
     <None Remove="appsettings.json" />
     <None Remove="CognitiveModels\Data\TodoUnlabeledUtterances.json" />
+    <None Remove="xunit.runner.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +21,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="CognitiveModels\Data\TodoUnlabeledUtterances.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="xunit.runner.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

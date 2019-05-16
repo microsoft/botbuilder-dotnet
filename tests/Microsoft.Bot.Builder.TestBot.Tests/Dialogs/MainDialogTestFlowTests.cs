@@ -11,6 +11,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 {
     /// <summary>
     /// This sample uses the current classes and approach for testing bot conversations.
+    /// Note: this is included just as a reference.
     /// </summary>
     public class MainDialogTestFlowTests : DialogTestsBase
     {

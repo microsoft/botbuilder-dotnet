@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
@@ -18,89 +17,6 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         {
         }
 
-        public static BookingDialogData<string, BookingDetails, string[,]> BookingDialogDataSource =>
-            new BookingDialogData<string, BookingDetails, string[,]>
-            {
-                {
-                    "Full flow",
-                    new BookingDetails(),
-                    new[,]
-                    {
-                        { "irrelevant", "Where would you like to travel to?" },
-                        { "Seattle", "Where are you traveling from?" },
-                        { "New York", "When would you like to travel?" },
-                        { "tomorrow", $"Please confirm, I have you traveling to: Seattle from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
-                        { "yes", "I have you booked to Seattle from New York on tomorrow" },
-                    }
-                },
-                {
-                    "Full flow with 'no' at confirmation",
-                    new BookingDetails(),
-                    new[,]
-                    {
-                        { "irrelevant", "Where would you like to travel to?" },
-                        { "Seattle", "Where are you traveling from?" },
-                        { "New York", "When would you like to travel?" },
-                        { "tomorrow", $"Please confirm, I have you traveling to: Seattle from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
-                        { "no", "OK, we can do this later." },
-                    }
-                },
-                {
-                    "Destination given",
-                    new BookingDetails
-                    {
-                        Destination = "Bahamas",
-                        Origin = null,
-                        TravelDate = null,
-                    },
-                    new[,]
-                    {
-                        { "irrelevant", "Where are you traveling from?" },
-                    }
-                },
-                {
-                    "Destination and Origin given",
-                    new BookingDetails
-                    {
-                        Destination = "Bahamas",
-                        Origin = "New York",
-                        TravelDate = null,
-                    },
-                    new[,]
-                    {
-                        { "irrelevant", "When would you like to travel?" },
-                    }
-                },
-                {
-                    "All booking details given for today",
-                    new BookingDetails
-                    {
-                        Destination = "Seattle",
-                        Origin = "Bahamas",
-                        TravelDate = $"{DateTime.UtcNow:yyyy-MM-dd}",
-                    },
-                    new[,]
-                    {
-                        { "irrelevant", $"Please confirm, I have you traveling to: Seattle from: Bahamas on: {DateTime.UtcNow:yyyy-MM-dd} (1) Yes or (2) No" },
-                        { "yes", "I have you booked to Seattle from Bahamas on today" },
-                    }
-                },
-                {
-                    "All booking details given for tomorrow",
-                    new BookingDetails
-                    {
-                        Destination = "Bahamas",
-                        Origin = "New York",
-                        TravelDate = $"{DateTime.UtcNow.AddDays(1):yyyy-MM-dd}",
-                    },
-                    new[,]
-                    {
-                        { "irrelevant", $"Please confirm, I have you traveling to: Bahamas from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
-                        { "yes", "I have you booked to Bahamas from New York on tomorrow" },
-                    }
-                },
-            };
-
         [Fact]
         public void DialogConstructor()
         {
@@ -114,7 +30,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         }
 
         [Theory]
-        [MemberData(nameof(BookingDialogDataSource))]
+        [ClassData(typeof(BookingDialogTestsDialogFlowData))]
         public async Task DialogFlowUseCases(string useCaseName, BookingDetails inputBookingInfo, string[,] utterancesAndReplies)
         {
             var sut = new BookingDialog();
@@ -132,15 +48,6 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         public void ShouldBeAbleToCancelAtAnyTime()
         {
             // TODO
-        }
-
-        public class BookingDialogData<TUseCaseName, TBookingDetails, TUtterancesAndReplies> : TheoryData
-            where TBookingDetails : BookingDetails
-        {
-            public void Add(TUseCaseName useCaseName, TBookingDetails bookingDetails, TUtterancesAndReplies utterancesAndReplies)
-            {
-                AddRow(useCaseName, bookingDetails, utterancesAndReplies);
-            }
         }
     }
 }
