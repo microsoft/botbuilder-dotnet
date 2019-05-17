@@ -3,7 +3,7 @@ The BotBuilder SDK daily build feed is found on [MyGet](https://botbuilder.myget
 
 To consume the latest daily builds of the Bot Framework, you'll need to register MyGet as a package source in Visual Studio. 
 
-# Register Myget in Visual Studio Steps
+# Register MyGet in Visual Studio Steps
 You can register a MyGet feed the same way you register any NuGet package source by using the **Package Manager Settings** dialog.
 
 1. In Visual Studio go to Tools > Library Package Manager > Package Manager Settings in the Visual Studio menu.
