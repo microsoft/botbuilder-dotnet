@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.BotBuilderSamples.Tests.Utils;
+using Microsoft.BotBuilderSamples.Tests.Utils.XUnit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -30,17 +31,18 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         }
 
         [Theory]
-        [ClassData(typeof(BookingDialogTestsDialogFlowData))]
-        public async Task DialogFlowUseCases(string useCaseName, BookingDetails inputBookingInfo, string[,] utterancesAndReplies)
+        [ClassData(typeof(BookingDialogTestsDataGenerator))]
+        public async Task DialogFlowUseCases(TestDataObject testData)
         {
+            var bookingTestData = testData.GetObject<BookingDialogTestData>();
             var sut = new BookingDialog();
-            var testBot = new DialogsTestBot(sut, Output, inputBookingInfo);
+            var testBot = new DialogsTestBot(sut, Output, bookingTestData.BookingDetails);
 
-            Output.WriteLine($"Use Case: {useCaseName}");
-            for (var i = 0; i < utterancesAndReplies.GetLength(0); i++)
+            Output.WriteLine($"Use Case: {bookingTestData.TestCaseName}");
+            for (var i = 0; i < bookingTestData.UtterancesAndReplies.GetLength(0); i++)
             {
-                var reply = await testBot.SendAsync<IMessageActivity>(utterancesAndReplies[i, 0]);
-                Assert.Equal(utterancesAndReplies[i, 1], reply.Text);
+                var reply = await testBot.SendAsync<IMessageActivity>(bookingTestData.UtterancesAndReplies[i, 0]);
+                Assert.Equal(bookingTestData.UtterancesAndReplies[i, 1], reply.Text);
             }
         }
 

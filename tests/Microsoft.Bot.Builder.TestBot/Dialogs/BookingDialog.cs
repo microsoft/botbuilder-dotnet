@@ -97,6 +97,8 @@ namespace Microsoft.BotBuilderSamples
             {
                 var bookingDetails = (BookingDetails)stepContext.Options;
 
+                // Now we have all the booking details call the booking service.
+
                 // If the call to the booking service was successful tell the user.
                 var timeProperty = new TimexProperty(bookingDetails.TravelDate);
                 var travelDateMsg = timeProperty.ToNaturalLanguage(DateTime.Now);

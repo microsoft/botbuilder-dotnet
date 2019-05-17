@@ -2,20 +2,35 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using Microsoft.BotBuilderSamples.Tests.Utils.XUnit;
 using Xunit;
 using Xunit.Sdk;
 
 namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 {
-    [SuppressMessage("Microsoft.StyleCop.CSharp.OrderingRules", "SA1118:ParameterMustNotSpanMultipleLines", Justification = "Ignoring to make code more readable")]
-    public class BookingDialogTestsDialogFlowData : TheoryData<string, BookingDetails, string[,]>
+
+    public class BookingDialogTestData
     {
-        public BookingDialogTestsDialogFlowData()
+        public string TestCaseName { get; set; }
+
+        public BookingDetails BookingDetails { get; set; }
+
+        public string[,] UtterancesAndReplies { get; set; }
+    }
+
+    [SuppressMessage("Microsoft.StyleCop.CSharp.OrderingRules", "SA1118:ParameterMustNotSpanMultipleLines", Justification = "Ignoring to make code more readable")]
+    public class BookingDialogTestsDataGenerator : IEnumerable<object[]>
+    {
+        private readonly List<object[]> _data;
+
+        public BookingDialogTestsDataGenerator()
         {
-            Add(
+            _data = new List<object[]>();
+            AddTestCase(
                 "Full flow",
                 new BookingDetails(),
                 new[,]
@@ -26,7 +41,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     { "tomorrow", $"Please confirm, I have you traveling to: Seattle from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
                     { "yes", "I have you booked to Seattle from New York on tomorrow" },
                 });
-            Add(
+            AddTestCase(
                 "Full flow with 'no' at confirmation",
                 new BookingDetails(),
                 new[,]
@@ -37,7 +52,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     { "tomorrow", $"Please confirm, I have you traveling to: Seattle from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
                     { "no", "OK, we can do this later." },
                 });
-            Add(
+            AddTestCase(
                 "Destination given",
                 new BookingDetails
                 {
@@ -49,7 +64,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 {
                     { "irrelevant", "Where are you traveling from?" },
                 });
-            Add(
+            AddTestCase(
                 "Destination and Origin given",
                 new BookingDetails
                 {
@@ -61,7 +76,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 {
                     { "irrelevant", "When would you like to travel?" },
                 });
-            Add(
+            AddTestCase(
                 "All booking details given for today",
                 new BookingDetails
                 {
@@ -74,7 +89,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     { "irrelevant", $"Please confirm, I have you traveling to: Seattle from: Bahamas on: {DateTime.UtcNow:yyyy-MM-dd} (1) Yes or (2) No" },
                     { "yes", "I have you booked to Seattle from Bahamas on today" },
                 });
-            Add(
+            AddTestCase(
                 "All booking details given for tomorrow",
                 new BookingDetails
                 {
@@ -87,6 +102,21 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     { "irrelevant", $"Please confirm, I have you traveling to: Bahamas from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
                     { "yes", "I have you booked to Bahamas from New York on tomorrow" },
                 });
+        }
+
+        public IEnumerator<object[]> GetEnumerator() => _data.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        private void AddTestCase(string useCaseName, BookingDetails inputBookingInfo, string[,] utterancesAndReplies)
+        {
+            var testData = new BookingDialogTestData()
+            {
+                TestCaseName = useCaseName,
+                BookingDetails = inputBookingInfo,
+                UtterancesAndReplies = utterancesAndReplies,
+            };
+            _data.Add(new object[] { new TestDataObject(testData) });
         }
     }
 }
