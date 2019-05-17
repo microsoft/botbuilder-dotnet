@@ -1211,7 +1211,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     case 11:
                     case 12:
                     case 13:
-                        ordinalResult = num + "th";
+                        ordinalResult += "th";
                         hasResult = true;
                         break;
                 }
@@ -1221,16 +1221,16 @@ namespace Microsoft.Bot.Builder.Expressions
                     switch (num % 10)
                     {
                         case 1:
-                            ordinalResult = num + "st";
+                            ordinalResult += "st";
                             break;
                         case 2:
-                            ordinalResult = num + "nd";
+                            ordinalResult += "nd";
                             break;
                         case 3:
-                            ordinalResult = num + "rd";
+                            ordinalResult += "rd";
                             break;
                         default:
-                            ordinalResult = num + "th";
+                            ordinalResult += "th";
                             break;
                     }
                 }
