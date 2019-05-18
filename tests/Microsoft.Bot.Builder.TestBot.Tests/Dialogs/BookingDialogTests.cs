@@ -36,12 +36,12 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         {
             var bookingTestData = testData.GetObject<BookingDialogTestData>();
             var sut = new BookingDialog();
-            var testBot = new DialogsTestBot(sut, Output, bookingTestData.BookingDetails);
+            var testClient = new DialogTestClient(sut, Output, bookingTestData.BookingDetails);
 
             Output.WriteLine($"Use Case: {bookingTestData.TestCaseName}");
             for (var i = 0; i < bookingTestData.UtterancesAndReplies.GetLength(0); i++)
             {
-                var reply = await testBot.SendAsync<IMessageActivity>(bookingTestData.UtterancesAndReplies[i, 0]);
+                var reply = await testClient.SendAsync<IMessageActivity>(bookingTestData.UtterancesAndReplies[i, 0]);
                 Assert.Equal(bookingTestData.UtterancesAndReplies[i, 1], reply.Text);
             }
         }

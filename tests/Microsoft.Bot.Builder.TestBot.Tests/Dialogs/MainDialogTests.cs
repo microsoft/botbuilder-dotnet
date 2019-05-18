@@ -21,14 +21,14 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 {
     public class MainDialogTests : DialogTestsBase
     {
-        private readonly IntentDialogMap _intentsAndDialogs;
+        private readonly IntentDialogMap _mockDialogs;
         private readonly Mock<IRecognizer> _mockLuisRecognizer;
 
         public MainDialogTests(ITestOutputHelper output)
             : base(output)
         {
             _mockLuisRecognizer = new Mock<IRecognizer>();
-            _intentsAndDialogs = new IntentDialogMap
+            _mockDialogs = new IntentDialogMap
             {
                 { FlightBooking.Intent.BookFlight, DialogUtils.CreateMockDialog<BookingDialog>().Object },
                 { FlightBooking.Intent.GetWeather, DialogUtils.CreateMockDialog<Dialog>(null, "GetWeatherDialog").Object },
@@ -64,7 +64,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         {
             // TODO: check with the team if there's value in these types of test or if there's a better way of asserting the
             // dialog got composed properly.
-            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _intentsAndDialogs);
+            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _mockDialogs);
 
             Assert.Equal("MainDialog", sut.Id);
             Assert.IsType<TextPrompt>(sut.FindDialog("TextPrompt"));
@@ -88,14 +88,14 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             luisMockConfig.Setup(x => x["LuisAPIKey"]).Returns(luisApiKey);
             luisMockConfig.Setup(x => x["LuisAPIHostName"]).Returns(luisApiHostName);
 
-            var sut = new MainDialog(luisMockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _intentsAndDialogs);
-            var testBot = new DialogsTestBot(sut, Output);
+            var sut = new MainDialog(luisMockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _mockDialogs);
+            var testClient = new DialogTestClient(sut, Output);
 
             // Act/Assert
-            var reply = await testBot.SendAsync<IMessageActivity>("hi");
+            var reply = await testClient.SendAsync<IMessageActivity>("hi");
             Assert.Equal("NOTE: LUIS is not configured. To enable all capabilities, add 'LuisAppId', 'LuisAPIKey' and 'LuisAPIHostName' to the appsettings.json file.", reply.Text);
 
-            reply = await testBot.GetNextReplyAsync<IMessageActivity>();
+            reply = await testClient.GetNextReplyAsync<IMessageActivity>();
             Assert.Equal("What can I help you with today?", reply.Text);
         }
 
@@ -103,19 +103,19 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         public async Task ShowsPromptIfLuisIsConfigured()
         {
             // Arrange
-            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _intentsAndDialogs);
-            var testBot = new DialogsTestBot(sut, Output);
+            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _mockDialogs);
+            var testClient = new DialogTestClient(sut, Output);
 
             // Act/Assert
-            var reply = await testBot.SendAsync<IMessageActivity>("hi");
+            var reply = await testClient.SendAsync<IMessageActivity>("hi");
             Assert.Equal("What can I help you with today?", reply.Text);
         }
 
         [Theory]
         [InlineData("I want to book a flight", "BookFlight", "BookingDialog mock invoked")]
         [InlineData("What's the weather like?", "GetWeather", "TODO: get weather flow here")]
-        [InlineData("bananas", "None", "Sorry Dave, I didn't get that (intent was None)")]
-        public async Task TaskSelector(string utterance, string intent, string invokedDialog)
+        [InlineData("bananas", "None", "Sorry, I didn't get that. Please try asking in a different way (intent was None)")]
+        public async Task TaskSelector(string utterance, string intent, string invokedDialogResponse)
         {
             _mockLuisRecognizer.SetupRecognizeAsync<FlightBooking>(
                 new FlightBooking
@@ -126,23 +126,16 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     },
                 });
 
-            _mockLuisRecognizer.SetupRecognizeAsync<BookingDetails>(
-                new BookingDetails
-                {
-                    Origin = "irrelevant",
-                    Destination = "irrelevant",
-                    TravelDate = "irrelevant",
-                });
+            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _mockDialogs);
+            var testClient = new DialogTestClient(sut, Output);
 
-
-            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _intentsAndDialogs);
-            var testBot = new DialogsTestBot(sut, Output);
-
-            var reply = await testBot.SendAsync<IMessageActivity>("irrelevant");
+            var reply = await testClient.SendAsync<IMessageActivity>("hi");
             Assert.Equal("What can I help you with today?", reply.Text);
-            reply = await testBot.SendAsync<IMessageActivity>(utterance);
-            Assert.Equal(invokedDialog, reply.Text);
-            reply = await testBot.GetNextReplyAsync<IMessageActivity>();
+
+            reply = await testClient.SendAsync<IMessageActivity>(utterance);
+            Assert.Equal(invokedDialogResponse, reply.Text);
+
+            reply = await testClient.GetNextReplyAsync<IMessageActivity>();
             Assert.Equal("What else can I do for you?", reply.Text);
         }
 
@@ -162,23 +155,23 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             _mockLuisRecognizer.SetupRecognizeAsync(
                 new BookingDetails
                 {
-                    Origin = "irrelevant",
-                    Destination = "irrelevant",
-                    TravelDate = "irrelevant",
+                    Origin = "hi",
+                    Destination = "hi",
+                    TravelDate = "hi",
                 });
 
             // Arrange
-            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _intentsAndDialogs);
-            var testBot = new DialogsTestBot(sut, Output);
+            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _mockDialogs);
+            var testClient = new DialogTestClient(sut, Output);
 
             // Act/Assert
-            var reply = await testBot.SendAsync<IMessageActivity>("Hi");
+            var reply = await testClient.SendAsync<IMessageActivity>("Hi");
             Assert.Equal("What can I help you with today?", reply.Text);
 
-            reply = await testBot.SendAsync<IMessageActivity>("irrelevant");
+            reply = await testClient.SendAsync<IMessageActivity>("hi");
             Assert.Equal("BookingDialog mock invoked", reply.Text);
 
-            reply = await testBot.GetNextReplyAsync<IMessageActivity>();
+            reply = await testClient.GetNextReplyAsync<IMessageActivity>();
             Assert.Equal(endMessage, reply.Text);
         }
 

@@ -35,7 +35,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 new BookingDetails(),
                 new[,]
                 {
-                    { "irrelevant", "Where would you like to travel to?" },
+                    { "hi", "Where would you like to travel to?" },
                     { "Seattle", "Where are you traveling from?" },
                     { "New York", "When would you like to travel?" },
                     { "tomorrow", $"Please confirm, I have you traveling to: Seattle from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
@@ -46,7 +46,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 new BookingDetails(),
                 new[,]
                 {
-                    { "irrelevant", "Where would you like to travel to?" },
+                    { "hi", "Where would you like to travel to?" },
                     { "Seattle", "Where are you traveling from?" },
                     { "New York", "When would you like to travel?" },
                     { "tomorrow", $"Please confirm, I have you traveling to: Seattle from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
@@ -62,7 +62,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 },
                 new[,]
                 {
-                    { "irrelevant", "Where are you traveling from?" },
+                    { "hi", "Where are you traveling from?" },
                 });
             AddTestCase(
                 "Destination and Origin given",
@@ -74,7 +74,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 },
                 new[,]
                 {
-                    { "irrelevant", "When would you like to travel?" },
+                    { "hi", "When would you like to travel?" },
                 });
             AddTestCase(
                 "All booking details given for today",
@@ -86,7 +86,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 },
                 new[,]
                 {
-                    { "irrelevant", $"Please confirm, I have you traveling to: Seattle from: Bahamas on: {DateTime.UtcNow:yyyy-MM-dd} (1) Yes or (2) No" },
+                    { "hi", $"Please confirm, I have you traveling to: Seattle from: Bahamas on: {DateTime.UtcNow:yyyy-MM-dd} (1) Yes or (2) No" },
                     { "yes", "I have you booked to Seattle from Bahamas on today" },
                 });
             AddTestCase(
@@ -99,7 +99,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 },
                 new[,]
                 {
-                    { "irrelevant", $"Please confirm, I have you traveling to: Bahamas from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
+                    { "hi", $"Please confirm, I have you traveling to: Bahamas from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
                     { "yes", "I have you booked to Bahamas from New York on tomorrow" },
                 });
         }

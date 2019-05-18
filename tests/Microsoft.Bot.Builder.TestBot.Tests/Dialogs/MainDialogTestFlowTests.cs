@@ -29,7 +29,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 
             await testFlow.Send("hi")
                 .AssertReply("What can I help you with today?")
-                .Send("irrelevant")
+                .Send("hi")
                 .AssertReply("Where would you like to travel to?")
                 .Send("Bahamas")
                 .AssertReply("Where are you traveling from?")

@@ -88,7 +88,7 @@ namespace Microsoft.BotBuilderSamples
 
                 default:
                     // Catch all for unhandled intents
-                    await stepContext.Context.SendActivityAsync($"Sorry Dave, I didn't get that (intent was {luisResult.TopIntent().intent})", cancellationToken: cancellationToken);
+                    await stepContext.Context.SendActivityAsync($"Sorry, I didn't get that. Please try asking in a different way (intent was {luisResult.TopIntent().intent})", cancellationToken: cancellationToken);
                     break;
             }
 

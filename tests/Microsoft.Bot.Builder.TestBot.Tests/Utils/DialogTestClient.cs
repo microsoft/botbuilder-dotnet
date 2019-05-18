@@ -12,14 +12,14 @@ using Xunit.Abstractions;
 namespace Microsoft.BotBuilderSamples.Tests.Utils
 {
     /// <summary>
-    /// A Bot to be used for testing dialogs in isolation.
+    /// A client to for testing dialogs in isolation.
     /// </summary>
-    public class DialogsTestBot
+    public class DialogTestClient
     {
         private readonly BotCallbackHandler _callback;
         private readonly TestAdapter _testAdapter;
 
-        public DialogsTestBot(Dialog targetDialog, ITestOutputHelper outputHelper = null, object initialDialogOptions = null)
+        public DialogTestClient(Dialog targetDialog, ITestOutputHelper outputHelper = null, object initialDialogOptions = null)
         {
             var convoState = new ConversationState(new MemoryStorage());
             _testAdapter = new TestAdapter()
