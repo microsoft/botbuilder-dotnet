@@ -240,7 +240,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 }
             }
 
-            // Fill in Qna Results (found or not)
+            // Fill in QnA Results (found or not)
             if (queryResults.Length > 0)
             {
                 var queryResult = queryResults[0];
