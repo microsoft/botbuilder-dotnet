@@ -7,10 +7,10 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Schema.Tests
 {
-    [TestClass]
     /// <summary>
     /// Entity schema validation tests to ensure that serilization and deserialization work as expected.
     /// </summary>
+    [TestClass]
     public class EntitySchemaValidationTest
     {
         /// <summary>

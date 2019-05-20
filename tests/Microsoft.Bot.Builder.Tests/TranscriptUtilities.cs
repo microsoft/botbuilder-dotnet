@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Tests
 
         private static readonly object _syncRoot = new object();
 
-        private static string TranscriptsLocalPath { get; set; } = @"..\..\..\..\..\tests\Transcripts\";
+        private static string TranscriptsLocalPath { get; set; } = @"../../../../../tests/Transcripts/";
 
         /// <summary>
         /// Loads a list of activities from a transcript file.
