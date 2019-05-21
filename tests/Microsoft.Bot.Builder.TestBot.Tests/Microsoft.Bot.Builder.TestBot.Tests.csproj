@@ -58,6 +58,9 @@
     <None Update="CognitiveModels\Data\email.lu">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="CognitiveModels\Data\flightBookingSampleSet.lu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="CognitiveModels\Data\pointofinterest.lu">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

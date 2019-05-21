@@ -36,6 +36,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         {
             var bookingTestData = testData.GetObject<BookingDialogTestData>();
             var sut = new BookingDialog();
+
             var testClient = new DialogTestClient(sut, Output, bookingTestData.BookingDetails);
 
             Output.WriteLine($"Use Case: {bookingTestData.TestCaseName}");

@@ -14,7 +14,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Utils.XUnit
     {
         public LuDownDataGenerator(string fileName, string relativePath)
         {
-            var absolutePath = Path.Combine(Directory.GetCurrentDirectory(), relativePath);
+            var absolutePath = string.IsNullOrEmpty(relativePath) ? Directory.GetCurrentDirectory() : Path.Combine(Directory.GetCurrentDirectory(), relativePath);
             var batchTest = LuisCommandRunner.LuToBatchTest(fileName, absolutePath);
             foreach (var testUtterance in batchTest)
             {

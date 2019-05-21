@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
@@ -34,30 +33,6 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 { FlightBooking.Intent.GetWeather, DialogUtils.CreateMockDialog<Dialog>(null, "GetWeatherDialog").Object },
             };
         }
-
-        public static MainDialogData<BookingDetails, string> MainDialogDataSource =>
-            new MainDialogData<BookingDetails, string>
-            {
-                { null, "Thank you." },
-                {
-                    new BookingDetails
-                    {
-                        Destination = "Bahamas",
-                        Origin = "New York",
-                        TravelDate = $"{DateTime.UtcNow.AddDays(1):yyyy-MM-dd}",
-                    },
-                    "I have you booked to Bahamas from New York on tomorrow"
-                },
-                {
-                    new BookingDetails
-                    {
-                        Destination = "Seattle",
-                        Origin = "Bahamas",
-                        TravelDate = $"{DateTime.UtcNow:yyyy-MM-dd}",
-                    },
-                    "I have you booked to Seattle from Bahamas on today"
-                },
-            };
 
         [Fact]
         public void DialogConstructor()
@@ -137,51 +112,6 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 
             reply = await testClient.GetNextReplyAsync<IMessageActivity>();
             Assert.Equal("What else can I do for you?", reply.Text);
-        }
-
-        [Theory]
-        [MemberData(nameof(MainDialogDataSource))]
-        public async Task TaskSelectorWithMemberData(BookingDetails expectedResult, string endMessage)
-        {
-            _mockLuisRecognizer.SetupRecognizeAsync(
-                new FlightBooking
-                {
-                    Intents = new Dictionary<FlightBooking.Intent, IntentScore>
-                    {
-                        { FlightBooking.Intent.BookFlight, new IntentScore { Score = 1 } },
-                    },
-                });
-
-            _mockLuisRecognizer.SetupRecognizeAsync(
-                new BookingDetails
-                {
-                    Origin = "hi",
-                    Destination = "hi",
-                    TravelDate = "hi",
-                });
-
-            // Arrange
-            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _mockDialogs);
-            var testClient = new DialogTestClient(sut, Output);
-
-            // Act/Assert
-            var reply = await testClient.SendAsync<IMessageActivity>("Hi");
-            Assert.Equal("What can I help you with today?", reply.Text);
-
-            reply = await testClient.SendAsync<IMessageActivity>("hi");
-            Assert.Equal("BookingDialog mock invoked", reply.Text);
-
-            reply = await testClient.GetNextReplyAsync<IMessageActivity>();
-            Assert.Equal(endMessage, reply.Text);
-        }
-
-        public class MainDialogData<TBookingDetails, TExpectedReply> : TheoryData
-            where TBookingDetails : BookingDetails
-        {
-            public void Add(TBookingDetails bookingDetails, TExpectedReply expectedReply)
-            {
-                AddRow(bookingDetails, expectedReply);
-            }
         }
     }
 }

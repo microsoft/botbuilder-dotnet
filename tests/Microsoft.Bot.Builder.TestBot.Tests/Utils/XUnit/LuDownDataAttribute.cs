@@ -21,6 +21,11 @@ namespace Microsoft.BotBuilderSamples.Tests.Utils.XUnit
         private readonly string _luDownFileName;
         private readonly string _relativePath;
 
+        public LuDownDataAttribute(string luDownFileName)
+            : this(luDownFileName, null)
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="LuDownDataAttribute"/> class.
         /// </summary>
