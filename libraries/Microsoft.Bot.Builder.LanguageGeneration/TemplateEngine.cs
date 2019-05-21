@@ -12,11 +12,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class TemplateEngine
     {
         /// <summary>
-        /// Parsed LG templates.
-        /// </summary>
-        public List<LGTemplate> Templates = new List<LGTemplate>();
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngine"/> class.
         /// Return an empty engine, you can then use AddFile\AddFiles to add files to it,
         /// or you can just use this empty engine to evaluate inline template.
@@ -26,15 +21,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
+        /// Gets or sets parsed LG templates.
+        /// </summary>
+        /// <value>
+        /// Parsed LG templates.
+        /// </value>
+        public List<LGTemplate> Templates { get; set; } = new List<LGTemplate>();
+
+        /// <summary>
         /// Create a template engine from files, a shorthand for.
         ///    new TemplateEngine().AddFiles(filePath).
         /// </summary>
         /// <param name="filePaths">paths to LG files.</param>
         /// <returns>Engine created.</returns>
-        public static TemplateEngine FromFiles(params string[] filePaths)
-        {
-            return new TemplateEngine().AddFiles(filePaths);
-        }
+        public static TemplateEngine FromFiles(params string[] filePaths) => new TemplateEngine().AddFiles(filePaths);
 
         /// <summary>
         /// Create a template engine from text, equivalent to.
@@ -42,10 +42,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="text">Content of lg file.</param>
         /// <returns>Engine created.</returns>
-        public static TemplateEngine FromText(string text)
-        {
-            return new TemplateEngine().AddText(text);
-        }
+        public static TemplateEngine FromText(string text) => new TemplateEngine().AddText(text);
 
         /// <summary>
         /// Load .lg files into template engine
@@ -60,7 +57,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var newTemplates = filePaths.Select(filePath =>
             {
                 var text = File.ReadAllText(filePath);
-                return ToTemplates(Parse(text), filePath);
+                return LGParser.Parse(text, filePath);
             }).SelectMany(x => x);
 
             var mergedTemplates = Templates.Concat(newTemplates).ToList();
@@ -79,19 +76,22 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Template engine with the parsed content.</returns>
         public TemplateEngine AddText(string text)
         {
-            Templates.AddRange(ToTemplates(Parse(text), "text"));
-
+            Templates.AddRange(LGParser.Parse(text, "text"));
             RunStaticCheck();
             return this;
         }
 
+        /// <summary>
+        /// Check templates/text to match LG format.
+        /// </summary>
+        /// <param name="templates">the templates which should be checked.</param>
         public void RunStaticCheck(List<LGTemplate> templates = null)
         {
             var teamplatesToCheck = templates ?? this.Templates;
             var checker = new StaticChecker(teamplatesToCheck);
-            var report = checker.Check();
+            var diagnostics = checker.Check();
 
-            var errors = report.Where(u => u.Type == ReportEntryType.ERROR).ToList();
+            var errors = diagnostics.Where(u => u.Severity == DiagnosticSeverity.Error).ToList();
             if (errors.Count != 0)
             {
                 throw new Exception(string.Join("\n", errors));
@@ -130,7 +130,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var fakeTemplateId = "__temp__";
             var wrappedStr = $"# {fakeTemplateId} \r\n - {inlineStr}";
 
-            var parsedTemplates = ToTemplates(Parse(wrappedStr), "inline");
+            var parsedTemplates = LGParser.Parse(wrappedStr, "inline");
 
             // merge the existing templates and this new template as a whole for evaluation
             var mergedTemplates = Templates.Concat(parsedTemplates).ToList();
@@ -139,45 +139,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var evaluator = new Evaluator(mergedTemplates, methodBinder);
             return evaluator.EvaluateTemplate(fakeTemplateId, scope);
-        }
-
-        /// <summary>
-        /// Parse text as a LG file using antlr.
-        /// </summary>
-        /// <param name="text">text to parse.</param>
-        /// <returns>ParseTree of the LG file.</returns>
-        private LGFileParser.FileContext Parse(string text)
-        {
-            if (string.IsNullOrEmpty(text))
-            {
-                return null;
-            }
-
-            var input = new AntlrInputStream(text);
-            var lexer = new LGFileLexer(input);
-            var tokens = new CommonTokenStream(lexer);
-            var parser = new LGFileParser(tokens);
-            parser.RemoveErrorListeners();
-            var listener = new ErrorListener();
-
-            parser.AddErrorListener(listener);
-            parser.BuildParseTree = true;
-
-            return parser.file();
-        }
-
-        /// <summary>
-        /// Convert a file parse tree to a list of LG templates.
-        /// </summary>
-        private List<LGTemplate> ToTemplates(LGFileParser.FileContext file, string source = "")
-        {
-            if (file == null)
-            {
-                return new List<LGTemplate>();
-            }
-
-            var templates = file.paragraph().Select(x => x.templateDefinition()).Where(x => x != null);
-            return templates.Select(t => new LGTemplate(t, source)).ToList();
         }
     }
 }

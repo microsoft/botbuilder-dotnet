@@ -10,26 +10,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class LGTemplate
     {
         /// <summary>
-        /// Name of the template, what's followed by '#' in a LG file.
-        /// </summary>
-        public string Name;
-
-        /// <summary>
-        /// Paramter list of this template.
-        /// </summary>
-        public List<string> Paramters;
-
-        /// <summary>
-        /// Source of this template, source file path if it's from a certain file.
-        /// </summary>
-        public string Source;
-
-        /// <summary>
-        /// The parse tree of this template.
-        /// </summary>
-        public LGFileParser.TemplateDefinitionContext ParseTree;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="LGTemplate"/> class.
         /// </summary>
         /// <param name="parseTree">The parse tree of this template.</param>
@@ -41,12 +21,52 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             Name = ExtractName(parseTree);
             Paramters = ExtractParameters(parseTree);
+            Body = ExtractBody(parseTree);
         }
 
-        private string ExtractName(LGFileParser.TemplateDefinitionContext parseTree)
-        {
-            return parseTree.templateNameLine().templateName().GetText();
-        }
+        /// <summary>
+        /// Gets name of the template, what's followed by '#' in a LG file.
+        /// </summary>
+        /// <value>
+        /// Name of the template, what's followed by '#' in a LG file.
+        /// </value>
+        public string Name { get; }
+
+        /// <summary>
+        /// Gets paramter list of this template.
+        /// </summary>
+        /// <value>
+        /// Paramter list of this template.
+        /// </value>
+        public List<string> Paramters { get; }
+
+        /// <summary>
+        /// Gets or sets text format of Body of this template. All content except Name and Parameters.
+        /// </summary>
+        /// <value>
+        /// Text format of Body of this template. All content except Name and Parameters.
+        /// </value>
+        public string Body { get; set; }
+
+        /// <summary>
+        /// Gets source of this template, source file path if it's from a certain file.
+        /// </summary>
+        /// <value>
+        /// Source of this template, source file path if it's from a certain file.
+        /// </value>
+        public string Source { get; }
+
+        /// <summary>
+        /// Gets the parse tree of this template.
+        /// </summary>
+        /// <value>
+        /// The parse tree of this template.
+        /// </value>
+        public LGFileParser.TemplateDefinitionContext ParseTree { get; }
+
+        private string ExtractBody(LGFileParser.TemplateDefinitionContext parseTree) => parseTree.templateBody()?.GetText();
+
+        private string ExtractName(LGFileParser.TemplateDefinitionContext parseTree) => parseTree.templateNameLine().templateName().GetText();
 
         private List<string> ExtractParameters(LGFileParser.TemplateDefinitionContext parseTree)
         {

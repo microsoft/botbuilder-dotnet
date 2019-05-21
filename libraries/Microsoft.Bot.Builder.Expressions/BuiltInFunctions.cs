@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Expressions
     /// <remarks>
     /// These functions are largely from WDL https://docs.microsoft.com/en-us/azure/logic-apps/workflow-definition-language-functions-reference
     /// with a few extensions like infix operators for math, logic and comparisons.
-    /// 
+    ///
     /// This class also has some methods that are useful to use when defining custom functions.
     /// You can always construct a <see cref="ExpressionEvaluator"/> directly which gives the maximum amount of control over validation and evaluation.
     /// Validators are static checkers that should throw an exception if something is not valid statically.
@@ -33,12 +33,21 @@ namespace Microsoft.Bot.Builder.Expressions
         /// Random number generator used for expressions.
         /// </summary>
         /// <remarks>This is exposed so that you can explicitly seed the random number generator for tests.</remarks>
-        public static Random Randomizer = new Random();
+        public static readonly Random Randomizer = new Random();
 
         /// <summary>
         /// The default date time format string.
         /// </summary>
         public static readonly string DefaultDateTimeFormat = "o";
+
+        /// <summary>
+        /// Verify the result of an expression is of the appropriate type and return a string if not.
+        /// </summary>
+        /// <param name="value">Value to verify.</param>
+        /// <param name="expression">Expression that produced value.</param>
+        /// <param name="child">Index of child expression.</param>
+        /// <returns>Null if value if correct or error string otherwise.</returns>
+        public delegate string VerifyExpression(object value, Expression expression, int child);
 
         // Validators do static validation of expressions
 
@@ -100,7 +109,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// Validate the number and type of arguments to a function.
         /// </summary>
         /// <param name="expression">Expression to validate.</param>
-        /// <parm name="optional">Optional types in order.</parm>
+        /// <param name="optional">Optional types in order.</parm>
         /// <param name="types">Expected types in order.</param>
         public static void ValidateOrder(Expression expression, ReturnType[] optional, params ReturnType[] types)
         {
@@ -209,16 +218,7 @@ namespace Microsoft.Bot.Builder.Expressions
         public static void ValidateUnaryBoolean(Expression expression)
             => ValidateOrder(expression, null, ReturnType.Boolean);
 
-        // Verifiers do runtime error checking of expression evaluation
-
-        /// <summary>
-        /// Verify the result of an expression is of the appropriate type and return a string if not.
-        /// </summary>
-        /// <param name="value">Value to verify.</param>
-        /// <param name="expression">Expression that produced value.</param>
-        /// <param name="child">Index of child expression.</param>
-        /// <returns>Null if value if correct or error string otherwise.</returns>
-        public delegate string VerifyExpression(object value, Expression expression, int child);
+        // Verifiers do runtime error checking of expression evaluation.
 
         /// <summary>
         /// Verify value is numeric.
@@ -464,14 +464,14 @@ namespace Microsoft.Bot.Builder.Expressions
                 args =>
                 {
                     var binaryArgs = new List<object> { null, null };
-                    var soFar = args[0];
+                    var sofar = args[0];
                     for (var i = 1; i < args.Count; ++i)
                     {
-                        binaryArgs[0] = soFar;
+                        binaryArgs[0] = sofar;
                         binaryArgs[1] = args[i];
-                        soFar = function(binaryArgs);
+                        sofar = function(binaryArgs);
                     }
-                    return soFar;
+                    return sofar;
                 }, verify);
 
         /// <summary>
@@ -734,7 +734,7 @@ namespace Microsoft.Bot.Builder.Expressions
         }
 
         /// <summary>
-        /// Lookup an index property of instance
+        /// Lookup an index property of instance.
         /// </summary>
         /// <param name="instance">Instance with property.</param>
         /// <param name="index">Property to lookup.</param>
@@ -841,7 +841,7 @@ namespace Microsoft.Bot.Builder.Expressions
         }
 
         /// <summary>
-        /// return new object list replace jarray.ToArray<object>()
+        /// return new object list replace jarray.ToArray<object>().
         /// </summary>
         /// <param name="jarray"></param>
         /// <returns></returns>
@@ -1063,12 +1063,12 @@ namespace Microsoft.Bot.Builder.Expressions
                     {
                         var local = new Dictionary<string, object>
                         {
-                            {iteratorName, AccessIndex(ilist, idx).value},
+                            { iteratorName, AccessIndex(ilist, idx).value },
                         };
                         var newScope = new Dictionary<string, object>
                         {
-                            {"$global", state},
-                            {"$local", local}
+                            { "$global", state },
+                            { "$local", local },
                         };
 
                         (var r, var e) = expression.Children[2].TryEvaluate(newScope);
@@ -1080,7 +1080,6 @@ namespace Microsoft.Bot.Builder.Expressions
                         ((List<object>)result).Add(r);
                     }
                 }
-
                 else
                 {
                     error = $"{expression.Children[0]} is not a collection to run foreach";
@@ -1089,8 +1088,6 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
-
-        //
         private static void ValidateForeach(Expression expression)
         {
             if (expression.Children.Count() != 3)
@@ -1110,7 +1107,6 @@ namespace Microsoft.Bot.Builder.Expressions
             // rewrite the 2nd, 3rd paramater
             expression.Children[1] = RewriteAccessor(expression.Children[1], iteratorName);
             expression.Children[2] = RewriteAccessor(expression.Children[2], iteratorName);
-
         }
 
         private static Expression RewriteAccessor(Expression expression, string localVarName)
@@ -1130,11 +1126,11 @@ namespace Microsoft.Bot.Builder.Expressions
                         prefix = "$local";
                     }
 
-                    expression.Children = new Expression[] {
+                    expression.Children = new Expression[]
+                    {
                         expression.Children[0],
                         Expression.MakeExpression(ExpressionType.Accessor, new Constant(prefix)),
                     };
-
                 }
 
                 return expression;
@@ -1150,7 +1146,7 @@ namespace Microsoft.Bot.Builder.Expressions
             }
         }
 
-        private static (Func<DateTime, DateTime>, string) pastDateTimeConverter(long interval, string timeUnit)
+        private static (Func<DateTime, DateTime>, string) PastDateTimeConverter(long interval, string timeUnit)
         {
             Func<DateTime, DateTime> converter = (dateTime) => dateTime;
             string error = null;
@@ -1194,7 +1190,7 @@ namespace Microsoft.Bot.Builder.Expressions
             var functions = new List<ExpressionEvaluator>
             {
                 // Math
-                new ExpressionEvaluator(ExpressionType.Element, ExtractElement, ReturnType.Object,ValidateBinary),
+                new ExpressionEvaluator(ExpressionType.Element, ExtractElement, ReturnType.Object, ValidateBinary),
                 MultivariateNumeric(ExpressionType.Add, args => args[0] + args[1]),
                 MultivariateNumeric(ExpressionType.Subtract, args => args[0] - args[1]),
                 MultivariateNumeric(ExpressionType.Multiply, args => args[0] * args[1]),
@@ -1220,7 +1216,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         {
                             object value = null;
                             string error;
-                            if (Convert.ToInt64(args[1]) == 0l)
+                            if (Convert.ToInt64(args[1]) == 0L)
                             {
                                 error = $"Cannot mod by 0";
                             }
@@ -1352,7 +1348,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     ExpressionType.Substring,
                     Substring,
                     ReturnType.String,
-                    (expression) => ValidateOrder(expression, new[] {ReturnType.Number }, ReturnType.String, ReturnType.Number)),
+                    (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.String, ReturnType.Number)),
                 StringTransform(ExpressionType.ToLower, args => args[0].ToLower()),
                 StringTransform(ExpressionType.ToUpper, args => args[0].ToUpper()),
                 StringTransform(ExpressionType.Trim, args => args[0].Trim()),
@@ -1421,7 +1417,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     ExpressionType.FormatDateTime,
                     ApplyWithError(args => ParseTimestamp((string) args[0], dt => dt.ToString(args.Count() == 2 ? args[1] : DefaultDateTimeFormat)), VerifyString),
                     ReturnType.String,
-                    (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String  )),
+                    (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.SubtractFromTime,
                     (expr, state) =>
@@ -1436,7 +1432,7 @@ namespace Microsoft.Bot.Builder.Expressions
                             {
                                 var format = (args.Count() == 4) ? (string)args[3] : DefaultDateTimeFormat;
                                 Func<DateTime, DateTime> timeConverter;
-                                (timeConverter, error) = pastDateTimeConverter(int1, string2);
+                                (timeConverter, error) = PastDateTimeConverter(int1, string2);
                                 if (error == null)
                                 {
                                     (value, error) = ParseTimestamp(string0, dt => timeConverter(dt).ToString(format));
@@ -1520,6 +1516,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 // Conversions
                 new ExpressionEvaluator(ExpressionType.Float, Apply(args => (float) Convert.ToDouble(args[0])), ReturnType.Number, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Int, Apply(args => (float) Convert.ToSingle(args[0])), ReturnType.Number, ValidateUnary),
+
                 // TODO: Is this really the best way?
                 new ExpressionEvaluator(ExpressionType.String, Apply(args => JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"')), ReturnType.String, ValidateUnary),
                 Comparison(ExpressionType.Bool, args => IsLogicTrue(args[0]), ValidateUnary),
@@ -1637,9 +1634,9 @@ namespace Microsoft.Bot.Builder.Expressions
             // Math aliases
             lookup.Add("add", lookup[ExpressionType.Add]); // more than 1 params
             lookup.Add("div", lookup[ExpressionType.Divide]); // more than 1 params
-            lookup.Add("mul", lookup[ExpressionType.Multiply]);// more than 1 params
-            lookup.Add("sub", lookup[ExpressionType.Subtract]);// more than 1 params
-            lookup.Add("exp", lookup[ExpressionType.Power]);// more than 1 params
+            lookup.Add("mul", lookup[ExpressionType.Multiply]); // more than 1 params
+            lookup.Add("sub", lookup[ExpressionType.Subtract]); // more than 1 params
+            lookup.Add("exp", lookup[ExpressionType.Power]); // more than 1 params
             lookup.Add("mod", lookup[ExpressionType.Mod]);
 
             // Comparison aliases

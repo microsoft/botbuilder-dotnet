@@ -11,9 +11,6 @@ namespace Microsoft.Bot.Builder.Expressions
     {
         public static readonly ErrorListener Instance = new ErrorListener();
 
-        public override void SyntaxError([NotNull] IRecognizer recognizer, [Nullable] IToken offendingSymbol, int line, int charPositionInLine, [NotNull] string msg, [Nullable] RecognitionException e)
-        {
-            throw new Exception($"syntax error at line {line}:{charPositionInLine} {msg}");
-        }
+        public override void SyntaxError([NotNull] IRecognizer recognizer, [Nullable] IToken offendingSymbol, int line, int charPositionInLine, [NotNull] string msg, [Nullable] RecognitionException e) => throw new Exception($"syntax error at line {line}:{charPositionInLine} {msg}");
     }
 }

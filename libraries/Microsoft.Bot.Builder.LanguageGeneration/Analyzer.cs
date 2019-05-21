@@ -11,7 +11,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class Analyzer : LGFileParserBaseVisitor<List<string>>
     {
-        public readonly List<LGTemplate> Templates;
         private readonly Dictionary<string, LGTemplate> templateMap;
 
         private readonly IExpressionParser _expressionParser;
@@ -20,10 +19,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public Analyzer(List<LGTemplate> templates)
         {
-            this.Templates = templates;
+            Templates = templates;
             templateMap = templates.ToDictionary(t => t.Name);
             _expressionParser = new ExpressionEngine(new GetMethodExtensions(new Evaluator(this.Templates, null)).GetMethodX);
         }
+
+        public List<LGTemplate> Templates { get; }
 
         public List<string> AnalyzeTemplate(string templateName)
         {
@@ -66,10 +67,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             throw new Exception("template name match failed");
         }
 
-        public override List<string> VisitNormalBody([NotNull] LGFileParser.NormalBodyContext context)
-        {
-            return Visit(context.normalTemplateBody());
-        }
+        public override List<string> VisitNormalBody([NotNull] LGFileParser.NormalBodyContext context) => Visit(context.normalTemplateBody());
 
         public override List<string> VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
         {
@@ -132,11 +130,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        private EvaluationTarget CurrentTarget()
-        {
+        private EvaluationTarget CurrentTarget() =>
+
             // just don't want to write evaluationTargetStack.Peek() everywhere
-            return evaluationTargetStack.Peek();
-        }
+            evaluationTargetStack.Peek();
 
         /// <summary>
         /// Extract the templates ref out from an expression
@@ -169,39 +166,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                                             .ToList();
 
             return references.Concat(referencesInTemplates).ToList();
-
-            /*
-            var references = new HashSet<string>();
-            // Extend the expression reference walk so that when a string is encountered it is evaluated as
-            // a {expression} or [template] and expanded.
-            var path = Microsoft.Bot.Builder.Expressions.Extensions.ReferenceWalk(parse, references,
-                (expression) =>
-                {
-                    var found = false;
-                    if (expression is Constant cnst && cnst.Value is string str)
-                    {
-                        if (str.StartsWith("[") && str.EndsWith("]"))
-                        {
-                            found = true;
-                            references.UnionWith(AnalyzeTemplateRef(str));
-                        }
-                        else if (str.StartsWith("{") && str.EndsWith("}"))
-                        {
-                            found = true;
-                            foreach (var childRef in AnalyzeExpression(str))
-                            {
-                                references.Add(childRef);
-                            }
-                        }
-                    }
-                    return found;
-                });
-            if (path != null)
-            {
-                references.Add(path);
-            }
-            return references.ToList();
-            */
         }
 
         private List<string> AnalyzeTemplateRef(string exp)
