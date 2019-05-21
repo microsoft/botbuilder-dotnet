@@ -203,15 +203,15 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // If the json path does not exist
-            string[] segments = pathExpression.Split('.').Select(segment => segment.ToLower()).ToArray();
+            var segments = pathExpression.Split('.').Select(segment => segment.ToLower()).ToArray();
             dynamic current = this;
 
-            for (int i = 0; i < segments.Length - 1; i++)
+            for (var i = 0; i < segments.Length - 1; i++)
             {
                 var segment = segments[i];
                 if (current is IDictionary<string, object> curDict)
                 {
-                    if (!curDict.ContainsKey(segment))
+                    if (!curDict.TryGetValue(segment, out var segVal) || segVal == null)
                     {
                         curDict[segment] = new JObject();
                     }
@@ -241,6 +241,34 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
+        public void RemoveValue(string pathExpression)
+        {
+            // If the json path does not exist
+            string[] segments = pathExpression.Split('.').Select(segment => segment.ToLower()).ToArray();
+            dynamic current = this;
+
+            var deleted = false;
+            for (var i = 0; i < segments.Length - 1; i++)
+            {
+                var segment = segments[i];
+                if (current is IDictionary<string, object> curDict)
+                {
+                    if (!curDict.TryGetValue(segment, out var segVal) || segVal == null)
+                    {
+                        deleted = true;
+                        break;
+                    }
+
+                    current = curDict[segment];
+                }
+            }
+
+            if (!deleted)
+            {
+                current.Remove(segments.Last());
+            }
+        }
+
         public void Add(string key, object value)
         {
             throw new NotImplementedException();
@@ -251,7 +279,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return this.Keys.Contains(key.ToLower());
         }
 
-        public bool Remove(string key)
+        public bool Remove(string pathExpression)
         {
             throw new NotImplementedException();
         }

@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             // Ensure planning context
             if (dc is PlanningContext planning)
             {
-                dc.State.SetValue(Property, null);
+                dc.State.RemoveValue(Property);
                 return await dc.EndDialogAsync();
             }
             else
