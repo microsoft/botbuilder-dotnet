@@ -4,7 +4,7 @@
   "steps": [
     {
       "$type": "Microsoft.SaveEntity",
-      "entity": "promptContentML",
+      "entity": "TaskContentML",
       "property": "dialog.item"
     },
     {

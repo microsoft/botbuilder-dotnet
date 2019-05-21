@@ -3,6 +3,7 @@
     "$type": "Microsoft.AdaptiveDialog",
     "$id": "root",
     "autoEndDialog": false,
+    "RecognizerThreshold":  "0.5",
     "recognizer": "ToDoLuis.lu",
     "steps": [
         {

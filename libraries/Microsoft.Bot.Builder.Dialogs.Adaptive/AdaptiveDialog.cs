@@ -56,6 +56,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </remarks>
         public bool AutoEndDialog { get; set; } = true;
 
+        public double RecognizerThreshold { get; set; } = 0.0;
+
         /// <summary>
         /// Gets or sets the selector for picking the possible rules to execute.
         /// </summary>
@@ -620,22 +622,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 // only allow one intent 
                 var topIntent = result.GetTopScoringIntent();
                 result.Intents.Clear();
-                result.Intents.Add(topIntent.intent, new IntentScore() { Score = topIntent.score });
-                return result;
-            }
-            else
-            {
-                return new RecognizerResult()
-                {
-                    Text = context.Activity.Text ?? string.Empty,
-                    Intents = new Dictionary<string, IntentScore>()
-                    {
-                        { "None", new IntentScore() { Score = 0.0} }
-                    },
-                    Entities = JObject.Parse("{}")
-                };
 
+                if (topIntent.score >= this.RecognizerThreshold)
+                {
+                    result.Intents.Add(topIntent.intent, new IntentScore() { Score = topIntent.score });
+                    return result;
+                }
             }
+
+            return new RecognizerResult()
+            {
+                Text = context.Activity.Text ?? string.Empty,
+                Intents = new Dictionary<string, IntentScore>()
+                {
+                    { "None", new IntentScore() { Score = 0.0} }
+                },
+                Entities = JObject.Parse("{}")
+            };
         }
 
         protected virtual async Task<bool> EvaluateRulesAsync(PlanningContext planning, DialogEvent dialogEvent, CancellationToken cancellationToken)

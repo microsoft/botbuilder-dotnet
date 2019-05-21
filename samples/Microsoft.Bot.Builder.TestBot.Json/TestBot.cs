@@ -43,7 +43,12 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 }
             };
 
-            LoadDialogs();
+            //LoadDialogs();
+            var rootDialogFile = "ToDoLuisBot.main.dialog";
+            var rootFile = resourceExplorer.GetResource(rootDialogFile);
+
+            rootDialog = DeclarativeTypeLoader.Load<AdaptiveDialog>(rootFile, resourceExplorer, DebugSupport.SourceRegistry);
+
         }
 
 
