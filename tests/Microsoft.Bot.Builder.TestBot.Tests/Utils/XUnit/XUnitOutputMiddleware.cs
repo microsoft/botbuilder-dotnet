@@ -10,8 +10,13 @@ using Activity = Microsoft.Bot.Schema.Activity;
 
 namespace Microsoft.BotBuilderSamples.Tests.Utils.XUnit
 {
+    /// <summary>
+    /// A middleware to output incoming and outgoing activities as json strings to the console during
+    /// unit tests
+    /// </summary>
     public class XUnitOutputMiddleware : IMiddleware
     {
+        private const string XUnitStopWatchStateKey = "XUnitStopwatch";
         private readonly ITestOutputHelper _output;
 
         public XUnitOutputMiddleware(ITestOutputHelper xunitOutputHelper)
@@ -23,7 +28,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Utils.XUnit
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            context.TurnState["XUnitStopwatch"] = stopwatch;
+            context.TurnState[XUnitStopWatchStateKey] = stopwatch;
             LogActivity("User: ", context.Activity);
             context.OnSendActivities(OnSendActivities);
 
@@ -34,7 +39,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Utils.XUnit
 
         private async Task<ResourceResponse[]> OnSendActivities(ITurnContext context, List<Activity> activities, Func<Task<ResourceResponse[]>> next)
         {
-            var stopwatch = (Stopwatch)context.TurnState["XUnitStopwatch"];
+            var stopwatch = (Stopwatch)context.TurnState[XUnitStopWatchStateKey];
             foreach (var response in activities)
             {
                 LogActivity("Bot:  ", response, stopwatch);

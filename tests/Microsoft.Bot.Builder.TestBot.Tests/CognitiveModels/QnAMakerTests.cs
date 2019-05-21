@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Microsoft.BotBuilderSamples.Tests.CognitiveModels
 {
-    class QnAMakerTests
+    public class QnAMakerTests
     {
     }
 }

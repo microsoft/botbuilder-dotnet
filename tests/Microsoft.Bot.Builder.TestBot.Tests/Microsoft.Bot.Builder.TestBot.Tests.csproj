@@ -12,6 +12,13 @@
 
   <ItemGroup>
     <None Remove="appsettings.json" />
+    <None Remove="CognitiveModels\Data\calendar.lu" />
+    <None Remove="CognitiveModels\Data\calendarTestSet.lu" />
+    <None Remove="CognitiveModels\Data\dispatch.json" />
+    <None Remove="CognitiveModels\Data\email.lu" />
+    <None Remove="CognitiveModels\Data\flightBookingTestSet.lu" />
+    <None Remove="CognitiveModels\Data\pointofinterest.lu" />
+    <None Remove="CognitiveModels\Data\todo.lu" />
     <None Remove="CognitiveModels\Data\TodoUnlabeledUtterances.json" />
     <None Remove="xunit.runner.json" />
   </ItemGroup>
@@ -20,12 +27,36 @@
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="CognitiveModels\Data\TodoUnlabeledUtterances.json">
+    <EmbeddedResource Include="CognitiveModels\Data\TodoUnlabeledUtterances.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </EmbeddedResource>
     <Content Include="xunit.runner.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="CognitiveModels\Data\calendar.lu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CognitiveModels\Data\calendarTestSet.lu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CognitiveModels\Data\dispatch.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CognitiveModels\Data\email.lu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CognitiveModels\Data\flightBookingTestSet.lu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CognitiveModels\Data\pointofinterest.lu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CognitiveModels\Data\todo.lu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
@@ -49,24 +80,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="CognitiveModels\Data\calendarSample.lu">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="CognitiveModels\Data\calendar.lu">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="CognitiveModels\Data\email.lu">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="CognitiveModels\Data\flightBookingSampleSet.lu">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="CognitiveModels\Data\pointofinterest.lu">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="CognitiveModels\Data\todo.lu">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="Properties\launchSettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

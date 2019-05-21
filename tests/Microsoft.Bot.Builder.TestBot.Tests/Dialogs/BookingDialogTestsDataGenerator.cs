@@ -12,16 +12,6 @@ using Xunit.Sdk;
 
 namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 {
-
-    public class BookingDialogTestData
-    {
-        public string TestCaseName { get; set; }
-
-        public BookingDetails BookingDetails { get; set; }
-
-        public string[,] UtterancesAndReplies { get; set; }
-    }
-
     [SuppressMessage("Microsoft.StyleCop.CSharp.OrderingRules", "SA1118:ParameterMustNotSpanMultipleLines", Justification = "Ignoring to make code more readable")]
     public class BookingDialogTestsDataGenerator : IEnumerable<object[]>
     {
@@ -108,11 +98,11 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        private void AddTestCase(string useCaseName, BookingDetails inputBookingInfo, string[,] utterancesAndReplies)
+        private void AddTestCase(string testCaseName, BookingDetails inputBookingInfo, string[,] utterancesAndReplies)
         {
-            var testData = new BookingDialogTestData()
+            var testData = new BookingDialogTestData
             {
-                TestCaseName = useCaseName,
+                TestCaseName = testCaseName,
                 BookingDetails = inputBookingInfo,
                 UtterancesAndReplies = utterancesAndReplies,
             };

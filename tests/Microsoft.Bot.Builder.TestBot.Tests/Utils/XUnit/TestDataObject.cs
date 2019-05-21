@@ -10,24 +10,29 @@ namespace Microsoft.BotBuilderSamples.Tests.Utils.XUnit
     /// A wrapper class for test data that enables support for enumerating test cases in Test Explorer.
     /// </summary>
     /// <remarks>
-    /// Test explorer only supports value types for data driven tests. This class takes a complex types
-    /// and serializes it as json so it can be enumerated and displayed into test explorer.
-    /// This also allows the developer to right click on a particular test case and run it.
+    /// VS Test explorer only supports value types for data driven tests.
+    /// This class implements <see cref="IXunitSerializable"/> and serializes complex types as json
+    /// so the test data can be enumerated and displayed into VS test explorer.
+    /// This also allows the developer to right click on a particular test case and run it individually.
     /// </remarks>
     public class TestDataObject : IXunitSerializable
     {
-        private const string TestObjectKey = "TestObjectName";
+        private const string TestObjectKey = "TestObjectKey";
 
+        // Needed by serializer
         public TestDataObject()
         {
         }
 
-        // Needed for deserializer
         public TestDataObject(object testData)
         {
             TestObject = JsonConvert.SerializeObject(testData);
         }
 
+        /// <summary>
+        /// Gets a json string with the test data object.
+        /// </summary>
+        /// <value>The test data object as a json string.</value>
         public string TestObject { get; private set; }
 
         public void Deserialize(IXunitSerializationInfo serializationInfo)
@@ -40,6 +45,11 @@ namespace Microsoft.BotBuilderSamples.Tests.Utils.XUnit
             serializationInfo.AddValue(TestObjectKey, TestObject);
         }
 
+        /// <summary>
+        /// Gets the test data object for the specified .Net type.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to returned.</typeparam>
+        /// <returns>The test object.</returns>
         public T GetObject<T>()
         {
             return JsonConvert.DeserializeObject<T>(TestObject);

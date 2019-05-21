@@ -17,7 +17,7 @@ namespace Microsoft.BotBuilderSamples.Tests
     {
         private static readonly Lazy<TestConfiguration> _configurationLazy = new Lazy<TestConfiguration>(() =>
         {
-            LoadLaunchSettingsIntoEnvVariables("Properties\\launchSettings.json");
+            LoadLaunchSettingsIntoEnvVariables("Properties//launchSettings.json");
 
             var config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
@@ -57,7 +57,6 @@ namespace Microsoft.BotBuilderSamples.Tests
 
                 var variables = fileData
                     .GetValue("profiles")
-                    //select a proper profile here
                     .SelectMany(profiles => profiles.Children())
                     .SelectMany(profile => profile.Children<JProperty>())
                     .Where(prop => prop.Name == "environmentVariables")

@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace Microsoft.BotBuilderSamples.Tests.Utils.Luis
 {
     /// <summary>
-    /// A set of helper methods that wrap ludown and LUIS calls.
+    /// A set of helper methods that wraps ludown and luis command calls.
     /// </summary>
     public static class LuisCommandRunner
     {
@@ -16,7 +16,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Utils.Luis
         {
             using (var ps = System.Management.Automation.PowerShell.Create())
             {
-                var targetPath = EnsureTargetPath(sourcePath);
+                var targetPath = EnsureTargetFolder(sourcePath);
                 var sourceFile = Path.Combine(sourcePath, sourceLuFile);
                 ps.AddScript($"ludown parse toluis --in {sourceFile} -o {targetPath}");
                 var r = ps.InvokeAsync().Result;
@@ -32,9 +32,9 @@ namespace Microsoft.BotBuilderSamples.Tests.Utils.Luis
         {
             using (var ps = System.Management.Automation.PowerShell.Create())
             {
-                var targetPath = EnsureTargetPath(sourcePath);
+                var targetFolder = EnsureTargetFolder(sourcePath);
                 var sourceFile = Path.Combine(sourcePath, sourceLuFile);
-                ps.AddScript($"ludown parse toluis --write_luis_batch_tests --in {sourceFile} -o {targetPath}");
+                ps.AddScript($"ludown parse toluis --write_luis_batch_tests --in {sourceFile} -o {targetFolder}");
                 var r = ps.InvokeAsync().Result;
                 if (r.Count > 0)
                 {
@@ -43,12 +43,12 @@ namespace Microsoft.BotBuilderSamples.Tests.Utils.Luis
                 }
 
                 var batchFilePrefix = Path.GetFileNameWithoutExtension(sourceFile);
-                var batchTest = JsonConvert.DeserializeObject<LuisTestItem[]>(File.ReadAllText($"{targetPath}\\{batchFilePrefix}_LUISBatchTest.json"));
+                var batchTest = JsonConvert.DeserializeObject<LuisTestItem[]>(File.ReadAllText($"{targetFolder}\\{batchFilePrefix}_LUISBatchTest.json"));
                 return batchTest;
             }
         }
 
-        private static string EnsureTargetPath(string sourcePath)
+        private static string EnsureTargetFolder(string sourcePath)
         {
             var targetPath = Path.Combine(sourcePath, "Temp");
             if (!Directory.Exists(targetPath))

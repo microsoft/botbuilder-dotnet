@@ -34,11 +34,12 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         [ClassData(typeof(BookingDialogTestsDataGenerator))]
         public async Task DialogFlowUseCases(TestDataObject testData)
         {
+            // Arrange
             var bookingTestData = testData.GetObject<BookingDialogTestData>();
             var sut = new BookingDialog();
-
             var testClient = new DialogTestClient(sut, Output, bookingTestData.BookingDetails);
 
+            // Act/Assert
             Output.WriteLine($"Use Case: {bookingTestData.TestCaseName}");
             for (var i = 0; i < bookingTestData.UtterancesAndReplies.GetLength(0); i++)
             {

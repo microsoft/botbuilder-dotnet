@@ -59,17 +59,21 @@ namespace Microsoft.BotBuilderSamples.Tests.CognitiveModels
         }
 
         [Theory]
-        [LuDownData("calendarSample.lu", RelativePath)]
-        public async Task CalendarSampleTests(LuisTestItem luisTestItem)
+        [LuDownData("calendarTestSet.lu", RelativePath)]
+        public async Task CalendarSampleTests(TestDataObject luisData)
         {
+            var luisTestItem = luisData.GetObject<LuisTestItem>();
+
             var luisResult = await _luisRecognizerLazy.Value.RecognizeAsync(luisTestItem.Utterance, CancellationToken.None);
             Assert.Equal(luisTestItem.ExpectedIntent, luisResult.GetTopScoringIntent().intent);
         }
 
         [Theory]
         [LuDownData(SourceLuFile, RelativePath)]
-        public async Task BatchTestFromLuFile(LuisTestItem luisTestItem)
+        public async Task BatchTestFromLuFile(TestDataObject luisData)
         {
+            var luisTestItem = luisData.GetObject<LuisTestItem>();
+
             _output.WriteLine("Expected:");
             _output.WriteAsFormattedJson(luisTestItem);
             var luisResult = await _luisRecognizerLazy.Value.RecognizeAsync(luisTestItem.Utterance, CancellationToken.None);

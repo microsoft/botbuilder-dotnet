@@ -17,6 +17,8 @@ namespace Microsoft.BotBuilderSamples.Tests.CognitiveModels
 {
     public class FlightBookingLuisTests
     {
+        private const string RelativePath = @"CognitiveModels/Data";
+
         private static readonly Lazy<LuisRecognizer> _luisRecognizerLazy = new Lazy<LuisRecognizer>(() =>
         {
             var configuration = TestConfiguration.Instance.Configuration;
@@ -31,7 +33,7 @@ namespace Microsoft.BotBuilderSamples.Tests.CognitiveModels
             return new LuisRecognizer(luisApplication, null, false, null);
         });
 
-        private ITestOutputHelper _output;
+        private readonly ITestOutputHelper _output;
 
         public FlightBookingLuisTests(ITestOutputHelper output)
         {
@@ -50,10 +52,13 @@ namespace Microsoft.BotBuilderSamples.Tests.CognitiveModels
         }
 
         [Theory]
-        [LuDownData(@"CognitiveModels/Data/flightBookingSampleSet.lu")]
-        public async Task FlightBookingTestSet(LuisTestItem luisTestItem)
+        [LuDownData(@"flightBookingTestSet.lu", RelativePath)]
+        public async Task FlightBookingTestSet(TestDataObject luisData)
         {
-            _output.WriteLine("Expected:");
+            var luisTestItem = luisData.GetObject<LuisTestItem>();
+
+            _output.WriteLine($"Utterance: {luisTestItem.Utterance}");
+            _output.WriteLine("\r\nExpected:");
             _output.WriteAsFormattedJson(luisTestItem);
             var luisResult = await _luisRecognizerLazy.Value.RecognizeAsync(luisTestItem.Utterance, CancellationToken.None);
 

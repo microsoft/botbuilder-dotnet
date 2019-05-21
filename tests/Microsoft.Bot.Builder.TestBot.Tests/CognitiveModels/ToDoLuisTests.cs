@@ -43,8 +43,9 @@ namespace Microsoft.BotBuilderSamples.Tests.CognitiveModels
 
         [Theory]
         [LuDownData(SourceLuFile, RelativePath)]
-        public async Task BatchTestFromLuFile(LuisTestItem luisTestItem)
+        public async Task BatchTestFromLuFile(TestDataObject luisData)
         {
+            var luisTestItem = luisData.GetObject<LuisTestItem>();
             _output.WriteLine("Expected:");
             _output.WriteAsFormattedJson(luisTestItem);
             var luisResult = await _luisTester.LuisRecognizer.RecognizeAsync(luisTestItem.Utterance, CancellationToken.None);
@@ -64,8 +65,9 @@ namespace Microsoft.BotBuilderSamples.Tests.CognitiveModels
 
         [Theory]
         [JsonLuisData("TodoUnlabeledUtterances.json", RelativePath)]
-        public async Task BatchTestFromJsonFile(LuisTestItem luisTestItem)
+        public async Task BatchTestFromJsonFile(TestDataObject luisData)
         {
+            var luisTestItem = luisData.GetObject<LuisTestItem>();
             _output.WriteLine("Expected:");
             _output.WriteAsFormattedJson(luisTestItem);
             var luisResult = await _luisTester.LuisRecognizer.RecognizeAsync(luisTestItem.Utterance, CancellationToken.None);
