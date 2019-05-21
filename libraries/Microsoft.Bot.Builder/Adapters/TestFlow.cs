@@ -168,6 +168,36 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <summary>
         /// Adds an assertion that the turn processing logic responds as expected.
         /// </summary>
+        /// <param name="expected">The part of the expected text of a message from the bot.</param>
+        /// <param name="description">A message to send if the actual response is not as expected.</param>
+        /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
+        /// <returns>A new <see cref="TestFlow"/> object that appends this assertion to the modeled exchange.</returns>
+        /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
+        /// <exception cref="Exception">The bot did not respond as expected.</exception>
+        public TestFlow AssertReplyContain(string expected, string description = null, uint timeout = 3000)
+        {
+            return AssertReply(
+                (reply) =>
+                {
+                    if (!reply.AsMessageActivity().Text.Contains(expected))
+                    {
+                        if (description == null)
+                        {
+                            throw new Exception($"Expected:{expected}\nReceived:{reply.AsMessageActivity().Text}");
+                        }
+                        else
+                        {
+                            throw new Exception($"{description}:\nExpected:{expected}\nReceived:{reply.AsMessageActivity().Text}");
+                        }
+                    }
+                },
+                description,
+                timeout);
+        }
+
+        /// <summary>
+        /// Adds an assertion that the turn processing logic responds as expected.
+        /// </summary>
         /// <param name="expected">The expected activity from the bot.</param>
         /// <param name="description">A message to send if the actual response is not as expected.</param>
         /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
