@@ -204,32 +204,37 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         {
             using (var output = new StreamWriter(outPath))
             {
-                output.WriteLine("digraph TriggerTree {");
-                GenerateGraph(output, Root, 0);
+                var visited = new HashSet<Node>();
+                output.WriteLine("strict digraph TriggerTree {");
+                GenerateGraph(output, Root, 0, visited);
                 output.WriteLine("}");
             }
         }
 
         private string NameNode(Node node) => '"' + node.ToString().Replace("\"", "\\\"") + '"';
 
-        private void GenerateGraph(StreamWriter output, Node node, int indent)
+        private void GenerateGraph(StreamWriter output, Node node, int indent, HashSet<Node> visited)
         {
-            output.Write($"{"".PadLeft(indent)}{NameNode(node)}");
-            var first = true;
-            foreach (var child in node.Specializations)
+            if (!visited.Contains(node))
             {
-                if (first)
+                visited.Add(node);
+                output.Write($"{"".PadLeft(indent)}{NameNode(node)}");
+                var spaces = "".PadLeft(indent + 2);
+                var first = true;
+                foreach (var child in node.Specializations)
                 {
-                    output.Write(" -> {");
-                    first = false;
+                    if (first)
+                    {
+                        output.WriteLine(" -> {");
+                        first = false;
+                    }
+                    output.WriteLine($"{spaces}{NameNode(child)}");
                 }
-                output.Write($" {NameNode(child)}");
-            }
-            if (!first) output.WriteLine($"{"".PadLeft(indent)}}}");
-            else output.WriteLine();
-            foreach (var child in node.Specializations)
-            {
-                GenerateGraph(output, child, indent + 2);
+                if (!first) output.WriteLine($"{"".PadLeft(indent)}}}");
+                foreach (var child in node.Specializations)
+                {
+                    GenerateGraph(output, child, indent + 2, visited);
+                }
             }
         }
 

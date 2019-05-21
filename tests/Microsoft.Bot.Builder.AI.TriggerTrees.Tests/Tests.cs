@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
     [TestClass]
     public class Tests
     {
-        private Generator _generator;
+        private readonly Generator _generator;
 
         private Trigger VerifyAddTrigger(TriggerTree tree, Expression expression, object action)
         {
