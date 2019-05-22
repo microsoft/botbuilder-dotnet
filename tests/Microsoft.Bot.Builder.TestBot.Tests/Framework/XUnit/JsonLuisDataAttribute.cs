@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Xunit.Sdk;
 
-namespace Microsoft.BotBuilderSamples.Tests.Utils.XUnit
+namespace Microsoft.BotBuilderSamples.Tests.Framework.XUnit
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public class JsonLuisDataAttribute : DataAttribute

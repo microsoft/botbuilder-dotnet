@@ -19,7 +19,7 @@
     <None Remove="CognitiveModels\Data\flightBookingTestSet.lu" />
     <None Remove="CognitiveModels\Data\pointofinterest.lu" />
     <None Remove="CognitiveModels\Data\todo.lu" />
-    <None Remove="CognitiveModels\Data\TodoUnlabeledUtterances.json" />
+    <None Remove="CognitiveModels\Data\todoTestSet.json" />
     <None Remove="xunit.runner.json" />
   </ItemGroup>
 
@@ -27,7 +27,7 @@
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <EmbeddedResource Include="CognitiveModels\Data\TodoUnlabeledUtterances.json">
+    <EmbeddedResource Include="CognitiveModels\Data\todoTestSet.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <Content Include="xunit.runner.json">

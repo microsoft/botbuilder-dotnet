@@ -3,7 +3,7 @@
 
 using Newtonsoft.Json;
 
-namespace Microsoft.BotBuilderSamples.Tests.Utils.Luis
+namespace Microsoft.BotBuilderSamples.Tests.Framework.Luis
 {
     public class LuisTestEntity
     {

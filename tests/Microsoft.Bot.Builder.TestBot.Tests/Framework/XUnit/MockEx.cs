@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Moq;
 
-namespace Microsoft.BotBuilderSamples.Tests.Utils.XUnit
+namespace Microsoft.BotBuilderSamples.Tests.Framework.XUnit
 {
     /// <summary>
     /// Extension methods for XUnit <see cref="Mock"/>.

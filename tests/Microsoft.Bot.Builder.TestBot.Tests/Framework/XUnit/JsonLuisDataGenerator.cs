@@ -2,11 +2,10 @@
 // Licensed under the MIT License.
 
 using System.IO;
-using Microsoft.BotBuilderSamples.Tests.Utils.Luis;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace Microsoft.BotBuilderSamples.Tests.Utils.XUnit
+namespace Microsoft.BotBuilderSamples.Tests.Framework.XUnit
 {
     public class JsonLuisDataGenerator : TheoryData<LuisTestItem>
     {

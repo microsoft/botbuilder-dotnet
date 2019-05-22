@@ -4,7 +4,7 @@
 using Newtonsoft.Json;
 using Xunit.Abstractions;
 
-namespace Microsoft.BotBuilderSamples.Tests.Utils.XUnit
+namespace Microsoft.BotBuilderSamples.Tests.Framework.XUnit
 {
     /// <summary>
     /// Extension methods for ITestOutputHelper.

@@ -8,7 +8,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.BotBuilderSamples.Tests.Extensions
+namespace Microsoft.BotBuilderSamples.Tests.Framework.Luis
 {
     public static class LuisRecognizerEx
     {

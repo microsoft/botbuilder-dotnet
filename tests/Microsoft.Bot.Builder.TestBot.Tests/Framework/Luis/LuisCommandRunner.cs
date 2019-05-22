@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using Newtonsoft.Json;
 
-namespace Microsoft.BotBuilderSamples.Tests.Utils.Luis
+namespace Microsoft.BotBuilderSamples.Tests.Framework.Luis
 {
     /// <summary>
     /// A set of helper methods that wraps ludown and luis command calls.

@@ -8,7 +8,7 @@ using System.Reflection;
 using Xunit;
 using Xunit.Sdk;
 
-namespace Microsoft.BotBuilderSamples.Tests.Utils.XUnit
+namespace Microsoft.BotBuilderSamples.Tests.Framework.XUnit
 {
     /// <summary>
     /// Represents an implementation of <see cref="DataAttribute"/> which uses an

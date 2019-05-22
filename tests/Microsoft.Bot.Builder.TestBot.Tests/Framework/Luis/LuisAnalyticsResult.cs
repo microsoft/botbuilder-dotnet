@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.BotBuilderSamples.Tests.Utils.Luis
+namespace Microsoft.BotBuilderSamples.Tests.Framework.Luis
 {
     public class LuisAnalyticsResult
     {

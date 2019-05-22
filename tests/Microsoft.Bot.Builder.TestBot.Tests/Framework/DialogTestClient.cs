@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.BotBuilderSamples.Tests.Utils.XUnit;
 using Xunit.Abstractions;
 
-namespace Microsoft.BotBuilderSamples.Tests.Utils
+namespace Microsoft.BotBuilderSamples.Tests.Framework
 {
     /// <summary>
     /// A client to for testing dialogs in isolation.

@@ -2,7 +2,7 @@
 using Microsoft.Bot.Builder.Dialogs;
 using Moq;
 
-namespace Microsoft.BotBuilderSamples.Tests.Utils
+namespace Microsoft.BotBuilderSamples.Tests.Framework
 {
     public static class DialogUtils
     {

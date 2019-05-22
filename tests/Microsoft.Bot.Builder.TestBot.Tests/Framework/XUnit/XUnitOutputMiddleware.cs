@@ -8,7 +8,7 @@ using Microsoft.Bot.Schema;
 using Xunit.Abstractions;
 using Activity = Microsoft.Bot.Schema.Activity;
 
-namespace Microsoft.BotBuilderSamples.Tests.Utils.XUnit
+namespace Microsoft.BotBuilderSamples.Tests.Framework.XUnit
 {
     /// <summary>
     /// A middleware to output incoming and outgoing activities as json strings to the console during
