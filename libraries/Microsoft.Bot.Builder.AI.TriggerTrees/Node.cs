@@ -1,9 +1,9 @@
 ﻿// This will trace the whole process, but will generate a lot of output
-#define TraceTree
+// #define TraceTree
 
 // This adds a counter to each comparison when building the tree so that you can find it in the trace.
 // There is a node static count and boolean ShowTrace that can be turned on/off if needed.
-#define Count
+// #define Count
 
 // This will verify the tree as it is built by checking invariants
 // #define VerifyTree
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
 #endif
 
 #if TraceTree
-        public static bool ShowTrace = false;  // TODO: true
+        public static bool ShowTrace = true;
 #endif
 
         internal Node(Clause clause, TriggerTree tree, Trigger trigger = null)
@@ -159,12 +159,13 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         {
             bool removed = false;
 #if TraceTree
-            Debug.WriteLine("");
-            Debug.WriteLine($"***** Remove {trigger} *****");
-            Debug.IndentSize = 2;
+            if (Node.ShowTrace)
+            {
+                Debug.WriteLine("");
+                Debug.WriteLine($"***** Remove {trigger} *****");
+                Debug.IndentSize = 2;
+            }
 #endif
-            // TODO: Remove
-            ShowTrace = true;
             RemoveTrigger(trigger, new HashSet<Node>(), ref removed);
             return removed;
         }
@@ -537,10 +538,10 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                         if (Node.ShowTrace) Debug.WriteLine($"Move children of {child} to {this}");
 #endif
                         _specializations.Remove(child);
-                        foreach(var specialization in child.Specializations)
+                        foreach (var specialization in child.Specializations)
                         {
                             var add = true;
-                            foreach(var parent in _specializations)
+                            foreach (var parent in _specializations)
                             {
                                 var reln = parent.Relationship(specialization);
                                 if (reln == RelationshipType.Generalizes)
