@@ -125,6 +125,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             // wrap inline string with "# name and -" to align the evaluation process
             var fakeTemplateId = "__temp__";
+            inlineStr = inlineStr.IndexOf('\n') >= 0 ? "```" + inlineStr + "```" : inlineStr;
             var wrappedStr = $"# {fakeTemplateId} \r\n - {inlineStr}";
 
             var parsedTemplates = LGParser.Parse(wrappedStr, "inline");
