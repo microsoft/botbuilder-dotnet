@@ -7,7 +7,9 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
@@ -17,6 +19,19 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     /// </summary>
     public class BotFrameworkHttpAdapter : BotFrameworkAdapter, IBotFrameworkHttpAdapter
     {
+        public BotFrameworkHttpAdapter(IConfiguration configuration, ILogger<BotFrameworkHttpAdapter> logger = null)
+            : base(new ConfigurationCredentialProvider(configuration), new ConfigurationChannelProvider(configuration), customHttpClient: null, middleware: null, logger: logger)
+        {
+            var openIdEndpoint = configuration.GetSection(AuthenticationConstants.BotOpenIdMetadataKey)?.Value;
+
+            if (!string.IsNullOrEmpty(openIdEndpoint))
+            {
+                // Indicate which Cloud we are using, for example, Public or Sovereign.
+                ChannelValidation.OpenIdMetadataUrl = openIdEndpoint;
+                GovernmentChannelValidation.OpenIdMetadataUrl = openIdEndpoint;
+            }
+        }
+
         public BotFrameworkHttpAdapter(ICredentialProvider credentialProvider = null, IChannelProvider channelProvider = null, ILogger<BotFrameworkHttpAdapter> logger = null)
             : base(credentialProvider ?? new SimpleCredentialProvider(), channelProvider, null, null, null, logger)
         {
