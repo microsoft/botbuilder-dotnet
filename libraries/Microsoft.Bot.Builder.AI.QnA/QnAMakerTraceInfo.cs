@@ -75,5 +75,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </value>
         [JsonProperty("metadataBoost")]
         public Metadata[] MetadataBoost { get; set; }
+
+        [JsonProperty("context")]
+        public QnARequestContext Context { get; set; }
     }
 }

@@ -306,6 +306,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 {
                    hydratedOptions.MetadataBoost = queryOptions.MetadataBoost;
                 }
+
+                if (queryOptions.Context != null)
+                {
+                    hydratedOptions.Context = queryOptions.Context;
+                }
             }
 
             return hydratedOptions;
@@ -347,6 +352,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
             {
                 options.MetadataBoost = new Metadata[] { };
             }
+
+            if (options.Context == null)
+            {
+                options.Context = new QnARequestContext();
+            }
         }
 
         private async Task<QueryResult[]> QueryQnaServiceAsync(Activity messageActivity, QnAMakerOptions options)
@@ -373,6 +383,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 Top = options.Top,
                 StrictFilters = options.StrictFilters,
                 MetadataBoost = options.MetadataBoost,
+                Context = options.Context,
             };
             var traceActivity = Activity.CreateTraceActivity(QnAMakerName, QnAMakerTraceType, traceInfo, QnAMakerTraceLabel);
             await turnContext.SendActivityAsync(traceActivity).ConfigureAwait(false);
@@ -392,6 +403,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     strictFilters = options.StrictFilters,
                     metadataBoost = options.MetadataBoost,
                     scoreThreshold = options.ScoreThreshold,
+                    context = options.Context,
                 }, Formatting.None);
 
             request.Content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");

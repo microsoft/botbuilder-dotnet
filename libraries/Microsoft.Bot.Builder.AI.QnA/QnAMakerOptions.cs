@@ -48,5 +48,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public Metadata[] StrictFilters { get; set; }
 
         public Metadata[] MetadataBoost { get; set; }
+
+        public QnARequestContext Context { get; set; }
     }
 }

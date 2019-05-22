@@ -232,6 +232,40 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
+        public async Task QnaMaker_ReturnsAnswerFromContext()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswerFromContext.json"));
+
+            var qna = GetQnAMaker(
+                mockHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname,
+                },
+                new QnAMakerOptions
+                {
+                    Top = 1,
+                    Context = new QnARequestContext()
+                    {
+                        PreviousQnAId = 5,
+                        PreviousUserQuery = "how do I clean the stove?",
+                    },
+                });
+
+            var results = await qna.GetAnswersAsync(GetContext("Where can I buy cleaning products?"));
+            Assert.IsNotNull(results);
+            Assert.AreEqual(1, results.Length, "should get one result");
+            Assert.AreEqual(55, results[0].Id, "should get context based follow-up");
+            StringAssert.StartsWith(results[0].Answer, "Any DIY store");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
         public async Task QnaMaker_ReturnsAnswer_Configuration()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -590,6 +624,34 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
+        public async Task QnaMaker_ReturnsAnswerWithContext()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswerWithContext.json"));
+
+            var interceptHttp = new InterceptRequestHandler(mockHttp);
+
+            var qna = GetQnAMaker(
+                interceptHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname,
+                });
+
+            var results = await qna.GetAnswersAsync(GetContext("what is life?"));
+
+            Assert.IsNotNull(results);
+            Assert.AreEqual(results.Length, 1, "should get one answer");
+            Assert.AreEqual(results[0].Context.Prompts.Length, 2, "should get two follow up questions");
+            StringAssert.StartsWith(results[0].Answer, "That's a deep question");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
         public async Task QnaMaker_TestThresholdInQueryOption()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -716,6 +778,25 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 },
             };
 
+            var withPreviousContext = new QnAMakerOptions()
+            {
+                Top = 2000,
+                ScoreThreshold = 0.42F,
+                StrictFilters = new Metadata[]
+                {
+                    new Metadata()
+                    {
+                        Name = "dog",
+                        Value = "samoyed",
+                    },
+                },
+                Context = new QnARequestContext()
+                {
+                    PreviousQnAId = 20,
+                    PreviousUserQuery = "What is life?",
+                },
+            };
+
             var context = GetContext("up");
 
             // Ensure that options from previous requests do not bleed over to the next,
@@ -738,6 +819,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var noOptionsResults = await qna.GetAnswersAsync(context);
             var requestContent6 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
 
+            var withPreviousContextResult = await qna.GetAnswersAsync(context, withPreviousContext);
+            var requestContent7 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
+
+
             Assert.AreEqual(0, requestContent1.StrictFilters.Length);
             Assert.AreEqual(2, requestContent2.StrictFilters.Length);
             Assert.AreEqual(1, requestContent3.StrictFilters.Length);
@@ -750,6 +835,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             Assert.AreEqual(30, requestContent6.Top);
             Assert.AreEqual(0.3, Math.Round(requestContent6.ScoreThreshold, 2));
             Assert.AreEqual(0, requestContent6.StrictFilters.Length);
+
+            Assert.AreEqual(20, requestContent7.Context.PreviousQnAId);
+            StringAssert.StartsWith(requestContent7.Context.PreviousUserQuery, "What is life?");
         }
 
         [TestMethod]
@@ -1270,6 +1358,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             public Metadata[] MetadataBoost { get; set; }
 
             public float ScoreThreshold { get; set; }
+
+            public QnARequestContext Context { get; set; }
         }
     }
 }

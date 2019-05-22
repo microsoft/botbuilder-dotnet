@@ -1,0 +1,31 @@
+{
+  "answers": [
+    {
+      "questions": [
+        "what is life?"
+      ],
+      "answer": "That's a deep question",
+      "score": 100,
+      "id": 390,
+      "source": "Editorial",
+      "metadata": [],
+      "context": {
+        "isContextOnly": false,
+        "prompts": [
+          {
+            "displayOrder": 0,
+            "qnaId": 391,
+            "qna": null,
+            "displayText": "Does life have meaning?"
+          },
+          {
+            "displayOrder": 0,
+            "qnaId": 447,
+            "qna": null,
+            "displayText": "The Life of Brian"
+          }
+        ]
+      }
+    }
+  ]
+}
