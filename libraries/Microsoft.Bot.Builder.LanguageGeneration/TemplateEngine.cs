@@ -77,18 +77,21 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public TemplateEngine AddText(string text)
         {
             Templates.AddRange(LGParser.Parse(text, "text"));
-
             RunStaticCheck();
             return this;
         }
 
+        /// <summary>
+        /// Check templates/text to match LG format.
+        /// </summary>
+        /// <param name="templates">the templates which should be checked.</param>
         public void RunStaticCheck(List<LGTemplate> templates = null)
         {
             var teamplatesToCheck = templates ?? this.Templates;
             var checker = new StaticChecker(teamplatesToCheck);
-            var report = checker.Check();
+            var diagnostics = checker.Check();
 
-            var errors = report.Where(u => u.Type == ReportEntryType.ERROR).ToList();
+            var errors = diagnostics.Where(u => u.Severity == DiagnosticSeverity.Error).ToList();
             if (errors.Count != 0)
             {
                 throw new Exception(string.Join("\n", errors));
