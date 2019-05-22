@@ -191,8 +191,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Renderer
             try
             {
                 // do inline evaluation first
-                text = !text.Trim().StartsWith("```") && text.IndexOf('\n') >= 0
-                    ? "```" + text + "```" : text;
                 result = engine.Evaluate(text, data, null);
                 return true;
             }
