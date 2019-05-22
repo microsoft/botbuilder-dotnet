@@ -10,8 +10,13 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
-    /// Basic configuration options supported by all prompts.
+    /// Waits for an activity to be received.
     /// </summary>
+    /// <remarks>
+    /// This prompt requires a validator be passed in and is useful when waiting for non-message
+    /// activities like an event to be received.The validator can ignore received events until the
+    /// expected activity is received.
+    /// </remarks>
     public abstract class ActivityPrompt : Dialog
     {
         private const string PersistedOptions = "options";
@@ -19,6 +24,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private readonly PromptValidator<Activity> _validator;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ActivityPrompt"/> class.
+        /// </summary>
+        /// <param name="dialogId">Unique ID of the dialog within its parent <see cref="DialogSet"/> or <see cref="ComponentDialog"/>.</param>
+        /// <param name="validator">Validator that will be called each time a new activity is received.</param>
         public ActivityPrompt(string dialogId, PromptValidator<Activity> validator)
             : base(dialogId)
         {

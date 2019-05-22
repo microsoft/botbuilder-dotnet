@@ -1,0 +1,1238 @@
+{
+  "text": "3 inches long by 2 inches wide and 5% to 10% and are you between 6 years old and 8 years old and can i trade kb457 for kb922 and change 425-777-1212 to 206-666-4123 and did delta buy virgin and did the rain from hawaii get to redmond and http://foo.com changed to http://blah.com and i like between 68 degrees and 72 degrees and john likes mary and leave 3pm and arrive 5pm and pay between $400 and $500 and send chrimc@hotmail.com from emad@gmail.com",
+  "intents": {
+    "Roles": {
+      "score": 1.0
+    },
+    "EntityTests": {
+      "score": 0.0115484772
+    },
+    "Weather_GetForecast": {
+      "score": 0.009885744
+    },
+    "search": {
+      "score": 0.009508528
+    },
+    "Travel": {
+      "score": 0.004027992
+    },
+    "None": {
+      "score": 0.00087468233
+    },
+    "SpecifyName": {
+      "score": 0.000113203794
+    },
+    "Delivery": {
+      "score": 7.92103747E-05
+    },
+    "Help": {
+      "score": 6.826453E-07
+    },
+    "Greeting": {
+      "score": 4.24091354E-07
+    },
+    "Cancel": {
+      "score": 4.06555785E-07
+    }
+  },
+  "entities": {
+    "$instance": {
+      "Composite1": [
+        {
+          "startIndex": 0,
+          "endIndex": 211,
+          "text": "3 inches long by 2 inches wide and 5 % to 10 % and are you between 6 years old and 8 years old and can i trade kb457 for kb922 and change 425 - 777 - 1212 to 206 - 666 - 4123 and did delta buy virgin and did the rain from",
+          "type": "Composite1",
+          "score": 0.0632453859
+        },
+        {
+          "startIndex": 299,
+          "endIndex": 420,
+          "text": "68 degrees and 72 degrees and john likes mary and leave 3pm and arrive 5pm and pay between $ 400 and $ 500 and send chrimc @",
+          "type": "Composite1",
+          "score": 0.0442264825
+        }
+      ],
+      "liker": [
+        {
+          "startIndex": 329,
+          "endIndex": 333,
+          "text": "john",
+          "type": "Name",
+          "score": 0.9921442
+        }
+      ],
+      "likee": [
+        {
+          "startIndex": 340,
+          "endIndex": 344,
+          "text": "mary",
+          "type": "Name",
+          "score": 0.9902693
+        }
+      ],
+      "destination": [
+        {
+          "startIndex": 226,
+          "endIndex": 233,
+          "text": "redmond",
+          "type": "Weather.Location",
+          "score": 0.987181664
+        }
+      ],
+      "source": [
+        {
+          "startIndex": 212,
+          "endIndex": 218,
+          "text": "hawaii",
+          "type": "Weather.Location",
+          "score": 0.972107649
+        }
+      ],
+      "begin": [
+        {
+          "startIndex": 65,
+          "endIndex": 76,
+          "text": "6 years old",
+          "type": "builtin.age"
+        }
+      ],
+      "end": [
+        {
+          "startIndex": 81,
+          "endIndex": 92,
+          "text": "8 years old",
+          "type": "builtin.age"
+        }
+      ],
+      "leave": [
+        {
+          "startIndex": 355,
+          "endIndex": 358,
+          "text": "3pm",
+          "type": "builtin.datetimeV2.time"
+        }
+      ],
+      "arrive": [
+        {
+          "startIndex": 370,
+          "endIndex": 373,
+          "text": "5pm",
+          "type": "builtin.datetimeV2.time"
+        }
+      ],
+      "length": [
+        {
+          "startIndex": 0,
+          "endIndex": 8,
+          "text": "3 inches",
+          "type": "builtin.dimension"
+        }
+      ],
+      "width": [
+        {
+          "startIndex": 17,
+          "endIndex": 25,
+          "text": "2 inches",
+          "type": "builtin.dimension"
+        }
+      ],
+      "receiver": [
+        {
+          "startIndex": 413,
+          "endIndex": 431,
+          "text": "chrimc@hotmail.com",
+          "type": "builtin.email"
+        }
+      ],
+      "sender": [
+        {
+          "startIndex": 437,
+          "endIndex": 451,
+          "text": "emad@gmail.com",
+          "type": "builtin.email"
+        }
+      ],
+      "min": [
+        {
+          "startIndex": 390,
+          "endIndex": 394,
+          "text": "$400",
+          "type": "builtin.currency"
+        }
+      ],
+      "max": [
+        {
+          "startIndex": 399,
+          "endIndex": 403,
+          "text": "$500",
+          "type": "builtin.currency"
+        }
+      ],
+      "minimum": [
+        {
+          "startIndex": 35,
+          "endIndex": 37,
+          "text": "5%",
+          "type": "builtin.percentage"
+        }
+      ],
+      "maximum": [
+        {
+          "startIndex": 41,
+          "endIndex": 44,
+          "text": "10%",
+          "type": "builtin.percentage"
+        }
+      ],
+      "a": [
+        {
+          "startIndex": 299,
+          "endIndex": 309,
+          "text": "68 degrees",
+          "type": "builtin.temperature"
+        }
+      ],
+      "b": [
+        {
+          "startIndex": 314,
+          "endIndex": 324,
+          "text": "72 degrees",
+          "type": "builtin.temperature"
+        }
+      ],
+      "oldURL": [
+        {
+          "startIndex": 238,
+          "endIndex": 252,
+          "text": "http://foo.com",
+          "type": "builtin.url"
+        }
+      ],
+      "url": [
+        {
+          "startIndex": 264,
+          "endIndex": 279,
+          "text": "http://blah.com",
+          "type": "builtin.url"
+        }
+      ],
+      "Buyer": [
+        {
+          "startIndex": 173,
+          "endIndex": 178,
+          "text": "delta",
+          "type": "Airline"
+        }
+      ],
+      "Seller": [
+        {
+          "startIndex": 183,
+          "endIndex": 189,
+          "text": "virgin",
+          "type": "Airline"
+        }
+      ],
+      "sell": [
+        {
+          "startIndex": 109,
+          "endIndex": 114,
+          "text": "kb457",
+          "type": "Part"
+        }
+      ],
+      "buy": [
+        {
+          "startIndex": 119,
+          "endIndex": 124,
+          "text": "kb922",
+          "type": "Part"
+        }
+      ]
+    },
+    "Composite1": [
+      {
+        "$instance": {
+          "datetime": [
+            {
+              "startIndex": 65,
+              "endIndex": 72,
+              "text": "6 years",
+              "type": "builtin.datetimeV2.duration"
+            },
+            {
+              "startIndex": 81,
+              "endIndex": 88,
+              "text": "8 years",
+              "type": "builtin.datetimeV2.duration"
+            }
+          ],
+          "number": [
+            {
+              "startIndex": 0,
+              "endIndex": 1,
+              "text": "3",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 17,
+              "endIndex": 18,
+              "text": "2",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 35,
+              "endIndex": 36,
+              "text": "5",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 41,
+              "endIndex": 43,
+              "text": "10",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 65,
+              "endIndex": 66,
+              "text": "6",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 81,
+              "endIndex": 82,
+              "text": "8",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 136,
+              "endIndex": 139,
+              "text": "425",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 140,
+              "endIndex": 143,
+              "text": "777",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 144,
+              "endIndex": 148,
+              "text": "1212",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 152,
+              "endIndex": 155,
+              "text": "206",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 156,
+              "endIndex": 159,
+              "text": "666",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 160,
+              "endIndex": 164,
+              "text": "4123",
+              "type": "builtin.number",
+              "subtype": "integer"
+            }
+          ],
+          "phonenumber": [
+            {
+              "startIndex": 136,
+              "endIndex": 148,
+              "text": "425-777-1212",
+              "type": "builtin.phonenumber"
+            },
+            {
+              "startIndex": 152,
+              "endIndex": 164,
+              "text": "206-666-4123",
+              "type": "builtin.phonenumber"
+            }
+          ]
+        },
+        "datetime": [
+          {
+            "type": "duration",
+            "timex": [
+              "P6Y"
+            ]
+          },
+          {
+            "type": "duration",
+            "timex": [
+              "P8Y"
+            ]
+          }
+        ],
+        "number": [
+          3,
+          2,
+          5,
+          10,
+          6,
+          8,
+          425,
+          777,
+          1212,
+          206,
+          666,
+          4123
+        ],
+        "phonenumber": [
+          "425-777-1212",
+          "206-666-4123"
+        ]
+      },
+      {
+        "$instance": {
+          "dimension": [
+            {
+              "startIndex": 355,
+              "endIndex": 358,
+              "text": "3pm",
+              "type": "builtin.dimension"
+            },
+            {
+              "startIndex": 370,
+              "endIndex": 373,
+              "text": "5pm",
+              "type": "builtin.dimension"
+            }
+          ],
+          "number": [
+            {
+              "startIndex": 299,
+              "endIndex": 301,
+              "text": "68",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 314,
+              "endIndex": 316,
+              "text": "72",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 391,
+              "endIndex": 394,
+              "text": "400",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 400,
+              "endIndex": 403,
+              "text": "500",
+              "type": "builtin.number",
+              "subtype": "integer"
+            }
+          ]
+        },
+        "dimension": [
+          {
+            "number": 3,
+            "units": "Picometer"
+          },
+          {
+            "number": 5,
+            "units": "Picometer"
+          }
+        ],
+        "number": [
+          68,
+          72,
+          400,
+          500
+        ]
+      }
+    ],
+    "liker": [
+      "john"
+    ],
+    "likee": [
+      "mary"
+    ],
+    "destination": [
+      "redmond"
+    ],
+    "source": [
+      "hawaii"
+    ],
+    "begin": [
+      {
+        "number": 6,
+        "units": "Year"
+      }
+    ],
+    "end": [
+      {
+        "number": 8,
+        "units": "Year"
+      }
+    ],
+    "leave": [
+      {
+        "type": "time",
+        "timex": [
+          "T15"
+        ]
+      }
+    ],
+    "arrive": [
+      {
+        "type": "time",
+        "timex": [
+          "T17"
+        ]
+      }
+    ],
+    "length": [
+      {
+        "number": 3,
+        "units": "Inch"
+      }
+    ],
+    "width": [
+      {
+        "number": 2,
+        "units": "Inch"
+      }
+    ],
+    "receiver": [
+      "chrimc@hotmail.com"
+    ],
+    "sender": [
+      "emad@gmail.com"
+    ],
+    "min": [
+      {
+        "number": 400,
+        "units": "Dollar"
+      }
+    ],
+    "max": [
+      {
+        "number": 500,
+        "units": "Dollar"
+      }
+    ],
+    "minimum": [
+      5
+    ],
+    "maximum": [
+      10
+    ],
+    "a": [
+      {
+        "number": 68,
+        "units": "Degree"
+      }
+    ],
+    "b": [
+      {
+        "number": 72,
+        "units": "Degree"
+      }
+    ],
+    "oldURL": [
+      "http://foo.com"
+    ],
+    "url": [
+      "http://blah.com"
+    ],
+    "Buyer": [
+      [
+        "Delta"
+      ]
+    ],
+    "Seller": [
+      [
+        "Virgin"
+      ]
+    ],
+    "sell": [
+      "kb457"
+    ],
+    "buy": [
+      "kb922"
+    ]
+  },
+  "sentiment": {
+    "label": "neutral",
+    "score": 0.5
+  },
+  "luisResult": {
+    "query": "3 inches long by 2 inches wide and 5% to 10% and are you between 6 years old and 8 years old and can i trade kb457 for kb922 and change 425-777-1212 to 206-666-4123 and did delta buy virgin and did the rain from hawaii get to redmond and http://foo.com changed to http://blah.com and i like between 68 degrees and 72 degrees and john likes mary and leave 3pm and arrive 5pm and pay between $400 and $500 and send chrimc@hotmail.com from emad@gmail.com",
+    "topScoringIntent": {
+      "intent": "Roles",
+      "score": 1.0
+    },
+    "intents": [
+      {
+        "intent": "Roles",
+        "score": 1.0
+      },
+      {
+        "intent": "EntityTests",
+        "score": 0.0115484772
+      },
+      {
+        "intent": "Weather.GetForecast",
+        "score": 0.009885744
+      },
+      {
+        "intent": "search",
+        "score": 0.009508528
+      },
+      {
+        "intent": "Travel",
+        "score": 0.004027992
+      },
+      {
+        "intent": "None",
+        "score": 0.00087468233
+      },
+      {
+        "intent": "SpecifyName",
+        "score": 0.000113203794
+      },
+      {
+        "intent": "Delivery",
+        "score": 7.92103747E-05
+      },
+      {
+        "intent": "Help",
+        "score": 6.826453E-07
+      },
+      {
+        "intent": "Greeting",
+        "score": 4.24091354E-07
+      },
+      {
+        "intent": "Cancel",
+        "score": 4.06555785E-07
+      }
+    ],
+    "entities": [
+      {
+        "entity": "john",
+        "type": "Name",
+        "startIndex": 329,
+        "endIndex": 332,
+        "score": 0.9921442,
+        "role": "liker"
+      },
+      {
+        "entity": "mary",
+        "type": "Name",
+        "startIndex": 340,
+        "endIndex": 343,
+        "score": 0.9902693,
+        "role": "likee"
+      },
+      {
+        "entity": "redmond",
+        "type": "Weather.Location",
+        "startIndex": 226,
+        "endIndex": 232,
+        "score": 0.987181664,
+        "role": "destination"
+      },
+      {
+        "entity": "hawaii",
+        "type": "Weather.Location",
+        "startIndex": 212,
+        "endIndex": 217,
+        "score": 0.972107649,
+        "role": "source"
+      },
+      {
+        "entity": "3 inches long by 2 inches wide and 5 % to 10 % and are you between 6 years old and 8 years old and can i trade kb457 for kb922 and change 425 - 777 - 1212 to 206 - 666 - 4123 and did delta buy virgin and did the rain from",
+        "type": "Composite1",
+        "startIndex": 0,
+        "endIndex": 210,
+        "score": 0.0632453859
+      },
+      {
+        "entity": "68 degrees and 72 degrees and john likes mary and leave 3pm and arrive 5pm and pay between $ 400 and $ 500 and send chrimc @",
+        "type": "Composite1",
+        "startIndex": 299,
+        "endIndex": 419,
+        "score": 0.0442264825
+      },
+      {
+        "entity": "3",
+        "type": "builtin.number",
+        "startIndex": 0,
+        "endIndex": 0,
+        "resolution": {
+          "subtype": "integer",
+          "value": "3"
+        }
+      },
+      {
+        "entity": "2",
+        "type": "builtin.number",
+        "startIndex": 17,
+        "endIndex": 17,
+        "resolution": {
+          "subtype": "integer",
+          "value": "2"
+        }
+      },
+      {
+        "entity": "5",
+        "type": "builtin.number",
+        "startIndex": 35,
+        "endIndex": 35,
+        "resolution": {
+          "subtype": "integer",
+          "value": "5"
+        }
+      },
+      {
+        "entity": "10",
+        "type": "builtin.number",
+        "startIndex": 41,
+        "endIndex": 42,
+        "resolution": {
+          "subtype": "integer",
+          "value": "10"
+        }
+      },
+      {
+        "entity": "6",
+        "type": "builtin.number",
+        "startIndex": 65,
+        "endIndex": 65,
+        "resolution": {
+          "subtype": "integer",
+          "value": "6"
+        }
+      },
+      {
+        "entity": "8",
+        "type": "builtin.number",
+        "startIndex": 81,
+        "endIndex": 81,
+        "resolution": {
+          "subtype": "integer",
+          "value": "8"
+        }
+      },
+      {
+        "entity": "425",
+        "type": "builtin.number",
+        "startIndex": 136,
+        "endIndex": 138,
+        "resolution": {
+          "subtype": "integer",
+          "value": "425"
+        }
+      },
+      {
+        "entity": "777",
+        "type": "builtin.number",
+        "startIndex": 140,
+        "endIndex": 142,
+        "resolution": {
+          "subtype": "integer",
+          "value": "777"
+        }
+      },
+      {
+        "entity": "1212",
+        "type": "builtin.number",
+        "startIndex": 144,
+        "endIndex": 147,
+        "resolution": {
+          "subtype": "integer",
+          "value": "1212"
+        }
+      },
+      {
+        "entity": "206",
+        "type": "builtin.number",
+        "startIndex": 152,
+        "endIndex": 154,
+        "resolution": {
+          "subtype": "integer",
+          "value": "206"
+        }
+      },
+      {
+        "entity": "666",
+        "type": "builtin.number",
+        "startIndex": 156,
+        "endIndex": 158,
+        "resolution": {
+          "subtype": "integer",
+          "value": "666"
+        }
+      },
+      {
+        "entity": "4123",
+        "type": "builtin.number",
+        "startIndex": 160,
+        "endIndex": 163,
+        "resolution": {
+          "subtype": "integer",
+          "value": "4123"
+        }
+      },
+      {
+        "entity": "68",
+        "type": "builtin.number",
+        "startIndex": 299,
+        "endIndex": 300,
+        "resolution": {
+          "subtype": "integer",
+          "value": "68"
+        }
+      },
+      {
+        "entity": "72",
+        "type": "builtin.number",
+        "startIndex": 314,
+        "endIndex": 315,
+        "resolution": {
+          "subtype": "integer",
+          "value": "72"
+        }
+      },
+      {
+        "entity": "400",
+        "type": "builtin.number",
+        "startIndex": 391,
+        "endIndex": 393,
+        "resolution": {
+          "subtype": "integer",
+          "value": "400"
+        }
+      },
+      {
+        "entity": "500",
+        "type": "builtin.number",
+        "startIndex": 400,
+        "endIndex": 402,
+        "resolution": {
+          "subtype": "integer",
+          "value": "500"
+        }
+      },
+      {
+        "entity": "6 years old",
+        "type": "builtin.age",
+        "startIndex": 65,
+        "endIndex": 75,
+        "resolution": {
+          "unit": "Year",
+          "value": "6"
+        },
+        "role": "begin"
+      },
+      {
+        "entity": "8 years old",
+        "type": "builtin.age",
+        "startIndex": 81,
+        "endIndex": 91,
+        "resolution": {
+          "unit": "Year",
+          "value": "8"
+        },
+        "role": "end"
+      },
+      {
+        "entity": "6 years",
+        "type": "builtin.datetimeV2.duration",
+        "startIndex": 65,
+        "endIndex": 71,
+        "resolution": {
+          "values": [
+            {
+              "timex": "P6Y",
+              "type": "duration",
+              "value": "189216000"
+            }
+          ]
+        }
+      },
+      {
+        "entity": "8 years",
+        "type": "builtin.datetimeV2.duration",
+        "startIndex": 81,
+        "endIndex": 87,
+        "resolution": {
+          "values": [
+            {
+              "timex": "P8Y",
+              "type": "duration",
+              "value": "252288000"
+            }
+          ]
+        }
+      },
+      {
+        "entity": "3pm",
+        "type": "builtin.datetimeV2.time",
+        "startIndex": 355,
+        "endIndex": 357,
+        "resolution": {
+          "values": [
+            {
+              "timex": "T15",
+              "type": "time",
+              "value": "15:00:00"
+            }
+          ]
+        },
+        "role": "leave"
+      },
+      {
+        "entity": "5pm",
+        "type": "builtin.datetimeV2.time",
+        "startIndex": 370,
+        "endIndex": 372,
+        "resolution": {
+          "values": [
+            {
+              "timex": "T17",
+              "type": "time",
+              "value": "17:00:00"
+            }
+          ]
+        },
+        "role": "arrive"
+      },
+      {
+        "entity": "3 inches",
+        "type": "builtin.dimension",
+        "startIndex": 0,
+        "endIndex": 7,
+        "resolution": {
+          "unit": "Inch",
+          "value": "3"
+        },
+        "role": "length"
+      },
+      {
+        "entity": "2 inches",
+        "type": "builtin.dimension",
+        "startIndex": 17,
+        "endIndex": 24,
+        "resolution": {
+          "unit": "Inch",
+          "value": "2"
+        },
+        "role": "width"
+      },
+      {
+        "entity": "3pm",
+        "type": "builtin.dimension",
+        "startIndex": 355,
+        "endIndex": 357,
+        "resolution": {
+          "unit": "Picometer",
+          "value": "3"
+        }
+      },
+      {
+        "entity": "5pm",
+        "type": "builtin.dimension",
+        "startIndex": 370,
+        "endIndex": 372,
+        "resolution": {
+          "unit": "Picometer",
+          "value": "5"
+        }
+      },
+      {
+        "entity": "chrimc@hotmail.com",
+        "type": "builtin.email",
+        "startIndex": 413,
+        "endIndex": 430,
+        "resolution": {
+          "value": "chrimc@hotmail.com"
+        },
+        "role": "receiver"
+      },
+      {
+        "entity": "emad@gmail.com",
+        "type": "builtin.email",
+        "startIndex": 437,
+        "endIndex": 450,
+        "resolution": {
+          "value": "emad@gmail.com"
+        },
+        "role": "sender"
+      },
+      {
+        "entity": "$400",
+        "type": "builtin.currency",
+        "startIndex": 390,
+        "endIndex": 393,
+        "resolution": {
+          "unit": "Dollar",
+          "value": "400"
+        },
+        "role": "min"
+      },
+      {
+        "entity": "$500",
+        "type": "builtin.currency",
+        "startIndex": 399,
+        "endIndex": 402,
+        "resolution": {
+          "unit": "Dollar",
+          "value": "500"
+        },
+        "role": "max"
+      },
+      {
+        "entity": "5%",
+        "type": "builtin.percentage",
+        "startIndex": 35,
+        "endIndex": 36,
+        "resolution": {
+          "value": "5%"
+        },
+        "role": "minimum"
+      },
+      {
+        "entity": "10%",
+        "type": "builtin.percentage",
+        "startIndex": 41,
+        "endIndex": 43,
+        "resolution": {
+          "value": "10%"
+        },
+        "role": "maximum"
+      },
+      {
+        "entity": "425-777-1212",
+        "type": "builtin.phonenumber",
+        "startIndex": 136,
+        "endIndex": 147,
+        "resolution": {
+          "score": "0.9",
+          "value": "425-777-1212"
+        }
+      },
+      {
+        "entity": "206-666-4123",
+        "type": "builtin.phonenumber",
+        "startIndex": 152,
+        "endIndex": 163,
+        "resolution": {
+          "score": "0.9",
+          "value": "206-666-4123"
+        }
+      },
+      {
+        "entity": "68 degrees",
+        "type": "builtin.temperature",
+        "startIndex": 299,
+        "endIndex": 308,
+        "resolution": {
+          "unit": "Degree",
+          "value": "68"
+        },
+        "role": "a"
+      },
+      {
+        "entity": "72 degrees",
+        "type": "builtin.temperature",
+        "startIndex": 314,
+        "endIndex": 323,
+        "resolution": {
+          "unit": "Degree",
+          "value": "72"
+        },
+        "role": "b"
+      },
+      {
+        "entity": "http://foo.com",
+        "type": "builtin.url",
+        "startIndex": 238,
+        "endIndex": 251,
+        "resolution": {
+          "value": "http://foo.com"
+        },
+        "role": "oldURL"
+      },
+      {
+        "entity": "http://blah.com",
+        "type": "builtin.url",
+        "startIndex": 264,
+        "endIndex": 278,
+        "resolution": {
+          "value": "http://blah.com"
+        }
+      },
+      {
+        "entity": "delta",
+        "type": "Airline",
+        "startIndex": 173,
+        "endIndex": 177,
+        "resolution": {
+          "values": [
+            "Delta"
+          ]
+        },
+        "role": "Buyer"
+      },
+      {
+        "entity": "virgin",
+        "type": "Airline",
+        "startIndex": 183,
+        "endIndex": 188,
+        "resolution": {
+          "values": [
+            "Virgin"
+          ]
+        },
+        "role": "Seller"
+      },
+      {
+        "entity": "kb457",
+        "type": "Part",
+        "startIndex": 109,
+        "endIndex": 113,
+        "role": "sell"
+      },
+      {
+        "entity": "kb922",
+        "type": "Part",
+        "startIndex": 119,
+        "endIndex": 123,
+        "role": "buy"
+      }
+    ],
+    "compositeEntities": [
+      {
+        "parentType": "Composite1",
+        "value": "3 inches long by 2 inches wide and 5 % to 10 % and are you between 6 years old and 8 years old and can i trade kb457 for kb922 and change 425 - 777 - 1212 to 206 - 666 - 4123 and did delta buy virgin and did the rain from",
+        "children": [
+          {
+            "type": "builtin.datetimeV2.duration",
+            "value": "6 years"
+          },
+          {
+            "type": "builtin.datetimeV2.duration",
+            "value": "8 years"
+          },
+          {
+            "type": "builtin.number",
+            "value": "3"
+          },
+          {
+            "type": "builtin.number",
+            "value": "2"
+          },
+          {
+            "type": "builtin.number",
+            "value": "5"
+          },
+          {
+            "type": "builtin.number",
+            "value": "10"
+          },
+          {
+            "type": "builtin.number",
+            "value": "6"
+          },
+          {
+            "type": "builtin.number",
+            "value": "8"
+          },
+          {
+            "type": "builtin.number",
+            "value": "425"
+          },
+          {
+            "type": "builtin.number",
+            "value": "777"
+          },
+          {
+            "type": "builtin.number",
+            "value": "1212"
+          },
+          {
+            "type": "builtin.number",
+            "value": "206"
+          },
+          {
+            "type": "builtin.number",
+            "value": "666"
+          },
+          {
+            "type": "builtin.number",
+            "value": "4123"
+          },
+          {
+            "type": "builtin.phonenumber",
+            "value": "425-777-1212"
+          },
+          {
+            "type": "builtin.phonenumber",
+            "value": "206-666-4123"
+          }
+        ]
+      },
+      {
+        "parentType": "Composite1",
+        "value": "68 degrees and 72 degrees and john likes mary and leave 3pm and arrive 5pm and pay between $ 400 and $ 500 and send chrimc @",
+        "children": [
+          {
+            "type": "builtin.dimension",
+            "value": "3pm"
+          },
+          {
+            "type": "builtin.dimension",
+            "value": "5pm"
+          },
+          {
+            "type": "builtin.number",
+            "value": "68"
+          },
+          {
+            "type": "builtin.number",
+            "value": "72"
+          },
+          {
+            "type": "builtin.number",
+            "value": "400"
+          },
+          {
+            "type": "builtin.number",
+            "value": "500"
+          }
+        ]
+      }
+    ],
+    "sentimentAnalysis": {
+      "label": "neutral",
+      "score": 0.5
+    }
+  }
+}

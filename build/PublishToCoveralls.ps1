@@ -1,17 +1,24 @@
+#
+# Installs and runs Coveralls.exe to upload coverage files to https://coveralls.io/.
+# Arguments example: -coverallsToken $(Coveralls.Token) -pathToCoverageFiles $(Build.SourcesDirectory)\CodeCoverage
+#
 Param(
-    [string]$coverallsToken
+    [string]$coverallsToken,
+    [string]$pathToCoverageFiles,
+    [string]$serviceName = 'Azure DevOps'
 )
 
 Write-Host Install tools
+$basePath = (get-item $pathToCoverageFiles ).parent.FullName
 $coverageAnalyzer = "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Team Tools\Dynamic Code Coverage Tools\CodeCoverage.exe"
 dotnet tool install coveralls.net --version 1.0.0 --tool-path tools
 $coverageUploader = ".\tools\csmacnz.Coveralls.exe"
 
 Write-Host "Analyze coverage [$coverageAnalyzer] with args:"
-$coverageFiles = Get-ChildItem -Path "$env:Build_SourcesDirectory\CodeCoverage" -Include "*.coverage" -Recurse | Select -Exp FullName
+$coverageFiles = Get-ChildItem -Path "$pathToCoverageFiles" -Include "*.coverage" -Recurse | Select -Exp FullName
 $analyzeArgs = @(
     "analyze",
-    "/output:""$env:Build_SourcesDirectory\CodeCoverage\coverage.coveragexml"""
+    "/output:""$pathToCoverageFiles\coverage.coveragexml"""
 );
 $analyzeArgs += $coverageFiles
 Foreach ($i in $analyzeArgs) { Write-Host "  $i" }
@@ -22,16 +29,17 @@ if (Test-Path env:System_PullRequest_SourceBranch) {
     $branchName = $env:System_PullRequest_SourceBranch -replace "refs/heads/", "" }
 $uploadArgs = @(
     "--dynamiccodecoverage",
-    "-i ""$env:Build_SourcesDirectory\CodeCoverage\coverage.coveragexml""",
-    "-o ""$env:Build_SourcesDirectory\CodeCoverage\coverage.json"""
+    "-i ""$pathToCoverageFiles\coverage.coveragexml""",
+    "-o ""$pathToCoverageFiles\coverage.json"""
     "--useRelativePaths",
-    "--basePath ""$env:Build_SourcesDirectory""",
+    "--basePath ""$basePath""",
     "--repoToken ""$coverallsToken""",
     "--jobId ""$env:Build_BuildId""",
     "--commitId ""$env:Build_SourceVersion""",
     "--commitAuthor ""$env:Build_RequestedFor""",
     "--commitEmail ""$env:Build_RequestedForEmail""",
-    "--commitMessage ""$env:Build_SourceVersionMessage"""
+    "--commitMessage ""$env:Build_SourceVersionMessage""",
+    "--serviceName ""$serviceName"""
 );
 if (Test-Path env:System_PullRequest_SourceBranch)
 {

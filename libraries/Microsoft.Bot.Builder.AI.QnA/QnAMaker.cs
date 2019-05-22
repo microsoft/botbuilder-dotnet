@@ -71,9 +71,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (httpClient == null)
             {
-                // assign DefaultHttpClient to _httpClient to expose Timeout in unit tests
-                // and keep HttpClient usage as a singleton by default
-                DefaultHttpClient.Timeout = TimeSpan.FromMilliseconds(_options.Timeout);
                 _httpClient = DefaultHttpClient;
             }
             else
@@ -134,7 +131,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Gets the currently configured <see cref="IBotTelemetryClient"/> that logs the QnaMessage event.
         /// </summary>
-        /// <value>The <see cref=IBotTelemetryClient"/> being used to log events.</value>
+        /// <value>The <see cref="IBotTelemetryClient"/> being used to log events.</value>
         public IBotTelemetryClient TelemetryClient { get; }
 
         /// <summary>
@@ -286,7 +283,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="queryOptions">The options for the QnA Maker knowledge base.</param>
         private QnAMakerOptions HydrateOptions(QnAMakerOptions queryOptions)
         {
-            var hydratedOptions = _options;
+            var hydratedOptions = JsonConvert.DeserializeObject<QnAMakerOptions>(JsonConvert.SerializeObject(_options));
 
             if (queryOptions != null)
             {

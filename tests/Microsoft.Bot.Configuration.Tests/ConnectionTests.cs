@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Configuration.Tests
     [TestClass]
     public class ConnectionTests
     {
-        private const string TestBotFileName = @"..\..\..\test.bot";
+        private const string TestBotFileName = @"../../../test.bot";
 
         [TestMethod]
         public async Task ConnectAssignsUniqueIds()
