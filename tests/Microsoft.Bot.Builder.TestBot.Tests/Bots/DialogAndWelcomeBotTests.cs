@@ -6,6 +6,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
+using Microsoft.BotBuilderSamples.Tests.Framework;
 using Xunit;
 
 namespace Microsoft.BotBuilderSamples.Tests.Bots

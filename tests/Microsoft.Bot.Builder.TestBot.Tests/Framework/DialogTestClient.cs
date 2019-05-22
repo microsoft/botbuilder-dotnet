@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.BotBuilderSamples.Tests.Framework.XUnit;
 using Xunit.Abstractions;
 
 namespace Microsoft.BotBuilderSamples.Tests.Framework

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.IO;
+using Microsoft.BotBuilderSamples.Tests.Framework.Luis;
 using Newtonsoft.Json;
 using Xunit;
 

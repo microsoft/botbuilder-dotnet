@@ -8,10 +8,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.AI.Luis;
+using Microsoft.BotBuilderSamples.Tests.Framework.Luis;
 using Microsoft.BotBuilderSamples.Tests.Framework.XUnit;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 using Xunit.Abstractions;
+using LuisTestItem = Microsoft.BotBuilderSamples.Tests.Framework.Luis.LuisTestItem;
 
 namespace Microsoft.BotBuilderSamples.Tests.CognitiveModels
 {

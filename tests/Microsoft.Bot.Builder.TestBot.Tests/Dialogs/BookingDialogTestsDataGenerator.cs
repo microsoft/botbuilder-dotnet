@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using Microsoft.BotBuilderSamples.Tests.Framework.XUnit;
 using Xunit;
 using Xunit.Sdk;
 

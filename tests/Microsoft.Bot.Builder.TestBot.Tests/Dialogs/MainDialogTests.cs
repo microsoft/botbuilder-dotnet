@@ -10,6 +10,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.BotBuilderSamples.CognitiveModels;
 using Microsoft.BotBuilderSamples.Dialogs;
 using Microsoft.BotBuilderSamples.Tests.Framework;
+using Microsoft.BotBuilderSamples.Tests.Framework.XUnit;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Xunit;

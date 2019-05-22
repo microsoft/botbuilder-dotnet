@@ -4,6 +4,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.BotBuilderSamples.Tests.Framework.Luis;
 
 namespace Microsoft.BotBuilderSamples.Tests.Framework.XUnit
 {

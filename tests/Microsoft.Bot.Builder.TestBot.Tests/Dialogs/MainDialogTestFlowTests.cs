@@ -8,6 +8,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.BotBuilderSamples.CognitiveModels;
 using Microsoft.BotBuilderSamples.Dialogs;
+using Microsoft.BotBuilderSamples.Tests.Framework;
 using Moq;
 using Xunit;
 
