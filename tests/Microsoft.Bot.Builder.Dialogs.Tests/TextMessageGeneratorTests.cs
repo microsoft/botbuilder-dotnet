@@ -59,6 +59,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        public async Task TestInlineWithLineBreakMark()
+        {
+            var lg = new MockLanguageGenator();
+            var mg = new TextMessageActivityGenerator(lg);
+            var activity = await mg.Generate("", "Hi \n Hello", id: null, data: null, types: null, tags: null);
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.AreEqual("Hi \n Hello", activity.Text);
+            Assert.AreEqual("Hi \n Hello", activity.Speak);
+
+            activity = await mg.Generate("", "Hi \r\n Hello", id: null, data: null, types: null, tags: null);
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.AreEqual("Hi \r\n Hello", activity.Text);
+            Assert.AreEqual("Hi \r\n Hello", activity.Speak);
+
+            activity = await mg.Generate("", "Hi \r\n @{name}", id: null, data: null, types: null, tags: null);
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.AreEqual("Hi \r\n DL", activity.Text);
+            Assert.AreEqual("Hi \r\n DL", activity.Speak);
+        }
+
+        [TestMethod]
         public async Task TestSpeak()
         {
             var lg = new MockLanguageGenator();
