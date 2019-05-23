@@ -55,8 +55,11 @@ namespace Microsoft.Bot.Schema
             foreach (var mention in activity.GetMentions().Where(mention => mention.Mentioned.Id == id))
             {
                 var mentionNameMatch = Regex.Match(mention.Text, @"(?<=<at.*>)(.*?)(?=<\/at>)", RegexOptions.IgnoreCase);
-                activity.Text = activity.Text.Replace(mentionNameMatch.Value, string.Empty);
-                activity.Text = Regex.Replace(activity.Text, "<at></at>", string.Empty, RegexOptions.IgnoreCase);
+                if (mentionNameMatch.Success)
+                {
+                    activity.Text = activity.Text.Replace(mentionNameMatch.Value, string.Empty);
+                    activity.Text = Regex.Replace(activity.Text, "<at></at>", string.Empty, RegexOptions.IgnoreCase);
+                }
             }
 
             return activity.Text;
