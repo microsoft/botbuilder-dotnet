@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Returns the raw cached data from the TurnContext.
+        /// Returns a copy of the raw cached data from the TurnContext, this can be used for tracing scenarios.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
         /// <returns>A JSON representation of the cached state.</returns>
