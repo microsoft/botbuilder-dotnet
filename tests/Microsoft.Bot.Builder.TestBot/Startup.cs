@@ -22,8 +22,6 @@ namespace Microsoft.BotBuilderSamples
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            GetEnvironmentVariables();
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Create the credential provider to be used with the Bot Framework Adapter.
@@ -51,20 +49,6 @@ namespace Microsoft.BotBuilderSamples
             services.AddSingleton<MainDialog>();
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
-            switch (chosenBot)
-            {
-                case "EchoBot":
-                    services.AddTransient<IBot, MyBot>();
-                    break;
-
-                case "DialogBot":
-                    services.AddTransient<IBot, DialogBot<MainDialog>>();
-                    break;
-
-                default:
-                    services.AddTransient<IBot, DialogAndWelcomeBot<MainDialog>>();
-                    break;
-            }
 
             // We can also run the inspection at a different endpoint. Just uncomment these lines.
             // services.AddSingleton<DebugAdapter>();
@@ -90,16 +74,7 @@ namespace Microsoft.BotBuilderSamples
             app.UseMvc();
         }
 
-        public void GetEnvironmentVariables()
-        {
-            if (string.IsNullOrWhiteSpace(chosenBot))
             {
-                chosenBot = Environment.GetEnvironmentVariable("CHOSENBOT");
-                if (string.IsNullOrWhiteSpace(chosenBot))
-                {
-                    chosenBot = "DialogAndWelcomeBot";
-                }
-            }
         }
     }
 }
