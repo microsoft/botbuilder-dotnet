@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// </summary>
         /// <remarks>
         /// Triggers only contain the most specific trigger, so if this node 
-        /// as Pred(A) and there was a rule R1: Pred(A) -> A1 and R2: Pred(A) v Pred(B) -> A2
+        /// is Pred(A) and there was a rule R1: Pred(A) -> A1 and R2: Pred(A) v Pred(B) -> A2
         /// then the second trigger would be in AllTriggers, but not Triggers because it 
         /// is more general.
         /// </remarks>
@@ -157,8 +157,17 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
 
         internal bool RemoveTrigger(Trigger trigger)
         {
-            var removed = new Dictionary<Node, Operation>();
-            return RemoveTrigger(trigger, null, removed) == Operation.Removed;
+            bool removed = false;
+#if TraceTree
+            if (Node.ShowTrace)
+            {
+                Debug.WriteLine("");
+                Debug.WriteLine($"***** Remove {trigger} *****");
+                Debug.IndentSize = 2;
+            }
+#endif
+            RemoveTrigger(trigger, new HashSet<Node>(), ref removed);
+            return removed;
         }
 
         // In order to add a trigger we have to walk over the whole tree
@@ -454,56 +463,104 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             return added;
         }
 
-        // TODO: Implement remove and drop parent
-        // Need to make sure we update triggers from allTriggers as well.
-        private Operation RemoveTrigger(Trigger trigger, Node parent, Dictionary<Node, Operation> removed)
+        private void RemoveTrigger(Trigger trigger, HashSet<Node> visited, ref bool removed)
         {
-            var op = Operation.None;
-            /*
-            if (!removed.TryGetValue(this, out op))
+            if (!visited.Contains(this))
             {
-                var relationship = trigger.Relationship(_triggers.First());
-#if TraceTree
-                Debug.WriteLine(trigger.ToString());
-                Debug.WriteLine($"Remove {relationship}");
-                Debug.WriteLine(ToString());
-                Debug.WriteLine("");
-#endif
-                switch (relationship)
+                visited.Add(this);
+                // Remove from allTriggers and triggers
+                if (_allTriggers.Remove(trigger))
                 {
-                    case RelationshipType.Equal:
+                    // We found the trigger somewhere in the tree
+                    removed = true;
+#if TraceTree
+                    if (Node.ShowTrace)
+                    {
+                        Debug.WriteLine("");
+#if Count
+                        Debug.Write($"{_count}:");
+#endif
+                        Debug.WriteLine(this);
+                        Debug.WriteLine($"Removed from all triggers");
+                    }
+#endif
+#if Count
+                    ++_count;
+#endif
+                    if (_triggers.Remove(trigger))
+                    {
+#if TraceTree
+                        if (Node.ShowTrace) Debug.WriteLine("Removed from triggers");
+#endif
+                        foreach (var candidate in _allTriggers)
                         {
-                            if (_triggers.Remove(trigger))
+                            var add = true;
+                            foreach (var existing in _triggers)
                             {
-                                op = Operation.Removed;
-                            }
-                            else
-                            {
-                                op = Operation.Found;
-                            }
-                            if (parent != null && _triggers.Count == 0)
-                            {
-                                parent._specializations.AddRange(_specializations);
-                            }
-                        }
-                        break;
-                    case RelationshipType.Specializes:
-                        {
-                            foreach (var child in new List<Node>(_specializations))
-                            {
-                                op = child.RemoveTrigger(trigger, this, removed);
-                                if (op != Operation.None)
+                                var reln = candidate.Relationship(existing, Tree.Comparers);
+                                if (reln == RelationshipType.Equal || reln == RelationshipType.Generalizes)
                                 {
+                                    add = false;
                                     break;
                                 }
                             }
+                            if (add)
+                            {
+#if TraceTree
+                                if (Node.ShowTrace) Debug.WriteLine($"Moved {candidate} to triggers");
+#endif
+                                _triggers.Add(candidate);
+                            }
                         }
-                        break;
+                    }
                 }
-                removed[this] = op;
+
+                // Remove from any children
+                List<Node> emptyChildren = null;
+                foreach (var child in _specializations)
+                {
+                    child.RemoveTrigger(trigger, visited, ref removed);
+                    if (child.Triggers.Count == 0)
+                    {
+                        if (emptyChildren == null)
+                        {
+                            emptyChildren = new List<Node>();
+                        }
+                        emptyChildren.Add(child);
+                    }
+                }
+                if (emptyChildren != null)
+                {
+                    // Remove children if no triggers left
+                    foreach (var child in emptyChildren)
+                    {
+#if TraceTree
+                        if (Node.ShowTrace) Debug.WriteLine($"Move children of {child} to {this}");
+#endif
+                        _specializations.Remove(child);
+                        foreach (var specialization in child.Specializations)
+                        {
+                            var add = true;
+                            foreach (var parent in _specializations)
+                            {
+                                var reln = parent.Relationship(specialization);
+                                if (reln == RelationshipType.Generalizes)
+                                {
+                                    add = false;
+                                    break;
+                                }
+                            }
+                            if (add)
+                            {
+#if TraceTree
+                                if (Node.ShowTrace) Debug.WriteLine($"Move {specialization}");
+#endif
+                                _specializations.Add(specialization);
+                            }
+                        }
+                    }
+                }
             }
-            */
-            return op;
         }
 
         private bool Matches(object state, List<Node> matches, Dictionary<Node, bool> matched)
