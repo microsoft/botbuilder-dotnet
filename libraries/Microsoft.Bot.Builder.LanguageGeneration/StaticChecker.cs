@@ -204,36 +204,36 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 if (node.GetText().Count(u => u == ' ') > 1)
                 {
-                    result.Add(BuildLGDiagnostic($"At most 1 whitespace is allowed between SWITCH/CASE/DEFAULT and :. expression: '{switchCaseNode.GetText()}", context: switchCaseNode));
+                    result.Add(BuildLGDiagnostic($"At most 1 whitespace is allowed between SWITCH/CASE/DEFAULT and :. expression: '{context.switchCaseTemplateBody().GetText()}", context: switchCaseNode));
 
                 }
 
                 if (idx == 0 && !switchExpr)
                 {
-                    result.Add(BuildLGDiagnostic($"control flow is not start with switch: '{switchCaseNode.GetText()}'", context: switchCaseNode));
+                    result.Add(BuildLGDiagnostic($"control flow is not start with switch: '{context.switchCaseTemplateBody().GetText()}'", context: switchCaseNode));
                 }
 
                 if (idx > 0 && switchExpr)
                 {
-                    result.Add(BuildLGDiagnostic($"control flow can not have more than one switch statement: '{switchCaseNode.GetText()}'", context: switchCaseNode));
+                    result.Add(BuildLGDiagnostic($"control flow can not have more than one switch statement: '{context.switchCaseTemplateBody().GetText()}'", context: switchCaseNode));
                 }
 
                 if (idx > 0 && idx < length - 1 && !caseExpr)
                 {
-                    result.Add(BuildLGDiagnostic($"only case statement is allowed in the middle of control flow: '{switchCaseNode.GetText()}'", context: switchCaseNode));
+                    result.Add(BuildLGDiagnostic($"only case statement is allowed in the middle of control flow: '{context.switchCaseTemplateBody().GetText()}'", context: switchCaseNode));
                 }
 
                 if (idx == length - 1 && (caseExpr || defaultExpr))
                 {
                     if (caseExpr)
                     {
-                        result.Add(BuildLGDiagnostic($"control flow is not ending with default statement: '{switchCaseNode.GetText()}'", DiagnosticSeverity.Warning, switchCaseNode));
+                        result.Add(BuildLGDiagnostic($"control flow is not ending with default statement: '{context.switchCaseTemplateBody().GetText()}'", DiagnosticSeverity.Warning, switchCaseNode));
                     }
                     else
                     {
                         if (length == 2)
                         {
-                            result.Add(BuildLGDiagnostic($"control flow should have at least one case statement: '{switchCaseNode.GetText()}'", DiagnosticSeverity.Warning, switchCaseNode));
+                            result.Add(BuildLGDiagnostic($"control flow should have at least one case statement: '{context.switchCaseTemplateBody().GetText()}'", DiagnosticSeverity.Warning, switchCaseNode));
                         }
                     }
                 }
@@ -242,7 +242,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     if (switchCaseNode.EXPRESSION().Length != 1)
                     {
-                        result.Add(BuildLGDiagnostic($"switch and case should followed by one valid expression: '{switchCaseNode.GetText()}'", DiagnosticSeverity.Warning, switchCaseNode));
+                        result.Add(BuildLGDiagnostic($"switch and case should followed by one valid expression: '{context.switchCaseTemplateBody().GetText()}'", context: switchCaseNode));
                     }
                     else
                     {
@@ -251,9 +251,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 else
                 {
-                    if (switchCaseNode.EXPRESSION().Length != 0 || switchCaseNode.EXPRESSION().Length != 0)
+                    if (switchCaseNode.EXPRESSION().Length != 0 || switchCaseNode.TEXT().Length != 0)
                     {
-                        result.Add(BuildLGDiagnostic($"default should not followed by any expression or any text: '{switchCaseNode.GetText()}'", context: switchCaseNode));
+                        result.Add(BuildLGDiagnostic($"default should not followed by any expression or any text: '{context.switchCaseTemplateBody().GetText()}'", context: switchCaseNode));
                     }
                 }
 
@@ -265,10 +265,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     }
                     else
                     {
-                        result.Add(BuildLGDiagnostic($"no normal template body in case or default block: '{switchCaseRules[idx].GetText()}'", context: switchCaseNode));
+                        result.Add(BuildLGDiagnostic($"no normal template body in case or default block: '{context.switchCaseTemplateBody().GetText()}'", context: switchCaseNode));
                     }
                 }
-                idx = idx + 1;
             }
 
             return result;
