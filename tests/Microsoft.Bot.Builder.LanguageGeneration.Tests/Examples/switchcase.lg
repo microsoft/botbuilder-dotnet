@@ -1,0 +1,8 @@
+# greetInAWeek
+-SWITCH: {day}
+-CASE: {'Saturday'}
+-Happy Saturday!
+-CASE: {'Sunday'}
+-Happy Sunday!
+-DEFAULT:  
+-Work Hard!
