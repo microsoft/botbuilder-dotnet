@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// <summary>
     /// The Adaptive Dialog models conversation using events and rules to adapt dynamicaly to changing conversation flow
     /// </summary>
-    public class AdaptiveDialog : Dialog
+    public class AdaptiveDialog : Dialog, IDialogDependencies
     {
         private bool installedDependencies = false;
         protected readonly DialogSet dialogs = new DialogSet();
@@ -59,7 +59,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <summary>
         /// Gets or sets the selector for picking the possible rules to execute.
         /// </summary>
-        public IRuleSelector Selector { get; set; }
+
+        // Default to most specific then first
+        public IRuleSelector Selector { get; set; } = new MostSpecificSelector
+        {
+            Selector = new FirstSelector()
+        };
 
         public override IBotTelemetryClient TelemetryClient
         {
@@ -100,17 +105,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     {
                         AddDialog(rule.Steps.ToArray());
                     }
-
-                    // Wire up selector
-                    if (this.Selector == null)
-                    {
-                        // Default to most specific then first
-                        this.Selector = new MostSpecificSelector
-                        {
-                            Selector = new FirstSelector()
-                        };
-                    }
-                    this.Selector.Initialize(this.Rules, true);
                 }
             }
 
@@ -130,6 +124,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Create a new planning context
             var planning = PlanningContext.Create(dc, state);
 
+            this.Selector.Initialize(this.Rules, true);
 
             if (this.Steps.Any())
             {
@@ -160,6 +155,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             state.Changes = new List<PlanChangeList>();
 
             var planning = PlanningContext.Create(dc, state);
+
+            this.Selector.Initialize(this.Rules, true);
 
             // First consult plan
             var consultation = await ConsultPlanAsync(planning, cancellationToken).ConfigureAwait(false);
@@ -749,6 +746,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 }
             }
             return false;
+        }
+
+        public List<IDialog> ListDependencies()
+        {
+            return this.Steps.Union(this.Rules.SelectMany(r => r.Steps)).ToList();
         }
     }
 }
