@@ -333,7 +333,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ParserRuleContext context = null)
         {
             var startPosition = context == null ? new Position(0, 0) : new Position(context.Start.Line - 1, context.Start.Column);
-            var stopPosition = context == null ? new Position(0, 0) : new Position(context.Stop.Line - 1, context.Stop.Column);
+            var stopPosition = context == null ? new Position(0, 0) : new Position(context.Stop.Line - 1, context.Stop.Column + context.Stop.Text.Length);
             var range = new Range(startPosition, stopPosition);
             return new Diagnostic(range, message, severity);
         }
