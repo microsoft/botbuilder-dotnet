@@ -205,7 +205,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 if (node.GetText().Count(u => u == ' ') > 1)
                 {
                     result.Add(BuildLGDiagnostic($"At most 1 whitespace is allowed between SWITCH/CASE/DEFAULT and :. expression: '{context.switchCaseTemplateBody().GetText()}", context: switchCaseNode));
-
                 }
 
                 if (idx == 0 && !switchExpr)
