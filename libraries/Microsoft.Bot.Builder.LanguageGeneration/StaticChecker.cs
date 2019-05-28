@@ -271,8 +271,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             foreach (Match match in mc)
             {
-                var newExp = match.Value.Substring(1); // remove @
-                result.AddRange(CheckExpression(newExp, context));
+                result.AddRange(CheckExpression(match.Value, context));
             }
 
             return result;
@@ -306,7 +305,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private List<Diagnostic> CheckExpression(string exp, ParserRuleContext context)
         {
             var result = new List<Diagnostic>();
-            exp = exp.TrimStart('{').TrimEnd('}');
+            exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
             try
             {
                 new ExpressionEngine(new GetMethodExtensions(new Evaluator(this.Templates, null)).GetMethodX).Parse(exp);
