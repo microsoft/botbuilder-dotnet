@@ -209,7 +209,7 @@ namespace Microsoft.Bot.Builder
             if (turnContext.Activity.Name == "signin/verifyState")
             {
                 turnContext.SendActivityAsync(new Activity(ActivityTypesEx.InvokeResponse, value: null)).Wait(cancellationToken);
-                return OnMsTeamsTokenResponseEventAsync(turnContext, cancellationToken);
+                return OnMsTeamsSigninResponseInvokeAsync(turnContext, cancellationToken);
             }
 
             return OnInvokeActivityAsync(turnContext, cancellationToken);
@@ -225,7 +225,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        protected virtual Task OnMsTeamsTokenResponseEventAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        protected virtual Task OnMsTeamsSigninResponseInvokeAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
