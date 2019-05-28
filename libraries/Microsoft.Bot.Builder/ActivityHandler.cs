@@ -55,6 +55,9 @@ namespace Microsoft.Bot.Builder
                 case ActivityTypes.Event:
                     return OnEventActivityAsync(new DelegatingTurnContext<IEventActivity>(turnContext), cancellationToken);
 
+                case ActivityTypes.Invoke:
+                    return OnInvokeActivityAsync(new DelegatingTurnContext<IInvokeActivity>(turnContext), cancellationToken);
+
                 default:
                     return OnUnrecognizedActivityTypeAsync(turnContext, cancellationToken);
             }
@@ -188,6 +191,56 @@ namespace Microsoft.Bot.Builder
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         protected virtual Task OnEventAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// By default, this method will send an invoke response if the
+        /// activity's name is <c>signin/verifyState</c> or <see cref="OnInvokeActivityAsync(ITurnContext{IEventActivity}, CancellationToken)"/> otherwise.
+        /// A <c>signin/verifyState</c> invoke activity can be triggered by an <see cref="OAuthCard"/> used within Teams.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        private Task OnInvokeActivityAsync(DelegatingTurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        {
+            if (turnContext.Activity.Name == "signin/verifyState")
+            {
+                turnContext.SendActivityAsync(new Activity(ActivityTypesEx.InvokeResponse, value: null)).Wait(cancellationToken);
+                return OnMsTeamsTokenResponseEventAsync(turnContext, cancellationToken);
+            }
+
+            return OnInvokeActivityAsync(turnContext, cancellationToken);
+        }
+
+        /// <summary>
+        /// Invoked when a <c>signin/verifyState</c> invoke activity is received when the base behavior of
+        /// <see cref="OnInvokeActivityAsync(ITurnContext{IConversationUpdateActivity}, CancellationToken)"/> is used.
+        /// If using an <c>OAuthPrompt</c> with Microsoft Teams, override this method to forward this <see cref="Activity"/> to the current dialog.
+        /// By default, this method does nothing.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual Task OnMsTeamsTokenResponseEventAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Invoked when an invoke activity other than <c>signin/verifyState</c> is received when the base behavior of
+        /// <see cref="OnInvokeActivityAsync(ITurnContext{IConversationUpdateActivity}, CancellationToken)"/> is used.
+        /// This method could optionally be overridden if the bot is meant to handle miscellaneous invoke activities.
+        /// By default, this method does nothing.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual Task OnInvokeActivityAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
