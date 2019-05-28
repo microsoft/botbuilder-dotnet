@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="scope">The state visible in the evaluation.</param>
         /// <param name="methodBinder">Optional methodBinder to extend or override functions.</param>
         /// <returns>Evaluate result.</returns>
-        public string EvaluateTemplate(string templateName, object scope, IGetMethod methodBinder = null)
+        public string EvaluateTemplate(string templateName, object scope = null, IGetMethod methodBinder = null)
         {
             var evaluator = new Evaluator(Templates, methodBinder);
             return evaluator.EvaluateTemplate(templateName, scope);
@@ -124,7 +124,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="scope">scope object or JToken.</param>
         /// <param name="methodBinder">input method.</param>
         /// <returns>Evaluate result.</returns>
-        public string Evaluate(string inlineStr, object scope, IGetMethod methodBinder = null)
+        public string Evaluate(string inlineStr, object scope = null, IGetMethod methodBinder = null)
         {
             // wrap inline string with "# name and -" to align the evaluation process
             var fakeTemplateId = "__temp__";
