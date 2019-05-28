@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder
 {
@@ -140,6 +141,23 @@ namespace Microsoft.Bot.Builder
 
             var storageKey = GetStorageKey(turnContext);
             await _storage.DeleteAsync(new[] { storageKey }, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Returns a copy of the raw cached data from the TurnContext, this can be used for tracing scenarios.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <returns>A JSON representation of the cached state.</returns>
+        public JToken Get(ITurnContext turnContext)
+        {
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
+
+            var stateKey = this.GetType().Name;
+            var cachedState = turnContext.TurnState.Get<object>(stateKey);
+            return JObject.FromObject(cachedState)["State"];
         }
 
         /// <summary>
