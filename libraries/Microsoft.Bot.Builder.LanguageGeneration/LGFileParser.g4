@@ -36,10 +36,10 @@ parameters
     ;
 
 templateBody
-	: normalTemplateBody						#normalBody
-	| ifElseTemplateBody					    #ifElseBody
+    : normalTemplateBody						#normalBody
+    | ifElseTemplateBody					    #ifElseBody
     | switchCaseTemplateBody                    #switchCaseBody
-	;
+    ;
 
 normalTemplateBody
     : (normalTemplateString newline)+
