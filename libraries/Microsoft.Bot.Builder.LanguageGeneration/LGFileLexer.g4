@@ -22,6 +22,19 @@ fragment WHITESPACE
   : ' '|'\t'|'\ufeff'|'\u00a0'
   ;
 
+fragment A: 'a' | 'A';
+fragment C: 'c' | 'C';
+fragment D: 'd' | 'D';
+fragment E: 'e' | 'E';
+fragment F: 'f' | 'F';
+fragment H: 'h' | 'H';
+fragment I: 'i' | 'I';
+fragment L: 'l' | 'L';
+fragment S: 's' | 'S';
+fragment T: 't' | 'T';
+fragment U: 'u' | 'U';
+fragment W: 'w' | 'W';
+
 COMMENTS
   : ('>'|'$') ~('\r'|'\n')+ -> skip
   ;
@@ -96,15 +109,15 @@ NEWLINE_IN_BODY
   ;
 
 IF
-  : ('if'|'IF') WHITESPACE* ':'  {expectIfElse}? { ignoreWS = true;}
+  : I F WHITESPACE* ':'  {expectIfElse}? { ignoreWS = true;}
   ;
 
 ELSEIF
-  : ('elseif'|'ELSEIF') WHITESPACE* ':' {expectIfElse}? { ignoreWS = true;}
+  : E L S E I F WHITESPACE* ':' {expectIfElse}? { ignoreWS = true;}
   ;
 
 ELSE
-  : ('else'|'ELSE') WHITESPACE* ':' {expectIfElse}? { ignoreWS = true;}
+  : E L S E WHITESPACE* ':' {expectIfElse}? { ignoreWS = true;}
   ;
 
 MULTI_LINE_TEXT
