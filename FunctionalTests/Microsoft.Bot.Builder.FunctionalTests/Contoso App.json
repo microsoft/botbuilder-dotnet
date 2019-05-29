@@ -231,7 +231,7 @@
     {
       "name": "phonenumber",
       "roles": [
-        "new",
+        "newPhone",
         "old"
       ]
     },
@@ -756,7 +756,7 @@
         },
         {
           "entity": "phonenumber",
-          "role": "new",
+          "role": "newPhone",
           "startPos": 23,
           "endPos": 34
         }
@@ -774,7 +774,7 @@
         },
         {
           "entity": "phonenumber",
-          "role": "new",
+          "role": "newPhone",
           "startPos": 23,
           "endPos": 34
         }

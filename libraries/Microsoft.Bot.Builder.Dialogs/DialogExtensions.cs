@@ -11,6 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public static async Task RunAsync(this Dialog dialog, ITurnContext turnContext, IStatePropertyAccessor<DialogState> accessor, CancellationToken cancellationToken)
         {
             var dialogSet = new DialogSet(accessor);
+            dialogSet.TelemetryClient = dialog.TelemetryClient;
             dialogSet.Add(dialog);
 
             var dialogContext = await dialogSet.CreateContextAsync(turnContext, cancellationToken).ConfigureAwait(false);

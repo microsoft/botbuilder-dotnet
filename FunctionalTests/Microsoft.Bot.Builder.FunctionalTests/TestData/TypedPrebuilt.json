@@ -2,34 +2,37 @@
   "Text": "http://foo.com is where you can get a weather forecast for seattle",
   "Intents": {
     "Weather_GetForecast": {
-      "score": 0.8973387
+      "score": 0.6606207
     },
     "EntityTests": {
-      "score": 0.6120084
+      "score": 0.415276438
+    },
+    "Roles": {
+      "score": 0.07347516
     },
     "None": {
-      "score": 0.038558647
+      "score": 0.0172496215
     },
     "search": {
-      "score": 0.0183345526
+      "score": 0.0105431341
     },
     "Travel": {
-      "score": 0.00512401946
-    },
-    "Delivery": {
-      "score": 0.00396467233
+      "score": 0.00389883434
     },
     "SpecifyName": {
-      "score": 0.00337156886
+      "score": 0.001811265
+    },
+    "Delivery": {
+      "score": 0.00116541423
     },
     "Help": {
-      "score": 0.00175959955
+      "score": 0.0005478024
     },
     "Cancel": {
-      "score": 0.000602799933
+      "score": 0.000173182227
     },
     "Greeting": {
-      "score": 0.000445256825
+      "score": 0.000154677386
     }
   },
   "Entities": {
@@ -55,7 +58,7 @@
               "startIndex": 59,
               "endIndex": 66,
               "text": "seattle",
-              "score": 0.8812625,
+              "score": 0.756665945,
               "type": "Weather.Location"
             }
           ]
@@ -68,7 +71,7 @@
           "startIndex": 0,
           "endIndex": 66,
           "text": "http : / / foo . com is where you can get a weather forecast for seattle",
-          "score": 0.572650731,
+          "score": 0.617026448,
           "type": "Composite2"
         }
       ]
@@ -80,51 +83,54 @@
   },
   "luisResult": {
     "query": "http://foo.com is where you can get a weather forecast for seattle",
-    "alteredQuery": null,
     "topScoringIntent": {
       "intent": "Weather.GetForecast",
-      "score": 0.8973387
+      "score": 0.6606207
     },
     "intents": [
       {
         "intent": "Weather.GetForecast",
-        "score": 0.8973387
+        "score": 0.6606207
       },
       {
         "intent": "EntityTests",
-        "score": 0.6120084
+        "score": 0.415276438
+      },
+      {
+        "intent": "Roles",
+        "score": 0.07347516
       },
       {
         "intent": "None",
-        "score": 0.038558647
+        "score": 0.0172496215
       },
       {
         "intent": "search",
-        "score": 0.0183345526
+        "score": 0.0105431341
       },
       {
         "intent": "Travel",
-        "score": 0.00512401946
-      },
-      {
-        "intent": "Delivery",
-        "score": 0.00396467233
+        "score": 0.00389883434
       },
       {
         "intent": "SpecifyName",
-        "score": 0.00337156886
+        "score": 0.001811265
+      },
+      {
+        "intent": "Delivery",
+        "score": 0.00116541423
       },
       {
         "intent": "Help",
-        "score": 0.00175959955
+        "score": 0.0005478024
       },
       {
         "intent": "Cancel",
-        "score": 0.000602799933
+        "score": 0.000173182227
       },
       {
         "intent": "Greeting",
-        "score": 0.000445256825
+        "score": 0.000154677386
       }
     ],
     "entities": [
@@ -133,14 +139,14 @@
         "type": "Weather.Location",
         "startIndex": 59,
         "endIndex": 65,
-        "score": 0.8812625
+        "score": 0.756665945
       },
       {
         "entity": "http : / / foo . com is where you can get a weather forecast for seattle",
         "type": "Composite2",
         "startIndex": 0,
         "endIndex": 65,
-        "score": 0.572650731
+        "score": 0.617026448
       },
       {
         "entity": "http://foo.com",
@@ -158,12 +164,12 @@
         "value": "http : / / foo . com is where you can get a weather forecast for seattle",
         "children": [
           {
-            "type": "Weather.Location",
-            "value": "seattle"
-          },
-          {
             "type": "builtin.url",
             "value": "http://foo.com"
+          },
+          {
+            "type": "Weather.Location",
+            "value": "seattle"
           }
         ]
       }
@@ -171,7 +177,6 @@
     "sentimentAnalysis": {
       "label": "neutral",
       "score": 0.5
-    },
-    "connectedServiceResult": null
+    }
   }
 }

@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
@@ -337,6 +336,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         // data store for state. The stepIndex, which was an object being cast to an Int64
         // after deserialization, was throwing an exception for not being Int32 datatype.
         // This test checks to make sure that this error is no longer thrown.
+        //
+        // The problem was reintroduced when the prompt retry count feature was implemented:
+        // https://github.com/microsoft/botbuilder-dotnet/issues/1859
+        // The waterfall in this test has been modified to include a prompt.
         [TestMethod]
         public async Task WaterfallCosmos()
         {
@@ -349,6 +352,23 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
                 var dialogState = convoState.CreateProperty<DialogState>("dialogState");
                 var dialogs = new DialogSet(dialogState);
+
+                dialogs.Add(new TextPrompt(nameof(TextPrompt), async (promptContext, cancellationToken) =>
+                {
+                    var result = promptContext.Recognized.Value;
+                    if (result.Length > 3)
+                    {
+                        var succeededMessage = MessageFactory.Text($"You got it at the {promptContext.AttemptCount}th try!");
+                        await promptContext.Context.SendActivityAsync(succeededMessage, cancellationToken);
+                        return true;
+                    }
+
+                    var reply = MessageFactory.Text($"Please send a name that is longer than 3 characters. {promptContext.AttemptCount}");
+                    await promptContext.Context.SendActivityAsync(reply, cancellationToken);
+
+                    return false;
+                }));
+
                 var steps = new WaterfallStep[]
                     {
                         async (stepContext, ct) =>
@@ -360,8 +380,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                         async (stepContext, ct) =>
                         {
                             Assert.AreEqual(stepContext.ActiveDialog.State["stepIndex"].GetType(), typeof(int));
-                            await stepContext.Context.SendActivityAsync("step2");
-                            return Dialog.EndOfTurn;
+                            return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Please type your name.") }, ct);
                         },
                         async (stepContext, ct) =>
                         {
@@ -370,25 +389,31 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                             return Dialog.EndOfTurn;
                         },
                     };
-                dialogs.Add(
-                    new WaterfallDialog(
-                    "test",
-                    steps));
+
+                dialogs.Add(new WaterfallDialog(nameof(WaterfallDialog), steps));
 
                 await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-                {
-                    var dc = await dialogs.CreateContextAsync(turnContext);
-                    await dc.ContinueDialogAsync();
-                    if (!turnContext.Responded)
                     {
-                        await dc.BeginDialogAsync("test");
-                    }
-                })
+                        var dc = await dialogs.CreateContextAsync(turnContext);
+
+                        await dc.ContinueDialogAsync();
+                        if (!turnContext.Responded)
+                        {
+                            await dc.BeginDialogAsync(nameof(WaterfallDialog));
+                        }
+                    })
                     .Send("hello")
                     .AssertReply("step1")
                     .Send("hello")
-                    .AssertReply("step2")
-                    .Send("hello")
+                    .AssertReply("Please type your name.")
+                    .Send("hi")
+                    .AssertReply("Please send a name that is longer than 3 characters. 1")
+                    .Send("hi")
+                    .AssertReply("Please send a name that is longer than 3 characters. 2")
+                    .Send("hi")
+                    .AssertReply("Please send a name that is longer than 3 characters. 3")
+                    .Send("Kyle")
+                    .AssertReply("You got it at the 4th try!")
                     .AssertReply("step3")
                     .StartTestAsync();
             }

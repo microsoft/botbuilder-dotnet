@@ -115,18 +115,12 @@ namespace Microsoft.Bot.Builder
 
                 if (_userState != null)
                 {
-                    var name = _userState.GetType().Name;
-                    var cachedState = turnContext.TurnState.Get<object>(name);
-                    var obj = JObject.FromObject(cachedState)["State"];
-                    botState.Add("userState", obj);
+                    botState.Add("userState", _userState.Get(turnContext));
                 }
 
                 if (_conversationState != null)
                 {
-                    var name = _conversationState.GetType().Name;
-                    var cachedState = turnContext.TurnState.Get<object>(name);
-                    var obj = JObject.FromObject(cachedState)["State"];
-                    botState.Add("conversationState", obj);
+                    botState.Add("conversationState", _conversationState.Get(turnContext));
                 }
 
                 await InvokeSendAsync(turnContext, session, botState.TraceActivity(), cancellationToken).ConfigureAwait(false);
