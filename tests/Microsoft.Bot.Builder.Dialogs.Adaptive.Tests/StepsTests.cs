@@ -295,33 +295,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         Prompt = new ActivityTemplate("Please select a color:"),
                         RetryPrompt = new ActivityTemplate("Please select a color:"),
                         Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
-                        Style = ListStyle.Inline,
-                        ResultType = ResultType.Value,
-                        AlwaysPrompt = true,
+                        Style = ListStyle.Inline
                     },
-                    new SendActivity("Value {user.color}"),
+                    new SendActivity("{user.color}"),
                     new ChoiceInput()
                     {
                         Property = "user.color",
                         Prompt = new ActivityTemplate("Please select a color:"),
                         RetryPrompt = new ActivityTemplate("Please select a color:"),
                         Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
-                        Style = ListStyle.Inline,
-                        ResultType = ResultType.Index,
                         AlwaysPrompt = true,
+                        Style = ListStyle.Inline
                     },
-                    new SendActivity("Index {user.color}"),
-                    new ChoiceInput()
-                    {
-                        Property = "user.color",
-                        Prompt = new ActivityTemplate("Please select a color:"),
-                        RetryPrompt = new ActivityTemplate("Please select a color:"),
-                        Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
-                        Style = ListStyle.Inline,
-                        ResultType = ResultType.FoundChoice,
-                        AlwaysPrompt = true
-                    },
-                    new SendActivity("Choice {user.color.value} {user.color.index}"),
+                    new SendActivity("{user.color}"),
                 }
             };
 
@@ -332,15 +318,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("Not a color. Please select a color: (1) red, (2) green, or (3) blue")
             .Send("blue")
                 .AssertReply("blue")
-                .AssertReply("Please select a color: (1) red, (2) green, or (3) blue")
-            .Send("green")
-                .AssertReply("Value green")
+                .AssertReply("blue")
                 .AssertReply("Please select a color: (1) red, (2) green, or (3) blue")
             .Send("red")
-                .AssertReply("Index 0")
-                .AssertReply("Please select a color: (1) red, (2) green, or (3) blue")
-            .Send("blue")
-                .AssertReply("Choice blue 2")
+                .AssertReply("red")
             .StartTestAsync();
         }
 

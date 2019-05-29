@@ -25,8 +25,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         public ListStyle Style { get; set; }
 
-        public ResultType ResultType { get; set; } = ResultType.Value;
-
         public ChoiceInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
@@ -89,26 +87,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         public override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var foundChoice = result as FoundChoice;
-
+            FoundChoice foundChoice = result as FoundChoice;
             if (foundChoice != null)
             {
-                object choiceResult = null;
-                switch (this.ResultType)
-                {
-                    case ResultType.Index:
-                        choiceResult = foundChoice.Index;
-                        break;
-                    case ResultType.FoundChoice:
-                        choiceResult = foundChoice;
-                        break;
-                    case ResultType.Value:
-                    default:
-                        choiceResult = foundChoice.Value;
-                        break;
-                }
-
-                return base.ResumeDialogAsync(dc, reason, choiceResult, cancellationToken);
+                // return value insted of FoundChoice object
+                return base.ResumeDialogAsync(dc, reason, foundChoice.Value, cancellationToken);
             }
             return base.ResumeDialogAsync(dc, reason, result, cancellationToken);
         }
