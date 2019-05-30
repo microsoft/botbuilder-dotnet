@@ -32,9 +32,16 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         {
             var p = System.Diagnostics.Process.Start("git", "version");
             string message = "github push test output:\n";
+
             message += RunProcess("git", "version");
-            message += RunProcess("fsutil", "file createnew dummy.txt 500");
+            //message += RunProcess("git", "checkout master");
+            //message += RunProcess("git", "pull origin master");
+            message += RunProcess("fsutil", "file createnew ../../../dummy.txt 500");
+            message += RunProcess("git", "add ../../../dummy.txt");
+            message += RunProcess("git", "commit Committed by test QnaMaker_GithubPush()");
             message += RunProcess("git", "status");
+            message += RunProcess("git", "push");
+            //message += RunProcess("git", "push origin master");
             message += RunProcess("cmd", "/c dir");
 
             Assert.IsTrue(false, message);
