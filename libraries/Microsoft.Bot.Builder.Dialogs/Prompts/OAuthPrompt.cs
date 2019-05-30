@@ -323,7 +323,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     result.Succeeded = true;
                     result.Value = token;
 
-                    await turnContext.SendActivityAsync(new Activity { Type = ActivityTypesEx.InvokeResponse, Value = null }, cancellationToken).ConfigureAwait(false);
+                    await turnContext.SendActivityAsync(new Activity { Type = ActivityTypesEx.InvokeResponse }, cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
