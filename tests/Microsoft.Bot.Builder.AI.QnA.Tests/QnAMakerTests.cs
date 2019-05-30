@@ -30,6 +30,14 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         [TestCategory("QnAMaker")]
         public async Task QnaMaker_GithubPush()
         {
+            using (System.Management.Automation.PowerShell powershell = System.Management.Automation.PowerShell.Create())
+            {
+                powershell.AddScript(@"git version");
+
+                var results = powershell.Invoke();
+                Assert.IsTrue(false, results.ToString());
+            }
+
             Assert.IsTrue(false, "This is the stub of a github push test.");
         }
 
