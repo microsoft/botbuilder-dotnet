@@ -166,7 +166,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             try
             {
-                exp = exp.TrimStart('{').TrimEnd('}');
+                exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
                 var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
 
                 if (error != null
@@ -189,7 +189,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private string EvalExpression(string exp)
         {
-            exp = exp.TrimStart('{').TrimEnd('}');
+            exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
             var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
             if (error != null)
             {
@@ -244,11 +244,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             // remove ``` ```
             exp = exp.Substring(3, exp.Length - 6);
             var reg = @"@\{[^{}]+\}";
-            var evalutor = new MatchEvaluator(m =>
-            {
-                var newExp = m.Value.Substring(1); // remove @
-                return EvalExpression(newExp);
-            });
+            var evalutor = new MatchEvaluator(m => EvalExpression(m.Value));
 
             return Regex.Replace(exp, reg, evalutor);
         }

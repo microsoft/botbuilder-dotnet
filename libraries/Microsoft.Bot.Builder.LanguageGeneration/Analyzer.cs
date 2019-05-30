@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private List<string> AnalyzeExpression(string exp)
         {
-            exp = exp.TrimStart('{').TrimEnd('}');
+            exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
             var parsed = _expressionParser.Parse(exp);
 
             var references = parsed.References();
@@ -207,8 +207,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 if (matchItem.Success)
                 {
-                    var value = matchItem.Value.Substring(1); // remove @
-                    result.AddRange(AnalyzeExpression(value)); // { }
+                    result.AddRange(AnalyzeExpression(matchItem.Value));
                 }
             }
 
