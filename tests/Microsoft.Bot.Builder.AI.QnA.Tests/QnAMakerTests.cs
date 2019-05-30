@@ -30,15 +30,37 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         [TestCategory("QnAMaker")]
         public async Task QnaMaker_GithubPush()
         {
-            using (System.Management.Automation.PowerShell powershell = System.Management.Automation.PowerShell.Create())
+            var p = System.Diagnostics.Process.Start("git", "version");
+            string message = "Following is output from a github push test:\n";
+            message += RunProcess("git", "version");
+            message += RunProcess("git", "status");
+            //message += RunProcess("dir", "*.*");
+
+            Assert.IsTrue(false, message);
+        }
+
+        private string RunProcess(string command, string args)
+        {
+            string output = ">" + command + " " + args + "\n";
+
+            var proc = new System.Diagnostics.Process
             {
-                powershell.AddScript(@"git version");
-
-                var results = powershell.Invoke();
-                Assert.IsTrue(false, results.ToString());
+                StartInfo = new System.Diagnostics.ProcessStartInfo()
+                {
+                    FileName = command,
+                    Arguments = args,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    CreateNoWindow = true,
+                },
+            };
+            proc.Start();
+            while (!proc.StandardOutput.EndOfStream)
+            {
+                string line = proc.StandardOutput.ReadLine();
+                output += line + "\n";
             }
-
-            Assert.IsTrue(false, "This is the stub of a github push test.");
+            return output;
         }
 
         [TestMethod]
