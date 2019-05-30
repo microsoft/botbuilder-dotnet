@@ -28,6 +28,14 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
+        public async Task QnaMaker_GithubPush()
+        {
+            Assert.IsTrue(false, "This is the stub of a github push test.");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
         public async Task QnaMaker_TraceActivity()
         {
             // Mock Qna
