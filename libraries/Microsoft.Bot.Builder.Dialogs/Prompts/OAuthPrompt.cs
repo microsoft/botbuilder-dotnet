@@ -322,6 +322,12 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     result.Succeeded = true;
                     result.Value = token;
+
+                    await turnContext.SendActivityAsync(new Activity { Type = ActivityTypesEx.InvokeResponse, Value = null }, cancellationToken).ConfigureAwait(false);
+                }
+                else
+                {
+                    await turnContext.SendActivityAsync(new Activity { Type = ActivityTypesEx.InvokeResponse, Value = new InvokeResponse { Status = 500 } }, cancellationToken).ConfigureAwait(false);
                 }
             }
             else if (turnContext.Activity.Type == ActivityTypes.Message)
