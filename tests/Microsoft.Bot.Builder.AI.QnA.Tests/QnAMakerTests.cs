@@ -649,6 +649,112 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
+        public async Task QnaMaker_Test_Options_Hydration()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+
+            var interceptHttp = new InterceptRequestHandler(mockHttp);
+
+            var noFiltersOptions = new QnAMakerOptions()
+            {
+                Top = 30,
+            };
+
+            var qna = GetQnAMaker(
+                interceptHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname,
+                },
+                noFiltersOptions);
+
+            var oneFilteredOption = new QnAMakerOptions()
+            {
+                Top = 30,
+                StrictFilters = new Metadata[]
+                {
+                    new Metadata()
+                    {
+                        Name = "movie",
+                        Value = "disney",
+                    },
+                },
+            };
+
+            var twoStrictFiltersOptions = new QnAMakerOptions()
+            {
+                Top = 30,
+                StrictFilters = new Metadata[]
+                {
+                    new Metadata()
+                    {
+                        Name = "movie",
+                        Value = "disney",
+                    },
+                    new Metadata()
+                    {
+                        Name = "home",
+                        Value = "floating",
+                    },
+                },
+            };
+            var allChangedRequestOptions = new QnAMakerOptions()
+            {
+                Top = 2000,
+                ScoreThreshold = 0.42F,
+                StrictFilters = new Metadata[]
+                {
+                    new Metadata()
+                    {
+                        Name = "dog",
+                        Value = "samoyed",
+                    },
+                },
+            };
+
+            var context = GetContext("up");
+
+            // Ensure that options from previous requests do not bleed over to the next,
+            // And that the options set in the constructor are not overwritten improperly by options passed into .GetAnswersAsync()
+            var noFilterResults1 = await qna.GetAnswersAsync(context, noFiltersOptions);
+            var requestContent1 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
+
+            var twoFiltersResults = await qna.GetAnswersAsync(context, twoStrictFiltersOptions);
+            var requestContent2 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
+
+            var oneFilterResults = await qna.GetAnswersAsync(context, oneFilteredOption);
+            var requestContent3 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
+
+            var noFilterResults2 = await qna.GetAnswersAsync(context);
+            var requestContent4 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
+
+            var allChangedOptionsResult = await qna.GetAnswersAsync(context, allChangedRequestOptions);
+            var requestContent5 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
+
+            var noOptionsResults = await qna.GetAnswersAsync(context);
+            var requestContent6 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
+
+            Assert.AreEqual(0, requestContent1.StrictFilters.Length);
+            Assert.AreEqual(2, requestContent2.StrictFilters.Length);
+            Assert.AreEqual(1, requestContent3.StrictFilters.Length);
+            Assert.AreEqual(0, requestContent4.StrictFilters.Length);
+
+            Assert.AreEqual(2000, requestContent5.Top);
+            Assert.AreEqual(0.42, Math.Round(requestContent5.ScoreThreshold, 2));
+            Assert.AreEqual(1, requestContent5.StrictFilters.Length);
+
+            Assert.AreEqual(30, requestContent6.Top);
+            Assert.AreEqual(0.3, Math.Round(requestContent6.ScoreThreshold, 2));
+            Assert.AreEqual(0, requestContent6.StrictFilters.Length);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
         [TestCategory("Telemetry")]
         public async Task Telemetry_NullTelemetryClient()
         {
@@ -1151,6 +1257,19 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                                 "MySecondEvent",
                                 secondEventProperties);
             }
+        }
+
+        private class CapturedRequest
+        {
+            public string[] Questions { get; set; }
+
+            public int Top { get; set; }
+
+            public Metadata[] StrictFilters { get; set; }
+
+            public Metadata[] MetadataBoost { get; set; }
+
+            public float ScoreThreshold { get; set; }
         }
     }
 }
