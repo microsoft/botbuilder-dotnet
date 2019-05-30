@@ -24,7 +24,7 @@
 
 # template4
 - ```
-@{city} {lgTemplate('template5')} 
+@{city} @{lgTemplate('template5')} 
 ```
 
 # template5
