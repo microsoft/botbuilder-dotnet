@@ -31,10 +31,11 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         public async Task QnaMaker_GithubPush()
         {
             var p = System.Diagnostics.Process.Start("git", "version");
-            string message = "Following is output from a github push test:\n";
+            string message = "github push test output:\n";
             message += RunProcess("git", "version");
+            message += RunProcess("fsutil", "file createnew dummy.txt 500");
             message += RunProcess("git", "status");
-            //message += RunProcess("dir", "*.*");
+            message += RunProcess("cmd", "/c dir");
 
             Assert.IsTrue(false, message);
         }
@@ -42,23 +43,29 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         private string RunProcess(string command, string args)
         {
             string output = ">" + command + " " + args + "\n";
-
-            var proc = new System.Diagnostics.Process
+            try
             {
-                StartInfo = new System.Diagnostics.ProcessStartInfo()
+                var proc = new System.Diagnostics.Process
                 {
-                    FileName = command,
-                    Arguments = args,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    CreateNoWindow = true,
-                },
-            };
-            proc.Start();
-            while (!proc.StandardOutput.EndOfStream)
+                    StartInfo = new System.Diagnostics.ProcessStartInfo()
+                    {
+                        FileName = command,
+                        Arguments = args,
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        CreateNoWindow = true,
+                    },
+                };
+                proc.Start();
+                while (!proc.StandardOutput.EndOfStream)
+                {
+                    string line = proc.StandardOutput.ReadLine();
+                    output += line + "\n";
+                }
+            }
+            catch (Exception e)
             {
-                string line = proc.StandardOutput.ReadLine();
-                output += line + "\n";
+                output += e.Message + "\n";
             }
             return output;
         }
