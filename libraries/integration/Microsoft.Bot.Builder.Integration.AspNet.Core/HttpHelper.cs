@@ -56,14 +56,18 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
             else
             {
-                response.ContentType = "application/json";
                 response.StatusCode = invokeResponse.Status;
 
-                using (var writer = new StreamWriter(response.Body))
+                if (invokeResponse.Body != null)
                 {
-                    using (var jsonWriter = new JsonTextWriter(writer))
+                    response.ContentType = "application/json";
+
+                    using (var writer = new StreamWriter(response.Body))
                     {
-                        BotMessageSerializer.Serialize(jsonWriter, invokeResponse.Body);
+                        using (var jsonWriter = new JsonTextWriter(writer))
+                        {
+                            BotMessageSerializer.Serialize(jsonWriter, invokeResponse.Body);
+                        }
                     }
                 }
             }
