@@ -157,6 +157,31 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public void TestCaseInsensitive()
+        {
+            var engine = TemplateEngine.FromFiles(GetExampleFilePath("CaseInsensitive.lg"));
+            var alarms = new[]
+            {
+                new
+                {
+                    time = "7 am",
+                    date = "tomorrow"
+                },
+                new
+                {
+                    time = "8 pm",
+                    date = "tomorrow"
+                }
+            };
+
+            var evaled = engine.EvaluateTemplate("ShowAlarms", new { alarms = alarms });
+            Assert.AreEqual("You have two alarms", evaled);
+
+            evaled = engine.EvaluateTemplate("greetInAWeek", new { day = "Saturday" });
+            Assert.AreEqual("Happy Saturday!", evaled);
+        }
+
+        [TestMethod]
         public void TestListWithOnlyOneElement()
         {
             var engine = TemplateEngine.FromFiles(GetExampleFilePath("8.lg"));
