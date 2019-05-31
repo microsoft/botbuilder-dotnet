@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
-        public void TestBasicConditionalTemplate()
+        public void TestIfElseTemplate()
         {
             var engine = TemplateEngine.FromFiles(GetExampleFilePath("5.lg"));
 
@@ -79,6 +79,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = engine.EvaluateTemplate("time-of-day-readout-without-default2", new { timeOfDay = "evening" });
             Assert.IsNull(evaled, "Evaled is not null");
+        }
+
+        [TestMethod]
+        public void TestBasicSwitchCaseTemplate()
+        {
+            var engine = TemplateEngine.FromFiles(GetExampleFilePath("switchcase.lg"));
+
+            string evaled = engine.EvaluateTemplate("greetInAWeek", new { day = "Saturday" });
+            Assert.IsTrue(evaled == "Happy Saturday!");
+
+            evaled = engine.EvaluateTemplate("greetInAWeek", new { day = "Monday" });
+            Assert.IsTrue(evaled == "Work Hard!");
         }
 
         [TestMethod]

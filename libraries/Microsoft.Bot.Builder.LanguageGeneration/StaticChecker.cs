@@ -113,11 +113,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        public override List<Diagnostic> VisitConditionalBody([NotNull] LGFileParser.ConditionalBodyContext context)
+        public override List<Diagnostic> VisitIfElseBody([NotNull] LGFileParser.IfElseBodyContext context)
         {
             var result = new List<Diagnostic>();
 
-            var ifRules = context.conditionalTemplateBody().ifConditionRule();
+            var ifRules = context.ifElseTemplateBody().ifConditionRule();
             for (var idx = 0; idx < ifRules.Length; idx++)
             {
                 var conditionNode = ifRules[idx].ifCondition();
@@ -131,27 +131,27 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 if (node.GetText().Count(u => u == ' ') > 1)
                 {
-                    result.Add(BuildLGDiagnostic($"At most 1 whitespace is allowed between IF/ELSEIF/ELSE and :. expression: '{context.conditionalTemplateBody().GetText()}", context: conditionNode));
+                    result.Add(BuildLGDiagnostic($"At most 1 whitespace is allowed between IF/ELSEIF/ELSE and :. expression: '{context.ifElseTemplateBody().GetText()}", context: conditionNode));
                 }
 
                 if (idx == 0 && !ifExpr)
                 {
-                    result.Add(BuildLGDiagnostic($"condition is not start with if: '{context.conditionalTemplateBody().GetText()}'", DiagnosticSeverity.Warning, conditionNode));
+                    result.Add(BuildLGDiagnostic($"condition is not start with if: '{context.ifElseTemplateBody().GetText()}'", DiagnosticSeverity.Warning, conditionNode));
                 }
 
                 if (idx > 0 && ifExpr)
                 {
-                    result.Add(BuildLGDiagnostic($"condition can't have more than one if: '{context.conditionalTemplateBody().GetText()}'", context: conditionNode));
+                    result.Add(BuildLGDiagnostic($"condition can't have more than one if: '{context.ifElseTemplateBody().GetText()}'", context: conditionNode));
                 }
 
                 if (idx == ifRules.Length - 1 && !elseExpr)
                 {
-                    result.Add(BuildLGDiagnostic($"condition is not end with else: '{context.conditionalTemplateBody().GetText()}'", DiagnosticSeverity.Warning, conditionNode));
+                    result.Add(BuildLGDiagnostic($"condition is not end with else: '{context.ifElseTemplateBody().GetText()}'", DiagnosticSeverity.Warning, conditionNode));
                 }
 
                 if (idx > 0 && idx < ifRules.Length - 1 && !elseIfExpr)
                 {
-                    result.Add(BuildLGDiagnostic($"only elseif is allowed in middle of condition: '{context.conditionalTemplateBody().GetText()}'", context: conditionNode));
+                    result.Add(BuildLGDiagnostic($"only elseif is allowed in middle of condition: '{context.ifElseTemplateBody().GetText()}'", context: conditionNode));
                 }
 
                 // check rule should should with one and only expression
@@ -181,6 +181,91 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 else
                 {
                     result.Add(BuildLGDiagnostic($"no normal template body in condition block: '{ifRules[idx].GetText()}'", context: conditionNode));
+                }
+            }
+
+            return result;
+        }
+
+        public override List<Diagnostic> VisitSwitchCaseBody([NotNull] LGFileParser.SwitchCaseBodyContext context)
+        {
+            var result = new List<Diagnostic>();
+            var switchCaseRules = context.switchCaseTemplateBody().switchCaseRule();
+            var length = switchCaseRules.Length;
+            for (var idx = 0; idx < length; idx++)
+            {
+                var switchCaseNode = switchCaseRules[idx].switchCaseStat();
+                var switchExpr = switchCaseNode.SWITCH() != null;
+                var caseExpr = switchCaseNode.CASE() != null;
+                var defaultExpr = switchCaseNode.DEFAULT() != null;
+                var node = switchExpr ? switchCaseNode.SWITCH() :
+                           caseExpr ? switchCaseNode.CASE() :
+                           switchCaseNode.DEFAULT();
+
+                if (node.GetText().Count(u => u == ' ') > 1)
+                {
+                    result.Add(BuildLGDiagnostic($"At most 1 whitespace is allowed between SWITCH/CASE/DEFAULT and :. expression: '{context.switchCaseTemplateBody().GetText()}", context: switchCaseNode));
+                }
+
+                if (idx == 0 && !switchExpr)
+                {
+                    result.Add(BuildLGDiagnostic($"control flow is not start with switch: '{context.switchCaseTemplateBody().GetText()}'", context: switchCaseNode));
+                }
+
+                if (idx > 0 && switchExpr)
+                {
+                    result.Add(BuildLGDiagnostic($"control flow can not have more than one switch statement: '{context.switchCaseTemplateBody().GetText()}'", context: switchCaseNode));
+                }
+
+                if (idx > 0 && idx < length - 1 && !caseExpr)
+                {
+                    result.Add(BuildLGDiagnostic($"only case statement is allowed in the middle of control flow: '{context.switchCaseTemplateBody().GetText()}'", context: switchCaseNode));
+                }
+
+                if (idx == length - 1 && (caseExpr || defaultExpr))
+                {
+                    if (caseExpr)
+                    {
+                        result.Add(BuildLGDiagnostic($"control flow is not ending with default statement: '{context.switchCaseTemplateBody().GetText()}'", DiagnosticSeverity.Warning, switchCaseNode));
+                    }
+                    else
+                    {
+                        if (length == 2)
+                        {
+                            result.Add(BuildLGDiagnostic($"control flow should have at least one case statement: '{context.switchCaseTemplateBody().GetText()}'", DiagnosticSeverity.Warning, switchCaseNode));
+                        }
+                    }
+                }
+
+                if (switchExpr || caseExpr)
+                {
+                    if (switchCaseNode.EXPRESSION().Length != 1)
+                    {
+                        result.Add(BuildLGDiagnostic($"switch and case should followed by one valid expression: '{context.switchCaseTemplateBody().GetText()}'", context: switchCaseNode));
+                    }
+                    else
+                    {
+                        result.AddRange(CheckExpression(switchCaseNode.EXPRESSION(0).GetText(), switchCaseNode));
+                    }
+                }
+                else
+                {
+                    if (switchCaseNode.EXPRESSION().Length != 0 || switchCaseNode.TEXT().Length != 0)
+                    {
+                        result.Add(BuildLGDiagnostic($"default should not followed by any expression or any text: '{context.switchCaseTemplateBody().GetText()}'", context: switchCaseNode));
+                    }
+                }
+
+                if (caseExpr || defaultExpr)
+                {
+                    if (switchCaseRules[idx].normalTemplateBody() != null)
+                    {
+                        result.AddRange(Visit(switchCaseRules[idx].normalTemplateBody()));
+                    }
+                    else
+                    {
+                        result.Add(BuildLGDiagnostic($"no normal template body in case or default block: '{context.switchCaseTemplateBody().GetText()}'", context: switchCaseNode));
+                    }
                 }
             }
 

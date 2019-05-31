@@ -50,13 +50,32 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                         x = 3,
                     }
                 },
+            user = new
+            {
+                lists = new
+                {
+                    todo = new []
+                    {
+                        "todo1",
+                        "todo2",
+                        "todo3",
+                    }
+                },
+                listType = "todo",
+            },
             timestamp = "2018-03-15T13:00:00.000Z",
             notISOTimestamp = "2018/03/15 13:00:00",
             turn = new
             {
                 entities = new
                 {
-                    city = "Seattle"
+                    city = "Seattle",
+                    ordinal = new []
+                    {
+                        "1",
+                        "2",
+                        "3"
+                    }
                 },
                 intents = new
                 {
@@ -403,7 +422,17 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("items[1+1]","two"),
             Test("getProperty(null, 'p')", null),
             Test("(getProperty(null, 'p'))[1]", null),
-            # endregion
+            #endregion
+
+            # region Dialog 
+            Test("user.lists.todo[int(@ordinal[0]) - 1] != null", true),
+            Test("user.lists.todo[int(@ordinal[0]) + 3] != null", false),
+            Test("count(user.lists.todo) > int(@ordinal[0]))", true),
+            Test("count(user.lists.todo) >= int(@ordinal[0]))", true),
+            Test("user.lists.todo[int(@ordinal[0]) - 1]", "todo1"),
+            Test("user.lists[user.listType][int(@ordinal[0]) - 1]", "todo1"),
+            #endregion
+
         };
 
         [DataTestMethod]
@@ -456,7 +485,14 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         {
             if (IsNumber(actual) && IsNumber(expected))
             {
-                Assert.IsTrue(Convert.ToSingle(actual) == Convert.ToSingle(expected));
+                if (actual is int)
+                {
+                    Assert.IsTrue(expected is int);
+                }
+                else
+                {
+                    Assert.IsTrue(Convert.ToSingle(actual) == Convert.ToSingle(expected));
+                }
             }
             // Compare two lists
             else if (expected is IList expectedList
