@@ -1547,9 +1547,9 @@ namespace Microsoft.Bot.Builder.Expressions
                     ReturnType.String),
                 new ExpressionEvaluator(
                     ExpressionType.FormatDateTime,
-                    ApplyWithError(args => ParseTimestamp((string) args[0], dt => dt.ToString(args.Count() == 2 ? args[1] : DefaultDateTimeFormat)), VerifyString),
+                    ApplyWithError(args => ParseTimestamp((string) args[0].ToString(), dt => dt.ToString(args.Count() == 2 ? args[1] : DefaultDateTimeFormat))),
                     ReturnType.String,
-                    (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String)),
+                    (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Object)),
                 new ExpressionEvaluator(
                     ExpressionType.SubtractFromTime,
                     (expr, state) =>
