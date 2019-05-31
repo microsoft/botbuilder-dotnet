@@ -210,11 +210,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(new TemplateEngine().Evaluate("Hi", null), "Hi");
         }
 
-        public void TestCaseInsensitive()
-        {
-
-        }
-
         [TestMethod]
         public void TestInlineTemplateWithTemplateFile()
         {

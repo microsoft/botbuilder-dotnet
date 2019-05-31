@@ -109,27 +109,27 @@ NEWLINE_IN_BODY
   ;
 
 IF
-  : ('if'|'IF') WHITESPACE* ':'  {expectKeywords}? { ignoreWS = true;}
+  : I F WHITESPACE* ':'  {expectKeywords}? { ignoreWS = true;}
   ;
 
 ELSEIF
-  : ('elseif'|'ELSEIF') WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
+  : E L S E I F WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
   ;
 
 ELSE
-  : ('else'|'ELSE') WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
+  : E L S E WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
   ;
 
-  SWITCH
-  : ('switch'|'SWITCH') WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
+SWITCH
+  : S W I T C H WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
   ;
 
 CASE
-  : ('case'|'CASE') WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
+  : C A S E WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
   ;
 
 DEFAULT
-  : ('default'|'DEFAULT') WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
+  : D E F A U L T WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
   ;
 
 MULTI_LINE_TEXT
