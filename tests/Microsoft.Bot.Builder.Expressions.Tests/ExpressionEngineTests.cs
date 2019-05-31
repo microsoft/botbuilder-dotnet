@@ -397,7 +397,17 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("count(union(createArray('a', 'b'), createArray('b', 'c'), createArray('b', 'd')))", 4),
             Test("count(intersection(createArray('a', 'b')))", 2),
             Test("count(intersection(createArray('a', 'b'), createArray('b', 'c'), createArray('b', 'd')))", 1),
-            
+            Test("skip(createArray('H','e','l','l','0'),2)", new List<object>{"l", "l", "0"}),
+            Test("take(createArray('H','e','l','l','0'),2)", new List<object>{"H", "e"}),
+            Test("subArray(createArray('H','e','l','l','o'),2,5)", new List<object>{"l", "l", "o"}),
+            Test("count(newGuid())", 36),
+            Test("newGuid().indexOf('-')", 8),
+            Test("indexOf(newGuid(), '-')", 8),
+            Test("indexOf(hello, '-')", -1),
+            Test("newGuid().lastIndexOf('-')", 23),
+            Test("lastIndexOf(newGuid(), '-')", 23),
+            Test("lastIndexOf(hello, '-')", -1),
+            Test("newGuid().length()",36),
             # endregion
 
             # region  Object manipulation and construction functions
@@ -436,7 +446,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("user.lists.todo[int(@ordinal[0]) - 1]", "todo1"),
             Test("user.lists[user.listType][int(@ordinal[0]) - 1]", "todo1"),
             #endregion
-
+            
         };
 
         [DataTestMethod]
@@ -492,6 +502,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 if (actual is int)
                 {
                     Assert.IsTrue(expected is int);
+                    Assert.AreEqual(actual, expected);
                 }
                 else
                 {

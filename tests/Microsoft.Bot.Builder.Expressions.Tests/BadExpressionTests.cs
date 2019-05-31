@@ -110,6 +110,15 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("countWord(one)"),// should have string param
             Test("addOrdinal(one)"),// should have Integer param
             Test("addOrdinal(one, two)"),// should have one param
+            Test("newGuid(one)"), // should have no parameters
+            Test("indexOf(hello)"), // should have two parameters
+            Test("indexOf(hello, world, one)"), // should have two parameters
+            Test("indexOf(hello, one)"), // both parameters should be string
+            Test("indexOf(one, hello)"), // both parameters should be string
+            Test("lastIndexOf(hello)"),// should have two parameters
+            Test("lastIndexOf(hello, world, one)"), // should have two parameters
+            Test("lastIndexOf(hello, one)"), // both parameters should be string
+            Test("lastIndexOf(one, hello)"), // both parameters should be string
             # endregion
 
             # region Logical comparison functions test
@@ -256,6 +265,15 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("foreach(items, x, sum(x))"),// third paramter error
             Test("union(one, two)"),// should have collection param
             Test("intersection(one, two)"),// should have collection param
+            Test("skip(one, two)"), //should have collection param
+            Test("skip(items,-1)"), //the second parameter shoule not less than zero
+            Test("skip(items,3)"), //the second parameter shoule  less than the length of the collection
+            Test("take(one, two)"), //should have collection param
+            Test("take(items,-1)"), //the second parameter shoule not less than zero
+            Test("take(items,4)"), //the second parameter shoule  less than the length of the collection
+            Test("subArray(one,1,4)"), //should have collection param
+            Test("subArray(items,-1,4)"), //the second parameter shoule not less than zero
+            Test("subArray(items,1,4)"), //the second parameter shoule  less than the length of the collection
             # endregion
 
             # region Object manipulation and construction functions test

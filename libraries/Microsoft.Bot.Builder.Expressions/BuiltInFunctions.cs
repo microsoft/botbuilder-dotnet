@@ -1265,6 +1265,173 @@ namespace Microsoft.Bot.Builder.Expressions
             return ordinalResult;
         }
 
+        private static string newGuid()
+        {
+            return Guid.NewGuid().ToString();
+        }
+
+        private static (object value, string error) Skip(Expression expression, object state)
+        {
+            object result = null;
+            string error;
+            object arr = null;
+            (arr, error) = expression.Children[0].TryEvaluate(state);
+
+            if (error == null)
+            {
+                if (TryParseList(arr, out var list))
+                {
+                    object start;
+                    var startInt = 0;
+                    var startExpr = expression.Children[1];
+                    (start, error) = startExpr.TryEvaluate(state);
+                    if (error == null)
+                    {
+                        if (start == null || !start.IsInteger())
+                        {
+                            error = $"{startExpr} is not an integer.";
+                        }
+                        else
+                        {
+                            startInt = (int)start;
+                            if (startInt < 0 || startInt >= list.Count)
+                            {
+                                error = $"{startExpr}={start} which is out of range for {arr}";
+                            }
+                        }
+
+                        if (error == null)
+                        {
+                            result = list.OfType<object>().Skip(startInt).ToList();
+                        }
+                    }
+                }
+                else
+                {
+                    error = $"{expression.Children[0]} is not array.";
+                }
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) Take(Expression expression, object state)
+        {
+            object result = null;
+            string error;
+            object arr = null;
+            (arr, error) = expression.Children[0].TryEvaluate(state);
+            if (error == null)
+            {
+                bool arrIsList = TryParseList(arr, out var list);
+                bool arrIsStr = arr.GetType() == typeof(string);
+                if (arrIsList || arrIsStr)
+                {
+                    object countObj;
+                    var count = 0;
+                    var countExpr = expression.Children[1];
+                    (countObj, error) = countExpr.TryEvaluate(state);
+                    if (error == null && !countObj.IsInteger())
+                    {
+                        error = $"{countExpr} is not an integer.";
+                    }
+                    else
+                    {
+                        count = (int)countObj;
+                        if (arrIsList)
+                        {
+                            if (count < 0 || count >= list.Count)
+                            {
+                                error = $"{countExpr}={count} which is out of range for {arr}";
+                            }
+                            else
+                            {
+                                result = list.OfType<object>().Take(count).ToList();
+                            }
+                        }
+                        else
+                        {
+                            if (count < 0 || count > list.Count)
+                            {
+                                error = $"{countExpr}={count} which is out of range for {arr}";
+                            }
+                            else
+                            {
+                                result = arr.ToString().Substring(0, count);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    error = $"{expression.Children[0]} is not array or string.";
+                }
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) SubArray(Expression expression, object state)
+        {
+            object result = null;
+            string error;
+            object arr = null;
+            (arr, error) = expression.Children[0].TryEvaluate(state);
+
+            if (error == null)
+            {
+                if (TryParseList(arr, out var list))
+                {
+                    var start = 0;
+                    var end = 0;
+                    object startObj = null;
+                    var startExpr = expression.Children[1];
+                    (startObj, error) = startExpr.TryEvaluate(state);
+                    if (error == null && !startObj.IsInteger())
+                    {
+                        error = $"{startExpr} is not an integer.";
+                    }
+                    start = (int)startObj;
+                    if (error == null && (start < 0 || start > list.Count))
+                    {
+                        error = $"{startExpr}={start} which is out of range for {arr}";
+                    }
+                    if (error == null)
+                    {
+                        if (expression.Children.Length == 2)
+                        {
+                            end = list.Count;
+                        }
+                        else
+                        {
+                            object endObj = null;
+                            var endExpr = expression.Children[2];
+                            (endObj, error) = endExpr.TryEvaluate(state);
+                            if (error == null && !endObj.IsInteger())
+                            {
+                                error = $"{endExpr} is not an integer.";
+                            }
+                            end = (int)endObj;
+                            if (error == null && (end < 0 || end > list.Count))
+                            {
+                                error = $"{endExpr}={end} which is out of range for {arr}";
+                            }
+                            if (error == null)
+                            {
+                                result = list.OfType<object>().Skip(start).Take(end - start).ToList();
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    error = $"{expression.Children[0]} is not array or string.";
+                }
+            }
+
+            return (result, error);
+        }
+
         private static bool IsSameDay(DateTime date1, DateTime date2) => date1.Year == date2.Year && date1.Month == date2.Month && date1.Day == date2.Day;
 
         private static Dictionary<string, ExpressionEvaluator> BuildFunctionLookup()
@@ -1334,6 +1501,8 @@ namespace Microsoft.Bot.Builder.Expressions
                         VerifyNumericList),
                     ReturnType.Number,
                     ValidateUnary),
+
+                // Collection Functions
                 new ExpressionEvaluator(
                     ExpressionType.Count,
                     Apply(
@@ -1382,6 +1551,21 @@ namespace Microsoft.Bot.Builder.Expressions
                         }, VerifyList),
                     ReturnType.Object,
                     ValidateAtLeastOne),
+                new ExpressionEvaluator(
+                    ExpressionType.Skip,
+                    BuiltInFunctions.Skip,
+                    ReturnType.Object,
+                    (expression) => BuiltInFunctions.ValidateOrder(expression, null, ReturnType.Object, ReturnType.Number)),
+                new ExpressionEvaluator(
+                    ExpressionType.Take,
+                    BuiltInFunctions.Take,
+                    ReturnType.Object,
+                    (expression) => BuiltInFunctions.ValidateOrder(expression, null, ReturnType.Object, ReturnType.Number)),
+                new ExpressionEvaluator(
+                    ExpressionType.SubArray,
+                    BuiltInFunctions.SubArray,
+                    ReturnType.Object,
+                    (expression) => BuiltInFunctions.ValidateOrder(expression, new[] {ReturnType.Number}, ReturnType.Object, ReturnType.Number)),
 
                 // Booleans
                 Comparison(ExpressionType.LessThan, args => args[0] < args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
@@ -1505,6 +1689,21 @@ namespace Microsoft.Bot.Builder.Expressions
                     },
                     ReturnType.String,
                     expr => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.NewGuid,
+                    BuiltInFunctions.Apply(args => BuiltInFunctions.newGuid()),
+                    ReturnType.String,
+                    (exprssion) => BuiltInFunctions.ValidateArityAndAnyType(exprssion, 0, 0)),
+                new ExpressionEvaluator(
+                    ExpressionType.IndexOf,
+                    Apply(args => args[0].IndexOf(args[1]), VerifyString),
+                    ReturnType.Number,
+                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.LastIndexOf,
+                    Apply(args => args[0].LastIndexOf(args[1]), VerifyString),
+                    ReturnType.Number,
+                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String)),
 
                 // Date and time
                 TimeTransform(ExpressionType.AddDays, (ts, add) => ts.AddDays(add)),
