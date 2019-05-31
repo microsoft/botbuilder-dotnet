@@ -33,6 +33,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var p = System.Diagnostics.Process.Start("git", "version");
             string message = "github push test output:\n";
 
+            message += RunProcess("git", "config --global user.email v-bruhal@microsoft.com");
+            message += RunProcess("git", "config --global user.name BruceHaley");
             message += RunProcess("git", "status");
             message += RunProcess("git", "checkout v-bruhal/githubpushtest");
             message += RunProcess("git", "status");
