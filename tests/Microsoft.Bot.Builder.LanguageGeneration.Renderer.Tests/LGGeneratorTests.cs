@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
@@ -131,6 +135,42 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task TestDialogInjection()
+        {
+            var dialog = new AdaptiveDialog()
+            {
+                Generator = new ResourceMultiLanguageGenerator("subDialog.lg"),
+                Steps = new List<IDialog>()
+                {
+                    new SendActivity("[test]")
+                }
+            };
+
+            await CreateFlow("en-us", async (turnContext, cancellationToken) =>
+            {
+                await dialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
+
+            })
+            .Send("hello")
+                .AssertReply("overriden")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task TestDialogInjectionDeclarative()
+        {
+            await CreateFlow("en-us", async (turnContext, cancellationToken) =>
+            {
+                var resource = resourceExplorer.GetResource("test.dialog");
+                var dialog = (AdaptiveDialog)DeclarativeTypeLoader.Load<IDialog>(resource, resourceExplorer, DebugSupport.SourceRegistry);
+
+                await dialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
+            })
+            .Send("hello")
+                .AssertReply("overriden")
+            .StartTestAsync();
+        }
 
         private TestFlow CreateFlow(string locale, BotCallbackHandler handler)
         {
@@ -138,6 +178,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var storage = new MemoryStorage();
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
+
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             adapter
                 .UseStorage(storage)
@@ -145,8 +186,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 .UseResourceExplorer(resourceExplorer)
                 .UseLanguageGeneration(resourceExplorer, "test.lg")
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
-
-            adapter.Locale = locale;
 
             return new TestFlow(adapter, handler);
         }

@@ -408,7 +408,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             if (this.Generator != null)
             {
-                dc.Context.TurnState.Add<ILanguageGenerator>(this.Generator);
+                dc.Context.TurnState.Set<ILanguageGenerator>(this.Generator);
             }
 
             // Execute component

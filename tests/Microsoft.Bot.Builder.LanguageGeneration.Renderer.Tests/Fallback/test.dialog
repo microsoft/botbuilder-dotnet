@@ -1,0 +1,10 @@
+﻿{
+  "$type": "Microsoft.AdaptiveDialog",
+  "generator": "subDialog.lg",
+  "steps": [
+    {
+      "$type": "Microsoft.SendActivity",
+      "activity": "[test]"
+    }
+  ]
+}
