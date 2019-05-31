@@ -12,7 +12,7 @@ lexer grammar LGFileLexer;
 
 @lexer::members {
   bool ignoreWS = true;      // usually we ignore whitespace, but inside template, whitespace is significant
-  bool expectIfElse = false; // whether we are expecting IF/ELSEIF/ELSE
+  bool expectKeywords = false; // whether we are expecting IF/ELSEIF/ELSE
 }
 
 fragment LETTER: 'a'..'z' | 'A'..'Z';
@@ -52,7 +52,7 @@ HASH
   ;
 
 DASH
-  : '-' {expectIfElse = true;} -> pushMode(TEMPLATE_BODY_MODE)
+  : '-' {expectKeywords = true;} -> pushMode(TEMPLATE_BODY_MODE)
   ;
 
 INVALID_TOKEN_DEFAULT_MODE
@@ -109,23 +109,35 @@ NEWLINE_IN_BODY
   ;
 
 IF
-  : I F WHITESPACE* ':'  {expectIfElse}? { ignoreWS = true;}
+  : ('if'|'IF') WHITESPACE* ':'  {expectKeywords}? { ignoreWS = true;}
   ;
 
 ELSEIF
-  : E L S E I F WHITESPACE* ':' {expectIfElse}? { ignoreWS = true;}
+  : ('elseif'|'ELSEIF') WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
   ;
 
 ELSE
-  : E L S E WHITESPACE* ':' {expectIfElse}? { ignoreWS = true;}
+  : ('else'|'ELSE') WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
+  ;
+
+  SWITCH
+  : ('switch'|'SWITCH') WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
+  ;
+
+CASE
+  : ('case'|'CASE') WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
+  ;
+
+DEFAULT
+  : ('default'|'DEFAULT') WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
   ;
 
 MULTI_LINE_TEXT
-  : '```' .*? '```' { ignoreWS = false; expectIfElse = false;}
+  : '```' .*? '```' { ignoreWS = false; expectKeywords = false;}
   ;
 
 ESCAPE_CHARACTER
-  : '\\{' | '\\[' | '\\\\' | '\\'[rtn\]}]  { ignoreWS = false; expectIfElse = false;}
+  : '\\{' | '\\[' | '\\\\' | '\\'[rtn\]}]  { ignoreWS = false; expectKeywords = false;}
   ;
 
 INVALID_ESCAPE
@@ -133,17 +145,17 @@ INVALID_ESCAPE
   ;
 
 EXPRESSION
-  : '{' ~[\r\n{}]* '}'  { ignoreWS = false; expectIfElse = false;}
+  : '@'? '{' ~[\r\n{}]* '}'  { ignoreWS = false; expectKeywords = false;}
   ;
 
 TEMPLATE_REF
-  : '[' (~[\r\n\]] | TEMPLATE_REF)* ']'  { ignoreWS = false; expectIfElse = false;}
+  : '[' (~[\r\n\]] | TEMPLATE_REF)* ']'  { ignoreWS = false; expectKeywords = false;}
   ;
 
 TEXT_SEPARATOR
-  : [ \t\r\n{}[\]()]  { ignoreWS = false; expectIfElse = false;}
+  : [ \t\r\n{}[\]()]  { ignoreWS = false; expectKeywords = false;}
   ;
 
 TEXT
-  : ~[ \\\t\r\n{}[\]()]+  { ignoreWS = false; expectIfElse = false;}
+  : ~[ \\\t\r\n{}[\]()]+  { ignoreWS = false; expectKeywords = false;}
   ;

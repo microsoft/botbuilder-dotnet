@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </value>
         public LGFileParser.TemplateDefinitionContext ParseTree { get; }
 
-        private string ExtractBody(LGFileParser.TemplateDefinitionContext parseTree) => parseTree.templateBody().GetText();
+        private string ExtractBody(LGFileParser.TemplateDefinitionContext parseTree) => parseTree.templateBody()?.GetText();
 
         private string ExtractName(LGFileParser.TemplateDefinitionContext parseTree) => parseTree.templateNameLine().templateName().GetText();
 

@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
     [TestClass]
     public class Tests
     {
-        private Generator _generator;
+        private readonly Generator _generator;
 
         private Trigger VerifyAddTrigger(TriggerTree tree, Expression expression, object action)
         {
@@ -101,11 +101,12 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
             var singletons = _generator.GeneratePredicates(numPredicates, "mem");
             var tree = new TriggerTree();
             var predicates = new List<ExpressionInfo>(singletons);
+            var triggers = new List<Trigger>();
 
             // Add singletons
             foreach (var predicate in singletons.Take(numSingletons))
             {
-                tree.AddTrigger(predicate.Expression, predicate.Bindings);
+                triggers.Add(tree.AddTrigger(predicate.Expression, predicate.Bindings));
             }
             Assert.AreEqual(numSingletons, tree.TotalTriggers);
 
@@ -120,6 +121,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                 }
                 var trigger = tree.AddTrigger(conjunction.Expression, conjunction.Bindings);
                 var matches = tree.Matches(memory);
+                triggers.Add(trigger);
                 Assert.IsTrue(matches.Count() == 1);
                 var first = matches.First().Clause;
                 foreach (var match in matches)
@@ -134,7 +136,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
             var disjunctions = _generator.GenerateDisjunctions(predicates, numDisjunctions, minClause, maxClause);
             foreach (var disjunction in disjunctions)
             {
-                tree.AddTrigger(disjunction.Expression, disjunction.Bindings);
+                triggers.Add(tree.AddTrigger(disjunction.Expression, disjunction.Bindings));
             }
             Assert.AreEqual(numSingletons + numConjunctions + numDisjunctions, tree.TotalTriggers);
 
@@ -145,7 +147,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
             var optionals = _generator.GenerateOptionals(all, numOptionals, minClause, maxClause);
             foreach(var optional in optionals)
             {
-                tree.AddTrigger(optional.Expression, optional.Bindings);
+                triggers.Add(tree.AddTrigger(optional.Expression, optional.Bindings));
             }
             Assert.AreEqual(numSingletons + numConjunctions + numDisjunctions + numOptionals, tree.TotalTriggers);
             all.AddRange(optionals);
@@ -154,7 +156,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
             var quantified = _generator.GenerateQuantfiers(all, numQuantifiers, maxClause, maxExpansion, maxQuantifiers);
             foreach(var expr in quantified)
             {
-                tree.AddTrigger(expr.Expression, expr.Bindings, expr.Quantifiers.ToArray());
+                triggers.Add(tree.AddTrigger(expr.Expression, expr.Bindings, expr.Quantifiers.ToArray()));
             }
             Assert.AreEqual(numSingletons + numConjunctions + numDisjunctions + numOptionals + numQuantifiers, tree.TotalTriggers);
             all.AddRange(quantified);
@@ -162,9 +164,10 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
             var nots = _generator.GenerateNots(all, numNots);
             foreach(var expr in nots)
             {
-                tree.AddTrigger(expr.Expression, expr.Bindings, expr.Quantifiers.ToArray());
+                triggers.Add(tree.AddTrigger(expr.Expression, expr.Bindings, expr.Quantifiers.ToArray()));
             }
             Assert.AreEqual(numSingletons + numConjunctions + numDisjunctions + numOptionals + numQuantifiers + numNots, tree.TotalTriggers);
+            all.AddRange(nots);
 
             VerifyTree(tree);
 
@@ -189,7 +192,17 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                 }
             }
 
-            tree.GenerateGraph("tree.dot");
+            // NOTE: This is useful to test tree visualization, but not really a test.
+            // tree.GenerateGraph("tree.dot");
+
+            // Delete triggers
+            Assert.AreEqual(triggers.Count, tree.TotalTriggers);
+            foreach(var trigger in triggers)
+            {
+                tree.RemoveTrigger(trigger);
+            }
+            Assert.AreEqual(0, tree.TotalTriggers);
+            VerifyTree(tree);
         }
     }
 }

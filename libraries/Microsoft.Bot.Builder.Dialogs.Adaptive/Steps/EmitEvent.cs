@@ -1,6 +1,5 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
-
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -12,7 +11,6 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 {
-#if EMIT
     public class EmitEvent : DialogCommand
     {
         private const string eventValueProperty = "eventValue";
@@ -25,16 +23,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         {
             get
             {
-                if (InputProperties.ContainsKey(eventValueProperty))
+                if (InputBindings.ContainsKey(eventValueProperty))
                 {
-                    return InputProperties[eventValueProperty];
+                    return InputBindings[eventValueProperty];
                 }
                 return string.Empty;
             }
 
             set
             {
-                InputProperties[eventValueProperty] = value;
+                InputBindings[eventValueProperty] = value;
             }
         }
 
@@ -42,12 +40,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         {
             get
             {
-                return OutputProperty;
+                return OutputBinding;
             }
 
             set
             {
-                OutputProperty = value;
+                OutputBinding = value;
             }
         }
 
@@ -74,5 +72,4 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             return $"EmitEvent[{EventName ?? string.Empty}]";
         }
     }
-#endif
 }

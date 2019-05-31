@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Antlr4.Runtime;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -15,10 +16,49 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>LG template list.</returns>
         public static IList<LGTemplate> Parse(string text, string source = "")
         {
-            var fileContentContext = GetFileContentContext(text);
-            return ToLGTemplates(fileContentContext, source);
+            var parseSuccess = TryParse(text, out var templates, out var error, source);
+            if (!parseSuccess)
+            {
+                throw new Exception(error.ToString());
+            }
+
+            return templates;
         }
 
+        /// <summary>
+        /// Try Get LG template list from input string.
+        /// </summary>
+        /// <param name="text">LG file content or inline text.</param>
+        /// <param name="templates">LG template list.</param>
+        /// <param name="error">error/warning list.</param>
+        /// <param name="source">text source.</param>
+        /// <returns>LG template if parse success.</returns>
+        public static bool TryParse(string text, out IList<LGTemplate> templates, out Diagnostic error, string source = "")
+        {
+            LGFileParser.FileContext fileContext = null;
+            error = null;
+            templates = new List<LGTemplate>();
+
+            try
+            {
+                fileContext = GetFileContentContext(text);
+            }
+            catch (Exception e)
+            {
+                error = JsonConvert.DeserializeObject<Diagnostic>(e.Message);
+                return false;
+            }
+
+            templates = ToLGTemplates(fileContext, source);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Get parsed tree node from text by antlr4 engine.
+        /// </summary>
+        /// <param name="text">Original text which will be parsed.</param>
+        /// <returns>Parsed tree node.</returns>
         private static LGFileParser.FileContext GetFileContentContext(string text)
         {
             if (string.IsNullOrEmpty(text))

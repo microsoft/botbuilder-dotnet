@@ -51,11 +51,30 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     }
                 },
             timestamp = "2018-03-15T13:00:00Z",
+            user = new
+            {
+                lists = new
+                {
+                    todo = new []
+                    {
+                        "todo1",
+                        "todo2",
+                        "todo3",
+                    }
+                },
+                listType = "todo",
+            },
             turn = new
             {
                 entities = new
                 {
-                    city = "Seattle"
+                    city = "Seattle",
+                    ordinal = new []
+                    {
+                        "1",
+                        "2",
+                        "3"
+                    }
                 },
                 intents = new
                 {
@@ -160,6 +179,23 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("trim(' hello ')", "hello"),
             Test("trim(' hello')", "hello"),
             Test("trim('hello')", "hello"),
+            Test("endsWith('hello','o')", true),
+            Test("endsWith('hello','a')", false),
+            Test("endsWith(hello,'o')", true),
+            Test("endsWith(hello,'a')", false),
+            Test("startsWith('hello','h')", true),
+            Test("startsWith('hello','a')", false),
+            Test("countWord(hello)", 1),
+            Test("countWord(concat(hello, ' ', world))", 2),
+            Test("addOrdinal(11)", "11th"),
+            Test("addOrdinal(11 + 1)", "12th"),
+            Test("addOrdinal(11 + 2)", "13th"),
+            Test("addOrdinal(11 + 10)", "21st"),
+            Test("addOrdinal(11 + 11)", "22nd"),
+            Test("addOrdinal(11 + 12)", "23rd"),
+            Test("addOrdinal(11 + 13)", "24th"),
+            Test("addOrdinal(-1)", "-1"),//original string value
+            
             # endregion
 
             # region  Logical comparison functions test
@@ -307,6 +343,15 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("getTimeOfDay('2018-03-15T18:00:00Z')", "evening"),
             Test("getTimeOfDay('2018-03-15T22:00:00Z')", "evening"),
             Test("getTimeOfDay('2018-03-15T23:00:00Z')", "night"),
+            Test("getPastTime(1,'Year','MM-dd-yy')", DateTime.Now.AddYears(-1).ToString("MM-dd-yy")),
+            Test("getPastTime(1,'Month','MM-dd-yy')", DateTime.Now.AddMonths(-1).ToString("MM-dd-yy")),
+            Test("getPastTime(1,'Week','MM-dd-yy')", DateTime.Now.AddDays(-7).ToString("MM-dd-yy")),
+            Test("getPastTime(1,'Day','MM-dd-yy')", DateTime.Now.AddDays(-1).ToString("MM-dd-yy")),
+            Test("getFutureTime(1,'Year','MM-dd-yy')", DateTime.Now.AddYears(1).ToString("MM-dd-yy")),
+            Test("getFutureTime(1,'Month','MM-dd-yy')", DateTime.Now.AddMonths(1).ToString("MM-dd-yy")),
+            Test("getFutureTime(1,'Week','MM-dd-yy')", DateTime.Now.AddDays(7).ToString("MM-dd-yy")),
+            Test("getFutureTime(1,'Day','MM-dd-yy')", DateTime.Now.AddDays(1).ToString("MM-dd-yy")),
+           
             # endregion
 
             # region  collection functions test
@@ -340,6 +385,11 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("last('hello')", "o"),
             Test("last(createArray(0, 1, 2))", 2),
             Test("last(1)", null),
+            Test("count(union(createArray('a', 'b')))", 2),
+            Test("count(union(createArray('a', 'b'), createArray('b', 'c'), createArray('b', 'd')))", 4),
+            Test("count(intersection(createArray('a', 'b')))", 2),
+            Test("count(intersection(createArray('a', 'b'), createArray('b', 'c'), createArray('b', 'd')))", 1),
+            
             # endregion
 
             # region  Object manipulation and construction functions
@@ -368,7 +418,17 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("items[1+1]","two"),
             Test("getProperty(null, 'p')", null),
             Test("(getProperty(null, 'p'))[1]", null),
-            # endregion
+            #endregion
+
+            # region Dialog 
+            Test("user.lists.todo[int(@ordinal[0]) - 1] != null", true),
+            Test("user.lists.todo[int(@ordinal[0]) + 3] != null", false),
+            Test("count(user.lists.todo) > int(@ordinal[0]))", true),
+            Test("count(user.lists.todo) >= int(@ordinal[0]))", true),
+            Test("user.lists.todo[int(@ordinal[0]) - 1]", "todo1"),
+            Test("user.lists[user.listType][int(@ordinal[0]) - 1]", "todo1"),
+            #endregion
+
         };
 
         [DataTestMethod]
@@ -421,7 +481,14 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         {
             if (IsNumber(actual) && IsNumber(expected))
             {
-                Assert.IsTrue(Convert.ToSingle(actual) == Convert.ToSingle(expected));
+                if (actual is int)
+                {
+                    Assert.IsTrue(expected is int);
+                }
+                else
+                {
+                    Assert.IsTrue(Convert.ToSingle(actual) == Convert.ToSingle(expected));
+                }
             }
             // Compare two lists
             else if (expected is IList expectedList

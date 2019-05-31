@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
-        public void TestBasicConditionalTemplate()
+        public void TestIfElseTemplate()
         {
             var engine = TemplateEngine.FromFiles(GetExampleFilePath("5.lg"));
 
@@ -79,6 +79,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = engine.EvaluateTemplate("time-of-day-readout-without-default2", new { timeOfDay = "evening" });
             Assert.IsNull(evaled, "Evaled is not null");
+        }
+
+        [TestMethod]
+        public void TestBasicSwitchCaseTemplate()
+        {
+            var engine = TemplateEngine.FromFiles(GetExampleFilePath("switchcase.lg"));
+
+            string evaled = engine.EvaluateTemplate("greetInAWeek", new { day = "Saturday" });
+            Assert.IsTrue(evaled == "Happy Saturday!");
+
+            evaled = engine.EvaluateTemplate("greetInAWeek", new { day = "Monday" });
+            Assert.IsTrue(evaled == "Work Hard!");
         }
 
         [TestMethod]
@@ -192,6 +204,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(emptyEngine.Evaluate("Hi", null), "Hi");
             Assert.AreEqual(emptyEngine.Evaluate("Hi {name}", new { name = "DL" }), "Hi DL");
             Assert.AreEqual(emptyEngine.Evaluate("Hi {name.FirstName}{name.LastName}", new { name = new { FirstName = "D", LastName = "L" } }), "Hi DL");
+            Assert.AreEqual(emptyEngine.Evaluate("Hi \n Hello", null), "Hi \n Hello");
+            Assert.AreEqual(emptyEngine.Evaluate("Hi \r\n Hello", null), "Hi \r\n Hello");
+            Assert.AreEqual(emptyEngine.Evaluate("Hi \r\n @{name}", new { name = "DL" }), "Hi \r\n DL");
             Assert.AreEqual(new TemplateEngine().Evaluate("Hi", null), "Hi");
         }
 
