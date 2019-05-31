@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             message += RunProcess("git", "status");
             message += RunProcess("git", "commit Committed by test QnaMaker_GithubPush()");
             message += RunProcess("git", "status");
-            message += RunProcess("git", "push");
+            message += RunProcess("git", "push origin v-bruhal/githubpushtest");
             message += RunProcess("git", "status");
             //message += RunProcess("git", "push origin master");
             //message += RunProcess("cmd", "/c dir ..\..\..\*.*");
