@@ -206,6 +206,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("year(timestamp, 1)"), // should have 1 param
             Test("year(notISOTimestamp)"), // not ISO datetime format
             Test("formatDateTime('errortime')"), // error datetime format
+            Test("formatDateTime(notValidTimestamp)"), // error datetime format
             Test("formatDateTime(timestamp, 'yyyy', 1)"), // should have 2 or 3 params
             Test("subtractFromTime('errortime', 'yyyy', 1)"), // error datetime format
             Test("subtractFromTime(timestamp, 1, 'W')"),// error time unit
@@ -318,6 +319,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 },
                 timestamp = "2018-03-15T13:00:00Z",
                 notISOTimestamp = "2018/03/15 13:00:00",
+                notValidTimestamp = "2018timestmap",
                 turn = new
                 {
                     entities = new

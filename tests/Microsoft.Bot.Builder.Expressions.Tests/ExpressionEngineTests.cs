@@ -66,6 +66,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             timestamp = "2018-03-15T13:00:00.000Z",
             notISOTimestamp = "2018/03/15 13:00:00",
             timestampObj = DateTime.Parse("2018-03-15T13:00:00.000Z").ToUniversalTime(),
+            unixTimestamp = 1521118800,
             turn = new
             {
                 entities = new
@@ -144,7 +145,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("'string'&'builder'","stringbuilder"),
             Test("\"string\"&\"builder\"","stringbuilder"),
             Test("one > 0.5 && two < 2.5", true, oneTwo),
-            Test("notThere > 4", false), 
+            Test("notThere > 4", false),
             Test("float(5.5) && float(0.0)", true),
             Test("hello && \"hello\"", true),
             Test("items || ((2 + 2) <= (4 - 1))", true), // true || false
@@ -333,6 +334,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("formatDateTime(notISOTimestamp, 'MM-dd-yy')", "03-15-18"),
             Test("formatDateTime('2018-03-15')", "2018-03-15T00:00:00.000Z"),
             Test("formatDateTime(timestampObj)", "2018-03-15T13:00:00.000Z"),
+            Test("formatDateTime(unixTimestamp)", "2018-03-15T13:00:00.000Z"),
             Test("subtractFromTime(timestamp, 1, 'Year')", "2017-03-15T13:00:00.000Z"),
             Test("subtractFromTime(timestamp, 1, 'Month')", "2018-02-15T13:00:00.000Z"),
             Test("subtractFromTime(timestamp, 1, 'Week')", "2018-03-08T13:00:00.000Z"),

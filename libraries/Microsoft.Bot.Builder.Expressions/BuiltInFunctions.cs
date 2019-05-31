@@ -1547,7 +1547,23 @@ namespace Microsoft.Bot.Builder.Expressions
                     ReturnType.String),
                 new ExpressionEvaluator(
                     ExpressionType.FormatDateTime,
-                    ApplyWithError(args => ParseTimestamp((string) args[0].ToString(), dt => dt.ToString(args.Count() == 2 ? args[1] : DefaultDateTimeFormat))),
+                    ApplyWithError(
+                        args =>
+                        {
+                            object result = null;
+                            string error = null;
+                            double unixTimestamp;
+                            dynamic timestamp = args[0];
+                            if (double.TryParse(args[0].ToString(), out unixTimestamp))
+                            {
+                                var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                                timestamp = dateTime.AddSeconds(unixTimestamp);
+                            }
+
+                            (result, error) = ParseTimestamp((string) timestamp.ToString(), dt => dt.ToString(args.Count() == 2 ? args[1] : DefaultDateTimeFormat));
+
+                            return (result, error);
+                        }),
                     ReturnType.String,
                     (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Object)),
                 new ExpressionEvaluator(
