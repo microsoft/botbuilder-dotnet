@@ -38,12 +38,15 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             message += RunProcess("git", "status");
             message += RunProcess("git", "checkout v-bruhal/githubpushtest");
             message += RunProcess("git", "status");
+            //git tag -a v1.4 -m "my version 1.4"
+            message += RunProcess("git", "tag -a v9.9.9 -m\"Test git tag from QnaMaker_GithubPush\" ");
+            message += RunProcess("git", "push origin --tags");
             //message += RunProcess("git", "checkout master");
             //message += RunProcess("git", "pull origin master");
             message += RunProcess("fsutil", "file createnew ../../../dummy.txt 500");
             message += RunProcess("git", "add ../../../dummy.txt");
             message += RunProcess("git", "status");
-            message += RunProcess("git", "commit");
+            message += RunProcess("git", "commit -m\"Committed by test QnaMaker_GithubPush\" ");
             message += RunProcess("git", "status");
             message += RunProcess("git", "push origin v-bruhal/githubpushtest");
             message += RunProcess("git", "status");
