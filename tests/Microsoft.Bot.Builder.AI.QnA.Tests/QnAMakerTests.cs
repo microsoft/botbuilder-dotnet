@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             message += RunProcess("fsutil", "file createnew ../../../dummy.txt 500");
             message += RunProcess("git", "add ../../../dummy.txt");
             message += RunProcess("git", "status");
-            message += RunProcess("git", "commit Committed by test QnaMaker_GithubPush()");
+            message += RunProcess("git", "commit -m 'Committed by test QnaMaker_GithubPush()'");
             message += RunProcess("git", "status");
             message += RunProcess("git", "push origin v-bruhal/githubpushtest");
             message += RunProcess("git", "status");
