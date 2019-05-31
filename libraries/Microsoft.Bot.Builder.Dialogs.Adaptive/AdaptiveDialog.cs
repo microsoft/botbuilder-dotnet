@@ -38,6 +38,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public IRecognizer Recognizer { get; set; }
 
         /// <summary>
+        /// Language Generator override
+        /// </summary>
+        public ILanguageGenerator Generator { get; set; }
+
+        /// <summary>
         /// Gets or sets the steps to execute when the dialog begins
         /// </summary>
         public List<IDialog> Steps { get; set; } = new List<IDialog>();
@@ -400,6 +405,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 },
                 conversationState: storedState.ConversationState,
                 userState: storedState.UserState);
+
+            if (this.Generator != null)
+            {
+                dc.Context.TurnState.Add<ILanguageGenerator>(this.Generator);
+            }
 
             // Execute component
             var result = await dc.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);

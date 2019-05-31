@@ -1,121 +1,154 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Bot.Builder.LanguageGeneration.Renderer;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 {
+    public class MockLanguageGenator : ILanguageGenerator
+    {
+        public Task<string> Generate(ITurnContext turnContext, string template, object data)
+        {
+            return Task.FromResult(template);
+        }
+    }
+
     [TestClass]
     public class LGGeneratorTests
     {
+        public TestContext TestContext { get; set; }
 
-        private string GetFallbackFolder()
+        private static ResourceExplorer resourceExplorer;
+
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context)
         {
-            return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "Fallback";
+            TypeFactory.Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
+            TypeFactory.RegisterAdaptiveTypes();
+            resourceExplorer = ResourceExplorer.LoadProject(GetProjectFolder());
+        }
+        private static string GetProjectFolder()
+        {
+            return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin"));
         }
 
-        public TestContext TestContext { get; set; }
+
+        [ClassCleanup]
+        public static void ClassCleanup()
+        {
+            resourceExplorer.Dispose();
+        }
+
+        private ITurnContext GetTurnContext(string locale, ILanguageGenerator generator = null)
+        {
+            var context = new TurnContext(new TestAdapter()
+                .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration(resourceExplorer, generator ?? new MockLanguageGenator()), new Activity() { Locale = locale, Text = "" });
+            context.TurnState.Add(new LanguageGeneratorManager(resourceExplorer));
+            if (generator != null)
+            {
+                context.TurnState.Add<ILanguageGenerator>(generator);
+            }
+            return context;
+        }
 
         [TestMethod]
         [ExpectedException(typeof(Exception))]
         public async Task TestNotFoundTemplate()
         {
-            var resourceManager = new ResourceExplorer()
-                .AddFolder(GetFallbackFolder());
-            var lg = new LGLanguageGenerator(resourceManager);
-
-            await lg.Generate("en-us", id: "tesdfdfsst");
+            var context = GetTurnContext("");
+            var lg = new TemplateEngineLanguageGenerator("");
+            await lg.Generate(context, "[tesdfdfsst]", null);
         }
 
         [TestMethod]
-        public async Task TestExactLanguageLookup()
+        public async Task TestMultiLanguageGenerator()
         {
-            var resourceManager = new ResourceExplorer()
-                .AddFolder(GetFallbackFolder());
-            var lg = new LGLanguageGenerator(resourceManager);
+            var lg = new MultiLanguageGenerator();
+            lg.LanguageGenerators[""] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.lg").ReadText());
+            lg.LanguageGenerators["de"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.de.lg").ReadText());
+            lg.LanguageGenerators["en"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en.lg").ReadText());
+            lg.LanguageGenerators["en-US"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en-US.lg").ReadText());
+            lg.LanguageGenerators["en-GB"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en-GB.lg").ReadText());
+            lg.LanguageGenerators["fr"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.fr.lg").ReadText());
 
-            Assert.AreEqual("english-us", await lg.Generate("en-us", id: "test"));
-            Assert.AreEqual("english-gb", await lg.Generate("en-gb", id: "test"));
-            Assert.AreEqual("english", await lg.Generate("en", id: "test"));
-            Assert.AreEqual("default", await lg.Generate("", id: "test"));
-            Assert.AreEqual("default", await lg.Generate("foo", id: "test"));
+            // test targeted in each language
+            Assert.AreEqual("english-us", await lg.Generate(GetTurnContext("en-us"), "[test]", null));
+            Assert.AreEqual("english-gb", await lg.Generate(GetTurnContext("en-gb"), "[test]", null));
+            Assert.AreEqual("english", await lg.Generate(GetTurnContext("en"), "[test]", null));
+            Assert.AreEqual("default", await lg.Generate(GetTurnContext(""), "[test]", null));
+            Assert.AreEqual("default", await lg.Generate(GetTurnContext("foo"), "[test]", null));
 
-            Assert.AreEqual("default2", await lg.Generate("en-us", id: "test2"));
-            Assert.AreEqual("default2", await lg.Generate("en-gb", id: "test2"));
-            Assert.AreEqual("default2", await lg.Generate("en", id: "test2"));
-            Assert.AreEqual("default2", await lg.Generate("", id: "test2"));
-            Assert.AreEqual("default2", await lg.Generate("foo", id: "test2"));
+            // test fallback for en-us -> en -> default
+            Assert.AreEqual("default2", await lg.Generate(GetTurnContext("en-us"), "[test2]", null));
+            Assert.AreEqual("default2", await lg.Generate(GetTurnContext("en-gb"), "[test2]", null));
+            Assert.AreEqual("default2", await lg.Generate(GetTurnContext("en"), "[test2]", null));
+            Assert.AreEqual("default2", await lg.Generate(GetTurnContext(""), "[test2]", null));
+            Assert.AreEqual("default2", await lg.Generate(GetTurnContext("foo"), "[test2]", null));
         }
 
         [TestMethod]
-        public async Task TestInheritenceLookup()
+        public async Task TestResourceMultiLanguageGenerator()
         {
-            // inheritence order is z -> y -> x meaning z derives from y derives from x
-            string[] zTypes = new string[] { "z", "y", "x" };
-            string[] yTypes = new string[] { "y", "x" };
-            string[] xTypes = new string[] { "x" };
+            var lg = new ResourceMultiLanguageGenerator("test.lg");
 
-            var resourceManager = new ResourceExplorer()
-                .AddFolder(GetFallbackFolder());
-            var lg = new LGLanguageGenerator(resourceManager);
+            // test targeted in each language
+            Assert.AreEqual("english-us", await lg.Generate(GetTurnContext("en-us", lg), "[test]", null));
+            Assert.AreEqual("english-gb", await lg.Generate(GetTurnContext("en-gb", lg), "[test]", null));
+            Assert.AreEqual("english", await lg.Generate(GetTurnContext("en", lg), "[test]", null));
+            Assert.AreEqual("default", await lg.Generate(GetTurnContext("", lg), "[test]", null));
+            Assert.AreEqual("default", await lg.Generate(GetTurnContext("foo", lg), "[test]", null));
 
-            // property is defined at each point in the hierarchy
-            Assert.AreEqual("test x", await lg.Generate("en", id: "property", types: xTypes));
-            Assert.AreEqual("test y", await lg.Generate("en", id: "property", types: yTypes));
-            Assert.AreEqual("test z", await lg.Generate("en", id: "property", types: zTypes));
-
-            // property 2 is only defined at the x level
-            Assert.AreEqual("test2 x", await lg.Generate("en", id: "property2", types: xTypes));
-            Assert.AreEqual("test2 x", await lg.Generate("en", id: "property2", types: yTypes));
-            Assert.AreEqual("test2 x", await lg.Generate("en", id: "property2", types: zTypes));
+            // test fallback for en-us -> en -> default
+            Assert.AreEqual("default2", await lg.Generate(GetTurnContext("en-us", lg), "[test2]", null));
+            Assert.AreEqual("default2", await lg.Generate(GetTurnContext("en-gb", lg), "[test2]", null));
+            Assert.AreEqual("default2", await lg.Generate(GetTurnContext("en", lg), "[test2]", null));
+            Assert.AreEqual("default2", await lg.Generate(GetTurnContext("", lg), "[test2]", null));
+            Assert.AreEqual("default2", await lg.Generate(GetTurnContext("foo", lg), "[test2]", null));
         }
 
         [TestMethod]
-        public async Task TestTags()
+        public async Task TestLanguageGeneratorMiddleware()
         {
-            string[] notags = new string[] { };
-            string[] tags1 = new string[] { "tag1" };
-            string[] tags2 = new string[] { "tag2" };
-            string[] oddTags = new string[] { "foo", "bar" };
-
-            var resourceManager = new ResourceExplorer()
-                .AddFolder(GetFallbackFolder());
-            var lg = new LGLanguageGenerator(resourceManager);
-
-            Assert.AreEqual("english", await lg.Generate("en", id: "test", tags: notags));
-            Assert.AreEqual("english", await lg.Generate("en", id: "test", tags: oddTags));
-            Assert.AreEqual("tag1 test", await lg.Generate("en", id: "test", tags: tags1));
-            Assert.AreEqual("tag2 test", await lg.Generate("en", id: "test", tags: tags2));
+            await CreateFlow("en-us", async (turnContext, cancellationToken) =>
+            {
+                var lg = turnContext.TurnState.Get<ILanguageGenerator>();
+                Assert.IsNotNull(lg, "ILanguageGenerator should not be null");
+                Assert.IsNotNull(turnContext.TurnState.Get<ResourceExplorer>(), "ResourceExplorer should not be null");
+                var text = await lg.Generate(turnContext, "[test]", null);
+                Assert.AreEqual("english-us", text, "template should be there");
+            })
+            .Send("hello")
+            .StartTestAsync();
         }
 
-        [TestMethod]
-        public async Task TestTagsAndInheritence()
+
+        private TestFlow CreateFlow(string locale, BotCallbackHandler handler)
         {
-            string[] zTypes = new string[] { "z", "y", "x" };
-            string[] yTypes = new string[] { "y", "x" };
-            string[] xTypes = new string[] { "x" };
+            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+            var storage = new MemoryStorage();
+            var convoState = new ConversationState(storage);
+            var userState = new UserState(storage);
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            adapter
+                .UseStorage(storage)
+                .UseState(userState, convoState)
+                .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration(resourceExplorer, "test.lg")
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
-            string[] notags = new string[] { };
-            string[] tags1 = new string[] { "tag1" };
-            string[] tags2 = new string[] { "tag2" };
-            string[] oddTags = new string[] { "foo", "bar" };
+            adapter.Locale = locale;
 
-            var resourceManager = new ResourceExplorer()
-                .AddFolder(GetFallbackFolder());
-            var lg = new LGLanguageGenerator(resourceManager);
-
-            Assert.AreEqual("test x", await lg.Generate("en", id: "property", tags: notags, types: xTypes));
-            Assert.AreEqual("test y", await lg.Generate("en", id: "property", tags: notags, types: yTypes));
-            Assert.AreEqual("test z", await lg.Generate("en", id: "property", tags: notags, types: zTypes));
-
-            Assert.AreEqual("test x", await lg.Generate("en", id: "property", tags: oddTags, types: xTypes));
-            Assert.AreEqual("test y", await lg.Generate("en", id: "property", tags: oddTags, types: yTypes));
-            Assert.AreEqual("test z", await lg.Generate("en", id: "property", tags: oddTags, types: zTypes));
-
-            Assert.AreEqual("test x", await lg.Generate("en", id: "property", tags: tags2, types: xTypes));
-            Assert.AreEqual("test tag2 y", await lg.Generate("en", id: "property", tags: tags2, types: yTypes));
+            return new TestFlow(adapter, handler);
         }
     }
 }

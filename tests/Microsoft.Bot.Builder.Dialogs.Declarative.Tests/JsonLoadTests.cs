@@ -8,7 +8,6 @@ using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Tests.Recognizers;
-using Microsoft.Bot.Builder.LanguageGeneration.Renderer;
 using Microsoft.Bot.Schema;
 using System.Collections.Generic;
 using System;
@@ -16,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.LanguageGeneration;
 
 namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 {
@@ -287,7 +287,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         private TestFlow BuildTestFlow(string resourceName, bool sendTrace = false)
         {
             TypeFactory.Configuration = new ConfigurationBuilder().Build();
-            var lg = new LGLanguageGenerator(resourceExplorer);
             var storage = new MemoryStorage();
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
@@ -295,8 +294,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             adapter
                 .UseStorage(storage)
                 .UseState(userState, convoState)
-                .UseLanguageGenerator(lg)
                 .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             var resource = resourceExplorer.GetResource(resourceName);
