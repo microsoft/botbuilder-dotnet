@@ -380,6 +380,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var keys = ComputeKeys(context);
             var storage = context.TurnState.Get<IStorage>();
 
+            if (this.Generator != null)
+            {
+                context.TurnState.Set<ILanguageGenerator>(this.Generator);
+            }
+
             if (storedState == null)
             {
                 storedState = await LoadBotState(storage, keys).ConfigureAwait(false);
@@ -405,11 +410,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 },
                 conversationState: storedState.ConversationState,
                 userState: storedState.UserState);
-
-            if (this.Generator != null)
-            {
-                dc.Context.TurnState.Set<ILanguageGenerator>(this.Generator);
-            }
 
             // Execute component
             var result = await dc.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);

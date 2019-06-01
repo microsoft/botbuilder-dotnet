@@ -168,6 +168,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 await dialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
             })
             .Send("hello")
+                .AssertReply("root")
                 .AssertReply("overriden")
             .StartTestAsync();
         }
