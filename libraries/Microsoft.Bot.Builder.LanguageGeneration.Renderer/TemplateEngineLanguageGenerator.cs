@@ -18,9 +18,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         private TemplateEngine engine;
 
-        public TemplateEngineLanguageGenerator(string lgText)
+        public TemplateEngineLanguageGenerator(string lgText=null)
         {
-            this.engine = TemplateEngine.FromText(lgText);
+            this.engine = TemplateEngine.FromText(lgText ?? String.Empty);
         }
 
         public TemplateEngineLanguageGenerator(TemplateEngine engine)

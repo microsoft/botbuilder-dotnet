@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public async Task TestNotFoundTemplate()
         {
             var context = GetTurnContext("");
-            var lg = new TemplateEngineLanguageGenerator("");
+            var lg = new TemplateEngineLanguageGenerator();
             await lg.Generate(context, "[tesdfdfsst]", null);
         }
 
