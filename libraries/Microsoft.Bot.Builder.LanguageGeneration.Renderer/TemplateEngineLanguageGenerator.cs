@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -18,19 +19,39 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         private TemplateEngine engine;
 
-        public TemplateEngineLanguageGenerator(string lgText=null)
+        public TemplateEngineLanguageGenerator()
         {
+            this.engine = TemplateEngine.FromText("");
+        }
+
+        public TemplateEngineLanguageGenerator(string name, string lgText)
+        {
+            this.Name = name;
             this.engine = TemplateEngine.FromText(lgText ?? String.Empty);
         }
 
-        public TemplateEngineLanguageGenerator(TemplateEngine engine)
+        public TemplateEngineLanguageGenerator(string name, TemplateEngine engine)
         {
+            this.Name = name;
             this.engine = engine;
         }
 
+        public string Name { get; set; }
+
         public async Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
-            return engine.Evaluate(template, data);
+            try
+            {
+                return engine.Evaluate(template, data);
+            }
+            catch (Exception err)
+            {
+                if (!String.IsNullOrEmpty(this.Name))
+                {
+                    throw new Exception($"{Name}:{err.Message}");
+                }
+                throw;
+            }
         }
     }
 }
