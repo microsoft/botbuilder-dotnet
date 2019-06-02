@@ -819,7 +819,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     }
                     else
                     {
-                        error = $"Could not coerce {index} to an int or string";
+                        error = $"Could not coerce {index}<{idxValue.GetType()}> to an int or string";
                     }
                 }
             }
@@ -1679,7 +1679,7 @@ namespace Microsoft.Bot.Builder.Expressions
 
                 // Conversions
                 new ExpressionEvaluator(ExpressionType.Float, Apply(args => (float) Convert.ToDouble(args[0])), ReturnType.Number, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Int, Apply(args => (float) Convert.ToSingle(args[0])), ReturnType.Number, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Int, Apply(args => (int) Convert.ToInt64(args[0])), ReturnType.Number, ValidateUnary),
 
                 // TODO: Is this really the best way?
                 new ExpressionEvaluator(ExpressionType.String, Apply(args => JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"')), ReturnType.String, ValidateUnary),
