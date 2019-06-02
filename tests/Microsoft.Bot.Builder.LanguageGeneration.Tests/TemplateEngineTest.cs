@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
-        public void TestBasicConditionalTemplate()
+        public void TestIfElseTemplate()
         {
             var engine = TemplateEngine.FromFiles(GetExampleFilePath("5.lg"));
 
@@ -79,6 +79,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = engine.EvaluateTemplate("time-of-day-readout-without-default2", new { timeOfDay = "evening" });
             Assert.IsNull(evaled, "Evaled is not null");
+        }
+
+        [TestMethod]
+        public void TestBasicSwitchCaseTemplate()
+        {
+            var engine = TemplateEngine.FromFiles(GetExampleFilePath("switchcase.lg"));
+
+            string evaled = engine.EvaluateTemplate("greetInAWeek", new { day = "Saturday" });
+            Assert.IsTrue(evaled == "Happy Saturday!");
+
+            evaled = engine.EvaluateTemplate("greetInAWeek", new { day = "Monday" });
+            Assert.IsTrue(evaled == "Work Hard!");
         }
 
         [TestMethod]
@@ -142,6 +154,31 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             //var evaled = engine.EvaluateTemplate("ShowAlarmsWithMemberHumanize", new { alarms = alarms });
             //Assert.AreEqual("You have 2 alarms, 7 am at tomorrow and 8 pm at tomorrow", evaled);
 
+        }
+
+        [TestMethod]
+        public void TestCaseInsensitive()
+        {
+            var engine = TemplateEngine.FromFiles(GetExampleFilePath("CaseInsensitive.lg"));
+            var alarms = new[]
+            {
+                new
+                {
+                    time = "7 am",
+                    date = "tomorrow"
+                },
+                new
+                {
+                    time = "8 pm",
+                    date = "tomorrow"
+                }
+            };
+
+            var evaled = engine.EvaluateTemplate("ShowAlarms", new { alarms = alarms });
+            Assert.AreEqual("You have two alarms", evaled);
+
+            evaled = engine.EvaluateTemplate("greetInAWeek", new { day = "Saturday" });
+            Assert.AreEqual("Happy Saturday!", evaled);
         }
 
         [TestMethod]
