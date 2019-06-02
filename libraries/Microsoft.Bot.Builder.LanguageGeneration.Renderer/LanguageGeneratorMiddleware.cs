@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public ILanguageGenerator LanguageGenerator { get; set; }
 
-        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default)
+        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
         {
             turnContext.TurnState.Add<ILanguageGenerator>(this.LanguageGenerator);
             await next(cancellationToken).ConfigureAwait(false);
