@@ -99,5 +99,11 @@ namespace Microsoft.Bot.Builder
         {
             Add(typeof(T).FullName, value);
         }
+
+        public void Set<T>(T value)
+            where T : class
+        {
+            this[typeof(T).FullName] = value;
+        }
     }
 }

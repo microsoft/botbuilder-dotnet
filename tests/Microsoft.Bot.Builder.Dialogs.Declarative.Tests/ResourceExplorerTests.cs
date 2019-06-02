@@ -71,9 +71,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
                 TaskCompletionSource<bool> changeFired = new TaskCompletionSource<bool>();
 
-                explorer.Changed += (paths) =>
+                explorer.Changed += (resources) =>
                 {
-                    if (paths.Any(p => Path.GetFileName(p) == "foo.dialog"))
+                    if (resources.Any(resource => resource.Id == "foo.dialog"))
                     {
                         changeFired.SetResult(true);
                     }
@@ -98,9 +98,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
                 TaskCompletionSource<bool> changeFired = new TaskCompletionSource<bool>();
 
-                explorer.Changed += (paths) =>
+                explorer.Changed += (resources) =>
                 {
-                    if (paths.Any(p => Path.GetFileName(p) == "foo.dialog"))
+                    if (resources.Any(resource => resource.Id == "foo.dialog"))
                     {
                         changeFired.SetResult(true);
                     }
@@ -125,9 +125,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
                 TaskCompletionSource<bool> changeFired = new TaskCompletionSource<bool>();
 
-                explorer.Changed += (paths) =>
+                explorer.Changed += (resources) =>
                 {
-                    if (paths.Any(p => Path.GetFileName(p) == "foo.dialog"))
+                    if (resources.Any(resource => resource.Id == "foo.dialog"))
                     {
                         changeFired.SetResult(true);
                     }

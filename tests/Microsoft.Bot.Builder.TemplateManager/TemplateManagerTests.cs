@@ -3,7 +3,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.LanguageGeneration.Renderer;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

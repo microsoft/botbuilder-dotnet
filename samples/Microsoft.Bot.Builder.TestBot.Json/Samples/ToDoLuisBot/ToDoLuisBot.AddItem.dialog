@@ -1,115 +1,116 @@
 {
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
-  "steps": [
-    {
-      "$type": "Microsoft.SaveEntity",
-      "entity": "promptContentML",
-      "property": "dialog.item"
-    },
-    {
-      "$type": "Microsoft.SaveEntity",
-      "entity": "ListType",
-      "property": "dialog.listName"
-    },
-    {
-      "$type": "Microsoft.IfCondition",
-      "condition": "dialog.listName != null && dialog.listName != \"shopping\" && dialog.listName != \"grocery\" && dialog.listName != \"todo\"",
-      "steps": [
+    "generator": "ToDoLuisBot.lg",
+    "steps": [
         {
-          "$type": "Microsoft.SendActivity",
-          "activity": "The list name must be shopping, grocery or todo."
+            "$type": "Microsoft.SaveEntity",
+            "entity": "promptContentML",
+            "property": "dialog.item"
         },
         {
-          "$type": "Microsoft.EndDialog"
-        }
-      ]
-    },
-    {
-      "$type": "Microsoft.IfCondition",
-      "condition": "user.lists == null",
-      "steps": [
+            "$type": "Microsoft.SaveEntity",
+            "entity": "ListType",
+            "property": "dialog.listName"
+        },
         {
-          "$type": "Microsoft.InitProperty",
-          "property": "user.lists",
-          "type": "object"
-        }
-      ]
-    },
-    {
-      "$type": "Microsoft.IfCondition",
-      "condition": "dialog.listName == null",
-      "steps": [
+            "$type": "Microsoft.IfCondition",
+            "condition": "dialog.listName != null && dialog.listName != \"shopping\" && dialog.listName != \"grocery\" && dialog.listName != \"todo\"",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "The list name must be shopping, grocery or todo."
+                },
+                {
+                    "$type": "Microsoft.EndDialog"
+                }
+            ]
+        },
         {
-          "$type": "Microsoft.ChoiceInput",
-          "property": "dialog.listName",
-          "choices": [
-            {
-              "value": "shopping",
-              "synonyms": [
-                "1",
-                "first",
-                "shopping",
-                "first one"
-              ]
-            },
-            {
-              "value": "grocery",
-              "synonyms": [
-                "2",
-                "second",
-                "grocery",
-                "second one"
-              ]
-            },
-            {
-              "value": "todo",
-              "synonyms": [
-                "3",
-                "third",
-                "todo",
-                "third one",
-                "to do"
-              ]
-            }
-          ],
-          "prompt": "Which list do you want to expand?",
-          "style": "SuggestedAction",
-          "alwaysPrompt": true
-        }
-      ]
-    },
-    {
-      "$type": "Microsoft.IfCondition",
-      "condition": "dialog.item == null",
-      "steps": [
+            "$type": "Microsoft.IfCondition",
+            "condition": "user.lists == null",
+            "steps": [
+                {
+                    "$type": "Microsoft.InitProperty",
+                    "property": "user.lists",
+                    "type": "object"
+                }
+            ]
+        },
         {
-          "$type": "Microsoft.TextInput",
-          "prompt": "Please enter the title of your item.",
-          "property": "dialog.item"
-        }
-      ]
-    },
-    {
-      "$type": "Microsoft.IfCondition",
-      "condition": "(dialog.listName == \"shopping\" && user.lists.shopping == null) || (dialog.listName == \"grocery\" && user.lists.grocery == null) || (dialog.listName == \"todo\" && user.lists.todo == null)",
-      "steps": [
+            "$type": "Microsoft.IfCondition",
+            "condition": "dialog.listName == null",
+            "steps": [
+                {
+                    "$type": "Microsoft.ChoiceInput",
+                    "property": "dialog.listName",
+                    "choices": [
+                        {
+                            "value": "shopping",
+                            "synonyms": [
+                                "1",
+                                "first",
+                                "shopping",
+                                "first one"
+                            ]
+                        },
+                        {
+                            "value": "grocery",
+                            "synonyms": [
+                                "2",
+                                "second",
+                                "grocery",
+                                "second one"
+                            ]
+                        },
+                        {
+                            "value": "todo",
+                            "synonyms": [
+                                "3",
+                                "third",
+                                "todo",
+                                "third one",
+                                "to do"
+                            ]
+                        }
+                    ],
+                    "prompt": "Which list do you want to expand?",
+                    "style": "SuggestedAction",
+                    "alwaysPrompt": true
+                }
+            ]
+        },
         {
-          "$type": "Microsoft.InitProperty",
-          "property": "user.lists.{dialog.listName}",
-          "type": "array"
+            "$type": "Microsoft.IfCondition",
+            "condition": "dialog.item == null",
+            "steps": [
+                {
+                    "$type": "Microsoft.TextInput",
+                    "prompt": "Please enter the title of your item.",
+                    "property": "dialog.item"
+                }
+            ]
+        },
+        {
+            "$type": "Microsoft.IfCondition",
+            "condition": "(dialog.listName == \"shopping\" && user.lists.shopping == null) || (dialog.listName == \"grocery\" && user.lists.grocery == null) || (dialog.listName == \"todo\" && user.lists.todo == null)",
+            "steps": [
+                {
+                    "$type": "Microsoft.InitProperty",
+                    "property": "user.lists.{dialog.listName}",
+                    "type": "array"
+                }
+            ]
+        },
+        {
+            "$type": "Microsoft.EditArray",
+            "changeType": "Push",
+            "arrayProperty": "user.lists.{dialog.listName}",
+            "itemProperty": "dialog.item"
+        },
+        {
+            "$type": "Microsoft.SendActivity",
+            "activity": "Successfully added {dialog.item} to {dialog.listName} list."
         }
-      ]
-    },
-    {
-      "$type": "Microsoft.EditArray",
-      "changeType": "Push",
-      "arrayProperty": "user.lists.{dialog.listName}",
-      "itemProperty": "dialog.item"
-    },
-    {
-      "$type": "Microsoft.SendActivity",
-      "activity": "Successfully added {dialog.item} to {dialog.listName} list."
-    }
-  ]
+    ]
 }
