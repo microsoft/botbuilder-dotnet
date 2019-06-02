@@ -30,9 +30,21 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns></returns>
         public static BotAdapter UseLanguageGeneration(this BotAdapter botAdapter, ResourceExplorer resourceExplorer, string defaultLg = null, IMessageActivityGenerator messageGenerator = null)
         {
+            if (defaultLg == null)
+            {
+                defaultLg = "main.lg";
+            }
             TypeFactory.Register("DefaultLanguageGenerator", typeof(ResourceMultiLanguageGenerator), new CustomLGLoader());
             botAdapter.Use(new RegisterClassMiddleware<LanguageGeneratorManager>(new LanguageGeneratorManager(resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer)))));
-            botAdapter.Use(new LanguageGeneratorMiddleware(new ResourceMultiLanguageGenerator(defaultLg ?? "main.lg")));
+
+            if (resourceExplorer.GetResource(defaultLg) == null)
+            {
+                botAdapter.Use(new LanguageGeneratorMiddleware(new TemplateEngineLanguageGenerator("")));
+            }
+            else
+            {
+                botAdapter.Use(new LanguageGeneratorMiddleware(new ResourceMultiLanguageGenerator(defaultLg)));
+            }
             botAdapter.Use(new RegisterClassMiddleware<IMessageActivityGenerator>(messageGenerator ?? new TextMessageActivityGenerator()));
             return botAdapter;
         }
