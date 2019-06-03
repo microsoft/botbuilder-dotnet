@@ -57,6 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                         new InterfaceConverter<IRule>(refResolver, registry, paths),
                         new InterfaceConverter<IStorage>(refResolver, registry, paths),
                         new InterfaceConverter<IRecognizer>(refResolver, registry, paths),
+                        new LanguageGeneratorConverter(refResolver, registry, paths),
                         new ExpressionConverter(),
                         new ActivityConverter(),
                         new ActivityTemplateConverter()

@@ -1,17 +1,18 @@
 {
-  "$schema": "../../app.schema",
-  "$type": "Microsoft.AdaptiveDialog",
-  "steps": [
-    {
-      "$type": "Microsoft.SendActivity",
-      "activity": "Why did the chicken cross the road?"
-    },
-    {
-      "$type": "Microsoft.EndTurn"
-    },
-    {
-      "$type": "Microsoft.SendActivity",
-      "activity": "To get to the other side"
-    }
-  ]
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "generator": "ExternalLanguage.main.lg",
+    "steps": [
+        {
+            "$type": "Microsoft.SendActivity",
+            "activity": "Why did the chicken cross the road?"
+        },
+        {
+            "$type": "Microsoft.EndTurn"
+        },
+        {
+            "$type": "Microsoft.SendActivity",
+            "activity": "To get to the other side"
+        }
+    ]
 }
