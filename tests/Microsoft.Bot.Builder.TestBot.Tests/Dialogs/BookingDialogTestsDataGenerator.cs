@@ -2,25 +2,18 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using Microsoft.BotBuilderSamples.Tests.Framework.XUnit;
-using Xunit;
-using Xunit.Sdk;
 
 namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 {
     [SuppressMessage("Microsoft.StyleCop.CSharp.OrderingRules", "SA1118:ParameterMustNotSpanMultipleLines", Justification = "Ignoring to make code more readable")]
-    public class BookingDialogTestsDataGenerator : IEnumerable<object[]>
+    public static class BookingDialogTestsDataGenerator
     {
-        private readonly List<object[]> _data;
-
-        public BookingDialogTestsDataGenerator()
+        public static IEnumerable<object[]> BookingFlows()
         {
-            _data = new List<object[]>();
-            AddTestCase(
+            yield return BuildTestDataItem(
                 "Full flow",
                 new BookingDetails(),
                 new[,]
@@ -31,7 +24,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     { "tomorrow", $"Please confirm, I have you traveling to: Seattle from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
                     { "yes", "I have you booked to Seattle from New York on tomorrow" },
                 });
-            AddTestCase(
+            yield return BuildTestDataItem(
                 "Full flow with 'no' at confirmation",
                 new BookingDetails(),
                 new[,]
@@ -42,7 +35,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     { "tomorrow", $"Please confirm, I have you traveling to: Seattle from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
                     { "no", "OK, we can do this later." },
                 });
-            AddTestCase(
+            yield return BuildTestDataItem(
                 "Destination given",
                 new BookingDetails
                 {
@@ -54,7 +47,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 {
                     { "hi", "Where are you traveling from?" },
                 });
-            AddTestCase(
+            yield return BuildTestDataItem(
                 "Destination and Origin given",
                 new BookingDetails
                 {
@@ -66,7 +59,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 {
                     { "hi", "When would you like to travel?" },
                 });
-            AddTestCase(
+            yield return BuildTestDataItem(
                 "All booking details given for today",
                 new BookingDetails
                 {
@@ -79,7 +72,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     { "hi", $"Please confirm, I have you traveling to: Seattle from: Bahamas on: {DateTime.UtcNow:yyyy-MM-dd} (1) Yes or (2) No" },
                     { "yes", "I have you booked to Seattle from Bahamas on today" },
                 });
-            AddTestCase(
+            yield return BuildTestDataItem(
                 "All booking details given for tomorrow",
                 new BookingDetails
                 {
@@ -94,11 +87,52 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 });
         }
 
-        public IEnumerator<object[]> GetEnumerator() => _data.GetEnumerator();
+        public static IEnumerable<object[]> CancelFlows()
+        {
+            yield return BuildTestDataItem(
+                "Cancel on origin prompt",
+                new BookingDetails(),
+                new[,]
+                {
+                    { "hi", "Where would you like to travel to?" },
+                    { "cancel", "Cancelling" },
+                });
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+            yield return BuildTestDataItem(
+                "Cancel on destination prompt",
+                new BookingDetails(),
+                new[,]
+                {
+                    { "hi", "Where would you like to travel to?" },
+                    { "Seattle", "Where are you traveling from?" },
+                    { "cancel", "Cancelling" },
+                });
 
-        private void AddTestCase(string testCaseName, BookingDetails inputBookingInfo, string[,] utterancesAndReplies)
+            yield return BuildTestDataItem(
+                "Cancel on date prompt",
+                new BookingDetails(),
+                new[,]
+                {
+                    { "hi", "Where would you like to travel to?" },
+                    { "Seattle", "Where are you traveling from?" },
+                    { "New York", "When would you like to travel?" },
+                    { "cancel", "Cancelling" },
+                });
+
+            yield return BuildTestDataItem(
+                "Cancel on confirm prompt",
+                new BookingDetails(),
+                new[,]
+                {
+                    { "hi", "Where would you like to travel to?" },
+                    { "Seattle", "Where are you traveling from?" },
+                    { "New York", "When would you like to travel?" },
+                    { "tomorrow", $"Please confirm, I have you traveling to: Seattle from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
+                    { "cancel", "Cancelling" },
+                });
+        }
+
+        private static object[] BuildTestDataItem(string testCaseName, BookingDetails inputBookingInfo, string[,] utterancesAndReplies)
         {
             var testData = new BookingDialogTestData
             {
@@ -106,7 +140,8 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 BookingDetails = inputBookingInfo,
                 UtterancesAndReplies = utterancesAndReplies,
             };
-            _data.Add(new object[] { new TestDataObject(testData) });
+            var item = new object[] { new TestDataObject(testData) };
+            return item;
         }
     }
 }

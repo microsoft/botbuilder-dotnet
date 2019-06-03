@@ -31,7 +31,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         }
 
         [Theory]
-        [ClassData(typeof(BookingDialogTestsDataGenerator))]
+        [MemberData(nameof(BookingDialogTestsDataGenerator.BookingFlows), MemberType = typeof(BookingDialogTestsDataGenerator))]
         public async Task DialogFlowUseCases(TestDataObject testData)
         {
             // Arrange
@@ -48,10 +48,24 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             }
         }
 
-        [Fact]
-        public void ShouldBeAbleToCancelAtAnyTime()
+        [Theory]
+        [MemberData(nameof(BookingDialogTestsDataGenerator.CancelFlows), MemberType = typeof(BookingDialogTestsDataGenerator))]
+        public async Task ShouldBeAbleToCancelAtAnyTime(TestDataObject testData)
         {
-            // TODO
+            // Arrange
+            var bookingTestData = testData.GetObject<BookingDialogTestData>();
+            var sut = new BookingDialog();
+            var testClient = new DialogTestClient(sut, Output, bookingTestData.BookingDetails);
+
+            // Act/Assert
+            Output.WriteLine($"Use Case: {bookingTestData.TestCaseName}");
+            for (var i = 0; i < bookingTestData.UtterancesAndReplies.GetLength(0); i++)
+            {
+                var reply = await testClient.SendAsync<IMessageActivity>(bookingTestData.UtterancesAndReplies[i, 0]);
+                Assert.Equal(bookingTestData.UtterancesAndReplies[i, 1], reply.Text);
+            }
+
+            Assert.Equal(DialogTurnStatus.Cancelled, testClient.DialogTurnResult.Status);
         }
     }
 }
