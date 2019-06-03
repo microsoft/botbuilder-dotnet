@@ -153,7 +153,7 @@ INVALID_ESCAPE
   ;
 
 EXPRESSION
-  : '@'? '{' ~[\r\n{}]* '}'  { ignoreWS = false; expectKeywords = false;}
+  : '@'? '{' (ESCAPE_CHARACTER | ~[\\\t\r\n{}])* '}'  { ignoreWS = false; expectKeywords = false;}
   ;
 
 TEMPLATE_REF

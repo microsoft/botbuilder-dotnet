@@ -2868,6 +2868,29 @@ namespace Microsoft.Bot.Builder.Expressions
                 new ExpressionEvaluator(ExpressionType.Foreach, Foreach, ReturnType.Object, ValidateForeach),
                 new ExpressionEvaluator(ExpressionType.Coalesce, Apply(args => Coalesce(args.ToArray<object>())), ReturnType.Object, ValidateAtLeastOne),
                 new ExpressionEvaluator(ExpressionType.XPath, ApplyWithError(args => XPath(args[0], args[1])), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
+
+                // Regex expression
+                new ExpressionEvaluator(
+                    ExpressionType.IsMatch,
+                    ApplyWithError(args =>
+                        {
+                            var value = false;
+                            string error = null;
+
+                            if (string.IsNullOrEmpty(args[0]))
+                            {
+                                value = false;
+                                error = "regular expression is empty.";
+                            }
+                            else
+                            {
+                                var regex = CommonRegex.CreateRegex(args[1]);
+                                value = regex.IsMatch(args[0]);
+                            }
+                            return (value, error);
+                        }),
+                    ReturnType.Boolean,
+                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String)),
             };
 
             var lookup = new Dictionary<string, ExpressionEvaluator>();

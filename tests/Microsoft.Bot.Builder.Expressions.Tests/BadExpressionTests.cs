@@ -359,6 +359,13 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("items[3]"), // index out of range
             Test("items[one+0.5]"), // index is not integer
             # endregion
+            
+            # region Regex
+            Test("isMatch('^[a-z]+$')"),// should have 2 parameter
+            Test("isMatch('abC', one)"),// second param should be string
+            Test("isMatch(1, '^[a-z]+$')"), // first param should be string
+            Test("isMatch('abC', '^[a-z+$')"),// bad regular expression
+            # endregion
         };
 
         [DataTestMethod]

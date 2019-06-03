@@ -409,5 +409,19 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 "Hey DL :)" == evaled ||
                 "Hello DL :)" == evaled);
         }
+
+        [TestMethod]
+        public void TestRegex()
+        {
+            var engine = TemplateEngine.FromFiles(GetExampleFilePath("Regex.lg"));
+            var evaled = engine.EvaluateTemplate("wPhrase", "");
+            Assert.AreEqual(evaled, "Hi");
+
+            evaled = engine.EvaluateTemplate("wPhrase", new { name = "jack"});
+            Assert.AreEqual(evaled, "Hi jack");
+
+            evaled = engine.EvaluateTemplate("wPhrase", new { name = "morethanfive" });
+            Assert.AreEqual(evaled, "Hi");
+        }
     }
 }
