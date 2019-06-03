@@ -64,6 +64,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 if (turnResult.Status == DialogTurnStatus.Cancelled)
                 {
+                    await EndComponentAsync(outerDc, turnResult.Result, cancellationToken).ConfigureAwait(false);
                     return new DialogTurnResult(DialogTurnStatus.Cancelled, turnResult.Result);
                 }
 
@@ -92,6 +93,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 if (turnResult.Status == DialogTurnStatus.Cancelled)
                 {
+                    await EndComponentAsync(outerDc, turnResult.Result, cancellationToken).ConfigureAwait(false);
                     return new DialogTurnResult(DialogTurnStatus.Cancelled, turnResult.Result);
                 }
 
