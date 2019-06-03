@@ -8,17 +8,21 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.AI.Luis.Tests
 {
+    /// <inheritdoc />
     /// <summary>
-    /// This HttpClientHandler returns a hard coded response equivallent to a LUIS no-match-found result.
+    /// An HttpClientHandler that returns a hard coded response equivalent to a LUIS no-match-found result.
     /// </summary>
     public class EmptyLuisResponseClientHandler : HttpClientHandler
     {
         public string UserAgent { get; private set; }
 
+        public HttpRequestMessage RequestMessage { get; private set; }
+
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            // Grab the user-agent so we can examine it after the call completes.
+            // Capture the user-agent and the HttpRequestMessage so we can examine it after the call completes.
             UserAgent = request.Headers.UserAgent.ToString();
+            RequestMessage = request;
 
             return Task.FromResult(new HttpResponseMessage
             {
