@@ -8,7 +8,7 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.BotBuilderSamples
 {
-    public class CancelAndHelpDialog : ComponentDialog
+    public abstract class CancelAndHelpDialog : ComponentDialog
     {
         public CancelAndHelpDialog(string id)
             : base(id)

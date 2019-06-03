@@ -1,5 +1,5 @@
-﻿// // Copyright (c) Microsoft Corporation. All rights reserved.
-// // Licensed under the MIT License.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,20 +40,26 @@ namespace Microsoft.BotBuilderSamples.Tests.Framework
 
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                switch (results.Status)
+                DialogTurnResult = await dc.ContinueDialogAsync(cancellationToken);
+                switch (DialogTurnResult.Status)
                 {
                     case DialogTurnStatus.Empty:
-                        await dc.BeginDialogAsync(targetDialog.Id, initialDialogOptions, cancellationToken);
+                        DialogTurnResult = await dc.BeginDialogAsync(targetDialog.Id, initialDialogOptions, cancellationToken);
                         break;
                     case DialogTurnStatus.Complete:
                     {
-                        // TODO: Dialog has ended, figure out a way of asserting that this is the case.
+                        // TODO: Dialog has ended
                         break;
                     }
                 }
             };
         }
+
+        /// <summary>
+        /// Gets the latest <see cref="DialogTurnResult"/> for the dialog being tested.
+        /// </summary>
+        /// <value>A <see cref="DialogTurnResult"/> instance with the result of the last turn.</value>
+        public DialogTurnResult DialogTurnResult { get; private set; }
 
         public async Task<T> SendAsync<T>(string text, CancellationToken cancellationToken = default)
         {

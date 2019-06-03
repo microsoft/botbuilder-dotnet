@@ -20,7 +20,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
     /// </summary>
     public class MainDialogTestFlowTests : DialogTestsBase
     {
-        [Fact]
+        [Fact(Skip = "Ignoring this one, this is just a sample on the old way of writing tests")]
         public async Task WholeEnchilada()
         {
             var intentsAndDialogs = new IntentDialogMap

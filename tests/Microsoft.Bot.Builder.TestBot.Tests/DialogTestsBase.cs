@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit.Abstractions;
 
-namespace Microsoft.BotBuilderSamples.Tests.Framework
+namespace Microsoft.BotBuilderSamples.Tests
 {
     /// <summary>
     /// A base class with helper methods and properties to test dialogs in isolation.
