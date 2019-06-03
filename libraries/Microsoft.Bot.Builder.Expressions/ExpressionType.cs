@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+
 namespace Microsoft.Bot.Builder.Expressions
 {
     /// NOTE: If you add a built-in type here, you also need to make sure it can be evaluated as well either by adding to BuiltInFunctions or when you construct the expression.
@@ -20,6 +22,7 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string Mod = "%";
         public const string Average = "average";
         public const string Sum = "sum";
+        public const string Range = "range";
 
         // Comparisons
         public const string LessThan = "<";
@@ -91,6 +94,17 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string Int = "int";
         public const string String = "string";
         public const string Bool = "bool";
+        public const string Array = "array";
+        public const string Binary = "binary";
+        public const string Base64 = "base64";
+        public const string Base64ToBinary = "base64ToBinary";
+        public const string Base64ToString = "base64ToString";
+        public const string DataUri = "dataUri";
+        public const string DataUriToBinary = "dataUriToBinary";
+        public const string DataUriToString = "dataUriToString";
+        public const string UriComponent = "uriComponent";
+        public const string DecodeUriComponent = "decodeUriComponent";
+        public const string Xml = "xml";
 
         // Memory
         public const string Accessor = "Accessor";

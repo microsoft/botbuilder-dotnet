@@ -284,9 +284,20 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("bool('hi')", true),
             Test("createArray('h', 'e', 'l', 'l', 'o')", new List<object>{"h", "e", "l", "l", "o" }),
             Test("createArray(1, bool(0), string(bool(1)), float('10'))", new List<object>{1, true, "true", 10.0f }),
-            # endregion
+            Test("array('hello')",new List<object>{ "hello" }),
+            Test("binary(hello)", "0110100001100101011011000110110001101111"),
+            Test("base64(hello)", "aGVsbG8="),
+            Test("base64ToBinary(base64(hello))", "0110000101000111010101100111001101100010010001110011100000111101"),
+            Test("base64ToString(base64(hello))", "hello"),
+            Test("dataUri(hello)", "data:text/plain;charset=utf-8;base64,aGVsbG8="),
+            Test("dataUriToBinary(base64(hello))","0110000101000111010101100111001101100010010001110011100000111101"),
+            Test("dataUriToString(dataUri(hello))","hello"),
+            Test("xml('{\"person\": {\"name\": \"Sophia Owen\", \"city\": \"Seattle\"}}')", "<root type=\"object\">\r\n  <person type=\"object\">\r\n    <name type=\"string\">Sophia Owen</name>\r\n    <city type=\"string\">Seattle</city>\r\n  </person>\r\n</root>"),
+            Test("uriComponent('http://contoso.com')", "http%3A%2F%2Fcontoso.com"),
+            Test("decodeUriComponent('http%3A%2F%2Fcontoso.com')", "http://contoso.com"),
+            #endregion
 
-            # region  Math functions test
+            #region  Math functions test
             Test("add(1, 2, 3)", 6),
             Test("add(1, 2)", 3),
             Test("add(1.0, 2.0)", 3.0),
@@ -310,6 +321,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("mod(5,2)", 1),
             Test("rand(1, 2)", 1),
             Test("rand(2, 3)", 2),
+            Test("range(1,4)",new[]{1,2,3,4}),
+            Test("range(-1,3)",new[]{-1,0,1}),
             # endregion
 
             # region  Date and time function test
