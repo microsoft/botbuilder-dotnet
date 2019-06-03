@@ -232,7 +232,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 async (step, ct) =>
                 {
-                    await step.Context. SendActivityAsync("Child started.");
+                    await step.Context.SendActivityAsync("Child started.");
                     return await step.BeginDialogAsync("parentDialog", options);
                 },
                 async (step, ct) =>
