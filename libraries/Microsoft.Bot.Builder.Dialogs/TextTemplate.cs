@@ -22,23 +22,20 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         public string Template { get; set; }
 
-        public async Task<string> BindToData(ITurnContext context, object data)
+        public async Task<string> BindToData(ITurnContext turnContext, object data)
         {
             if (string.IsNullOrEmpty(this.Template))
             {
                 throw new ArgumentNullException(nameof(this.Template));
             }
 
-            ILanguageGenerator languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+            ILanguageGenerator languageGenerator = turnContext.TurnState.Get<ILanguageGenerator>();
             if (languageGenerator != null)
             {
                 var result = await languageGenerator.Generate(
-                    context.Activity.Locale,
-                    inlineTemplate: Template,
-                    id: null,
-                    data: data,
-                    tags: null,
-                    types: null).ConfigureAwait(false);
+                    turnContext,
+                    template: Template,
+                    data: data).ConfigureAwait(false);
                 return result;
             }
 

@@ -17,7 +17,6 @@ using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Expressions.Parser;
-using Microsoft.Bot.Builder.LanguageGeneration.Renderer;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -39,8 +38,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
         private TestFlow CreateFlow(AdaptiveDialog ruleDialog)
         {
-            var explorer = new ResourceExplorer();
-            var lg = new LGLanguageGenerator(explorer);
+            var resourceExplorer = new ResourceExplorer();
             var storage = new MemoryStorage();
             var userState = new UserState(storage);
             var conversationState = new ConversationState(storage);
@@ -49,8 +47,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             adapter
                 .UseStorage(storage)
                 .UseState(userState, conversationState)
-                .UseResourceExplorer(explorer)
-                .UseLanguageGenerator(lg)
+                .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             var convoStateProperty = conversationState.CreateProperty<Dictionary<string, object>>("conversation");

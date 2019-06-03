@@ -15,6 +15,18 @@
             "endpoint": "http://localhost:54084/api/messages",
             "id": "189",
             "name": "VS Code (Port:54084)"
+        },
+        {
+            "type": "endpoint",
+            "endpoint": "http://localhost:3979/api/messages",
+            "name": "http://localhost:3979/api/messages",
+            "id": "98"
+        },
+        {
+            "type": "endpoint",
+            "endpoint": "http://localhost:3978/api/messages",
+            "name": "http://localhost:3978/api/messages",
+            "id": "161"
         }
     ],
     "padlock": "",
