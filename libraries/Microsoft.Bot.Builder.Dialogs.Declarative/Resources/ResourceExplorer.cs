@@ -16,7 +16,7 @@ using NuGet.Versioning;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 {
-    public delegate void ResourceChangedEventHandler(string[] paths);
+    public delegate void ResourceChangedEventHandler(IResource[] resources);
 
     /// <summary>
     /// Class which gives standard access to file based resources
@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private List<IResourceProvider> resourceProviders = new List<IResourceProvider>();
 
         private CancellationTokenSource CancelReloadToken = new CancellationTokenSource();
-        private ConcurrentBag<string> changedPaths = new ConcurrentBag<string>();
+        private ConcurrentBag<IResource> changedResources = new ConcurrentBag<IResource>();
 
         public ResourceExplorer()
         {
@@ -49,13 +49,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             return this;
         }
 
-        private void ResourceProvider_Changed(string[] ids)
+        private void ResourceProvider_Changed(IResource[] resources)
         {
             if (this.Changed != null)
             {
-                foreach (var id in ids)
+                foreach (var resource in resources)
                 {
-                    changedPaths.Add(id);
+                    changedResources.Add(resource);
                 }
 
                 lock (CancelReloadToken)
@@ -67,8 +67,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                         {
                             if (t.IsCanceled)
                                 return;
-                            var changed = changedPaths.ToArray();
-                            changedPaths = new ConcurrentBag<string>();
+                            var changed = changedResources.ToArray();
+                            changedResources = new ConcurrentBag<IResource>();
                             this.Changed(changed);
                         }).ContinueWith(t => t.Status);
                 }

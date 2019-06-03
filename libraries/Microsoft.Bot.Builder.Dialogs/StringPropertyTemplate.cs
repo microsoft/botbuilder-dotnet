@@ -30,18 +30,15 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public string Property { get; set; }
 
-        public async Task<string> BindToData(ITurnContext context, object data)
+        public async Task<string> BindToData(ITurnContext turnContext, object data)
         {
-            ILanguageGenerator languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+            ILanguageGenerator languageGenerator = turnContext.TurnState.Get<ILanguageGenerator>();
             if (languageGenerator != null)
             {
                 var result = await languageGenerator.Generate(
-                    context.Activity.Locale,
-                    inlineTemplate: null,
-                    id: this.Property,
-                    data: data,
-                    tags: null,
-                    types: this.Types.ToArray()).ConfigureAwait(false);
+                    turnContext,
+                    template: $"[{this.Property}]",
+                    data: data).ConfigureAwait(false);
                 return result;
             }
 

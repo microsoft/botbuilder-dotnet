@@ -4,7 +4,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.LanguageGeneration.Renderer;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
@@ -59,19 +58,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     }),
             });
 
-            var botResourceManager = new ResourceExplorer();
-            var lg = new LGLanguageGenerator(botResourceManager);
+            var resourceExplorer = new ResourceExplorer();
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                .Use(new RegisterClassMiddleware<ResourceExplorer>(botResourceManager))
-                .Use(new RegisterClassMiddleware<ILanguageGenerator>(lg))
+                .Use(new RegisterClassMiddleware<ResourceExplorer>(resourceExplorer))
                 .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
-                .Use(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)))
+                .UseLanguageGeneration(resourceExplorer)
                 .Use(new RegisterClassMiddleware<IConfiguration>(this.Configuration))
                 .Use(new AutoSaveStateMiddleware(convoState, userState))
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
-            adapter.Locale = locale;
+            // adapter.Locale = locale;
 
             var userStateProperty = userState.CreateProperty<Dictionary<string, object>>("user");
             var convoStateProperty = convoState.CreateProperty<Dictionary<string, object>>("conversation");
@@ -80,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var dialogs = new DialogSet(dialogState);
 
 
-            return new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            return new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
             {
                 await planningDialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
             });

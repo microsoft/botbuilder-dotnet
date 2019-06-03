@@ -82,11 +82,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        public override List<string> VisitConditionalBody([NotNull] LGFileParser.ConditionalBodyContext context)
+        public override List<string> VisitIfElseBody([NotNull] LGFileParser.IfElseBodyContext context)
         {
             var result = new List<string>();
 
-            var ifRules = context.conditionalTemplateBody().ifConditionRule();
+            var ifRules = context.ifElseTemplateBody().ifConditionRule();
             foreach (var ifRule in ifRules)
             {
                 var expression = ifRule.ifCondition().EXPRESSION(0);
@@ -98,6 +98,26 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 if (ifRule.normalTemplateBody() != null)
                 {
                     result.AddRange(Visit(ifRule.normalTemplateBody()));
+                }
+            }
+
+            return result;
+        }
+
+        public override List<string> VisitSwitchCaseBody([NotNull] LGFileParser.SwitchCaseBodyContext context)
+        {
+            var result = new List<string>();
+            var switchCaseNodes = context.switchCaseTemplateBody().switchCaseRule();
+            foreach (var iterNode in switchCaseNodes)
+            {
+                var expression = iterNode.switchCaseStat().EXPRESSION();
+                if (expression.Length > 0)
+                {
+                    result.AddRange(AnalyzeExpression(expression[0].GetText()));
+                }
+                if (iterNode.normalTemplateBody() != null)
+                {
+                    result.AddRange(Visit(iterNode.normalTemplateBody()));
                 }
             }
 

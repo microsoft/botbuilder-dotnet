@@ -36,9 +36,10 @@ parameters
     ;
 
 templateBody
-	: normalTemplateBody						#normalBody
-	| conditionalTemplateBody					#conditionalBody
-	;
+    : normalTemplateBody                        #normalBody
+    | ifElseTemplateBody                        #ifElseBody
+    | switchCaseTemplateBody                    #switchCaseBody
+    ;
 
 normalTemplateBody
     : (normalTemplateString newline)+
@@ -48,7 +49,7 @@ normalTemplateString
 	: DASH (WS|TEXT|EXPRESSION|TEMPLATE_REF|TEXT_SEPARATOR|MULTI_LINE_TEXT|ESCAPE_CHARACTER|INVALID_ESCAPE)*
 	;
 
-conditionalTemplateBody
+ifElseTemplateBody
     : ifConditionRule+
     ;
 
@@ -58,4 +59,16 @@ ifConditionRule
 
 ifCondition
     : DASH (IF|ELSE|ELSEIF) (WS|TEXT|EXPRESSION)*
+    ;
+
+    switchCaseTemplateBody
+    : switchCaseRule+
+    ;
+
+switchCaseRule
+    : switchCaseStat newline normalTemplateBody?
+    ;
+
+switchCaseStat
+    : DASH (SWITCH|CASE|DEFAULT) (WS|TEXT|EXPRESSION)*
     ;
