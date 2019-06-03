@@ -1554,10 +1554,13 @@ namespace Microsoft.Bot.Builder.Expressions
                             string error = null;
                             double unixTimestamp;
                             dynamic timestamp = args[0];
-                            if (double.TryParse(args[0].ToString(), out unixTimestamp))
+                            if (Extensions.IsNumber(timestamp))
                             {
-                                var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-                                timestamp = dateTime.AddSeconds(unixTimestamp);
+                                if (double.TryParse(args[0].ToString(), out unixTimestamp))
+                                {
+                                    var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                                    timestamp = dateTime.AddSeconds(unixTimestamp);
+                                }
                             }
 
                             (result, error) = ParseTimestamp((string) timestamp.ToString(), dt => dt.ToString(args.Count() == 2 ? args[1] : DefaultDateTimeFormat));
