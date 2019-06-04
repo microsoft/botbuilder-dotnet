@@ -286,6 +286,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("createArray(1, bool(0), string(bool(1)), float('10'))", new List<object>{1, true, "true", 10.0f }),
             Test("array('hello')",new List<object>{ "hello" }),
             Test("binary(hello)", "0110100001100101011011000110110001101111"),
+            Test("length(binary(hello))", 40),
             Test("base64(hello)", "aGVsbG8="),
             Test("base64ToBinary(base64(hello))", "0110000101000111010101100111001101100010010001110011100000111101"),
             Test("base64ToString(base64(hello))", "hello"),
