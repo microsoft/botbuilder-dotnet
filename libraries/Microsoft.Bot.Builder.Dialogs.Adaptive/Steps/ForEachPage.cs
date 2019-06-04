@@ -18,15 +18,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     /// <summary>
     /// Executes a set of steps once for each item in an in-memory list or collection.
     /// </summary>
-    public class Foreach : DialogCommand, IDialogDependencies
+    public class ForeachPage : DialogCommand, IDialogDependencies
     {
         // Expression used to compute the list that should be enumerated.
         [JsonProperty("ListProperty")]
         public string ListProperty { get; set; }
 
-        // In-memory property that will contain the current items index. Defaults to `dialog.index`.
-        [JsonProperty("IndexProperty")]
-        public string IndexProperty { get; set; } = "dialog.index";
+        [JsonProperty("PageSize")]
+        public int PageSize { get; set; } = 10;
 
         // In-memory property that will contain the current items value. Defaults to `dialog.value`.
         [JsonProperty("ValueProperty")]
@@ -37,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         public List<IDialog> Steps { get; set; } = new List<IDialog>();
 
         [JsonConstructor]
-        public Foreach([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
+        public ForeachPage([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()
         {
             this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
@@ -55,25 +54,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             {
                 string listProperty = null;
                 int offset = 0;
-                if (options != null && options is ForeachOptions)
+                int pageSize = 0;
+                if (options != null && options is ForeachPageOptions)
                 {
-                    var opt = options as ForeachOptions;
+                    var opt = options as ForeachPageOptions;
                     listProperty = opt.list;
                     offset = opt.offset;
+                    pageSize = opt.pageSize;
                 }
 
                 if (listProperty == null)
                 {
                     listProperty = await new TextTemplate(this.ListProperty).BindToData(dc.Context, dc.State).ConfigureAwait(false);
                 }
+                if (pageSize == 0)
+                {
+                    pageSize = this.PageSize;
+                }
 
                 var itemList = dc.State.GetValue(listProperty, new JArray());
-                var item = this.GetItem(itemList, offset);
+                var page = this.GetPage(itemList, offset, pageSize);
 
-                if (item != null)
+                if (page.Count() > 0)
                 {
-                    dc.State.SetValue(this.ValueProperty, item);
-                    dc.State.SetValue(this.IndexProperty, offset);
+                    dc.State.SetValue(this.ValueProperty, page);
                     var changes = new PlanChangeList()
                     {
                         ChangeType = PlanChangeTypes.DoSteps,
@@ -85,10 +89,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     {
                         DialogStack = new List<DialogInstance>(),
                         DialogId = this.Id,
-                        Options = new ForeachOptions()
+                        Options = new ForeachPageOptions()
                         {
                             list = listProperty,
-                            offset = offset + 1
+                            offset = offset + pageSize,
+                            pageSize = pageSize
                         }
                     });
                     planning.QueueChanges(changes);
@@ -102,22 +107,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             }
         }
 
-        private object GetItem(object list, int index)
+        private List<object> GetPage(object list, int index, int pageSize)
         {
-            JToken result = null;
+            List<object> page = new List<object>();
+            int end = index + pageSize;
             if (list != null && list.GetType() == typeof(JArray))
             {
-                if (index < JArray.FromObject(list).Count)
+                for (int i = index;  i < end && i < JArray.FromObject(list).Count; i++)
                 {
-                    result = JArray.FromObject(list)[index];
+                    page.Add(JArray.FromObject(list)[i]);
                 }
             }
             else if (list != null && list is JObject)
             {
-                result = ((JObject)list).SelectToken(index.ToString());
+                for (int i = index; i < end; i++)
+                {
+                    if (((JObject)list).SelectToken(i.ToString()).HasValues)
+                    {
+                        page.Add(((JObject)list).SelectToken(i.ToString()));
+                    }
+                }
             }
-           
-            return result;
+            return page;
         }
         protected override string OnComputeId()
         {
@@ -129,10 +140,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             return this.Steps;
         }
 
-        public class ForeachOptions
+        public class ForeachPageOptions
         {
             public string list { get; set; }
             public int offset { get; set; }
+            public int pageSize { get; set; }
         }
     }
 }
