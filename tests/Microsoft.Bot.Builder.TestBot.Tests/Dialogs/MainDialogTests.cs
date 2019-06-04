@@ -60,7 +60,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             luisMockConfig.Setup(x => x["LuisAPIHostName"]).Returns(luisApiHostName);
 
             var sut = new MainDialog(luisMockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _mockBookingDialog);
-            var testClient = new DialogTestClient(sut, Output);
+            var testClient = new DialogTestClient(sut, outputHelper: Output);
 
             // Act/Assert
             var reply = await testClient.SendAsync<IMessageActivity>("hi");
@@ -75,7 +75,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         {
             // Arrange
             var sut = new MainDialog(MockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _mockBookingDialog);
-            var testClient = new DialogTestClient(sut, Output);
+            var testClient = new DialogTestClient(sut, outputHelper: Output);
 
             // Act/Assert
             var reply = await testClient.SendAsync<IMessageActivity>("hi");
@@ -98,7 +98,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 });
 
             var sut = new MainDialog(MockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _mockBookingDialog);
-            var testClient = new DialogTestClient(sut, Output);
+            var testClient = new DialogTestClient(sut, outputHelper: Output);
 
             var reply = await testClient.SendAsync<IMessageActivity>("hi");
             Assert.Equal("What can I help you with today?", reply.Text);
