@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
 {
     /// <summary>
     /// A middleware to output incoming and outgoing activities as json strings to the console during
-    /// unit tests
+    /// unit tests.
     /// </summary>
     public class XUnitOutputMiddleware : IMiddleware
     {

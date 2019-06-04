@@ -7,13 +7,13 @@ using Xunit.Abstractions;
 namespace Microsoft.Bot.Builder.Testing.XUnit
 {
     /// <summary>
-    /// A wrapper class for test data that enables support for enumerating test cases in Test Explorer.
+    /// A wrapper class for XUnit test data that enables support for enumerating test cases in Test Explorer.
     /// </summary>
     /// <remarks>
     /// VS Test explorer only supports value types for data driven tests.
     /// This class implements <see cref="IXunitSerializable"/> and serializes complex types as json
-    /// so the test data can be enumerated and displayed into VS test explorer.
-    /// This also allows the developer to right click on a particular test case and run it individually.
+    /// so the test cases can be enumerated and displayed into VS test explorer.
+    /// This also allows the developer to right click on a particular test case on VS Test explorer and run it individually.
     /// </remarks>
     public class TestDataObject : IXunitSerializable
     {
@@ -48,8 +48,8 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
         /// <summary>
         /// Gets the test data object for the specified .Net type.
         /// </summary>
-        /// <typeparam name="T">The type of the object to returned.</typeparam>
-        /// <returns>The test object.</returns>
+        /// <typeparam name="T">The type of the object to be returned.</typeparam>
+        /// <returns>The test object instance.</returns>
         public T GetObject<T>()
         {
             return JsonConvert.DeserializeObject<T>(TestObject);

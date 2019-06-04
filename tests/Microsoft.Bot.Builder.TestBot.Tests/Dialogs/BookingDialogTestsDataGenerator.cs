@@ -5,16 +5,15 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Bot.Builder.Testing.XUnit;
-using Microsoft.BotBuilderSamples.Tests.Framework.XUnit;
 
 namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 {
     [SuppressMessage("Microsoft.StyleCop.CSharp.OrderingRules", "SA1118:ParameterMustNotSpanMultipleLines", Justification = "Ignoring to make code more readable")]
-    public static class BookingDialogTestsDataGenerator
+    public class BookingDialogTestsDataGenerator
     {
         public static IEnumerable<object[]> BookingFlows()
         {
-            yield return BuildTestDataItem(
+            yield return BuildTestCaseObject(
                 "Full flow",
                 new BookingDetails(),
                 new[,]
@@ -26,7 +25,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     { "yes", "I have you booked to Seattle from New York on tomorrow" },
                 });
 
-            yield return BuildTestDataItem(
+            yield return BuildTestCaseObject(
                 "Full flow with 'no' at confirmation",
                 new BookingDetails(),
                 new[,]
@@ -38,7 +37,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     { "no", "OK, we can do this later." },
                 });
 
-            yield return BuildTestDataItem(
+            yield return BuildTestCaseObject(
                 "Destination given",
                 new BookingDetails
                 {
@@ -51,7 +50,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     { "hi", "Where are you traveling from?" },
                 });
 
-            yield return BuildTestDataItem(
+            yield return BuildTestCaseObject(
                 "Destination and Origin given",
                 new BookingDetails
                 {
@@ -64,7 +63,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     { "hi", "When would you like to travel?" },
                 });
 
-            yield return BuildTestDataItem(
+            yield return BuildTestCaseObject(
                 "All booking details given for today",
                 new BookingDetails
                 {
@@ -78,7 +77,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     { "yes", "I have you booked to Seattle from Bahamas on today" },
                 });
 
-            yield return BuildTestDataItem(
+            yield return BuildTestCaseObject(
                 "All booking details given for tomorrow",
                 new BookingDetails
                 {
@@ -95,7 +94,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 
         public static IEnumerable<object[]> CancelFlows()
         {
-            yield return BuildTestDataItem(
+            yield return BuildTestCaseObject(
                 "Cancel on origin prompt",
                 new BookingDetails(),
                 new[,]
@@ -104,7 +103,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     { "cancel", "Cancelling" },
                 });
 
-            yield return BuildTestDataItem(
+            yield return BuildTestCaseObject(
                 "Cancel on destination prompt",
                 new BookingDetails(),
                 new[,]
@@ -114,7 +113,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     { "cancel", "Cancelling" },
                 });
 
-            yield return BuildTestDataItem(
+            yield return BuildTestCaseObject(
                 "Cancel on date prompt",
                 new BookingDetails(),
                 new[,]
@@ -125,7 +124,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     { "cancel", "Cancelling" },
                 });
 
-            yield return BuildTestDataItem(
+            yield return BuildTestCaseObject(
                 "Cancel on confirm prompt",
                 new BookingDetails(),
                 new[,]
@@ -138,11 +137,11 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 });
         }
 
-        private static object[] BuildTestDataItem(string testCaseName, BookingDetails inputBookingInfo, string[,] utterancesAndReplies)
+        private static object[] BuildTestCaseObject(string testCaseName, BookingDetails inputBookingInfo, string[,] utterancesAndReplies)
         {
-            var testData = new BookingDialogTestData
+            var testData = new BookingDialogTestCase
             {
-                TestCaseName = testCaseName,
+                Name = testCaseName,
                 BookingDetails = inputBookingInfo,
                 UtterancesAndReplies = utterancesAndReplies,
             };

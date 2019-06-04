@@ -6,8 +6,6 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Testing;
 using Microsoft.Bot.Builder.Testing.XUnit;
 using Microsoft.Bot.Schema;
-using Microsoft.BotBuilderSamples.Tests.Framework;
-using Microsoft.BotBuilderSamples.Tests.Framework.XUnit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -34,15 +32,16 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 
         [Theory]
         [MemberData(nameof(BookingDialogTestsDataGenerator.BookingFlows), MemberType = typeof(BookingDialogTestsDataGenerator))]
+        [MemberData(nameof(BookingDialogTestsDataGenerator.CancelFlows), MemberType = typeof(BookingDialogTestsDataGenerator))]
         public async Task DialogFlowUseCases(TestDataObject testData)
         {
             // Arrange
-            var bookingTestData = testData.GetObject<BookingDialogTestData>();
+            var bookingTestData = testData.GetObject<BookingDialogTestCase>();
             var sut = new BookingDialog();
             var testClient = new DialogTestClient(sut, Output, bookingTestData.BookingDetails);
 
             // Act/Assert
-            Output.WriteLine($"Use Case: {bookingTestData.TestCaseName}");
+            Output.WriteLine($"Test Case: {bookingTestData.Name}");
             for (var i = 0; i < bookingTestData.UtterancesAndReplies.GetLength(0); i++)
             {
                 var reply = await testClient.SendAsync<IMessageActivity>(bookingTestData.UtterancesAndReplies[i, 0]);
@@ -55,12 +54,12 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         public async Task ShouldBeAbleToCancelAtAnyTime(TestDataObject testData)
         {
             // Arrange
-            var bookingTestData = testData.GetObject<BookingDialogTestData>();
+            var bookingTestData = testData.GetObject<BookingDialogTestCase>();
             var sut = new BookingDialog();
             var testClient = new DialogTestClient(sut, Output, bookingTestData.BookingDetails);
 
             // Act/Assert
-            Output.WriteLine($"Use Case: {bookingTestData.TestCaseName}");
+            Output.WriteLine($"Test Case: {bookingTestData.Name}");
             for (var i = 0; i < bookingTestData.UtterancesAndReplies.GetLength(0); i++)
             {
                 var reply = await testClient.SendAsync<IMessageActivity>(bookingTestData.UtterancesAndReplies[i, 0]);

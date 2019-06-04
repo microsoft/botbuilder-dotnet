@@ -8,7 +8,7 @@ using Moq;
 namespace Microsoft.Bot.Builder.Testing.XUnit
 {
     /// <summary>
-    /// Extension methods for XUnit <see cref="Mock"/>.
+    /// Extension methods for <see cref="Mock"/>.
     /// </summary>
     public static class MockEx
     {

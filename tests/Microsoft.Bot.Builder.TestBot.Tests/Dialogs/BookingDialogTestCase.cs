@@ -3,9 +3,13 @@
 
 namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 {
-    public class BookingDialogTestData
+    public class BookingDialogTestCase
     {
-        public string TestCaseName { get; set; }
+        /// <summary>
+        /// Gets or sets the name for the test case.
+        /// </summary>
+        /// <value>The test case name.</value>
+        public string Name { get; set; }
 
         public BookingDetails BookingDetails { get; set; }
 

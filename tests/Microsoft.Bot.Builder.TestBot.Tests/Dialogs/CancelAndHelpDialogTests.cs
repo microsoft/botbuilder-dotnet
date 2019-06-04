@@ -8,7 +8,6 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Testing;
 using Microsoft.Bot.Schema;
-using Microsoft.BotBuilderSamples.Tests.Framework;
 using Xunit;
 
 namespace Microsoft.BotBuilderSamples.Tests.Dialogs
@@ -49,6 +48,9 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             Assert.Equal(DialogTurnStatus.Waiting, testClient.DialogTurnResult.Status);
         }
 
+        /// <summary>
+        /// A concrete instance of <see cref="CancelAndHelpDialog"/> for testing.
+        /// </summary>
         private class TestCancelAndHelpDialog : CancelAndHelpDialog
         {
             public TestCancelAndHelpDialog()
