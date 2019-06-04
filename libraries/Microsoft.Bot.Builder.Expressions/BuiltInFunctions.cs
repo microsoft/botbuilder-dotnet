@@ -1282,19 +1282,17 @@ namespace Microsoft.Bot.Builder.Expressions
 
         private static (object, string) ToXml(object contentToConvert)
         {
-            object result = null;
             string error = null;
+            XDocument xml = null;
             try
             {
                 if (contentToConvert is string str)
                 {
-                    var xml = XDocument.Load(JsonReaderWriterFactory.CreateJsonReader(Encoding.ASCII.GetBytes(str), new XmlDictionaryReaderQuotas()));
-                    result = xml.ToString().TrimStart('{').TrimEnd('}');
+                    xml = XDocument.Load(JsonReaderWriterFactory.CreateJsonReader(Encoding.ASCII.GetBytes(str), new XmlDictionaryReaderQuotas()));
                 }
                 else
                 {
-                    var xml = XDocument.Load(JsonReaderWriterFactory.CreateJsonReader(Encoding.ASCII.GetBytes(contentToConvert.ToString()), new XmlDictionaryReaderQuotas()));
-                    result = xml.ToString().TrimStart('{').TrimEnd('}');
+                    xml = XDocument.Load(JsonReaderWriterFactory.CreateJsonReader(Encoding.ASCII.GetBytes(contentToConvert.ToString()), new XmlDictionaryReaderQuotas()));
                 }
             }
             catch
@@ -1302,6 +1300,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 error = "Invalid json";
             }
 
+            var result = xml.ToString().TrimStart('{').TrimEnd('}');
             return (result, error);
         }
 
