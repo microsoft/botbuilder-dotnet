@@ -323,7 +323,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("rand(1, 2)", 1),
             Test("rand(2, 3)", 2),
             Test("range(1,4)",new[]{1,2,3,4}),
-            Test("range(-1,3)",new[]{-1,0,1}),
+            Test("range(-1,5)",new[]{-1,0,1,2,3}),
             # endregion
 
             # region  Date and time function test
