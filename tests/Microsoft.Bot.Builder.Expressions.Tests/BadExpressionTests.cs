@@ -300,6 +300,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("dataUriToBinary(false)"), //should have string param
             Test("dataUriToString(hello, world)"), // shoule have 1 param
             Test("dataUriToString(false)"), //should have string param
+            Test("binary(hello, world)"),      // shoule have 1 param
+            Test("binary(one)"), //should have string param
             Test("base64(hello, world)"),      // shoule have 1 param
             Test("base64(one)"), //should have string param
             Test("base64ToBinary(hello, world)"), // shoule have 1 param
