@@ -1288,14 +1288,12 @@ namespace Microsoft.Bot.Builder.Expressions
             {
                 if (contentToConvert is string str)
                 {
-                    var xml = XDocument.Load(JsonReaderWriterFactory.CreateJsonReader(
-                    Encoding.ASCII.GetBytes(str), new XmlDictionaryReaderQuotas()));
+                    var xml = XDocument.Load(JsonReaderWriterFactory.CreateJsonReader(Encoding.ASCII.GetBytes(str), new XmlDictionaryReaderQuotas()));
                     result = xml.ToString().TrimStart('{').TrimEnd('}');
                 }
                 else
                 {
-                    var xml = XDocument.Load(JsonReaderWriterFactory.CreateJsonReader(
-                    Encoding.ASCII.GetBytes(contentToConvert.ToString()), new XmlDictionaryReaderQuotas()));
+                    var xml = XDocument.Load(JsonReaderWriterFactory.CreateJsonReader(Encoding.ASCII.GetBytes(contentToConvert.ToString()), new XmlDictionaryReaderQuotas()));
                     result = xml.ToString().TrimStart('{').TrimEnd('}');
                 }
             }
@@ -1995,7 +1993,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 // TODO: Is this really the best way?
                 new ExpressionEvaluator(ExpressionType.String, Apply(args => JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"')), ReturnType.String, ValidateUnary),
                 Comparison(ExpressionType.Bool, args => IsLogicTrue(args[0]), ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Xml, ApplyWithError(args => BuiltInFunctions.ToXml(args[0]), BuiltInFunctions.VerifyString), ReturnType.String, BuiltInFunctions.ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Xml, ApplyWithError(args => BuiltInFunctions.ToXml(args[0])), ReturnType.String, BuiltInFunctions.ValidateUnary),
 
                 // Misc
                 new ExpressionEvaluator(ExpressionType.Accessor, Accessor, ReturnType.Object, ValidateAccessor),
