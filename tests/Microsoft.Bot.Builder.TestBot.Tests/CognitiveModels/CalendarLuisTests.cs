@@ -59,7 +59,7 @@ namespace Microsoft.BotBuilderSamples.Tests.CognitiveModels
             _output = output;
         }
 
-        [Theory]
+        [Theory(Skip = "WIP, disabled for now")]
         [LuDownData("calendarTestSet.lu", RelativePath)]
         public async Task CalendarSampleTests(TestDataObject luisData)
         {
@@ -69,7 +69,7 @@ namespace Microsoft.BotBuilderSamples.Tests.CognitiveModels
             Assert.Equal(luisTestItem.ExpectedIntent, luisResult.GetTopScoringIntent().intent);
         }
 
-        [Theory]
+        [Theory(Skip = "WIP, disabled for now")]
         [LuDownData(SourceLuFile, RelativePath)]
         public async Task BatchTestFromLuFile(TestDataObject luisData)
         {

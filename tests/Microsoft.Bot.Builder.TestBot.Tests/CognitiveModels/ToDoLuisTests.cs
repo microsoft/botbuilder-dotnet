@@ -41,7 +41,7 @@ namespace Microsoft.BotBuilderSamples.Tests.CognitiveModels
             _output = output;
         }
 
-        [Theory]
+        [Theory(Skip = "WIP, disabled for now")]
         [LuDownData(SourceLuFile, RelativePath)]
         public async Task BatchTestFromLuFile(TestDataObject luisData)
         {
@@ -63,7 +63,7 @@ namespace Microsoft.BotBuilderSamples.Tests.CognitiveModels
             }
         }
 
-        [Theory]
+        [Theory(Skip = "WIP, disabled for now")]
         [JsonLuisData("todoTestSet.json", RelativePath)]
         public async Task BatchTestFromJsonFile(TestDataObject luisData)
         {

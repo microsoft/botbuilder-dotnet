@@ -40,7 +40,7 @@ namespace Microsoft.BotBuilderSamples.Tests.CognitiveModels
             _output = output;
         }
 
-        [Fact]
+        [Fact(Skip = "WIP, disabled for now")]
         public void AnalyticThresholds()
         {
             var analyzer = new LuisAnalyzer();
@@ -51,7 +51,7 @@ namespace Microsoft.BotBuilderSamples.Tests.CognitiveModels
             Assert.True(sut.UnclearPredictions.Count == 0);
         }
 
-        [Theory]
+        [Theory(Skip = "WIP, disabled for now")]
         [LuDownData(@"flightBookingTestSet.lu", RelativePath)]
         public async Task FlightBookingTestSet(TestDataObject luisData)
         {
