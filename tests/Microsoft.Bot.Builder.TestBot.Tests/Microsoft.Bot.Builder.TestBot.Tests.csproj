@@ -61,7 +61,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.1" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.0.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="2.10.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
@@ -83,6 +83,7 @@
     <None Update="Properties\launchSettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
 
 </Project>
