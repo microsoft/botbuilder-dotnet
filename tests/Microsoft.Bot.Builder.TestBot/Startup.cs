@@ -11,7 +11,6 @@ using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.TestBot.Bots;
 using Microsoft.Bot.Connector.Authentication;
-using Microsoft.BotBuilderSamples.CognitiveModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -37,8 +36,6 @@ namespace Microsoft.BotBuilderSamples
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            GetEnvironmentVariables();
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Create the credential provider to be used with the Bot Framework Adapter.
@@ -78,24 +75,28 @@ namespace Microsoft.BotBuilderSamples
             services.AddSingleton<MainDialog>();
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
-            switch (_chosenBot)
-            {
-                case "EchoBot":
-                    services.AddTransient<IBot, MyBot>();
-                    break;
-
-                case "DialogBot":
-                    services.AddTransient<IBot, DialogBot<MainDialog>>();
-                    break;
-
-                default:
-                    services.AddTransient<IBot, DialogAndWelcomeBot<MainDialog>>();
-                    break;
-            }
+            services.AddScoped<MyBot>();
+            services.AddScoped<DialogBot<MainDialog>>();
+            services.AddScoped<DialogAndWelcomeBot<MainDialog>>();
 
             // We can also run the inspection at a different endpoint. Just uncomment these lines.
             // services.AddSingleton<DebugAdapter>();
             // services.AddTransient<DebugBot>();
+            services.AddTransient<Func<string, IBot>>(serviceProvider => key =>
+            {
+                switch (key)
+                {
+                    case "mybot":
+                        return serviceProvider.GetService<MyBot>();
+                    case "dialogbot":
+                        return serviceProvider.GetService<DialogBot<MainDialog>>();
+                    case "messages":
+                    case "dialogandwelcomebot":
+                        return serviceProvider.GetService<DialogAndWelcomeBot<MainDialog>>();
+                    default:
+                        return null;
+                }
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -114,21 +115,12 @@ namespace Microsoft.BotBuilderSamples
             app.UseStaticFiles();
 
             // app.UseHttpsRedirection();
-            app.UseMvc();
-        }
-
-        public void GetEnvironmentVariables()
-        {
-            if (!string.IsNullOrWhiteSpace(_chosenBot))
+            app.UseMvc(routes =>
             {
-                return;
-            }
-
-            _chosenBot = Environment.GetEnvironmentVariable("CHOSENBOT");
-            if (string.IsNullOrWhiteSpace(_chosenBot))
-            {
-                _chosenBot = "DialogAndWelcomeBot";
-            }
+                routes.MapRoute(
+                    name: "default",
+                    template: "api/{controller}");
+            });
         }
     }
 }

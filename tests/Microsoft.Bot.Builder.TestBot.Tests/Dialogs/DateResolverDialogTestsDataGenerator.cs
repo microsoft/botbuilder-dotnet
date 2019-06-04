@@ -63,6 +63,17 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     { "bananas", "I'm sorry, to make your booking please enter a full travel date including Day Month and Year." },
                     { "tomorrow", null },
                 });
+
+            yield return BuildTestCaseObject(
+                "fuzzy time ",
+                null,
+                $"2055-05-05",
+                new[,]
+                {
+                    { "hi", "When would you like to travel?" },
+                    { "may 5th", "I'm sorry, to make your booking please enter a full travel date including Day Month and Year." },
+                    { "may 5th 2055", null },
+                });
         }
 
         private static object[] BuildTestCaseObject(string testCaseName, string input, string result, string[,] utterancesAndReplies)

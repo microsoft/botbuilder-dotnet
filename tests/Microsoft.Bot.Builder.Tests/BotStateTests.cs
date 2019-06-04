@@ -735,6 +735,24 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual("default-value", value2);
         }
 
+        [TestMethod]
+        public async Task BotStateGet()
+        {
+            var turnContext = TestUtilities.CreateEmptyContext();
+            turnContext.Activity.Conversation = new ConversationAccount { Id = "1234" };
+
+            var storage = new MemoryStorage(new Dictionary<string, JObject>());
+
+            var conversationState = new ConversationState(storage);
+            (await conversationState
+                .CreateProperty<TestPocoState>("test-name")
+                .GetAsync(turnContext, () => new TestPocoState())).Value = "test-value";
+
+            var json = conversationState.Get(turnContext);
+
+            Assert.AreEqual("test-value", json["test-name"]["Value"].ToString());
+        }
+
         public class TypedObject
         {
             public string Name { get; set; }

@@ -1,4 +1,7 @@
-﻿using System.Threading;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -31,13 +34,13 @@ namespace Microsoft.BotBuilderSamples.Tests.Controllers
             var mockBot = new Mock<IBot>();
 
             // Create and initialize controller
-            var sut = new BotController(mockAdapter.Object, mockBot.Object)
+            var sut = new BotController(mockAdapter.Object, arg => mockBot.Object)
             {
                 ControllerContext = new ControllerContext(actionContext),
             };
 
             // Invoke the controller
-            await sut.PostAsync();
+            await sut.PostAsync("doesn't matter");
 
             // Assert
             mockAdapter.Verify(
