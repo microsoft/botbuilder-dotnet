@@ -1,15 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.BotBuilderSamples.CognitiveModels;
-using Microsoft.BotBuilderSamples.Dialogs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -19,11 +16,10 @@ namespace Microsoft.BotBuilderSamples
     public class MainDialog : ComponentDialog
     {
         private readonly IConfiguration _configuration;
-        private readonly IntentDialogMap _intentsAndDialogs;
         private readonly ILogger _logger;
         private readonly IRecognizer _luisRecognizer;
 
-        public MainDialog(IConfiguration configuration, ILogger<MainDialog> logger, IRecognizer luisRecognizer, IntentDialogMap intentsAndDialogs)
+        public MainDialog(IConfiguration configuration, ILogger<MainDialog> logger, IRecognizer luisRecognizer, BookingDialog bookingDialog)
             : base(nameof(MainDialog))
         {
             _configuration = configuration;
@@ -32,12 +28,8 @@ namespace Microsoft.BotBuilderSamples
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
 
-            // Add dialogs for intents
-            _intentsAndDialogs = intentsAndDialogs;
-            foreach (var dialog in intentsAndDialogs.Values)
-            {
-                AddDialog(dialog);
-            }
+            // Add bookingDialog intents
+            AddDialog(bookingDialog);
 
             // Create and add waterfall for main conversation loop
             var steps = new WaterfallStep[]

@@ -7,7 +7,6 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.BotBuilderSamples.CognitiveModels;
-using Microsoft.BotBuilderSamples.Dialogs;
 using Microsoft.BotBuilderSamples.Tests.Framework;
 using Moq;
 using Xunit;
@@ -23,12 +22,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         [Fact(Skip = "Ignoring this one, this is just a sample on the old way of writing tests")]
         public async Task WholeEnchilada()
         {
-            var intentsAndDialogs = new IntentDialogMap
-            {
-                { FlightBooking.Intent.BookFlight, new Mock<BookingDialog>().Object },
-                { FlightBooking.Intent.GetWeather, new Mock<Dialog>("mockweather").Object },
-            };
-            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, null, intentsAndDialogs);
+            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, null, new Mock<BookingDialog>().Object);
 
             var testFlow = BuildTestFlow(sut);
 

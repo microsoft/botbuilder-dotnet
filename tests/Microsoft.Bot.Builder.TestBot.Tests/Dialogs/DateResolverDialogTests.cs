@@ -24,7 +24,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             // Arrange
             var testCaseData = testData.GetObject<DateResolverDialogTestCase>();
             var sut = new DateResolverDialog();
-            var testClient = new DialogTestClient(sut, Output, testCaseData.InitialData);
+            var testClient = new DialogTestClient(sut, testCaseData.InitialData, Output);
 
             // Act/Assert
             Output.WriteLine($"Test Case: {testCaseData.Name}");

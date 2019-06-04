@@ -38,7 +38,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             // Arrange
             var bookingTestData = testData.GetObject<BookingDialogTestCase>();
             var sut = new BookingDialog();
-            var testClient = new DialogTestClient(sut, Output, bookingTestData.BookingDetails);
+            var testClient = new DialogTestClient(sut, bookingTestData.BookingDetails, Output);
 
             // Act/Assert
             Output.WriteLine($"Test Case: {bookingTestData.Name}");
@@ -56,7 +56,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             // Arrange
             var bookingTestData = testData.GetObject<BookingDialogTestCase>();
             var sut = new BookingDialog();
-            var testClient = new DialogTestClient(sut, Output, bookingTestData.BookingDetails);
+            var testClient = new DialogTestClient(sut, bookingTestData.BookingDetails, Output);
 
             // Act/Assert
             Output.WriteLine($"Test Case: {bookingTestData.Name}");

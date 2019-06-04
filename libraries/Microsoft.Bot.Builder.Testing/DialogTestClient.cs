@@ -18,7 +18,17 @@ namespace Microsoft.Bot.Builder.Testing
         private readonly BotCallbackHandler _callback;
         private readonly TestAdapter _testAdapter;
 
-        public DialogTestClient(Dialog targetDialog, ITestOutputHelper outputHelper = null, object initialDialogOptions = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DialogTestClient"/> class.
+        /// </summary>
+        /// <param name="targetDialog">The dialog to be tested. This will be the root dialog for the test client.</param>
+        /// <param name="initialDialogOptions">(Optional) additional argument(s) to pass to the dialog being started.</param>
+        /// <param name="outputHelper">
+        /// An XUnit <see cref="ITestOutputHelper"/> instance.
+        /// See <see href="https://xunit.net/docs/capturing-output.html">Capturing Output</see> in the XUnit documentation for additional details.
+        /// If this value is set, the test client will output the incoming and outgoing activities to the console window.
+        /// </param>
+        public DialogTestClient(Dialog targetDialog, object initialDialogOptions = null, ITestOutputHelper outputHelper = null)
         {
             var convoState = new ConversationState(new MemoryStorage());
             _testAdapter = new TestAdapter()

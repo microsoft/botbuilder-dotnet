@@ -63,7 +63,7 @@ namespace Microsoft.BotBuilderSamples
                     :
                 new BookingDetails();
 
-            // In this sample we only have a single Intent we are concerned with. However, typically a scneario
+            // In this sample we only have a single Intent we are concerned with. However, typically a scenario
             // will have multiple different Intents each corresponding to starting a different child Dialog.
 
             // Run the BookingDialog giving it whatever details we have from the LUIS call, it will fill out the remainder.

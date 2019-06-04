@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.Bot.Builder.Testing</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.Bot.Builder.Testing.DialogTestClient">
+            <summary>
+            A client to for testing dialogs in isolation.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Bot.Builder.Testing.DialogTestClient.#ctor(Microsoft.Bot.Builder.Dialogs.Dialog,System.Object,Xunit.Abstractions.ITestOutputHelper)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.Bot.Builder.Testing.DialogTestClient"/> class.
+            </summary>
+            <param name="targetDialog">The dialog to be tested. This will be the root dialog for the test client.</param>
+            <param name="initialDialogOptions">(Optional) additional argument(s) to pass to the dialog being started.</param>
+            <param name="outputHelper">
+            An XUnit <see cref="T:Xunit.Abstractions.ITestOutputHelper"/> instance.
+            See <see href="https://xunit.net/docs/capturing-output.html">Capturing Output</see> in the XUnit documentation for additional details.
+            If this value is set, the test client will output the incoming and outgoing activities to the console window.
+            </param>
+        </member>
+        <member name="P:Microsoft.Bot.Builder.Testing.DialogTestClient.DialogTurnResult">
+            <summary>
+            Gets the latest <see cref="P:Microsoft.Bot.Builder.Testing.DialogTestClient.DialogTurnResult"/> for the dialog being tested.
+            </summary>
+            <value>A <see cref="P:Microsoft.Bot.Builder.Testing.DialogTestClient.DialogTurnResult"/> instance with the result of the last turn.</value>
+        </member>
+        <member name="T:Microsoft.Bot.Builder.Testing.XUnit.MockEx">
+            <summary>
+            Extension methods for <see cref="T:Moq.Mock"/>.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Bot.Builder.Testing.XUnit.TestDataObject">
+            <summary>
+            A wrapper class for XUnit test data that enables support for enumerating test cases in Test Explorer.
+            </summary>
+            <remarks>
+            VS Test explorer only supports value types for data driven tests.
+            This class implements <see cref="T:Xunit.Abstractions.IXunitSerializable"/> and serializes complex types as json
+            so the test cases can be enumerated and displayed into VS test explorer.
+            This also allows the developer to right click on a particular test case on VS Test explorer and run it individually.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Bot.Builder.Testing.XUnit.TestDataObject.TestObject">
+            <summary>
+            Gets a json string with the test data object.
+            </summary>
+            <value>The test data object as a json string.</value>
+        </member>
+        <member name="M:Microsoft.Bot.Builder.Testing.XUnit.TestDataObject.GetObject``1">
+            <summary>
+            Gets the test data object for the specified .Net type.
+            </summary>
+            <typeparam name="T">The type of the object to be returned.</typeparam>
+            <returns>The test object instance.</returns>
+        </member>
+        <member name="T:Microsoft.Bot.Builder.Testing.XUnit.TestOutputHelperEx">
+            <summary>
+            Extension methods for XUnit <see cref="T:Xunit.Abstractions.ITestOutputHelper"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Bot.Builder.Testing.XUnit.TestOutputHelperEx.WriteAsFormattedJson(Xunit.Abstractions.ITestOutputHelper,System.Object)">
+            <summary>
+            Writes a given object as formatted json.
+            </summary>
+            <param name="outputHelper">the instance of <see cref="T:Xunit.Abstractions.ITestOutputHelper"/> being extended.</param>
+            <param name="object">An object instance to be written to the output as formatted json</param>
+        </member>
+        <member name="T:Microsoft.Bot.Builder.Testing.XUnit.XUnitOutputMiddleware">
+            <summary>
+            A middleware to output incoming and outgoing activities as json strings to the console during
+            unit tests.
+            </summary>
+        </member>
+    </members>
+</doc>
