@@ -12,7 +12,7 @@ lexer grammar LGFileLexer;
 
 @lexer::members {
   bool ignoreWS = true;      // usually we ignore whitespace, but inside template, whitespace is significant
-  bool expectIfElse = false; // whether we are expecting IF/ELSEIF/ELSE
+  bool expectKeywords = false; // whether we are expecting IF/ELSEIF/ELSE
 }
 
 fragment LETTER: 'a'..'z' | 'A'..'Z';
@@ -21,6 +21,19 @@ fragment NUMBER: '0'..'9';
 fragment WHITESPACE
   : ' '|'\t'|'\ufeff'|'\u00a0'
   ;
+
+fragment A: 'a' | 'A';
+fragment C: 'c' | 'C';
+fragment D: 'd' | 'D';
+fragment E: 'e' | 'E';
+fragment F: 'f' | 'F';
+fragment H: 'h' | 'H';
+fragment I: 'i' | 'I';
+fragment L: 'l' | 'L';
+fragment S: 's' | 'S';
+fragment T: 't' | 'T';
+fragment U: 'u' | 'U';
+fragment W: 'w' | 'W';
 
 COMMENTS
   : ('>'|'$') ~('\r'|'\n')+ -> skip
@@ -39,7 +52,7 @@ HASH
   ;
 
 DASH
-  : '-' {expectIfElse = true;} -> pushMode(TEMPLATE_BODY_MODE)
+  : '-' {expectKeywords = true;} -> pushMode(TEMPLATE_BODY_MODE)
   ;
 
 INVALID_TOKEN_DEFAULT_MODE
@@ -96,23 +109,35 @@ NEWLINE_IN_BODY
   ;
 
 IF
-  : ('if'|'IF') WHITESPACE* ':'  {expectIfElse}? { ignoreWS = true;}
+  : I F WHITESPACE* ':'  {expectKeywords}? { ignoreWS = true;}
   ;
 
 ELSEIF
-  : ('elseif'|'ELSEIF') WHITESPACE* ':' {expectIfElse}? { ignoreWS = true;}
+  : E L S E I F WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
   ;
 
 ELSE
-  : ('else'|'ELSE') WHITESPACE* ':' {expectIfElse}? { ignoreWS = true;}
+  : E L S E WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
+  ;
+
+SWITCH
+  : S W I T C H WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
+  ;
+
+CASE
+  : C A S E WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
+  ;
+
+DEFAULT
+  : D E F A U L T WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
   ;
 
 MULTI_LINE_TEXT
-  : '```' .*? '```' { ignoreWS = false; expectIfElse = false;}
+  : '```' .*? '```' { ignoreWS = false; expectKeywords = false;}
   ;
 
 ESCAPE_CHARACTER
-  : '\\{' | '\\[' | '\\\\' | '\\'[rtn\]}]  { ignoreWS = false; expectIfElse = false;}
+  : '\\{' | '\\[' | '\\\\' | '\\'[rtn\]}]  { ignoreWS = false; expectKeywords = false;}
   ;
 
 INVALID_ESCAPE
@@ -120,17 +145,17 @@ INVALID_ESCAPE
   ;
 
 EXPRESSION
-  : '@'? '{' ~[\r\n{}]* '}'  { ignoreWS = false; expectIfElse = false;}
+  : '@'? '{' ~[\r\n{}]* '}'  { ignoreWS = false; expectKeywords = false;}
   ;
 
 TEMPLATE_REF
-  : '[' (~[\r\n\]] | TEMPLATE_REF)* ']'  { ignoreWS = false; expectIfElse = false;}
+  : '[' (~[\r\n\]] | TEMPLATE_REF)* ']'  { ignoreWS = false; expectKeywords = false;}
   ;
 
 TEXT_SEPARATOR
-  : [ \t\r\n{}[\]()]  { ignoreWS = false; expectIfElse = false;}
+  : [ \t\r\n{}[\]()]  { ignoreWS = false; expectKeywords = false;}
   ;
 
 TEXT
-  : ~[ \\\t\r\n{}[\]()]+  { ignoreWS = false; expectIfElse = false;}
+  : ~[ \\\t\r\n{}[\]()]+  { ignoreWS = false; expectKeywords = false;}
   ;

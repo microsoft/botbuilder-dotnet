@@ -1,0 +1,20 @@
+﻿{
+  "$type": "Microsoft.AdaptiveDialog",
+  "generator": "root.lg",
+  "steps": [
+    {
+        "$type": "Microsoft.SendActivity",
+        "activity": "[test]"
+    },
+    {
+        "$type": "Microsoft.AdaptiveDialog",
+        "generator": "subDialog.lg",
+        "steps": [
+            {
+                "$type": "Microsoft.SendActivity",
+                "activity": "[test]"
+            }
+        ]
+    }
+  ]
+}

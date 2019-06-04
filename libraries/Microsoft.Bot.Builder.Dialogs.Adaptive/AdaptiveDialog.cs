@@ -38,6 +38,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public IRecognizer Recognizer { get; set; }
 
         /// <summary>
+        /// Language Generator override
+        /// </summary>
+        public ILanguageGenerator Generator { get; set; }
+
+        /// <summary>
         /// Gets or sets the steps to execute when the dialog begins
         /// </summary>
         public List<IDialog> Steps { get; set; } = new List<IDialog>();
@@ -517,6 +522,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     Desire = consultation?.Desire ?? DialogConsultationDesire.CanProcess,
                     Processor = async (dc) =>
                     {
+                        // set context
+                        if (this.Generator != null)
+                        {
+                            dc.Context.TurnState.Set<ILanguageGenerator>(this.Generator);
+                        }
+
                         // Continue current step
                         var result = consultation != null ? await consultation.Processor(step).ConfigureAwait(false) : new DialogTurnResult(DialogTurnStatus.Empty);
 

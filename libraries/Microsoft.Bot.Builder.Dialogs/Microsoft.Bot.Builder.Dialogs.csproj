@@ -55,11 +55,13 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Schemas\Microsoft.ILanguageGenerator.schema" />
     <None Remove="Schemas\Microsoft.ILanguagePolicy.schema" />
     <None Remove="Schemas\Policies\Microsoft.LanguagePolicy.schema" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Schemas\Microsoft.ILanguageGenerator.schema" />
     <Content Include="Schemas\Microsoft.ILanguagePolicy.schema" />
     <Content Include="Schemas\Microsoft.ITextTemplate.schema" />
     <Content Include="Schemas\Microsoft.IActivityTemplate.schema" />

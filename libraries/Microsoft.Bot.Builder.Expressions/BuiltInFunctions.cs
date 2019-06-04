@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <summary>
         /// The default date time format string.
         /// </summary>
-        public static readonly string DefaultDateTimeFormat = "o";
+        public static readonly string DefaultDateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
 
         /// <summary>
         /// Verify the result of an expression is of the appropriate type and return a string if not.
@@ -605,7 +605,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         if (args[0] is string string0 && args[1] is int int1)
                         {
                             var formatString = (args.Count() == 3 && args[2] is string string1) ? string1 : DefaultDateTimeFormat;
-                            (value, error) = ParseTimestamp(string0, dt => function(dt, int1).ToString(formatString));
+                            (value, error) = ParseISOTimestamp(string0, dt => function(dt, int1).ToString(formatString));
                         }
                         else
                         {
@@ -819,7 +819,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     }
                     else
                     {
-                        error = $"Could not coerce {index} to an int or string";
+                        error = $"Could not coerce {index}<{idxValue.GetType()}> to an int or string";
                     }
                 }
             }
@@ -1200,6 +1200,32 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
+        private static (object, string) ParseISOTimestamp(string timeStamp, Func<DateTime, object> transform = null)
+        {
+            object result = null;
+            string error = null;
+            if (DateTime.TryParse(
+                    s: timeStamp,
+                    provider: CultureInfo.InvariantCulture,
+                    styles: DateTimeStyles.RoundtripKind,
+                    result: out var parsed))
+            {
+                if (parsed.ToString(DefaultDateTimeFormat).Equals(timeStamp, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    result = transform != null ? transform(parsed) : parsed;
+                }
+                else
+                {
+                    error = $"{timeStamp} is not standard ISO format.";
+                }
+            }
+            else
+            {
+                error = $"Could not parse {timeStamp}";
+            }
+            return (result, error);
+        }
+
         private static string AddOrdinal(int num)
         {
             var hasResult = false;
@@ -1487,32 +1513,32 @@ namespace Microsoft.Bot.Builder.Expressions
                 TimeTransform(ExpressionType.AddSeconds, (ts, add) => ts.AddSeconds(add)),
                 new ExpressionEvaluator(
                     ExpressionType.DayOfMonth,
-                    ApplyWithError(args => ParseTimestamp((string) args[0], dt => dt.Day), VerifyString),
+                    ApplyWithError(args => ParseISOTimestamp((string) args[0], dt => dt.Day), VerifyString),
                     ReturnType.Number,
                     ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.DayOfWeek,
-                    ApplyWithError(args => ParseTimestamp((string) args[0], dt => (int) dt.DayOfWeek), VerifyString),
+                    ApplyWithError(args => ParseISOTimestamp((string) args[0], dt => (int) dt.DayOfWeek), VerifyString),
                     ReturnType.Number,
                     ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.DayOfYear,
-                    ApplyWithError(args => ParseTimestamp((string) args[0], dt => dt.DayOfYear), VerifyString),
+                    ApplyWithError(args => ParseISOTimestamp((string) args[0], dt => dt.DayOfYear), VerifyString),
                     ReturnType.Number,
                     ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.Month,
-                    ApplyWithError(args => ParseTimestamp((string) args[0], dt => dt.Month), VerifyString),
+                    ApplyWithError(args => ParseISOTimestamp((string) args[0], dt => dt.Month), VerifyString),
                     ReturnType.Number,
                     ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.Date,
-                    ApplyWithError(args => ParseTimestamp((string) args[0], dt => dt.Date.ToString("M/dd/yyyy")), VerifyString),
+                    ApplyWithError(args => ParseISOTimestamp((string) args[0], dt => dt.Date.ToString("M/dd/yyyy")), VerifyString),
                     ReturnType.String,
                     ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.Year,
-                    ApplyWithError(args => ParseTimestamp((string) args[0], dt => dt.Year), VerifyString),
+                    ApplyWithError(args => ParseISOTimestamp((string) args[0], dt => dt.Year), VerifyString),
                     ReturnType.Number,
                     ValidateUnaryString),
                 new ExpressionEvaluator(
@@ -1521,9 +1547,28 @@ namespace Microsoft.Bot.Builder.Expressions
                     ReturnType.String),
                 new ExpressionEvaluator(
                     ExpressionType.FormatDateTime,
-                    ApplyWithError(args => ParseTimestamp((string) args[0], dt => dt.ToString(args.Count() == 2 ? args[1] : DefaultDateTimeFormat)), VerifyString),
+                    ApplyWithError(
+                        args =>
+                        {
+                            object result = null;
+                            string error = null;
+                            double unixTimestamp;
+                            dynamic timestamp = args[0];
+                            if (Extensions.IsNumber(timestamp))
+                            {
+                                if (double.TryParse(args[0].ToString(), out unixTimestamp))
+                                {
+                                    var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                                    timestamp = dateTime.AddSeconds(unixTimestamp);
+                                }
+                            }
+
+                            (result, error) = ParseTimestamp((string) timestamp.ToString(), dt => dt.ToString(args.Count() == 2 ? args[1] : DefaultDateTimeFormat));
+
+                            return (result, error);
+                        }),
                     ReturnType.String,
-                    (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String)),
+                    (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Object)),
                 new ExpressionEvaluator(
                     ExpressionType.SubtractFromTime,
                     (expr, state) =>
@@ -1541,7 +1586,7 @@ namespace Microsoft.Bot.Builder.Expressions
                                 (timeConverter, error) = DateTimeConverter(int1, string2);
                                 if (error == null)
                                 {
-                                    (value, error) = ParseTimestamp(string0, dt => timeConverter(dt).ToString(format));
+                                    (value, error) = ParseISOTimestamp(string0, dt => timeConverter(dt).ToString(format));
                                 }
                             }
                             else
@@ -1560,11 +1605,11 @@ namespace Microsoft.Bot.Builder.Expressions
                         {
                             object result = null;
                             string error;
-                            (result, error) = ParseTimestamp((string) args[0]);
+                            (result, error) = ParseISOTimestamp((string) args[0]);
                             if (error == null)
                             {
                                 var timestamp1 = (DateTime) result;
-                                (result, error) = ParseTimestamp((string) args[1]);
+                                (result, error) = ParseISOTimestamp((string) args[1]);
                                 if (error == null)
                                 {
                                     var timestamp2 = (DateTime) result;
@@ -1584,7 +1629,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         {
                             object value = null;
                             string error = null;
-                            (value, error) = ParseTimestamp((string) args[0]);
+                            (value, error) = ParseISOTimestamp((string) args[0]);
                             if (error == null)
                             {
                                 var timestamp = (DateTime) value;
@@ -1679,7 +1724,7 @@ namespace Microsoft.Bot.Builder.Expressions
 
                 // Conversions
                 new ExpressionEvaluator(ExpressionType.Float, Apply(args => (float) Convert.ToDouble(args[0])), ReturnType.Number, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Int, Apply(args => (float) Convert.ToSingle(args[0])), ReturnType.Number, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Int, Apply(args => (int) Convert.ToInt64(args[0])), ReturnType.Number, ValidateUnary),
 
                 // TODO: Is this really the best way?
                 new ExpressionEvaluator(ExpressionType.String, Apply(args => JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"')), ReturnType.String, ValidateUnary),

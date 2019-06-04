@@ -50,12 +50,34 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                         x = 3,
                     }
                 },
-            timestamp = "2018-03-15T13:00:00Z",
+            user = new
+            {
+                lists = new
+                {
+                    todo = new[]
+                    {
+                        "todo1",
+                        "todo2",
+                        "todo3",
+                    }
+                },
+                listType = "todo",
+            },
+            timestamp = "2018-03-15T13:00:00.000Z",
+            notISOTimestamp = "2018/03/15 13:00:00",
+            timestampObj = DateTime.Parse("2018-03-15T13:00:00.000Z").ToUniversalTime(),
+            unixTimestamp = 1521118800,
             turn = new
             {
                 entities = new
                 {
-                    city = "Seattle"
+                    city = "Seattle",
+                    ordinal = new []
+                    {
+                        "1",
+                        "2",
+                        "3"
+                    }
                 },
                 intents = new
                 {
@@ -123,7 +145,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("'string'&'builder'","stringbuilder"),
             Test("\"string\"&\"builder\"","stringbuilder"),
             Test("one > 0.5 && two < 2.5", true, oneTwo),
-            Test("notThere > 4", false), 
+            Test("notThere > 4", false),
             Test("float(5.5) && float(0.0)", true),
             Test("hello && \"hello\"", true),
             Test("items || ((2 + 2) <= (4 - 1))", true), // true || false
@@ -292,13 +314,13 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
             # region  Date and time function test
             //init dateTime: 2018-03-15T13:00:00Z
-            Test("addDays(timestamp, 1)", "2018-03-16T13:00:00.0000000Z"),
+            Test("addDays(timestamp, 1)", "2018-03-16T13:00:00.000Z"),
             Test("addDays(timestamp, 1,'MM-dd-yy')", "03-16-18"),
-            Test("addHours(timestamp, 1)", "2018-03-15T14:00:00.0000000Z"),
+            Test("addHours(timestamp, 1)", "2018-03-15T14:00:00.000Z"),
             Test("addHours(timestamp, 1,'MM-dd-yy hh-mm')", "03-15-18 02-00"),
-            Test("addMinutes(timestamp, 1)", "2018-03-15T13:01:00.0000000Z"),
+            Test("addMinutes(timestamp, 1)", "2018-03-15T13:01:00.000Z"),
             Test("addMinutes(timestamp, 1, 'MM-dd-yy hh-mm')", "03-15-18 01-01"),
-            Test("addSeconds(timestamp, 1)", "2018-03-15T13:00:01.0000000Z"),
+            Test("addSeconds(timestamp, 1)", "2018-03-15T13:00:01.000Z"),
             Test("addSeconds(timestamp, 1, 'MM-dd-yy hh-mm-ss')", "03-15-18 01-00-01"),
             Test("dayOfMonth(timestamp)", 15),
             Test("dayOfWeek(timestamp)", 4),//Thursday
@@ -306,24 +328,29 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("month(timestamp)", 3),
             Test("date(timestamp)", "3/15/2018"),//Default. TODO
             Test("year(timestamp)", 2018),
-            Test("formatDateTime(timestamp)", "2018-03-15T13:00:00.0000000Z"),
-            Test("formatDateTime(timestamp, 'MM-dd-yy')", "03-15-18"),
-            Test("subtractFromTime(timestamp, 1, 'Year')", "2017-03-15T13:00:00.0000000Z"),
-            Test("subtractFromTime(timestamp, 1, 'Month')", "2018-02-15T13:00:00.0000000Z"),
-            Test("subtractFromTime(timestamp, 1, 'Week')", "2018-03-08T13:00:00.0000000Z"),
-            Test("subtractFromTime(timestamp, 1, 'Day')", "2018-03-14T13:00:00.0000000Z"),
-            Test("subtractFromTime(timestamp, 1, 'Hour')", "2018-03-15T12:00:00.0000000Z"),
-            Test("subtractFromTime(timestamp, 1, 'Minute')", "2018-03-15T12:59:00.0000000Z"),
-            Test("subtractFromTime(timestamp, 1, 'Second')", "2018-03-15T12:59:59.0000000Z"),
+            Test("length(utcNow())", 24),
+            Test("utcNow('MM-DD-YY')", DateTime.UtcNow.ToString("MM-DD-YY")),
+            Test("formatDateTime(notISOTimestamp)", "2018-03-15T13:00:00.000Z"),
+            Test("formatDateTime(notISOTimestamp, 'MM-dd-yy')", "03-15-18"),
+            Test("formatDateTime('2018-03-15')", "2018-03-15T00:00:00.000Z"),
+            Test("formatDateTime(timestampObj)", "2018-03-15T13:00:00.000Z"),
+            Test("formatDateTime(unixTimestamp)", "2018-03-15T13:00:00.000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Year')", "2017-03-15T13:00:00.000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Month')", "2018-02-15T13:00:00.000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Week')", "2018-03-08T13:00:00.000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Day')", "2018-03-14T13:00:00.000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Hour')", "2018-03-15T12:00:00.000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Minute')", "2018-03-15T12:59:00.000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Second')", "2018-03-15T12:59:59.000Z"),
             Test("dateReadBack(timestamp, addDays(timestamp, 1))", "tomorrow"),
             Test("dateReadBack(addDays(timestamp, 1),timestamp))", "yesterday"),
-            Test("getTimeOfDay('2018-03-15T00:00:00Z')", "midnight"),
-            Test("getTimeOfDay('2018-03-15T08:00:00Z')", "morning"),
-            Test("getTimeOfDay('2018-03-15T12:00:00Z')", "noon"),
-            Test("getTimeOfDay('2018-03-15T13:00:00Z')", "afternoon"),
-            Test("getTimeOfDay('2018-03-15T18:00:00Z')", "evening"),
-            Test("getTimeOfDay('2018-03-15T22:00:00Z')", "evening"),
-            Test("getTimeOfDay('2018-03-15T23:00:00Z')", "night"),
+            Test("getTimeOfDay('2018-03-15T00:00:00.000Z')", "midnight"),
+            Test("getTimeOfDay('2018-03-15T08:00:00.000Z')", "morning"),
+            Test("getTimeOfDay('2018-03-15T12:00:00.000Z')", "noon"),
+            Test("getTimeOfDay('2018-03-15T13:00:00.000Z')", "afternoon"),
+            Test("getTimeOfDay('2018-03-15T18:00:00.000Z')", "evening"),
+            Test("getTimeOfDay('2018-03-15T22:00:00.000Z')", "evening"),
+            Test("getTimeOfDay('2018-03-15T23:00:00.000Z')", "night"),
             Test("getPastTime(1,'Year','MM-dd-yy')", DateTime.Now.AddYears(-1).ToString("MM-dd-yy")),
             Test("getPastTime(1,'Month','MM-dd-yy')", DateTime.Now.AddMonths(-1).ToString("MM-dd-yy")),
             Test("getPastTime(1,'Week','MM-dd-yy')", DateTime.Now.AddDays(-7).ToString("MM-dd-yy")),
@@ -399,7 +426,17 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("items[1+1]","two"),
             Test("getProperty(null, 'p')", null),
             Test("(getProperty(null, 'p'))[1]", null),
-            # endregion
+            #endregion
+
+            # region Dialog 
+            Test("user.lists.todo[int(@ordinal[0]) - 1] != null", true),
+            Test("user.lists.todo[int(@ordinal[0]) + 3] != null", false),
+            Test("count(user.lists.todo) > int(@ordinal[0]))", true),
+            Test("count(user.lists.todo) >= int(@ordinal[0]))", true),
+            Test("user.lists.todo[int(@ordinal[0]) - 1]", "todo1"),
+            Test("user.lists[user.listType][int(@ordinal[0]) - 1]", "todo1"),
+            #endregion
+
         };
 
         [DataTestMethod]
@@ -452,7 +489,14 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         {
             if (IsNumber(actual) && IsNumber(expected))
             {
-                Assert.IsTrue(Convert.ToSingle(actual) == Convert.ToSingle(expected));
+                if (actual is int)
+                {
+                    Assert.IsTrue(expected is int);
+                }
+                else
+                {
+                    Assert.IsTrue(Convert.ToSingle(actual) == Convert.ToSingle(expected));
+                }
             }
             // Compare two lists
             else if (expected is IList expectedList
