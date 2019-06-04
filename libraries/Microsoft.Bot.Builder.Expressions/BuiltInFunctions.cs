@@ -1294,13 +1294,13 @@ namespace Microsoft.Bot.Builder.Expressions
                 {
                     xml = XDocument.Load(JsonReaderWriterFactory.CreateJsonReader(Encoding.ASCII.GetBytes(contentToConvert.ToString()), new XmlDictionaryReaderQuotas()));
                 }
+                var result = xml.ToString().TrimStart('{').TrimEnd('}');
             }
             catch
             {
                 error = "Invalid json";
             }
 
-            var result = xml.ToString().TrimStart('{').TrimEnd('}');
             return (result, error);
         }
 
