@@ -414,13 +414,11 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("take(createArray('H','e','l','l','0'),2)", new List<object>{"H", "e"}),
             Test("subArray(createArray('H','e','l','l','o'),2,5)", new List<object>{"l", "l", "o"}),
             Test("count(newGuid())", 36),
-            Test("newGuid().indexOf('-')", 8),
             Test("indexOf(newGuid(), '-')", 8),
             Test("indexOf(hello, '-')", -1),
-            Test("newGuid().lastIndexOf('-')", 23),
             Test("lastIndexOf(newGuid(), '-')", 23),
             Test("lastIndexOf(hello, '-')", -1),
-            Test("newGuid().length()",36),
+            Test("length(newGuid())",36),
             # endregion
 
             # region  Object manipulation and construction functions
