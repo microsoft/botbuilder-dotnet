@@ -1284,6 +1284,7 @@ namespace Microsoft.Bot.Builder.Expressions
         {
             string error = null;
             XDocument xml = null;
+            string result = null;
             try
             {
                 if (contentToConvert is string str)
@@ -1294,7 +1295,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 {
                     xml = XDocument.Load(JsonReaderWriterFactory.CreateJsonReader(Encoding.ASCII.GetBytes(contentToConvert.ToString()), new XmlDictionaryReaderQuotas()));
                 }
-                var result = xml.ToString().TrimStart('{').TrimEnd('}');
+                result = xml.ToString().TrimStart('{').TrimEnd('}');
             }
             catch
             {
