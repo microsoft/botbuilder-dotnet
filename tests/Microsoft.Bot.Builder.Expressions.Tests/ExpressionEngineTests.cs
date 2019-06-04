@@ -292,7 +292,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("dataUri(hello)", "data:text/plain;charset=utf-8;base64,aGVsbG8="),
             Test("dataUriToBinary(base64(hello))","0110000101000111010101100111001101100010010001110011100000111101"),
             Test("dataUriToString(dataUri(hello))","hello"),
-            Test("xml('{\"person\": {\"name\": \"Sophia Owen\", \"city\": \"Seattle\"}}')", "<root type=\"object\">\r\n  <person type=\"object\">\r\n    <name type=\"string\">Sophia Owen</name>\r\n    <city type=\"string\">Seattle</city>\r\n  </person>\r\n</root>"),
+            Test("xml('{\"person\": {\"name\": \"Sophia Owen\", \"city\": \"Seattle\"}}')", $"<root type=\"object\">{Environment.NewLine}  <person type=\"object\">{Environment.NewLine}    <name type=\"string\">Sophia Owen</name>{Environment.NewLine}    <city type=\"string\">Seattle</city>{Environment.NewLine}  </person>{Environment.NewLine}</root>"),
             Test("uriComponent('http://contoso.com')", "http%3A%2F%2Fcontoso.com"),
             Test("decodeUriComponent('http%3A%2F%2Fcontoso.com')", "http://contoso.com"),
             #endregion
