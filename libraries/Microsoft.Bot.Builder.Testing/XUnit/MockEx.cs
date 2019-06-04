@@ -3,10 +3,9 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
 using Moq;
 
-namespace Microsoft.BotBuilderSamples.Tests.Framework.XUnit
+namespace Microsoft.Bot.Builder.Testing.XUnit
 {
     /// <summary>
     /// Extension methods for XUnit <see cref="Mock"/>.

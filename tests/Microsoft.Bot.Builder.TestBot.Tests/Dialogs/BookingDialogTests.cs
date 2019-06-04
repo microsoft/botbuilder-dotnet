@@ -3,6 +3,8 @@
 
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Testing;
+using Microsoft.Bot.Builder.Testing.XUnit;
 using Microsoft.Bot.Schema;
 using Microsoft.BotBuilderSamples.Tests.Framework;
 using Microsoft.BotBuilderSamples.Tests.Framework.XUnit;

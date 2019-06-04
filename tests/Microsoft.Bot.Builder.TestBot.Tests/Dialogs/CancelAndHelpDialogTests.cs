@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Testing;
 using Microsoft.Bot.Schema;
 using Microsoft.BotBuilderSamples.Tests.Framework;
 using Xunit;

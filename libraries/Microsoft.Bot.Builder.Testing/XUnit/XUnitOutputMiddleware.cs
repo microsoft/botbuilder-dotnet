@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Xunit.Abstractions;
 using Activity = Microsoft.Bot.Schema.Activity;
 
-namespace Microsoft.BotBuilderSamples.Tests.Framework.XUnit
+namespace Microsoft.Bot.Builder.Testing.XUnit
 {
     /// <summary>
     /// A middleware to output incoming and outgoing activities as json strings to the console during
@@ -30,14 +29,14 @@ namespace Microsoft.BotBuilderSamples.Tests.Framework.XUnit
             stopwatch.Start();
             context.TurnState[XUnitStopWatchStateKey] = stopwatch;
             LogActivity("User: ", context.Activity);
-            context.OnSendActivities(OnSendActivities);
+            context.OnSendActivities(OnSendActivitiesAsync);
 
             await next(cancellationToken).ConfigureAwait(false);
         }
 
         private static string GetTextOrSpeak(IMessageActivity messageActivity) => string.IsNullOrWhiteSpace(messageActivity.Text) ? messageActivity.Speak : messageActivity.Text;
 
-        private async Task<ResourceResponse[]> OnSendActivities(ITurnContext context, List<Activity> activities, Func<Task<ResourceResponse[]>> next)
+        private async Task<ResourceResponse[]> OnSendActivitiesAsync(ITurnContext context, List<Activity> activities, Func<Task<ResourceResponse[]>> next)
         {
             var stopwatch = (Stopwatch)context.TurnState[XUnitStopWatchStateKey];
             foreach (var response in activities)
@@ -45,7 +44,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Framework.XUnit
                 LogActivity("Bot:  ", response, stopwatch);
             }
 
-            return await next();
+            return await next().ConfigureAwait(false);
         }
 
         private void LogActivity(string prefix, Activity contextActivity, Stopwatch stopwatch = null)

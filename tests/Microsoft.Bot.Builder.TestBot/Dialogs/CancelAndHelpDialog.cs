@@ -10,7 +10,7 @@ namespace Microsoft.BotBuilderSamples
 {
     public abstract class CancelAndHelpDialog : ComponentDialog
     {
-        public CancelAndHelpDialog(string id)
+        protected CancelAndHelpDialog(string id)
             : base(id)
         {
         }

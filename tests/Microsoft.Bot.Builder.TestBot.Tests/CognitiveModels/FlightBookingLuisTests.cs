@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.AI.Luis;
+using Microsoft.Bot.Builder.Testing.XUnit;
 using Microsoft.BotBuilderSamples.Tests.Framework.Luis;
 using Microsoft.BotBuilderSamples.Tests.Framework.XUnit;
 using Xunit;

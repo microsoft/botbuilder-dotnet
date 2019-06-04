@@ -45,7 +45,6 @@ namespace Microsoft.BotBuilderSamples.Tests.Bots
                 Times.Once);
         }
 
-
         [Fact]
         public async Task SavesTurnStateUsingMockWithVirtualSaveChangesAsync()
         {
@@ -102,6 +101,5 @@ namespace Microsoft.BotBuilderSamples.Tests.Bots
             // Assert that SaveChangesAsyncWasCalled
             Assert.True(false, "TODO");
         }
-
     }
 }

@@ -3,13 +3,12 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.BotBuilderSamples.Tests.Framework.XUnit;
+using Microsoft.Bot.Builder.Testing.XUnit;
 using Xunit.Abstractions;
 
-namespace Microsoft.BotBuilderSamples.Tests.Framework
+namespace Microsoft.Bot.Builder.Testing
 {
     /// <summary>
     /// A client to for testing dialogs in isolation.
@@ -33,22 +32,22 @@ namespace Microsoft.BotBuilderSamples.Tests.Framework
 
             _callback = async (turnContext, cancellationToken) =>
             {
-                var state = await dialogState.GetAsync(turnContext, () => new DialogState(), cancellationToken);
+                var state = await dialogState.GetAsync(turnContext, () => new DialogState(), cancellationToken).ConfigureAwait(false);
                 var dialogs = new DialogSet(dialogState);
 
                 dialogs.Add(targetDialog);
 
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken).ConfigureAwait(false);
 
-                DialogTurnResult = await dc.ContinueDialogAsync(cancellationToken);
+                DialogTurnResult = await dc.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
                 switch (DialogTurnResult.Status)
                 {
                     case DialogTurnStatus.Empty:
-                        DialogTurnResult = await dc.BeginDialogAsync(targetDialog.Id, initialDialogOptions, cancellationToken);
+                        DialogTurnResult = await dc.BeginDialogAsync(targetDialog.Id, initialDialogOptions, cancellationToken).ConfigureAwait(false);
                         break;
                     case DialogTurnStatus.Complete:
                     {
-                        // TODO: Dialog has ended
+                        // Dialog has ended
                         break;
                     }
                 }
@@ -65,7 +64,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Framework
         {
             var task = _testAdapter.SendTextToBotAsync(text, _callback, cancellationToken);
             task.Wait(cancellationToken);
-            return await GetNextReplyAsync<T>();
+            return await GetNextReplyAsync<T>().ConfigureAwait(false);
         }
 
         public Task<T> GetNextReplyAsync<T>()

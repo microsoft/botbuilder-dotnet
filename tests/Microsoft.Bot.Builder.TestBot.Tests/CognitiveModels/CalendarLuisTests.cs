@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.AI.Luis;
+using Microsoft.Bot.Builder.Testing.XUnit;
 using Microsoft.BotBuilderSamples.Tests.Framework.Luis;
 using Microsoft.BotBuilderSamples.Tests.Framework.XUnit;
 using Microsoft.Extensions.Configuration;
@@ -97,14 +98,14 @@ namespace Microsoft.BotBuilderSamples.Tests.CognitiveModels
 
                 Assert.Equal(expectedEntityValue, entityValues.FirstOrDefault()?["text"].ToString());
 
-                //foreach (var entityValue in entityValues)
-                //{
+                // foreach (var entityValue in entityValues)
+                // {
 
-                //}
+                // }
 
-                ////Assert.True(resultEntities.ContainsKey(entity.Entity), is);
-                //var actual = resultEntities[entity.Entity].FirstOrDefault()?.ToString();
-                //Assert.Equal(expectedEntityValue, actual);
+                // //Assert.True(resultEntities.ContainsKey(entity.Entity), is);
+                // var actual = resultEntities[entity.Entity].FirstOrDefault()?.ToString();
+                // Assert.Equal(expectedEntityValue, actual);
             }
         }
 

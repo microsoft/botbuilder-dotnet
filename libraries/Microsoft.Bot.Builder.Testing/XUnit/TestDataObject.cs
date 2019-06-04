@@ -4,7 +4,7 @@
 using Newtonsoft.Json;
 using Xunit.Abstractions;
 
-namespace Microsoft.BotBuilderSamples.Tests.Framework.XUnit
+namespace Microsoft.Bot.Builder.Testing.XUnit
 {
     /// <summary>
     /// A wrapper class for test data that enables support for enumerating test cases in Test Explorer.

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Bot.Builder.Testing.XUnit;
 using Microsoft.BotBuilderSamples.Tests.Framework.XUnit;
 
 namespace Microsoft.BotBuilderSamples.Tests.Dialogs
@@ -24,6 +25,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     { "tomorrow", $"Please confirm, I have you traveling to: Seattle from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
                     { "yes", "I have you booked to Seattle from New York on tomorrow" },
                 });
+
             yield return BuildTestDataItem(
                 "Full flow with 'no' at confirmation",
                 new BookingDetails(),
@@ -35,6 +37,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     { "tomorrow", $"Please confirm, I have you traveling to: Seattle from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
                     { "no", "OK, we can do this later." },
                 });
+
             yield return BuildTestDataItem(
                 "Destination given",
                 new BookingDetails
@@ -47,6 +50,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 {
                     { "hi", "Where are you traveling from?" },
                 });
+
             yield return BuildTestDataItem(
                 "Destination and Origin given",
                 new BookingDetails
@@ -59,6 +63,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 {
                     { "hi", "When would you like to travel?" },
                 });
+
             yield return BuildTestDataItem(
                 "All booking details given for today",
                 new BookingDetails
@@ -72,6 +77,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     { "hi", $"Please confirm, I have you traveling to: Seattle from: Bahamas on: {DateTime.UtcNow:yyyy-MM-dd} (1) Yes or (2) No" },
                     { "yes", "I have you booked to Seattle from Bahamas on today" },
                 });
+
             yield return BuildTestDataItem(
                 "All booking details given for tomorrow",
                 new BookingDetails
@@ -140,8 +146,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 BookingDetails = inputBookingInfo,
                 UtterancesAndReplies = utterancesAndReplies,
             };
-            var item = new object[] { new TestDataObject(testData) };
-            return item;
+            return new object[] { new TestDataObject(testData) };
         }
     }
 }
