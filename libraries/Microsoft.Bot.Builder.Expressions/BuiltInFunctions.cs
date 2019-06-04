@@ -1419,18 +1419,22 @@ namespace Microsoft.Bot.Builder.Expressions
                     var startExpr = expression.Children[1];
                     object startObj;
                     (startObj, error) = startExpr.TryEvaluate(state);
+                    var start = 0;
                     if (error == null && !startObj.IsInteger())
                     {
                         error = $"{startExpr} is not an integer.";
                     }
-                    var start = (int)startObj;
+                    else
+                    {
+                         start = (int)startObj;
+                    }
                     if (error == null && (start < 0 || start > list.Count))
                     {
                         error = $"{startExpr}={start} which is out of range for {arr}";
                     }
                     if (error == null)
                     {
-                        int end;
+                        var end = 0;
                         if (expression.Children.Length == 2)
                         {
                             end = list.Count;
@@ -1444,7 +1448,10 @@ namespace Microsoft.Bot.Builder.Expressions
                             {
                                 error = $"{endExpr} is not an integer.";
                             }
-                            end = (int)endObj;
+                            else
+                            {
+                                end = (int)endObj;
+                            }
                             if (error == null && (end < 0 || end > list.Count))
                             {
                                 error = $"{endExpr}={end} which is out of range for {arr}";
@@ -1540,7 +1547,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         args =>
                         {
                             string error = null;
-                            int[] result = null;
+                            IList result = null;
                             var count = (int)args[1];
                             if (count <= 0)
                             {
@@ -1548,8 +1555,9 @@ namespace Microsoft.Bot.Builder.Expressions
                             }
                             else
                             {
-                                result = Enumerable.Range(0, count).Select(x => x + (int)args[0]).ToArray<int>();
+                                result = Enumerable.Range((int) args[0], count).ToList();
                             }
+
                             return (result, error);
                         },
                         BuiltInFunctions.VerifyInteger),
@@ -1987,7 +1995,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 new ExpressionEvaluator(ExpressionType.DataUri, Apply(args => "data:text/plain;charset=utf-8;base64," + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0])), VerifyString), ReturnType.String, BuiltInFunctions.ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.DataUriToBinary, Apply(args => BuiltInFunctions.ToBinary(args[0]), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.DataUriToString, Apply(args => System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(args[0].Substring(args[0].IndexOf(",")+1))), VerifyString), ReturnType.String, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.DecodeUriComponent, Apply(args => Uri.UnescapeDataString(args[0]), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.UriComponentToString, Apply(args => Uri.UnescapeDataString(args[0]), VerifyString), ReturnType.String, ValidateUnary),
 
                 // TODO: Is this really the best way?
                 new ExpressionEvaluator(ExpressionType.String, Apply(args => JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"')), ReturnType.String, ValidateUnary),

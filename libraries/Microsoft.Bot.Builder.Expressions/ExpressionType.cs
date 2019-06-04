@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string DataUriToBinary = "dataUriToBinary";
         public const string DataUriToString = "dataUriToString";
         public const string UriComponent = "uriComponent";
-        public const string DecodeUriComponent = "decodeUriComponent";
+        public const string UriComponentToString = "uriComponentToString";
         public const string Xml = "xml";
 
         // Memory

@@ -294,7 +294,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("dataUriToString(dataUri(hello))","hello"),
             Test("xml('{\"person\": {\"name\": \"Sophia Owen\", \"city\": \"Seattle\"}}')", $"<root type=\"object\">{Environment.NewLine}  <person type=\"object\">{Environment.NewLine}    <name type=\"string\">Sophia Owen</name>{Environment.NewLine}    <city type=\"string\">Seattle</city>{Environment.NewLine}  </person>{Environment.NewLine}</root>"),
             Test("uriComponent('http://contoso.com')", "http%3A%2F%2Fcontoso.com"),
-            Test("decodeUriComponent('http%3A%2F%2Fcontoso.com')", "http://contoso.com"),
+            Test("uriComponentToString('http%3A%2F%2Fcontoso.com')", "http://contoso.com"),
             #endregion
 
             #region  Math functions test

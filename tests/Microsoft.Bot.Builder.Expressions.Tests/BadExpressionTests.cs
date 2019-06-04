@@ -144,8 +144,26 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("int(1, 1)"), // shold have 1 param
             Test("string(hello, 1)"), // shold have 1 param
             Test("bool(false, 1)"), // shold have 1 param
-            Test("array(one,two)"), // shold have 1 param
-            Test("binary(one,two)"), // shold have 1 param
+            Test("array(hello,world)"), // shold have 1 param
+            Test("array(one)"), // shold have 1 param
+            Test("DataUri(hello, world)"), // shoule have 1 param
+            Test("DataUri(false)"), //should have string param
+            Test("uriComponent(hello, world)"), // shoule have 1 param
+            Test("uriComponent(false)"), //should have string param
+            Test("uriComponentToString(hello, world)"), // shoule have 1 param
+            Test("uriComponentToString(false)"), //should have string param
+            Test("dataUriToBinary(hello, world)"), // shoule have 1 param
+            Test("dataUriToBinary(false)"), //should have string param
+            Test("dataUriToString(hello, world)"), // shoule have 1 param
+            Test("dataUriToString(false)"), //should have string param
+            Test("binary(hello, world)"),      // shoule have 1 param
+            Test("binary(one)"), //should have string param
+            Test("base64(hello, world)"),      // shoule have 1 param
+            Test("base64(one)"), //should have string param
+            Test("base64ToBinary(hello, world)"), // shoule have 1 param
+            Test("base64ToBinary(one)"), //should have string param
+            Test("base64ToString(hello, world)"), // shoule have 1 param
+            Test("base64ToString(false)"), //should have string param
             # endregion
 
             # region Math functions test
@@ -290,24 +308,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("setProperty(json('{\"key1\":\"value1\"}'), 1,'value2')"), // second param should be string
             Test("removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), 1))"),// second param should be string
             Test("removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), '1', '2'))"),// should have 2 parameter
-            Test("DataUri(hello, world)"), // shoule have 1 param
-            Test("DataUri(false)"), //should have string param
-            Test("uriComponent(hello, world)"), // shoule have 1 param
-            Test("uriComponent(false)"), //should have string param
-            Test("decodeUriComponent(hello, world)"), // shoule have 1 param
-            Test("decodeUriComponent(false)"), //should have string param
-            Test("dataUriToBinary(hello, world)"), // shoule have 1 param
-            Test("dataUriToBinary(false)"), //should have string param
-            Test("dataUriToString(hello, world)"), // shoule have 1 param
-            Test("dataUriToString(false)"), //should have string param
-            Test("binary(hello, world)"),      // shoule have 1 param
-            Test("binary(one)"), //should have string param
-            Test("base64(hello, world)"),      // shoule have 1 param
-            Test("base64(one)"), //should have string param
-            Test("base64ToBinary(hello, world)"), // shoule have 1 param
-            Test("base64ToBinary(one)"), //should have string param
-            Test("base64ToString(hello, world)"), // shoule have 1 param
-            Test("base64ToString(false)"), //should have string param
            # endregion
 
             # region Memory access test
