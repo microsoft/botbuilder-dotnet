@@ -4,15 +4,17 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.LanguageGeneration.Renderer;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
@@ -24,8 +26,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         private TestFlow CreateFlow(AdaptiveDialog ruleDialog)
         {
+            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+
             var explorer = new ResourceExplorer();
-            var lg = new LGLanguageGenerator(explorer);
             var storage = new MemoryStorage();
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
@@ -35,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .UseStorage(storage)
                 .UseState(userState, convoState)
                 .Use(new RegisterClassMiddleware<ResourceExplorer>(explorer))
-                .UseLanguageGenerator(lg)
+                .UseLanguageGeneration(explorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             var convoStateProperty = convoState.CreateProperty<Dictionary<string, object>>("conversation");

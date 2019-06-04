@@ -1,45 +1,50 @@
 {
-  "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
-  "$role": "unionType(Microsoft.IDialog)",
-  "title": "Adaptive Dialog",
-  "description": "Configures a data driven dialog via a collection of steps/dialogs.",
-  "type": "object",
-  "allOf": [
-    {
-      "$ref": "./baseSchema.json"
-    },
-    {
-      "properties": {
-        "autoEndDialog": {
-          "type": "boolean",
-          "title": "Auto End Dialog",
-          "description": "IF this is true the dialog will automatically end when there are no more steps to run.  If this is false it is the responsbility of the author to call EndDialog at an appropriate time."
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "Adaptive Dialog",
+    "description": "Configures a data driven dialog via a collection of steps/dialogs.",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "./baseSchema.json"
         },
-        "recognizer": {
-          "$type": "Microsoft.IRecognizer",
-          "title": "Recognizer",
-          "description": "Configured recognizer to generate intent and entites from user utterance"
-        },
-        "selector": {
-          "$type": "Microsoft.IRuleSelector",
-          "title": "Selector",
-          "description": "Policy for how to select rule to execute next"
-        },
-        "steps": {
-          "type": "array",
-          "description": "Initial Sequence of steps or dialogs to execute when dialog is started",
-          "items": {
-            "$type": "Microsoft.IDialog"
-          }
-        },
-        "rules": {
-          "type": "array",
-          "description": "Array of rules to use to evaluate conversation",
-          "items": {
-            "$type": "Microsoft.IRule"
-          }
+        {
+            "properties": {
+                "autoEndDialog": {
+                    "type": "boolean",
+                    "title": "Auto End Dialog",
+                    "description": "IF this is true the dialog will automatically end when there are no more steps to run.  If this is false it is the responsbility of the author to call EndDialog at an appropriate time."
+                },
+                "recognizer": {
+                    "$type": "Microsoft.IRecognizer",
+                    "title": "Recognizer",
+                    "description": "Configured recognizer to generate intent and entites from user utterance"
+                },
+                "generator": {
+                    "$type": "Microsoft.ILanguageGenerator",
+                    "title": "Language Generator",
+                    "description": "Language generator to use for this dialog. (aka: LG file)"
+                },
+                "selector": {
+                    "$type": "Microsoft.IRuleSelector",
+                    "title": "Selector",
+                    "description": "Policy for how to select rule to execute next"
+                },
+                "steps": {
+                    "type": "array",
+                    "description": "Initial Sequence of steps or dialogs to execute when dialog is started",
+                    "items": {
+                        "$type": "Microsoft.IDialog"
+                    }
+                },
+                "rules": {
+                    "type": "array",
+                    "description": "Array of rules to use to evaluate conversation",
+                    "items": {
+                        "$type": "Microsoft.IRule"
+                    }
+                }
+            }
         }
-      }
-    }
-  ]
+    ]
 }

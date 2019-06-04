@@ -1,6 +1,7 @@
 {
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
+    "generator": "GithubIssueBot.main.lg",
     "steps": [
         {
             "$type": "Microsoft.SendActivity",

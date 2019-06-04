@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         {
             if (this.Changed != null)
             {
-                this.Changed(new string[] { e.Name, e.OldName });
+                this.Changed(new IResource[] { new FileResource(e.FullPath)/*, new FileResource(e.OldFullPath) */});
             }
         }
 
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         {
             if (this.Changed != null)
             {
-                this.Changed(new string[] { e.Name });
+                this.Changed(new IResource[] { new FileResource(e.FullPath) });
             }
         }
 

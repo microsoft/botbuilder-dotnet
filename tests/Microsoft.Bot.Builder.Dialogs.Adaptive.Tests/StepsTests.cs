@@ -4,7 +4,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.LanguageGeneration.Renderer;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
@@ -18,6 +17,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Bot.Builder.LanguageGeneration;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -33,13 +33,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
             var resourceExplorer = new ResourceExplorer();
-            var lg = new LGLanguageGenerator(resourceExplorer);
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace);
             adapter
                 .UseStorage(storage)
                 .UseState(userState, convoState)
                 .UseResourceExplorer(resourceExplorer)
-                .UseLanguageGenerator(lg)
+                .UseLanguageGeneration(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>

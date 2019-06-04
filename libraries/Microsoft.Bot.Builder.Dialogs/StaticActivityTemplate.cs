@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public override string ToString()
         {
-            return $"{nameof(ActivityPropertyTemplate)}({this.Activity.Text})";
+            return $"{this.Activity.Text}";
         }
     }
 }
