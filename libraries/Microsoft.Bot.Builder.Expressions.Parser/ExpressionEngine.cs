@@ -83,20 +83,10 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             {
                 var parameters = ProcessArgsList(context.argsList()).ToList();
 
-                // if context.primaryExpression() is idAtom --> normal function
+                // Current only IdAtom is supported as function name
                 if (context.primaryExpression() is ExpressionParser.IdAtomContext functionNameItem)
                 {
                     var functionName = functionNameItem.GetText();
-                    return MakeExpression(functionName, parameters.ToArray());
-                }
-
-                // TODO: We really should interpret this as a function with a namespace and not an accessor with a function.  Should also loop over them.
-                // if context.primaryExpression() is memberaccessExp --> accessor
-                if (context.primaryExpression() is ExpressionParser.MemberAccessExpContext memberAccessExp)
-                {
-                    var instance = Visit(memberAccessExp.primaryExpression());
-                    var functionName = memberAccessExp.IDENTIFIER().GetText();
-                    parameters.Insert(0, instance);
                     return MakeExpression(functionName, parameters.ToArray());
                 }
 
