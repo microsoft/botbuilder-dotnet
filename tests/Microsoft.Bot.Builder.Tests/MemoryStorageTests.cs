@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -30,6 +32,13 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
+        public void MemoryParamTest()
+        {
+            Assert.ThrowsException<ArgumentNullException>(() =>
+                new MemoryStorage((JsonSerializer)null));
+        }
+
+        [TestMethod]
         public async Task MemoryStorage_ReadUnknownTest()
         {
             await ReadUnknownTest(storage);
@@ -51,6 +60,13 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task MemoryStorage_HandleCrazyKeys()
         {
             await HandleCrazyKeys(storage);
+        }
+
+        [TestMethod]
+        public async Task StatePersistsThroughMultiTurn_TypeNameHandlingNone()
+        {
+            storage = new MemoryStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.None });
+            await StatePersistsThroughMultiTurn(storage);
         }
     }
 }

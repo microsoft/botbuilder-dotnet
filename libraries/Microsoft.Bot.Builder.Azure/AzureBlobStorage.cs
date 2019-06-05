@@ -36,9 +36,34 @@ namespace Microsoft.Bot.Builder.Azure
             TypeNameHandling = TypeNameHandling.All,
         });
 
+        // If a JsonSerializer is not provided during construction, this will be the default static JsonSerializer.
+        private readonly JsonSerializer _jsonSerializer;
         private readonly CloudStorageAccount _storageAccount;
         private readonly string _containerName;
         private int _checkforContainerExistance;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AzureBlobStorage"/> class.
+        /// </summary>
+        /// <param name="storageAccount">Azure CloudStorageAccount instance.</param>
+        /// <param name="containerName">Name of the Blob container where entities will be stored.</param>
+        /// <param name="jsonSerializer">If passing in a custom JsonSerializer, we recommend the following settings:
+        /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.All.</para>
+        /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
+        /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
+        /// </param>
+        public AzureBlobStorage(CloudStorageAccount storageAccount, string containerName, JsonSerializer jsonSerializer)
+        {
+            _jsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
+            _storageAccount = storageAccount ?? throw new ArgumentNullException(nameof(storageAccount));
+            _containerName = containerName ?? throw new ArgumentNullException(nameof(containerName));
+
+            // Checks if a container name is valid
+            NameValidator.ValidateContainerName(containerName);
+
+            // Triggers a check for the existance of the container
+            _checkforContainerExistance = 1;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureBlobStorage"/> class.
@@ -56,15 +81,8 @@ namespace Microsoft.Bot.Builder.Azure
         /// <param name="storageAccount">Azure CloudStorageAccount instance.</param>
         /// <param name="containerName">Name of the Blob container where entities will be stored.</param>
         public AzureBlobStorage(CloudStorageAccount storageAccount, string containerName)
+            : this(storageAccount, containerName, JsonSerializer)
         {
-            _storageAccount = storageAccount ?? throw new ArgumentNullException(nameof(storageAccount));
-            _containerName = containerName ?? throw new ArgumentNullException(nameof(containerName));
-
-            // Checks if a container name is valid
-            NameValidator.ValidateContainerName(containerName);
-
-            // Triggers a check for the existance of the container
-            _checkforContainerExistance = 1;
         }
 
         /// <summary>
@@ -179,7 +197,7 @@ namespace Microsoft.Bot.Builder.Azure
                     using (var memoryStream = new MultiBufferMemoryStream(blobReference.ServiceClient.BufferManager))
                     using (var streamWriter = new StreamWriter(memoryStream))
                     {
-                        JsonSerializer.Serialize(streamWriter, newValue);
+                        _jsonSerializer.Serialize(streamWriter, newValue);
                         streamWriter.Flush();
                         memoryStream.Seek(0, SeekOrigin.Begin);
                         await blobReference.UploadFromStreamAsync(memoryStream, accessCondition, blobRequestOptions, operationContext, cancellationToken).ConfigureAwait(false);
@@ -208,7 +226,7 @@ namespace Microsoft.Bot.Builder.Azure
             return blobName;
         }
 
-        private static async Task<object> InnerReadBlobAsync(CloudBlob blobReference, CancellationToken cancellationToken)
+        private async Task<object> InnerReadBlobAsync(CloudBlob blobReference, CancellationToken cancellationToken)
         {
             var i = 0;
             while (true)
@@ -221,7 +239,7 @@ namespace Microsoft.Bot.Builder.Azure
                     using (var blobStream = await blobReference.OpenReadAsync(null, options, new OperationContext(), cancellationToken).ConfigureAwait(false))
                     using (var jsonReader = new JsonTextReader(new StreamReader(blobStream)))
                     {
-                        var obj = JsonSerializer.Deserialize(jsonReader);
+                        var obj = _jsonSerializer.Deserialize(jsonReader);
 
                         if (obj is IStoreItem storeItem)
                         {

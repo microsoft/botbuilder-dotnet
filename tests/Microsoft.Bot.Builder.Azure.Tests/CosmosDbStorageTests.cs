@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 }
             }
         }
-
+        
         [TestMethod]
         public void Sanatize_Key_Should_Work()
         {
@@ -533,6 +533,19 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
                 // Should throw DocumentClientException: Cross partition query is required but disabled
                 await Assert.ThrowsExceptionAsync<DocumentClientException>(async () => await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None));
+            }
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
+        public async Task StatePersistsThroughMultiTurn_TypeNameHandlingNone()
+        {
+            if (CheckEmulator())
+            {
+                var storage = new CosmosDbStorage(
+                                   CreateCosmosDbStorageOptions(),
+                                   new JsonSerializer() { TypeNameHandling = TypeNameHandling.None });
+                await StatePersistsThroughMultiTurn(storage);
             }
         }
 
