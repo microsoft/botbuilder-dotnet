@@ -111,6 +111,15 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("countWord(one)"),// should have string param
             Test("addOrdinal(one)"),// should have Integer param
             Test("addOrdinal(one, two)"),// should have one param
+            Test("newGuid(one)"), // should have no parameters
+            Test("indexOf(hello)"), // should have two parameters
+            Test("indexOf(hello, world, one)"), // should have two parameters
+            Test("indexOf(hello, one)"), // both parameters should be string
+            Test("indexOf(one, hello)"), // both parameters should be string
+            Test("lastIndexOf(hello)"),// should have two parameters
+            Test("lastIndexOf(hello, world, one)"), // should have two parameters
+            Test("lastIndexOf(hello, one)"), // both parameters should be string
+            Test("lastIndexOf(one, hello)"), // both parameters should be string
             # endregion
 
             # region Logical comparison functions test
@@ -136,6 +145,26 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("int(1, 1)"), // shold have 1 param
             Test("string(hello, 1)"), // shold have 1 param
             Test("bool(false, 1)"), // shold have 1 param
+            Test("array(hello,world)"), // shold have 1 param
+            Test("array(one)"), // shold have 1 param
+            Test("DataUri(hello, world)"), // shoule have 1 param
+            Test("DataUri(false)"), //should have string param
+            Test("uriComponent(hello, world)"), // shoule have 1 param
+            Test("uriComponent(false)"), //should have string param
+            Test("uriComponentToString(hello, world)"), // shoule have 1 param
+            Test("uriComponentToString(false)"), //should have string param
+            Test("dataUriToBinary(hello, world)"), // shoule have 1 param
+            Test("dataUriToBinary(false)"), //should have string param
+            Test("dataUriToString(hello, world)"), // shoule have 1 param
+            Test("dataUriToString(false)"), //should have string param
+            Test("binary(hello, world)"),      // shoule have 1 param
+            Test("binary(one)"), //should have string param
+            Test("base64(hello, world)"),      // shoule have 1 param
+            Test("base64(one)"), //should have string param
+            Test("base64ToBinary(hello, world)"), // shoule have 1 param
+            Test("base64ToBinary(one)"), //should have string param
+            Test("base64ToString(hello, world)"), // shoule have 1 param
+            Test("base64ToString(false)"), //should have string param
             # endregion
 
             # region Math functions test
@@ -165,6 +194,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("rand(5)"), //  need two params
             Test("rand(7, 6)"), //  minvalue cannot be greater than maxValue
             Test("sum(items)"), //  should have number parameters
+            Test("range(hello,one)"), // params should be integer
+            Test("range(one,0)"), //the second param should be more than 0
             #endregion
             
             #region Date and time function test
@@ -257,6 +288,18 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("foreach(items, x, sum(x))"),// third paramter error
             Test("union(one, two)"),// should have collection param
             Test("intersection(one, two)"),// should have collection param
+            Test("skip(one, two)"), //should have collection param
+            Test("skip(items,-1)"), //the second parameter shoule not less than zero
+            Test("skip(items,3)"), //the second parameter shoule  less than the length of the collection
+            Test("take(one, two)"), //should have collection param
+            Test("take(createArray('H','e','l','l','0'),items[5])"), // the second param expr is wrong
+            Test("take(items,-1)"), //the second parameter shoule not less than zero
+            Test("take(items,4)"), //the second parameter shoule  less than the length of the collection
+            Test("subArray(one,1,4)"), //should have collection param
+            Test("subArray(items,-1,4)"), //the second parameter shoule not less than zero
+            Test("subArray(items,1,4)"), //the second parameter shoule  less than the length of the collection
+            Test("subArray(createArray('H','e','l','l','o'),items[5],5)"), //the second parameter expression is invalid
+            Test("subArray(createArray('H','e','l','l','o'),2,items[5])"), //the second parameter expression is invalid
             # endregion
 
             # region Object manipulation and construction functions test
