@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     {
         // Expression used to compute the list that should be enumerated.
         [JsonProperty("ListProperty")]
-        public string ListProperty { get; set; }
+        public Expression ListProperty { get; set; }
 
         // In-memory property that will contain the current items index. Defaults to `dialog.index`.
         [JsonProperty("IndexProperty")]
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             // Ensure planning context
             if (dc is PlanningContext planning)
             {
-                string listProperty = null;
+                Expression listProperty = null;
                 int offset = 0;
                 if (options != null && options is ForeachOptions)
                 {
@@ -64,34 +64,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
                 if (listProperty == null)
                 {
-                    listProperty = await new TextTemplate(this.ListProperty).BindToData(dc.Context, dc.State).ConfigureAwait(false);
+                    listProperty = this.ListProperty;
                 }
 
-                var itemList = dc.State.GetValue(listProperty, new JArray());
-                var item = this.GetItem(itemList, offset);
+                var (itemList, error) = listProperty.TryEvaluate(dc.State);
 
-                if (item != null)
+                if (error == null)
                 {
-                    dc.State.SetValue(this.ValueProperty, item);
-                    dc.State.SetValue(this.IndexProperty, offset);
-                    var changes = new PlanChangeList()
+                    var item = this.GetItem(itemList, offset);
+                    if (item != null)
                     {
-                        ChangeType = PlanChangeTypes.DoSteps,
-                        Steps = new List<PlanStepState>()
-                    };
-                    this.Steps.ForEach(step => changes.Steps.Add(new PlanStepState(step.Id)));
-
-                    changes.Steps.Add(new PlanStepState()
-                    {
-                        DialogStack = new List<DialogInstance>(),
-                        DialogId = this.Id,
-                        Options = new ForeachOptions()
+                        dc.State.SetValue(this.ValueProperty, item);
+                        dc.State.SetValue(this.IndexProperty, offset);
+                        var changes = new PlanChangeList()
                         {
-                            list = listProperty,
-                            offset = offset + 1
-                        }
-                    });
-                    planning.QueueChanges(changes);
+                            ChangeType = PlanChangeTypes.DoSteps,
+                            Steps = new List<PlanStepState>()
+                        };
+                        this.Steps.ForEach(step => changes.Steps.Add(new PlanStepState(step.Id)));
+
+                        changes.Steps.Add(new PlanStepState()
+                        {
+                            DialogStack = new List<DialogInstance>(),
+                            DialogId = this.Id,
+                            Options = new ForeachOptions()
+                            {
+                                list = listProperty,
+                                offset = offset + 1
+                            }
+                        });
+                        planning.QueueChanges(changes);
+                    }
                 }
 
                 return await planning.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -131,7 +134,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
         public class ForeachOptions
         {
-            public string list { get; set; }
+            public Expression list { get; set; }
             public int offset { get; set; }
         }
     }

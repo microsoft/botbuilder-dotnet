@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     {
         // Expression used to compute the list that should be enumerated.
         [JsonProperty("ListProperty")]
-        public string ListProperty { get; set; }
+        public Expression ListProperty { get; set; }
 
         [JsonProperty("PageSize")]
         public int PageSize { get; set; } = 10;
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             // Ensure planning context
             if (dc is PlanningContext planning)
             {
-                string listProperty = null;
+                Expression listProperty = null;
                 int offset = 0;
                 int pageSize = 0;
                 if (options != null && options is ForeachPageOptions)
@@ -63,40 +63,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     pageSize = opt.pageSize;
                 }
 
-                if (listProperty == null)
-                {
-                    listProperty = await new TextTemplate(this.ListProperty).BindToData(dc.Context, dc.State).ConfigureAwait(false);
-                }
                 if (pageSize == 0)
                 {
                     pageSize = this.PageSize;
                 }
 
-                var itemList = dc.State.GetValue(listProperty, new JArray());
-                var page = this.GetPage(itemList, offset, pageSize);
-
-                if (page.Count() > 0)
+                if (listProperty == null)
                 {
-                    dc.State.SetValue(this.ValueProperty, page);
-                    var changes = new PlanChangeList()
-                    {
-                        ChangeType = PlanChangeTypes.DoSteps,
-                        Steps = new List<PlanStepState>()
-                    };
-                    this.Steps.ForEach(step => changes.Steps.Add(new PlanStepState(step.Id)));
+                    listProperty = this.ListProperty;
+                }
 
-                    changes.Steps.Add(new PlanStepState()
+                var (itemList, error) = listProperty.TryEvaluate(dc.State);
+                if (error == null)
+                {
+                    var page = this.GetPage(itemList, offset, pageSize);
+
+                    if (page.Count() > 0)
                     {
-                        DialogStack = new List<DialogInstance>(),
-                        DialogId = this.Id,
-                        Options = new ForeachPageOptions()
+                        dc.State.SetValue(this.ValueProperty, page);
+                        var changes = new PlanChangeList()
                         {
-                            list = listProperty,
-                            offset = offset + pageSize,
-                            pageSize = pageSize
-                        }
-                    });
-                    planning.QueueChanges(changes);
+                            ChangeType = PlanChangeTypes.DoSteps,
+                            Steps = new List<PlanStepState>()
+                        };
+                        this.Steps.ForEach(step => changes.Steps.Add(new PlanStepState(step.Id)));
+
+                        changes.Steps.Add(new PlanStepState()
+                        {
+                            DialogStack = new List<DialogInstance>(),
+                            DialogId = this.Id,
+                            Options = new ForeachPageOptions()
+                            {
+                                list = listProperty,
+                                offset = offset + pageSize,
+                                pageSize = pageSize
+                            }
+                        });
+                        planning.QueueChanges(changes);
+                    }
                 }
 
                 return await planning.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -142,7 +146,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
         public class ForeachPageOptions
         {
-            public string list { get; set; }
+            public Expression list { get; set; }
             public int offset { get; set; }
             public int pageSize { get; set; }
         }
