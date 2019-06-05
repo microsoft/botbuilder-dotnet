@@ -17,7 +17,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Bots
         public async Task ReturnsWelcomeCardOnConversationUpdate()
         {
             // Arrange
-            var mockRootDialog = DialogUtils.CreateMockDialog<Dialog>(expectedResult: null, "mockRootDialog");
+            var mockRootDialog = DialogUtils.CreateMockDialog<Dialog>(null, "mockRootDialog");
 
             // TODO: do we need state here?
             var memoryStorage = new MemoryStorage();
