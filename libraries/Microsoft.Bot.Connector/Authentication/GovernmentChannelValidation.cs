@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// setup and teardown, so a shared HttpClient is recommended.</param>
         /// <param name="channelId">The ID of the channel to validate.</param>
         /// <returns>ClaimsIdentity.</returns>
-        public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, string serviceUrl, HttpClient httpClient, string channelId)
+        public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, string serviceUrl, HttpClient httpClient, string channelId, AuthenticationConfiguration authConfig = null)
         {
             var tokenExtractor = new JwtTokenExtractor(
                 httpClient,
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 OpenIdMetadataUrl,
                 AuthenticationConstants.AllowedSigningAlgorithms);
 
-            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId).ConfigureAwait(false);
+            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, authConfig?.RequiredEndorsements).ConfigureAwait(false);
 
             await ValidateIdentity(identity, credentials, serviceUrl).ConfigureAwait(false);
 

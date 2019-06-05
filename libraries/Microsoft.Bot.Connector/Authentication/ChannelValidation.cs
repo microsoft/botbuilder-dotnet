@@ -48,10 +48,11 @@ namespace Microsoft.Bot.Connector.Authentication
         /// HttpClient is used for making those calls. Those calls generally require TLS connections, which are expensive to
         /// setup and teardown, so a shared HttpClient is recommended.</param>
         /// <param name="channelId">The ID of the channel to validate.</param>
+        /// <param name="authConfig">The optional authentication configuration.</param>
         /// <returns>
         /// A valid ClaimsIdentity.
         /// </returns>
-        public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, HttpClient httpClient, string channelId)
+        public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, HttpClient httpClient, string channelId, AuthenticationConfiguration authConfig = null)
         {
             var tokenExtractor = new JwtTokenExtractor(
                 httpClient,
@@ -59,7 +60,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 OpenIdMetadataUrl,
                 AuthenticationConstants.AllowedSigningAlgorithms);
 
-            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId);
+            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, authConfig?.RequiredEndorsements);
             if (identity == null)
             {
                 // No valid identity. Not Authorized.
@@ -115,10 +116,11 @@ namespace Microsoft.Bot.Connector.Authentication
         /// HttpClient is used for making those calls. Those calls generally require TLS connections, which are expensive to
         /// setup and teardown, so a shared HttpClient is recommended.</param>
         /// <param name="channelId">The ID of the channel to validate.</param>
+        /// <param name="authConfig">The optional authentication configuration.</param>
         /// <returns>ClaimsIdentity.</returns>
-        public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, string serviceUrl, HttpClient httpClient, string channelId)
+        public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, string serviceUrl, HttpClient httpClient, string channelId, AuthenticationConfiguration authConfig = null)
         {
-            var identity = await AuthenticateChannelToken(authHeader, credentials, httpClient, channelId);
+            var identity = await AuthenticateChannelToken(authHeader, credentials, httpClient, channelId, authConfig);
 
             var serviceUrlClaim = identity.Claims.FirstOrDefault(claim => claim.Type == AuthenticationConstants.ServiceUrlClaim)?.Value;
             if (string.IsNullOrWhiteSpace(serviceUrlClaim))

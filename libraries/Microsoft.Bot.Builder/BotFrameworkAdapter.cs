@@ -54,6 +54,7 @@ namespace Microsoft.Bot.Builder
         private readonly RetryPolicy _connectorClientRetryPolicy;
         private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, MicrosoftAppCredentials> _appCredentialMap = new ConcurrentDictionary<string, MicrosoftAppCredentials>();
+        private readonly AuthenticationConfiguration _authConfiguration;
 
         // There is a significant boost in throughput if we reuse a connectorClient
         // _connectorClients is a cache using [serviceUrl + appId].
@@ -69,6 +70,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="customHttpClient">The HTTP client.</param>
         /// <param name="middleware">The middleware to initially add to the adapter.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
+        /// <param name="authConfig">The optional authentication configuration.</param>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="credentialProvider"/> is <c>null</c>.</exception>
         /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
@@ -81,13 +83,15 @@ namespace Microsoft.Bot.Builder
             RetryPolicy connectorClientRetryPolicy = null,
             HttpClient customHttpClient = null,
             IMiddleware middleware = null,
-            ILogger logger = null)
+            ILogger logger = null,
+            AuthenticationConfiguration authConfig = null)
         {
             _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
             _channelProvider = channelProvider;
             _httpClient = customHttpClient ?? _defaultHttpClient;
             _connectorClientRetryPolicy = connectorClientRetryPolicy;
             _logger = logger ?? NullLogger.Instance;
+            _authConfiguration = authConfig;
 
             if (middleware != null)
             {
@@ -211,7 +215,7 @@ namespace Microsoft.Bot.Builder
         {
             BotAssert.ActivityNotNull(activity);
 
-            var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _channelProvider, _httpClient).ConfigureAwait(false);
+            var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _channelProvider, _httpClient, _authConfiguration).ConfigureAwait(false);
             return await ProcessActivityAsync(claimsIdentity, activity, callback, cancellationToken).ConfigureAwait(false);
         }
 

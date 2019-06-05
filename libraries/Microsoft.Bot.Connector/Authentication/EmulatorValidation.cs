@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <remarks>
         /// A token issued by the Bot Framework will FAIL this check. Only Emulator tokens will pass.
         /// </remarks>
-        public static async Task<ClaimsIdentity> AuthenticateEmulatorToken(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, HttpClient httpClient, string channelId)
+        public static async Task<ClaimsIdentity> AuthenticateEmulatorToken(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, HttpClient httpClient, string channelId, AuthenticationConfiguration authConfig = null)
         {
             var openIdMetadataUrl = (channelProvider != null && channelProvider.IsGovernment()) ?
                 GovernmentAuthenticationConstants.ToBotFromEmulatorOpenIdMetadataUrl :
@@ -121,7 +121,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     openIdMetadataUrl,
                     AuthenticationConstants.AllowedSigningAlgorithms);
 
-            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId);
+            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, authConfig?.RequiredEndorsements);
             if (identity == null)
             {
                 // No valid identity. Not Authorized.

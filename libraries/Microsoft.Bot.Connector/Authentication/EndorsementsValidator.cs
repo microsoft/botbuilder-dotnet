@@ -17,18 +17,18 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <see cref="Schema.Activity.ChannelId"/> property is set to "webchat" and the signing party
         /// of the JWT token must have a corresponding endorsement of “Webchat”.
         /// </summary>
-        /// <param name="channelId">The ID of the channel to validate, typically extracted from the activity's
+        /// <param name="expectedEndorsement">The expected endorsement. Generally the ID of the channel to validate, typically extracted from the activity's
         /// <see cref="Schema.Activity.ChannelId"/> property, that to which the Activity is affinitized.</param>
         /// <param name="endorsements">The JWT token’s signing party is permitted to send activities only for
         /// specific channels. That list, the set of channels the service can sign for, is called the the endorsement list.
         /// The activity’s <see cref="Schema.Activity.ChannelId"/> MUST be found in the endorsement list, or the incoming
         /// activity is not considered valid.</param>
         /// <returns>True if the channel ID is found in the endorsements list; otherwise, false.</returns>
-        public static bool Validate(string channelId, HashSet<string> endorsements)
+        public static bool Validate(string expectedEndorsement, HashSet<string> endorsements)
         {
             // If the Activity came in and doesn't have a channel ID then it's making no
             // assertions as to who endorses it. This means it should pass.
-            if (string.IsNullOrEmpty(channelId))
+            if (string.IsNullOrEmpty(expectedEndorsement))
             {
                 return true;
             }
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Connector.Authentication
             //          JWTTokenExtractor
 
             // Does the set of endorsements match the channelId that was passed in?
-            var endorsementPresent = endorsements.Contains(channelId);
+            var endorsementPresent = endorsements.Contains(expectedEndorsement);
             return endorsementPresent;
         }
     }

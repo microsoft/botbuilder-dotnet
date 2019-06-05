@@ -61,26 +61,34 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="tokenValidationParameters">tokenValidationParameters.</param>
         /// <param name="metadataUrl">metadataUrl.</param>
         /// <param name="allowedSigningAlgorithms">allowedSigningAlgorithms.</param>
-        public JwtTokenExtractor(HttpClient httpClient, TokenValidationParameters tokenValidationParameters, string metadataUrl, HashSet<string> allowedSigningAlgorithms)
+        /// <param name="customEndorsementsConfig">Custom endorsement configuration to be used by the JwtTokenExtractor.</param>
+        /// <param name="customOpenIdConnectConfig">Custom OpenId connect configuration to be used by the JwtTokenExtractor.</param>
+        public JwtTokenExtractor(
+            HttpClient httpClient,
+            TokenValidationParameters tokenValidationParameters,
+            string metadataUrl,
+            HashSet<string> allowedSigningAlgorithms,
+            ConfigurationManager<IDictionary<string, HashSet<string>>> customEndorsementsConfig = null,
+            ConfigurationManager<OpenIdConnectConfiguration> customOpenIdConnectConfig = null)
         {
             // Make our own copy so we can edit it
             _tokenValidationParameters = tokenValidationParameters.Clone();
             _tokenValidationParameters.RequireSignedTokens = true;
             _allowedSigningAlgorithms = allowedSigningAlgorithms;
 
-            _openIdMetadata = _openIdMetadataCache.GetOrAdd(metadataUrl, key =>
+            _openIdMetadata = customOpenIdConnectConfig ?? _openIdMetadataCache.GetOrAdd(metadataUrl, key =>
             {
                 return new ConfigurationManager<OpenIdConnectConfiguration>(metadataUrl, new OpenIdConnectConfigurationRetriever(), httpClient);
             });
 
-            _endorsementsData = _endorsementsCache.GetOrAdd(metadataUrl, key =>
+            _endorsementsData = customEndorsementsConfig ?? _endorsementsCache.GetOrAdd(metadataUrl, key =>
             {
                 var retriever = new EndorsementsRetriever(httpClient);
                 return new ConfigurationManager<IDictionary<string, HashSet<string>>>(metadataUrl, retriever, retriever);
             });
         }
 
-        public async Task<ClaimsIdentity> GetIdentityAsync(string authorizationHeader, string channelId)
+        public async Task<ClaimsIdentity> GetIdentityAsync(string authorizationHeader, string channelId, string[] requiredEndorsements = null)
         {
             if (authorizationHeader == null)
             {
@@ -90,13 +98,13 @@ namespace Microsoft.Bot.Connector.Authentication
             string[] parts = authorizationHeader?.Split(' ');
             if (parts.Length == 2)
             {
-                return await GetIdentityAsync(parts[0], parts[1], channelId).ConfigureAwait(false);
+                return await GetIdentityAsync(parts[0], parts[1], channelId, requiredEndorsements).ConfigureAwait(false);
             }
 
             return null;
         }
 
-        public async Task<ClaimsIdentity> GetIdentityAsync(string scheme, string parameter, string channelId)
+        public async Task<ClaimsIdentity> GetIdentityAsync(string scheme, string parameter, string channelId, string[] requiredEndorsements = null)
         {
             // No header in correct scheme or no token
             if (scheme != "Bearer" || string.IsNullOrEmpty(parameter))
@@ -112,7 +120,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             try
             {
-                var claimsPrincipal = await ValidateTokenAsync(parameter, channelId).ConfigureAwait(false);
+                var claimsPrincipal = await ValidateTokenAsync(parameter, channelId, requiredEndorsements).ConfigureAwait(false);
                 return claimsPrincipal.Identities.OfType<ClaimsIdentity>().FirstOrDefault();
             }
             catch (Exception e)
@@ -124,7 +132,13 @@ namespace Microsoft.Bot.Connector.Authentication
 
         private bool HasAllowedIssuer(string jwtToken)
         {
+            if (!_tokenValidationParameters.ValidateIssuer)
+            {
+                return true;
+            }
+
             JwtSecurityToken token = new JwtSecurityToken(jwtToken);
+
             if (_tokenValidationParameters.ValidIssuer != null && _tokenValidationParameters.ValidIssuer == token.Issuer)
             {
                 return true;
@@ -138,7 +152,7 @@ namespace Microsoft.Bot.Connector.Authentication
             return false;
         }
 
-        private async Task<ClaimsPrincipal> ValidateTokenAsync(string jwtToken, string channelId)
+        private async Task<ClaimsPrincipal> ValidateTokenAsync(string jwtToken, string channelId, string[] requiredEndorsements = null)
         {
             // _openIdMetadata only does a full refresh when the cache expires every 5 days
             OpenIdConnectConfiguration config = null;
@@ -161,6 +175,7 @@ namespace Microsoft.Bot.Connector.Authentication
             _tokenValidationParameters.IssuerSigningKeys = config.SigningKeys;
 
             var tokenHandler = new JwtSecurityTokenHandler();
+
             try
             {
                 var principal = tokenHandler.ValidateToken(jwtToken, _tokenValidationParameters, out SecurityToken parsedToken);
@@ -175,10 +190,22 @@ namespace Microsoft.Bot.Connector.Authentication
                 // below won't run. This is normal.
                 if (!string.IsNullOrEmpty(keyId) && endorsements.TryGetValue(keyId, out var endorsementsForKey))
                 {
+                    // Verify that channelId is included in endorsements
                     var isEndorsed = EndorsementsValidator.Validate(channelId, endorsementsForKey);
+
                     if (!isEndorsed)
                     {
                         throw new UnauthorizedAccessException($"Could not validate endorsement for key: {keyId} with endorsements: {string.Join(",", endorsementsForKey)}");
+                    }
+
+                    // Verify that additional endorsements are satisfied. If no additional endorsements are expected, the requirement is satisfied as well
+                    var additionalEndorsementsSatisfied = requiredEndorsements == null ? true : 
+                        requiredEndorsements.All(
+                            endorsement => EndorsementsValidator.Validate(endorsement, endorsementsForKey));
+
+                    if (!additionalEndorsementsSatisfied)
+                    {
+                        throw new UnauthorizedAccessException($"Could not validate additional endorsement for key: {keyId} with endorsements: {string.Join(",", endorsementsForKey)}. Expected endorsements: {string.Join(",", requiredEndorsements)}");
                     }
                 }
 
