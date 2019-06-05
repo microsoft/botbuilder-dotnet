@@ -31,6 +31,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("func(A,b,b,)"),
             Test("a.#title"),
             Test("\"hello'"),
+            Test("'hello'.length()") // not support currently
         };
 
 
