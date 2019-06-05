@@ -317,6 +317,13 @@ namespace Microsoft.Bot.Builder.Dialogs
                     throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
                 }
 
+                // Getting the token follows a different flow in Teams. At the signin completion, Teams
+                // will send the bot an "invoke" activity that contains a "magic" code. This code MUST
+                // then be used to try fetching the token from Botframework service within some time
+                // period. We try here. If it succeeds, we return 200 with an empty body. If it fails
+                // with a retriable error, we return 500. Teams will re-send another invoke in this case.
+                // If it failes with a non-retriable error, we return 404. Teams will not (still work in
+                // progress) retry in that case.
                 try
                 {
                     var token = await adapter.GetUserTokenAsync(turnContext, _settings.ConnectionName, magicCode, cancellationToken).ConfigureAwait(false);
