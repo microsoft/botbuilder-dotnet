@@ -1435,10 +1435,12 @@ namespace Microsoft.Bot.Builder.Expressions
                         {
                             start = (int)startObj;
                         }
+
                         if (error == null && (start < 0 || start > list.Count))
                         {
                             error = $"{startExpr}={start} which is out of range for {arr}";
                         }
+
                         if (error == null)
                         {
                             var end = 0;
@@ -1467,6 +1469,7 @@ namespace Microsoft.Bot.Builder.Expressions
                                     }
                                 }
                             }
+
                             if (error == null)
                             {
                                 result = list.OfType<object>().Skip(start).Take(end - start).ToList();
