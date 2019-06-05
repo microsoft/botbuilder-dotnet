@@ -291,11 +291,14 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("skip(items,-1)"), //the second parameter shoule not less than zero
             Test("skip(items,3)"), //the second parameter shoule  less than the length of the collection
             Test("take(one, two)"), //should have collection param
+            Test("take(createArray('H','e','l','l','0'),items[5])"), // the second param expr is wrong
             Test("take(items,-1)"), //the second parameter shoule not less than zero
             Test("take(items,4)"), //the second parameter shoule  less than the length of the collection
             Test("subArray(one,1,4)"), //should have collection param
             Test("subArray(items,-1,4)"), //the second parameter shoule not less than zero
             Test("subArray(items,1,4)"), //the second parameter shoule  less than the length of the collection
+            Test("subArray(createArray('H','e','l','l','o'),items[5],5)"), //the second parameter expression is invalid
+            Test("subArray(createArray('H','e','l','l','o'),2,items[5])"), //the second parameter expression is invalid
             # endregion
 
             # region Object manipulation and construction functions test

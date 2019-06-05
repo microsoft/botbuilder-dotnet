@@ -1295,6 +1295,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 {
                     xml = XDocument.Load(JsonReaderWriterFactory.CreateJsonReader(Encoding.ASCII.GetBytes(contentToConvert.ToString()), new XmlDictionaryReaderQuotas()));
                 }
+
                 result = xml.ToString().TrimStart('{').TrimEnd('}');
             }
             catch
@@ -1366,33 +1367,36 @@ namespace Microsoft.Bot.Builder.Expressions
                     object countObj;
                     var countExpr = expression.Children[1];
                     (countObj, error) = countExpr.TryEvaluate(state);
-                    if (error == null && !countObj.IsInteger())
+                    if (error == null)
                     {
-                        error = $"{countExpr} is not an integer.";
-                    }
-                    else
-                    {
-                        var count = (int)countObj;
-                        if (arrIsList)
+                        if (countObj == null || !countObj.IsInteger())
                         {
-                            if (count < 0 || count >= list.Count)
-                            {
-                                error = $"{countExpr}={count} which is out of range for {arr}";
-                            }
-                            else
-                            {
-                                result = list.OfType<object>().Take(count).ToList();
-                            }
+                            error = $"{countExpr} is not an integer.";
                         }
                         else
                         {
-                            if (count < 0 || count > list.Count)
+                            var count = (int)countObj;
+                            if (arrIsList)
                             {
-                                error = $"{countExpr}={count} which is out of range for {arr}";
+                                if (count < 0 || count >= list.Count)
+                                {
+                                    error = $"{countExpr}={count} which is out of range for {arr}";
+                                }
+                                else
+                                {
+                                    result = list.OfType<object>().Take(count).ToList();
+                                }
                             }
                             else
                             {
-                                result = arr.ToString().Substring(0, count);
+                                if (count < 0 || count > list.Count)
+                                {
+                                    error = $"{countExpr}={count} which is out of range for {arr}";
+                                }
+                                else
+                                {
+                                    result = arr.ToString().Substring(0, count);
+                                }
                             }
                         }
                     }
@@ -1421,46 +1425,52 @@ namespace Microsoft.Bot.Builder.Expressions
                     object startObj;
                     (startObj, error) = startExpr.TryEvaluate(state);
                     var start = 0;
-                    if (error == null && !startObj.IsInteger())
-                    {
-                        error = $"{startExpr} is not an integer.";
-                    }
-                    else
-                    {
-                         start = (int)startObj;
-                    }
-                    if (error == null && (start < 0 || start > list.Count))
-                    {
-                        error = $"{startExpr}={start} which is out of range for {arr}";
-                    }
                     if (error == null)
                     {
-                        var end = 0;
-                        if (expression.Children.Length == 2)
+                        if (startObj == null || !startObj.IsInteger())
                         {
-                            end = list.Count;
+                            error = $"{startExpr} is not an integer.";
                         }
                         else
                         {
-                            var endExpr = expression.Children[2];
-                            object endObj;
-                            (endObj, error) = endExpr.TryEvaluate(state);
-                            if (error == null && !endObj.IsInteger())
-                            {
-                                error = $"{endExpr} is not an integer.";
-                            }
-                            else
-                            {
-                                end = (int)endObj;
-                            }
-                            if (error == null && (end < 0 || end > list.Count))
-                            {
-                                error = $"{endExpr}={end} which is out of range for {arr}";
-                            }
+                            start = (int)startObj;
+                        }
+                        if (error == null && (start < 0 || start > list.Count))
+                        {
+                            error = $"{startExpr}={start} which is out of range for {arr}";
                         }
                         if (error == null)
                         {
-                            result = list.OfType<object>().Skip(start).Take(end - start).ToList();
+                            var end = 0;
+                            if (expression.Children.Length == 2)
+                            {
+                                end = list.Count;
+                            }
+                            else
+                            {
+                                var endExpr = expression.Children[2];
+                                object endObj;
+                                (endObj, error) = endExpr.TryEvaluate(state);
+                                if (error == null)
+                                {
+                                    if (endObj == null || !endObj.IsInteger())
+                                    {
+                                        error = $"{endExpr} is not an integer.";
+                                    }
+                                    else
+                                    {
+                                        end = (int)endObj;
+                                    }
+                                    if (error == null && (end < 0 || end > list.Count))
+                                    {
+                                        error = $"{endExpr}={end} which is out of range for {arr}";
+                                    }
+                                }
+                            }
+                            if (error == null)
+                            {
+                                result = list.OfType<object>().Skip(start).Take(end - start).ToList();
+                            }
                         }
                     }
                 }
