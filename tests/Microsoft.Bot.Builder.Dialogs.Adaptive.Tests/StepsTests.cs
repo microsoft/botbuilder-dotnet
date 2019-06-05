@@ -815,7 +815,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
                     new Foreach()
                     {
-                        ListProperty = "dialog.todo",
+                        ListProperty = new ExpressionEngine().Parse("dialog.todo"),
                         Steps = new List<IDialog>()
                         {
                             new SendActivity("index is: {dialog.index} and value is: {dialog.value}")
@@ -893,7 +893,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
                     new ForeachPage()
                     {
-                        ListProperty = "dialog.todo",
+                        ListProperty = new ExpressionEngine().Parse("dialog.todo"),
                         PageSize = 3,
                         ValueProperty = "dialog.page",
                         Steps = new List<IDialog>()
@@ -901,7 +901,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new SendActivity("This page have 3 items"),
                             new Foreach()
                             {
-                                ListProperty = "dialog.page",
+                                ListProperty = new ExpressionEngine().Parse("dialog.page"),
                                 Steps = new List<IDialog>()
                                 {
                                     new SendActivity("index is: {dialog.index} and value is: {dialog.value}")
