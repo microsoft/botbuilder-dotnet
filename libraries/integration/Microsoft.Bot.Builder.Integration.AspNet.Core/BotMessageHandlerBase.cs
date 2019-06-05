@@ -72,9 +72,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                 {
                     response.StatusCode = invokeResponse.Status;
 
-                    if (response.Body != null)
+                    if (invokeResponse.Body != null)
                     {
                         response.ContentType = "application/json";
+
                         using (var writer = new StreamWriter(response.Body))
                         {
                             using (var jsonWriter = new JsonTextWriter(writer))
