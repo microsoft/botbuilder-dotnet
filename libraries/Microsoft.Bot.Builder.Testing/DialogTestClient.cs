@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Testing
         /// <value>A <see cref="DialogTurnResult"/> instance with the result of the last turn.</value>
         public DialogTurnResult DialogTurnResult { get; private set; }
 
-        public async Task<T> SendAsync<T>(string text, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<T> SendAsync<T>(string text, CancellationToken cancellationToken = default)
         {
             var task = _testAdapter.SendTextToBotAsync(text, _callback, cancellationToken);
             task.Wait(cancellationToken);
