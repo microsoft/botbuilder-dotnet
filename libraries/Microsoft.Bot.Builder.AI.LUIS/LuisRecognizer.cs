@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         {
         }
 
-        public static HttpClient DefaultHttpClient { get; private set; }
+        public static HttpClient DefaultHttpClient { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to log personal information that came from the user to telemetry.
