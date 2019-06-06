@@ -143,7 +143,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var token = "abc123";
             var magicCode = "888999";
 
-            // Create new DialogSet.
+            // Create new DialogSet
             var dialogs = new DialogSet(dialogState);
             dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = connectionName, Title = "Sign in" }));
 
