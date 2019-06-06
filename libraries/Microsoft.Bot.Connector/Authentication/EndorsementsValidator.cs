@@ -12,11 +12,16 @@ namespace Microsoft.Bot.Connector.Authentication
     public static class EndorsementsValidator
     {
         /// <summary>
-        /// Verify that a channel matches the endorsements found on the JWT token.
+        /// Verify that the specified endorsement exists on the JWT token. Call this method multiple times to validate multiple endorsements.
         /// For example, if an <see cref="Schema.Activity"/> comes from WebChat, that activity's
         /// <see cref="Schema.Activity.ChannelId"/> property is set to "webchat" and the signing party
         /// of the JWT token must have a corresponding endorsement of “Webchat”.
         /// </summary>
+        /// <remarks>
+        /// JWT token signing keys contain endorsements matching the IDs of the channels they are approved to sign for.
+        /// They also contain keywords representing compliance certifications. This code ensures that a channel ID or compliance
+        /// certification is present on the signing key used for the request's token.
+        /// </remarks>
         /// <param name="expectedEndorsement">The expected endorsement. Generally the ID of the channel to validate, typically extracted from the activity's
         /// <see cref="Schema.Activity.ChannelId"/> property, that to which the Activity is affinitized.</param>
         /// <param name="endorsements">The JWT token’s signing party is permitted to send activities only for
