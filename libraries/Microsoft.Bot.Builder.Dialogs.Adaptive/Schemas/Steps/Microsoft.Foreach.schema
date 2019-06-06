@@ -24,12 +24,14 @@
         "IndexProperty": {
             "$role": "memoryPath",
             "title": "Index Property",
-            "description": "The memory path which refer to the index of the item"
+            "description": "The memory path which refer to the index of the item",
+            "default": "dialog.index"
         },
         "ValueProperty": {
             "$role": "memoryPath",
             "title": "Value Property",
-            "description": "The memory path which refer to the value of the item"
+            "description": "The memory path which refer to the value of the item",
+            "default":  "dialog.value"
         }
     },
     "required": [
