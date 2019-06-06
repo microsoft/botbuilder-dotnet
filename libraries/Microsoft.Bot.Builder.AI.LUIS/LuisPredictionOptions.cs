@@ -64,6 +64,10 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <value>
         /// The time in milliseconds to wait before the request times out. Default is 100000 milliseconds.
         /// </value>
+        /// <remarks>
+        /// This value can only be set when <see cref="LuisRecognizer"/> is created and can't be changed
+        /// in individual <see cref="IRecognizer.RecognizeAsync"/> calls.
+        /// </remarks>
         public double Timeout { get; set; } = 100000;
 
         /// <summary>
@@ -80,6 +84,10 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <value>
         /// The client used to log telemetry events.
         /// </value>
+        /// <remarks>
+        /// This value can only be set when <see cref="LuisRecognizer"/> is created and can't be changed
+        /// in individual <see cref="IRecognizer.RecognizeAsync"/> calls.
+        /// </remarks>
         [JsonIgnore]
         public IBotTelemetryClient TelemetryClient { get; set; } = new NullBotTelemetryClient();
 
@@ -87,6 +95,10 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// Gets or sets a value indicating whether to log personal information that came from the user to telemetry.
         /// </summary>
         /// <value>If true, personal information is logged to Telemetry; otherwise the properties will be filtered.</value>
+        /// <remarks>
+        /// This value can only be set when <see cref="LuisRecognizer"/> is created and can't be changed
+        /// in individual <see cref="IRecognizer.RecognizeAsync"/> calls.
+        /// </remarks>
         public bool LogPersonalInformation { get; set; } = false;
     }
 }
