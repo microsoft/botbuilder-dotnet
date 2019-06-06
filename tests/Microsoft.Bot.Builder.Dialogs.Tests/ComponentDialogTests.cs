@@ -343,6 +343,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     results = await dc.BeginDialogAsync("TestComponentDialog", null, cancellationToken);
                 }
+
                 if (results.Status == DialogTurnStatus.Cancelled)
                 {
                     await turnContext.SendActivityAsync(MessageFactory.Text($"Component dialog cancelled (result value is {results.Result?.ToString()})."), cancellationToken);
