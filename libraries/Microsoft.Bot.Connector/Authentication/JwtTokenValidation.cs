@@ -73,31 +73,33 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new ArgumentNullException(nameof(authHeader));
             }
 
+            httpClient = httpClient ?? _httpClient;
+
             bool usingEmulator = EmulatorValidation.IsTokenFromEmulator(authHeader);
 
             if (usingEmulator)
             {
-                return await EmulatorValidation.AuthenticateEmulatorToken(authHeader, credentials, channelProvider, httpClient ?? _httpClient, channelId);
+                return await EmulatorValidation.AuthenticateEmulatorToken(authHeader, credentials, channelProvider, httpClient, channelId);
             }
             else if (channelProvider == null || channelProvider.IsPublicAzure())
             {
                 // No empty or null check. Empty can point to issues. Null checks only.
                 if (serviceUrl != null)
                 {
-                    return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, serviceUrl, httpClient ?? _httpClient, channelId);
+                    return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, serviceUrl, httpClient, channelId);
                 }
                 else
                 {
-                    return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, httpClient ?? _httpClient, channelId);
+                    return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, httpClient, channelId);
                 }
             }
             else if (channelProvider.IsGovernment())
             {
-                return await GovernmentChannelValidation.AuthenticateChannelToken(authHeader, credentials, serviceUrl, httpClient ?? _httpClient, channelId).ConfigureAwait(false);
+                return await GovernmentChannelValidation.AuthenticateChannelToken(authHeader, credentials, serviceUrl, httpClient, channelId).ConfigureAwait(false);
             }
             else
             {
-                return await EnterpriseChannelValidation.AuthenticateChannelToken(authHeader, credentials, channelProvider, serviceUrl, httpClient ?? _httpClient, channelId).ConfigureAwait(false);
+                return await EnterpriseChannelValidation.AuthenticateChannelToken(authHeader, credentials, channelProvider, serviceUrl, httpClient, channelId).ConfigureAwait(false);
             }
         }
     }
