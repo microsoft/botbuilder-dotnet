@@ -35,15 +35,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         {
         }
 
-        protected override PlanChangeList OnCreateChangeList(PlanningContext planning, object dialogOptions = null)
+        protected override StepChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
         {
             if (planning.State.TryGetValue<RecognizerResult>("turn.dialogEvent.value", out var recognizerResult))
             {
-                return new PlanChangeList()
+                return new StepChangeList()
                 {
                     //ChangeType = this.ChangeType,
                     Desire = DialogConsultationDesire.CanProcess,
-                    Steps = Steps.Select(s => new PlanStepState()
+                    Steps = Steps.Select(s => new StepState()
                     {
                         DialogStack = new List<DialogInstance>(),
                         DialogId = s.Id,
@@ -52,9 +52,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
                 };
             }
 
-            return new PlanChangeList()
+            return new StepChangeList()
             { 
-                Steps = Steps.Select(s => new PlanStepState()
+                Steps = Steps.Select(s => new StepState()
                 {
                     DialogStack = new List<DialogInstance>(),
                     DialogId = s.Id,

@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     result = values;
                 }
 
-                PlanningContext pc = dc as PlanningContext;
+                SequenceContext pc = dc as SequenceContext;
 
                 // if this step interrupted a step in the active plan
                 if (pc != null && pc.Plan.Steps.Count > 1 && pc.Plan.Steps[1].DialogStack.Count > 0)

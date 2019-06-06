@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             _evaluate = evaluate;
         }
 
-        public async Task<IReadOnlyList<int>> Select(PlanningContext context, CancellationToken cancel = default(CancellationToken))
+        public async Task<IReadOnlyList<int>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
         {
             var (value, error) = Condition.TryEvaluate(context.State);
             var eval = error == null && (bool)value;

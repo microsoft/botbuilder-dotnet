@@ -12,23 +12,23 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
-    public class PlanningContext : DialogContext
+    public class SequenceContext : DialogContext
     {
-        public PlanningState Plans { get; private set; }
+        public AdaptiveDialogState Plans { get; private set; }
 
         /// <summary>
         /// The current plan being executed (if any.)
         /// </summary>
         public PlanState Plan => Plans.Plan;
 
-        public List<PlanChangeList> Changes { get { return this.Plans.Changes; } }
+        public List<StepChangeList> Changes { get { return this.Plans.Changes; } }
 
         /// <summary>
         /// Returns true if there are saved plans.
         /// </summary>
         public bool HasSavedPlans => Plans.SavedPlans?.Count > 0;
 
-        public PlanningContext(DialogContext dc, DialogContext parentDc, DialogSet dialogs, DialogState state, PlanningState plans)
+        public SequenceContext(DialogContext dc, DialogContext parentDc, DialogSet dialogs, DialogState state, AdaptiveDialogState plans)
             : base(dialogs, dc.Context, state, conversationState: dc.State.Conversation, userState: dc.State.User, settings: dc.State.Settings)
         {
             this.Parent = parentDc;
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// Queues up a set of plan changes that will be applied when ApplyChanges is called.
         /// </summary>
         /// <param name="changes">Plan changes to queue up</param>
-        public void QueueChanges(PlanChangeList changes)
+        public void QueueChanges(StepChangeList changes)
         {
             if (changes == null)
             {
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             if (Plans.Changes == null)
             {
-                Plans.Changes = new List<PlanChangeList>();
+                Plans.Changes = new List<StepChangeList>();
             }
 
             if (this.Plans.Changes.Count > 0 && this.Plans.Changes[0].Desire != changes.Desire)
@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 // A shouldProcess outweighs any canProcess changes
                 if (changes.Desire == DialogConsultationDesire.ShouldProcess)
                 {
-                    this.Plans.Changes = new List<PlanChangeList>() { changes };
+                    this.Plans.Changes = new List<StepChangeList>() { changes };
                 }
                 else
                 {
@@ -101,22 +101,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                     switch (change.ChangeType)
                     {
-                        case PlanChangeTypes.NewPlan:
+                        case StepChangeTypes.NewPlan:
                             await NewPlanAsync(change.Steps, cancellationToken).ConfigureAwait(false);
                             break;
-                        case PlanChangeTypes.DoSteps:
+                        case StepChangeTypes.DoSteps:
                             await DoStepsAsync(change.Steps, cancellationToken).ConfigureAwait(false);
                             break;
-                        case PlanChangeTypes.DoStepsBeforeTags:
+                        case StepChangeTypes.DoStepsBeforeTags:
                             await DoStepsBeforeTagsAsync(change.Tags, change.Steps, cancellationToken).ConfigureAwait(false);
                             break;
-                        case PlanChangeTypes.DoStepsLater:
+                        case StepChangeTypes.DoStepsLater:
                             await DoStepsLaterAsync(change.Steps, cancellationToken).ConfigureAwait(false);
                             break;
-                        case PlanChangeTypes.EndPlan:
+                        case StepChangeTypes.EndPlan:
                             await EndPlanAsync(change.Steps, cancellationToken).ConfigureAwait(false);
                             break;
-                        case PlanChangeTypes.ReplacePlan:
+                        case StepChangeTypes.ReplacePlan:
                             await ReplacePlanAsync(change.Steps, cancellationToken).ConfigureAwait(false);
                             break;
                     }
@@ -136,14 +136,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </summary>
         /// <param name="steps">Steps to insert at the beginning of the plan.</param>
         /// <returns>True if a new plan had to be started.</returns>
-        public async Task<bool> DoStepsAsync(List<PlanStepState> steps, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<bool> DoStepsAsync(List<StepState> steps, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Initialize new plan if needed
             bool isNewPlan = Plans.Plan == null;
 
             if (isNewPlan)
             {
-                Plans.Plan = new PlanState() { Steps = new List<PlanStepState>() };
+                Plans.Plan = new PlanState() { Steps = new List<StepState>() };
             }
 
             // Insert steps
@@ -153,20 +153,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Emit new plan event
             if (isNewPlan)
             {
-                await this.EmitEventAsync(AdaptiveEvents.StepsStarted.ToString(), null, false, cancellationToken).ConfigureAwait(false);
+                await this.EmitEventAsync(AdaptiveEvents.SequenceStarted.ToString(), null, false, cancellationToken).ConfigureAwait(false);
             }
 
             return isNewPlan;
         }
 
-        public async Task<bool> DoStepsBeforeTagsAsync(List<string> tags, List<PlanStepState> steps, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<bool> DoStepsBeforeTagsAsync(List<string> tags, List<StepState> steps, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Initialize new plan if needed
             bool isNewPlan = Plans.Plan == null;
 
             if (isNewPlan)
             {
-                Plans.Plan = new PlanState() { Steps = new List<PlanStepState>() };
+                Plans.Plan = new PlanState() { Steps = new List<StepState>() };
             }
 
             // Search for tag to insert steps before
@@ -208,20 +208,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Emit new plan event
             if (isNewPlan)
             {
-                await this.EmitEventAsync(AdaptiveEvents.StepsStarted.ToString(), null, false, cancellationToken).ConfigureAwait(false);
+                await this.EmitEventAsync(AdaptiveEvents.SequenceStarted.ToString(), null, false, cancellationToken).ConfigureAwait(false);
             }
 
             return isNewPlan;
         }
 
-        public async Task<bool> DoStepsLaterAsync(List<PlanStepState> steps, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<bool> DoStepsLaterAsync(List<StepState> steps, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Initialize new plan if needed
             bool isNewPlan = Plans.Plan == null;
 
             if (isNewPlan)
             {
-                Plans.Plan = new PlanState() { Steps = new List<PlanStepState>() };
+                Plans.Plan = new PlanState() { Steps = new List<StepState>() };
             }
 
             // Insert steps
@@ -231,13 +231,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Emit new plan event
             if (isNewPlan)
             {
-                await this.EmitEventAsync(AdaptiveEvents.StepsStarted.ToString(), null, false, cancellationToken);
+                await this.EmitEventAsync(AdaptiveEvents.SequenceStarted.ToString(), null, false, cancellationToken);
             }
 
             return isNewPlan;
         }
 
-        public async Task<bool> EndPlanAsync(List<PlanStepState> steps = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<bool> EndPlanAsync(List<StepState> steps = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var resumePlan = Plans.SavedPlans != null && Plans.SavedPlans.Count > 0;
 
@@ -267,7 +267,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 this.Plans.Plan = null;
 
                 // Emit planning ended event
-                await this.EmitEventAsync(AdaptiveEvents.StepsEnded.ToString(), null, false, cancellationToken).ConfigureAwait(false);
+                await this.EmitEventAsync(AdaptiveEvents.SequenceEnded.ToString(), null, false, cancellationToken).ConfigureAwait(false);
             }
 
             return resumePlan;
@@ -290,7 +290,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return false;
         }
 
-        public async Task<bool> NewPlanAsync(List<PlanStepState> steps, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<bool> NewPlanAsync(List<StepState> steps, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Save existing plan
             var savePlan = Plans.Plan != null && Plans.Plan.Steps.Count > 0;
@@ -318,12 +318,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 await this.EmitEventAsync(AdaptiveEvents.StepsSaved.ToString(), null, false, cancellationToken).ConfigureAwait(false);
             }
 
-            await this.EmitEventAsync(AdaptiveEvents.StepsStarted.ToString(), null, false, cancellationToken).ConfigureAwait(false);
+            await this.EmitEventAsync(AdaptiveEvents.SequenceStarted.ToString(), null, false, cancellationToken).ConfigureAwait(false);
 
             return savePlan;
         }
 
-        public async Task<bool> ReplacePlanAsync(List<PlanStepState> steps, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<bool> ReplacePlanAsync(List<StepState> steps, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Update plan
             var planReplaced = Plans.Plan != null && Plans.Plan.Steps.Count > 0;
@@ -334,7 +334,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             };
 
             // Emit plan started event
-            await this.EmitEventAsync(AdaptiveEvents.StepsStarted.ToString(), null, false, cancellationToken);
+            await this.EmitEventAsync(AdaptiveEvents.SequenceStarted.ToString(), null, false, cancellationToken);
 
             return planReplaced;
         }
@@ -349,19 +349,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             Plans.Plan.Title = title;
         }
 
-        public static PlanningContext Create(DialogContext dc, PlanningState plans)
+        public static SequenceContext Create(DialogContext dc, AdaptiveDialogState plans)
         {
-            return new PlanningContext(dc, dc.Parent, dc.Dialogs, new DialogState() { DialogStack = dc.Stack }, plans);
+            return new SequenceContext(dc, dc.Parent, dc.Dialogs, new DialogState() { DialogStack = dc.Stack }, plans);
         }
 
-        public static PlanningContext CreateForStep(PlanningContext planning, DialogSet dialogs)
+        public static SequenceContext CreateForStep(SequenceContext planning, DialogSet dialogs)
         {
             var plans = planning.Plans;
 
             if (plans.Plan != null && plans.Plan.Steps.Count > 0)
             {
                 var state = plans.Plan.Steps[0];
-                return new PlanningContext(planning, planning, dialogs, state, plans);
+                return new SequenceContext(planning, planning, dialogs, state, plans);
             }
             else
             {
@@ -375,42 +375,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public const string ActivityReceived = "activityReceived";
         public const string RecognizedIntent = "recognizedIntent";
         public const string UnknownIntent = "unknownIntent";
-        public const string StepsStarted = "stepsStarted";
-        public const string StepsSaved = "stepsSaved";
-        public const string StepsEnded = "stepsEnded";
-        public const string StepsResumed = "stepsResumed";
+        public const string SequenceStarted = "stepsStarted";
+        public const string SequenceEnded = "stepsEnded";
+        public const string BeginDialog = "beginDialog";
+        public const string CancelDialog = "cancelDialog";
     }
 
-    public class PlanningState
+    public class AdaptiveDialogState
     {
-        public PlanningState()
+        public AdaptiveDialogState()
         {
         }
 
         [JsonProperty(PropertyName = "options")]
         public dynamic Options { get; set; }
 
-        [JsonProperty(PropertyName = "plan")]
-        public PlanState Plan { get; set; }
-
-        [JsonProperty(PropertyName = "savedPlans")]
-        public List<PlanState> SavedPlans { get; set; } = new List<PlanState>();
-
-        [JsonProperty(PropertyName = "changes")]
-        public List<PlanChangeList> Changes { get; set; } = new List<PlanChangeList>();
+        [JsonProperty(PropertyName = "steps")]
+        public List<StepState> Steps { get; set; } = new List<StepState>();
 
         [JsonProperty(PropertyName = "result")]
         public object Result { get; set; }
     }
 
     [DebuggerDisplay("{DialogId}")]
-    public class PlanStepState : DialogState
+    public class StepState : DialogState
     {
-        public PlanStepState()
+        public StepState()
         {
         }
 
-        public PlanStepState(string dialogId = null, object options = null)
+        public StepState(string dialogId = null, object options = null)
         {
             DialogId = dialogId;
             Options = options;
@@ -423,46 +417,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public object Options { get; set; }
     }
 
-    [DebuggerDisplay("{Title}")]
-    public class PlanState
+    public enum StepChangeTypes
     {
-        [JsonProperty(PropertyName = "title")]
-        public string Title { get; set; }
-
-        [JsonProperty(PropertyName = "steps")]
-        public List<PlanStepState> Steps { get; set; } = new List<PlanStepState>();
-    }
-
-    public enum PlanChangeTypes
-    {
-        NewPlan,
-        DoSteps,
-        DoStepsBeforeTags,
-        DoStepsLater,
-        EndPlan,
-        ReplacePlan
+        InsertSteps,
+        InsertStepsBeforeTags,
+        AppendSteps,
+        EndSequence,
+        ReplaceSequence,
     }
 
     [DebuggerDisplay("{ChangeType}:{Desire}")]
-    public class PlanChangeList
+    public class StepChangeList
     {
         [JsonProperty(PropertyName = "changeType")]
-        public PlanChangeTypes ChangeType { get; set; } = PlanChangeTypes.DoSteps;
+        public StepChangeTypes ChangeType { get; set; } = StepChangeTypes.InsertSteps;
 
         [JsonProperty(PropertyName = "steps")]
-        public List<PlanStepState> Steps { get; set; } = new List<PlanStepState>();
+        public List<StepState> Steps { get; set; } = new List<StepState>();
 
         [JsonProperty(PropertyName = "tags")]
         public List<string> Tags { get; set; } = new List<string>();
-
-        /// <summary>
-        /// Gets or sets turn state associated with the plan change list (it will be applied to turn state when plan is applied)
-        /// </summary>
-        [JsonProperty(PropertyName = "turn")]
-        public Dictionary<string, object> Turn { get; set; }
-
-        [JsonProperty(PropertyName = "desire")]
-        public DialogConsultationDesire Desire { get; set; } = DialogConsultationDesire.ShouldProcess;
-
     }
 }

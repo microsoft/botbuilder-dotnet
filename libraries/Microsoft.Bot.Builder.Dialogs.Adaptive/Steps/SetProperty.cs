@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             }
 
             // Ensure planning context
-            if (dc is PlanningContext planning)
+            if (dc is SequenceContext planning)
             {
                 // SetProperty evaluates the "Value" expression and returns it as the result of the dialog
                 var (value, error) = Value.TryEvaluate(dc.State);
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
                 if (error == null)
                 {
-                    PlanningContext pc = dc as PlanningContext;
+                    SequenceContext pc = dc as SequenceContext;
 
                     // if this step interrupted a step in the active plan
                     if (pc != null && pc.Plan.Steps.Count > 1 && pc.Plan.Steps[1].DialogStack.Count > 0)
