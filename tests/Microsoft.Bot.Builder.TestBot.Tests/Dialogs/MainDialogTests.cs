@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
@@ -10,6 +11,7 @@ using Microsoft.Bot.Builder.Testing;
 using Microsoft.Bot.Builder.Testing.XUnit;
 using Microsoft.Bot.Schema;
 using Microsoft.BotBuilderSamples.CognitiveModels;
+using Microsoft.BotBuilderSamples.Services;
 using Microsoft.BotBuilderSamples.Tests.Framework;
 using Microsoft.Extensions.Configuration;
 using Moq;
@@ -27,7 +29,11 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             : base(output)
         {
             _mockLuisRecognizer = new Mock<IRecognizer>();
-            _mockBookingDialog = DialogUtils.CreateMockDialog<BookingDialog>().Object;
+
+            var mockFlightBookingService = new Mock<IFlightBookingService>();
+            mockFlightBookingService.Setup(x => x.BookFlight(It.IsAny<BookingDetails>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(true));
+            _mockBookingDialog = DialogUtils.CreateMockDialog<BookingDialog>(null, new Mock<GetBookingDetailsDialog>().Object, mockFlightBookingService.Object).Object;
         }
 
         [Fact]

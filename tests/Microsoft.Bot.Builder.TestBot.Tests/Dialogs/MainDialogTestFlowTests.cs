@@ -1,12 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
-using Microsoft.BotBuilderSamples.CognitiveModels;
+using Microsoft.BotBuilderSamples.Services;
 using Microsoft.BotBuilderSamples.Tests.Framework;
 using Moq;
 using Xunit;
@@ -22,7 +23,11 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         [Fact(Skip = "Ignoring this one, this is just a sample on the old way of writing tests")]
         public async Task WholeEnchilada()
         {
-            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, null, new Mock<BookingDialog>().Object);
+            var mockFlightBookingService = new Mock<IFlightBookingService>();
+            mockFlightBookingService.Setup(x => x.BookFlight(It.IsAny<BookingDetails>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(true));
+            var mockBookingDialog = DialogUtils.CreateMockDialog<BookingDialog>(null, mockFlightBookingService.Object).Object;
+            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, null, mockBookingDialog);
 
             var testFlow = BuildTestFlow(sut);
 

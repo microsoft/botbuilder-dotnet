@@ -11,7 +11,8 @@ namespace Microsoft.BotBuilderSamples.Tests.Framework
         {
             var mockDialog = new Mock<T>(constructorParams);
             var mockDialogNameTypeName = typeof(T).Name;
-            mockDialog.Setup(x => x.BeginDialogAsync(It.IsAny<DialogContext>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
+            mockDialog
+                .Setup(x => x.BeginDialogAsync(It.IsAny<DialogContext>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
                 .Returns(async (DialogContext dialogContext, object options, CancellationToken cancellationToken) =>
                 {
                     await dialogContext.Context.SendActivityAsync($"{mockDialogNameTypeName} mock invoked", cancellationToken: cancellationToken);

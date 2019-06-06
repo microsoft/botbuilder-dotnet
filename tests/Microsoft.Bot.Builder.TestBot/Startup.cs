@@ -11,6 +11,7 @@ using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.TestBot.Bots;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.BotBuilderSamples.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,8 +19,6 @@ namespace Microsoft.BotBuilderSamples
 {
     public class Startup
     {
-        private string _chosenBot = string.Empty;
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -59,20 +58,17 @@ namespace Microsoft.BotBuilderSamples
             // Create the Conversation state. (Used by the Dialog system itself.)
             services.AddSingleton<ConversationState>();
 
-            // Register booking dialog
-            services.AddSingleton(new BookingDialog());
-
             // Register LUIS recognizer
             var luisApplication = new LuisApplication(
                 Configuration["LuisAppId"],
                 Configuration["LuisAPIKey"],
                 "https://" + Configuration["LuisAPIHostName"]);
 
-            var recognizer = new LuisRecognizer(luisApplication, null, false, null);
+            var recognizer = new LuisRecognizer(luisApplication);
             services.AddSingleton<IRecognizer>(recognizer);
 
-            // The Dialog that will be run by the bot.
-            services.AddSingleton<MainDialog>();
+            // Register dialogs that will be used by the bot.
+            RegisterDialogs(services);
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddScoped<MyBot>();
@@ -121,6 +117,15 @@ namespace Microsoft.BotBuilderSamples
                     name: "default",
                     template: "api/{controller}");
             });
+        }
+
+        private static void RegisterDialogs(IServiceCollection services)
+        {
+            // Register booking dialog
+            services.AddSingleton(new BookingDialog(new GetBookingDetailsDialog(), new FlightBookingService()));
+
+            // The Dialog that will be run by the bot.
+            services.AddSingleton<MainDialog>();
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Testing;
 using Microsoft.Bot.Builder.Testing.XUnit;
 using Microsoft.Bot.Schema;
+using Microsoft.BotBuilderSamples.Tests.Dialogs.TestData;
 using Xunit;
 using Xunit.Abstractions;
 
