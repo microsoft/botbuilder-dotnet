@@ -284,9 +284,21 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("bool('hi')", true),
             Test("createArray('h', 'e', 'l', 'l', 'o')", new List<object>{"h", "e", "l", "l", "o" }),
             Test("createArray(1, bool(0), string(bool(1)), float('10'))", new List<object>{1, true, "true", 10.0f }),
-            # endregion
+            Test("array('hello')",new List<object>{ "hello" }),
+            Test("binary(hello)", "0110100001100101011011000110110001101111"),
+            Test("length(binary(hello))", 40),
+            Test("base64(hello)", "aGVsbG8="),
+            Test("base64ToBinary(base64(hello))", "0110000101000111010101100111001101100010010001110011100000111101"),
+            Test("base64ToString(base64(hello))", "hello"),
+            Test("dataUri(hello)", "data:text/plain;charset=utf-8;base64,aGVsbG8="),
+            Test("dataUriToBinary(base64(hello))","0110000101000111010101100111001101100010010001110011100000111101"),
+            Test("dataUriToString(dataUri(hello))","hello"),
+            Test("xml('{\"person\": {\"name\": \"Sophia Owen\", \"city\": \"Seattle\"}}')", $"<root type=\"object\">{Environment.NewLine}  <person type=\"object\">{Environment.NewLine}    <name type=\"string\">Sophia Owen</name>{Environment.NewLine}    <city type=\"string\">Seattle</city>{Environment.NewLine}  </person>{Environment.NewLine}</root>"),
+            Test("uriComponent('http://contoso.com')", "http%3A%2F%2Fcontoso.com"),
+            Test("uriComponentToString('http%3A%2F%2Fcontoso.com')", "http://contoso.com"),
+            #endregion
 
-            # region  Math functions test
+            #region  Math functions test
             Test("add(1, 2, 3)", 6),
             Test("add(1, 2)", 3),
             Test("add(1.0, 2.0)", 3.0),
@@ -310,6 +322,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("mod(5,2)", 1),
             Test("rand(1, 2)", 1),
             Test("rand(2, 3)", 2),
+            Test("range(1,4)",new[]{1,2,3,4}),
+            Test("range(-1,6)",new[]{-1,0,1,2,3,4}),
             # endregion
 
             # region  Date and time function test
@@ -397,7 +411,15 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("count(union(createArray('a', 'b'), createArray('b', 'c'), createArray('b', 'd')))", 4),
             Test("count(intersection(createArray('a', 'b')))", 2),
             Test("count(intersection(createArray('a', 'b'), createArray('b', 'c'), createArray('b', 'd')))", 1),
-            
+            Test("skip(createArray('H','e','l','l','0'),2)", new List<object>{"l", "l", "0"}),
+            Test("take(createArray('H','e','l','l','0'),2)", new List<object>{"H", "e"}),
+            Test("subArray(createArray('H','e','l','l','o'),2,5)", new List<object>{"l", "l", "o"}),
+            Test("count(newGuid())", 36),
+            Test("indexOf(newGuid(), '-')", 8),
+            Test("indexOf(hello, '-')", -1),
+            Test("lastIndexOf(newGuid(), '-')", 23),
+            Test("lastIndexOf(hello, '-')", -1),
+            Test("length(newGuid())",36),
             # endregion
 
             # region  Object manipulation and construction functions
@@ -436,7 +458,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("user.lists.todo[int(@ordinal[0]) - 1]", "todo1"),
             Test("user.lists[user.listType][int(@ordinal[0]) - 1]", "todo1"),
             #endregion
-
+            
         };
 
         [DataTestMethod]
@@ -492,6 +514,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 if (actual is int)
                 {
                     Assert.IsTrue(expected is int);
+                    Assert.AreEqual(actual, expected);
                 }
                 else
                 {
