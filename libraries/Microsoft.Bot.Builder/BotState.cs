@@ -78,10 +78,10 @@ namespace Microsoft.Bot.Builder
                     // the item found will be a JObject.
                     turnContext.TurnState[_contextServiceKey] = new CachedBotState(asJobject.ToObject<IDictionary<string, object>>());
                 }
-                else if (val is null)
+                else if (val == null)
                 {
                     // This is the case where the dictionary did not exist in the store.
-                    turnContext.TurnState[_contextServiceKey] = new CachedBotState((IDictionary<string, object>)val);
+                    turnContext.TurnState[_contextServiceKey] = new CachedBotState();
                 }
                 else
                 {
