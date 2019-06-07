@@ -408,7 +408,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         private static async Task<DialogTurnResult> Waterfall5_Step2(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             await stepContext.Context.SendActivityAsync(MessageFactory.Text("step2.2"), cancellationToken);
-            return await stepContext.EndDialogAsync(cancellationToken);
+            return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
         }
     }
 }

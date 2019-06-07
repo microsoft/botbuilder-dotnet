@@ -144,8 +144,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (hasTimedOut)
             {
-                // if the token fetch request timesout, complete the prompt with no result.
-                return await dc.EndDialogAsync(cancellationToken).ConfigureAwait(false);
+                // if the token fetch request timeout, complete the prompt with no result.
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else
             {
