@@ -9,7 +9,7 @@ Param(
 
 Write-Host Install tools
 $basePath = (get-item $pathToCoverageFiles ).parent.FullName
-$coverageAnalyzer = "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Team Tools\Dynamic Code Coverage Tools\CodeCoverage.exe"
+$coverageAnalyzer = "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Team Tools\Dynamic Code Coverage Tools\CodeCoverage.exe"
 dotnet tool install coveralls.net --version 1.0.0 --tool-path tools
 $coverageUploader = ".\tools\csmacnz.Coveralls.exe"
 
