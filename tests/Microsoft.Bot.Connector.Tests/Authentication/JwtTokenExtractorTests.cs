@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Xunit;
 
 namespace Microsoft.Bot.Connector.Authentication.Tests
@@ -46,13 +47,12 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
         }
 
         [Fact]
-        public async Task Connector_TokenExtractor_NullRequiredEndorsements_ShouldValidate()
+        public async Task Connector_TokenExtractor_NullRequiredEndorsements_ShouldFail()
         {
             var configRetriever = new TestConfigurationRetriever();
 
             configRetriever.EndorsementTable.Add(keyId, new HashSet<string>() { randomEndorsement, complianceEndorsement, testChannelName});
-            var claimsIdentity = await RunTestCase(configRetriever);
-            Assert.True(claimsIdentity.IsAuthenticated);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await RunTestCase(configRetriever));
         }
 
         [Fact]

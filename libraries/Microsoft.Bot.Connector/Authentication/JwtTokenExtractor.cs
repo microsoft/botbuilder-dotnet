@@ -61,34 +61,67 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="tokenValidationParameters">tokenValidationParameters.</param>
         /// <param name="metadataUrl">metadataUrl.</param>
         /// <param name="allowedSigningAlgorithms">allowedSigningAlgorithms.</param>
-        /// <param name="customEndorsementsConfig">Custom endorsement configuration to be used by the JwtTokenExtractor.</param>
-        /// <param name="customOpenIdConnectConfig">Custom OpenId connect configuration to be used by the JwtTokenExtractor.</param>
         public JwtTokenExtractor(
             HttpClient httpClient,
             TokenValidationParameters tokenValidationParameters,
             string metadataUrl,
-            HashSet<string> allowedSigningAlgorithms,
-            ConfigurationManager<IDictionary<string, HashSet<string>>> customEndorsementsConfig = null,
-            ConfigurationManager<OpenIdConnectConfiguration> customOpenIdConnectConfig = null)
+            HashSet<string> allowedSigningAlgorithms)
         {
             // Make our own copy so we can edit it
             _tokenValidationParameters = tokenValidationParameters.Clone();
             _tokenValidationParameters.RequireSignedTokens = true;
             _allowedSigningAlgorithms = allowedSigningAlgorithms;
 
-            _openIdMetadata = customOpenIdConnectConfig ?? _openIdMetadataCache.GetOrAdd(metadataUrl, key =>
+            _openIdMetadata = _openIdMetadataCache.GetOrAdd(metadataUrl, key =>
             {
                 return new ConfigurationManager<OpenIdConnectConfiguration>(metadataUrl, new OpenIdConnectConfigurationRetriever(), httpClient);
             });
 
-            _endorsementsData = customEndorsementsConfig ?? _endorsementsCache.GetOrAdd(metadataUrl, key =>
+            _endorsementsData = _endorsementsCache.GetOrAdd(metadataUrl, key =>
             {
                 var retriever = new EndorsementsRetriever(httpClient);
                 return new ConfigurationManager<IDictionary<string, HashSet<string>>>(metadataUrl, retriever, retriever);
             });
         }
 
-        public async Task<ClaimsIdentity> GetIdentityAsync(string authorizationHeader, string channelId, string[] requiredEndorsements = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JwtTokenExtractor"/> class.
+        /// Extracts relevant data from JWT Tokens.
+        /// </summary>
+        /// <param name="httpClient">As part of validating JWT Tokens, endorsements need to be feteched from
+        /// sources specified by the relevant security URLs. This HttpClient is used to allow for resource
+        /// pooling around those retrievals. As those resources require TLS sharing the HttpClient is
+        /// important to overall perfomance.</param>
+        /// <param name="tokenValidationParameters">tokenValidationParameters.</param>
+        /// <param name="metadataUrl">metadataUrl.</param>
+        /// <param name="allowedSigningAlgorithms">allowedSigningAlgorithms.</param>
+        /// <param name="customEndorsementsConfig">Custom endorsement configuration to be used by the JwtTokenExtractor.</param>
+        public JwtTokenExtractor(
+            HttpClient httpClient,
+            TokenValidationParameters tokenValidationParameters,
+            string metadataUrl,
+            HashSet<string> allowedSigningAlgorithms,
+            ConfigurationManager<IDictionary<string, HashSet<string>>> customEndorsementsConfig)
+        {
+            // Make our own copy so we can edit it
+            _tokenValidationParameters = tokenValidationParameters.Clone();
+            _tokenValidationParameters.RequireSignedTokens = true;
+            _allowedSigningAlgorithms = allowedSigningAlgorithms;            
+
+            _openIdMetadata = _openIdMetadataCache.GetOrAdd(metadataUrl, key =>
+            {
+                return new ConfigurationManager<OpenIdConnectConfiguration>(metadataUrl, new OpenIdConnectConfigurationRetriever(), httpClient);
+            });
+
+            _endorsementsData = customEndorsementsConfig ?? throw new ArgumentNullException(nameof(customEndorsementsConfig));
+        }
+
+        public async Task<ClaimsIdentity> GetIdentityAsync(string authorizationHeader, string channelId)
+        {
+            return await GetIdentityAsync(authorizationHeader, channelId, new string[] { }).ConfigureAwait(false);
+        }
+
+        public async Task<ClaimsIdentity> GetIdentityAsync(string authorizationHeader, string channelId, string[] requiredEndorsements)
         {
             if (authorizationHeader == null)
             {
@@ -104,8 +137,18 @@ namespace Microsoft.Bot.Connector.Authentication
             return null;
         }
 
-        public async Task<ClaimsIdentity> GetIdentityAsync(string scheme, string parameter, string channelId, string[] requiredEndorsements = null)
+        public async Task<ClaimsIdentity> GetIdentityAsync(string scheme, string parameter, string channelId)
         {
+            return await GetIdentityAsync(scheme, parameter, channelId, new string[] { }).ConfigureAwait(false);
+        }
+
+        public async Task<ClaimsIdentity> GetIdentityAsync(string scheme, string parameter, string channelId, string[] requiredEndorsements)
+        {
+            if (requiredEndorsements == null)
+            {
+                throw new ArgumentNullException(nameof(requiredEndorsements));
+            }
+
             // No header in correct scheme or no token
             if (scheme != "Bearer" || string.IsNullOrEmpty(parameter))
             {
@@ -152,8 +195,18 @@ namespace Microsoft.Bot.Connector.Authentication
             return false;
         }
 
-        private async Task<ClaimsPrincipal> ValidateTokenAsync(string jwtToken, string channelId, string[] requiredEndorsements = null)
+        private async Task<ClaimsPrincipal> ValidateTokenAsync(string jwtToken, string channelId)
         {
+            return await ValidateTokenAsync(jwtToken, channelId, new string[] { }).ConfigureAwait(false);
+        }
+
+        private async Task<ClaimsPrincipal> ValidateTokenAsync(string jwtToken, string channelId, string[] requiredEndorsements)
+        {
+            if (requiredEndorsements == null)
+            {
+                throw new ArgumentNullException(nameof(requiredEndorsements));
+            }
+
             // _openIdMetadata only does a full refresh when the cache expires every 5 days
             OpenIdConnectConfiguration config = null;
             try
@@ -199,8 +252,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     }
 
                     // Verify that additional endorsements are satisfied. If no additional endorsements are expected, the requirement is satisfied as well
-                    var additionalEndorsementsSatisfied = requiredEndorsements == null ? true : 
-                        requiredEndorsements.All(
+                    var additionalEndorsementsSatisfied = requiredEndorsements.All(
                             endorsement => EndorsementsValidator.Validate(endorsement, endorsementsForKey));
 
                     if (!additionalEndorsementsSatisfied)

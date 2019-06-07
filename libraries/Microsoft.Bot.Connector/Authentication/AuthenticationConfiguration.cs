@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -13,6 +12,6 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </remarks>
     public class AuthenticationConfiguration
     {
-        public string[] RequiredEndorsements { get; set; }
+        public string[] RequiredEndorsements { get; set; } = new string[] { };
     }
 }
