@@ -33,12 +33,10 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <param name="id">ID of this action</param>
         /// <param name="entities">Entities associated with this action</param>
-        /// <param name="state">State of this action. Allowed values: `start`, `continue`, `done`</param>
-        public SemanticAction(string id = default(string), IDictionary<string, Entity> entities = default(IDictionary<string, Entity>), string state = default(string))
+        public SemanticAction(string id = default(string), IDictionary<string, Entity> entities = default(IDictionary<string, Entity>))
         {
             Id = id;
             Entities = entities;
-            State = state;
             CustomInit();
         }
 
