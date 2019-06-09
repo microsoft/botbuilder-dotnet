@@ -86,6 +86,13 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string GetTimeOfDay = "getTimeOfDay";
         public const string GetFutureTime = "getFutureTime";
         public const string GetPastTime = "getPastTime";
+        public const string ConvertFromUTC = "convertFromUTC";
+        public const string ConvertToUTC = "convertToUTC";
+        public const string AddToTime = "addToTime";
+        public const string ConvertTimeZone = "convertTimeZone";
+        public const string StartOfDay = "startOfDay";
+        public const string StartOfHour = "startOfHour";
+        public const string StartOfMonth = "startOfMonth";
 
         // Conversions
         public const string Float = "float";
