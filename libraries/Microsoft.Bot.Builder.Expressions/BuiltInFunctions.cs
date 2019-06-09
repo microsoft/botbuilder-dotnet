@@ -1229,6 +1229,317 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
+        private static (string, string) ConvertFromUTC(string utcTimestamp, string timezone, string format = "o")
+        {
+            string error = null;
+            string result = null;
+            TimeZoneInfo tz = null;
+            var utcDt = DateTime.UtcNow;
+            try
+            {
+                utcDt = DateTime.Parse(utcTimestamp).ToUniversalTime();
+            }
+            catch
+            {
+                error = "illegal timestamp format";
+            }
+
+            if (error == null)
+            {
+                try
+                {
+                    tz = TimeZoneInfo.FindSystemTimeZoneById(timezone);
+                }
+                catch
+                {
+                    error = "illegal timezone info";
+                }
+
+                if (error == null)
+                {
+                    var convertedTS = TimeZoneInfo.ConvertTimeFromUtc(utcDt, tz);
+                    try
+                    {
+                        result = convertedTS.ToString(format);
+                    }
+                    catch
+                    {
+                        error = "illegal format representation";
+                    }
+                }
+            }
+
+            return (result, error);
+        }
+
+        private static (string, string) ConvertToUTC(string sourceTimestamp, string sourceTimezone, string format = "o")
+        {
+            string error = null;
+            string result = null;
+            TimeZoneInfo tz = null;
+            var srcDt = DateTime.UtcNow;
+            try
+            {
+                srcDt = DateTime.Parse(sourceTimestamp);
+            }
+            catch
+            {
+                error = "illegal timestamp format";
+            }
+
+            if (error == null)
+            {
+                try
+                {
+                    tz = TimeZoneInfo.FindSystemTimeZoneById(sourceTimezone);
+                }
+                catch
+                {
+                    error = "illegal timezone info";
+                }
+
+                if (error == null)
+                {
+                    var convertedTS = TimeZoneInfo.ConvertTimeToUtc(srcDt, tz);
+                    try
+                    {
+                        result = convertedTS.ToString(format);
+                    }
+                    catch
+                    {
+                        error = "illegal format representation";
+                    }
+                }
+            }
+
+            return (result, error);
+        }
+
+        private static (string, string) AddToTime(string timestamp, int interval, string timeUnit, string format = "o")
+        {
+            dynamic ts = null;
+            string result = null;
+            string error = null;
+            try
+            {
+                ts = DateTime.Parse(timestamp).ToUniversalTime();
+            }
+            catch
+            {
+                error = "illegal timestamp format";
+            }
+
+            if (error == null)
+            {
+                switch (timeUnit)
+                {
+                    case "Second":
+                        ts = ts.AddSeconds(interval);
+                        break;
+                    case "Minute":
+                        ts = ts.AddMinutes(interval);
+                        break;
+                    case "Hour":
+                        ts = ts.AddHours(interval);
+                        break;
+                    case "Day":
+                        ts = ts.AddDays(interval);
+                        break;
+                    case "Week":
+                        ts = ts.AddDays(7 * interval);
+                        break;
+                    case "Month":
+                        ts = ts.AddMonths(interval);
+                        break;
+                    case "Year":
+                        ts = ts.AddYears(interval);
+                        break;
+                    default:
+                        error = "illegal time unit format, should be one of: 'Second', 'Minute', 'Hour', 'Day', 'Week', 'Month', 'Year'";
+                        break;
+                }
+
+                if (error == null)
+                {
+                    try
+                    {
+                        result = ts.ToString(format);
+                    }
+                    catch
+                    {
+                        error = "illegal format representation";
+                    }
+                }
+            }
+
+            return (result, error);
+        }
+
+        private static (string, string) ConvertTimeZone(string timestamp, string sourceTimeZone, string destinationTimeZone, string format = "o")
+        {
+            dynamic ts = null;
+            dynamic destanationTS = null;
+            string result = null;
+            string error = null;
+            TimeZoneInfo sourceTZ = null;
+            TimeZoneInfo destinationTZ = null;
+
+            try
+            {
+                sourceTZ = TimeZoneInfo.FindSystemTimeZoneById(sourceTimeZone);
+            }
+            catch
+            {
+                error = "illegal source timezone info";
+            }
+
+            if (error == null)
+            {
+                try
+                {
+                    destinationTZ = TimeZoneInfo.FindSystemTimeZoneById(destinationTimeZone);
+                }
+                catch
+                {
+                    error = "illegal destination timezone info";
+                }
+            }
+
+            if (error == null)
+            {
+                try
+                {
+                    ts = DateTime.Parse(timestamp);
+                }
+                catch
+                {
+                    error = "illegal timestamp representation";
+                }
+            }
+
+            if (error == null)
+            {
+                if (ts.Kind == DateTimeKind.Unspecified)
+                {
+                    destanationTS = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(ts, sourceTimeZone, destinationTimeZone);
+                }
+                else if (ts.Kind == DateTimeKind.Local)
+                {
+                    var utcTS = TimeZoneInfo.ConvertTimeToUtc(ts, TimeZoneInfo.Local);
+                    destanationTS = TimeZoneInfo.ConvertTimeFromUtc(utcTS, destinationTZ);
+                }
+                else
+                {
+                    destanationTS = TimeZoneInfo.ConvertTimeFromUtc(ts, destinationTZ);
+                }
+
+                try
+                {
+                    result = destanationTS.ToString(format);
+                }
+                catch
+                {
+                    error = "illegal format representation";
+                }
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) StartOfDay(string timestamp, string format = "o")
+        {
+            string result = null;
+            dynamic ts = null;
+            string error = null;
+            try
+            {
+                ts = DateTime.Parse(timestamp);
+            }
+            catch
+            {
+                error = "illegal timestamp format";
+            }
+
+            if (error == null)
+            {
+                var startOfDay = ts.Date;
+                try
+                {
+                    result = startOfDay.ToString(format);
+                }
+                catch
+                {
+                    error = "illegal format representation";
+                }
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) StartOfHour(string timestamp, string format = "o")
+        {
+            string result = null;
+            dynamic ts = null;
+            string error = null;
+            try
+            {
+                ts = DateTime.Parse(timestamp);
+            }
+            catch
+            {
+                error = "illegal timestamp format";
+            }
+
+            if (error == null)
+            {
+                var startOfDay = ts.Date;
+                var hours = ts.Hour;
+                var startOfHour = startOfDay.AddHours(hours);
+                try
+                {
+                    result = startOfHour.ToString(format);
+                }
+                catch
+                {
+                    error = "illegal format representation";
+                }
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) StartOfMonth(string timestamp, string format = "o")
+        {
+            string result = null;
+            dynamic ts = null;
+            string error = null;
+            try
+            {
+                ts = DateTime.Parse(timestamp);
+            }
+            catch
+            {
+                error = "illegal timestamp format";
+            }
+
+            if (error == null)
+            {
+                var startOfDay = ts.Date;
+                var days = ts.Day;
+                var startOfHour = startOfDay.AddDays(1-days);
+                try
+                {
+                    result = startOfHour.ToString(format);
+                }
+                catch
+                {
+                    error = "illegal format representation";
+                }
+            }
+
+            return (result, error);
+        }
+
         private static string AddOrdinal(int num)
         {
             var hasResult = false;
@@ -1996,6 +2307,174 @@ namespace Microsoft.Bot.Builder.Expressions
                     },
                     ReturnType.String,
                     (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Number, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.ConvertFromUTC,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            if (args.Count == 2)
+                            {
+                                if (args[0] is string ts && args[1] is string tz)
+                                {
+                                    (value, error) = ConvertFromUTC(ts, tz);
+                                }
+                                else
+                                {
+                                    error = $"{expr} can't evaluate.";
+                                }
+                            }
+                            else if (args.Count == 3)
+                            {
+                                if (args[0] is string ts && args[1] is string tz && args[2] is string format)
+                                {
+                                    (value, error) = ConvertFromUTC(ts, tz, format);
+                                }
+                                else
+                                {
+                                    error = $"{expr} can't evaluate.";
+                                }
+                            }
+                            else
+                            {
+                                error = $"{expr} should have two or three parameters";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    expr => ValidateArityAndAnyType(expr, 2, 3, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.ConvertToUTC,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            if (args.Count == 2)
+                            {
+                                if (args[0] is string ts && args[1] is string tz)
+                                {
+                                    (value, error) = ConvertToUTC(ts, tz);
+                                }
+                                else
+                                {
+                                    error = $"{expr} can't evaluate.";
+                                }
+                            }
+                            else if (args.Count == 3)
+                            {
+                                if (args[0] is string ts && args[1] is string tz && args[2] is string format)
+                                {
+                                    (value, error) = ConvertToUTC(ts, tz, format);
+                                }
+                                else
+                                {
+                                    error = $"{expr} can't evaluate.";
+                                }
+                            }
+                            else
+                            {
+                                error = $"{expr} should have two or three parameters";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    expr => ValidateArityAndAnyType(expr, 2, 3, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.AddToTime,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            if (args.Count == 3)
+                            {
+                                if (args[0] is string ts && args[1] is int interval && args[2] is string timeUnit)
+                                {
+                                    (value, error) = AddToTime(ts, interval, timeUnit);
+                                }
+                                else
+                                {
+                                    error = $"{expr} can't evaluate.";
+                                }
+                            }
+                            else if (args.Count == 4)
+                            {
+                                if (args[0] is string ts && args[1] is int interval && args[2] is string timeUnit && args[3] is string format)
+                                {
+                                    (value, error) = AddToTime(ts, interval, timeUnit, format);
+                                }
+                                else
+                                {
+                                    error = $"{expr} can't evaluate.";
+                                }
+                            }
+                            else
+                            {
+                                error = $"{expr} should have three or four parameters";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String, ReturnType.Number, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.ConvertTimeZone,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            if (args.Count == 3)
+                            {
+                                if (args[0] is string ts && args[1] is string sourceTZ && args[2] is string destinationTZ)
+                                {
+                                    (value, error) = ConvertTimeZone(ts, sourceTZ, destinationTZ);
+                                }
+                                else
+                                {
+                                    error = $"{expr} can't evaluate.";
+                                }
+                            }
+                            else if (args.Count == 4)
+                            {
+                                if (args[0] is string ts && args[1] is string sourceTZ && args[2] is string destinationTZ && args[3] is string format)
+                                {
+                                    (value, error) = ConvertTimeZone(ts, sourceTZ, destinationTZ, format);
+                                }
+                                else
+                                {
+                                    error = $"{expr} can't evaluate.";
+                                }
+                            }
+                            else
+                            {
+                                error = $"{expr} should have three or four parameters";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    expr => ValidateArityAndAnyType(expr, 3, 4, ReturnType.String)),
 
                 // Conversions
                 new ExpressionEvaluator(ExpressionType.Float, Apply(args => (float) Convert.ToDouble(args[0])), ReturnType.Number, ValidateUnary),
