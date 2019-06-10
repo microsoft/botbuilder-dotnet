@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var startPosition = new Position(line - 1, charPositionInLine);
             var stopPosition = new Position(line - 1, charPositionInLine + offendingSymbol.StopIndex - offendingSymbol.StartIndex + 1);
             var range = new Range(startPosition, stopPosition);
-            msg = "source: " + source + ". syntax error message: " + msg;
+            msg = $"source: {source}. syntax error message: {msg}";
             var diagnostic = new Diagnostic(range, msg, DiagnosticSeverity.Error);
 
             throw new Exception(JsonConvert.SerializeObject(diagnostic));
