@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         public List<IDialog> Steps { get; set; } = new List<IDialog>();
 
         [JsonProperty("changeType")]
-        public PlanChangeTypes ChangeType { get; set; }
+        public StepChangeTypes ChangeType { get; set; }
 
         [JsonConstructor]
         public EditSteps([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
@@ -27,29 +27,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
 
-            if (dc is PlanningContext planning)
+            if (dc is SequenceContext sc)
             {
-                var planSteps = Steps.Select(s => new PlanStepState()
+                var planSteps = Steps.Select(s => new StepState()
                 {
                     DialogStack = new List<DialogInstance>(),
                     DialogId = s.Id,
                     Options = options
                 });
 
-                var changes = new PlanChangeList()
+                var changes = new StepChangeList()
                 {
                     ChangeType = ChangeType,
                     Steps = planSteps.ToList()
                 };
 
-                if (this.ChangeType == PlanChangeTypes.DoStepsBeforeTags)
+                if (this.ChangeType == StepChangeTypes.InsertStepsBeforeTags)
                 {
                     changes.Tags = this.Tags;
                 }
 
-                planning.QueueChanges(changes);
+                sc.QueueChanges(changes);
 
-                return await planning.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+                return await sc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else
             {
