@@ -50,12 +50,11 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                         x = 3,
                     }
                 },
-            timestamp = "2018-03-15T13:00:00Z",
             user = new
             {
                 lists = new
                 {
-                    todo = new []
+                    todo = new[]
                     {
                         "todo1",
                         "todo2",
@@ -64,6 +63,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 },
                 listType = "todo",
             },
+            timestamp = "2018-03-15T13:00:00.000Z",
+            notISOTimestamp = "2018/03/15 13:00:00",
+            timestampObj = DateTime.Parse("2018-03-15T13:00:00.000Z").ToUniversalTime(),
+            unixTimestamp = 1521118800,
             turn = new
             {
                 entities = new
@@ -142,7 +145,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("'string'&'builder'","stringbuilder"),
             Test("\"string\"&\"builder\"","stringbuilder"),
             Test("one > 0.5 && two < 2.5", true, oneTwo),
-            Test("notThere > 4", false), 
+            Test("notThere > 4", false),
             Test("float(5.5) && float(0.0)", true),
             Test("hello && \"hello\"", true),
             Test("items || ((2 + 2) <= (4 - 1))", true), // true || false
@@ -281,9 +284,21 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("bool('hi')", true),
             Test("createArray('h', 'e', 'l', 'l', 'o')", new List<object>{"h", "e", "l", "l", "o" }),
             Test("createArray(1, bool(0), string(bool(1)), float('10'))", new List<object>{1, true, "true", 10.0f }),
-            # endregion
+            Test("array('hello')",new List<object>{ "hello" }),
+            Test("binary(hello)", "0110100001100101011011000110110001101111"),
+            Test("length(binary(hello))", 40),
+            Test("base64(hello)", "aGVsbG8="),
+            Test("base64ToBinary(base64(hello))", "0110000101000111010101100111001101100010010001110011100000111101"),
+            Test("base64ToString(base64(hello))", "hello"),
+            Test("dataUri(hello)", "data:text/plain;charset=utf-8;base64,aGVsbG8="),
+            Test("dataUriToBinary(base64(hello))","0110000101000111010101100111001101100010010001110011100000111101"),
+            Test("dataUriToString(dataUri(hello))","hello"),
+            Test("xml('{\"person\": {\"name\": \"Sophia Owen\", \"city\": \"Seattle\"}}')", $"<root type=\"object\">{Environment.NewLine}  <person type=\"object\">{Environment.NewLine}    <name type=\"string\">Sophia Owen</name>{Environment.NewLine}    <city type=\"string\">Seattle</city>{Environment.NewLine}  </person>{Environment.NewLine}</root>"),
+            Test("uriComponent('http://contoso.com')", "http%3A%2F%2Fcontoso.com"),
+            Test("uriComponentToString('http%3A%2F%2Fcontoso.com')", "http://contoso.com"),
+            #endregion
 
-            # region  Math functions test
+            #region  Math functions test
             Test("add(1, 2, 3)", 6),
             Test("add(1, 2)", 3),
             Test("add(1.0, 2.0)", 3.0),
@@ -307,17 +322,19 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("mod(5,2)", 1),
             Test("rand(1, 2)", 1),
             Test("rand(2, 3)", 2),
+            Test("range(1,4)",new[]{1,2,3,4}),
+            Test("range(-1,6)",new[]{-1,0,1,2,3,4}),
             # endregion
 
             # region  Date and time function test
             //init dateTime: 2018-03-15T13:00:00Z
-            Test("addDays(timestamp, 1)", "2018-03-16T13:00:00.0000000Z"),
+            Test("addDays(timestamp, 1)", "2018-03-16T13:00:00.000Z"),
             Test("addDays(timestamp, 1,'MM-dd-yy')", "03-16-18"),
-            Test("addHours(timestamp, 1)", "2018-03-15T14:00:00.0000000Z"),
+            Test("addHours(timestamp, 1)", "2018-03-15T14:00:00.000Z"),
             Test("addHours(timestamp, 1,'MM-dd-yy hh-mm')", "03-15-18 02-00"),
-            Test("addMinutes(timestamp, 1)", "2018-03-15T13:01:00.0000000Z"),
+            Test("addMinutes(timestamp, 1)", "2018-03-15T13:01:00.000Z"),
             Test("addMinutes(timestamp, 1, 'MM-dd-yy hh-mm')", "03-15-18 01-01"),
-            Test("addSeconds(timestamp, 1)", "2018-03-15T13:00:01.0000000Z"),
+            Test("addSeconds(timestamp, 1)", "2018-03-15T13:00:01.000Z"),
             Test("addSeconds(timestamp, 1, 'MM-dd-yy hh-mm-ss')", "03-15-18 01-00-01"),
             Test("dayOfMonth(timestamp)", 15),
             Test("dayOfWeek(timestamp)", 4),//Thursday
@@ -325,24 +342,29 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("month(timestamp)", 3),
             Test("date(timestamp)", "3/15/2018"),//Default. TODO
             Test("year(timestamp)", 2018),
-            Test("formatDateTime(timestamp)", "2018-03-15T13:00:00.0000000Z"),
-            Test("formatDateTime(timestamp, 'MM-dd-yy')", "03-15-18"),
-            Test("subtractFromTime(timestamp, 1, 'Year')", "2017-03-15T13:00:00.0000000Z"),
-            Test("subtractFromTime(timestamp, 1, 'Month')", "2018-02-15T13:00:00.0000000Z"),
-            Test("subtractFromTime(timestamp, 1, 'Week')", "2018-03-08T13:00:00.0000000Z"),
-            Test("subtractFromTime(timestamp, 1, 'Day')", "2018-03-14T13:00:00.0000000Z"),
-            Test("subtractFromTime(timestamp, 1, 'Hour')", "2018-03-15T12:00:00.0000000Z"),
-            Test("subtractFromTime(timestamp, 1, 'Minute')", "2018-03-15T12:59:00.0000000Z"),
-            Test("subtractFromTime(timestamp, 1, 'Second')", "2018-03-15T12:59:59.0000000Z"),
+            Test("length(utcNow())", 24),
+            Test("utcNow('MM-DD-YY')", DateTime.UtcNow.ToString("MM-DD-YY")),
+            Test("formatDateTime(notISOTimestamp)", "2018-03-15T13:00:00.000Z"),
+            Test("formatDateTime(notISOTimestamp, 'MM-dd-yy')", "03-15-18"),
+            Test("formatDateTime('2018-03-15')", "2018-03-15T00:00:00.000Z"),
+            Test("formatDateTime(timestampObj)", "2018-03-15T13:00:00.000Z"),
+            Test("formatDateTime(unixTimestamp)", "2018-03-15T13:00:00.000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Year')", "2017-03-15T13:00:00.000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Month')", "2018-02-15T13:00:00.000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Week')", "2018-03-08T13:00:00.000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Day')", "2018-03-14T13:00:00.000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Hour')", "2018-03-15T12:00:00.000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Minute')", "2018-03-15T12:59:00.000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Second')", "2018-03-15T12:59:59.000Z"),
             Test("dateReadBack(timestamp, addDays(timestamp, 1))", "tomorrow"),
             Test("dateReadBack(addDays(timestamp, 1),timestamp))", "yesterday"),
-            Test("getTimeOfDay('2018-03-15T00:00:00Z')", "midnight"),
-            Test("getTimeOfDay('2018-03-15T08:00:00Z')", "morning"),
-            Test("getTimeOfDay('2018-03-15T12:00:00Z')", "noon"),
-            Test("getTimeOfDay('2018-03-15T13:00:00Z')", "afternoon"),
-            Test("getTimeOfDay('2018-03-15T18:00:00Z')", "evening"),
-            Test("getTimeOfDay('2018-03-15T22:00:00Z')", "evening"),
-            Test("getTimeOfDay('2018-03-15T23:00:00Z')", "night"),
+            Test("getTimeOfDay('2018-03-15T00:00:00.000Z')", "midnight"),
+            Test("getTimeOfDay('2018-03-15T08:00:00.000Z')", "morning"),
+            Test("getTimeOfDay('2018-03-15T12:00:00.000Z')", "noon"),
+            Test("getTimeOfDay('2018-03-15T13:00:00.000Z')", "afternoon"),
+            Test("getTimeOfDay('2018-03-15T18:00:00.000Z')", "evening"),
+            Test("getTimeOfDay('2018-03-15T22:00:00.000Z')", "evening"),
+            Test("getTimeOfDay('2018-03-15T23:00:00.000Z')", "night"),
             Test("getPastTime(1,'Year','MM-dd-yy')", DateTime.Now.AddYears(-1).ToString("MM-dd-yy")),
             Test("getPastTime(1,'Month','MM-dd-yy')", DateTime.Now.AddMonths(-1).ToString("MM-dd-yy")),
             Test("getPastTime(1,'Week','MM-dd-yy')", DateTime.Now.AddDays(-7).ToString("MM-dd-yy")),
@@ -389,7 +411,15 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("count(union(createArray('a', 'b'), createArray('b', 'c'), createArray('b', 'd')))", 4),
             Test("count(intersection(createArray('a', 'b')))", 2),
             Test("count(intersection(createArray('a', 'b'), createArray('b', 'c'), createArray('b', 'd')))", 1),
-            
+            Test("skip(createArray('H','e','l','l','0'),2)", new List<object>{"l", "l", "0"}),
+            Test("take(createArray('H','e','l','l','0'),2)", new List<object>{"H", "e"}),
+            Test("subArray(createArray('H','e','l','l','o'),2,5)", new List<object>{"l", "l", "o"}),
+            Test("count(newGuid())", 36),
+            Test("indexOf(newGuid(), '-')", 8),
+            Test("indexOf(hello, '-')", -1),
+            Test("lastIndexOf(newGuid(), '-')", 23),
+            Test("lastIndexOf(hello, '-')", -1),
+            Test("length(newGuid())",36),
             # endregion
 
             # region  Object manipulation and construction functions
@@ -428,7 +458,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("user.lists.todo[int(@ordinal[0]) - 1]", "todo1"),
             Test("user.lists[user.listType][int(@ordinal[0]) - 1]", "todo1"),
             #endregion
-
+            
         };
 
         [DataTestMethod]
@@ -484,6 +514,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 if (actual is int)
                 {
                     Assert.IsTrue(expected is int);
+                    Assert.AreEqual(actual, expected);
                 }
                 else
                 {

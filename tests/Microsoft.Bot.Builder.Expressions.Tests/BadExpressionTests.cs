@@ -31,6 +31,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("func(A,b,b,)"),
             Test("a.#title"),
             Test("\"hello'"),
+            Test("'hello'.length()") // not support currently
         };
 
 
@@ -110,6 +111,15 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("countWord(one)"),// should have string param
             Test("addOrdinal(one)"),// should have Integer param
             Test("addOrdinal(one, two)"),// should have one param
+            Test("newGuid(one)"), // should have no parameters
+            Test("indexOf(hello)"), // should have two parameters
+            Test("indexOf(hello, world, one)"), // should have two parameters
+            Test("indexOf(hello, one)"), // both parameters should be string
+            Test("indexOf(one, hello)"), // both parameters should be string
+            Test("lastIndexOf(hello)"),// should have two parameters
+            Test("lastIndexOf(hello, world, one)"), // should have two parameters
+            Test("lastIndexOf(hello, one)"), // both parameters should be string
+            Test("lastIndexOf(one, hello)"), // both parameters should be string
             # endregion
 
             # region Logical comparison functions test
@@ -135,6 +145,26 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("int(1, 1)"), // shold have 1 param
             Test("string(hello, 1)"), // shold have 1 param
             Test("bool(false, 1)"), // shold have 1 param
+            Test("array(hello,world)"), // shold have 1 param
+            Test("array(one)"), // shold have 1 param
+            Test("DataUri(hello, world)"), // shoule have 1 param
+            Test("DataUri(false)"), //should have string param
+            Test("uriComponent(hello, world)"), // shoule have 1 param
+            Test("uriComponent(false)"), //should have string param
+            Test("uriComponentToString(hello, world)"), // shoule have 1 param
+            Test("uriComponentToString(false)"), //should have string param
+            Test("dataUriToBinary(hello, world)"), // shoule have 1 param
+            Test("dataUriToBinary(false)"), //should have string param
+            Test("dataUriToString(hello, world)"), // shoule have 1 param
+            Test("dataUriToString(false)"), //should have string param
+            Test("binary(hello, world)"),      // shoule have 1 param
+            Test("binary(one)"), //should have string param
+            Test("base64(hello, world)"),      // shoule have 1 param
+            Test("base64(one)"), //should have string param
+            Test("base64ToBinary(hello, world)"), // shoule have 1 param
+            Test("base64ToBinary(one)"), //should have string param
+            Test("base64ToString(hello, world)"), // shoule have 1 param
+            Test("base64ToString(false)"), //should have string param
             # endregion
 
             # region Math functions test
@@ -164,6 +194,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("rand(5)"), //  need two params
             Test("rand(7, 6)"), //  minvalue cannot be greater than maxValue
             Test("sum(items)"), //  should have number parameters
+            Test("range(hello,one)"), // params should be integer
+            Test("range(one,0)"), //the second param should be more than 0
             #endregion
             
             #region Date and time function test
@@ -171,41 +203,57 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("addDays(timestamp, 'hi')"),// second param should be integer
             Test("addDays(timestamp)"),// should have 2 or 3 params
             Test("addDays(timestamp, 1,'yyyy', 2)"),// should have 2 or 3 params
+            Test("addDays(notISOTimestamp, 1)"), // not ISO datetime format
             Test("addHours('errortime', 1)"),// error datetime format
             Test("addHours(timestamp, 'hi')"),// second param should be integer
             Test("addHours(timestamp)"),// should have 2 or 3 params
             Test("addHours(timestamp, 1,'yyyy', 2)"),// should have 2 or 3 params
+            Test("addHours(notISOTimestamp, 1)"), // not ISO datetime format
             Test("addMinutes('errortime', 1)"),// error datetime format
             Test("addMinutes(timestamp, 'hi')"),// second param should be integer
             Test("addMinutes(timestamp)"),// should have 2 or 3 params
             Test("addMinutes(timestamp, 1,'yyyy', 2)"),// should have 2 or 3 params
+            Test("addMinutes(notISOTimestamp, 1)"), // not ISO datetime format
             Test("addSeconds('errortime', 1)"),// error datetime format
             Test("addSeconds(timestamp, 'hi')"),// second param should be integer
             Test("addSeconds(timestamp)"),// should have 2 or 3 params
             Test("addSeconds(timestamp, 1,'yyyy', 2)"),// should have 2 or 3 params
+            Test("addSeconds(notISOTimestamp, 1)"), // not ISO datetime format
             Test("dayOfMonth('errortime')"), // error datetime format
             Test("dayOfMonth(timestamp, 1)"), //should have 1 param
+            Test("dayOfMonth(notISOTimestamp)"), // not ISO datetime format
             Test("dayOfWeek('errortime')"), // error datetime format
             Test("dayOfWeek(timestamp, 1)"), //should have 1 param
+            Test("dayOfWeek(notISOTimestamp)"), // not ISO datetime format
             Test("dayOfYear('errortime')"), // error datetime format
             Test("dayOfYear(timestamp, 1)"), //should have 1 param
+            Test("dayOfYear(notISOTimestamp)"), // not ISO datetime format
             Test("month('errortime')"), // error datetime format
             Test("month(timestamp, 1)"), //should have 1 param
+            Test("month(notISOTimestamp)"), // not ISO datetime format
             Test("date('errortime')"), // error datetime format
             Test("date(timestamp, 1)"), //should have 1 param
+            Test("date(notISOTimestamp)"), // not ISO datetime format
             Test("year('errortime')"), // error datetime format
             Test("year(timestamp, 1)"), // should have 1 param
+            Test("year(notISOTimestamp)"), // not ISO datetime format
             Test("formatDateTime('errortime')"), // error datetime format
+            Test("formatDateTime(notValidTimestamp)"), // error datetime format
+            Test("formatDateTime(notValidTimestamp2)"), // error datetime format
+            Test("formatDateTime(notValidTimestamp3)"), // error datetime format
             Test("formatDateTime(timestamp, 'yyyy', 1)"), // should have 2 or 3 params
             Test("subtractFromTime('errortime', 'yyyy', 1)"), // error datetime format
             Test("subtractFromTime(timestamp, 1, 'W')"),// error time unit
             Test("subtractFromTime(timestamp, timestamp, 'W')"),// error parameters format
-            Test("subtractFromTime(timestamp, 'yyyy', '1')"), // third param should be integer
+            Test("subtractFromTime(timestamp, '1', 'Year')"), // second param should be integer
             Test("subtractFromTime(timestamp, 'yyyy')"), // should have 3 or 4 params
+            Test("subtractFromTime(notISOTimestamp, 1, 'Year')"), // not ISO datetime format
             Test("dateReadBack('errortime', 'errortime')"), // error datetime format
             Test("dateReadBack(timestamp)"), // shold have two params
+            Test("dateReadBack(notISOTimestamp, addDays(timestamp, 1))"), // not ISO datetime format
             Test("getTimeOfDay('errortime')"), // error datetime format
             Test("getTimeOfDay(timestamp, timestamp)"), // should have 1 param
+            Test("getTimeOfDay(notISOTimestamp)"), // not ISO datetime format
             Test("getPastTime(1, 'W')"),// error time unit
             Test("getPastTime(timestamp, 'W')"),// error parameters format
             Test("getPastTime('yyyy', '1')"),// second param should be integer
@@ -240,6 +288,18 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("foreach(items, x, sum(x))"),// third paramter error
             Test("union(one, two)"),// should have collection param
             Test("intersection(one, two)"),// should have collection param
+            Test("skip(one, two)"), //should have collection param
+            Test("skip(items,-1)"), //the second parameter shoule not less than zero
+            Test("skip(items,3)"), //the second parameter shoule  less than the length of the collection
+            Test("take(one, two)"), //should have collection param
+            Test("take(createArray('H','e','l','l','0'),items[5])"), // the second param expr is wrong
+            Test("take(items,-1)"), //the second parameter shoule not less than zero
+            Test("take(items,4)"), //the second parameter shoule  less than the length of the collection
+            Test("subArray(one,1,4)"), //should have collection param
+            Test("subArray(items,-1,4)"), //the second parameter shoule not less than zero
+            Test("subArray(items,1,4)"), //the second parameter shoule  less than the length of the collection
+            Test("subArray(createArray('H','e','l','l','o'),items[5],5)"), //the second parameter expression is invalid
+            Test("subArray(createArray('H','e','l','l','o'),2,items[5])"), //the second parameter expression is invalid
             # endregion
 
             # region Object manipulation and construction functions test
@@ -304,6 +364,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     }
                 },
                 timestamp = "2018-03-15T13:00:00Z",
+                notISOTimestamp = "2018/03/15 13:00:00",
+                notValidTimestamp = "2018timestmap",
+                notValidTimestamp2 = "1521118800",
+                notValidTimestamp3 = "20181115",
                 turn = new
                 {
                     entities = new

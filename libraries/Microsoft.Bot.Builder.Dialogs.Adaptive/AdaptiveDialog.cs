@@ -41,6 +41,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public IRecognizer Recognizer { get; set; }
 
         /// <summary>
+        /// Language Generator override
+        /// </summary>
+        public ILanguageGenerator Generator { get; set; }
+
+        /// <summary>
         /// Gets or sets the steps to execute when the dialog begins
         /// </summary>
         public List<IDialog> Steps { get; set; } = new List<IDialog>();
