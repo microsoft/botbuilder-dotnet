@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             try
             {
-                fileContext = GetFileContentContext(text);
+                fileContext = GetFileContentContext(text, source);
             }
             catch (Exception e)
             {
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="text">Original text which will be parsed.</param>
         /// <returns>Parsed tree node.</returns>
-        private static LGFileParser.FileContext GetFileContentContext(string text)
+        private static LGFileParser.FileContext GetFileContentContext(string text, string source)
         {
             if (string.IsNullOrEmpty(text))
             {
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var tokens = new CommonTokenStream(lexer);
             var parser = new LGFileParser(tokens);
             parser.RemoveErrorListeners();
-            var listener = new ErrorListener();
+            var listener = new ErrorListener(source);
 
             parser.AddErrorListener(listener);
             parser.BuildParseTree = true;

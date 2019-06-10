@@ -1,0 +1,34 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "EditSteps Step",
+    "description": "Edit current dialog with changeType and Steps",
+    "type": "object",
+    "properties": {
+        "ChangeType": {
+            "type": "string",
+            "title": "Change Type",
+            "description": "The change type to apply to current dialog",
+            "enum": [
+                "NewPlan",
+                "DoSteps",
+                "DoStepsBeforeTags",
+                "DoStepsLater",
+                "EndPlan",
+                "ReplacePlan"
+            ]
+        },
+        "Steps": {
+            "type": "array",
+            "items": {
+                "$type": "Microsoft.IDialog"
+            },
+            "title": "Steps",
+            "description": "Step to execute"
+        }
+    },
+    "required": [
+        "ChangeType",
+        "Steps"
+    ]
+}
