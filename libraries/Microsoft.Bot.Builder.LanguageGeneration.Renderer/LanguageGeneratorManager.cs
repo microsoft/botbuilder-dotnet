@@ -22,9 +22,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             this.resourceExplorer = resourceExplorer;
             foreach (var resource in this.resourceExplorer.GetResources("lg"))
             {
-                LanguageGenerators[resource.Id] = new TemplateEngineLanguageGenerator(resource.Id, resource.ReadText());
+                LanguageGenerators[resource.Id] = new TemplateEngineLanguageGenerator(resource.ReadText(), resourceLoader: loadResource, name: resource.Id);
             }
             this.resourceExplorer.Changed += ResourceExplorer_Changed;
+        }
+
+        private string loadResource(string id)
+        {
+            var res = resourceExplorer.GetResource(id);
+            return (res != null) ? res.ReadText() : string.Empty;
         }
 
         private void ResourceExplorer_Changed(IResource[] resources)
@@ -32,7 +38,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             // reload changed LG files
             foreach (var resource in resources.Where(r => Path.GetExtension(r.Id).ToLower() == ".lg"))
             {
-                LanguageGenerators[resource.Id] = new TemplateEngineLanguageGenerator(resource.Id, resource.ReadText());
+                LanguageGenerators[resource.Id] = new TemplateEngineLanguageGenerator(resource.ReadText(), resourceLoader: loadResource, name: resource.Id);
             }
         }
 
