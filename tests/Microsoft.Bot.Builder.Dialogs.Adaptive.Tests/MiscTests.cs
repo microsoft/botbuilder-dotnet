@@ -138,7 +138,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         Steps = new List<IDialog>()
                         {
-                            new SaveEntity("@name", "user.name"),
+                            new SetProperty()
+                            {
+                                Property = "user.name",
+                                Value = new ExpressionEngine().Parse("@name")
+                            }
                         }
                     }
                 }

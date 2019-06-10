@@ -105,40 +105,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
                 }).ToList()
             };
         }
-        //protected override StepChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
-        //{
-        //    if (planning.State.TryGetValue<RecognizerResult>("turn.dialogEvent.value", out var recognizerResult))
-        //    {
-        //        var (name, score) = recognizerResult.GetTopScoringIntent();
-        //        return new StepChangeList()
-        //        {
-        //            //ChangeType = this.ChangeType,
-
-        //            // proposed turn state changes
-        //            Turn = new Dictionary<string, object>()
-        //            {
-        //                { "intent",  new Dictionary<string, object>() { { name, score } } },
-        //                { "entities", recognizerResult.Entities }
-        //            },
-        //            Steps = Steps.Select(s => new StepState()
-        //            {
-        //                DialogStack = new List<DialogInstance>(),
-        //                DialogId = s.Id,
-        //                Options = dialogOptions
-        //            }).ToList()
-        //        };
-        //    }
-
-        //    return new StepChangeList()
-        //    {
-        //        Steps = Steps.Select(s => new StepState()
-        //        {
-        //            DialogStack = new List<DialogInstance>(),
-        //            DialogId = s.Id,
-        //            Options = dialogOptions
-        //        }).ToList()
-        //    };
-        //}
 
         public override string GetIdentity()
         {

@@ -157,8 +157,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var state = (IDictionary<string, object>)((Dictionary<string, object>)instance.State)[PersistedState];
-            var options = (PromptOptions)((Dictionary<string, object>)instance.State)[PersistedOptions];
+            var state = (IDictionary<string, object>)instance.State[PersistedState];
+            var options = (PromptOptions)instance.State[PersistedOptions];
             await OnPromptAsync(turnContext, state, options, isRetry: true).ConfigureAwait(false);
         }
 

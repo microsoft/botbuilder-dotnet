@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     public class SequenceContext : DialogContext
     {
-        private const string changeKey = "stepChangeList";
+        private readonly string changeKey;
 
         public AdaptiveDialogState Plans { get; private set; }
 
@@ -33,10 +33,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             private set { this.Context.TurnState[changeKey] = value; }
         }
 
-        public SequenceContext(DialogSet dialogs, DialogContext dc, DialogState state, List<StepState> steps)
+        public SequenceContext(DialogSet dialogs, DialogContext dc, DialogState state, List<StepState> steps, string changeKey)
             : base(dialogs, dc.Context, state, conversationState: dc.State.Conversation, userState: dc.State.User, settings: dc.State.Settings)
         {
             this.Steps = steps;
+            this.changeKey = changeKey;
         }
 
         /// <summary>

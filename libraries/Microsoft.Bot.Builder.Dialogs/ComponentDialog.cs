@@ -172,7 +172,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             var childDc = this.CreateInnerDc(dc.Context, dc.ActiveDialog, dc.State.User, dc.State.Conversation);
             childDc.Parent = dc;
-            return childDc;//childDc.Stack.Any() ? childDc : null;
+            return childDc;
         }
 
         private DialogContext CreateInnerDc(ITurnContext context, DialogInstance instance, Dictionary<string, object> userState, Dictionary<string, object> conversationState)
@@ -186,6 +186,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             else
             {
                 state = new DialogState();
+                instance.State[PersistedDialogState] = state;
             }
 
             if (state.DialogStack == null)
