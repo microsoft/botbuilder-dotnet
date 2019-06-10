@@ -1453,7 +1453,7 @@ namespace Microsoft.Bot.Builder.Expressions
             string error = null;
             try
             {
-                ts = DateTime.Parse(timestamp);
+                ts = DateTime.Parse(timestamp).ToUniversalTime();
             }
             catch
             {
@@ -1483,7 +1483,7 @@ namespace Microsoft.Bot.Builder.Expressions
             string error = null;
             try
             {
-                ts = DateTime.Parse(timestamp);
+                ts = DateTime.Parse(timestamp).ToUniversalTime();
             }
             catch
             {
@@ -1515,7 +1515,7 @@ namespace Microsoft.Bot.Builder.Expressions
             string error = null;
             try
             {
-                ts = DateTime.Parse(timestamp);
+                ts = DateTime.Parse(timestamp).ToUniversalTime();
             }
             catch
             {
@@ -1535,6 +1535,28 @@ namespace Microsoft.Bot.Builder.Expressions
                 {
                     error = "illegal format representation";
                 }
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) Ticks(string timestamp)
+        {
+            object result = null;
+            dynamic ts = null;
+            string error = null;
+            try
+            {
+                ts = DateTime.Parse(timestamp).ToUniversalTime();
+            }
+            catch
+            {
+                error = "illegal timestamp format";
+            }
+
+            if (error == null)
+            {
+                result = ts.Ticks;
             }
 
             return (result, error);
@@ -2475,6 +2497,163 @@ namespace Microsoft.Bot.Builder.Expressions
                     },
                     ReturnType.String,
                     expr => ValidateArityAndAnyType(expr, 3, 4, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.StartOfDay,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            if (args.Count == 1)
+                            {
+                                if (args[0] is string ts )
+                                {
+                                    (value, error) = StartOfDay(ts);
+                                }
+                                else
+                                {
+                                    error = $"{expr} can't evaluate.";
+                                }
+                            }
+                            else if (args.Count == 2)
+                            {
+                                if (args[0] is string ts && args[1] is string format)
+                                {
+                                    (value, error) = StartOfDay(ts, format);
+                                }
+                                else
+                                {
+                                    error = $"{expr} can't evaluate.";
+                                }
+                            }
+                            else
+                            {
+                                error = $"{expr} should have one or two parameters";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    expr => ValidateArityAndAnyType(expr, 1, 2, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.StartOfHour,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            if (args.Count == 1)
+                            {
+                                if (args[0] is string ts )
+                                {
+                                    (value, error) = StartOfHour(ts);
+                                }
+                                else
+                                {
+                                    error = $"{expr} can't evaluate.";
+                                }
+                            }
+                            else if (args.Count == 2)
+                            {
+                                if (args[0] is string ts && args[1] is string format)
+                                {
+                                    (value, error) = StartOfHour(ts, format);
+                                }
+                                else
+                                {
+                                    error = $"{expr} can't evaluate.";
+                                }
+                            }
+                            else
+                            {
+                                error = $"{expr} should have one or two parameters";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    expr => ValidateArityAndAnyType(expr, 1, 2, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.StartOfMonth,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            if (args.Count == 1)
+                            {
+                                if (args[0] is string ts )
+                                {
+                                    (value, error) = StartOfMonth(ts);
+                                }
+                                else
+                                {
+                                    error = $"{expr} can't evaluate.";
+                                }
+                            }
+                            else if (args.Count == 2)
+                            {
+                                if (args[0] is string ts && args[1] is string format)
+                                {
+                                    (value, error) = StartOfMonth(ts, format);
+                                }
+                                else
+                                {
+                                    error = $"{expr} can't evaluate.";
+                                }
+                            }
+                            else
+                            {
+                                error = $"{expr} should have one or two parameters";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    expr => ValidateArityAndAnyType(expr, 1, 2, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.Ticks,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            if (args.Count == 1)
+                            {
+                                if (args[0] is string ts )
+                                {
+                                    (value, error) = Ticks(ts);
+                                }
+                                else
+                                {
+                                    error = $"{expr} can't evaluate.";
+                                }
+                            }
+                            else
+                            {
+                                error = $"{expr} should have one parameters";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.String)),
 
                 // Conversions
                 new ExpressionEvaluator(ExpressionType.Float, Apply(args => (float) Convert.ToDouble(args[0])), ReturnType.Number, ValidateUnary),

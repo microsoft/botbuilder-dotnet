@@ -379,6 +379,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("addToTime('2018-01-01T00:00:00Z', 1, 'Week')", "2018-01-08T00:00:00.0000000Z"),
             Test("convertTimeZone('2018-01-01T08:00:00.0000000Z', 'UTC', 'Pacific Standard Time')", "2018-01-01T00:00:00.0000000"),
             Test("convertTimeZone('2018-01-01T03:00:00.0000000', 'Eastern Standard Time', 'Pacific Standard Time', 'D')", "Monday, January 1, 2018"),
+            Test("startOfDay('2018-03-15T13:30:30Z')", "2018-03-15T00:00:00.0000000Z"),
+            Test("startOfHour('2018-03-15T13:30:30Z')", "2018-03-15T13:00:00.0000000Z"),
+            Test("startOfMonth('2018-03-15T13:30:30Z')", "2018-03-01T00:00:00.0000000Z"),
+            Test("ticks('2018-01-01T08:00:00.0000000Z')", 636503904000000000),
             #endregion
 
             #region  collection functions test
