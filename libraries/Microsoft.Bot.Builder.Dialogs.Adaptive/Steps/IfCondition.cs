@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 // Queue up steps that should run after current step
                 planning.QueueChanges(new StepChangeList()
                 {
-                    ChangeType = StepChangeTypes.DoSteps,
+                    ChangeType = StepChangeTypes.InsertSteps,
                     Steps = planSteps.ToList()
                 });
 

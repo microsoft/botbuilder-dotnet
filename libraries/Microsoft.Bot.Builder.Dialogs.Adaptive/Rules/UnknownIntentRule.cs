@@ -34,33 +34,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
             callerPath: callerPath, callerLine: callerLine)
         {
         }
-
-        protected override StepChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
-        {
-            if (planning.State.TryGetValue<RecognizerResult>("turn.dialogEvent.value", out var recognizerResult))
-            {
-                return new StepChangeList()
-                {
-                    //ChangeType = this.ChangeType,
-                    Desire = DialogConsultationDesire.CanProcess,
-                    Steps = Steps.Select(s => new StepState()
-                    {
-                        DialogStack = new List<DialogInstance>(),
-                        DialogId = s.Id,
-                        Options = dialogOptions
-                    }).ToList()
-                };
-            }
-
-            return new StepChangeList()
-            { 
-                Steps = Steps.Select(s => new StepState()
-                {
-                    DialogStack = new List<DialogInstance>(),
-                    DialogId = s.Id,
-                    Options = dialogOptions
-                }).ToList()
-            };
-        }
     }
 }

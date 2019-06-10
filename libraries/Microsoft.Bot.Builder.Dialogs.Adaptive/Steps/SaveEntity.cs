@@ -54,14 +54,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     result = values;
                 }
 
-                SequenceContext pc = dc as SequenceContext;
+                //SequenceContext pc = dc as SequenceContext;
 
-                // if this step interrupted a step in the active plan
-                if (pc != null && pc.Plan.Steps.Count > 1 && pc.Plan.Steps[1].DialogStack.Count > 0)
-                {
-                    // reset the next step's dialog stack so that when the plan continues it reevaluates new changed state
-                    pc.Plan.Steps[1].DialogStack.Clear();
-                }
+                //// if this step interrupted a step in the active plan
+                //if (pc != null && pc.Plan.Steps.Count > 1 && pc.Plan.Steps[1].DialogStack.Count > 0)
+                //{
+                //    // reset the next step's dialog stack so that when the plan continues it reevaluates new changed state
+                //    pc.Plan.Steps[1].DialogStack.Clear();
+                //}
 
                 return await dc.EndDialogAsync(result: result, cancellationToken: cancellationToken);
             }

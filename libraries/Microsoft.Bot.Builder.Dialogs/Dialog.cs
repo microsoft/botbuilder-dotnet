@@ -17,6 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     public abstract class Dialog : IDialog
     {
         public static readonly DialogTurnResult EndOfTurn = new DialogTurnResult(DialogTurnStatus.Waiting);
+
         private IBotTelemetryClient _telemetryClient;
 
         public Dialog(string dialogId = null)
@@ -145,28 +146,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Should be overridden by dialogs that support multi-turn conversations. A function for 
-        /// processing the utterance is returned along with a code indicating the dialogs desire to 
-        /// process the utterance.This can be one of the following values. 
-        /// - CanProcess - The dialog is capable of processing the utterance but parent dialogs 
-        /// should feel free to intercept the utterance if they'd like.
-        /// - ShouldProcess - The dialog (or one of its children) wants to process the utterance
-        /// so parents should not intercept it.
-        /// The default implementation calls the legacy ContinueDialogAsync for 
-        /// compatibility reasons.That method simply calls DialogContext.EndDialog().
-        /// </summary>
-        /// <param name="dc">The dialog context for the current turn of conversation.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        public virtual async Task<DialogConsultation> ConsultDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return new DialogConsultation()
-            {
-                Desire = DialogConsultationDesire.CanProcess,
-                Processor = (dialogContext) => this.ContinueDialogAsync(dialogContext),
-            };
-        }
-
-        /// <summary>
         /// Called when an event has been raised, using `DialogContext.emitEvent()`, by either the current dialog or a dialog that the current dialog started.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of conversation.</param>
@@ -174,6 +153,52 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>True if the event is handled by the current dialog and bubbling should stop.</returns>
         public virtual async Task<bool> OnDialogEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+        {
+            // Before bubble
+            var handled = await this.OnPreBubbleEvent(dc, e, cancellationToken).ConfigureAwait(false);
+
+            // Bubble as needed
+            if (!handled && e.Bubble && dc.Parent != null)
+            {
+                handled = await dc.Parent.EmitEventAsync(e.Name, e.Value, true, false, cancellationToken).ConfigureAwait(false);
+            }
+
+            // Post bubble
+            if (!handled)
+            {
+                handled = await this.OnPostBubbleEvent(dc, e, cancellationToken).ConfigureAwait(false);
+            }
+
+            return handled;
+        }
+
+        /// <summary>
+        /// Called before an event is bubbled to its parent.
+        /// </summary>
+        /// <remarks>
+        /// This is a good place to perform interception of an event as returning `true` will prevent
+        /// any further bubbling of the event to the dialogs parents and will also prevent any child
+        /// dialogs from performing their default processing.
+        /// </remarks>
+        /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <param name="e">The event being raised.</param>
+        /// <returns> Whether the event is handled by the current dialog and further processing should stop.</returns>
+        protected virtual async Task<bool> OnPreBubbleEvent(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// Called after an event was bubbled to all parents and wasn't handled.
+        /// </summary>
+        /// <remarks>
+        /// This is a good place to perform default processing logic for an event. Returning `true` will
+        /// prevent any processing of the event by child dialogs.
+        /// </remarks>
+        /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <param name="e">The event being raised.</param>
+        /// <returns> Whether the event is handled by the current dialog and further processing should stop.</returns>
+        protected virtual async Task<bool> OnPostBubbleEvent(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
             return false;
         }
