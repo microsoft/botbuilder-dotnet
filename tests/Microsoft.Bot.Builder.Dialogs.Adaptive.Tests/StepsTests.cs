@@ -775,5 +775,155 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("Yippee ki-yay!")
             .StartTestAsync();
         }
+
+        [TestMethod]
+        public async Task Step_Foreach()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var rootDialog = new AdaptiveDialog("root")
+            {
+                Steps = new List<IDialog>()
+                {
+                    new InitProperty()
+                    {
+                        Property = "dialog.todo",
+                        Type = "Array"
+                    },
+
+                    new EditArray()
+                    {
+                        ArrayProperty = "dialog.todo",
+                        ChangeType = EditArray.ArrayChangeType.Push,
+                        ItemProperty = "1"
+                    },
+
+                    new EditArray()
+                    {
+                        ArrayProperty = "dialog.todo",
+                        ChangeType = EditArray.ArrayChangeType.Push,
+                        ItemProperty = "2"
+                    },
+
+                    new EditArray()
+                    {
+                        ArrayProperty = "dialog.todo",
+                        ChangeType = EditArray.ArrayChangeType.Push,
+                        ItemProperty = "3"
+                    },
+
+                    new Foreach()
+                    {
+                        ListProperty = new ExpressionEngine().Parse("dialog.todo"),
+                        Steps = new List<IDialog>()
+                        {
+                            new SendActivity("index is: {dialog.index} and value is: {dialog.value}")
+                        }
+                    }
+                }
+            };
+
+
+            await CreateFlow(rootDialog)
+            .Send("hi")
+                .AssertReply("index is: 0 and value is: 1")
+                .AssertReply("index is: 1 and value is: 2")
+                .AssertReply("index is: 2 and value is: 3")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task Step_ForeachPage()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var userState = new UserState(new MemoryStorage());
+
+            var rootDialog = new AdaptiveDialog("root")
+            {
+                Steps = new List<IDialog>()
+                {
+                    new InitProperty()
+                    {
+                        Property = "dialog.todo",
+                        Type = "Array"
+                    },
+
+                    new EditArray()
+                    {
+                        ArrayProperty = "dialog.todo",
+                        ChangeType = EditArray.ArrayChangeType.Push,
+                        ItemProperty = "1"
+                    },
+
+                    new EditArray()
+                    {
+                        ArrayProperty = "dialog.todo",
+                        ChangeType = EditArray.ArrayChangeType.Push,
+                        ItemProperty = "2"
+                    },
+
+                    new EditArray()
+                    {
+                        ArrayProperty = "dialog.todo",
+                        ChangeType = EditArray.ArrayChangeType.Push,
+                        ItemProperty = "3"
+                    },
+
+                    new EditArray()
+                    {
+                        ArrayProperty = "dialog.todo",
+                        ChangeType = EditArray.ArrayChangeType.Push,
+                        ItemProperty = "4"
+                    },
+
+                    new EditArray()
+                    {
+                        ArrayProperty = "dialog.todo",
+                        ChangeType = EditArray.ArrayChangeType.Push,
+                        ItemProperty = "5"
+                    },
+
+                    new EditArray()
+                    {
+                        ArrayProperty = "dialog.todo",
+                        ChangeType = EditArray.ArrayChangeType.Push,
+                        ItemProperty = "6"
+                    },
+
+                    new ForeachPage()
+                    {
+                        ListProperty = new ExpressionEngine().Parse("dialog.todo"),
+                        PageSize = 3,
+                        ValueProperty = "dialog.page",
+                        Steps = new List<IDialog>()
+                        {
+                            new SendActivity("This page have 3 items"),
+                            new Foreach()
+                            {
+                                ListProperty = new ExpressionEngine().Parse("dialog.page"),
+                                Steps = new List<IDialog>()
+                                {
+                                    new SendActivity("index is: {dialog.index} and value is: {dialog.value}")
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+
+            await CreateFlow(rootDialog)
+            .Send("hi")
+                .AssertReply("This page have 3 items")
+                .AssertReply("index is: 0 and value is: 1")
+                .AssertReply("index is: 1 and value is: 2")
+                .AssertReply("index is: 2 and value is: 3")
+                .AssertReply("This page have 3 items")
+                .AssertReply("index is: 0 and value is: 4")
+                .AssertReply("index is: 1 and value is: 5")
+                .AssertReply("index is: 2 and value is: 6")
+            .StartTestAsync();
+        }
     }
 }

@@ -13,6 +13,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         private Dictionary<string, LGTemplate> templateMap = new Dictionary<string, LGTemplate>();
 
+        private string currentSource = string.Empty;
+
         public StaticChecker(List<LGTemplate> templates)
         {
             Templates = templates;
@@ -60,6 +62,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             Templates.ForEach(t =>
             {
+                currentSource = t.Source;
                 result.AddRange(Visit(t.ParseTree));
             });
 
@@ -419,6 +422,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var startPosition = context == null ? new Position(0, 0) : new Position(context.Start.Line - 1, context.Start.Column);
             var stopPosition = context == null ? new Position(0, 0) : new Position(context.Stop.Line - 1, context.Stop.Column + context.Stop.Text.Length);
             var range = new Range(startPosition, stopPosition);
+            message = $"source: {currentSource}. error message: {message}";
             return new Diagnostic(range, message, severity);
         }
     }

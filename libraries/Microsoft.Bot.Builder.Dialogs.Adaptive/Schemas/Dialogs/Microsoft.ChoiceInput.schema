@@ -45,7 +45,8 @@
                         "HeroCard"
                     ],
                     "title": "List Style",
-                    "description": "The kind of choice list style to generate"
+                    "description": "The kind of choice list style to generate",
+                    "default":  "Auto"
                 },
                 "choicesProperty": {
                     "type": "string",

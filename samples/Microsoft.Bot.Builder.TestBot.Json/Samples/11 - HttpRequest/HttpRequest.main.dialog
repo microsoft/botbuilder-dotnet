@@ -21,7 +21,7 @@
             "$type": "Microsoft.HttpRequest",
             "url": "http://petstore.swagger.io/v2/pet",
             "method": "POST",
-            "header": {
+            "headers": {
                 "test": "test",
                 "test2": "test2"
             },
