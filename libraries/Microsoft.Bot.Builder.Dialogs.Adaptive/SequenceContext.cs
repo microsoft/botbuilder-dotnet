@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             {
                                 this.Steps.Clear();
                             }
-                            await EmitEventAsync(AdaptiveEvents.SequenceEnded, null, false).ConfigureAwait(false);
+                            await EmitEventAsync(name: AdaptiveEvents.SequenceEnded, value: null, bubble: false).ConfigureAwait(false);
                             break;
                         case StepChangeTypes.ReplaceSequence:
                             if (this.Steps.Any())
@@ -233,7 +233,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Emit SequenceStarted event if applicable
             if (newSequence)
             {
-                await this.EmitEventAsync(AdaptiveEvents.SequenceStarted, null, false).ConfigureAwait(false);
+                await this.EmitEventAsync(name: AdaptiveEvents.SequenceStarted, value: null, bubble: false).ConfigureAwait(false);
             }
         }
 

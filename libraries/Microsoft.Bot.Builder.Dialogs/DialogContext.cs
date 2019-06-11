@@ -395,7 +395,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         // Check to see if the dialog wants to handle the event
                         if (notify)
                         {
-                            var eventHandled = await dialogContext.EmitEventAsync(eventName, eventValue, false, false, cancellationToken).ConfigureAwait(false);
+                            var eventHandled = await dialogContext.EmitEventAsync(eventName, eventValue, bubble: false, fromLeaf: false, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                             if (eventHandled)
                             {
@@ -457,7 +457,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public async Task RepromptDialogAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             // Emit 'RepromptDialog' event
-            var handled = await EmitEventAsync(DialogEvents.RepromptDialog, null, false, false, cancellationToken).ConfigureAwait(false);
+            var handled = await EmitEventAsync(name: DialogEvents.RepromptDialog, value: null, bubble: false, fromLeaf: false, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             if (!handled)
             {
