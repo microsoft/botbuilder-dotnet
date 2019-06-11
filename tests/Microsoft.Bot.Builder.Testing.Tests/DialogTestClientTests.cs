@@ -111,16 +111,6 @@ namespace Microsoft.Bot.Builder.Testing.Tests
             Assert.Equal(turnResult, sut.DialogTurnResult.Result);
         }
 
-        public void ShouldUseMyCustomCallback()
-        {
-            // TODO
-        }
-
-        public void ShouldUseMyCustomAdapter()
-        {
-            // TODO
-        }
-
         private class TestOptions
         {
             public string SomeText { get; set; }

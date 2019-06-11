@@ -23,12 +23,13 @@ namespace Microsoft.Bot.Builder.Testing
         /// </summary>
         /// <param name="targetDialog">The dialog to be tested. This will be the root dialog for the test client.</param>
         /// <param name="initialDialogOptions">(Optional) additional argument(s) to pass to the dialog being started.</param>
-        /// <param name="middlewares">A list of middlewares to be added to the test adapter.</param>
-        /// <param name="callback">The bot turn processing logic for the test. If this value is not provided, the test client will create a default <see cref="BotCallbackHandler"/>.</param>
-        public DialogTestClient(Dialog targetDialog, object initialDialogOptions = null, IEnumerable<IMiddleware> middlewares = null, BotCallbackHandler callback = null)
+        /// <param name="testAdapter">(Optional) The test adapter to use. If this parameter is not provided, the test client will use a default <see cref="TestAdapter"/>.</param>
+        /// <param name="middlewares">(Optional) A list of middlewares to be added to the test adapter.</param>
+        /// <param name="callback">(Optional) The bot turn processing logic for the test. If this value is not provided, the test client will create a default <see cref="BotCallbackHandler"/>.</param>
+        public DialogTestClient(Dialog targetDialog, object initialDialogOptions = null, IEnumerable<IMiddleware> middlewares = null, TestAdapter testAdapter = null, BotCallbackHandler callback = null)
         {
             var convoState = new ConversationState(new MemoryStorage());
-            _testAdapter = new TestAdapter()
+            _testAdapter = testAdapter ?? new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(convoState));
 
             AddUserMiddlewares(middlewares);
