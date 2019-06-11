@@ -288,6 +288,15 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("ticks(notValidTimeStamp)"), // not valid timestamp
             # endregion
 
+            #region uri parsing function test
+            Test("uriHost(relatibeUri)"),
+            Test("uriPath(relatibeUri)"),
+            Test("uriPathAndQuery(relatibeUri)"),
+            Test("uriPort(relatibeUri)"),
+            Test("uriQuery(relatibeUri)"),
+            Test("uriScheme(relatibeUri)"),
+            #endregion
+
             # region collection functions test
             Test("sum(items, 'hello')"),//should have 1 parameter
             Test("sum('hello')"),//first param should be list
@@ -335,7 +344,11 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("setProperty(json('{\"key1\":\"value1\"}'), 'key2','value2','key3')"), //should have 3 parameter
             Test("setProperty(json('{\"key1\":\"value1\"}'), 1,'value2')"), // second param should be string
             Test("removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), 1))"),// second param should be string
-            Test("removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), '1', '2'))"),// should have 2 parameter
+            Test("removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), '1', '2'))"),// should have 2 parameters
+            Test("coalesce()"), // should have at least 1 parameter
+            Test("xPath(invalidXml, ''sum(/produce/item/count)')"), //not valid xml
+            Test("xPath(xmlStr)"), // should have two params
+            Test("xPath(xmlStr, 'getTotal')"), // invalid xpath query
            # endregion
 
             # region Memory access test
@@ -372,6 +385,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     name = "mybag"
                 },
                 items = new string[] { "zero", "one", "two" },
+                xmlStr = "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>",
+                invalidXml = "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count>",
                 nestedItems = new[]
                 {
                     new
@@ -395,6 +410,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 notValidTimestamp = "2018timestmap",
                 notValidTimestamp2 = "1521118800",
                 notValidTimestamp3 = "20181115",
+                relativeUri = "../catalog/shownew.htm?date=today",
                 turn = new
                 {
                     entities = new

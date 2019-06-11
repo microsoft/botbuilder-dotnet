@@ -112,6 +112,14 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string UriComponentToString = "uriComponentToString";
         public const string Xml = "xml";
 
+        // URI Parsing Functions
+        public const string UriHost = "uriHost";
+        public const string UriPath = "uriPath";
+        public const string UriPathAndQuery = "uriPathAndQuery";
+        public const string UriPort = "uriPort";
+        public const string UriQuery = "uriQuery";
+        public const string UriScheme = "uriScheme";
+
         // Memory
         public const string Accessor = "Accessor";
         public const string Element = "Element";
@@ -129,5 +137,7 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string AddProperty = "addProperty";
         public const string RemoveProperty = "removeProperty";
         public const string SetProperty = "setProperty";
+        public const string Coalesce = "coalesce";
+        public const string XPath = "xPath";
     }
 }

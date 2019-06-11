@@ -15,6 +15,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
         public static HashSet<string> one = new HashSet<string> { "one" };
         public static HashSet<string> oneTwo = new HashSet<string> { "one", "two" };
+        private static string nullStr = null;
 
         private readonly object scope = new
         {
@@ -23,6 +24,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             hello = "hello",
             world = "world",
             istrue = true,
+            nullObj = nullStr,
             bag = new
             {
                 three = 3.0,
@@ -67,7 +69,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             notISOTimestamp = "2018/03/15 13:00:00",
             timestampObj = DateTime.Parse("2018-03-15T13:00:00.000Z").ToUniversalTime(),
             unixTimestamp = 1521118800,
-            turn = new
+            xmlStr = "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>",
+        turn = new
             {
                 entities = new
                 {
@@ -385,6 +388,15 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("ticks('2018-01-01T08:00:00.0000000Z')", 636503904000000000),
             #endregion
 
+            #region uri parsing function test
+            Test("uriHost('https://www.localhost.com:8080')", "www.localhost.com"),
+            Test("uriPath('http://www.contoso.com/catalog/shownew.htm?date=today')", "/catalog/shownew.htm"),
+            Test("uriPathAndQuery('http://www.contoso.com/catalog/shownew.htm?date=today')", "/catalog/shownew.htm?date=today"),
+            Test("uriPort('http://www.localhost:8080')", 8080),
+            Test("uriQuery('http://www.contoso.com/catalog/shownew.htm?date=today')", "?date=today"),
+            Test("uriScheme('http://www.contoso.com/catalog/shownew.htm?date=today')", "http"),
+            #endregion
+
             #region  collection functions test
             Test("sum(createArray(1, 2))", 3),
             Test("sum(createArray(one, two, 3))", 6.0),
@@ -435,6 +447,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("string(addProperty(json('{\"key1\":\"value1\"}'), 'key2','value2'))", "{\"key1\":\"value1\",\"key2\":\"value2\"}"),
             Test("string(setProperty(json('{\"key1\":\"value1\"}'), 'key1','value2'))", "{\"key1\":\"value2\"}"),
             Test("string(removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), 'key2'))", "{\"key1\":\"value1\"}"),
+            Test("coalesce(nullObj,hello,nullObj)", "hello"),
+            //Test("xPath(xmlStr,'/produce/item/name')", new[] { "<name>Gala</name>", "<name>Honeycrisp</name>"}),
+            Test("xPath(xmlStr,'sum(/produce/item/count)')", 30),
             # endregion
 
             # region  Short Hand Expression
