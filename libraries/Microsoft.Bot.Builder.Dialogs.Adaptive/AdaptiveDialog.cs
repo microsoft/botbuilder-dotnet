@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var sequence = this.ToSequenceContext(dc);
 
             // Process event and queue up any potential interruptions
-            return await this.ProcessEventAsync(sequence, dialogEvent, preBubble: false, cancellationToken).ConfigureAwait(false);
+            return await this.ProcessEventAsync(sequence, dialogEvent, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         protected async Task<bool> ProcessEventAsync(SequenceContext sequence, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default(CancellationToken))
