@@ -4,8 +4,8 @@
     "generator": "todo.lg",
     "steps": [
         {
-            "$type": "Microsoft.SaveEntity",
-            "entity": "title",
+            "$type": "Microsoft.SetProperty",
+            "value": "@title",
             "property": "dialog.todo"
         },
         {

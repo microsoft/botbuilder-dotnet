@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            var handled = await dc.EmitEventAsync(EventName, EventValue, BubbleEvent, cancellationToken).ConfigureAwait(false);
+            var handled = await dc.EmitEventAsync(EventName, EventValue, BubbleEvent, false, cancellationToken).ConfigureAwait(false);
             return await dc.EndDialogAsync(handled, cancellationToken).ConfigureAwait(false);
         }
 

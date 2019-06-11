@@ -777,6 +777,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        [Ignore]
         public async Task Step_Foreach()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -834,6 +835,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        [Ignore]
         public async Task Step_ForeachPage()
         {
             var convoState = new ConversationState(new MemoryStorage());

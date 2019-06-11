@@ -35,21 +35,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             }
 
             // Ensure planning context
-            if (dc is PlanningContext planning)
+            if (dc is SequenceContext planning)
             {
                 // SetProperty evaluates the "Value" expression and returns it as the result of the dialog
                 var (value, error) = Value.TryEvaluate(dc.State);
 
-
                 if (error == null)
                 {
-                    PlanningContext pc = dc as PlanningContext;
+                    var sc = dc as SequenceContext;
 
-                    // if this step interrupted a step in the active plan
-                    if (pc != null && pc.Plan.Steps.Count > 1 && pc.Plan.Steps[1].DialogStack.Count > 0)
+                    // If this step interrupted a step in the active plan
+                    if (sc != null && sc.Steps.Count > 1 && sc.Steps[1].DialogStack.Count > 0)
                     {
-                        // reset the next step's dialog stack so that when the plan continues it reevaluates new changed state
-                        pc.Plan.Steps[1].DialogStack.Clear();
+                        // Reset the next step's dialog stack so that when the plan continues it reevaluates new changed state
+                        sc.Steps[1].DialogStack.Clear();
                     }
                 }
 
