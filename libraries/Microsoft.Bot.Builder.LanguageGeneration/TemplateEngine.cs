@@ -165,7 +165,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var text = File.ReadAllText(filePath);
                     var lgFile = LGParser.Parse(text, filePath);
                     finalLgFiles.Add(filePath, lgFile);
-                    var importedFilePaths = lgFile.Imports.Select(e => Path.GetFullPath(Path.GetDirectoryName(filePath) + e.Path)).ToArray();
+                    var importedFilePaths = lgFile.Imports.Select(e => Path.IsPathRooted(e.Path) ? e.Path : Path.GetFullPath(Path.GetDirectoryName(filePath) + e.Path)).ToArray();
                     LoopLGFiles(importedFilePaths, finalLgFiles);
                 }
             }
@@ -184,7 +184,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 else
                 {
-                    throw new Exception("Import path in text is not valid absolute path.");
+                    throw new Exception("Import path in text must be valid absolute path.");
                 }
             }
 
