@@ -344,5 +344,39 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var msg = "hello from t1, ref template2: 'hello from t2, ref template3: hello from t3' and ref template3: 'hello from t3'";
             Assert.AreEqual(msg, engine.EvaluateTemplate("template1", null));
         }
+
+        [TestMethod]
+        public void TestImportLgFiles()
+        {
+            var engine = TemplateEngine.FromFiles(GetExampleFilePath("import.lg"));
+
+            string evaled = engine.EvaluateTemplate("basicTemplate", null);
+            Assert.IsTrue("Hi" == evaled || "Hello" == evaled);
+
+            evaled = engine.EvaluateTemplate("welcome", null);
+            Assert.IsTrue("Hi DongLei :)" == evaled ||
+                "Hey DongLei :)" == evaled ||
+                "Hello DongLei :)" == evaled);
+
+            evaled = engine.EvaluateTemplate("welcome", new { userName = "DL" });
+            Assert.IsTrue("Hi DL :)" == evaled ||
+                "Hey DL :)" == evaled ||
+                "Hello DL :)" == evaled);
+
+            var importedFilePath = GetExampleFilePath("6.lg");
+            engine = TemplateEngine.FromText("# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](" + importedFilePath + ")");
+            evaled = engine.EvaluateTemplate("basicTemplate", null);
+            Assert.IsTrue("Hi" == evaled || "Hello" == evaled);
+
+            evaled = engine.EvaluateTemplate("welcome", null);
+            Assert.IsTrue("Hi DongLei :)" == evaled ||
+                "Hey DongLei :)" == evaled ||
+                "Hello DongLei :)" == evaled);
+
+            evaled = engine.EvaluateTemplate("welcome", new { userName = "DL" });
+            Assert.IsTrue("Hi DL :)" == evaled ||
+                "Hey DL :)" == evaled ||
+                "Hello DL :)" == evaled);
+        }
     }
 }

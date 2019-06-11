@@ -54,18 +54,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Teamplate engine with parsed files.</returns>
         public TemplateEngine AddFiles(params string[] filePaths)
         {
-            var newTemplates = filePaths.Select(filePath =>
+            var lgFileDic = new Dictionary<string, LGFile>();
+            LoopLGFiles(filePaths, lgFileDic);
+
+            foreach (var lgFile in lgFileDic)
             {
-                var text = File.ReadAllText(filePath);
-                return LGParser.Parse(text, filePath);
-            }).SelectMany(x => x);
+                Templates = Templates.Concat(lgFile.Value.Templates).ToList();
+            }
 
-            var mergedTemplates = Templates.Concat(newTemplates).ToList();
-
-            RunStaticCheck(mergedTemplates);
-
-            Templates = mergedTemplates; // only set value after static checking is passed
-
+            RunStaticCheck(Templates);
             return this;
         }
 
@@ -76,8 +73,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Template engine with the parsed content.</returns>
         public TemplateEngine AddText(string text)
         {
-            Templates.AddRange(LGParser.Parse(text, "text"));
-            RunStaticCheck();
+            var lgFileDic = new Dictionary<string, LGFile>();
+            LoopLGText(text, lgFileDic, "text");
+
+            foreach (var lgFile in lgFileDic)
+            {
+                Templates = Templates.Concat(lgFile.Value.Templates).ToList();
+            }
+
+            RunStaticCheck(Templates);
             return this;
         }
 
@@ -132,15 +136,59 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                    ? "```" + inlineStr + "```" : inlineStr;
             var wrappedStr = $"# {fakeTemplateId} \r\n - {inlineStr}";
 
-            var parsedTemplates = LGParser.Parse(wrappedStr, "inline");
+            var lgFileDic = new Dictionary<string, LGFile>();
+            LoopLGText(wrappedStr, lgFileDic, "inline");
 
-            // merge the existing templates and this new template as a whole for evaluation
-            var mergedTemplates = Templates.Concat(parsedTemplates).ToList();
+            var templates = new List<LGTemplate>(Templates);
+            foreach (var lgFile in lgFileDic)
+            {
+                templates = templates.Concat(lgFile.Value.Templates).ToList();
+            }
 
-            RunStaticCheck(mergedTemplates);
+            RunStaticCheck(templates);
 
-            var evaluator = new Evaluator(mergedTemplates, methodBinder);
+            var evaluator = new Evaluator(templates, methodBinder);
             return evaluator.EvaluateTemplate(fakeTemplateId, scope);
+        }
+
+        private void LoopLGFiles(string[] filePaths, Dictionary<string, LGFile> finalLgFiles)
+        {
+            foreach (var filePath in filePaths)
+            {
+                if (finalLgFiles.ContainsKey(filePath))
+                {
+                    continue;
+                }
+
+                if (Path.IsPathRooted(filePath))
+                {
+                    var text = File.ReadAllText(filePath);
+                    var lgFile = LGParser.Parse(text, filePath);
+                    finalLgFiles.Add(filePath, lgFile);
+                    var importedFilePaths = lgFile.Imports.Select(e => Path.GetFullPath(Path.GetDirectoryName(filePath) + e.Path)).ToArray();
+                    LoopLGFiles(importedFilePaths, finalLgFiles);
+                }
+            }
+        }
+
+        private void LoopLGText(string text, Dictionary<string, LGFile> finalLgFiles, string source = "")
+        {
+            var lgFile = LGParser.Parse(text, source);
+            finalLgFiles.Add(source, lgFile);
+            var importedFilePaths = new List<string>();
+            foreach (var import in lgFile.Imports)
+            {
+                if (Path.IsPathRooted(import.Path))
+                {
+                    importedFilePaths.Add(import.Path);
+                }
+                else
+                {
+                    throw new Exception("Import path in text is not valid absolute path.");
+                }
+            }
+
+            LoopLGFiles(importedFilePaths.ToArray(), finalLgFiles);
         }
     }
 }

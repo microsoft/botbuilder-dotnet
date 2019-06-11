@@ -9,6 +9,7 @@ file
 paragraph
     : newline
     | templateDefinition
+    | importDefinition
     ;
 
 // Treat EOF as newline to hanle file end gracefully
@@ -71,4 +72,8 @@ switchCaseRule
 
 switchCaseStat
     : DASH (SWITCH|CASE|DEFAULT) (WS|TEXT|EXPRESSION)*
+    ;
+
+importDefinition
+    : IMPORT_DESC IMPORT_PATH
     ;
