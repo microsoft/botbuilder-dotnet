@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -1248,19 +1249,19 @@ namespace Microsoft.Bot.Builder.Expressions
             {
                 try
                 {
-                    tz = TimeZoneInfo.FindSystemTimeZoneById(timezone);
-                }
-                catch
-                {
-                    try
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                     {
                         var convertedTZ = TimeZoneConverter.WindowsToIana(timezone);
                         tz = TimeZoneInfo.FindSystemTimeZoneById(convertedTZ);
                     }
-                    catch
+                    else
                     {
-                        error = "illegal timezone info";
+                        tz = TimeZoneInfo.FindSystemTimeZoneById(timezone);
                     }
+                }
+                catch
+                {
+                    error = "illegal timezone info";
                 }
 
                 if (error == null)
@@ -1299,7 +1300,15 @@ namespace Microsoft.Bot.Builder.Expressions
             {
                 try
                 {
-                    tz = TimeZoneInfo.FindSystemTimeZoneById(sourceTimezone);
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                    {
+                        var convertedTZ = TimeZoneConverter.WindowsToIana(sourceTimezone);
+                        tz = TimeZoneInfo.FindSystemTimeZoneById(convertedTZ);
+                    }
+                    else
+                    {
+                        tz = TimeZoneInfo.FindSystemTimeZoneById(sourceTimezone);
+                    }
                 }
                 catch
                 {
@@ -1394,7 +1403,16 @@ namespace Microsoft.Bot.Builder.Expressions
 
             try
             {
-                sourceTZ = TimeZoneInfo.FindSystemTimeZoneById(sourceTimeZone);
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    var convertedTZ = TimeZoneConverter.WindowsToIana(sourceTimeZone);
+                    sourceTZ = TimeZoneInfo.FindSystemTimeZoneById(convertedTZ);
+                    sourceTimeZone = convertedTZ;
+                }
+                else
+                {
+                    sourceTZ = TimeZoneInfo.FindSystemTimeZoneById(sourceTimeZone);
+                }
             }
             catch
             {
@@ -1405,7 +1423,16 @@ namespace Microsoft.Bot.Builder.Expressions
             {
                 try
                 {
-                    destinationTZ = TimeZoneInfo.FindSystemTimeZoneById(destinationTimeZone);
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                    {
+                        var convertedTZ = TimeZoneConverter.WindowsToIana(destinationTimeZone);
+                        destinationTZ = TimeZoneInfo.FindSystemTimeZoneById(convertedTZ);
+                        destinationTimeZone = convertedTZ;
+                    }
+                    else
+                    {
+                        destinationTZ = TimeZoneInfo.FindSystemTimeZoneById(destinationTimeZone);
+                    }
                 }
                 catch
                 {
