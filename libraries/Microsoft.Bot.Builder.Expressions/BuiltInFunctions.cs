@@ -11,7 +11,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
-using System.Xml.XPath;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -1253,7 +1252,15 @@ namespace Microsoft.Bot.Builder.Expressions
                 }
                 catch
                 {
-                    error = "illegal timezone info";
+                    try
+                    {
+                        var convertedTZ = TimeZoneConverter.WindowsToIana(timezone);
+                        tz = TimeZoneInfo.FindSystemTimeZoneById(convertedTZ);
+                    }
+                    catch
+                    {
+                        error = "illegal timezone info";
+                    }
                 }
 
                 if (error == null)
