@@ -32,6 +32,27 @@ namespace Microsoft.BotBuilderSamples
                     var welcomeCard = CreateAdaptiveCardAttachment();
                     var response = CreateResponse(turnContext.Activity, welcomeCard);
                     await turnContext.SendActivityAsync(response, cancellationToken);
+                    await Dialog.Run(turnContext, ConversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
+                }
+            }
+        }
+
+        // Load attachment from embedded resource.
+        private Attachment CreateAdaptiveCardAttachment()
+        {
+            var rootNamespace = typeof(Startup).Namespace;
+            var cardResourcePath = $"{rootNamespace}.Cards.welcomeCard.json";
+
+            using (var stream = GetType().Assembly.GetManifestResourceStream(cardResourcePath))
+            {
+                using (var reader = new StreamReader(stream))
+                {
+                    var adaptiveCard = reader.ReadToEnd();
+                    return new Attachment()
+                    {
+                        ContentType = "application/vnd.microsoft.card.adaptive",
+                        Content = JsonConvert.DeserializeObject(adaptiveCard),
+                    };
                 }
             }
         }
@@ -42,20 +63,6 @@ namespace Microsoft.BotBuilderSamples
             var response = ((Activity)activity).CreateReply();
             response.Attachments = new List<Attachment>() { attachment };
             return response;
-        }
-
-        // Load attachment from file.
-        private Attachment CreateAdaptiveCardAttachment()
-        {
-            // combine path for cross platform support
-            string[] paths = { ".", "Cards", "welcomeCard.json" };
-            string fullPath = Path.Combine(paths);
-            var adaptiveCard = File.ReadAllText(fullPath);
-            return new Attachment()
-            {
-                ContentType = "application/vnd.microsoft.card.adaptive",
-                Content = JsonConvert.DeserializeObject(adaptiveCard),
-            };
         }
     }
 }
