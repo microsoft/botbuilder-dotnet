@@ -111,6 +111,33 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </remarks>
         public static async Task<ClaimsIdentity> AuthenticateEmulatorToken(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, HttpClient httpClient, string channelId)
         {
+            return await AuthenticateEmulatorToken(authHeader, credentials, channelProvider, httpClient, channelId, new AuthenticationConfiguration()).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Validate the incoming Auth Header as a token sent from the Bot Framework Emulator.
+        /// </summary>
+        /// <param name="authHeader">The raw HTTP header in the format: "Bearer [longString]".</param>
+        /// <param name="credentials">The user defined set of valid credentials, such as the AppId.</param>
+        /// <param name="channelProvider">The channelService value that distinguishes public Azure from US Government Azure.</param>
+        /// <param name="httpClient">Authentication of tokens requires calling out to validate Endorsements and related documents. The
+        /// HttpClient is used for making those calls. Those calls generally require TLS connections, which are expensive to
+        /// setup and teardown, so a shared HttpClient is recommended.</param>
+        /// <param name="channelId">The ID of the channel to validate.</param>
+        /// <param name="authConfig">The authentication configuration.</param>
+        /// <returns>
+        /// A valid ClaimsIdentity.
+        /// </returns>
+        /// <remarks>
+        /// A token issued by the Bot Framework will FAIL this check. Only Emulator tokens will pass.
+        /// </remarks>
+        public static async Task<ClaimsIdentity> AuthenticateEmulatorToken(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, HttpClient httpClient, string channelId, AuthenticationConfiguration authConfig)
+        {
+            if (authConfig == null)
+            {
+                throw new ArgumentNullException(nameof(authConfig));
+            }
+
             var openIdMetadataUrl = (channelProvider != null && channelProvider.IsGovernment()) ?
                 GovernmentAuthenticationConstants.ToBotFromEmulatorOpenIdMetadataUrl :
                 AuthenticationConstants.ToBotFromEmulatorOpenIdMetadataUrl;
@@ -121,7 +148,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     openIdMetadataUrl,
                     AuthenticationConstants.AllowedSigningAlgorithms);
 
-            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId);
+            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, authConfig.RequiredEndorsements);
             if (identity == null)
             {
                 // No valid identity. Not Authorized.

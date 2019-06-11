@@ -80,9 +80,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Used to skip to the next waterfall step.
         /// </summary>
-        /// <param name="result">Optional result to pass to next step.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>A <see cref="Task"/> of <see cref="DialogTurnResult"/> representing the asynchronous operation.</returns>
+        /// <param name="result">(Optional) result to pass to the next step of the current waterfall dialog.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>In the next step of the waterfall, the <see cref="Result"/> property of the
+        /// waterfall step context will contain the value of the <paramref name="result"/>.</remarks>
         public async Task<DialogTurnResult> NextAsync(object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Ensure next hasn't been called
