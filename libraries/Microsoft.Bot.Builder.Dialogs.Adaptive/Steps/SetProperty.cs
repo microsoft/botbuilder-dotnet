@@ -22,6 +22,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
+        public override string Property
+        {
+            get
+            {
+                return InputBindings["value"];
+            }
+            set
+            {
+                InputBindings["value"] = value;
+                OutputBinding = value;
+            }
+        }
+
         /// <summary>
         /// Value expression
         /// </summary>

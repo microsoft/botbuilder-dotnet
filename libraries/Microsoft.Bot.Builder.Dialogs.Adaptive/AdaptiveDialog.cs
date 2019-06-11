@@ -590,6 +590,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var sequence = this.ToSequenceContext(dc);
             await sequence.ApplyChangesAsync(cancellationToken).ConfigureAwait(false);
 
+            if (this.Generator != null)
+            {
+                dc.Context.TurnState.Set<ILanguageGenerator>(this.Generator);
+            }
+
             // Get a unique instance ID for the current stack entry.
             // We need to do this because things like cancellation can cause us to be removed
             // from the stack and we want to detect this so we can stop processing steps.
