@@ -23,7 +23,7 @@
             "$type": "Microsoft.EditArray",
             "changeType": "Remove",
             "arrayProperty": "user.todos",
-            "itemProperty": "dialog.todo"
+            "value": "dialog.todo"
         },
         {
             "$type": "Microsoft.SendActivity",
