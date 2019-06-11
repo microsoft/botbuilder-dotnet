@@ -17,25 +17,50 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     public class TemplateEngineLanguageGenerator : ILanguageGenerator
     {
+        private const string DEFAULTLABEL = "Unknown";
         private TemplateEngine engine;
+        private Func<string, string> resourceLoader = (id) => string.Empty;
 
         public TemplateEngineLanguageGenerator()
         {
             this.engine = TemplateEngine.FromText("");
         }
 
-        public TemplateEngineLanguageGenerator(string name, string lgText)
+        /// <summary>
+        /// Construct with raw LG text 
+        /// </summary>
+        /// <param name="lgText">lg template text</param>
+        /// <param name="resourceLoader">template resource loader (id) => templateText</param>
+        /// <param name="name">optional label for the source of the templates (used for labeling source of template errors)</param>
+        public TemplateEngineLanguageGenerator(string lgText, Func<string, string> resourceLoader = null, string name = null)
         {
-            this.Name = name;
+            this.Name = name ?? DEFAULTLABEL;
             this.engine = TemplateEngine.FromText(lgText ?? String.Empty);
+            if (resourceLoader != null)
+            {
+                this.resourceLoader = resourceLoader;
+            }
         }
 
-        public TemplateEngineLanguageGenerator(string name, TemplateEngine engine)
+        /// <summary>
+        /// Construct using prebuilt TemplateEngine
+        /// </summary>
+        /// <param name="engine">template engine</param>
+        /// <param name="resourceLoader">template resource loader (resourceId) => templateText</param>
+        /// <param name="name">optional label for the source of the templates (used for labeling source of template errors)</param>
+        public TemplateEngineLanguageGenerator(TemplateEngine engine, Func<string, string> resourceLoader = null, string name = null)
         {
-            this.Name = name;
+            this.Name = name ?? DEFAULTLABEL;
             this.engine = engine;
+            if (resourceLoader != null)
+            {
+                this.resourceLoader = resourceLoader;
+            }
         }
 
+        /// <summary>
+        /// Name of the source of this template (used for labeling errors)
+        /// </summary>
         public string Name { get; set; }
 
         public async Task<string> Generate(ITurnContext turnContext, string template, object data)

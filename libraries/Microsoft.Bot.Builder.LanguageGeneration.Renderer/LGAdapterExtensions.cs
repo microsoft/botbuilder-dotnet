@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Register default LG file as language generation
         /// </summary>
-        /// <param name="botAdapter">BotAdapter</param>
+        /// <param name="botAdapter">botAdapter to add services to</param>
         /// <param name="resourceExplorer">resource explorer</param>
         /// <param name="defaultLg">Default LG Resource Id (default: main.lg)</param>
         /// <param name="messageGenerator"></param>
@@ -34,35 +34,43 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 defaultLg = "main.lg";
             }
-            TypeFactory.Register("DefaultLanguageGenerator", typeof(ResourceMultiLanguageGenerator), new CustomLGLoader());
-            botAdapter.Use(new RegisterClassMiddleware<LanguageGeneratorManager>(new LanguageGeneratorManager(resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer)))));
-
             // if there is no main.lg, then provide default engine (for inline expression evaluation only)
             if (resourceExplorer.GetResource(defaultLg) == null)
             {
-                botAdapter.Use(new LanguageGeneratorMiddleware(new TemplateEngineLanguageGenerator(defaultLg, "")));
+                botAdapter.UseLanguageGeneration(resourceExplorer, new TemplateEngineLanguageGenerator("", name: defaultLg));
             }
             else
             {
-                botAdapter.Use(new LanguageGeneratorMiddleware(new ResourceMultiLanguageGenerator(defaultLg)));
+                botAdapter.UseLanguageGeneration(resourceExplorer, new ResourceMultiLanguageGenerator(defaultLg));
             }
-            botAdapter.Use(new RegisterClassMiddleware<IMessageActivityGenerator>(messageGenerator ?? new TextMessageActivityGenerator()));
             return botAdapter;
         }
 
         /// <summary>
         /// Register ILanguageGenerator as default langugage generator
         /// </summary>
-        /// <param name="botAdapter"></param>
-        /// <param name="resourceExplorer"></param>
-        /// <param name="languageGenerator"></param>
-        /// <param name="messageGenerator"></param>
-        /// <returns></returns>
+        /// <param name="botAdapter">botAdapter to add services to</param>
+        /// <param name="resourceExplorer">resourceExporer to provide to LanguageGenerator</param>
+        /// <param name="languageGenerator">LanguageGenerator to use</param>
+        /// <param name="messageGenerator">(OPTIONAL) Default is TextMessageActivityGenerator() </param>
+        /// <returns>botAdapter</returns>
         public static BotAdapter UseLanguageGeneration(this BotAdapter botAdapter, ResourceExplorer resourceExplorer, ILanguageGenerator languageGenerator, IMessageActivityGenerator messageGenerator = null)
         {
             TypeFactory.Register("DefaultLanguageGenerator", typeof(ResourceMultiLanguageGenerator), new CustomLGLoader());
             botAdapter.Use(new RegisterClassMiddleware<LanguageGeneratorManager>(new LanguageGeneratorManager(resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer)))));
             botAdapter.Use(new LanguageGeneratorMiddleware(languageGenerator ?? throw new ArgumentNullException(nameof(languageGenerator))));
+            botAdapter.UseMessageActivityGeneration(messageGenerator);
+            return botAdapter;
+        }
+
+        /// <summary>
+        /// Register MessageActivityGeneration 
+        /// </summary>
+        /// <param name="botAdapter">botAdapter to add services to</param>
+        /// <param name="messageGenerator">(OPTIONAL) Default is TextMessageActivityGenerator() </param>
+        /// <returns>botAdapter</returns>
+        public static BotAdapter UseMessageActivityGeneration(this BotAdapter botAdapter, IMessageActivityGenerator messageGenerator = null)
+        {
             botAdapter.Use(new RegisterClassMiddleware<IMessageActivityGenerator>(messageGenerator ?? new TextMessageActivityGenerator()));
             return botAdapter;
         }

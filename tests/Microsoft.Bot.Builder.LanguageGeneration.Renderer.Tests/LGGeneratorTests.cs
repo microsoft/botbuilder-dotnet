@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public async Task TestNotFoundTemplate()
         {
             var context = GetTurnContext("");
-            var lg = new TemplateEngineLanguageGenerator("test","");
+            var lg = new TemplateEngineLanguageGenerator("", name: "test");
             await lg.Generate(context, "[tesdfdfsst]", null);
         }
 
@@ -78,12 +78,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public async Task TestMultiLanguageGenerator()
         {
             var lg = new MultiLanguageGenerator();
-            lg.LanguageGenerators[""] = new TemplateEngineLanguageGenerator("test.lg", resourceExplorer.GetResource("test.lg").ReadText());
-            lg.LanguageGenerators["de"] = new TemplateEngineLanguageGenerator("test.de.lg", resourceExplorer.GetResource("test.de.lg").ReadText());
-            lg.LanguageGenerators["en"] = new TemplateEngineLanguageGenerator("test.en.lg", resourceExplorer.GetResource("test.en.lg").ReadText());
-            lg.LanguageGenerators["en-US"] = new TemplateEngineLanguageGenerator("test.en-US.lg", resourceExplorer.GetResource("test.en-US.lg").ReadText());
-            lg.LanguageGenerators["en-GB"] = new TemplateEngineLanguageGenerator("test.en-GB.lg", resourceExplorer.GetResource("test.en-GB.lg").ReadText());
-            lg.LanguageGenerators["fr"] = new TemplateEngineLanguageGenerator("test.fr.lg", resourceExplorer.GetResource("test.fr.lg").ReadText());
+            lg.LanguageGenerators[""] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.lg").ReadText(), name: "test.lg");
+            lg.LanguageGenerators["de"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.de.lg").ReadText(), name: "test.de.lg");
+            lg.LanguageGenerators["en"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en.lg").ReadText(), name: "test.en.lg");
+            lg.LanguageGenerators["en-US"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en-US.lg").ReadText(), name: "test.en-US.lg");
+            lg.LanguageGenerators["en-GB"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en-GB.lg").ReadText(), name: "test.en-GB.lg");
+            lg.LanguageGenerators["fr"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.fr.lg").ReadText(), name: "test.fr.lg");
 
             // test targeted in each language
             Assert.AreEqual("english-us", await lg.Generate(GetTurnContext(locale: "en-us"), "[test]", null));
