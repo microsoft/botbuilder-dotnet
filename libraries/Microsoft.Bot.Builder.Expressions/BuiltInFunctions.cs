@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
+using System.Xml.XPath;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -1562,6 +1563,187 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
+        // URI Parsing Functions
+        private static (object, string) UriHost(string uri)
+        {
+            object result = null;
+            string error = null;
+            dynamic uriBase = null;
+            try
+            {
+                uriBase = new Uri(uri);
+            }
+            catch
+            {
+                error = "illegal URI string";
+            }
+
+            if (error == null)
+            {
+                try
+                {
+                    var host = uriBase.Host;
+                    result = host.ToString();
+                }
+                catch
+                {
+                    error = "invalid operation, input uri should be an absolute URI";
+                }
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) UriPath(string uri)
+        {
+            object result = null;
+            string error = null;
+            dynamic uriBase = null;
+            try
+            {
+                uriBase = new Uri(uri);
+            }
+            catch
+            {
+                error = "illegal URI string";
+            }
+
+            if (error == null)
+            {
+                try
+                {
+                    var path = uriBase.AbsolutePath;
+                    result = path.ToString();
+                }
+                catch
+                {
+                    error = "invalid operation, input uri should be an absolute URI";
+                }
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) UriPathAndQuery(string uri)
+        {
+            object result = null;
+            string error = null;
+            dynamic uriBase = null;
+            try
+            {
+                uriBase = new Uri(uri);
+            }
+            catch
+            {
+                error = "illegal URI string";
+            }
+
+            if (error == null)
+            {
+                try
+                {
+                    var pathAndQuery = uriBase.PathAndQuery;
+                    result = pathAndQuery.ToString();
+                }
+                catch
+                {
+                    error = "invalid operation, input uri should be an absolute URI";
+                }
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) UriPort(string uri)
+        {
+            object result = null;
+            string error = null;
+            dynamic uriBase = null;
+            try
+            {
+                uriBase = new Uri(uri);
+            }
+            catch
+            {
+                error = "illegal URI string";
+            }
+
+            if (error == null)
+            {
+                try
+                {
+                    var port = uriBase.Port;
+                    result = (int)port;
+                }
+                catch
+                {
+                    error = "invalid operation, input uri should be an absolute URI";
+                }
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) UriQuery(string uri)
+        {
+            object result = null;
+            string error = null;
+            dynamic uriBase = null;
+            try
+            {
+                uriBase = new Uri(uri);
+            }
+            catch
+            {
+                error = "illegal URI string";
+            }
+
+            if (error == null)
+            {
+                try
+                {
+                    var query = uriBase.Query;
+                    result = query.ToString();
+                }
+                catch
+                {
+                    error = "invalid operation, input uri should be an absolute URI";
+                }
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) UriScheme(string uri)
+        {
+            object result = null;
+            string error = null;
+            dynamic uriBase = null;
+            try
+            {
+                uriBase = new Uri(uri);
+            }
+            catch
+            {
+                error = "illegal URI string";
+            }
+
+            if (error == null)
+            {
+                try
+                {
+                    var scheme = uriBase.Scheme;
+                    result = scheme.ToString();
+                }
+                catch
+                {
+                    error = "invalid operation, input uri should be an absolute URI";
+                }
+            }
+
+            return (result, error);
+        }
+
         private static string AddOrdinal(int num)
         {
             var hasResult = false;
@@ -1599,6 +1781,83 @@ namespace Microsoft.Bot.Builder.Expressions
             }
 
             return ordinalResult;
+        }
+
+        // object manipulation
+        private static object Coalesce(object[] objectList)
+        {
+            foreach (var obj in objectList)
+            {
+                if (obj != null)
+                {
+                    return obj;
+                }
+            }
+
+            return null;
+        }
+
+        private static (object, string) XPath(object xmlObj, object xpath)
+        {
+            object value = null;
+            object result = null;
+            string error = null;
+            var doc = new XmlDocument();
+            try
+            {
+                doc.LoadXml(xmlObj.ToString());
+            }
+            catch
+            {
+                error = "not valid xml input";
+            }
+
+            if (error == null)
+            {
+                var nav = doc.CreateNavigator();
+                var strExpr = xpath.ToString();
+                var nodeList = new List<string>();
+                try
+                {
+                    value = nav.Evaluate(strExpr);
+                    if (value is IEnumerable)
+                    {
+                        var iterNodes = nav.Select(strExpr);
+                        while (iterNodes.MoveNext())
+                        {
+                            var nodeType = (System.Xml.XmlNodeType)iterNodes.Current.NodeType;
+                            var name = iterNodes.Current.Name;
+                            var nameSpaceURI = iterNodes.Current.NamespaceURI.ToString();
+                            XmlNode node = doc.CreateNode(nodeType, name, nameSpaceURI);
+                            node.InnerText = iterNodes.Current.Value;
+                            nodeList.Add(node.OuterXml.ToString());
+                        }
+
+                        if (nodeList.Count == 0)
+                        {
+                            error = "there is no matched nodes in the xml";
+                        }
+                    }
+                }
+                catch
+                {
+                    error = "cannot evaluate the xpath query expression";
+                }
+
+                if (error == null)
+                {
+                    if (nodeList.Count >= 1)
+                    {
+                        result = nodeList.ToArray();
+                    }
+                    else
+                    {
+                        result = value;
+                    }
+                }
+            }
+
+            return (result, error);
         }
 
         // conversion functions
@@ -2655,6 +2914,194 @@ namespace Microsoft.Bot.Builder.Expressions
                     ReturnType.String,
                     expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.String)),
 
+                // URI Parsing
+                new ExpressionEvaluator(
+                    ExpressionType.UriHost,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            if (args.Count == 1)
+                            {
+                                if (args[0] is string uri )
+                                {
+                                    (value, error) = UriHost(uri);
+                                }
+                                else
+                                {
+                                    error = $"{expr} can't evaluate.";
+                                }
+                            }
+                            else
+                            {
+                                error = $"{expr} should have one parameters";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.UriPath,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            if (args.Count == 1)
+                            {
+                                if (args[0] is string uri )
+                                {
+                                    (value, error) = UriPath(uri);
+                                }
+                                else
+                                {
+                                    error = $"{expr} can't evaluate.";
+                                }
+                            }
+                            else
+                            {
+                                error = $"{expr} should have one parameters";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.UriPathAndQuery,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            if (args.Count == 1)
+                            {
+                                if (args[0] is string uri )
+                                {
+                                    (value, error) = UriPathAndQuery(uri);
+                                }
+                                else
+                                {
+                                    error = $"{expr} can't evaluate.";
+                                }
+                            }
+                            else
+                            {
+                                error = $"{expr} should have one parameters";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.UriPort,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            if (args.Count == 1)
+                            {
+                                if (args[0] is string uri )
+                                {
+                                    (value, error) = UriPort(uri);
+                                }
+                                else
+                                {
+                                    error = $"{expr} can't evaluate.";
+                                }
+                            }
+                            else
+                            {
+                                error = $"{expr} should have one parameters";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.Number,
+                    ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.UriQuery,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            if (args.Count == 1)
+                            {
+                                if (args[0] is string uri )
+                                {
+                                    (value, error) = UriQuery(uri);
+                                }
+                                else
+                                {
+                                    error = $"{expr} can't evaluate.";
+                                }
+                            }
+                            else
+                            {
+                                error = $"{expr} should have one parameters";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.UriScheme,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            if (args.Count == 1)
+                            {
+                                if (args[0] is string uri )
+                                {
+                                    (value, error) = UriScheme(uri);
+                                }
+                                else
+                                {
+                                    error = $"{expr} can't evaluate.";
+                                }
+                            }
+                            else
+                            {
+                                error = $"{expr} should have one parameters";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    ValidateUnary),
+
                 // Conversions
                 new ExpressionEvaluator(ExpressionType.Float, Apply(args => (float) Convert.ToDouble(args[0])), ReturnType.Number, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Int, Apply(args => (int) Convert.ToInt64(args[0])), ReturnType.Number, ValidateUnary),
@@ -2771,6 +3218,8 @@ namespace Microsoft.Bot.Builder.Expressions
                     ReturnType.Object,
                     (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
                 new ExpressionEvaluator(ExpressionType.Foreach, Foreach, ReturnType.Object, ValidateForeach),
+                new ExpressionEvaluator(ExpressionType.Coalesce, Apply(args => Coalesce(args.ToArray<object>())), ReturnType.Object, ValidateAtLeastOne),
+                new ExpressionEvaluator(ExpressionType.XPath, ApplyWithError(args => XPath(args[0], args[1])), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
             };
 
             var lookup = new Dictionary<string, ExpressionEvaluator>();
