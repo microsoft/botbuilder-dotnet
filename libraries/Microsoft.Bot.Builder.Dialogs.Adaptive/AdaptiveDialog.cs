@@ -161,7 +161,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var sequence = this.ToSequenceContext(dc);
 
             // Process event and queue up any potential interruptions
-            return await this.ProcessEventAsync(sequence, dialogEvent, true, cancellationToken).ConfigureAwait(false);
+            return await this.ProcessEventAsync(sequence, dialogEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         protected override async Task<bool> OnPostBubbleEvent(DialogContext dc, DialogEvent dialogEvent, CancellationToken cancellationToken = default(CancellationToken))
@@ -216,7 +216,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         {
                             // Emit leading ActivityReceived event
                             var e = new DialogEvent() { Name = AdaptiveEvents.ActivityReceived, Bubble = false };
-                            handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: true, cancellationToken).ConfigureAwait(false);
+                            handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
                         }
 
                         break;
@@ -237,13 +237,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                             // Emit leading RecognizedIntent event
                             var e = new DialogEvent() { Name = AdaptiveEvents.RecognizedIntent, Value = recognized, Bubble = false };
-                            handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: true, cancellationToken).ConfigureAwait(false);
+                            handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
                         }
                         else if (activity.Type == ActivityTypes.Event)
                         {
                             // Emit trailing edge of named event that was received
                             var e = new DialogEvent() { Name = activity.Name, Value = activity.Value, Bubble = false };
-                            handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: true, cancellationToken).ConfigureAwait(false);
+                            handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
                         }
 
                         else if (activity.Type == ActivityTypes.ConversationUpdate)
@@ -253,7 +253,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             {
                                 // Emit trailing ConversationMembersAdded event
                                 var e = new DialogEvent() { Name = AdaptiveEvents.ConversationMembersAdded, Value = membersAdded, Bubble = false };
-                                handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: true, cancellationToken).ConfigureAwait(false);
+                                handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
                             }
                         }
                         
@@ -266,7 +266,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     case AdaptiveEvents.BeginDialog:
                         var e = new DialogEvent() { Name = AdaptiveEvents.ActivityReceived, Bubble = false };
-                        handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: false, cancellationToken).ConfigureAwait(false);
+                        handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                         break;
 
@@ -286,7 +286,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             {
                                 // Emit trailing unknownIntent event
                                 e = new DialogEvent() { Name = AdaptiveEvents.UnknownIntent, Bubble = false };
-                                handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: false, cancellationToken).ConfigureAwait(false);
+                                handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
                             }
                             else
                             {
@@ -297,13 +297,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         {
                             // Emit trailing edge of named event that was received
                             e = new DialogEvent() { Name = activity.Name, Value = activity.Value, Bubble = false };
-                            handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: false, cancellationToken).ConfigureAwait(false);
+                            handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
                         }
                         else if (activity.Type == ActivityTypes.ConversationUpdate && membersAdded != null && membersAdded.Any())
                         {
                             // Emit trailing conversation members added event
                             e = new DialogEvent() { Name = activity.Name, Value = activity.Value, Bubble = false };
-                            handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: false, cancellationToken).ConfigureAwait(false);
+                            handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
                         }
 
                         break;
