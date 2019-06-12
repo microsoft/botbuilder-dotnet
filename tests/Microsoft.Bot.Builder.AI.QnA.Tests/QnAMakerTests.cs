@@ -847,7 +847,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             // Arrange
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer _WhenNoAnswerFoundInKb.json"));
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
 
             var client = new HttpClient(mockHttp);
 
