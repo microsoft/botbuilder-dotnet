@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
                     {
                         var userId = string.Empty;
                         var from = body["from"];
-                        if (!string.IsNullOrWhiteSpace(from.ToString()))
+                        if (!string.IsNullOrWhiteSpace(from?.ToString()))
                         {
                             userId = (string)from["id"];
                         }

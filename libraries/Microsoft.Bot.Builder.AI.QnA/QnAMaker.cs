@@ -240,7 +240,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 }
             }
 
-            // Fill in Qna Results (found or not)
+            // Fill in QnA Results (found or not)
             if (queryResults.Length > 0)
             {
                 var queryResult = queryResults[0];
@@ -252,7 +252,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
             else
             {
-                properties.Add(QnATelemetryConstants.QuestionProperty, "No Qna Question matched");
+                properties.Add(QnATelemetryConstants.MatchedQuestionProperty, "No Qna Question matched");
                 properties.Add(QnATelemetryConstants.QuestionIdProperty, "No QnA Question Id matched");
                 properties.Add(QnATelemetryConstants.AnswerProperty, "No Qna Answer matched");
                 properties.Add(QnATelemetryConstants.ArticleFoundProperty, "false");

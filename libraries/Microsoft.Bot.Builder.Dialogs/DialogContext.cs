@@ -175,7 +175,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// automatically ended as well and the result passed to its parent. If there are no more
         /// parent dialogs on the stack then processing of the turn will end.
         /// </summary>
-        /// <param name="result"> (Optional) result to pass to the parent dialogs.</param>
+        /// <param name="result">(Optional) result to pass to the parent dialogs.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<DialogTurnResult> EndDialogAsync(object result = null, CancellationToken cancellationToken = default(CancellationToken))

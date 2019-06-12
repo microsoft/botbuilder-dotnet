@@ -43,13 +43,35 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>ClaimsIdentity.</returns>
         public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, string serviceUrl, HttpClient httpClient, string channelId)
         {
+            return await AuthenticateChannelToken(authHeader, credentials, serviceUrl, httpClient, channelId, new AuthenticationConfiguration()).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Validate the incoming Auth Header as a token sent from a Bot Framework Government Channel Service.
+        /// </summary>
+        /// <param name="authHeader">The raw HTTP header in the format: "Bearer [longString]".</param>
+        /// <param name="credentials">The user defined set of valid credentials, such as the AppId.</param>
+        /// <param name="serviceUrl">The service url from the request.</param>
+        /// <param name="httpClient">Authentication of tokens requires calling out to validate Endorsements and related documents. The
+        /// HttpClient is used for making those calls. Those calls generally require TLS connections, which are expensive to
+        /// setup and teardown, so a shared HttpClient is recommended.</param>
+        /// <param name="channelId">The ID of the channel to validate.</param>
+        /// <param name="authConfig">The authentication configuration.</param>
+        /// <returns>ClaimsIdentity.</returns>
+        public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, string serviceUrl, HttpClient httpClient, string channelId, AuthenticationConfiguration authConfig)
+        {
+            if (authConfig == null)
+            {
+                throw new ArgumentNullException(nameof(authConfig));
+            }
+
             var tokenExtractor = new JwtTokenExtractor(
                 httpClient,
                 ToBotFromGovernmentChannelTokenValidationParameters,
                 OpenIdMetadataUrl,
                 AuthenticationConstants.AllowedSigningAlgorithms);
 
-            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId).ConfigureAwait(false);
+            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, authConfig.RequiredEndorsements).ConfigureAwait(false);
 
             await ValidateIdentity(identity, credentials, serviceUrl).ConfigureAwait(false);
 

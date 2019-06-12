@@ -107,7 +107,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             state[PersistedExpires] = DateTime.Now.AddMilliseconds(timeout);
 
             // Attempt to get the users token
-            var output = await GetUserTokenAsync(dc.Context, cancellationToken).ConfigureAwait(false);
+            if (!(dc.Context.Adapter is IUserTokenProvider adapter))
+            {
+                throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
+            }
+
+            var output = await adapter.GetUserTokenAsync(dc.Context, _settings.ConnectionName, null, cancellationToken).ConfigureAwait(false);
             if (output != null)
             {
                 // Return token
@@ -181,27 +186,16 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="turnContext">Context for the current turn of the conversation with the user.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="code">(Optional) login code received from the user.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            string magicCode = null;
             if (!(turnContext.Adapter is IUserTokenProvider adapter))
             {
                 throw new InvalidOperationException("OAuthPrompt.GetUserToken(): not supported by the current adapter");
             }
 
-            if (IsTeamsVerificationInvoke(turnContext))
-            {
-                var value = turnContext.Activity.Value as JObject;
-                magicCode = value.GetValue("state")?.ToString();
-            }
-
-            if (turnContext.Activity.Type == ActivityTypes.Message && turnContext.Activity.Text != null && _magicCodeRegex.IsMatch(turnContext.Activity.Text))
-            {
-                magicCode = turnContext.Activity.Text;
-            }
-
-            return await adapter.GetUserTokenAsync(turnContext, _settings.ConnectionName, magicCode, cancellationToken).ConfigureAwait(false);
+            return await adapter.GetUserTokenAsync(turnContext, _settings.ConnectionName, null, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
