@@ -24,6 +24,10 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestDataObject"/> class.
+        /// </summary>
+        /// <param name="testData">An object with the data to be used in the test.</param>
         public TestDataObject(object testData)
         {
             TestObject = JsonConvert.SerializeObject(testData);
@@ -35,11 +39,19 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
         /// <value>The test data object as a json string.</value>
         public string TestObject { get; private set; }
 
+        /// <summary>
+        /// Used by XUnit.net for deserialization.
+        /// </summary>
+        /// <param name="serializationInfo">A parameter used by XUnit.net.</param>
         public void Deserialize(IXunitSerializationInfo serializationInfo)
         {
             TestObject = serializationInfo.GetValue<string>(TestObjectKey);
         }
 
+        /// <summary>
+        /// Used by XUnit.net for serialization.
+        /// </summary>
+        /// <param name="serializationInfo">A parameter used by XUnit.net.</param>
         public void Serialize(IXunitSerializationInfo serializationInfo)
         {
             serializationInfo.AddValue(TestObjectKey, TestObject);
