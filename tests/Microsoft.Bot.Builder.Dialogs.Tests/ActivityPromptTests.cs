@@ -215,6 +215,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         private async Task<bool> Validator(PromptValidatorContext<Activity> promptContext, CancellationToken cancellationToken)
         {
+            Assert.IsTrue(promptContext.AttemptCount > 0);
+
             var activity = promptContext.Recognized.Value;
             if (activity.Type == ActivityTypes.Event)
             {

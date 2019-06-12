@@ -62,7 +62,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Initialize prompt state
             var state = dc.ActiveDialog.State;
             state[PersistedOptions] = opt;
-            state[PersistedState] = new Dictionary<string, object>();
+            state[PersistedState] = new Dictionary<string, object>
+            {
+                { Prompt<int>.AttemptCountKey, 0 },
+            };
 
             // Send initial prompt
             await OnPromptAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions], cancellationToken).ConfigureAwait(false);
@@ -82,9 +85,21 @@ namespace Microsoft.Bot.Builder.Dialogs
             var options = (PromptOptions)instance.State[PersistedOptions];
             var recognized = await OnRecognizeAsync(dc.Context, state, options, cancellationToken).ConfigureAwait(false);
 
+            // Increment attempt count
+            // Convert.ToInt32 For issue https://github.com/Microsoft/botbuilder-dotnet/issues/1859
+            state[Prompt<int>.AttemptCountKey] = Convert.ToInt32(state[Prompt<int>.AttemptCountKey]) + 1;
+
             // Validate the return value
-            var promptContext = new PromptValidatorContext<Activity>(dc.Context, recognized, state, options);
-            var isValid = await _validator(promptContext, cancellationToken).ConfigureAwait(false);
+            var isValid = false;
+            if (_validator != null)
+            {
+                var promptContext = new PromptValidatorContext<Activity>(dc.Context, recognized, state, options);
+                isValid = await _validator(promptContext, cancellationToken).ConfigureAwait(false);
+            }
+            else if (recognized.Succeeded)
+            {
+                isValid = true;
+            }
 
             // Return recognized value or re-prompt
             if (isValid)

@@ -103,7 +103,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             var timeout = _settings.Timeout ?? DefaultPromptTimeout;
             var state = dc.ActiveDialog.State;
             state[PersistedOptions] = opt;
-            state[PersistedState] = new Dictionary<string, object>();
+            state[PersistedState] = new Dictionary<string, object>
+            {
+                { Prompt<int>.AttemptCountKey, 0 },
+            };
+
             state[PersistedExpires] = DateTime.Now.AddMilliseconds(timeout);
 
             // Attempt to get the users token
@@ -151,6 +155,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 var promptState = (IDictionary<string, object>)state[PersistedState];
                 var promptOptions = (PromptOptions)state[PersistedOptions];
+
+                // Increment attempt count
+                // Convert.ToInt32 For issue https://github.com/Microsoft/botbuilder-dotnet/issues/1859
+                promptState[Prompt<int>.AttemptCountKey] = Convert.ToInt32(promptState[Prompt<int>.AttemptCountKey]) + 1;
 
                 // Validate the return value
                 var isValid = false;
