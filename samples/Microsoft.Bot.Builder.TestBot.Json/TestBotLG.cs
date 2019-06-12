@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         {
             // load LG file into engine
             engine = new TemplateEngine()
-                .AddFiles(GetLGResourceFile("8.LG"));
+                .Add(new string[] { GetLGResourceFile("8.LG") });
         }
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
