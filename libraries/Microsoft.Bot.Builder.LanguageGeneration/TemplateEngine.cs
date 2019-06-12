@@ -41,8 +41,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         ///    new TemplateEngine.AddText(text).
         /// </summary>
         /// <param name="text">Content of lg file.</param>
+        /// <param name="resourceLoader">delegate resolve templateid -> template text.</param>
         /// <returns>Engine created.</returns>
-        public static TemplateEngine FromText(string text) => new TemplateEngine().AddText(text);
+        public static TemplateEngine FromText(string text, Func<string, string> resourceLoader = null) => new TemplateEngine().AddText(text);
 
         /// <summary>
         /// Load .lg files into template engine

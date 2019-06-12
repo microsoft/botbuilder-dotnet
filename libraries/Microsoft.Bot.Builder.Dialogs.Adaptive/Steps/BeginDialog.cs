@@ -19,8 +19,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     public class BeginDialog : BaseInvokeDialog
     {
         [JsonConstructor]
-        public BeginDialog(string dialogIdToCall = null, string id = null, string property = null, object options = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(dialogIdToCall, id, property, options)
+        public BeginDialog(string dialogIdToCall = null, string property = null, object options = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(dialogIdToCall, property, options)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }

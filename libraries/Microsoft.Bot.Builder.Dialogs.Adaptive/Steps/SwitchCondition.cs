@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             }
 
             // Ensure planning context
-            if (dc is PlanningContext planning)
+            if (dc is SequenceContext planning)
             {
                 lock (this.Condition)
                 {
@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 }
 
                 // run condition or default steps
-                var planSteps = stepsToRun.Select(s => new PlanStepState()
+                var planSteps = stepsToRun.Select(s => new StepState()
                 {
                     DialogStack = new List<DialogInstance>(),
                     DialogId = s.Id,
@@ -113,9 +113,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 });
 
                 // Queue up steps that should run after current step
-                planning.QueueChanges(new PlanChangeList()
+                planning.QueueChanges(new StepChangeList()
                 {
-                    ChangeType = PlanChangeTypes.DoSteps,
+                    ChangeType = StepChangeTypes.InsertSteps,
                     Steps = planSteps.ToList()
                 });
 

@@ -14,7 +14,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     /// </summary>
     public class EndDialog : DialogCommand
     {
-
         [JsonConstructor]
         public EndDialog([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
