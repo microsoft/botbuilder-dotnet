@@ -8,10 +8,9 @@ This repository contains code for the .NET version of the [Microsoft Bot Framewo
 
 This repo is part the [Microsoft Bot Framework](https://github.com/Microsoft/botframework) - a comprehensive framework for building enterprise-grade conversational AI experiences.
 
- | Branch | Description        | Build Status | Coverage Status | Functional Tests Status |
- |----|---------------|--------------|-----------------|--|
- |Master | 4.5.* Preview Builds |[![Build Status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/DotNet/BotBuilder-DotNet-master-CI-PR?branchName=master)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=457&branchName=master) |[![Coverage Status](https://coveralls.io/repos/github/Microsoft/botbuilder-dotnet/badge.svg?branch=master&service=github)](https://coveralls.io/github/Microsoft/botbuilder-dotnet?branch=master) | [![Tests status](https://fuselabs.vsrm.visualstudio.com/_apis/public/Release/badge/86659c66-c9df-418a-a371-7de7aed35064/48/48)](https://fuselabs.vsrm.visualstudio.com/_apis/public/Release/badge/86659c66-c9df-418a-a371-7de7aed35064/48/48)
-
+ | Branch | Description        | Build Status | Coverage Status | Windows Bot Test Status | Linux Bot Test Status |
+ |----|---------------|--------------|-----------------|--|--|
+ |Master | 4.5.* Preview Builds |[![Build Status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/DotNet/BotBuilder-DotNet-master-CI-PR?branchName=master)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=457&branchName=master) |[![Coverage Status](https://coveralls.io/repos/github/Microsoft/botbuilder-dotnet/badge.svg?branch=master&service=github)](https://coveralls.io/github/Microsoft/botbuilder-dotnet?branch=master) | [![Tests status](https://fuselabs.vsrm.visualstudio.com/_apis/public/Release/badge/86659c66-c9df-418a-a371-7de7aed35064/48/48)](https://fuselabs.visualstudio.com/SDK_v4/_release?definitionId=48&_a=releases) |  [![Tests status](https://fuselabs.vsrm.visualstudio.com/_apis/public/Release/badge/86659c66-c9df-418a-a371-7de7aed35064/47/47)](https://fuselabs.visualstudio.com/SDK_v4/_release?definitionId=47&_a=releases)
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Microsoft/botbuilder-dotnet/blob/master/LICENSE)
 [![Gitter](https://img.shields.io/gitter/room/Microsoft/BotBuilder.svg)](https://gitter.im/Microsoft/BotBuilder)
