@@ -43,7 +43,9 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Replace any mention text for given id from Text property.
+        /// Replace any mention text for given id from Text property. First checks for and replaces the name of the
+        /// recipient with the matching id and then checks for the leftover <at></at> tags (this is done to handle
+        /// the way Skype sends mention text.
         /// </summary>
         /// <param name="activity">activity.</param>
         /// <param name="id">id to match.</param>
@@ -52,7 +54,12 @@ namespace Microsoft.Bot.Schema
         {
             foreach (var mention in activity.GetMentions().Where(mention => mention.Mentioned.Id == id))
             {
-                activity.Text = Regex.Replace(activity.Text, mention.Text, string.Empty, RegexOptions.IgnoreCase);
+                var mentionNameMatch = Regex.Match(mention.Text, @"(?<=<at.*>)(.*?)(?=<\/at>)", RegexOptions.IgnoreCase);
+                if (mentionNameMatch.Success)
+                {
+                    activity.Text = activity.Text.Replace(mentionNameMatch.Value, string.Empty);
+                    activity.Text = Regex.Replace(activity.Text, "<at></at>", string.Empty, RegexOptions.IgnoreCase);
+                }
             }
 
             return activity.Text;
