@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             foreach (var filePath in filePaths)
             {
                 var resolvedPath = fileResolver != null ? fileResolver(filePath) : filePath;
-                var absolutePath = Path.IsPathRooted(resolvedPath) ? resolvedPath : new FileInfo(resolvedPath).FullName;
+                var absolutePath = new FileInfo(resolvedPath).FullName;
                 if (finalLgFiles.ContainsKey(absolutePath))
                 {
                     continue;
@@ -193,7 +193,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var lgFile = LGParser.Parse(text, absolutePath);
                 finalLgFiles.Add(absolutePath, lgFile);
                 var importedFilePaths = lgFile.Imports.Select(e => fileResolver != null ? fileResolver(e.Path) : e.Path);
-                importedFilePaths = importedFilePaths.Select(e => Path.IsPathRooted(e) ? e : Path.Combine(Path.GetDirectoryName(absolutePath) + "/" + e));
+                importedFilePaths = importedFilePaths.Select(e => Path.IsPathRooted(e) ? e : Path.Combine(Path.GetDirectoryName(absolutePath), e));
                 LoopLGFiles(importedFilePaths.ToArray(), finalLgFiles, fileResolver);
             }
         }
