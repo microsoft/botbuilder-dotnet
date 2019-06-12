@@ -1,0 +1,86 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "./baseSchema.json"
+    },
+    {
+      "properties": {
+        "prompt": {
+          "$type": "Microsoft.IActivityTemplate",
+          "title": "Initial Prompt",
+          "description": "The message to send to as prompt for this input.",
+          "examples": [
+            "What is your birth date?"
+          ]
+        },
+        "unrecognizedPrompt": {
+          "$type": "Microsoft.IActivityTemplate",
+          "title": "Unrecognized Prompt",
+          "description": "The message to send if the last input is not recognized.",
+          "examples": [
+            "Let's try again. What is your birth date?"
+          ]
+        },
+        "invalidPrompt": {
+          "$type": "Microsoft.IActivityTemplate",
+          "title": "Invalid Prompt",
+          "description": "The message to send to when then input was not valid for the input type.",
+          "examples": [
+            "No date was recognized"
+          ]
+        },
+        "maxTurnCount": {
+          "type": "number",
+          "title": "Max Turn Count",
+          "description": "The max retry count for this prompt.",
+          "default": "2147483647",
+          "examples": [
+            "3"
+          ]
+        },
+        "validations": {
+          "type": "array",
+          "items": {
+            "$role": "expression"
+          },
+          "title": "validation expressions",
+          "description": "Expressions to valid an input."
+        },
+        "value": {
+          "$role": "expression",
+          "title": "Value",
+          "description": "Value to return"
+        },
+        "valueProperty": {
+          "$role": "memoryPath",
+          "title": "Value Property",
+          "description": "The property to store the result of the value",
+          "examples": [
+            "user.name"
+          ]
+        },
+        "defaultValue": {
+          "$role": "expression",
+          "title": "Default Value",
+          "description": "value to return if the value expression can't be evaluated.",
+        },
+        "alwaysPrompt": {
+          "type": "boolean",
+          "title": "Always Prompt",
+          "description": "If set to true this will always prompt the user regardless if you already have the value or not.",
+          "default": "false",
+          "examples": [ "false" ]
+        },
+        "allowInterruptions": {
+          "type": "boolean",
+          "title": "Allow Interruptions",
+          "description": "If set to true this will always consult the parent dialog whether it will be interupt or not",
+          "default": "true",
+          "examples": [ "true" ]
+        }
+      }
+    }
+  ]
+}
