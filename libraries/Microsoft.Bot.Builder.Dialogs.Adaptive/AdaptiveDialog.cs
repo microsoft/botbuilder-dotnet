@@ -551,9 +551,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 if (result.Status == DialogTurnStatus.Empty && GetUniqueInstanceId(sequence) == instanceId)
                 {
                     var nextStep = step.Steps.First();
-
-                    // TODO: NextStep does not have options because it is IDialog. Figure out Options propagation.
-                    result = await step.BeginDialogAsync(nextStep.DialogId, null, cancellationToken).ConfigureAwait(false);
+                    result = await step.BeginDialogAsync(nextStep.DialogId, nextStep.Options, cancellationToken).ConfigureAwait(false);
                 }
 
                 // Increment turns step count
