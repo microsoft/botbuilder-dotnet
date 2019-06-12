@@ -70,22 +70,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
 
         }
 
-        protected override PlanChangeList OnCreateChangeList(PlanningContext planning, object dialogOptions = null)
+        protected override StepChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
         {
             if (planning.State.TryGetValue<RecognizerResult>("turn.dialogEvent.value", out var recognizerResult))
             {
                 var (name, score) = recognizerResult.GetTopScoringIntent();
-                return new PlanChangeList()
+                return new StepChangeList()
                 {
                     //ChangeType = this.ChangeType,
 
                     // proposed turn state changes
+
                     Turn = new Dictionary<string, object>()
                     {
                         { "intent",  new Dictionary<string, object>() { { name, score } } },
                         { "entities", recognizerResult.Entities }
                     },
-                    Steps = Steps.Select(s => new PlanStepState()
+                    Steps = Steps.Select(s => new StepState()
                     {
                         DialogStack = new List<DialogInstance>(),
                         DialogId = s.Id,
@@ -94,9 +95,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
                 };
             }
 
-            return new PlanChangeList()
+            return new StepChangeList()
             {
-                Steps = Steps.Select(s => new PlanStepState()
+                Steps = Steps.Select(s => new StepState()
                 {
                     DialogStack = new List<DialogInstance>(),
                     DialogId = s.Id,

@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             }
 
             // Ensure planning context
-            if (dc is PlanningContext planning)
+            if (dc is SequenceContext sc)
             {
                 Expression listProperty = null;
                 int offset = 0;
@@ -76,14 +76,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     {
                         dc.State.SetValue(this.ValueProperty, item);
                         dc.State.SetValue(this.IndexProperty, offset);
-                        var changes = new PlanChangeList()
+                        var changes = new StepChangeList()
                         {
-                            ChangeType = PlanChangeTypes.DoSteps,
-                            Steps = new List<PlanStepState>()
+                            ChangeType = StepChangeTypes.InsertSteps,
+                            Steps = new List<StepState>()
                         };
-                        this.Steps.ForEach(step => changes.Steps.Add(new PlanStepState(step.Id)));
+                        this.Steps.ForEach(step => changes.Steps.Add(new StepState(step.Id)));
 
-                        changes.Steps.Add(new PlanStepState()
+                        changes.Steps.Add(new StepState()
                         {
                             DialogStack = new List<DialogInstance>(),
                             DialogId = this.Id,
@@ -93,11 +93,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                                 offset = offset + 1
                             }
                         });
-                        planning.QueueChanges(changes);
+                        sc.QueueChanges(changes);
                     }
                 }
 
-                return await planning.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+                return await sc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else
             {

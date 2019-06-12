@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         /// <param name="planningContext"></param>
         /// <param name="dialogEvent"></param>
         /// <returns></returns>
-        public async Task<List<PlanChangeList>> ExecuteAsync(PlanningContext planningContext)
+        public async Task<List<StepChangeList>> ExecuteAsync(SequenceContext planningContext)
         {
             return await OnExecuteAsync(planningContext).ConfigureAwait(false);
         }
@@ -112,24 +112,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         /// <param name="context"></param>
         /// <param name="dialogEvent"></param>
         /// <returns></returns>
-        public async virtual Task<List<PlanChangeList>> OnExecuteAsync(PlanningContext planning)
+        public async virtual Task<List<StepChangeList>> OnExecuteAsync(SequenceContext planning)
         {
-            return new List<PlanChangeList>()
+            return new List<StepChangeList>()
             {
                 this.OnCreateChangeList(planning)
             };
         }
 
-        protected virtual PlanChangeList OnCreateChangeList(PlanningContext planning, object dialogOptions = null)
+        protected virtual StepChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
         {
-            var changeList = new PlanChangeList()
+            var changeList = new StepChangeList()
             {
-                Steps = new List<PlanStepState>()
+                Steps = new List<StepState>()
             };
 
             Steps.ForEach(s =>
             {
-                var stepState = new PlanStepState()
+                var stepState = new StepState()
                 {
                     DialogStack = new List<DialogInstance>(),
                     DialogId = s.Id

@@ -147,7 +147,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.LogStep", typeof(LogStep));
             Register("Microsoft.RepeatDialog", typeof(RepeatDialog));
             Register("Microsoft.ReplaceDialog", typeof(ReplaceDialog));
-            Register("Microsoft.SaveEntity", typeof(SaveEntity));
             Register("Microsoft.SendActivity", typeof(SendActivity));
             Register("Microsoft.SetProperty", typeof(SetProperty));
             Register("Microsoft.SwitchCondition", typeof(SwitchCondition));

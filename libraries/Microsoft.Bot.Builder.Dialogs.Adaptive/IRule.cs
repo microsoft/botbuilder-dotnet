@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <param name="context"></param>
         /// <param name="dialogEvent"></param>
         /// <returns></returns>
-        Task<List<PlanChangeList>> ExecuteAsync(PlanningContext context);
+        Task<List<StepChangeList>> ExecuteAsync(SequenceContext context);
 
         /// <summary>
         /// Steps to add to the plan when the rule is activated
