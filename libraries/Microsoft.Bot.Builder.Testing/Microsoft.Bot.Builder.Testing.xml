@@ -9,14 +9,15 @@
             A client to for testing dialogs in isolation.
             </summary>
         </member>
-        <member name="M:Microsoft.Bot.Builder.Testing.DialogTestClient.#ctor(Microsoft.Bot.Builder.Dialogs.Dialog,System.Object,System.Collections.Generic.IEnumerable{Microsoft.Bot.Builder.IMiddleware},Microsoft.Bot.Builder.BotCallbackHandler)">
+        <member name="M:Microsoft.Bot.Builder.Testing.DialogTestClient.#ctor(Microsoft.Bot.Builder.Dialogs.Dialog,System.Object,System.Collections.Generic.IEnumerable{Microsoft.Bot.Builder.IMiddleware},Microsoft.Bot.Builder.Adapters.TestAdapter,Microsoft.Bot.Builder.BotCallbackHandler)">
             <summary>
             Initializes a new instance of the <see cref="T:Microsoft.Bot.Builder.Testing.DialogTestClient"/> class.
             </summary>
             <param name="targetDialog">The dialog to be tested. This will be the root dialog for the test client.</param>
             <param name="initialDialogOptions">(Optional) additional argument(s) to pass to the dialog being started.</param>
-            <param name="middlewares">A list of middlewares to be added to the test adapter.</param>
-            <param name="callback">The bot turn processing logic for the test. If this value is not provided, the test client will create a default <see cref="T:Microsoft.Bot.Builder.BotCallbackHandler"/>.</param>
+            <param name="testAdapter">(Optional) The test adapter to use. If this parameter is not provided, the test client will use a default <see cref="T:Microsoft.Bot.Builder.Adapters.TestAdapter"/>.</param>
+            <param name="middlewares">(Optional) A list of middlewares to be added to the test adapter.</param>
+            <param name="callback">(Optional) The bot turn processing logic for the test. If this value is not provided, the test client will create a default <see cref="T:Microsoft.Bot.Builder.BotCallbackHandler"/>.</param>
         </member>
         <member name="P:Microsoft.Bot.Builder.Testing.DialogTestClient.DialogTurnResult">
             <summary>
@@ -112,6 +113,12 @@
             See <see href="https://xunit.net/docs/capturing-output.html">Capturing Output</see> in the XUnit documentation for additional details.
             </param>
         </member>
+        <member name="P:Microsoft.Bot.Builder.Testing.XUnit.XUnitOutputMiddleware.Output">
+            <summary>
+            Gets the <see cref="T:Xunit.Abstractions.ITestOutputHelper"/> instance for this middleware.
+            </summary>
+            <value>The <see cref="T:Xunit.Abstractions.ITestOutputHelper"/> instance for this middleware.</value>
+        </member>
         <member name="M:Microsoft.Bot.Builder.Testing.XUnit.XUnitOutputMiddleware.LogIncomingActivityAsync(Microsoft.Bot.Builder.ITurnContext,Microsoft.Bot.Schema.Activity,System.Threading.CancellationToken)">
             <summary>
             Logs messages sent from the user to the bot.
@@ -119,10 +126,19 @@
             <remarks>
             <see cref="F:Microsoft.Bot.Schema.ActivityTypes.Message"/> activities will be logged as text. Other activities will be logged as json.
             </remarks>
-            <param name="context">TODO.</param>
-            <param name="activity">TODO 1.</param>
-            <param name="cancellationToken">TODO 2.</param>
-            <returns>TODO 3.</returns>
+            <param name="context">The context object for this turn.</param>
+            <param name="activity">The <see cref="T:Microsoft.Bot.Schema.Activity"/> to be logged.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>A task that represents the work to execute.</returns>
+        </member>
+        <member name="M:Microsoft.Bot.Builder.Testing.XUnit.XUnitOutputMiddleware.LogOutgoingActivityAsync(Microsoft.Bot.Builder.ITurnContext,Microsoft.Bot.Schema.Activity,System.Threading.CancellationToken)">
+            <summary>
+            Logs messages sent from the bot to the user.
+            </summary>
+            <param name="context">The context object for this turn.</param>
+            <param name="activity">The <see cref="T:Microsoft.Bot.Schema.Activity"/> to be logged.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>A task that represents the work to execute.</returns>
         </member>
     </members>
 </doc>

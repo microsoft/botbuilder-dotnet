@@ -93,6 +93,7 @@ namespace Microsoft.Bot.Builder.Testing.Tests.XUnit
                         InputHint = _inputHint,
                     };
                 }
+
                 await dc.Context.SendActivityAsync(echoActivity, cancellationToken);
                 return new DialogTurnResult(DialogTurnStatus.Complete);
             }

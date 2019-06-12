@@ -19,7 +19,6 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
     /// </summary>
     public class XUnitOutputMiddleware : IMiddleware
     {
-        private readonly ITestOutputHelper _output;
         private readonly string _stopWatchStateKey;
 
         /// <summary>
@@ -37,8 +36,14 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
         public XUnitOutputMiddleware(ITestOutputHelper xunitOutputHelper)
         {
             _stopWatchStateKey = $"{nameof(XUnitOutputMiddleware)}.Stopwatch.{Guid.NewGuid()}";
-            _output = xunitOutputHelper;
+            Output = xunitOutputHelper;
         }
+
+        /// <summary>
+        /// Gets the <see cref="ITestOutputHelper"/> instance for this middleware.
+        /// </summary>
+        /// <value>The <see cref="ITestOutputHelper"/> instance for this middleware.</value>
+        protected ITestOutputHelper Output { get; }
 
         public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default)
         {
@@ -57,27 +62,34 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
         /// <remarks>
         /// <see cref="ActivityTypes.Message"/> activities will be logged as text. Other activities will be logged as json.
         /// </remarks>
-        /// <param name="context">TODO.</param>
-        /// <param name="activity">TODO 1.</param>
-        /// <param name="cancellationToken">TODO 2.</param>
-        /// <returns>TODO 3.</returns>
+        /// <param name="context">The context object for this turn.</param>
+        /// <param name="activity">The <see cref="Activity"/> to be logged.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A task that represents the work to execute.</returns>
         protected virtual Task LogIncomingActivityAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken = default)
         {
             var actor = "User: ";
             if (activity.Type == ActivityTypes.Message)
             {
                 var messageActivity = activity.AsMessageActivity();
-                _output.WriteLine($"\r\n{actor} {messageActivity.Text}");
+                Output.WriteLine($"\r\n{actor} {messageActivity.Text}");
             }
             else
             {
                 LogActivityAsJson(actor, activity);
             }
 
-            _output.WriteLine($"       -> ts: {DateTime.Now:hh:mm:ss}");
+            Output.WriteLine($"       -> ts: {DateTime.Now:hh:mm:ss}");
             return Task.FromResult(Task.CompletedTask);
         }
 
+        /// <summary>
+        /// Logs messages sent from the bot to the user.
+        /// </summary>
+        /// <param name="context">The context object for this turn.</param>
+        /// <param name="activity">The <see cref="Activity"/> to be logged.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A task that represents the work to execute.</returns>
         protected virtual Task LogOutgoingActivityAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken = default)
         {
             var stopwatch = (Stopwatch)context.TurnState[_stopWatchStateKey];
@@ -85,7 +97,7 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
             if (activity.Type == ActivityTypes.Message)
             {
                 var messageActivity = activity.AsMessageActivity();
-                _output.WriteLine($"\r\n{actor} Text={messageActivity.Text}\r\n       Speak={messageActivity.Speak}\r\n       InputHint={messageActivity.InputHint}");
+                Output.WriteLine($"\r\n{actor} Text={messageActivity.Text}\r\n       Speak={messageActivity.Speak}\r\n       InputHint={messageActivity.InputHint}");
             }
             else
             {
@@ -95,7 +107,7 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
             var timingInfo = $"       -> ts: {DateTime.Now:hh:mm:ss} elapsed: {stopwatch.ElapsedMilliseconds:N0} ms";
             stopwatch.Restart();
 
-            _output.WriteLine(timingInfo);
+            Output.WriteLine(timingInfo);
             return Task.FromResult(Task.CompletedTask);
         }
 
@@ -111,12 +123,12 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
 
         private void LogActivityAsJson(string actor, Activity activity)
         {
-            _output.WriteLine($"\r\n{actor} Activity = ActivityTypes.{activity.Type}");
+            Output.WriteLine($"\r\n{actor} Activity = ActivityTypes.{activity.Type}");
             var s = new JsonSerializerSettings
             {
                 Formatting = Formatting.Indented,
             };
-            _output.WriteLine(JsonConvert.SerializeObject(activity, s));
+            Output.WriteLine(JsonConvert.SerializeObject(activity, s));
         }
     }
 }
