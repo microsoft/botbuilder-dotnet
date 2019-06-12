@@ -1,0 +1,16 @@
+# ShowAlarms
+- iF: {count(alarms) == 1}
+    - You have one alarm
+- Elseif: {count(alarms) == 2}
+    - You have two alarms
+- elSe:
+    - You don't have any alarms
+
+# greetInAWeek
+-sWItCH: {day}
+  -cAsE: {'Saturday'}
+    -Happy Saturday!
+  -CASe: {'Sunday'}
+    -Happy Sunday!
+  -dEFAULT:  
+    -Work Hard!

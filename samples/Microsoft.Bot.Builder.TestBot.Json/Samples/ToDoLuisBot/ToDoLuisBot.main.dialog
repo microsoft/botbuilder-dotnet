@@ -3,6 +3,7 @@
     "$type": "Microsoft.AdaptiveDialog",
     "$id": "root",
     "autoEndDialog": false,
+    "generator": "ToDoLuisBot.lg",
     "recognizer": "ToDoLuis.lu",
     "steps": [
         {

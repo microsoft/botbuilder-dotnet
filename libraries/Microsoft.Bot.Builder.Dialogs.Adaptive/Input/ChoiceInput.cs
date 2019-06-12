@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         public string ChoicesProperty { get; set; }
 
-        public ListStyle Style { get; set; }
+        public ListStyle Style { get; set; } = ListStyle.Auto;
 
         public ResultType ResultType { get; set; } = ResultType.Value;
 

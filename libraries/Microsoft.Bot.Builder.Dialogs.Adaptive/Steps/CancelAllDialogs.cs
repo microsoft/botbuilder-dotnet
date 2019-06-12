@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            return await CancelAllParentDialogsAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await CancelAllParentDialogsAsync(dc, eventName: EventName ?? "cancelDialog", eventValue: EventValue, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         protected override string OnComputeId()

@@ -12,7 +12,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Builder.LanguageGeneration.Renderer;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 TypeFactory.Register("Testbot.Multiply", typeof(MultiplyStep));
                 TypeFactory.Register("Testbot.JavascriptStep", typeof(JavascriptStep));
             });
-            this.UseLanguageGenerator(new LGLanguageGenerator(resourceExplorer));
+            this.UseLanguageGeneration(resourceExplorer);
             this.UseDebugger(configuration.GetValue<int>("debugport", 4712), events: new Events<AdaptiveEvents>());
 
             this.OnTurnError = async (turnContext, exception) =>

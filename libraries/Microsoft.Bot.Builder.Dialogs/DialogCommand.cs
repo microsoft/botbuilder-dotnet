@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return turnResult;
         }
 
-        protected async Task<DialogTurnResult> CancelAllParentDialogsAsync(DialogContext dc, object result = null, CancellationToken cancellationToken = default(CancellationToken))
+        protected async Task<DialogTurnResult> CancelAllParentDialogsAsync(DialogContext dc, object result = null, string eventName = "cancelDialog", object eventValue = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (result is CancellationToken)
             {
@@ -102,11 +102,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (dc.Stack.Count > 0 || dc.Parent == null)
             {
-                return await dc.CancelAllDialogsAsync(cancellationToken).ConfigureAwait(false);
+                return await dc.CancelAllDialogsAsync(eventName, eventValue, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                var turnResult = await dc.Parent.CancelAllDialogsAsync(cancellationToken).ConfigureAwait(false);
+                var turnResult = await dc.Parent.CancelAllDialogsAsync(eventName, eventValue, cancellationToken).ConfigureAwait(false);
                 turnResult.ParentEnded = true;
                 return turnResult;
             }

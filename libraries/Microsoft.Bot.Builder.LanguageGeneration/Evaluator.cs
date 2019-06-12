@@ -66,15 +66,56 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return Visit(normalTemplateStrs[rd.Next(normalTemplateStrs.Length)]);
         }
 
-        public override string VisitConditionalBody([NotNull] LGFileParser.ConditionalBodyContext context)
+        public override string VisitIfElseBody([NotNull] LGFileParser.IfElseBodyContext context)
         {
-            var ifRules = context.conditionalTemplateBody().ifConditionRule();
+            var ifRules = context.ifElseTemplateBody().ifConditionRule();
             foreach (var ifRule in ifRules)
             {
                 if (EvalCondition(ifRule.ifCondition()) && ifRule.normalTemplateBody() != null)
                 {
                     return Visit(ifRule.normalTemplateBody());
                 }
+            }
+
+            return null;
+        }
+
+        public override string VisitSwitchCaseBody([NotNull] LGFileParser.SwitchCaseBodyContext context)
+        {
+            var switchCaseNodes = context.switchCaseTemplateBody().switchCaseRule();
+            var length = switchCaseNodes.Length;
+            var switchExprs = switchCaseNodes[0].switchCaseStat().EXPRESSION();
+            var switchExprResult = EvalExpression(switchExprs[0].GetText());
+            var idx = 0;
+            foreach (var switchCaseNode in switchCaseNodes)
+            {
+                if (idx == 0)
+                {
+                    idx = idx + 1;
+                    continue;   // skip the first node, which is switch statement
+                }
+
+                if (idx == length - 1 && switchCaseNode.switchCaseStat().DEFAULT() != null)
+                {
+                    var defaultBody = switchCaseNode.normalTemplateBody();
+                    if (defaultBody != null)
+                    {
+                        return Visit(defaultBody);
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+
+                var caseExprs = switchCaseNode.switchCaseStat().EXPRESSION();
+                var caseExprResult = EvalExpression(caseExprs[0].GetText());
+                if (switchExprResult == caseExprResult)
+                {
+                    return Visit(switchCaseNode.normalTemplateBody());
+                }
+
+                idx = idx + 1;
             }
 
             return null;

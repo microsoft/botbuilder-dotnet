@@ -41,26 +41,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
             return Dialog.EndOfTurn;
         }
-
-        public override async Task<DialogConsultation> ConsultDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return new DialogConsultation()
-            {
-                Desire = DialogConsultationDesire.CanProcess,
-                Processor = async (ctx) =>
-                {
-                    var activity = ctx.Context.Activity;
-
-                    if (activity.Type == ActivityTypes.Message)
-                    {
-                        return await ctx.EndDialogAsync(activity.Text, cancellationToken).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        return Dialog.EndOfTurn;
-                    }
-                }
-            };
-        }
     }
 }

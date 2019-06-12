@@ -40,7 +40,7 @@
                 "dialog.contosodata"
             ]
         },
-        "header": {
+        "headers": {
             "type": "object",
             "additionProperties": true,
             "title": "Http headers",
@@ -55,7 +55,8 @@
                 "json",
                 "activity",
                 "activities"
-            ]
+            ],
+            "default": "json"
         }
     },
     "required": [

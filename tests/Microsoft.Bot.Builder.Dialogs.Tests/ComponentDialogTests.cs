@@ -190,8 +190,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await Task.CompletedTask;
         }
 
-
-
         [TestMethod]
         public async Task BasicComponentDialogTest()
         {

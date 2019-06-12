@@ -4,7 +4,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.LanguageGeneration.Renderer;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
@@ -18,6 +17,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Bot.Builder.LanguageGeneration;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -30,7 +30,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             TypeFactory.Configuration = new ConfigurationBuilder().Build();
             var resourceExplorer = new ResourceExplorer();
-            var lg = new LGLanguageGenerator(resourceExplorer);
             var storage = new MemoryStorage();
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
@@ -38,8 +37,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             adapter
                 .UseStorage(storage)
                 .UseState(userState, convoState)
-                .UseLanguageGenerator(lg)
                 .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
@@ -138,7 +137,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         Steps = new List<IDialog>()
                         {
-                            new SaveEntity("@name", "user.name"),
+                            new SetProperty()
+                            {
+                                Property = "user.name",
+                                Value = new ExpressionEngine().Parse("@name")
+                            }
                         }
                     }
                 }

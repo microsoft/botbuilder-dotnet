@@ -9,18 +9,15 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public class ComponentDialog : Dialog
+    public class ComponentDialog : DialogContainer
     {
-        protected const string PersistedDialogState = "dialogs";
-
-        protected DialogSet _dialogs;
+        public const string PersistedDialogState = "dialogs";
 
         private bool initialized = false;
 
         public ComponentDialog(string dialogId = null)
             : base(dialogId)
         {
-            _dialogs = new DialogSet();
         }
 
         public string InitialDialogId { get; set; }
@@ -56,13 +53,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(outerDc));
             }
 
-            // Start the inner dialog.
-            var dialogState = new DialogState();
-            outerDc.DialogState[PersistedDialogState] = dialogState;
-
             await EnsureInitialized(outerDc).ConfigureAwait(false);
 
-            var innerDc = new DialogContext(_dialogs, outerDc, dialogState, outerDc.State.Conversation, outerDc.State.User);
+            var innerDc = this.CreateChildContext(outerDc);
             var turnResult = await OnBeginDialogAsync(innerDc, options, cancellationToken).ConfigureAwait(false);
 
             // Check for end of inner dialog
@@ -78,6 +71,25 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
+        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext outerDc, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // Continue execution of inner dialog
+            var innerDc = this.CreateChildContext(outerDc);
+            var turnResult = await this.OnContinueDialogAsync(innerDc, cancellationToken).ConfigureAwait(false);
+
+            // Check for end of inner dialog
+            if (turnResult.Status != DialogTurnStatus.Waiting)
+            {
+                // Return to calling dialog
+                return await this.EndComponentAsync(outerDc, turnResult.Result, cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                // Signal end of turn
+                return Dialog.EndOfTurn;
+            }
+        }
+
         protected async Task EnsureInitialized(DialogContext outerDc)
         {
             if (!this.initialized)
@@ -85,42 +97,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 this.initialized = true;
                 await OnInitialize(outerDc).ConfigureAwait(false);
             }
-        }
-
-        public override async Task<DialogConsultation> ConsultDialogAsync(DialogContext outerDc, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (outerDc == null)
-            {
-                throw new ArgumentNullException(nameof(outerDc));
-            }
-
-            await EnsureInitialized(outerDc).ConfigureAwait(false);
-
-            // Consult inner dialog.
-            var dialogState = (DialogState)outerDc.DialogState[PersistedDialogState];
-            var innerDc = new DialogContext(_dialogs, outerDc, dialogState, outerDc.State.Conversation, outerDc.State.User);
-            var innerConsultation = await OnConsultDialog(innerDc, cancellationToken).ConfigureAwait(false);
-
-            // Call OnContinueDialog() with inner consultation
-            // - The default implementation of OnContinueDialog() will simply invoke the inner processor that was returned. 
-            // - This lets legacy components that have added custom interruption logic to continue to operate as designed.
-            return new DialogConsultation()
-            {
-                Desire = innerConsultation != null ? innerConsultation.Desire : DialogConsultationDesire.CanProcess,
-                Processor = async (dc) =>
-                {
-                    var turnResult = await OnContinueDialogAsync(innerDc, innerConsultation).ConfigureAwait(false);
-
-                    if (turnResult.Status != DialogTurnStatus.Waiting)
-                    {
-                        return await EndComponentAsync(outerDc, turnResult.Result, cancellationToken).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        return EndOfTurn;
-                    }
-                },
-            };
         }
 
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext outerDc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -144,8 +120,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Delegate to inner dialog.
-            var dialogState = (DialogState)((Dictionary<string, object>)instance.State)[PersistedDialogState];
-            var innerDc = new DialogContext(_dialogs, turnContext, dialogState, new Dictionary<string, object>(), new Dictionary<string, object>());
+            var innerDc = this.CreateInnerDc(turnContext, instance, null, null);
             await innerDc.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
 
             // Notify component
@@ -157,18 +132,13 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Forward cancel to inner dialogs
             if (reason == DialogReason.CancelCalled)
             {
-                var dialogState = (DialogState)((Dictionary<string, object>)instance.State)[PersistedDialogState];
-                var innerDc = new DialogContext(_dialogs, turnContext, dialogState, new Dictionary<string, object>(), new Dictionary<string, object>());
+                var innerDc = this.CreateInnerDc(turnContext, instance, null, null);
                 await innerDc.CancelAllDialogsAsync(cancellationToken).ConfigureAwait(false);
             }
 
             await OnEndDialogAsync(turnContext, instance, reason, cancellationToken).ConfigureAwait(false);
         }
 
-        public ComponentDialog AddDialog(Dialog dialog)
-        {
-            return AddDialog(dialog as IDialog);
-        }
 
         /// <summary>
         /// Adds a dialog to the component dialog.
@@ -176,9 +146,15 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialog">The dialog to add.</param>
         /// <returns>The updated <see cref="ComponentDialog"/>.</returns>
         /// <remarks>Adding a new dialog will inherit the <see cref="IBotTelemetryClient"/> of the ComponentDialog.</remarks>
-        public ComponentDialog AddDialog(IDialog dialog)
+        public override Dialog AddDialog(IDialog dialog)
         {
-            _dialogs.Add(dialog);
+            base.AddDialog(dialog);
+
+            if (this.InitialDialogId == null)
+            {
+                this.InitialDialogId = dialog.Id;
+            }
+
             return this;
         }
 
@@ -190,6 +166,35 @@ namespace Microsoft.Bot.Builder.Dialogs
         public IDialog FindDialog(string dialogId)
         {
             return _dialogs.Find(dialogId);
+        }
+
+        public override DialogContext CreateChildContext(DialogContext dc)
+        {
+            var childDc = this.CreateInnerDc(dc.Context, dc.ActiveDialog, dc.State.User, dc.State.Conversation);
+            childDc.Parent = dc;
+            return childDc;
+        }
+
+        private DialogContext CreateInnerDc(ITurnContext context, DialogInstance instance, Dictionary<string, object> userState, Dictionary<string, object> conversationState)
+        {
+            DialogState state;
+
+            if (instance.State.ContainsKey(PersistedDialogState))
+            {
+                state = instance.State[PersistedDialogState] as DialogState;
+            }
+            else
+            {
+                state = new DialogState();
+                instance.State[PersistedDialogState] = state;
+            }
+
+            if (state.DialogStack == null)
+            {
+                state.DialogStack = new List<DialogInstance>();
+            }
+
+            return new DialogContext(this._dialogs, context, state, conversationState, userState);
         }
 
         protected virtual Task OnInitialize(DialogContext dc)
@@ -207,19 +212,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             return innerDc.BeginDialogAsync(InitialDialogId, options, cancellationToken);
         }
 
-        protected virtual Task<DialogConsultation> OnConsultDialog(DialogContext innerDc, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return innerDc.ConsultDialogAsync(cancellationToken);
-        }
-
-        protected virtual Task<DialogTurnResult> OnContinueDialogAsync(DialogContext innerDc, DialogConsultation consultation, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return consultation != null ? consultation.Processor(innerDc) : innerDc.ContinueDialogAsync(cancellationToken);
-        }
-
         protected virtual Task<DialogTurnResult> OnContinueDialogAsync(DialogContext innerDc, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return OnContinueDialogAsync(innerDc, null, cancellationToken);
+            return innerDc.ContinueDialogAsync(cancellationToken);
         }
 
         protected virtual Task OnEndDialogAsync(ITurnContext context, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
