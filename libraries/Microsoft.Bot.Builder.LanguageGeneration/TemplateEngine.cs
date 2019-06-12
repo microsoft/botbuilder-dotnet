@@ -162,7 +162,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 if (Path.IsPathRooted(filePath))
                 {
-                    var text = File.ReadAllText(filePath);
+                    var text = string.Empty;
+                    try
+                    {
+                        text = File.ReadAllText(filePath);
+                    }
+                    catch
+                    {
+                        throw new Exception($"Invalid file path: {filePath}.");
+                    }
+
                     var lgFile = LGParser.Parse(text, filePath);
                     finalLgFiles.Add(filePath, lgFile);
                     var importedFilePaths = lgFile.Imports.Select(e => Path.IsPathRooted(e.Path) ? e.Path : Path.GetFullPath(Path.GetDirectoryName(filePath) + e.Path)).ToArray();
