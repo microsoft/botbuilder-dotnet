@@ -200,7 +200,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestBasicInlineTemplate()
         {
-            var emptyEngine = TemplateEngine.FromText("");
+            var emptyEngine = TemplateEngine.FromText("", "");
             Assert.AreEqual(emptyEngine.Evaluate("Hi", null), "Hi");
             Assert.AreEqual(emptyEngine.Evaluate("Hi {name}", new { name = "DL" }), "Hi DL");
             Assert.AreEqual(emptyEngine.Evaluate("Hi {name.FirstName}{name.LastName}", new { name = new { FirstName = "D", LastName = "L" } }), "Hi DL");
@@ -333,16 +333,50 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var ex = Assert.ThrowsException<Exception>(() => TemplateEngine.FromFiles(file123[0]));
             TestContext.WriteLine(ex.Message);
 
-            ex = Assert.ThrowsException<Exception>(() => TemplateEngine.FromFiles(file123[0], file123[1]));
+            ex = Assert.ThrowsException<Exception>(() => TemplateEngine.FromFiles(new string[] { file123[0], file123[1] }));
             TestContext.WriteLine(ex.Message);
 
-            ex = Assert.ThrowsException<Exception>(() => TemplateEngine.FromFiles(file123[0], file123[2]));
+            ex = Assert.ThrowsException<Exception>(() => TemplateEngine.FromFiles(new string[] { file123[0], file123[2] }));
             TestContext.WriteLine(ex.Message);
 
             var engine = TemplateEngine.FromFiles(file123);
 
             var msg = "hello from t1, ref template2: 'hello from t2, ref template3: hello from t3' and ref template3: 'hello from t3'";
             Assert.AreEqual(msg, engine.EvaluateTemplate("template1", null));
+        }
+
+        [TestMethod]
+        public void TestImportLgFiles()
+        {
+            var engine = TemplateEngine.FromFiles(GetExampleFilePath("import.lg"));
+
+            string evaled = engine.EvaluateTemplate("basicTemplate", null);
+            Assert.IsTrue("Hi" == evaled || "Hello" == evaled);
+
+            evaled = engine.EvaluateTemplate("welcome", null);
+            Assert.IsTrue("Hi DongLei :)" == evaled ||
+                "Hey DongLei :)" == evaled ||
+                "Hello DongLei :)" == evaled);
+
+            evaled = engine.EvaluateTemplate("welcome", new { userName = "DL" });
+            Assert.IsTrue("Hi DL :)" == evaled ||
+                "Hey DL :)" == evaled ||
+                "Hello DL :)" == evaled);
+
+            var importedFilePath = GetExampleFilePath("6.lg");
+            engine = TemplateEngine.FromText("# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](" + importedFilePath + ")", "test");
+            evaled = engine.EvaluateTemplate("basicTemplate", null);
+            Assert.IsTrue("Hi" == evaled || "Hello" == evaled);
+
+            evaled = engine.EvaluateTemplate("welcome", null);
+            Assert.IsTrue("Hi DongLei :)" == evaled ||
+                "Hey DongLei :)" == evaled ||
+                "Hello DongLei :)" == evaled);
+
+            evaled = engine.EvaluateTemplate("welcome", new { userName = "DL" });
+            Assert.IsTrue("Hi DL :)" == evaled ||
+                "Hey DL :)" == evaled ||
+                "Hello DL :)" == evaled);
         }
     }
 }

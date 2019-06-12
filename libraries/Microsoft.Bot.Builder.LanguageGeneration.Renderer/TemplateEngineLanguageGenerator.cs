@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public TemplateEngineLanguageGenerator()
         {
-            this.engine = TemplateEngine.FromText("");
+            this.engine = TemplateEngine.FromText("", "");
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public TemplateEngineLanguageGenerator(string lgText, Func<string, string> resourceLoader = null, string name = null)
         {
             this.Name = name ?? DEFAULTLABEL;
-            this.engine = TemplateEngine.FromText(lgText ?? String.Empty);
+            this.engine = TemplateEngine.FromText(lgText ?? String.Empty, this.Name);
             if (resourceLoader != null)
             {
                 this.resourceLoader = resourceLoader;
