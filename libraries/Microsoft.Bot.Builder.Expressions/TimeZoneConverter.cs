@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 return ianaToWindowsMap[ianaTimeZoneId];
             }
 
-            throw new InvalidTimeZoneException();
+            return ianaTimeZoneId;
         }
 
         public static string WindowsToIana(string windowsTimeZoneId)
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 return windowsToIanaMap[$"001|{windowsTimeZoneId}"];
             }
 
-            throw new InvalidTimeZoneException();
+            return windowsTimeZoneId;
         }
 
         private static void LoadData()

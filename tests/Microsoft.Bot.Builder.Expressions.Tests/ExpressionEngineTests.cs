@@ -377,6 +377,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("getFutureTime(1,'Week','MM-dd-yy')", DateTime.Now.AddDays(7).ToString("MM-dd-yy")),
             Test("getFutureTime(1,'Day','MM-dd-yy')", DateTime.Now.AddDays(1).ToString("MM-dd-yy")),
             Test("convertFromUTC('2018-01-01T08:00:00.0000000Z', 'Pacific Standard Time', 'D')", "Monday, January 1, 2018"),
+            Test("convertFromUTC('2018-01-01T08:00:00.0000000Z', 'America/Los_Angeles', 'D')", "Monday, January 1, 2018"),
             Test("convertToUTC('01/01/2018 00:00:00', 'Pacific Standard Time')", "2018-01-01T08:00:00.0000000Z"),
             Test("addToTime('2018-01-01T00:00:00Z', 1, 'Day', 'D')", "Tuesday, January 2, 2018"),
             Test("addToTime('2018-01-01T00:00:00Z', 1, 'Week')", "2018-01-08T00:00:00.0000000Z"),

@@ -1256,7 +1256,8 @@ namespace Microsoft.Bot.Builder.Expressions
                     }
                     else
                     {
-                        tz = TimeZoneInfo.FindSystemTimeZoneById(timezone);
+                        var convertedTZ = TimeZoneConverter.IanaToWindows(timezone);
+                        tz = TimeZoneInfo.FindSystemTimeZoneById(convertedTZ);
                     }
                 }
                 catch
@@ -1307,7 +1308,8 @@ namespace Microsoft.Bot.Builder.Expressions
                     }
                     else
                     {
-                        tz = TimeZoneInfo.FindSystemTimeZoneById(sourceTimezone);
+                        var convertedTZ = TimeZoneConverter.IanaToWindows(sourceTimezone);
+                        tz = TimeZoneInfo.FindSystemTimeZoneById(convertedTZ);
                     }
                 }
                 catch
@@ -1411,7 +1413,9 @@ namespace Microsoft.Bot.Builder.Expressions
                 }
                 else
                 {
-                    sourceTZ = TimeZoneInfo.FindSystemTimeZoneById(sourceTimeZone);
+                    var convertedTZ = TimeZoneConverter.IanaToWindows(sourceTimeZone);
+                    sourceTZ = TimeZoneInfo.FindSystemTimeZoneById(convertedTZ);
+                    sourceTimeZone = convertedTZ;
                 }
             }
             catch
@@ -1431,7 +1435,9 @@ namespace Microsoft.Bot.Builder.Expressions
                     }
                     else
                     {
-                        destinationTZ = TimeZoneInfo.FindSystemTimeZoneById(destinationTimeZone);
+                        var convertedTZ = TimeZoneConverter.IanaToWindows(destinationTimeZone);
+                        destinationTZ = TimeZoneInfo.FindSystemTimeZoneById(convertedTZ);
+                        destinationTimeZone = convertedTZ;
                     }
                 }
                 catch
