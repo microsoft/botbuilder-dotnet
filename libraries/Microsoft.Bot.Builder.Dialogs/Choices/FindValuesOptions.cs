@@ -3,6 +3,9 @@
 
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
+    /// <summary>
+    /// Contains options used to control how choices are recognized in a users utterance.
+    /// </summary>
     public class FindValuesOptions
     {
         /// <summary>
