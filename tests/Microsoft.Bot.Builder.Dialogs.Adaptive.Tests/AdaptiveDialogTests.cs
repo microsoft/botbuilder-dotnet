@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Property = "dialog.todo"
                 },
                 new InitProperty() { Property = "user.todos", Type = "array" },
-                new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
+                new EditArray(EditArray.ArrayChangeType.Push, "user.todos", new ExpressionEngine().Parse("dialog.todo")),
                 new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
                 new TextInput()
                 {
@@ -138,7 +138,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Property = "dialog.todo"
 
                 },
-                new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
+                new EditArray(EditArray.ArrayChangeType.Push, "user.todos", new ExpressionEngine().Parse("dialog.todo")),
                 new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
 
                 // Remove item
@@ -147,7 +147,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Prompt = new ActivityTemplate("Enter a item to remove."),
                     Property = "dialog.todo"
                 },
-                new EditArray(EditArray.ArrayChangeType.Remove, "user.todos", "dialog.todo"),
+                new EditArray(EditArray.ArrayChangeType.Remove, "user.todos", new ExpressionEngine().Parse("dialog.todo")),
                 new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
 
                 // Add item and pop item
@@ -156,14 +156,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Prompt = new ActivityTemplate("Please add an item to todos."),
                     Property = "dialog.todo"
                 },
-                new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
+                new EditArray(EditArray.ArrayChangeType.Push, "user.todos", new ExpressionEngine().Parse("dialog.todo")),
                 new TextInput()
                 {
                     AlwaysPrompt = true,
                     Prompt = new ActivityTemplate("Please add an item to todos."),
                     Property = "dialog.todo"
                 },
-                new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
+                new EditArray(EditArray.ArrayChangeType.Push, "user.todos", new ExpressionEngine().Parse("dialog.todo")),
                 new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
 
                 new EditArray(EditArray.ArrayChangeType.Pop, "user.todos"),
