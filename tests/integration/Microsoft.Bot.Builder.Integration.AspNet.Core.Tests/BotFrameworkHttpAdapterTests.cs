@@ -124,7 +124,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 .Build();
 
             // Act
-            var adapter = new BotFrameworkHttpAdapter(configuration);
+            var adapter = new MyAdapter(configuration);
 
             // Assert
 
@@ -175,6 +175,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             textWriter.Flush();
             stream.Seek(0, SeekOrigin.Begin);
             return stream;
+        }
+
+        private class MyAdapter : BotFrameworkHttpAdapter
+        {
+            public MyAdapter(IConfiguration configuration)
+                : base(configuration)
+            {
+            }
         }
 
         private class InvokeResponseBot : IBot
