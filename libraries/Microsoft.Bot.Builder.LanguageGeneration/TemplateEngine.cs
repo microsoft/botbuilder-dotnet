@@ -12,8 +12,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     public class TemplateEngine
     {
-        public delegate string ImportResolverDelegate(string resourceId);
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngine"/> class.
         /// Return an empty engine, you can then use AddFile\AddFiles to add files to it,
@@ -22,6 +20,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public TemplateEngine()
         {
         }
+
+        /// <summary>
+        /// Delegate for resolving resource id of imported lg file.
+        /// </summary>
+        /// <param name="resourceId">Resource id to resolve.</param>
+        /// <returns>Resolved resource id.</returns>
+        public delegate string ImportResolverDelegate(string resourceId);
 
         /// <summary>
         /// Gets or sets parsed LG templates.
@@ -46,6 +51,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="filePaths">paths to LG files.</param>
         /// <returns>Engine created.</returns>
         public static TemplateEngine FromFiles(string[] filePaths) => new TemplateEngine().Add(filePaths);
+
         /// <summary>
         /// Create a template engine from text, equivalent to.
         ///    new TemplateEngine.AddText(text).
@@ -63,16 +69,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// otherwise static checking won't allow you to add it one by one.
         /// </summary>
         /// <param name="filePaths">Paths to .lg files.</param>
-        /// <param name="fileResolver">resolver to resolve LG file path.</param>
         /// <returns>Teamplate engine with parsed files.</returns>
         public TemplateEngine Add(string[] filePaths)
         {
-            foreach (var filePath in filePaths.Select(f => getOsPath(f)))
+            foreach (var filePath in filePaths.Select(f => GetOsPath(f)))
             {
                 this.Add(content: File.ReadAllText(filePath), name: filePath, importResolver: (id) =>
                 {
-                    id = getOsPath(id);
-                    return File.ReadAllText((Path.IsPathRooted(id) ? id : Path.Combine(Path.GetDirectoryName(filePath), id)));
+                    id = GetOsPath(id);
+                    return File.ReadAllText(Path.IsPathRooted(id) ? id : Path.Combine(Path.GetDirectoryName(filePath), id));
                 });
             }
 
@@ -204,7 +209,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private string FileResolver(string path) => File.ReadAllText(path);
 
-        private static string getOsPath(string path) => Path.Combine(path.TrimEnd('\\', '/').Split('\\', '/'));
-
+        private static string GetOsPath(string path) => Path.Combine(path.TrimEnd('\\', '/').Split('\\', '/')).Replace(":", ":" + Path.DirectorySeparatorChar);
     }
 }

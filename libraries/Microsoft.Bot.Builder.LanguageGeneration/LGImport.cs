@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ParseTree = parseTree;
 
             Description = ExtractDescription(parseTree);
-            Id = ExtractPath(parseTree);
+            Id = ExtractId(parseTree);
         }
 
         /// <summary>
@@ -47,6 +47,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private string ExtractDescription(LGFileParser.ImportDefinitionContext parseTree) => parseTree.IMPORT_DESC()?.GetText()?.Trim('[').Trim(']');
 
-        private string ExtractPath(LGFileParser.ImportDefinitionContext parseTree) => parseTree.IMPORT_PATH()?.GetText()?.Trim('(').Trim(')');
+        private string ExtractId(LGFileParser.ImportDefinitionContext parseTree) => parseTree.IMPORT_PATH()?.GetText()?.Trim('(').Trim(')');
     }
 }

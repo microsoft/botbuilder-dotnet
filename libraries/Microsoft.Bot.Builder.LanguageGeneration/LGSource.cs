@@ -21,10 +21,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Gets or sets id of this lg source
+        /// Gets or sets id of this lg source.
         /// </summary>
         /// <value>
-        /// id of this lg source
+        /// id of this lg source.
         /// </value>
         public string Id { get; set; }
 
