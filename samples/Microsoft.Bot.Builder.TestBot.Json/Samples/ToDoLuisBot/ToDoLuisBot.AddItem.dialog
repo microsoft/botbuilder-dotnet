@@ -106,7 +106,7 @@
             "$type": "Microsoft.EditArray",
             "changeType": "Push",
             "arrayProperty": "user.lists.{dialog.listName}",
-            "itemProperty": "dialog.item"
+            "value": "dialog.item"
         },
         {
             "$type": "Microsoft.SendActivity",
