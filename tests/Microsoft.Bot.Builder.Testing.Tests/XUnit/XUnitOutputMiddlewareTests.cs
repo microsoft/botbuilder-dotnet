@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Testing.XUnit;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Xunit;
@@ -23,7 +24,7 @@ namespace Microsoft.Bot.Builder.Testing.Tests.XUnit
         {
             var mockOutput = new MockTestOutputHelper();
             var sut = new XUnitOutputMiddleware(mockOutput);
-            var testClient = new DialogTestClient(new EchoDialog(textReply, speakReply, inputHint), null, new List<IMiddleware> { sut });
+            var testClient = new DialogTestClient(Channels.Test, new EchoDialog(textReply, speakReply, inputHint), null, new List<IMiddleware> { sut });
             await testClient.SendActivityAsync<IMessageActivity>(utterance);
 
             Assert.Equal("\r\nUser:  Hi", mockOutput.Output[0]);
@@ -52,7 +53,7 @@ namespace Microsoft.Bot.Builder.Testing.Tests.XUnit
         {
             var mockOutput = new MockTestOutputHelper();
             var sut = new XUnitOutputMiddleware(mockOutput);
-            var testClient = new DialogTestClient(new EchoDialog(), null, new List<IMiddleware> { sut });
+            var testClient = new DialogTestClient(Channels.Test, new EchoDialog(), null, new List<IMiddleware> { sut });
 
             var activity = new Activity(activityType);
             await testClient.SendActivityAsync<IActivity>(activity);

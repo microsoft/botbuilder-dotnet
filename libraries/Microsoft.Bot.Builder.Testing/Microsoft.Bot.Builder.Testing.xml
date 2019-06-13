@@ -9,13 +9,28 @@
             A client to for testing dialogs in isolation.
             </summary>
         </member>
-        <member name="M:Microsoft.Bot.Builder.Testing.DialogTestClient.#ctor(Microsoft.Bot.Builder.Dialogs.Dialog,System.Object,System.Collections.Generic.IEnumerable{Microsoft.Bot.Builder.IMiddleware},Microsoft.Bot.Builder.Adapters.TestAdapter,Microsoft.Bot.Builder.BotCallbackHandler)">
+        <member name="M:Microsoft.Bot.Builder.Testing.DialogTestClient.#ctor(System.String,Microsoft.Bot.Builder.Dialogs.Dialog,System.Object,System.Collections.Generic.IEnumerable{Microsoft.Bot.Builder.IMiddleware},Microsoft.Bot.Builder.BotCallbackHandler)">
             <summary>
             Initializes a new instance of the <see cref="T:Microsoft.Bot.Builder.Testing.DialogTestClient"/> class.
             </summary>
+            <param name="channelId">
+            The channelId (see <see cref="T:Microsoft.Bot.Connector.Channels"/>) to be used for the test.
+            Use <see cref="F:Microsoft.Bot.Connector.Channels.Emulator"/> or <see cref="F:Microsoft.Bot.Connector.Channels.Test"/> if you are uncertain of the channel you are targeting.
+            Otherwise, it is recommended that you use the id for the channel(s) your bot will be using.
+            Consider writing a test case for each channel.
+            </param>
             <param name="targetDialog">The dialog to be tested. This will be the root dialog for the test client.</param>
             <param name="initialDialogOptions">(Optional) additional argument(s) to pass to the dialog being started.</param>
-            <param name="testAdapter">(Optional) The test adapter to use. If this parameter is not provided, the test client will use a default <see cref="T:Microsoft.Bot.Builder.Adapters.TestAdapter"/>.</param>
+            <param name="middlewares">(Optional) A list of middlewares to be added to the test adapter.</param>
+            <param name="callback">(Optional) The bot turn processing logic for the test. If this value is not provided, the test client will create a default <see cref="T:Microsoft.Bot.Builder.BotCallbackHandler"/>.</param>
+        </member>
+        <member name="M:Microsoft.Bot.Builder.Testing.DialogTestClient.#ctor(Microsoft.Bot.Builder.Adapters.TestAdapter,Microsoft.Bot.Builder.Dialogs.Dialog,System.Object,System.Collections.Generic.IEnumerable{Microsoft.Bot.Builder.IMiddleware},Microsoft.Bot.Builder.BotCallbackHandler)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.Bot.Builder.Testing.DialogTestClient"/> class.
+            </summary>
+            <param name="testAdapter">The <see cref="T:Microsoft.Bot.Builder.Adapters.TestAdapter"/> to use.</param>
+            <param name="targetDialog">The dialog to be tested. This will be the root dialog for the test client.</param>
+            <param name="initialDialogOptions">(Optional) additional argument(s) to pass to the dialog being started.</param>
             <param name="middlewares">(Optional) A list of middlewares to be added to the test adapter.</param>
             <param name="callback">(Optional) The bot turn processing logic for the test. If this value is not provided, the test client will create a default <see cref="T:Microsoft.Bot.Builder.BotCallbackHandler"/>.</param>
         </member>

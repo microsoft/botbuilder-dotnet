@@ -3,7 +3,9 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Moq;
 using Xunit;
@@ -28,7 +30,7 @@ namespace Microsoft.Bot.Builder.Testing.Tests
             _mockDialog
                 .Setup(x => x.ContinueDialogAsync(It.IsAny<DialogContext>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(new DialogTurnResult(DialogTurnStatus.Complete)));
-            var sut = new DialogTestClient(_mockDialog.Object);
+            var sut = new DialogTestClient(Channels.Test, _mockDialog.Object);
 
             // Assert proper methods in the mock dialog have been called.
             await sut.SendActivityAsync<IMessageActivity>("test");
@@ -63,7 +65,7 @@ namespace Microsoft.Bot.Builder.Testing.Tests
                     await dc.Context.SendActivityAsync(testReply, cancellationToken: cancellationToken);
                     return new DialogTurnResult(DialogTurnStatus.Complete);
                 });
-            var sut = new DialogTestClient(_mockDialog.Object);
+            var sut = new DialogTestClient(Channels.Test, _mockDialog.Object);
 
             var reply = await sut.SendActivityAsync<IMessageActivity>(testUtterance);
             Assert.Equal(testUtterance, receivedActivity.AsMessageActivity().Text);
@@ -86,7 +88,7 @@ namespace Microsoft.Bot.Builder.Testing.Tests
                     optionsReceived = options;
                     return Task.FromResult(new DialogTurnResult(DialogTurnStatus.Complete));
                 });
-            var sut = new DialogTestClient(_mockDialog.Object, optionsSent);
+            var sut = new DialogTestClient(Channels.Test, _mockDialog.Object, optionsSent);
 
             await sut.SendActivityAsync<IMessageActivity>("test");
             Assert.NotNull(optionsReceived);
@@ -104,11 +106,47 @@ namespace Microsoft.Bot.Builder.Testing.Tests
             _mockDialog
                 .Setup(x => x.BeginDialogAsync(It.IsAny<DialogContext>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(new DialogTurnResult(turnStatus, turnResult)));
-            var sut = new DialogTestClient(_mockDialog.Object);
+            var sut = new DialogTestClient(Channels.Test, _mockDialog.Object);
 
             await sut.SendActivityAsync<IMessageActivity>("test");
             Assert.Equal(turnStatus, sut.DialogTurnResult.Status);
             Assert.Equal(turnResult, sut.DialogTurnResult.Result);
+        }
+
+        [Fact]
+        public async Task ShouldUseCustomAdapter()
+        {
+            var customAdapter = new Mock<TestAdapter>(Channels.Directline, false)
+            {
+                CallBase = true,
+            };
+
+            var sut = new DialogTestClient(customAdapter.Object, _mockDialog.Object);
+
+            await sut.SendActivityAsync<IActivity>("test message");
+
+            customAdapter.Verify(
+                x => x.SendTextToBotAsync(
+                    It.Is<string>(s => s == "test message"),
+                    It.IsAny<BotCallbackHandler>(),
+                    It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task ShouldUseCustomCallback()
+        {
+            var callbackCalled = false;
+
+            async Task TestCallback(ITurnContext context, CancellationToken token)
+            {
+                callbackCalled = true;
+                await context.SendActivityAsync("test reply from the bot", cancellationToken: token);
+            }
+
+            var sut = new DialogTestClient(Channels.Test, _mockDialog.Object, callback: TestCallback);
+
+            await sut.SendActivityAsync<IActivity>("test message");
+            Assert.True(callbackCalled);
         }
 
         private class TestOptions

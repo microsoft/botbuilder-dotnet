@@ -357,7 +357,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <seealso cref="TestFlow.Send(string)"/>
-        public Task SendTextToBotAsync(string userSays, BotCallbackHandler callback, CancellationToken cancellationToken)
+        public virtual Task SendTextToBotAsync(string userSays, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             return ProcessActivityAsync(MakeActivity(userSays), callback, cancellationToken);
         }
