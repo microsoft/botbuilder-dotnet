@@ -39,7 +39,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Test("InvalidTemplateName2.lg"),
             Test("DuplicatedTemplates.lg"),
             Test("LgTemplateFunctionError.lg"),
-            Test("SwitchCaseFormatError.lg")
+            Test("SwitchCaseFormatError.lg"),
+            Test("InvalidLGFileImportPath.lg")
         };
 
         public static IEnumerable<object[]> StaticCheckWariningData => new[]

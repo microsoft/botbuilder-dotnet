@@ -55,6 +55,14 @@ DASH
   : '-' {expectKeywords = true;} -> pushMode(TEMPLATE_BODY_MODE)
   ;
 
+IMPORT_DESC
+  : '[' .*? ']'
+  ;
+
+IMPORT_PATH
+  : '(' .*? ')'
+  ;
+
 INVALID_TOKEN_DEFAULT_MODE
   : .
   ;

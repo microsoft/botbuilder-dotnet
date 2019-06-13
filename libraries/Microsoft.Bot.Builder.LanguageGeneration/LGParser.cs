@@ -14,15 +14,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="text">LG file content or inline text.</param>
         /// <param name="source">text source.</param>
         /// <returns>LG template list.</returns>
-        public static IList<LGTemplate> Parse(string text, string source = "")
+        public static LGFile Parse(string text, string source = "")
         {
-            var parseSuccess = TryParse(text, out var templates, out var error, source);
+            var parseSuccess = TryParse(text, out var templates, out var imports, out var error, source);
             if (!parseSuccess)
             {
                 throw new Exception(error.ToString());
             }
 
-            return templates;
+            return new LGFile(templates, imports, source);
         }
 
         /// <summary>
@@ -30,14 +30,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="text">LG file content or inline text.</param>
         /// <param name="templates">LG template list.</param>
+        /// <param name="imports">LG import list.</param>
         /// <param name="error">error/warning list.</param>
         /// <param name="source">text source.</param>
         /// <returns>LG template if parse success.</returns>
-        public static bool TryParse(string text, out IList<LGTemplate> templates, out Diagnostic error, string source = "")
+        public static bool TryParse(string text, out IList<LGTemplate> templates, out IList<LGImport> imports, out Diagnostic error, string source = "")
         {
             LGFileParser.FileContext fileContext = null;
             error = null;
             templates = new List<LGTemplate>();
+            imports = new List<LGImport>();
 
             try
             {
@@ -50,6 +52,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             templates = ToLGTemplates(fileContext, source);
+            imports = ToLGImports(fileContext, source);
 
             return true;
         }
@@ -94,6 +97,23 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var templates = file.paragraph().Select(x => x.templateDefinition()).Where(x => x != null);
             return templates.Select(t => new LGTemplate(t, source)).ToList();
+        }
+
+        /// <summary>
+        /// Convert a file parse tree to a list of LG templates.
+        /// </summary>
+        /// <param name="file">LGFile context from antlr parser.</param>
+        /// <param name="source">text source.</param>
+        /// <returns>lg template list.</returns>
+        private static IList<LGImport> ToLGImports(LGFileParser.FileContext file, string source = "")
+        {
+            if (file == null)
+            {
+                return new List<LGImport>();
+            }
+
+            var imports = file.paragraph().Select(x => x.importDefinition()).Where(x => x != null);
+            return imports.Select(t => new LGImport(t, source)).ToList();
         }
     }
 }
