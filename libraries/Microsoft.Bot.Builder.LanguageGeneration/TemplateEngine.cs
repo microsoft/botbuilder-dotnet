@@ -37,32 +37,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public List<LGTemplate> Templates { get; set; } = new List<LGTemplate>();
 
         /// <summary>
-        /// Create a template engine from files, a shorthand for.
-        ///    new TemplateEngine().AddFiles(filePath).
-        /// </summary>
-        /// <param name="filePath">paths to LG files.</param>
-        /// <returns>Engine created.</returns>
-        public static TemplateEngine FromFile(string filePath) => new TemplateEngine().Add(new string[] { filePath });
-
-        /// <summary>
-        /// Create a template engine from files, a shorthand for.
-        ///    new TemplateEngine().AddFiles(filePath).
-        /// </summary>
-        /// <param name="filePaths">paths to LG files.</param>
-        /// <returns>Engine created.</returns>
-        public static TemplateEngine FromFiles(string[] filePaths) => new TemplateEngine().Add(filePaths);
-
-        /// <summary>
-        /// Create a template engine from text, equivalent to.
-        ///    new TemplateEngine.AddText(text).
-        /// </summary>
-        /// <param name="content">lg text content.</param>
-        /// <param name="name">name of lg text.</param>
-        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
-        /// <returns>Engine created.</returns>
-        public static TemplateEngine FromText(string content, string name, ImportResolverDelegate importResolver) => new TemplateEngine().Add(content, name, importResolver);
-
-        /// <summary>
         /// Load .lg files into template engine
         /// You can add one file, or mutlple file as once
         /// If you have multiple files referencing each other, make sure you add them all at once,
@@ -70,7 +44,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="filePaths">Paths to .lg files.</param>
         /// <returns>Teamplate engine with parsed files.</returns>
-        public TemplateEngine Add(string[] filePaths)
+        public TemplateEngine Add(IEnumerable<string> filePaths)
         {
             foreach (var filePath in filePaths)
             {
@@ -91,6 +65,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             RunStaticCheck(Templates);
             return this;
         }
+
+        /// <summary>
+        /// Load single .lg file into template engine.
+        /// </summary>
+        /// <param name="filePath">Paths to .lg file.</param>
+        /// <returns>Teamplate engine with single parsed file.</returns>
+        public TemplateEngine Add(string filePath) => Add(new List<string> { filePath });
 
         /// <summary>
         /// Add text as lg file content to template engine.
