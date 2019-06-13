@@ -10,7 +10,7 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Tests
+namespace Microsoft.Bot.Builder.Tests.Adapters
 {
     [TestClass]
     [TestCategory("Adapter")]
