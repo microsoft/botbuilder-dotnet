@@ -72,10 +72,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Teamplate engine with parsed files.</returns>
         public TemplateEngine Add(string[] filePaths)
         {
-            foreach (var filePath in filePaths.Select(f => GetOsPath(f)))
+            foreach (var filePath in filePaths.Select(f => GetOsPath(f)).Select(e => Path.GetFullPath(e)))
             {
-                var fullPath = Path.GetFullPath(filePath);
-                this.Add(content: File.ReadAllText(fullPath), name: fullPath, importResolver: (ref string id) =>
+                this.Add(content: File.ReadAllText(filePath), name: filePath, importResolver: (ref string id) =>
                 {
                     id = GetOsPath(id);
                     id = Path.GetFullPath(Path.IsPathRooted(id) ? id : Path.Combine(Path.GetDirectoryName(filePath), id));
