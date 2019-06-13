@@ -209,6 +209,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private string FileResolver(string path) => File.ReadAllText(path);
 
-        private static string GetOsPath(string path) => Path.Combine(path.TrimEnd('\\', '/').Split('\\', '/')).Replace(":", ":" + Path.DirectorySeparatorChar);
+        private static string GetOsPath(string path)
+        {
+            var osPath = Path.Combine(path.TrimEnd('\\', '/').Split('\\', '/'));
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return osPath.Replace(":", ":" + Path.DirectorySeparatorChar);
+            }
+            else
+            {
+                return osPath.Insert(0, Path.DirectorySeparatorChar.ToString());
+            }
+        }
     }
 }
