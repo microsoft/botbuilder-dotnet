@@ -4,6 +4,7 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Testing;
 using Microsoft.Bot.Builder.Testing.XUnit;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.BotBuilderSamples.Tests.Dialogs.TestData;
 using Xunit;
@@ -25,7 +26,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             // Arrange
             var testCaseData = testData.GetObject<DateResolverDialogTestCase>();
             var sut = new DateResolverDialog();
-            var testClient = new DialogTestClient(sut, testCaseData.InitialData, new[] { new XUnitOutputMiddleware(Output) });
+            var testClient = new DialogTestClient(Channels.Test, sut, testCaseData.InitialData, new[] { new XUnitOutputMiddleware(Output) });
 
             // Act/Assert
             Output.WriteLine($"Test Case: {testCaseData.Name}");

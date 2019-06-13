@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Testing;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Xunit;
 
@@ -20,7 +21,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         public async Task ShouldBeAbleToCancel(string utterance, string response, string cancelUtterance)
         {
             var sut = new TestCancelAndHelpDialog();
-            var testClient = new DialogTestClient(sut);
+            var testClient = new DialogTestClient(Channels.Test, sut);
 
             var reply = await testClient.SendActivityAsync<IMessageActivity>(utterance);
             Assert.Equal(response, reply.Text);
@@ -37,7 +38,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         public async Task ShouldBeAbleToGetHelp(string utterance, string response, string cancelUtterance)
         {
             var sut = new TestCancelAndHelpDialog();
-            var testClient = new DialogTestClient(sut);
+            var testClient = new DialogTestClient(Channels.Test, sut);
 
             var reply = await testClient.SendActivityAsync<IMessageActivity>(utterance);
             Assert.Equal(response, reply.Text);

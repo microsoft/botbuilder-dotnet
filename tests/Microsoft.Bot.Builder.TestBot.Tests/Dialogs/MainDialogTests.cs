@@ -9,6 +9,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Testing;
 using Microsoft.Bot.Builder.Testing.XUnit;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.BotBuilderSamples.CognitiveModels;
 using Microsoft.BotBuilderSamples.Services;
@@ -66,7 +67,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             luisMockConfig.Setup(x => x["LuisAPIHostName"]).Returns(luisApiHostName);
 
             var sut = new MainDialog(luisMockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _mockBookingDialog);
-            var testClient = new DialogTestClient(sut, middlewares: new[] { new XUnitOutputMiddleware(Output) });
+            var testClient = new DialogTestClient(Channels.Test, sut, middlewares: new[] { new XUnitOutputMiddleware(Output) });
 
             // Act/Assert
             var reply = await testClient.SendActivityAsync<IMessageActivity>("hi");
@@ -81,7 +82,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         {
             // Arrange
             var sut = new MainDialog(MockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _mockBookingDialog);
-            var testClient = new DialogTestClient(sut, middlewares: new[] { new XUnitOutputMiddleware(Output) });
+            var testClient = new DialogTestClient(Channels.Test, sut, middlewares: new[] { new XUnitOutputMiddleware(Output) });
 
             // Act/Assert
             var reply = await testClient.SendActivityAsync<IMessageActivity>("hi");
@@ -105,7 +106,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 }));
 
             var sut = new MainDialog(MockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _mockBookingDialog);
-            var testClient = new DialogTestClient(sut, middlewares: new[] { new XUnitOutputMiddleware(Output) });
+            var testClient = new DialogTestClient(Channels.Test, sut, middlewares: new[] { new XUnitOutputMiddleware(Output) });
 
             var reply = await testClient.SendActivityAsync<IMessageActivity>("hi");
             Assert.Equal("What can I help you with today?", reply.Text);

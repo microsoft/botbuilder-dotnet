@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Testing;
 using Microsoft.Bot.Builder.Testing.XUnit;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.BotBuilderSamples.Tests.Dialogs.TestData;
 using Xunit;
@@ -27,7 +28,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             // Arrange
             var bookingTestData = testData.GetObject<GetBookingDetailsDialogTestCase>();
             var sut = new GetBookingDetailsDialog();
-            var testClient = new DialogTestClient(sut, bookingTestData.InitialBookingDetails, new[] { new XUnitOutputMiddleware(Output) });
+            var testClient = new DialogTestClient(Channels.Test, sut, bookingTestData.InitialBookingDetails, new[] { new XUnitOutputMiddleware(Output) });
 
             // Act/Assert
             Output.WriteLine($"Test Case: {bookingTestData.Name}");
