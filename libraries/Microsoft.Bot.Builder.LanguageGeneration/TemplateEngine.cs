@@ -211,15 +211,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private static string GetOsPath(string path)
         {
-            var osPath = Path.Combine(path.TrimEnd('\\', '/').Split('\\', '/'));
+            var pathSlices = path.TrimEnd('\\', '/').Split('\\', '/');
+            var finalPath = string.Empty;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                return osPath.Replace(":", ":" + Path.DirectorySeparatorChar);
+                pathSlices.ToList().ForEach(e => finalPath += e + Path.DirectorySeparatorChar);
+                finalPath = finalPath.Length > 0 ? finalPath.Remove(finalPath.Length - 1) : finalPath;
             }
             else
             {
-                return osPath.Insert(0, Path.DirectorySeparatorChar.ToString());
+                pathSlices.ToList().ForEach(e => finalPath += Path.DirectorySeparatorChar + e);
+                finalPath = Path.IsPathRooted(path) ? finalPath : finalPath.Remove(0, 1);
             }
+
+            return finalPath;
         }
     }
 }
