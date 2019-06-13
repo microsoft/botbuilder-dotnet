@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.Bot.Builder.Testing</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.Bot.Builder.Testing.DialogTestClient">
+            <summary>
+            A client to for testing dialogs in isolation.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Bot.Builder.Testing.DialogTestClient.#ctor(Microsoft.Bot.Builder.Dialogs.Dialog,System.Object,System.Collections.Generic.IEnumerable{Microsoft.Bot.Builder.IMiddleware},Microsoft.Bot.Builder.Adapters.TestAdapter,Microsoft.Bot.Builder.BotCallbackHandler)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.Bot.Builder.Testing.DialogTestClient"/> class.
+            </summary>
+            <param name="targetDialog">The dialog to be tested. This will be the root dialog for the test client.</param>
+            <param name="initialDialogOptions">(Optional) additional argument(s) to pass to the dialog being started.</param>
+            <param name="testAdapter">(Optional) The test adapter to use. If this parameter is not provided, the test client will use a default <see cref="T:Microsoft.Bot.Builder.Adapters.TestAdapter"/>.</param>
+            <param name="middlewares">(Optional) A list of middlewares to be added to the test adapter.</param>
+            <param name="callback">(Optional) The bot turn processing logic for the test. If this value is not provided, the test client will create a default <see cref="T:Microsoft.Bot.Builder.BotCallbackHandler"/>.</param>
+        </member>
+        <member name="P:Microsoft.Bot.Builder.Testing.DialogTestClient.DialogTurnResult">
+            <summary>
+            Gets the latest <see cref="P:Microsoft.Bot.Builder.Testing.DialogTestClient.DialogTurnResult"/> for the dialog being tested.
+            </summary>
+            <value>A <see cref="P:Microsoft.Bot.Builder.Testing.DialogTestClient.DialogTurnResult"/> instance with the result of the last turn.</value>
+        </member>
+        <member name="M:Microsoft.Bot.Builder.Testing.DialogTestClient.SendActivityAsync``1(Microsoft.Bot.Schema.Activity,System.Threading.CancellationToken)">
+            <summary>
+            Sends an <see cref="T:Microsoft.Bot.Schema.Activity"/> to the target dialog.
+            </summary>
+            <param name="activity">The activity to send.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the result of the asynchronous operation.</returns>
+            <typeparam name="T">An <see cref="T:Microsoft.Bot.Schema.IActivity"/> derived type.</typeparam>
+        </member>
+        <member name="M:Microsoft.Bot.Builder.Testing.DialogTestClient.SendActivityAsync``1(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Sends a message activity to to the target dialog.
+            </summary>
+            <param name="text">The text of the message to send.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the result of the asynchronous operation.</returns>
+            <typeparam name="T">An <see cref="T:Microsoft.Bot.Schema.IActivity"/> derived type.</typeparam>
+        </member>
+        <member name="M:Microsoft.Bot.Builder.Testing.DialogTestClient.GetNextReply``1">
+            <summary>
+            Gets and returns the next bot response./>.
+            </summary>
+            <returns>The next activity in the queue; or null, if the queue is empty.</returns>
+            <typeparam name="T">An <see cref="T:Microsoft.Bot.Schema.IActivity"/> derived type.</typeparam>
+        </member>
+        <member name="T:Microsoft.Bot.Builder.Testing.XUnit.TestDataObject">
+            <summary>
+            A wrapper class for XUnit test data that enables support for enumerating test cases in Test Explorer.
+            </summary>
+            <remarks>
+            VS Test explorer only supports value types for data driven tests.
+            This class implements <see cref="T:Xunit.Abstractions.IXunitSerializable"/> and serializes complex types as json
+            so the test cases can be enumerated and displayed into VS test explorer.
+            This also allows the developer to right click on a particular test case on VS Test explorer and run it individually.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Bot.Builder.Testing.XUnit.TestDataObject.#ctor(System.Object)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.Bot.Builder.Testing.XUnit.TestDataObject"/> class.
+            </summary>
+            <param name="testData">An object with the data to be used in the test.</param>
+        </member>
+        <member name="P:Microsoft.Bot.Builder.Testing.XUnit.TestDataObject.TestObject">
+            <summary>
+            Gets a json string with the test data object.
+            </summary>
+            <value>The test data object as a json string.</value>
+        </member>
+        <member name="M:Microsoft.Bot.Builder.Testing.XUnit.TestDataObject.Deserialize(Xunit.Abstractions.IXunitSerializationInfo)">
+            <summary>
+            Used by XUnit.net for deserialization.
+            </summary>
+            <param name="serializationInfo">A parameter used by XUnit.net.</param>
+        </member>
+        <member name="M:Microsoft.Bot.Builder.Testing.XUnit.TestDataObject.Serialize(Xunit.Abstractions.IXunitSerializationInfo)">
+            <summary>
+            Used by XUnit.net for serialization.
+            </summary>
+            <param name="serializationInfo">A parameter used by XUnit.net.</param>
+        </member>
+        <member name="M:Microsoft.Bot.Builder.Testing.XUnit.TestDataObject.GetObject``1">
+            <summary>
+            Gets the test data object for the specified .Net type.
+            </summary>
+            <typeparam name="T">The type of the object to be returned.</typeparam>
+            <returns>The test object instance.</returns>
+        </member>
+        <member name="T:Microsoft.Bot.Builder.Testing.XUnit.XUnitOutputMiddleware">
+            <inheritdoc />
+            <summary>
+            A middleware to output incoming and outgoing activities as json strings to the console during
+            unit tests.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Bot.Builder.Testing.XUnit.XUnitOutputMiddleware.#ctor(Xunit.Abstractions.ITestOutputHelper)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.Bot.Builder.Testing.XUnit.XUnitOutputMiddleware"/> class.
+            </summary>
+            <remarks>
+            This middleware outputs the incoming and outgoing activities for the XUnit based test to the console window.
+            If you need to output the incoming and outgoing activities to some other provider consider using
+            the <see cref="T:Microsoft.Bot.Builder.TranscriptLoggerMiddleware"/> instead.
+            </remarks>
+            <param name="xunitOutputHelper">
+            An XUnit <see cref="T:Xunit.Abstractions.ITestOutputHelper"/> instance.
+            See <see href="https://xunit.net/docs/capturing-output.html">Capturing Output</see> in the XUnit documentation for additional details.
+            </param>
+        </member>
+        <member name="P:Microsoft.Bot.Builder.Testing.XUnit.XUnitOutputMiddleware.Output">
+            <summary>
+            Gets the <see cref="T:Xunit.Abstractions.ITestOutputHelper"/> instance for this middleware.
+            </summary>
+            <value>The <see cref="T:Xunit.Abstractions.ITestOutputHelper"/> instance for this middleware.</value>
+        </member>
+        <member name="M:Microsoft.Bot.Builder.Testing.XUnit.XUnitOutputMiddleware.LogIncomingActivityAsync(Microsoft.Bot.Builder.ITurnContext,Microsoft.Bot.Schema.Activity,System.Threading.CancellationToken)">
+            <summary>
+            Logs messages sent from the user to the bot.
+            </summary>
+            <remarks>
+            <see cref="F:Microsoft.Bot.Schema.ActivityTypes.Message"/> activities will be logged as text. Other activities will be logged as json.
+            </remarks>
+            <param name="context">The context object for this turn.</param>
+            <param name="activity">The <see cref="T:Microsoft.Bot.Schema.Activity"/> to be logged.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>A task that represents the work to execute.</returns>
+        </member>
+        <member name="M:Microsoft.Bot.Builder.Testing.XUnit.XUnitOutputMiddleware.LogOutgoingActivityAsync(Microsoft.Bot.Builder.ITurnContext,Microsoft.Bot.Schema.Activity,System.Threading.CancellationToken)">
+            <summary>
+            Logs messages sent from the bot to the user.
+            </summary>
+            <param name="context">The context object for this turn.</param>
+            <param name="activity">The <see cref="T:Microsoft.Bot.Schema.Activity"/> to be logged.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>A task that represents the work to execute.</returns>
+        </member>
+    </members>
+</doc>
