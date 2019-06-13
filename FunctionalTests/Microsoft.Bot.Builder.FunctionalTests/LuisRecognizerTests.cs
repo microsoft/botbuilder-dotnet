@@ -14,6 +14,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.AI.Luis.Tests;
 using Microsoft.Bot.Configuration;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -488,7 +489,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
             GetEnvironmentVarsLuis();
             var mockHttp = GetMockHttpClientHandlerObject(utterance, responsePath);
-            var adapter = new TestAdapter(null, true);
+            var adapter = new TestAdapter(Channels.Test, true);
             await new TestFlow(adapter, async (context, cancellationToken) =>
             {
                 if (context.Activity.Text == utterance)

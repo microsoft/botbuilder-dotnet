@@ -87,5 +87,10 @@ namespace Microsoft.Bot.Connector
         /// WebChat channel.
         /// </summary>
         public const string Webchat = "webchat";
+
+        /// <summary>
+        /// Test channel.
+        /// </summary>
+        public const string Test = "test";
     }
 }

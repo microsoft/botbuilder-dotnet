@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Connector;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 
@@ -61,7 +62,7 @@ namespace Microsoft.Bot.Builder.Tests
             // (1) send the /INSPECT open command from the emulator to the middleware
             var openActivity = MessageFactory.Text("/INSPECT open");
 
-            var inspectionAdapter = new TestAdapter(null, true);
+            var inspectionAdapter = new TestAdapter(Channels.Test, true);
             await inspectionAdapter.ProcessActivityAsync(openActivity, async (turnContext, cancellationToken) =>
             {
                 await inspectionMiddleware.ProcessCommandAsync(turnContext);
@@ -70,7 +71,7 @@ namespace Microsoft.Bot.Builder.Tests
             var inspectionOpenResultActivity = inspectionAdapter.ActiveQueue.Dequeue();
 
             // (2) send the resulting /INSPECT attach command from the channel to the middleware
-            var applicationAdapter = new TestAdapter(null, true);
+            var applicationAdapter = new TestAdapter(Channels.Test, true);
             applicationAdapter.Use(inspectionMiddleware);
 
             var attachCommand = inspectionOpenResultActivity.Value.ToString();
