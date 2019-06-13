@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns>A new <see cref="TestFlow"/> object that appends this assertion to the modeled exchange.</returns>
         /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
         /// <exception cref="Exception">The bot did not respond as expected.</exception>
-        public TestFlow AssertReplyContain(string expected, string description = null, uint timeout = 3000)
+        public TestFlow AssertReplyContains(string expected, string description = null, uint timeout = 3000)
         {
             return AssertReply(
                 (reply) =>
