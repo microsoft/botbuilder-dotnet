@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var isFail = false;
             try
             {
-                TemplateEngine.FromFiles(GetExampleFilePath(input));
+                TemplateEngine.FromFile(GetExampleFilePath(input));
                 isFail = true;
             }
             catch (Exception e)
@@ -83,15 +83,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             if (isFail)
             {
                 Assert.Fail("No exception is thrown.");
-            }    
+            }
         }
 
         [DataTestMethod]
         [DynamicData(nameof(StaticCheckWariningData))]
         public void WariningTest(string input)
         {
-            var engine = TemplateEngine.FromFiles(GetExampleFilePath(input));
-         
+            var engine = TemplateEngine.FromFile(GetExampleFilePath(input));
+
             var report = new StaticChecker(engine.Templates).Check();
 
             TestContext.WriteLine(string.Join("\n", report));
@@ -106,14 +106,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             TemplateEngine engine = null;
             try
             {
-                engine = TemplateEngine.FromFiles(GetExampleFilePath(input));
+                engine = TemplateEngine.FromFile(GetExampleFilePath(input));
             }
             catch (Exception)
             {
                 isFail = true;
                 errorMessage = "error occurs when parsing file";
             }
-            if(!isFail)
+            if (!isFail)
             {
                 try
                 {
@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             TemplateEngine engine = null;
             try
             {
-                engine = TemplateEngine.FromFiles(GetExampleFilePath(input));
+                engine = TemplateEngine.FromFile(GetExampleFilePath(input));
             }
             catch (Exception)
             {
@@ -150,7 +150,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 errorMessage = "error occurs when parsing file";
             }
 
-            if(!isFail)
+            if (!isFail)
             {
                 try
                 {

@@ -5,28 +5,28 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// <summary>
     /// Here is a data model that can easily understanded and used as the LG file definition.
     /// </summary>
-    public class LGFile
+    public class LGSource
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LGFile"/> class.
+        /// Initializes a new instance of the <see cref="LGSource"/> class.
         /// </summary>
         /// <param name="templates">The lg templates.</param>
         /// <param name="imports">The lg imports.</param>
-        /// <param name="path">The path of the lg file.</param>
-        public LGFile(IList<LGTemplate> templates, IList<LGImport> imports, string path = "")
+        /// <param name="id">The id of the lg source.</param>
+        public LGSource(IList<LGTemplate> templates, IList<LGImport> imports, string id = "")
         {
             Templates = templates;
             Imports = imports;
-            Path = path;
+            Id = id;
         }
 
         /// <summary>
-        /// Gets or sets path of this lg file.
+        /// Gets or sets id of this lg source.
         /// </summary>
         /// <value>
-        /// Path of this lg file.
+        /// id of this lg source.
         /// </value>
-        public string Path { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets LgTemplates.
