@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public int Id { get; set; }
 
         /// <summary>
-        /// Gets or sets context for multi-turn responses
+        /// Gets or sets context for multi-turn responses.
         /// </summary>
         /// <value>
         /// The context from which the QnA was extracted.
