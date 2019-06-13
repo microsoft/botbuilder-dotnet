@@ -22,14 +22,22 @@
             "title": "Array Property",
             "description": "Memory expression of the array to manipulate."
         },
-        "itemProperty": {
+        "resultProperty": {
             "$role": "memoryPath",
-            "title": "List Property",
-            "description": "Memory expression for the item"
+            "title": "Array Property",
+            "description": "Memory expression of the result of this action."
+        },
+        "value": {
+            "$role": "expression",
+            "title": "value of the item",
+            "description": "Expression to evaluate.",
+            "examples": [
+                "dialog.todo"
+            ]
         }
     },
     "required": [
         "changeType",
-        "listProperty"
+        "arrayProperty"
     ]
 }

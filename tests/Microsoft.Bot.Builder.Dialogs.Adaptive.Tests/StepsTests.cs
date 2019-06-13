@@ -777,7 +777,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        [Ignore]
         public async Task Step_Foreach()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -797,21 +796,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         ArrayProperty = "dialog.todo",
                         ChangeType = EditArray.ArrayChangeType.Push,
-                        ItemProperty = "1"
+                        Value = new ExpressionEngine().Parse("1")
                     },
 
                     new EditArray()
                     {
                         ArrayProperty = "dialog.todo",
                         ChangeType = EditArray.ArrayChangeType.Push,
-                        ItemProperty = "2"
+                        Value = new ExpressionEngine().Parse("2")
                     },
 
                     new EditArray()
                     {
                         ArrayProperty = "dialog.todo",
                         ChangeType = EditArray.ArrayChangeType.Push,
-                        ItemProperty = "3"
+                        Value = new ExpressionEngine().Parse("3")
                     },
 
                     new Foreach()
@@ -835,7 +834,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        [Ignore]
         public async Task Step_ForeachPage()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -855,42 +853,42 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         ArrayProperty = "dialog.todo",
                         ChangeType = EditArray.ArrayChangeType.Push,
-                        ItemProperty = "1"
+                        Value = new ExpressionEngine().Parse("1")
                     },
 
                     new EditArray()
                     {
                         ArrayProperty = "dialog.todo",
                         ChangeType = EditArray.ArrayChangeType.Push,
-                        ItemProperty = "2"
+                        Value = new ExpressionEngine().Parse("2")
                     },
 
                     new EditArray()
                     {
                         ArrayProperty = "dialog.todo",
                         ChangeType = EditArray.ArrayChangeType.Push,
-                        ItemProperty = "3"
+                        Value = new ExpressionEngine().Parse("3")
                     },
 
                     new EditArray()
                     {
                         ArrayProperty = "dialog.todo",
                         ChangeType = EditArray.ArrayChangeType.Push,
-                        ItemProperty = "4"
+                        Value = new ExpressionEngine().Parse("4")
                     },
 
                     new EditArray()
                     {
                         ArrayProperty = "dialog.todo",
                         ChangeType = EditArray.ArrayChangeType.Push,
-                        ItemProperty = "5"
+                        Value = new ExpressionEngine().Parse("5")
                     },
 
                     new EditArray()
                     {
                         ArrayProperty = "dialog.todo",
                         ChangeType = EditArray.ArrayChangeType.Push,
-                        ItemProperty = "6"
+                        Value = new ExpressionEngine().Parse("6")
                     },
 
                     new ForeachPage()

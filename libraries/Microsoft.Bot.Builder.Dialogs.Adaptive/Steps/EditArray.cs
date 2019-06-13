@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Expressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -73,14 +74,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         public string ArrayProperty { get; set; }
 
         /// <summary>
-        /// Memory of the item to put onto the array
+        /// The result of the action
         /// </summary>
-        [JsonProperty("itemProperty")]
-        public string ItemProperty { get; set; }
+        [JsonProperty("resultProperty")]
+        public string ResultProperty { get; set; }
 
-        public EditArray(ArrayChangeType changeType, string arrayProperty = null, string itemProperty = null)
+        /// <summary>
+        /// The expression of the item to put onto the array
+        /// </summary>
+        [JsonProperty("Value")]
+        public Expression Value { get; set; }
+
+        public EditArray(ArrayChangeType changeType, string arrayProperty = null, Expression value = null, string resultProperty = null)
             : base()
         {
+
             this.ChangeType = changeType;
 
             if (!string.IsNullOrEmpty(arrayProperty))
@@ -88,10 +96,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 this.ArrayProperty = arrayProperty;
             }
 
-            if (!string.IsNullOrEmpty(itemProperty))
-            {
-                this.ItemProperty = itemProperty;
-            }
+           switch (changeType)
+           {
+                case ArrayChangeType.Clear:
+                case ArrayChangeType.Pop:
+                case ArrayChangeType.Take:
+                    this.ResultProperty = resultProperty;
+                    break;
+                case ArrayChangeType.Push:
+                case ArrayChangeType.Remove:
+                    this.Value = value;
+                    break;
+           }           
         }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -110,27 +126,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             var array = dc.State.GetValue(prop, new JArray());
 
             object item = null;
-            string serialized = string.Empty;
-            object lastResult = null;
+            object result = null;
 
             switch (ChangeType)
             {
                 case ArrayChangeType.Pop:
                     item = array[array.Count - 1];
                     array.RemoveAt(array.Count - 1);
-                    if (!string.IsNullOrEmpty(ItemProperty))
-                    {
-                        dc.State.SetValue(ItemProperty, item);
-                    }
-                    lastResult = item;
+                    result = item;
                     break;
                 case ArrayChangeType.Push:
-                    EnsureItemProperty();
-                    dc.State.TryGetValue<object>(ItemProperty, out item);
-                    lastResult = item != null;
-                    if ((bool)lastResult)
+                    EnsureValue();
+                    var (itemResult, error) = this.Value.TryEvaluate(dc.State);
+                    if (error == null && itemResult != null)
                     {
-                        array.Add(item);
+                        array.Add(itemResult);
                     }
                     break;
                 case ArrayChangeType.Take:
@@ -139,37 +149,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                         break;
                     }
                     item = array[0];
-                    array.RemoveAt(0);
-                    if (!string.IsNullOrEmpty(ItemProperty))
-                    {
-                        dc.State.SetValue(ItemProperty, item);
-                    }
-                    lastResult = item;
+                    array.RemoveAt(0);                   
+                    result = item;
                     break;
                 case ArrayChangeType.Remove:
-                    EnsureItemProperty();
-                    dc.State.TryGetValue<object>(ItemProperty, out item);
-                    if (item != null)
+                    EnsureValue();
+                    (itemResult, error) = this.Value.TryEvaluate(dc.State);
+                    if (error == null && itemResult != null)
                     {
-                        lastResult = false;
-                        array.Where(x => x.Value<string>() == item.ToString()).First().Remove();
+                        result = false;
+                        if (array.Values<string>().Contains<object>(itemResult))
+                        {
+                            result = true;
+                            array.Where(x => x.Value<string>() == itemResult.ToString()).First().Remove();
+                        }                        
                     }
                     break;
                 case ArrayChangeType.Clear:
-                    lastResult = array.Count > 0;
+                    result = array.Count > 0;
                     array.Clear();
                     break;
             }
 
             dc.State.SetValue(prop, array);
-            return await dc.EndDialogAsync();
+            return await dc.EndDialogAsync(result);
         }
 
-        private void EnsureItemProperty()
+        private void EnsureValue()
         {
-            if (string.IsNullOrEmpty(ItemProperty))
+            if (Value == null)
             {
-                throw new Exception($"EditArray: \"{ ChangeType }\" operation couldn't be performed for array \"{ArrayProperty}\" because an itemProperty wasn't specified.");
+                throw new Exception($"EditArray: \"{ ChangeType }\" operation couldn't be performed for array \"{ArrayProperty}\" because a value wasn't specified.");
             }
         }
 
