@@ -265,11 +265,9 @@ namespace Microsoft.Bot.Configuration
             }
             else
             {
-                // Assign a unique random id between 0-255 (255 services seems like a LOT of services
-                var rnd = new Random();
                 do
                 {
-                    newService.Id = rnd.Next(byte.MaxValue).ToString();
+                    newService.Id = Guid.NewGuid().ToString();
                 }
                 while (this.Services.Where(s => s.Id == newService.Id).Any());
 
