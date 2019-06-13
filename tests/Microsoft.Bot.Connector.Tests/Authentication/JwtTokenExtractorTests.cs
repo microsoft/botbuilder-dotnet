@@ -5,34 +5,22 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.IdentityModel.Protocols;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Xunit;
 
 namespace Microsoft.Bot.Connector.Authentication.Tests
 {
-    public class TestConfigurationRetriever : IConfigurationRetriever<IDictionary<string, HashSet<string>>>
-    {
-        public readonly Dictionary<string, HashSet<string>> EndorsementTable = new Dictionary<string, HashSet<string>>();
-
-        public async Task<IDictionary<string, HashSet<string>>> GetConfigurationAsync(string address, IDocumentRetriever retriever, CancellationToken cancel)
-        {
-            return EndorsementTable;
-        }
-    }
-
     public class JwtTokenExtractorTests
     {
+        private const string KeyId = "CtfQC8Le-8NsC7oC2zQkZpcrfOc";
+        private const string TestChannelName = "testChannel";
+        private const string ComplianceEndorsement = "o365Compliant";
+        private const string RandomEndorsement = "2112121212";
+
         private readonly HttpClient client;
         private readonly HttpClient emptyClient;
-
-        private const string keyId = "CtfQC8Le-8NsC7oC2zQkZpcrfOc";
-        private const string testChannelName = "testChannel";
-        private const string complianceEndorsement = "o365Compliant";
-        private const string randomEndorsement = "2112121212";
 
         public JwtTokenExtractorTests()
         {
@@ -51,7 +39,7 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
         {
             var configRetriever = new TestConfigurationRetriever();
 
-            configRetriever.EndorsementTable.Add(keyId, new HashSet<string>() { randomEndorsement, complianceEndorsement, testChannelName});
+            configRetriever.EndorsementTable.Add(KeyId, new HashSet<string>() { RandomEndorsement, ComplianceEndorsement, TestChannelName });
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await RunTestCase(configRetriever));
         }
 
@@ -60,7 +48,7 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
         {
             var configRetriever = new TestConfigurationRetriever();
 
-            configRetriever.EndorsementTable.Add(keyId, new HashSet<string>() { randomEndorsement, complianceEndorsement, testChannelName });
+            configRetriever.EndorsementTable.Add(KeyId, new HashSet<string>() { RandomEndorsement, ComplianceEndorsement, TestChannelName });
             var claimsIdentity = await RunTestCase(configRetriever, new string[] { });
             Assert.True(claimsIdentity.IsAuthenticated);
         }
@@ -70,8 +58,8 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
         {
             var configRetriever = new TestConfigurationRetriever();
 
-            configRetriever.EndorsementTable.Add(keyId, new HashSet<string>() { randomEndorsement, complianceEndorsement, testChannelName });
-            var claimsIdentity = await RunTestCase(configRetriever, new string[] { complianceEndorsement });
+            configRetriever.EndorsementTable.Add(KeyId, new HashSet<string>() { RandomEndorsement, ComplianceEndorsement, TestChannelName });
+            var claimsIdentity = await RunTestCase(configRetriever, new string[] { ComplianceEndorsement });
             Assert.True(claimsIdentity.IsAuthenticated);
         }
 
@@ -80,8 +68,8 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
         {
             var configRetriever = new TestConfigurationRetriever();
 
-            configRetriever.EndorsementTable.Add(keyId, new HashSet<string>() { randomEndorsement, complianceEndorsement, testChannelName });
-            await Assert.ThrowsAsync<UnauthorizedAccessException>(async () => await RunTestCase(configRetriever, new string[] { complianceEndorsement, "notSatisfiedEndorsement" }));
+            configRetriever.EndorsementTable.Add(KeyId, new HashSet<string>() { RandomEndorsement, ComplianceEndorsement, TestChannelName });
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(async () => await RunTestCase(configRetriever, new string[] { ComplianceEndorsement, "notSatisfiedEndorsement" }));
         }
 
         private async Task<ClaimsIdentity> RunTestCase(IConfigurationRetriever<IDictionary<string, HashSet<string>>> configRetriever, string[] requiredEndorsements = null)
