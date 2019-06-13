@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="resourceId">Resource id to resolve.</param>
         /// <returns>Resolved resource id.</returns>
-        public delegate string ImportResolverDelegate(string resourceId);
+        public delegate string ImportResolverDelegate(ref string resourceId);
 
         /// <summary>
         /// Gets or sets parsed LG templates.
@@ -74,10 +74,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             foreach (var filePath in filePaths.Select(f => GetOsPath(f)))
             {
-                this.Add(content: File.ReadAllText(filePath), name: filePath, importResolver: (id) =>
+                var fullPath = Path.GetFullPath(filePath);
+                this.Add(content: File.ReadAllText(fullPath), name: fullPath, importResolver: (ref string id) =>
                 {
                     id = GetOsPath(id);
-                    return File.ReadAllText(Path.IsPathRooted(id) ? id : Path.Combine(Path.GetDirectoryName(filePath), id));
+                    id = Path.GetFullPath(Path.IsPathRooted(id) ? id : Path.Combine(Path.GetDirectoryName(filePath), id));
+                    return File.ReadAllText(id);
                 });
             }
 
@@ -183,19 +185,21 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             foreach (var id in ids)
             {
-                if (sources.ContainsKey(id))
-                {
-                    continue;
-                }
+                var fullId = id;
 
                 try
                 {
-                    var content = importResolver(id);
-                    LoopLGText(content, id, sources, importResolver);
+                    var content = importResolver(ref fullId);
+                    if (sources.ContainsKey(fullId))
+                    {
+                        continue;
+                    }
+
+                    LoopLGText(content, fullId, sources, importResolver);
                 }
                 catch (Exception err)
                 {
-                    throw new Exception($"{id}:{err.Message}", err);
+                    throw new Exception($"{fullId}:{err.Message}", err);
                 }
             }
         }
@@ -207,7 +211,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ImportIds(source.Imports.Select(lg => lg.Id).ToArray(), sources, importResolver);
         }
 
-        private string FileResolver(string path) => File.ReadAllText(path);
+        private string FileResolver(ref string path)
+        {
+            path = Path.GetFullPath(path);
+            return File.ReadAllText(path);
+        }
 
         private static string GetOsPath(string path)
         {

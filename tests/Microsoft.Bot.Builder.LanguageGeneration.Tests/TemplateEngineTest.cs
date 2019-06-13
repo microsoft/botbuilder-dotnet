@@ -377,6 +377,20 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsTrue("Hi DL :)" == evaled ||
                 "Hey DL :)" == evaled ||
                 "Hello DL :)" == evaled);
+
+            engine = TemplateEngine.FromText(content: "# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](./Examples/6.lg)", name: "test", importResolver: null);
+            evaled = engine.EvaluateTemplate("basicTemplate", null);
+            Assert.IsTrue("Hi" == evaled || "Hello" == evaled);
+
+            evaled = engine.EvaluateTemplate("welcome", null);
+            Assert.IsTrue("Hi DongLei :)" == evaled ||
+                "Hey DongLei :)" == evaled ||
+                "Hello DongLei :)" == evaled);
+
+            evaled = engine.EvaluateTemplate("welcome", new { userName = "DL" });
+            Assert.IsTrue("Hi DL :)" == evaled ||
+                "Hey DL :)" == evaled ||
+                "Hello DL :)" == evaled);
         }
     }
 }
