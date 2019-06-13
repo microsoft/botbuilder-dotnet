@@ -22,7 +22,7 @@
             "description": "Step to execute"
         },
         "PageSize": {
-            "type": "int",
+            "type": "number",
             "title": "Page Size",
             "description": "The page size",
             "default": "10"
