@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         private string GetExampleFilePath(string fileName)
         {
-            return Path.Combine(AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")), "Examples", fileName);
+            return Path.Combine(AppContext.BaseDirectory, "Examples", fileName);
         }
 
 
