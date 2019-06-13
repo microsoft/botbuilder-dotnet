@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ParseTree = parseTree;
 
             Description = ExtractDescription(parseTree);
-            Path = ExtractPath(parseTree);
+            Id = ExtractPath(parseTree);
         }
 
         /// <summary>
@@ -30,12 +30,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public string Description { get; }
 
         /// <summary>
-        /// Gets path of this import, what's included by '()' in a lg file.
+        /// Gets id of this import, what's included by '()' in a lg file.
         /// </summary>
         /// <value>
-        /// Path of this import.
+        /// Id of this import.
         /// </value>
-        public string Path { get; }
+        public string Id { get; }
 
         /// <summary>
         /// Gets the parse tree of this lg file.

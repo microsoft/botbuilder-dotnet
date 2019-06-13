@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Antlr4.Runtime;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -11,7 +12,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     public class TemplateEngine
     {
-        public delegate string FileResolverDelegate(string filePath);
+        public delegate string ImportResolverDelegate(string resourceId);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngine"/> class.
@@ -35,28 +36,25 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         ///    new TemplateEngine().AddFiles(filePath).
         /// </summary>
         /// <param name="filePath">paths to LG files.</param>
-        /// <param name="fileResolver">resolver to resolve LG file path.</param>
         /// <returns>Engine created.</returns>
-        public static TemplateEngine FromFiles(string filePath, FileResolverDelegate fileResolver = null) => new TemplateEngine().Add(new string[] { filePath }, fileResolver);
+        public static TemplateEngine FromFile(string filePath) => new TemplateEngine().Add(new string[] { filePath });
 
         /// <summary>
         /// Create a template engine from files, a shorthand for.
         ///    new TemplateEngine().AddFiles(filePath).
         /// </summary>
         /// <param name="filePaths">paths to LG files.</param>
-        /// <param name="fileResolver">resolver to resolve LG file path.</param>
         /// <returns>Engine created.</returns>
-        public static TemplateEngine FromFiles(string[] filePaths, FileResolverDelegate fileResolver = null) => new TemplateEngine().Add(filePaths, fileResolver);
-
+        public static TemplateEngine FromFiles(string[] filePaths) => new TemplateEngine().Add(filePaths);
         /// <summary>
         /// Create a template engine from text, equivalent to.
         ///    new TemplateEngine.AddText(text).
         /// </summary>
         /// <param name="content">lg text content.</param>
         /// <param name="name">name of lg text.</param>
-        /// <param name="fileResolver">resolver to resolve LG file path.</param>
+        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
         /// <returns>Engine created.</returns>
-        public static TemplateEngine FromText(string content, string name, FileResolverDelegate fileResolver = null) => new TemplateEngine().Add(content, name, fileResolver);
+        public static TemplateEngine FromText(string content, string name, ImportResolverDelegate importResolver) => new TemplateEngine().Add(content, name, importResolver);
 
         /// <summary>
         /// Load .lg files into template engine
@@ -67,14 +65,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="filePaths">Paths to .lg files.</param>
         /// <param name="fileResolver">resolver to resolve LG file path.</param>
         /// <returns>Teamplate engine with parsed files.</returns>
-        public TemplateEngine Add(string[] filePaths, FileResolverDelegate fileResolver = null)
+        public TemplateEngine Add(string[] filePaths)
         {
-            var lgFileDic = new Dictionary<string, LGFile>();
-            LoopLGFiles(filePaths, lgFileDic, fileResolver);
-
-            foreach (var lgFile in lgFileDic)
+            foreach (var filePath in filePaths.Select(f => getOsPath(f)))
             {
-                Templates = Templates.Concat(lgFile.Value.Templates).ToList();
+                this.Add(content: File.ReadAllText(filePath), name: filePath, importResolver: (id) =>
+                {
+                    id = getOsPath(id);
+                    return File.ReadAllText((Path.IsPathRooted(id) ? id : Path.Combine(Path.GetDirectoryName(filePath), id)));
+                });
             }
 
             RunStaticCheck(Templates);
@@ -86,16 +85,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="content">Text content contains lg templates.</param>
         /// <param name="name">Text name.</param>
-        /// <param name="fileResolver">resolve lg file delegate.</param>
+        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
         /// <returns>Template engine with the parsed content.</returns>
-        public TemplateEngine Add(string content, string name, FileResolverDelegate fileResolver = null)
+        public TemplateEngine Add(string content, string name, ImportResolverDelegate importResolver)
         {
-            var lgFileDic = new Dictionary<string, LGFile>();
-            LoopLGText(content, name, lgFileDic, fileResolver);
+            var sources = new Dictionary<string, LGSource>();
+            LoopLGText(content, name, sources, importResolver);
 
-            foreach (var lgFile in lgFileDic)
+            foreach (var source in sources)
             {
-                Templates = Templates.Concat(lgFile.Value.Templates).ToList();
+                Templates = Templates.Concat(source.Value.Templates).ToList();
             }
 
             RunStaticCheck(Templates);
@@ -144,9 +143,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="inlineStr">inline string which will be evaluated.</param>
         /// <param name="scope">scope object or JToken.</param>
         /// <param name="methodBinder">input method.</param>
-        /// <param name="fileResolver">resolve lg file delegate.</param>
+        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
         /// <returns>Evaluate result.</returns>
-        public string Evaluate(string inlineStr, object scope, IGetMethod methodBinder = null, FileResolverDelegate fileResolver = null)
+        public string Evaluate(string inlineStr, object scope, IGetMethod methodBinder = null, ImportResolverDelegate importResolver = null)
         {
             // wrap inline string with "# name and -" to align the evaluation process
             var fakeTemplateId = "__temp__";
@@ -154,13 +153,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                    ? "```" + inlineStr + "```" : inlineStr;
             var wrappedStr = $"# {fakeTemplateId} \r\n - {inlineStr}";
 
-            var lgFileDic = new Dictionary<string, LGFile>();
-            LoopLGText(wrappedStr, "inline", lgFileDic, fileResolver);
+            var sources = new Dictionary<string, LGSource>();
+            LoopLGText(wrappedStr, "inline", sources, importResolver);
 
             var templates = new List<LGTemplate>(Templates);
-            foreach (var lgFile in lgFileDic)
+            foreach (var source in sources)
             {
-                templates = templates.Concat(lgFile.Value.Templates).ToList();
+                templates = templates.Concat(source.Value.Templates).ToList();
             }
 
             RunStaticCheck(templates);
@@ -169,42 +168,43 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return evaluator.EvaluateTemplate(fakeTemplateId, scope);
         }
 
-        private void LoopLGFiles(string[] filePaths, Dictionary<string, LGFile> finalLgFiles, FileResolverDelegate fileResolver)
+        private void ImportIds(string[] ids, Dictionary<string, LGSource> sources, ImportResolverDelegate importResolver)
         {
-            foreach (var filePath in filePaths)
+            if (importResolver == null)
             {
-                var resolvedPath = fileResolver != null ? fileResolver(filePath) : filePath;
-                var absolutePath = new FileInfo(resolvedPath).FullName;
-                if (finalLgFiles.ContainsKey(absolutePath))
+                // default to fileResolver...
+                importResolver = FileResolver;
+            }
+
+            foreach (var id in ids)
+            {
+                if (sources.ContainsKey(id))
                 {
                     continue;
                 }
 
-                var text = string.Empty;
                 try
                 {
-                    text = File.ReadAllText(absolutePath);
+                    var content = importResolver(id);
+                    LoopLGText(content, id, sources, importResolver);
                 }
-                catch
+                catch (Exception err)
                 {
-                    throw new Exception($"Invalid file path: {absolutePath}.");
+                    throw new Exception($"{id}:{err.Message}", err);
                 }
-
-                var lgFile = LGParser.Parse(text, absolutePath);
-                finalLgFiles.Add(absolutePath, lgFile);
-                var importedFilePaths = lgFile.Imports.Select(e => fileResolver != null ? fileResolver(e.Path) : e.Path);
-                importedFilePaths = importedFilePaths.Select(e => Path.IsPathRooted(e) ? e : Path.Combine(Path.GetDirectoryName(absolutePath), e));
-                LoopLGFiles(importedFilePaths.ToArray(), finalLgFiles, fileResolver);
             }
         }
 
-        private void LoopLGText(string content, string name, Dictionary<string, LGFile> finalLgFiles, FileResolverDelegate fileResolver)
+        private void LoopLGText(string content, string name, Dictionary<string, LGSource> sources, ImportResolverDelegate importResolver)
         {
-            var lgFile = LGParser.Parse(content, name);
-            finalLgFiles.Add(name, lgFile);
-            var importedFilePaths = new List<string>();
-            lgFile.Imports.ToList().ForEach(e => importedFilePaths.Add(e.Path));
-            LoopLGFiles(importedFilePaths.ToArray(), finalLgFiles, fileResolver);
+            var source = LGParser.Parse(content, name);
+            sources.Add(name, source);
+            ImportIds(source.Imports.Select(lg => lg.Id).ToArray(), sources, importResolver);
         }
+
+        private string FileResolver(string path) => File.ReadAllText(path);
+
+        private static string getOsPath(string path) => Path.Combine(path.TrimEnd('\\', '/').Split('\\', '/'));
+
     }
 }
