@@ -37,6 +37,13 @@ namespace Microsoft.Bot.Builder.AI.Luis
         Task<T> RecognizeAsync<T>(ITurnContext turnContext, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics, CancellationToken cancellationToken = default(CancellationToken))
             where T : IRecognizerConvert, new();
 
+        /// <summary>
+        /// Runs an utterance through a recognizer and returns a strongly-typed recognizer result.
+        /// </summary>
+        /// <typeparam name="T">The recognition result type.</typeparam>
+        /// <param name="turnContext">Turn context.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Analysis of utterance.</returns>
         new Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
             where T : IRecognizerConvert, new();
     }

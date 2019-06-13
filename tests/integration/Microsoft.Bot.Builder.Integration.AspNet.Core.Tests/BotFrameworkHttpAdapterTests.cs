@@ -1,13 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Rest.Serialization;
 using Moq;
 using Moq.Protected;
@@ -103,6 +107,41 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             mockHttpMessageHandler.Protected().Verify<Task<HttpResponseMessage>>("SendAsync", Times.Once(), ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>());
         }
 
+        [Fact]
+        public void ConstructorWithConfiguration()
+        {
+            // Arrange
+            var appSettings = new Dictionary<string, string>
+            {
+                { "MicrosoftAppId", "appId" },
+                { "MicrosoftAppPassword", "appPassword" },
+                { "ChannelService", "channelService" },
+                { "BotOpenIdMetadata", "botOpenIdMetadata" },
+            };
+
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(appSettings)
+                .Build();
+
+            // Act
+            var adapter = new MyAdapter(configuration);
+
+            // Assert
+
+            // Note this is a special case testing a little more than just the public interface.
+            var credentialProviderField = typeof(BotFrameworkAdapter).GetField("_credentialProvider", BindingFlags.NonPublic | BindingFlags.GetField | BindingFlags.Instance);
+            var channelProviderField = typeof(BotFrameworkAdapter).GetField("_channelProvider", BindingFlags.NonPublic | BindingFlags.GetField | BindingFlags.Instance);
+
+            var credentialProvider = (SimpleCredentialProvider)credentialProviderField.GetValue(adapter);
+            var channelProvider = (SimpleChannelProvider)channelProviderField.GetValue(adapter);
+
+            Assert.Equal("appId", credentialProvider.AppId);
+            Assert.Equal("appPassword", credentialProvider.Password);
+            Assert.Equal("channelService", channelProvider.ChannelService);
+            Assert.Equal("botOpenIdMetadata", ChannelValidation.OpenIdMetadataUrl);
+            Assert.Equal("botOpenIdMetadata", GovernmentChannelValidation.OpenIdMetadataUrl);
+        }
+
         private static Stream CreateMessageActivityStream()
         {
             return CreateStream(new Activity
@@ -136,6 +175,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             textWriter.Flush();
             stream.Seek(0, SeekOrigin.Begin);
             return stream;
+        }
+
+        private class MyAdapter : BotFrameworkHttpAdapter
+        {
+            public MyAdapter(IConfiguration configuration)
+                : base(configuration)
+            {
+            }
         }
 
         private class InvokeResponseBot : IBot

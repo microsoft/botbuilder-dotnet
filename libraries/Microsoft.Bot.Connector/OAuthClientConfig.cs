@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Connector
             HttpStatusCode statusCode = httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
             string responseContent = null;
-            if ((int)statusCode != 200 && (int)statusCode != 404)
+            if (statusCode != HttpStatusCode.OK && statusCode != HttpStatusCode.NotFound)
             {
                 var ex = new ErrorResponseException(string.Format("Operation returned an invalid status code '{0}'", statusCode));
                 try
