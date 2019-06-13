@@ -179,15 +179,18 @@ namespace Microsoft.Bot.Builder.Adapters
             return AssertReply(
                 (reply) =>
                 {
-                    if (!reply.AsMessageActivity().Text.Contains(expected))
+                    var replyAsMessageActivity = reply.AsMessageActivity();
+                    if (replyAsMessageActivity == null || !replyAsMessageActivity.Text.Contains(expected))
                     {
                         if (description == null)
                         {
-                            throw new Exception($"Expected:{expected}\nReceived:{reply.AsMessageActivity().Text}");
+                            throw new Exception(
+                                $"Expected:{expected}\nReceived:{replyAsMessageActivity?.Text ?? "Not a Message Activity"}");
                         }
                         else
                         {
-                            throw new Exception($"{description}:\nExpected:{expected}\nReceived:{reply.AsMessageActivity().Text}");
+                            throw new Exception(
+                                $"{description}:\nExpected:{expected}\nReceived:{replyAsMessageActivity?.Text ?? "Not a Message Activity"}");
                         }
                     }
                 },
