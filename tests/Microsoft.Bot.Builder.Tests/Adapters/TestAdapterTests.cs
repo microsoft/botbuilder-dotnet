@@ -30,10 +30,10 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             async Task TestCallback(ITurnContext context, CancellationToken token)
             {
                 receivedChannelId = context.Activity.ChannelId;
-                await context.SendActivityAsync("reply from the bot", cancellationToken: token);
+                await context.SendActivityAsync("test reply from the bot", cancellationToken: token);
             }
 
-            await sut.SendTextToBotAsync("test", TestCallback, CancellationToken.None);
+            await sut.SendTextToBotAsync("test message", TestCallback, CancellationToken.None);
             var reply = sut.GetNextReply();
             Assert.AreEqual(targetChannel, receivedChannelId);
             Assert.AreEqual(targetChannel, reply.ChannelId);
