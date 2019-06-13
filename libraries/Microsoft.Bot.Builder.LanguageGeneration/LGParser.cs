@@ -12,17 +12,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Get LG template list from input string.
         /// </summary>
         /// <param name="text">LG file content or inline text.</param>
-        /// <param name="source">text source.</param>
+        /// <param name="id">text source.</param>
         /// <returns>LG template list.</returns>
-        public static LGFile Parse(string text, string source = "")
+        public static LGSource Parse(string text, string id = "")
         {
-            var parseSuccess = TryParse(text, out var templates, out var imports, out var error, source);
+            var parseSuccess = TryParse(text, out var templates, out var imports, out var error, id);
             if (!parseSuccess)
             {
                 throw new Exception(error.ToString());
             }
 
-            return new LGFile(templates, imports, source);
+            return new LGSource(templates, imports, id);
         }
 
         /// <summary>

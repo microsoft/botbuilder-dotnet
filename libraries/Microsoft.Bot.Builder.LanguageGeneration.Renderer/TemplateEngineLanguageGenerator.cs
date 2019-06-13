@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using static Microsoft.Bot.Builder.LanguageGeneration.TemplateEngine;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -19,49 +20,38 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         private const string DEFAULTLABEL = "Unknown";
         private TemplateEngine engine;
-        private Func<string, string> resourceLoader = (id) => string.Empty;
 
         public TemplateEngineLanguageGenerator()
         {
-            this.engine = TemplateEngine.FromText("", "");
+            this.engine = new TemplateEngine();
         }
 
         /// <summary>
         /// Construct with raw LG text 
         /// </summary>
         /// <param name="lgText">lg template text</param>
-        /// <param name="resourceLoader">template resource loader (id) => templateText</param>
+        /// <param name="importResolver">template resource loader (id) => templateText</param>
         /// <param name="name">optional label for the source of the templates (used for labeling source of template errors)</param>
-        public TemplateEngineLanguageGenerator(string lgText, Func<string, string> resourceLoader = null, string name = null)
+        public TemplateEngineLanguageGenerator(string lgText, ImportResolverDelegate importResolver = null, string name = null)
         {
             this.Name = name ?? DEFAULTLABEL;
-            this.engine = TemplateEngine.FromText(lgText ?? String.Empty, this.Name);
-            if (resourceLoader != null)
-            {
-                this.resourceLoader = resourceLoader;
-            }
+            this.engine = TemplateEngine.FromText(lgText ?? String.Empty, this.Name, importResolver: importResolver);
         }
 
         /// <summary>
         /// Construct using prebuilt TemplateEngine
         /// </summary>
         /// <param name="engine">template engine</param>
-        /// <param name="resourceLoader">template resource loader (resourceId) => templateText</param>
         /// <param name="name">optional label for the source of the templates (used for labeling source of template errors)</param>
-        public TemplateEngineLanguageGenerator(TemplateEngine engine, Func<string, string> resourceLoader = null, string name = null)
+        public TemplateEngineLanguageGenerator(TemplateEngine engine)
         {
-            this.Name = name ?? DEFAULTLABEL;
             this.engine = engine;
-            if (resourceLoader != null)
-            {
-                this.resourceLoader = resourceLoader;
-            }
         }
 
         /// <summary>
         /// Name of the source of this template (used for labeling errors)
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = String.Empty;
 
         public async Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
