@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
         /// Writes a given object as formatted json.
         /// </summary>
         /// <param name="outputHelper">the instance of <see cref="ITestOutputHelper"/> being extended.</param>
-        /// <param name="object">An object instance to be written to the output as formatted json</param>
+        /// <param name="object">An object instance to be written to the output as formatted json.</param>
         public static void WriteAsFormattedJson(this ITestOutputHelper outputHelper, object @object)
         {
             var s = new JsonSerializerSettings

@@ -125,7 +125,6 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs.TestData
                     { "cancel", "Cancelling" },
                 },
                 null);
-
         }
 
         private static object[] BuildTestCaseObject(string testCaseName, BookingDetails inputBookingInfo, string[,] utterancesAndReplies, BookingDetails expectedBookingInfo)

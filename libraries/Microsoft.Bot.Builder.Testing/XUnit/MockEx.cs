@@ -12,12 +12,13 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
     /// </summary>
     public static class MockEx
     {
-        public static void SetupRecognizeAsync<T>(this Mock<IRecognizer> mockRecognizer, T returns)
-            where T : IRecognizerConvert, new()
-        {
-            mockRecognizer
-                .Setup(x => x.RecognizeAsync<T>(It.IsAny<ITurnContext>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult(returns));
-        }
+        // ReSharper disable once UnusedMember.Global
+        // public static void SetupRecognizeAsync<T>(this Mock<IRecognizer> mockRecognizer, T returns)
+        //    where T : IRecognizerConvert, new()
+        // {
+        //    mockRecognizer
+        //        .Setup(x => x.RecognizeAsync<T>(It.IsAny<ITurnContext>(), It.IsAny<CancellationToken>()))
+        //        .Returns(() => Task.FromResult(returns));
+        // }
     }
 }

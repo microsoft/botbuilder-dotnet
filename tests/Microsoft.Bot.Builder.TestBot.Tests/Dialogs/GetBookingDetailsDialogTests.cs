@@ -27,13 +27,13 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             // Arrange
             var bookingTestData = testData.GetObject<GetBookingDetailsDialogTestCase>();
             var sut = new GetBookingDetailsDialog();
-            var testClient = new DialogTestClient(sut, bookingTestData.InitialBookingDetails, Output);
+            var testClient = new DialogTestClient(sut, bookingTestData.InitialBookingDetails, new[] { new XUnitOutputMiddleware(Output) });
 
             // Act/Assert
             Output.WriteLine($"Test Case: {bookingTestData.Name}");
             for (var i = 0; i < bookingTestData.UtterancesAndReplies.GetLength(0); i++)
             {
-                var reply = await testClient.SendAsync<IMessageActivity>(bookingTestData.UtterancesAndReplies[i, 0]);
+                var reply = await testClient.SendActivityAsync<IMessageActivity>(bookingTestData.UtterancesAndReplies[i, 0]);
                 Assert.Equal(bookingTestData.UtterancesAndReplies[i, 1], reply?.Text);
             }
 

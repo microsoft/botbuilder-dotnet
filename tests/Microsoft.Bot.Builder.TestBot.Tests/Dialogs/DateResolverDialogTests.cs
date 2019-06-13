@@ -25,14 +25,14 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             // Arrange
             var testCaseData = testData.GetObject<DateResolverDialogTestCase>();
             var sut = new DateResolverDialog();
-            var testClient = new DialogTestClient(sut, testCaseData.InitialData, Output);
+            var testClient = new DialogTestClient(sut, testCaseData.InitialData, new[] { new XUnitOutputMiddleware(Output) });
 
             // Act/Assert
             Output.WriteLine($"Test Case: {testCaseData.Name}");
             Output.WriteLine($"\r\nDialog Input: {testCaseData.InitialData}");
             for (var i = 0; i < testCaseData.UtterancesAndReplies.GetLength(0); i++)
             {
-                var reply = await testClient.SendAsync<IMessageActivity>(testCaseData.UtterancesAndReplies[i, 0]);
+                var reply = await testClient.SendActivityAsync<IMessageActivity>(testCaseData.UtterancesAndReplies[i, 0]);
                 Assert.Equal(testCaseData.UtterancesAndReplies[i, 1], reply?.Text);
             }
 

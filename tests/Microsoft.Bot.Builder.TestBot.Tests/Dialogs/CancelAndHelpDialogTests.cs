@@ -22,11 +22,11 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             var sut = new TestCancelAndHelpDialog();
             var testClient = new DialogTestClient(sut);
 
-            var reply = await testClient.SendAsync<IMessageActivity>(utterance);
+            var reply = await testClient.SendActivityAsync<IMessageActivity>(utterance);
             Assert.Equal(response, reply.Text);
             Assert.Equal(DialogTurnStatus.Waiting, testClient.DialogTurnResult.Status);
 
-            reply = await testClient.SendAsync<IMessageActivity>(cancelUtterance);
+            reply = await testClient.SendActivityAsync<IMessageActivity>(cancelUtterance);
             Assert.Equal("Cancelling", reply.Text);
             Assert.Equal(DialogTurnStatus.Cancelled, testClient.DialogTurnResult.Status);
         }
@@ -39,11 +39,11 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             var sut = new TestCancelAndHelpDialog();
             var testClient = new DialogTestClient(sut);
 
-            var reply = await testClient.SendAsync<IMessageActivity>(utterance);
+            var reply = await testClient.SendActivityAsync<IMessageActivity>(utterance);
             Assert.Equal(response, reply.Text);
             Assert.Equal(DialogTurnStatus.Waiting, testClient.DialogTurnResult.Status);
 
-            reply = await testClient.SendAsync<IMessageActivity>(cancelUtterance);
+            reply = await testClient.SendActivityAsync<IMessageActivity>(cancelUtterance);
             Assert.Equal("Show Help...", reply.Text);
             Assert.Equal(DialogTurnStatus.Waiting, testClient.DialogTurnResult.Status);
         }

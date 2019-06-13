@@ -36,7 +36,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             var mockGetBookingDetailsDialog = DialogUtils.CreateMockDialog<GetBookingDetailsDialog>(bookingTestData.GetBookingDetailsDialogResult).Object;
 
             var sut = new BookingDialog(mockGetBookingDetailsDialog, mockFlightBookingService.Object);
-            var testClient = new DialogTestClient(sut, null, Output);
+            var testClient = new DialogTestClient(sut, null, new[] { new XUnitOutputMiddleware(Output) });
 
             // Act/Assert
             Output.WriteLine($"Test Case: {bookingTestData.Name}");
@@ -46,11 +46,11 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 IMessageActivity reply;
                 if (!string.IsNullOrEmpty(message))
                 {
-                    reply = await testClient.SendAsync<IMessageActivity>(message);
+                    reply = await testClient.SendActivityAsync<IMessageActivity>(message);
                 }
                 else
                 {
-                    reply = await testClient.GetNextReplyAsync<IMessageActivity>();
+                    reply = testClient.GetNextReply<IMessageActivity>();
                 }
 
                 Assert.Equal(bookingTestData.UtterancesAndReplies[i, 1], reply.Text);
