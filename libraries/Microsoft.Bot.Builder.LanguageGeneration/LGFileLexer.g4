@@ -63,6 +63,10 @@ IMPORT_PATH
   : '(' .*? ')'
   ;
 
+STRING 
+  : ('\'' (~['\r\n])* '\'') | ('"' (~["\r\n])* '"')
+  ;
+
 INVALID_TOKEN_DEFAULT_MODE
   : .
   ;
@@ -153,7 +157,7 @@ INVALID_ESCAPE
   ;
 
 EXPRESSION
-  : '@'? '{' (ESCAPE_CHARACTER | ~[\\\t\r\n{}])* '}'  { ignoreWS = false; expectKeywords = false;}
+  : '@'? '{' (~[\r\n{}] | STRING)*  '}'  { ignoreWS = false; expectKeywords = false;}
   ;
 
 TEMPLATE_REF
@@ -167,3 +171,4 @@ TEXT_SEPARATOR
 TEXT
   : ~[ \\\t\r\n{}[\]()]+  { ignoreWS = false; expectKeywords = false;}
   ;
+
