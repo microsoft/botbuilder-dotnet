@@ -30,6 +30,7 @@
                     "description": "unknown ??? "
                 },
                 "choices": {
+                    "title": "Choices",
                     "type": "array",
                     "items": [
                         {

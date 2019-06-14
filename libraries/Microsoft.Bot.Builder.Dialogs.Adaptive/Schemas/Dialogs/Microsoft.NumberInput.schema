@@ -14,27 +14,27 @@
                     "type": "number",
                     "title": "Mininum value",
                     "description": "The minimum value that is acceptable.  ",
-                    "default": "-2147483648",
+                    "default": -2147483648,
                     "examples": [
-                        "0.1"
+                        0.1
                     ]
                 },
                 "maxValue": {
                     "type": "number",
                     "title": "Maximum value",
                     "description": "The maximum value that is acceptable.  ",
-                    "default": "2147483647",
+                    "default": 2147483647,
                     "examples": [
-                        "12.5"
+                        12.5
                     ]
                 },
                 "precision": {
-                    "type": "number",
+                    "type": "integer",
                     "title": "Precision",
                     "description": "The precision of decimal points you want. Default is zero, which integers.",
-                    "default": "0",
+                    "default": 0,
                     "examples": [
-                        "2"
+                        2
                     ]
                 }
             }
