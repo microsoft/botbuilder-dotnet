@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="resourceId">Resource id to resolve.</param>
         /// <returns>Resolved resource content and absolute file path id.</returns>
-        public delegate (string, string) ImportResolverDelegate(string resourceId);
+        public delegate (string content, string absoluteFilePath) ImportResolverDelegate(string resourceId);
 
         /// <summary>
         /// Gets or sets parsed LG templates.
@@ -89,10 +89,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var sources = new Dictionary<string, LGResource>();
             LoopLGText(content, name, sources, importResolver);
 
-            foreach (var source in sources)
-            {
-                Templates = Templates.Concat(source.Value.Templates).ToList();
-            }
+            Templates.AddRange(sources.SelectMany(s => s.Value.Templates));
 
             RunStaticCheck(Templates);
             return this;
@@ -170,12 +167,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 try
                 {
                     var (content, path) = importResolver(id);
-                    if (sources.ContainsKey(path))
+                    if (!sources.ContainsKey(path))
                     {
-                        continue;
+                        LoopLGText(content, path, sources, importResolver);
                     }
-
-                    LoopLGText(content, path, sources, importResolver);
                 }
                 catch (Exception err)
                 {
@@ -203,8 +198,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <remarks>
         /// path is from authored content which doesn't know what OS it is running on.
         /// This method treats / and \ both as seperators regardless of OS, for windows that means / -> \ and for linux/mac \\ -> /.
-        /// This allows author to use ../foo.lg or ..\foo.lg as equivelents for importing in Windows OS.
-        /// In Linux OS, only ../foo.lg and ..\\foo.lg are accepted.
+        /// This allows author to use ../foo.lg or ..\foo.lg as equivelents for importing.
         /// </remarks>
         /// <param name="ambigiousPath">authoredPath.</param>
         /// <returns>path expressed as OS path.</returns>
