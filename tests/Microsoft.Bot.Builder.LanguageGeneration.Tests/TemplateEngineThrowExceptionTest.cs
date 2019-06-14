@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var isFail = false;
             try
             {
-                TemplateEngine.FromFile(GetExampleFilePath(input));
+                new TemplateEngine().AddFile(GetExampleFilePath(input));
                 isFail = true;
             }
             catch (Exception e)
@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [DynamicData(nameof(StaticCheckWariningData))]
         public void WariningTest(string input)
         {
-            var engine = TemplateEngine.FromFile(GetExampleFilePath(input));
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath(input));
 
             var report = new StaticChecker(engine.Templates).Check();
 
@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             TemplateEngine engine = null;
             try
             {
-                engine = TemplateEngine.FromFile(GetExampleFilePath(input));
+                engine = new TemplateEngine().AddFile(GetExampleFilePath(input));
             }
             catch (Exception)
             {
@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             TemplateEngine engine = null;
             try
             {
-                engine = TemplateEngine.FromFile(GetExampleFilePath(input));
+                engine = new TemplateEngine().AddFile(GetExampleFilePath(input));
             }
             catch (Exception)
             {
