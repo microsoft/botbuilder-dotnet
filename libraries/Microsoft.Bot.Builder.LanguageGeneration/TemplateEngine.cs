@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Template engine with the parsed content.</returns>
         public TemplateEngine AddText(string content, string name, ImportResolverDelegate importResolver)
         {
-            var sources = new Dictionary<string, LGSource>();
+            var sources = new Dictionary<string, LGResource>();
             LoopLGText(content, name, sources, importResolver);
 
             foreach (var source in sources)
@@ -140,9 +140,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="inlineStr">inline string which will be evaluated.</param>
         /// <param name="scope">scope object or JToken.</param>
         /// <param name="methodBinder">input method.</param>
-        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
         /// <returns>Evaluate result.</returns>
-        public string Evaluate(string inlineStr, object scope, IGetMethod methodBinder = null, ImportResolverDelegate importResolver = null)
+        public string Evaluate(string inlineStr, object scope, IGetMethod methodBinder = null)
         {
             // wrap inline string with "# name and -" to align the evaluation process
             var fakeTemplateId = "__temp__";
@@ -150,22 +149,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                    ? "```" + inlineStr + "```" : inlineStr;
             var wrappedStr = $"# {fakeTemplateId} \r\n - {inlineStr}";
 
-            var sources = new Dictionary<string, LGSource>();
-            LoopLGText(wrappedStr, "inline", sources, importResolver);
-
-            var templates = new List<LGTemplate>(Templates);
-            foreach (var source in sources)
-            {
-                templates = templates.Concat(source.Value.Templates).ToList();
-            }
-
+            var lgSource = LGParser.Parse(wrappedStr, "inline");
+            var templates = lgSource.Templates.ToList();
             RunStaticCheck(templates);
 
             var evaluator = new Evaluator(templates, methodBinder);
             return evaluator.EvaluateTemplate(fakeTemplateId, scope);
         }
 
-        private void ImportIds(string[] ids, Dictionary<string, LGSource> sources, ImportResolverDelegate importResolver)
+        private void ImportIds(string[] ids, Dictionary<string, LGResource> sources, ImportResolverDelegate importResolver)
         {
             if (importResolver == null)
             {
@@ -192,7 +184,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
-        private void LoopLGText(string content, string name, Dictionary<string, LGSource> sources, ImportResolverDelegate importResolver)
+        private void LoopLGText(string content, string name, Dictionary<string, LGResource> sources, ImportResolverDelegate importResolver)
         {
             var source = LGParser.Parse(content, name);
             sources.Add(name, source);

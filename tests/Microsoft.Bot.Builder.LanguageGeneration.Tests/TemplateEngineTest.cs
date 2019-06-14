@@ -378,7 +378,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 "Hey DL :)" == evaled ||
                 "Hello DL :)" == evaled);
 
-            engine = TemplateEngine.FromText(content: "# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](./Examples/6.lg)", name: "test", importResolver: null);
+            engine = new TemplateEngine().AddText(content: "# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](./Examples/6.lg)", name: "test", importResolver: null);
             evaled = engine.EvaluateTemplate("basicTemplate", null);
             Assert.IsTrue("Hi" == evaled || "Hello" == evaled);
 
