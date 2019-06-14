@@ -266,6 +266,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestTemplateRef()
         {
+            var path = GetExampleFilePath("TemplateRef.lg");
             var engine = new TemplateEngine().AddFile(GetExampleFilePath("TemplateRef.lg"));
 
             var scope = new
@@ -413,7 +414,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestRegex()
         {
-            var engine = TemplateEngine.FromFiles(GetExampleFilePath("Regex.lg"));
+            
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("Regex.lg"));
             var evaled = engine.EvaluateTemplate("wPhrase", "");
             Assert.AreEqual(evaled, "Hi");
 
