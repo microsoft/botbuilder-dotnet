@@ -245,22 +245,58 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _knowlegeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
-                },
-                new QnAMakerOptions
-                {
-                    Top = 1,
-                    Context = new QnARequestContext()
-                    {
-                        PreviousQnAId = 5,
-                        PreviousUserQuery = "how do I clean the stove?",
-                    },
                 });
 
-            var results = await qna.GetAnswersAsync(GetContext("Where can I buy cleaning products?"));
+            var options = new QnAMakerOptions()
+            {
+                Top = 1,
+                Context = new QnARequestContext()
+                {
+                    PreviousQnAId = 5,
+                    PreviousUserQuery = "how do I clean the stove?",
+                },
+            };
+
+            var results = await qna.GetAnswersAsync(GetContext("Where can I buy cleaning products?"), options);
             Assert.IsNotNull(results);
             Assert.AreEqual(1, results.Length, "should get one result");
             Assert.AreEqual(55, results[0].Id, "should get context based follow-up");
             StringAssert.StartsWith(results[0].Answer, "Any DIY store");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        public async Task QnaMaker_ReturnsNonInitialAnswerFromContext()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsNonInitialAnswerFromContext.json"));
+
+            var qna = GetQnAMaker(
+                mockHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname,
+                });
+
+            var options = new QnAMakerOptions()
+            {
+                Top = 10,
+                Context = new QnARequestContext()
+                {
+                    PreviousQnAId = 15,
+                    PreviousUserQuery = "accounts and signing in",
+                },
+            };
+
+            var results = await qna.GetAnswersAsync(GetContext("Use Windows Hello to sign in"), options);
+            Assert.IsNotNull(results);
+            Assert.AreEqual(3, results.Length, "should get three follow-up prompts");
+            Assert.AreEqual(4, results[1].Context.Prompts[0].QnaId, "should get context based follow-up");
+            StringAssert.StartsWith(results[1].Context.Prompts[0].DisplayText, "Ports and connectors");
         }
 
         [TestMethod]
