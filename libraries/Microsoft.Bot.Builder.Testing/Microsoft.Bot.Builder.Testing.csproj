@@ -17,7 +17,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <IsPackable>true</IsPackable>
     <PackageId>Microsoft.Bot.Builder.Testing</PackageId>
     <Description>Library for building bot tests using Microsoft Bot Framework Connector</Description>
     <Summary>Library for building bot tests using Microsoft Bot Framework Connector</Summary>
@@ -35,7 +34,7 @@
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
     <PackageReference Include="Moq" Version="4.11.0" />
     <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
-    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.extensibility.core" Version="2.4.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
