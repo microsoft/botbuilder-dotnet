@@ -85,7 +85,6 @@
     <None Remove="Schemas\Steps\Microsoft.LogStep.schema" />
     <None Remove="Schemas\Steps\Microsoft.RepeatDialog.schema" />
     <None Remove="Schemas\Steps\Microsoft.ReplaceDialog.schema" />
-    <None Remove="Schemas\Steps\Microsoft.SaveEntity.schema" />
     <None Remove="Schemas\Steps\Microsoft.SendActivity.schema" />
     <None Remove="Schemas\Steps\Microsoft.SetProperty.schema" />
     <None Remove="Schemas\Steps\Microsoft.SwitchCondition.schema" />
@@ -123,7 +122,6 @@
     <Content Include="Schemas\Steps\Microsoft.EmitEvent.schema" />
     <Content Include="Schemas\Steps\Microsoft.SwitchCondition.schema" />
     <Content Include="Schemas\Steps\Microsoft.HttpRequest.schema" />
-    <Content Include="Schemas\Steps\Microsoft.SaveEntity.schema" />
     <Content Include="Schemas\Steps\Microsoft.EditArray.schema" />
     <Content Include="Schemas\Steps\Microsoft.BeginDialog.schema" />
     <Content Include="Schemas\Steps\Microsoft.CancelAllDialogs.schema" />
