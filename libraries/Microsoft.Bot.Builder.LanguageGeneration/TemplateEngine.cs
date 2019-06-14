@@ -37,60 +37,45 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public List<LGTemplate> Templates { get; set; } = new List<LGTemplate>();
 
         /// <summary>
-        /// Create a template engine from files, a shorthand for.
-        ///    new TemplateEngine().AddFiles(filePath).
-        /// </summary>
-        /// <param name="filePath">paths to LG files.</param>
-        /// <returns>Engine created.</returns>
-        public static TemplateEngine FromFile(string filePath) => new TemplateEngine().Add(new string[] { filePath });
-
-        /// <summary>
-        /// Create a template engine from files, a shorthand for.
-        ///    new TemplateEngine().AddFiles(filePath).
-        /// </summary>
-        /// <param name="filePaths">paths to LG files.</param>
-        /// <returns>Engine created.</returns>
-        public static TemplateEngine FromFiles(string[] filePaths) => new TemplateEngine().Add(filePaths);
-
-        /// <summary>
-        /// Create a template engine from text, equivalent to.
-        ///    new TemplateEngine.AddText(text).
-        /// </summary>
-        /// <param name="content">lg text content.</param>
-        /// <param name="name">name of lg text.</param>
-        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
-        /// <returns>Engine created.</returns>
-        public static TemplateEngine FromText(string content, string name, ImportResolverDelegate importResolver) => new TemplateEngine().Add(content, name, importResolver);
-
-        /// <summary>
         /// Load .lg files into template engine
         /// You can add one file, or mutlple file as once
         /// If you have multiple files referencing each other, make sure you add them all at once,
         /// otherwise static checking won't allow you to add it one by one.
         /// </summary>
         /// <param name="filePaths">Paths to .lg files.</param>
+        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
         /// <returns>Teamplate engine with parsed files.</returns>
-        public TemplateEngine Add(string[] filePaths)
+        public TemplateEngine AddFiles(IEnumerable<string> filePaths, ImportResolverDelegate importResolver = null)
         {
             foreach (var filePath in filePaths)
             {
-                this.Add(content: File.ReadAllText(filePath), name: filePath, importResolver: (id) =>
-                {
+                importResolver = importResolver ?? ((id) =>
+                 {
                     // import paths are in resource files which can be executed on multiple OS environments
                     // Call GetOsPath() to map / & \ in importPath -> OSPath
-                    string importPath = GetOsPath(id);
+                    var importPath = GetOsPath(id);
                     if (!Path.IsPathRooted(importPath))
-                    {
+                     {
                         // get full path for importPath relative to path which is doing the import.
                         importPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(filePath), id));
-                    }
+                     }
                     return File.ReadAllText(importPath);
-                });
+                 });
+
+                this.AddText(File.ReadAllText(filePath), filePath, importResolver);
             }
 
             RunStaticCheck(Templates);
             return this;
         }
+
+        /// <summary>
+        /// Load single .lg file into template engine.
+        /// </summary>
+        /// <param name="filePath">Path to .lg file.</param>
+        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
+        /// <returns>Teamplate engine with single parsed file.</returns>
+        public TemplateEngine AddFile(string filePath, ImportResolverDelegate importResolver = null) => AddFiles(new List<string> { filePath }, importResolver);
 
         /// <summary>
         /// Add text as lg file content to template engine.
@@ -99,7 +84,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="name">Text name.</param>
         /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
         /// <returns>Template engine with the parsed content.</returns>
-        public TemplateEngine Add(string content, string name, ImportResolverDelegate importResolver)
+        public TemplateEngine AddText(string content, string name, ImportResolverDelegate importResolver)
         {
             var sources = new Dictionary<string, LGSource>();
             LoopLGText(content, name, sources, importResolver);
@@ -224,9 +209,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// This method treats / and \ both as seperators regardless of OS, for windows that means / -> \ and for linux/mac \ -> /.
         /// This allows author to use ../foo.lg or ..\foo.lg as equivelents for importing.
         /// </remarks>
-        /// <param name="ambigiousPath">authoredPath</param>
-        /// <returns>path expressed as OS path</returns>
-        private static string GetOsPath(string ambigiousPath)
+        /// <param name="ambigiousPath">authoredPath.</param>
+        /// <returns>path expressed as OS path.</returns>
+        private string GetOsPath(string ambigiousPath)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {

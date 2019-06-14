@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public TemplateEngineLanguageGenerator(string lgText, ImportResolverDelegate importResolver = null, string name = null)
         {
             this.Name = name ?? DEFAULTLABEL;
-            this.engine = TemplateEngine.FromText(lgText ?? String.Empty, this.Name, importResolver: importResolver);
+            this.engine = new TemplateEngine().AddText(lgText ?? String.Empty, this.Name, importResolver: importResolver);
         }
 
         /// <summary>
