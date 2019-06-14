@@ -41,10 +41,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         public ConcurrentDictionary<string, ILanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, ILanguageGenerator>(StringComparer.OrdinalIgnoreCase);
 
-        private string resourceResolver(ref string id)
+        private (string, string) resourceResolver(string id)
         {
             var res = resourceExplorer.GetResource(id);
-            return (res != null) ? res.ReadText() : string.Empty;
+            return ((res != null) ? res.ReadText() : string.Empty, id);
         }
     }
 }

@@ -25,8 +25,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Delegate for resolving resource id of imported lg file.
         /// </summary>
         /// <param name="resourceId">Resource id to resolve.</param>
-        /// <returns>Resolved resource id.</returns>
-        public delegate string ImportResolverDelegate(ref string resourceId);
+        /// <returns>Resolved resource content and absolute file path id.</returns>
+        public delegate (string, string) ImportResolverDelegate(string resourceId);
 
         /// <summary>
         /// Gets or sets parsed LG templates.
@@ -72,13 +72,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Teamplate engine with parsed files.</returns>
         public TemplateEngine Add(string[] filePaths)
         {
-            foreach (var filePath in filePaths.Select(f => GetOsPath(f)).Select(e => Path.GetFullPath(e)))
+            foreach (var filePath in filePaths)
             {
-                this.Add(content: File.ReadAllText(filePath), name: filePath, importResolver: (ref string id) =>
+                this.Add(content: File.ReadAllText(filePath), name: filePath, importResolver: (id) =>
                 {
-                    id = GetOsPath(id);
-                    id = Path.GetFullPath(Path.IsPathRooted(id) ? id : Path.Combine(Path.GetDirectoryName(filePath), id));
-                    return File.ReadAllText(id);
+                    // import paths are in resource files which can be executed on multiple OS environments
+                    // Call GetOsPath() to map / & \ in importPath -> OSPath
+                    string importPath = GetOsPath(id);
+                    if (!Path.IsPathRooted(importPath))
+                    {
+                        // get full path for importPath relative to path which is doing the import.
+                        importPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(filePath), id));
+                    }
+                    return (File.ReadAllText(importPath), importPath);
                 });
             }
 
@@ -184,21 +190,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             foreach (var id in ids)
             {
-                var fullId = id;
-
                 try
                 {
-                    var content = importResolver(ref fullId);
-                    if (sources.ContainsKey(fullId))
+                    var (content, path) = importResolver(id);
+                    if (sources.ContainsKey(path))
                     {
                         continue;
                     }
 
-                    LoopLGText(content, fullId, sources, importResolver);
+                    LoopLGText(content, path, sources, importResolver);
                 }
                 catch (Exception err)
                 {
-                    throw new Exception($"{fullId}:{err.Message}", err);
+                    throw new Exception($"{id}:{err.Message}", err);
                 }
             }
         }
@@ -210,28 +214,34 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ImportIds(source.Imports.Select(lg => lg.Id).ToArray(), sources, importResolver);
         }
 
-        private string FileResolver(ref string path)
+        private (string, string) FileResolver(string path)
         {
             path = Path.GetFullPath(path);
-            return File.ReadAllText(path);
+            return (File.ReadAllText(path), path);
         }
 
-        private static string GetOsPath(string path)
+        /// <summary>
+        /// Normalize authored path to os path.
+        /// </summary>
+        /// <remarks>
+        /// path is from authored content which doesn't know what OS it is running on.
+        /// This method treats / and \ both as seperators regardless of OS, for windows that means / -> \ and for linux/mac \ -> /.
+        /// This allows author to use ../foo.lg or ..\foo.lg as equivelents for importing.
+        /// </remarks>
+        /// <param name="ambigiousPath">authoredPath.</param>
+        /// <returns>path expressed as OS path.</returns>
+        private static string GetOsPath(string ambigiousPath)
         {
-            var pathSlices = path.TrimEnd('\\', '/').Split('\\', '/');
-            var finalPath = string.Empty;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                pathSlices.ToList().ForEach(e => finalPath += e + Path.DirectorySeparatorChar);
-                finalPath = finalPath.Length > 0 ? finalPath.Remove(finalPath.Length - 1) : finalPath;
+                // map linux/mac sep -> windows
+                return ambigiousPath.Replace("/", "\\");
             }
             else
             {
-                pathSlices.ToList().ForEach(e => finalPath += Path.DirectorySeparatorChar + e);
-                finalPath = Path.IsPathRooted(path) ? finalPath : finalPath.Remove(0, 1);
+                // map windows sep -> linux/mac
+                return ambigiousPath.Replace("\\", "/");
             }
-
-            return finalPath;
         }
     }
 }
