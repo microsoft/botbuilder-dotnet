@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public int DisplayOrder { get; set; }
 
         /// <summary>
-        /// Gets or sets the QnADTO returned from the API - is always null.
+        /// Gets or sets the QnADTO returned from the API.
         /// </summary>
         /// <value>
         /// The QnA DTO.
