@@ -7,12 +7,12 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
-    /// The context of the question that is returned from the QnA Maker API.  Used to return related follow-up prompts.
+    /// The context of the question that is returned from the QnA Maker API.  Used to return related follow-up prompt.
     /// Allows a bot to do qna "multi-turn" conversations from one question to another.  So the user can journey through
     /// a series of filtered/refined questions to get to a final answer.  This requires the QnA knowledge base to have been
     /// configured with follow-up prompts to individual questions.
     /// </summary>
-    public class QnAPrompts
+    public class QnAPrompt
     {
         /// <summary>
         /// Gets or sets the index of the prompt, used for ordering.

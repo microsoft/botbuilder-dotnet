@@ -18,6 +18,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// The QnA prompts array.
         /// </value>
         [JsonProperty(PropertyName = "prompts")]
-        public QnAPrompts[] Prompts { get; set; }
+        public QnAPrompt[] Prompts { get; set; }
     }
 }
