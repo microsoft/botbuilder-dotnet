@@ -81,7 +81,7 @@ namespace Microsoft.BotBuilderSamples
         private async Task<DialogTurnResult> InvokeTaskStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var luisResult = await _luisRecognizer.RecognizeAsync<FlightBooking>(stepContext.Context, cancellationToken);
- 
+
             switch (luisResult.TopIntent().intent)
             {
                 case FlightBooking.Intent.BookFlight:

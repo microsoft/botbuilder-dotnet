@@ -21,6 +21,10 @@
 		<Description>Library for building bots using Microsoft Bot Framework Connector</Description>
 		<Summary>Library for building bots using Microsoft Bot Framework Connector</Summary>
 	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
+	  <DocumentationFile></DocumentationFile>
+	</PropertyGroup>
     
 	<ItemGroup>
 		<PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003" PrivateAssets="all" />

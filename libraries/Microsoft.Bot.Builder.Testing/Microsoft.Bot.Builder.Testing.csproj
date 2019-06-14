@@ -15,6 +15,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
+    <DocumentationFile />
   </PropertyGroup>
 
   <PropertyGroup>
@@ -26,7 +27,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Projects\Repos\botbuilder-dotnet\libraries\Microsoft.Bot.Builder.Testing\Microsoft.Bot.Builder.Testing.xml</DocumentationFile>
+    <DocumentationFile></DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
   </PropertyGroup>
@@ -34,11 +35,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
+    <DocumentationFile />
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - NuGet Packages|AnyCPU'">
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
+    <DocumentationFile />
   </PropertyGroup>
 
   <ItemGroup>

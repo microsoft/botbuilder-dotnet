@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Testing
         }
 
         /// <summary>
-        /// Gets and returns the next bot response./>.
+        /// Gets the next bot response./>.
         /// </summary>
         /// <returns>The next activity in the queue; or null, if the queue is empty.</returns>
         /// <typeparam name="T">An <see cref="IActivity"/> derived type.</typeparam>
