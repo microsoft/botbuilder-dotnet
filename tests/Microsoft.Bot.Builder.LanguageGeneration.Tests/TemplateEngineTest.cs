@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestBasic()
         {
-            var engine = new TemplateEngine().Add(GetExampleFilePath("2.lg"));
+            var engine = new TemplateEngine().AddFiles(GetExampleFilePath("2.lg"));
 
             var evaled = engine.EvaluateTemplate("wPhrase", null);
             var options = new List<string> { "Hi", "Hello", "Hiya " };
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestBasicTemplateReference()
         {
-            var engine = new TemplateEngine().Add(GetExampleFilePath("3.lg"));
+            var engine = new TemplateEngine().AddFiles(GetExampleFilePath("3.lg"));
 
             var evaled = engine.EvaluateTemplate("welcome-user", null);
             var options = new List<string> { "Hi", "Hello", "Hiya", "Hi :)", "Hello :)", "Hiya :)" };
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestBasicTemplateRefAndEntityRef()
         {
-            var engine = new TemplateEngine().Add(GetExampleFilePath("4.lg"));
+            var engine = new TemplateEngine().AddFiles(GetExampleFilePath("4.lg"));
 
             var userName = "DL";
             var evaled = engine.EvaluateTemplate("welcome-user", new { userName = userName });
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestIfElseTemplate()
         {
-            var engine = new TemplateEngine().Add(GetExampleFilePath("5.lg"));
+            var engine = new TemplateEngine().AddFiles(GetExampleFilePath("5.lg"));
 
             string evaled = engine.EvaluateTemplate("time-of-day-readout", new { timeOfDay = "morning" });
             Assert.IsTrue(evaled == "Good morning" || evaled == "Morning! ", $"Evaled is {evaled}");
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestBasicConditionalTemplateWithoutDefault()
         {
-            var engine = new TemplateEngine().Add(GetExampleFilePath("5.lg"));
+            var engine = new TemplateEngine().AddFiles(GetExampleFilePath("5.lg"));
 
             string evaled = engine.EvaluateTemplate("time-of-day-readout-without-default", new { timeOfDay = "morning" });
             Assert.IsTrue(evaled == "Good morning" || evaled == "Morning! ", $"Evaled is {evaled}");
@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestBasicSwitchCaseTemplate()
         {
-            var engine = new TemplateEngine().Add(GetExampleFilePath("switchcase.lg"));
+            var engine = new TemplateEngine().AddFiles(GetExampleFilePath("switchcase.lg"));
 
             string evaled = engine.EvaluateTemplate("greetInAWeek", new { day = "Saturday" });
             Assert.IsTrue(evaled == "Happy Saturday!");
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestBasicTemplateRefWithParameters()
         {
-            var engine = new TemplateEngine().Add(GetExampleFilePath("6.lg"));
+            var engine = new TemplateEngine().AddFiles(GetExampleFilePath("6.lg"));
 
             string evaled = engine.EvaluateTemplate("welcome", null);
             Assert.IsTrue("Hi DongLei :)" == evaled ||
@@ -112,7 +112,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestBasicListSupport()
         {
-            var engine = new TemplateEngine().Add(GetExampleFilePath("BasicList.lg"));
+            var engine = new TemplateEngine().AddFiles(GetExampleFilePath("BasicList.lg"));
             Assert.AreEqual(engine.EvaluateTemplate("BasicJoin", new { items = new[] { "1" } }), "1");
             Assert.AreEqual(engine.EvaluateTemplate("BasicJoin", new { items = new[] { "1", "2" } }), "1, 2");
             Assert.AreEqual(engine.EvaluateTemplate("BasicJoin", new { items = new[] { "1", "2", "3" } }), "1, 2 and 3");
@@ -121,7 +121,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestBasicExtendedFunctions()
         {
-            var engine = new TemplateEngine().Add(GetExampleFilePath("6.lg"));
+            var engine = new TemplateEngine().AddFiles(GetExampleFilePath("6.lg"));
             var alarms = new[]
             {
                 new
@@ -159,7 +159,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestCaseInsensitive()
         {
-            var engine = new TemplateEngine().Add(GetExampleFilePath("CaseInsensitive.lg"));
+            var engine = new TemplateEngine().AddFiles(GetExampleFilePath("CaseInsensitive.lg"));
             var alarms = new[]
             {
                 new
@@ -184,7 +184,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestListWithOnlyOneElement()
         {
-            var engine = new TemplateEngine().Add(GetExampleFilePath("8.lg"));
+            var engine = new TemplateEngine().AddFiles(GetExampleFilePath("8.lg"));
             var evaled = engine.EvaluateTemplate("ShowTasks", new { recentTasks = new[] { "Task1" } });
             Assert.AreEqual("Your most recent task is Task1. You can let me know if you want to add or complete a task.", evaled);
         }
@@ -192,7 +192,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestTemplateNameWithDotIn()
         {
-            var engine = new TemplateEngine().Add(GetExampleFilePath("TemplateNameWithDot.lg"));
+            var engine = new TemplateEngine().AddFiles(GetExampleFilePath("TemplateNameWithDot.lg"));
             Assert.AreEqual(engine.EvaluateTemplate("Hello.World", null), "Hello World");
             Assert.AreEqual(engine.EvaluateTemplate("Hello", null), "Hello World");
         }
@@ -200,7 +200,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestBasicInlineTemplate()
         {
-            var emptyEngine = new TemplateEngine().Add(content: String.Empty, name: "test", importResolver: null);
+            var emptyEngine = new TemplateEngine().AddText(content: String.Empty, name: "test", importResolver: null);
             Assert.AreEqual(emptyEngine.Evaluate("Hi", null), "Hi");
             Assert.AreEqual(emptyEngine.Evaluate("Hi {name}", new { name = "DL" }), "Hi DL");
             Assert.AreEqual(emptyEngine.Evaluate("Hi {name.FirstName}{name.LastName}", new { name = new { FirstName = "D", LastName = "L" } }), "Hi DL");
@@ -213,7 +213,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestInlineTemplateWithTemplateFile()
         {
-            var emptyEngine = new TemplateEngine().Add(GetExampleFilePath("8.lg"));
+            var emptyEngine = new TemplateEngine().AddFiles(GetExampleFilePath("8.lg"));
             Assert.AreEqual(emptyEngine.Evaluate("Hi", null), "Hi");
             Assert.AreEqual(emptyEngine.Evaluate("Hi {name}", new { name = "DL" }), "Hi DL");
             Assert.AreEqual(emptyEngine.Evaluate("Hi {name.FirstName}{name.LastName}", new { name = new { FirstName = "D", LastName = "L" } }), "Hi DL");
@@ -245,7 +245,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestMultiLine()
         {
-            var engine = new TemplateEngine().Add(GetExampleFilePath("MultilineTextForAdaptiveCard.lg"));
+            var engine = new TemplateEngine().AddFiles(GetExampleFilePath("MultilineTextForAdaptiveCard.lg"));
             var evaled1 = engine.EvaluateTemplate("wPhrase", "");
             var options1 = new List<string> { "\r\ncardContent\r\n", "hello", "\ncardContent\n" };
             Assert.IsTrue(options1.Contains(evaled1), $"Evaled is {evaled1}");
@@ -264,7 +264,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestTemplateRef()
         {
-            var engine = new TemplateEngine().Add(GetExampleFilePath("TemplateRef.lg"));
+            var engine = new TemplateEngine().AddFiles(GetExampleFilePath("TemplateRef.lg"));
 
             var scope = new
             {
@@ -281,7 +281,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestEscapeCharacter()
         {
-            var engine = new TemplateEngine().Add(GetExampleFilePath("EscapeCharacter.lg"));
+            var engine = new TemplateEngine().AddFiles(GetExampleFilePath("EscapeCharacter.lg"));
             var evaled1 = engine.EvaluateTemplate("wPhrase", null);
             Assert.AreEqual(evaled1, "Hi \r\n\t[]{}\\");
         }
@@ -290,7 +290,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestAnalyzer()
         {
-            var engine = new TemplateEngine().Add(GetExampleFilePath("analyzer.lg"));
+            var engine = new TemplateEngine().AddFiles(GetExampleFilePath("analyzer.lg"));
             var evaled1 = engine.AnalyzeTemplate("orderReadOut");
             var evaled1Options = new List<string> { "orderType", "userName", "base", "topping", "bread", "meat" };
             Assert.IsTrue(evaled1.All(evaled1Options.Contains) && evaled1.Count == evaled1Options.Count);
@@ -307,7 +307,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestExceptionCatch()
         {
-            var engine = new TemplateEngine().Add(GetExampleFilePath("ExceptionCatch.lg"));
+            var engine = new TemplateEngine().AddFiles(GetExampleFilePath("ExceptionCatch.lg"));
             try
             {
                 engine.EvaluateTemplate("NoVariableMatch", null);
@@ -330,16 +330,16 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 GetExampleFilePath("MultiFile-Part3.lg"),
             };
 
-            var ex = Assert.ThrowsException<Exception>(() => new TemplateEngine().Add(file123[0]));
+            var ex = Assert.ThrowsException<Exception>(() => new TemplateEngine().AddFiles(file123[0]));
             TestContext.WriteLine(ex.Message);
 
-            ex = Assert.ThrowsException<Exception>(() => new TemplateEngine().Add(new List<string> { file123[0], file123[1] }));
+            ex = Assert.ThrowsException<Exception>(() => new TemplateEngine().AddFiles(file123[0], file123[1]));
             TestContext.WriteLine(ex.Message);
 
-            ex = Assert.ThrowsException<Exception>(() => new TemplateEngine().Add(new List<string> { file123[0], file123[2] }));
+            ex = Assert.ThrowsException<Exception>(() => new TemplateEngine().AddFiles(file123[0], file123[2]));
             TestContext.WriteLine(ex.Message);
 
-            var engine = new TemplateEngine().Add(new List<string> { file123[2], file123[1], file123[0] });
+            var engine = new TemplateEngine().AddFiles(file123[2], file123[1], file123[0]);
 
             var msg = "hello from t1, ref template2: 'hello from t2, ref template3: hello from t3' and ref template3: 'hello from t3'";
             Assert.AreEqual(msg, engine.EvaluateTemplate("template1", null));
@@ -348,7 +348,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestImportLgFiles()
         {
-            var engine = new TemplateEngine().Add(GetExampleFilePath("import.lg"));
+            var engine = new TemplateEngine().AddFiles(GetExampleFilePath("import.lg"));
 
             string evaled = engine.EvaluateTemplate("basicTemplate", null);
             Assert.IsTrue("Hi" == evaled || "Hello" == evaled);
@@ -364,7 +364,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 "Hello DL :)" == evaled);
 
             var importedFilePath = GetExampleFilePath("6.lg");
-            engine = new TemplateEngine().Add(content: "# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](" + importedFilePath + ")", name: "test", importResolver: null);
+            engine = new TemplateEngine().AddText(content: "# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](" + importedFilePath + ")", name: "test", importResolver: null);
             evaled = engine.EvaluateTemplate("basicTemplate", null);
             Assert.IsTrue("Hi" == evaled || "Hello" == evaled);
 
