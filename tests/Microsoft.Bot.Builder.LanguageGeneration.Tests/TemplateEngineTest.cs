@@ -350,6 +350,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var engine = new TemplateEngine().AddFile(GetExampleFilePath("import.lg"));
 
+            // Assert 6.lg is imported only once when there are several relative paths which point to the same file.
+            // Assert import cycle loop is handled well as expected when a file imports itself.
+            Assert.AreEqual(10, engine.Templates.Count());
+
             string evaled = engine.EvaluateTemplate("basicTemplate", null);
             Assert.IsTrue("Hi" == evaled || "Hello" == evaled);
 
@@ -363,8 +367,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 "Hey DL :)" == evaled ||
                 "Hello DL :)" == evaled);
 
+            // Assert 6.lg of absolute path is imported from text.
             var importedFilePath = GetExampleFilePath("6.lg");
             engine = new TemplateEngine().AddText(content: "# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](" + importedFilePath + ")", name: "test", importResolver: null);
+
+            Assert.AreEqual(8, engine.Templates.Count());
+
             evaled = engine.EvaluateTemplate("basicTemplate", null);
             Assert.IsTrue("Hi" == evaled || "Hello" == evaled);
 
@@ -378,7 +386,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 "Hey DL :)" == evaled ||
                 "Hello DL :)" == evaled);
 
+            // Assert 6.lg of relative path is imported from text.
             engine = new TemplateEngine().AddText(content: "# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](./Examples/6.lg)", name: "test", importResolver: null);
+
+            Assert.AreEqual(8, engine.Templates.Count());
+
             evaled = engine.EvaluateTemplate("basicTemplate", null);
             Assert.IsTrue("Hi" == evaled || "Hello" == evaled);
 

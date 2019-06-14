@@ -150,7 +150,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var wrappedStr = $"# {fakeTemplateId} \r\n - {inlineStr}";
 
             var lgSource = LGParser.Parse(wrappedStr, "inline");
-            var templates = lgSource.Templates.ToList();
+            var templates = Templates.Concat(lgSource.Templates).ToList();
             RunStaticCheck(templates);
 
             var evaluator = new Evaluator(templates, methodBinder);

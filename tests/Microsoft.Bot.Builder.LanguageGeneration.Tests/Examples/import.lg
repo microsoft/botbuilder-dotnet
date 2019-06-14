@@ -3,3 +3,7 @@
 - Hello
 
 [import](./6.lg)
+[import](6.lg)
+[import](.\.\6.lg)
+[import](8.lg)
+[import](import.lg)
