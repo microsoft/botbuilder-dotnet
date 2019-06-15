@@ -44,15 +44,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             try
             {
                 fileContext = GetFileContentContext(text, source);
+                templates = ExtractLGTemplates(fileContext, source);
+                imports = ExtractLGImports(fileContext, source);
             }
             catch (Exception e)
             {
                 error = JsonConvert.DeserializeObject<Diagnostic>(e.Message);
                 return false;
             }
-
-            templates = ToLGTemplates(fileContext, source);
-            imports = ToLGImports(fileContext, source);
 
             return true;
         }
@@ -83,37 +82,35 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Convert a file parse tree to a list of LG templates.
+        /// Extract LG templates from a file parse tree.
         /// </summary>
         /// <param name="file">LGFile context from antlr parser.</param>
         /// <param name="source">text source.</param>
         /// <returns>lg template list.</returns>
-        private static IList<LGTemplate> ToLGTemplates(LGFileParser.FileContext file, string source = "")
+        private static IList<LGTemplate> ExtractLGTemplates(LGFileParser.FileContext file, string source = "")
         {
-            if (file == null)
-            {
-                return new List<LGTemplate>();
-            }
-
-            var templates = file.paragraph().Select(x => x.templateDefinition()).Where(x => x != null);
-            return templates.Select(t => new LGTemplate(t, source)).ToList();
+            return file == null ? new List<LGTemplate>() :
+                   file.paragraph()
+                   .Select(x => x.templateDefinition())
+                   .Where(x => x != null)
+                   .Select(t => new LGTemplate(t, source))
+                   .ToList();
         }
 
         /// <summary>
-        /// Convert a file parse tree to a list of LG templates.
+        /// Extract LG imports from a file parse tree.
         /// </summary>
         /// <param name="file">LGFile context from antlr parser.</param>
         /// <param name="source">text source.</param>
         /// <returns>lg template list.</returns>
-        private static IList<LGImport> ToLGImports(LGFileParser.FileContext file, string source = "")
+        private static IList<LGImport> ExtractLGImports(LGFileParser.FileContext file, string source = "")
         {
-            if (file == null)
-            {
-                return new List<LGImport>();
-            }
-
-            var imports = file.paragraph().Select(x => x.importDefinition()).Where(x => x != null);
-            return imports.Select(t => new LGImport(t, source)).ToList();
+            return file == null ? new List<LGImport>() :
+                   file.paragraph()
+                   .Select(x => x.importDefinition())
+                   .Where(x => x != null)
+                   .Select(t => new LGImport(t, source))
+                   .ToList();
         }
     }
 }
