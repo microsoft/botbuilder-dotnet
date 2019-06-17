@@ -148,6 +148,33 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
+        protected virtual async Task OnPromptAsync(
+            ITurnContext turnContext,
+            IDictionary<string, object> state,
+            PromptOptions options,
+            bool isRetry,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
+
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            if (isRetry == true && options.RetryPrompt != null)
+            {
+                await turnContext.SendActivityAsync(options.RetryPrompt, cancellationToken).ConfigureAwait(false);
+            }
+            else if (options.Prompt != null)
+            {
+                await turnContext.SendActivityAsync(options.Prompt, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
         protected virtual Task<PromptRecognizerResult<Activity>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(new PromptRecognizerResult<Activity>
