@@ -4,9 +4,17 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Microsoft.Bot.Schema;
+using Microsoft.Recognizers.Text.Number;
+using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
+    public enum NumberOutputFormat
+    {
+        Float,
+        Integer
+    }
     /// <summary>
     /// Generic declarative number input for gathering number information from users
     /// </summary>
@@ -28,6 +36,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// </summary>
         public int Precision { get; set; } = 0;
 
+        public string DefaultLocale { get; set; } = null;
+
+        public NumberOutputFormat OutputFormat { get; set; } = NumberOutputFormat.Float;
+
         public NumberInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
@@ -35,39 +47,41 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc, bool consultation)
         {
-            throw new NotImplementedException();
+            var input = dc.State.GetValue<object>(INPUT_PROPERTY);
+
+            var culture = dc.Context.Activity.Locale ?? DefaultLocale ?? English;
+            var results = NumberRecognizer.RecognizeNumber(input.ToString(), culture);
+            if (results.Count > 0)
+            {
+                // Try to parse value based on type
+                var text = results[0].Resolution["value"].ToString();
+                    
+                if (float.TryParse(text, out var value))
+                {
+                    input = value;
+                }
+                else
+                {
+                    return Task.FromResult(InputState.Unrecognized);
+                }
+            }
+            else
+            {
+                return Task.FromResult(InputState.Unrecognized);
+            }
+
+            switch (this.OutputFormat)
+            {
+                case NumberOutputFormat.Float:
+                default:
+                    dc.State.SetValue(INPUT_PROPERTY, input);
+                    break;
+                case NumberOutputFormat.Integer:
+                    dc.State.SetValue(INPUT_PROPERTY, Math.Floor((float)input));
+                    break;
+            }
+
+            return Task.FromResult(InputState.Valid);
         }
-
-        //protected override NumberPrompt<float> CreatePrompt()
-        //{
-        //    // We override the default constructor behavior from base class to add custom validation around min and max values.
-        //    return new NumberPrompt<float>(null, new PromptValidator<float>(async (promptContext, cancel) =>
-        //    {
-        //        if (!promptContext.Recognized.Succeeded)
-        //        {
-        //            return false;
-        //        }
-
-        //        promptContext.Recognized.Value = (float)Math.Round(promptContext.Recognized.Value, Precision);
-        //        var result = (IComparable<float>)promptContext.Recognized.Value;
-        //        if (result.CompareTo(MinValue) < 0 || result.CompareTo(MaxValue) > 0)
-        //        {
-        //            if (InvalidPrompt != null)
-        //            {
-        //                var invalid = await InvalidPrompt.BindToData(promptContext.Context, promptContext.State).ConfigureAwait(false);
-        //                if (invalid != null)
-        //                {
-        //                    await promptContext.Context.SendActivityAsync(invalid).ConfigureAwait(false);
-        //                }
-
-        //            }
-
-        //            return false;
-        //        }
-
-        //        return true;
-        //    }));
-        //}
-
     }
 }
