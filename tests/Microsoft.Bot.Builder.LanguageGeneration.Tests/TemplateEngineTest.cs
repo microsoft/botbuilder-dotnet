@@ -266,7 +266,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestTemplateRef()
         {
-            var path = GetExampleFilePath("TemplateRef.lg");
             var engine = new TemplateEngine().AddFile(GetExampleFilePath("TemplateRef.lg"));
 
             var scope = new
