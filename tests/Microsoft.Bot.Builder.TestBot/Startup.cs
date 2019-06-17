@@ -59,13 +59,7 @@ namespace Microsoft.BotBuilderSamples
             services.AddSingleton<ConversationState>();
 
             // Register LUIS recognizer
-            var luisApplication = new LuisApplication(
-                Configuration["LuisAppId"],
-                Configuration["LuisAPIKey"],
-                "https://" + Configuration["LuisAPIHostName"]);
-
-            var recognizer = new LuisRecognizer(luisApplication);
-            services.AddSingleton<IRecognizer>(recognizer);
+            RegisterLuisRecognizers(services);
 
             // Register dialogs that will be used by the bot.
             RegisterDialogs(services);
@@ -117,6 +111,21 @@ namespace Microsoft.BotBuilderSamples
                     name: "default",
                     template: "api/{controller}");
             });
+        }
+
+        private void RegisterLuisRecognizers(IServiceCollection services)
+        {
+            var luisIsConfigured = !string.IsNullOrEmpty(Configuration["LuisAppId"]) && !string.IsNullOrEmpty(Configuration["LuisAPIKey"]) && !string.IsNullOrEmpty(Configuration["LuisAPIHostName"]);
+            if (luisIsConfigured)
+            {
+                var luisApplication = new LuisApplication(
+                    Configuration["LuisAppId"],
+                    Configuration["LuisAPIKey"],
+                    "https://" + Configuration["LuisAPIHostName"]);
+
+                var recognizer = new LuisRecognizer(luisApplication);
+                services.AddSingleton<IRecognizer>(recognizer);
+            }
         }
 
         private static void RegisterDialogs(IServiceCollection services)

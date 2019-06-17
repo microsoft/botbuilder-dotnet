@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.BotBuilderSamples.CognitiveModels;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.BotBuilderSamples
@@ -15,14 +15,17 @@ namespace Microsoft.BotBuilderSamples
     // A root dialog responsible of understanding user intents and dispatching them sub tasks.
     public class MainDialog : ComponentDialog
     {
-        private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
         private readonly IRecognizer _luisRecognizer;
 
-        public MainDialog(IConfiguration configuration, ILogger<MainDialog> logger, IRecognizer luisRecognizer, BookingDialog bookingDialog)
+        public MainDialog(ILogger<MainDialog> logger, BookingDialog bookingDialog)
+            : this(logger, null, bookingDialog)
+        {
+        }
+
+        public MainDialog(ILogger<MainDialog> logger, IRecognizer luisRecognizer, BookingDialog bookingDialog)
             : base(nameof(MainDialog))
         {
-            _configuration = configuration;
             _logger = logger;
             _luisRecognizer = luisRecognizer;
 
@@ -32,12 +35,28 @@ namespace Microsoft.BotBuilderSamples
             AddDialog(bookingDialog);
 
             // Create and add waterfall for main conversation loop
-            var steps = new WaterfallStep[]
+            // NOTE: we use a different task step if LUIS is not configured.
+            WaterfallStep[] steps;
+            if (luisRecognizer == null)
             {
-                PromptForTaskStepAsync,
-                InvokeTaskStepAsync,
-                ResumeMainLoopStepAsync,
-            };
+                steps = new WaterfallStep[]
+                {
+                    PromptForTaskStepAsync,
+                    InvokeTaskStepAsyncNoLuis,
+                    ResumeMainLoopStepAsync,
+                };
+            }
+            else
+            {
+                // LUIS is configured
+                steps = new WaterfallStep[]
+                {
+                    PromptForTaskStepAsync,
+                    InvokeTaskStepAsync,
+                    ResumeMainLoopStepAsync,
+                };
+            }
+
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), steps));
 
             // The initial child Dialog to run.
@@ -46,8 +65,7 @@ namespace Microsoft.BotBuilderSamples
 
         private async Task<DialogTurnResult> PromptForTaskStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var isLuisOn = string.IsNullOrEmpty(_configuration["LuisAppId"]) || string.IsNullOrEmpty(_configuration["LuisAPIKey"]) || string.IsNullOrEmpty(_configuration["LuisAPIHostName"]);
-            if (isLuisOn)
+            if (_luisRecognizer == null)
             {
                 var activity = MessageFactory.Text("NOTE: LUIS is not configured. To enable all capabilities, add 'LuisAppId', 'LuisAPIKey' and 'LuisAPIHostName' to the appsettings.json file.");
                 activity.InputHint = InputHints.IgnoringInput;
@@ -67,8 +85,17 @@ namespace Microsoft.BotBuilderSamples
             switch (luisResult.TopIntent().intent)
             {
                 case FlightBooking.Intent.BookFlight:
-                    // Call LUIS and gather any potential booking details. (Note the TurnContext has the response to the prompt.)
-                    var bookingDetails = await _luisRecognizer.RecognizeAsync<BookingDetails>(stepContext.Context, cancellationToken);
+                    // Initialize BookingDetails with any entities we may have found in the response.
+                    var bookingDetails = new BookingDetails()
+                    {
+                        // Get destination and origin from the composite entities arrays.
+                        Destination = luisResult.Entities.To?.FirstOrDefault()?.Airport?.FirstOrDefault()?.FirstOrDefault(),
+                        Origin = luisResult.Entities.From?.FirstOrDefault()?.Airport?.FirstOrDefault()?.FirstOrDefault(),
+
+                        // This value will be a TIMEX. And we are only interested in a Date so grab the first result and drop the Time part.
+                        // TIMEX is a format that represents DateTime expressions that include some ambiguity. e.g. missing a Year.
+                        TravelDate = luisResult.Entities.datetime?.FirstOrDefault()?.Expressions.FirstOrDefault()?.Split('T')[0],
+                    };
 
                     // Run the BookingDialog giving it whatever details we have from the LUIS call, it will fill out the remainder.
                     return await stepContext.BeginDialogAsync(nameof(BookingDialog), bookingDetails, cancellationToken);
@@ -85,6 +112,13 @@ namespace Microsoft.BotBuilderSamples
             }
 
             return await stepContext.NextAsync(null, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> InvokeTaskStepAsyncNoLuis(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            // We only handle book a flight if LUIS is not configured
+            return await stepContext.BeginDialogAsync(nameof(BookingDialog), new BookingDetails(), cancellationToken);
+
         }
 
         private async Task<DialogTurnResult> ResumeMainLoopStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)

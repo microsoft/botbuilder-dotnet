@@ -8,17 +8,18 @@
           <CodeCoverage>
             <ModulePaths>
               <Include>
+                <ModulePath>.*\Microsoft.Bot.Builder.dll$</ModulePath>               
                 <ModulePath>.*\Microsoft.Bot.Builder.AI.Luis.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.AI.QnA.dll$</ModulePath>
-                <ModulePath>.*\Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.dll$</ModulePath>
-                <ModulePath>.*\Microsoft.Bot.Builder.Integration.AspNet.Core.dll$</ModulePath>
-                <ModulePath>.*\Microsoft.Bot.Builder.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.ApplicationInsights.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Azure.dll$</ModulePath>
-                <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.dll$</ModulePath>
-                <ModulePath>.*\Microsoft.Bot.Builder.TemplateManager.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Configuration.dll$</ModulePath>
-                <ModulePath>.*\Microsoft.Bot.Builder.Connector.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Connector.dll$</ModulePath>                
+                <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Integration.AspNet.Core.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.TemplateManager.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Testing.dll$</ModulePath>
                 <!-- <ModulePath>Microsoft.Bot.Builder.Schema.dll$</ModulePath> -->
               </Include>
             </ModulePaths>
@@ -28,4 +29,3 @@
     </DataCollectors>
   </DataCollectionRunSettings>
 </RunSettings>
-
