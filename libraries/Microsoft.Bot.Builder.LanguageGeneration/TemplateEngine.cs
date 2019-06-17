@@ -197,7 +197,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <remarks>
         /// path is from authored content which doesn't know what OS it is running on.
-        /// This method treats / and \ both as seperators regardless of OS, for windows that means / -> \ and for linux/mac \\ -> /.
+        /// This method treats / and \ both as seperators regardless of OS, for windows that means / -> \ and for linux/mac \ -> /.
         /// This allows author to use ../foo.lg or ..\foo.lg as equivelents for importing.
         /// </remarks>
         /// <param name="ambigiousPath">authoredPath.</param>
