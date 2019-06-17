@@ -62,7 +62,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     return (File.ReadAllText(importPath), importPath);
                  });
 
-                this.AddText(File.ReadAllText(filePath), filePath, importResolver);
+                var fullPath = Path.GetFullPath(filePath);
+                this.AddText(File.ReadAllText(fullPath), fullPath, importResolver);
             }
 
             RunStaticCheck(Templates);
