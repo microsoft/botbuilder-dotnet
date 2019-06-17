@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Gets or sets id of this lg source.
         /// </summary>
         /// <value>
-        /// id of this lg source.
+        /// id of this lg source. For file, is full path. for inline text, is 'inline'.
         /// </value>
         public string Id { get; set; }
 
