@@ -42,7 +42,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         {
             // TODO: check with the team if there's value in these types of test or if there's a better way of asserting the
             // dialog got composed properly.
-            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _mockBookingDialog);
+            var sut = new MainDialog(MockLogger.Object, _mockLuisRecognizer.Object, _mockBookingDialog);
 
             Assert.Equal("MainDialog", sut.Id);
             Assert.IsType<TextPrompt>(sut.FindDialog("TextPrompt"));
@@ -50,23 +50,11 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             Assert.IsType<WaterfallDialog>(sut.FindDialog("WaterfallDialog"));
         }
 
-        [Theory]
-        [InlineData("", "", "")]
-        [InlineData("A", "", "")]
-        [InlineData("", "B", "")]
-        [InlineData("", "", "C")]
-        [InlineData("A", "B", "")]
-        [InlineData("A", "", "C")]
-        [InlineData("", "B", "C")]
-        public async Task ShowsMessageIfLuisNotConfigured(string luisAppId, string luisApiKey, string luisApiHostName)
+        [Fact]
+        public async Task ShowsMessageIfLuisNotConfigured()
         {
             // Arrange
-            var luisMockConfig = new Mock<IConfiguration>();
-            luisMockConfig.Setup(x => x["LuisAppId"]).Returns(luisAppId);
-            luisMockConfig.Setup(x => x["LuisAPIKey"]).Returns(luisApiKey);
-            luisMockConfig.Setup(x => x["LuisAPIHostName"]).Returns(luisApiHostName);
-
-            var sut = new MainDialog(luisMockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _mockBookingDialog);
+            var sut = new MainDialog(MockLogger.Object, null, _mockBookingDialog);
             var testClient = new DialogTestClient(Channels.Test, sut, middlewares: new[] { new XUnitOutputMiddleware(Output) });
 
             // Act/Assert
@@ -81,7 +69,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         public async Task ShowsPromptIfLuisIsConfigured()
         {
             // Arrange
-            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _mockBookingDialog);
+            var sut = new MainDialog(MockLogger.Object, _mockLuisRecognizer.Object, _mockBookingDialog);
             var testClient = new DialogTestClient(Channels.Test, sut, middlewares: new[] { new XUnitOutputMiddleware(Output) });
 
             // Act/Assert
@@ -103,9 +91,10 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                     {
                         { Enum.Parse<FlightBooking.Intent>(intent), new IntentScore() { Score = 1 } },
                     },
+                    Entities = new FlightBooking._Entities(),
                 }));
 
-            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, _mockLuisRecognizer.Object, _mockBookingDialog);
+            var sut = new MainDialog(MockLogger.Object, _mockLuisRecognizer.Object, _mockBookingDialog);
             var testClient = new DialogTestClient(Channels.Test, sut, middlewares: new[] { new XUnitOutputMiddleware(Output) });
 
             var reply = await testClient.SendActivityAsync<IMessageActivity>("hi");

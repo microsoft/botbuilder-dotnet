@@ -27,7 +27,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             mockFlightBookingService.Setup(x => x.BookFlight(It.IsAny<BookingDetails>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(true));
             var mockBookingDialog = DialogUtils.CreateMockDialog<BookingDialog>(null, mockFlightBookingService.Object).Object;
-            var sut = new MainDialog(MockConfig.Object, MockLogger.Object, null, mockBookingDialog);
+            var sut = new MainDialog(MockLogger.Object, null, mockBookingDialog);
 
             var testFlow = BuildTestFlow(sut);
 
