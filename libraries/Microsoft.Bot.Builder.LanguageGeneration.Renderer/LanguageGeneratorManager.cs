@@ -44,6 +44,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private (string, string) resourceResolver(string id)
         {
             var res = resourceExplorer.GetResource(id);
+
+            // If IResource is FileResource, use full name as the resource key to avoid duplicated imports 
+            if (res is FileResource fileRes)
+            {
+                id = fileRes.FullName;
+            }
+
             return ((res != null) ? res.ReadText() : string.Empty, id);
         }
     }
