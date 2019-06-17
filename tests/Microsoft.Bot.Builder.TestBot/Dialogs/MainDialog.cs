@@ -118,7 +118,6 @@ namespace Microsoft.BotBuilderSamples
         {
             // We only handle book a flight if LUIS is not configured
             return await stepContext.BeginDialogAsync(nameof(BookingDialog), new BookingDetails(), cancellationToken);
-
         }
 
         private async Task<DialogTurnResult> ResumeMainLoopStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)

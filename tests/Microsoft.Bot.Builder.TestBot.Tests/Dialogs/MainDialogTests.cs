@@ -90,8 +90,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                         { Enum.Parse<FlightBooking.Intent>(intent), new IntentScore() { Score = 1 } },
                     },
                     Entities = new FlightBooking._Entities(),
-                }
-            );
+                });
 
             var sut = new MainDialog(_mockLogger.Object, mockLuisRecognizer.Object, _mockBookingDialog);
             var testClient = new DialogTestClient(Channels.Test, sut, middlewares: new[] { new XUnitOutputMiddleware(Output) });
