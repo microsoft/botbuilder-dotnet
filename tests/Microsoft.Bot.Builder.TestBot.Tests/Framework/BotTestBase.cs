@@ -5,19 +5,18 @@ using System;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit.Abstractions;
 
-namespace Microsoft.BotBuilderSamples.Tests
+namespace Microsoft.BotBuilderSamples.Tests.Framework
 {
     /// <summary>
-    /// A base class with helper methods and properties to test dialogs in isolation.
+    /// A base class with helper methods and properties to write bot tests.
     /// </summary>
-    public abstract class DialogTestsBase
+    public abstract class BotTestBase
     {
+        // A lazy configuration object that gets instantiated once during execution when is needed
         private static readonly Lazy<IConfiguration> _configurationLazy = new Lazy<IConfiguration>(() =>
         {
             LoadLaunchSettingsIntoEnvVariables("Properties//launchSettings.json");
@@ -29,12 +28,22 @@ namespace Microsoft.BotBuilderSamples.Tests
             return config.Build();
         });
 
-        protected DialogTestsBase()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotTestBase"/> class.
+        /// </summary>
+        protected BotTestBase()
             : this(null)
         {
         }
 
-        protected DialogTestsBase(ITestOutputHelper output)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotTestBase"/> class.
+        /// </summary>
+        /// <param name="output">
+        /// An XUnit <see cref="ITestOutputHelper"/> instance.
+        /// See <see href="https://xunit.net/docs/capturing-output.html">Capturing Output</see> in the XUnit documentation for additional details.
+        /// </param>
+        protected BotTestBase(ITestOutputHelper output)
         {
             Output = output;
         }
@@ -44,7 +53,7 @@ namespace Microsoft.BotBuilderSamples.Tests
         protected ITestOutputHelper Output { get; }
 
         /// <summary>
-        /// Test runners to load environment variables defined in launchSettings.json
+        /// Test runners don't load environment variables defined in launchSettings.json
         /// so this helper code loads it manually if the file is present.
         /// This is useful to be able to have your own key files in your local machine without
         /// having to put them in git.

@@ -14,7 +14,6 @@ using Microsoft.Bot.Schema;
 using Microsoft.BotBuilderSamples.CognitiveModels;
 using Microsoft.BotBuilderSamples.Services;
 using Microsoft.BotBuilderSamples.Tests.Framework;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -22,20 +21,19 @@ using Xunit.Abstractions;
 
 namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 {
-    public class MainDialogTests : DialogTestsBase
+    public class MainDialogTests : BotTestBase
     {
         private readonly BookingDialog _mockBookingDialog;
-        private readonly Mock<IRecognizer> _mockLuisRecognizer;
         private readonly Mock<ILogger<MainDialog>> _mockLogger;
 
         public MainDialogTests(ITestOutputHelper output)
             : base(output)
         {
             _mockLogger = new Mock<ILogger<MainDialog>>();
-            _mockLuisRecognizer = new Mock<IRecognizer>();
 
             var mockFlightBookingService = new Mock<IFlightBookingService>();
-            mockFlightBookingService.Setup(x => x.BookFlight(It.IsAny<BookingDetails>(), It.IsAny<CancellationToken>()))
+            mockFlightBookingService
+                .Setup(x => x.BookFlight(It.IsAny<BookingDetails>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(true));
             _mockBookingDialog = SimpleMockFactory.CreateMockDialog<BookingDialog>(null, new Mock<GetBookingDetailsDialog>().Object, mockFlightBookingService.Object).Object;
         }
@@ -43,9 +41,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         [Fact]
         public void DialogConstructor()
         {
-            // TODO: check with the team if there's value in these types of test or if there's a better way of asserting the
-            // dialog got composed properly.
-            var sut = new MainDialog(_mockLogger.Object, _mockLuisRecognizer.Object, _mockBookingDialog);
+            var sut = new MainDialog(_mockLogger.Object, null, _mockBookingDialog);
 
             Assert.Equal("MainDialog", sut.Id);
             Assert.IsType<TextPrompt>(sut.FindDialog("TextPrompt"));
@@ -72,7 +68,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         public async Task ShowsPromptIfLuisIsConfigured()
         {
             // Arrange
-            var sut = new MainDialog(_mockLogger.Object, _mockLuisRecognizer.Object, _mockBookingDialog);
+            var sut = new MainDialog(_mockLogger.Object, SimpleMockFactory.CreateMockLuisRecognizer<IRecognizer>(null).Object, _mockBookingDialog);
             var testClient = new DialogTestClient(Channels.Test, sut, middlewares: new[] { new XUnitOutputMiddleware(Output) });
 
             // Act/Assert
@@ -86,18 +82,18 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         [InlineData("bananas", "None", "Sorry, I didn't get that. Please try asking in a different way (intent was None)")]
         public async Task TaskSelector(string utterance, string intent, string invokedDialogResponse)
         {
-            _mockLuisRecognizer
-                .Setup(x => x.RecognizeAsync<FlightBooking>(It.IsAny<ITurnContext>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult(new FlightBooking
+            var mockLuisRecognizer = SimpleMockFactory.CreateMockLuisRecognizer<IRecognizer, FlightBooking>(
+                new FlightBooking
                 {
                     Intents = new Dictionary<FlightBooking.Intent, IntentScore>
                     {
                         { Enum.Parse<FlightBooking.Intent>(intent), new IntentScore() { Score = 1 } },
                     },
                     Entities = new FlightBooking._Entities(),
-                }));
+                }
+            );
 
-            var sut = new MainDialog(_mockLogger.Object, _mockLuisRecognizer.Object, _mockBookingDialog);
+            var sut = new MainDialog(_mockLogger.Object, mockLuisRecognizer.Object, _mockBookingDialog);
             var testClient = new DialogTestClient(Channels.Test, sut, middlewares: new[] { new XUnitOutputMiddleware(Output) });
 
             var reply = await testClient.SendActivityAsync<IMessageActivity>("hi");

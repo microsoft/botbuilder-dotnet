@@ -8,12 +8,13 @@ using Microsoft.Bot.Builder.Testing.XUnit;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.BotBuilderSamples.Tests.Dialogs.TestData;
+using Microsoft.BotBuilderSamples.Tests.Framework;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 {
-    public class GetBookingDetailsDialogTests : DialogTestsBase
+    public class GetBookingDetailsDialogTests : BotTestBase
     {
         public GetBookingDetailsDialogTests(ITestOutputHelper output)
             : base(output)

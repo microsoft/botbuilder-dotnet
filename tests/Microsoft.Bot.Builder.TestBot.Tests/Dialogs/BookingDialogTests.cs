@@ -16,7 +16,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 {
-    public class BookingDialogTests : DialogTestsBase
+    public class BookingDialogTests : BotTestBase
     {
         private readonly XUnitOutputMiddleware[] _middlewares;
 

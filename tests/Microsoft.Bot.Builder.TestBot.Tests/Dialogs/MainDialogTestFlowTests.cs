@@ -19,7 +19,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
     /// This sample uses the current classes and approach for testing bot conversations.
     /// Note: this is included just as a reference.
     /// </summary>
-    public class MainDialogTestFlowTests : DialogTestsBase
+    public class MainDialogTestFlowTests : BotTestBase
     {
         [Fact(Skip = "Ignoring this one, this is just a sample on the old way of writing tests")]
         public async Task WholeEnchilada()

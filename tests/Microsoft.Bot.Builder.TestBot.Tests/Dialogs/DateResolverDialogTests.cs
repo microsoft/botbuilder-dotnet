@@ -7,12 +7,13 @@ using Microsoft.Bot.Builder.Testing.XUnit;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.BotBuilderSamples.Tests.Dialogs.TestData;
+using Microsoft.BotBuilderSamples.Tests.Framework;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 {
-    public class DateResolverDialogTests : DialogTestsBase
+    public class DateResolverDialogTests : BotTestBase
     {
         public DateResolverDialogTests(ITestOutputHelper output)
             : base(output)

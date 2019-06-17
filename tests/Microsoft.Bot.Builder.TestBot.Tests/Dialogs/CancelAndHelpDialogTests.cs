@@ -10,12 +10,13 @@ using Microsoft.Bot.Builder.Testing;
 using Microsoft.Bot.Builder.Testing.XUnit;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
+using Microsoft.BotBuilderSamples.Tests.Framework;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 {
-    public class CancelAndHelpDialogTests : DialogTestsBase
+    public class CancelAndHelpDialogTests : BotTestBase
     {
         private readonly XUnitOutputMiddleware[] _middlewares;
 
