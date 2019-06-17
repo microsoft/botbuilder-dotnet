@@ -3,35 +3,61 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Schema;
+using static Microsoft.Bot.Builder.Dialogs.DialogContext;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
+    public class InputDialogOptions
+    {
+        public InputDialogOptions()
+        {
+        }
+    }
+    public enum InputState
+    {
+        Missing,
+        Unrecognized,
+        Invalid,
+        Valid
+    }
     /// <summary>
     /// Generic wrapper around prompts to abstract non-declarative prompts into declarative style input classes.
     /// </summary>
     /// <typeparam name="TPrompt">Prompt type being wrapped</typeparam>
     /// <typeparam name="TValue">Type of the value that the prompt will store and get to and from memory</typeparam>
-    public class InputWrapper<TPrompt, TValue> : DialogCommand, IDialogDependencies where TPrompt : IDialog, new()
+    public abstract class InputDialog : DialogCommand
     {
-        protected TPrompt prompt;
+        public bool AlwaysPrompt { get; set; } = false;
+
+        public bool AllowInterruptions { get; set; } = true;
+
+        public Expression Value { get; set; }
 
         /// <summary>
         /// Activity to send to the user
         /// </summary>
         public ITemplate<Activity> Prompt { get; set; }
-
+        
         /// <summary>
         /// Activity template for retrying prompt
         /// </summary>
-        public ITemplate<Activity> RetryPrompt { get; set; }
+        public ITemplate<Activity> UnrecognizedPrompt { get; set; }
 
         /// <summary>
         /// Activity template to send to the user whenever the value provided is invalid
         /// </summary>
         public ITemplate<Activity> InvalidPrompt { get; set; }
+
+        public List<Expression> Validations { get; } = new List<Expression>();
+
+        public int? MaxTurnCount { get; set; }
+
+        public Expression DefaultValue { get; set; }
 
         /// <summary>
         /// The property from memory to pass to the calling dialog and to set the return value to.
@@ -49,57 +75,202 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
         }
 
-        public bool AlwaysPrompt { get; set; } = false;
+        public static readonly string OPTIONS_PROPERTY = "dialog._input";
+        public static readonly string INITIAL_VALUE_PROPERTY = "dialog._input.value";
+        public static readonly string TURN_COUNT_PROPERTY = "dialog._input.turnCount";
+        public static readonly string INPUT_PROPERTY = "turn._input";
 
-        public InputWrapper() : base()
-        {
-            prompt = CreatePrompt();
-        }
+        private const string PersistedOptions = "options";
+        private const string PersistedState = "state";
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (options is CancellationToken)
+            return Dialog.EndOfTurn;
+        }
+
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (dc == null)
             {
-                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+                throw new ArgumentNullException(nameof(dc));
             }
 
-            // Check value in state and only call if missing and Property specified, or if required by AlwaysPrompt
-            var hasValue = Property == null ? false : dc.State.HasValue(Property);
+            var op = OnInitializeOptions(dc, options);
+            dc.State.SetValue(OPTIONS_PROPERTY, op);
+            dc.State.SetValue(TURN_COUNT_PROPERTY, 0);
+            dc.State.SetValue(INPUT_PROPERTY, null);
 
-            if (hasValue == false || AlwaysPrompt)
+            var state = this.AlwaysPrompt ? InputState.Missing : await this.RecognizeInput(dc, false);
+            if (state == InputState.Valid)
             {
-                if (Prompt == null)
-                {
-                    throw new ArgumentNullException(nameof(Activity));
-                }
-
-                var prompt = await Prompt.BindToData(dc.Context, dc.State).ConfigureAwait(false);
-                var retryPrompt = RetryPrompt == null ? prompt : await RetryPrompt.BindToData(dc.Context, dc.State).ConfigureAwait(false);
-
-                return await dc.PromptAsync(this.prompt.Id, new PromptOptions() { Prompt = prompt, RetryPrompt = retryPrompt }, cancellationToken).ConfigureAwait(false);
+                var input = dc.State.GetValue<object>(INPUT_PROPERTY);
+                return await dc.EndDialogAsync(input);
             }
             else
             {
-                return await dc.EndDialogAsync(cancellationToken: cancellationToken);
+                return await this.PromptUser(dc, state);
             }
         }
 
-        public override List<IDialog> ListDependencies()
+
+        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
-            // Update inner prompt id before returning
-            prompt.Id = Id + ":prompt";
-            return new List<IDialog>() { prompt };
+            var activity = dc.Context.Activity;
+            if (activity.Type != ActivityTypes.Message)
+            {
+                return Dialog.EndOfTurn;
+            }
+
+            var stepCount = dc.State.GetValue<int>("turn.stepCount", 0);
+
+            if (stepCount > 0)
+            {
+                return await this.PromptUser(dc, InputState.Missing);
+            }
+
+            var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY, 0) + 1;
+            dc.State.SetValue(TURN_COUNT_PROPERTY, turnCount);
+
+            // Perform base recognition
+            var state = await this.RecognizeInput(dc, false);
+
+            if (state == InputState.Valid)
+            {
+                var input = dc.State.GetValue<object>(INPUT_PROPERTY);
+                return await dc.EndDialogAsync(input);
+            }
+            else if (this.MaxTurnCount == null || turnCount < this.MaxTurnCount)
+            {
+                return await this.PromptUser(dc, state);
+            }
+            else
+            {
+                if (this.DefaultValue != null)
+                {
+                    var (value, error) = this.DefaultValue.TryEvaluate(dc.State);
+                    return await dc.EndDialogAsync(value);
+                }
+            }
+
+            return await dc.EndDialogAsync();
         }
 
-        /// <summary>
-        /// We allow subclasses to provide special creation of the TPrompt wrapped prompt. 
-        /// We provide a default implementation that suits more cases except when validation needs
-        /// to be customized at construction time
-        /// </summary>
-        /// <returns></returns>
-        protected virtual TPrompt CreatePrompt()
+        public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return new TPrompt();
+            return await this.PromptUser(dc, InputState.Missing);
+        }
+
+        protected abstract Task<InputState> OnRecognizeInput(DialogContext dc, bool consultation);
+
+        protected override async Task<bool> OnPreBubbleEvent(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+        {
+            if (e.Name == DialogEvents.ActivityReceived && dc.Context.Activity.Type == ActivityTypes.Message)
+            {
+                if (this.AllowInterruptions)
+                {
+                    var state = await this.RecognizeInput(dc, true).ConfigureAwait(false);
+                    return state == InputState.Valid;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        protected virtual object OnInitializeOptions(DialogContext dc, object options)
+        {
+            return options;
+        }
+
+
+        private async Task<InputState> RecognizeInput(DialogContext dc, bool consultation)
+        {
+            dynamic input = null;
+            if (this.Value != null)
+            {
+                var (temp, error) = this.Value.TryEvaluate(dc.State);
+                input = temp;
+            }
+
+            if (input == null)
+            {
+                var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY);
+                if (turnCount == 0)
+                {
+                    input = dc.State.GetValue<object>(INITIAL_VALUE_PROPERTY, null);
+                }
+                else
+                {
+                    input = dc.Context.Activity.Text;
+                }
+            }
+
+            dc.State.SetValue(INPUT_PROPERTY, input);
+            if (input != null)
+            {
+                var state = await this.OnRecognizeInput(dc, consultation).ConfigureAwait(false);
+                if (state == InputState.Valid)
+                {
+                    foreach (var validation in this.Validations)
+                    {
+                        var (value, error) = validation.TryEvaluate(dc.State);
+                        if (value == null)
+                        {
+                            return InputState.Invalid;
+                        }
+                    }
+                    return InputState.Valid;
+                }
+                else
+                {
+                    return state;
+                }
+            }
+            else
+            {
+                return InputState.Missing;
+            }
+        }
+
+        protected virtual async Task<IActivity> OnRenderPrompt(DialogContext dc, InputState state)
+        {
+            switch (state)
+            {
+                case InputState.Unrecognized:
+                    if (this.UnrecognizedPrompt != null)
+                    {
+                        return await this.UnrecognizedPrompt.BindToData(dc.Context, dc.State).ConfigureAwait(false);
+                    }
+                    else if (this.InvalidPrompt != null)
+                    {
+                        return await this.InvalidPrompt.BindToData(dc.Context, dc.State).ConfigureAwait(false);
+                    }
+                    break;
+
+                case InputState.Invalid:
+                    if (this.InvalidPrompt != null)
+                    {
+                        return await this.InvalidPrompt.BindToData(dc.Context, dc.State).ConfigureAwait(false);
+                    }
+                    else if (this.UnrecognizedPrompt != null)
+                    {
+                        return await this.UnrecognizedPrompt.BindToData(dc.Context, dc.State).ConfigureAwait(false);
+                    }
+                    break;
+
+            }
+
+            return await this.Prompt.BindToData(dc.Context, dc.State);
+        }
+
+        private async Task<DialogTurnResult> PromptUser(DialogContext dc, InputState state)
+        {
+            var prompt = await this.OnRenderPrompt(dc, state).ConfigureAwait(false);
+            await dc.Context.SendActivityAsync(prompt).ConfigureAwait(false);
+            return Dialog.EndOfTurn;
         }
     }
 }

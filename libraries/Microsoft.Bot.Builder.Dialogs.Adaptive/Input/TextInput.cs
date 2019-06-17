@@ -3,13 +3,14 @@
 
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
     /// <summary>
     /// Declarative text input to gather text data from users
     /// </summary>
-    public class TextInput : InputWrapper<TextPrompt, string>
+    public class TextInput : InputDialog
     {
         private Regex _patternMatcher;
 
@@ -24,44 +25,57 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
-        protected override TextPrompt CreatePrompt()
-        {
-            return new TextPrompt(null, new PromptValidator<string>(async (promptContext, cancel) =>
-            {
-                if (!promptContext.Recognized.Succeeded)
-                {
-                    return false;
-                }
+        //protected override TextPrompt CreatePrompt()
+        //{
+        //    return new TextPrompt(null, new PromptValidator<string>(async (promptContext, cancel) =>
+        //    {
+        //        if (!promptContext.Recognized.Succeeded)
+        //        {
+        //            return false;
+        //        }
 
-                if (_patternMatcher == null)
-                {
-                    return true;
-                }
+        //        if (_patternMatcher == null)
+        //        {
+        //            return true;
+        //        }
 
-                var value = promptContext.Recognized.Value;
+        //        var value = promptContext.Recognized.Value;
 
-                if (!_patternMatcher.IsMatch(value))
-                {
-                    if (InvalidPrompt != null)
-                    {
-                        var invalid = await InvalidPrompt.BindToData(promptContext.Context, promptContext.State).ConfigureAwait(false);
-                        if (invalid != null)
-                        {
-                            await promptContext.Context.SendActivityAsync(invalid).ConfigureAwait(false);
-                        }
+        //        if (!_patternMatcher.IsMatch(value))
+        //        {
+        //            if (InvalidPrompt != null)
+        //            {
+        //                var invalid = await InvalidPrompt.BindToData(promptContext.Context, promptContext.State).ConfigureAwait(false);
+        //                if (invalid != null)
+        //                {
+        //                    await promptContext.Context.SendActivityAsync(invalid).ConfigureAwait(false);
+        //                }
 
-                    }
+        //            }
 
-                    return false;
-                }
+        //            return false;
+        //        }
 
-                return true;
-            }));
-        }
+        //        return true;
+        //    }));
+        //}
 
         protected override string OnComputeId()
         {
             return $"TextInput[{BindingPath()}]";
+        }
+
+        protected override async Task<InputState> OnRecognizeInput(DialogContext dc, bool consultation)
+        {
+            if (consultation)
+            {
+                return InputState.Unrecognized;
+            }
+
+            var input = dc.State.GetValue<string>(INPUT_PROPERTY);
+
+            return input.Length > 0 ? InputState.Valid : InputState.Unrecognized;
+
         }
     }
 }

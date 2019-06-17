@@ -3,6 +3,7 @@
 
 using System;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
@@ -10,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     /// Generic declarative number input for gathering number information from users
     /// </summary>
     /// <typeparam name="float"></typeparam>
-    public class NumberInput : InputWrapper<NumberPrompt<float>, float> 
+    public class NumberInput : InputDialog
     {
         /// <summary>
         /// Minimum value expected for number
@@ -32,35 +33,41 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
-        protected override NumberPrompt<float> CreatePrompt()
+        protected override Task<InputState> OnRecognizeInput(DialogContext dc, bool consultation)
         {
-            // We override the default constructor behavior from base class to add custom validation around min and max values.
-            return new NumberPrompt<float>(null, new PromptValidator<float>(async (promptContext, cancel) =>
-            {
-                if (!promptContext.Recognized.Succeeded)
-                {
-                    return false;
-                }
-
-                promptContext.Recognized.Value = (float)Math.Round(promptContext.Recognized.Value, Precision);
-                var result = (IComparable<float>)promptContext.Recognized.Value;
-                if (result.CompareTo(MinValue) < 0 || result.CompareTo(MaxValue) > 0)
-                {
-                    if (InvalidPrompt != null)
-                    {
-                        var invalid = await InvalidPrompt.BindToData(promptContext.Context, promptContext.State).ConfigureAwait(false);
-                        if (invalid != null)
-                        {
-                            await promptContext.Context.SendActivityAsync(invalid).ConfigureAwait(false);
-                        }
-
-                    }
-
-                    return false;
-                }
-
-                return true;
-            }));
+            throw new NotImplementedException();
         }
+
+        //protected override NumberPrompt<float> CreatePrompt()
+        //{
+        //    // We override the default constructor behavior from base class to add custom validation around min and max values.
+        //    return new NumberPrompt<float>(null, new PromptValidator<float>(async (promptContext, cancel) =>
+        //    {
+        //        if (!promptContext.Recognized.Succeeded)
+        //        {
+        //            return false;
+        //        }
+
+        //        promptContext.Recognized.Value = (float)Math.Round(promptContext.Recognized.Value, Precision);
+        //        var result = (IComparable<float>)promptContext.Recognized.Value;
+        //        if (result.CompareTo(MinValue) < 0 || result.CompareTo(MaxValue) > 0)
+        //        {
+        //            if (InvalidPrompt != null)
+        //            {
+        //                var invalid = await InvalidPrompt.BindToData(promptContext.Context, promptContext.State).ConfigureAwait(false);
+        //                if (invalid != null)
+        //                {
+        //                    await promptContext.Context.SendActivityAsync(invalid).ConfigureAwait(false);
+        //                }
+
+        //            }
+
+        //            return false;
+        //        }
+
+        //        return true;
+        //    }));
+        //}
+
     }
 }
