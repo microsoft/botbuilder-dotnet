@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var engine = new TemplateEngine().AddFile(GetExampleFilePath("2.lg"));
 
-            var evaled = engine.EvaluateTemplate("wPhrase", null);
+            var evaled = engine.EvaluateTemplate("wPhrase");
             var options = new List<string> { "Hi", "Hello", "Hiya " };
 
             Assert.IsTrue(options.Contains(evaled), $"The result `{evaled}` is not in those options [{string.Join(",", options)}]");
@@ -201,6 +201,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestBasicInlineTemplate()
         {
             var emptyEngine = new TemplateEngine().AddText(content: String.Empty, name: "test", importResolver: null);
+            Assert.AreEqual(emptyEngine.Evaluate("Hi"), "Hi");
             Assert.AreEqual(emptyEngine.Evaluate("Hi", null), "Hi");
             Assert.AreEqual(emptyEngine.Evaluate("Hi {name}", new { name = "DL" }), "Hi DL");
             Assert.AreEqual(emptyEngine.Evaluate("Hi {name.FirstName}{name.LastName}", new { name = new { FirstName = "D", LastName = "L" } }), "Hi DL");
@@ -214,6 +215,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestInlineTemplateWithTemplateFile()
         {
             var emptyEngine = new TemplateEngine().AddFile(GetExampleFilePath("8.lg"));
+            Assert.AreEqual(emptyEngine.Evaluate("Hi"), "Hi");
             Assert.AreEqual(emptyEngine.Evaluate("Hi", null), "Hi");
             Assert.AreEqual(emptyEngine.Evaluate("Hi {name}", new { name = "DL" }), "Hi DL");
             Assert.AreEqual(emptyEngine.Evaluate("Hi {name.FirstName}{name.LastName}", new { name = new { FirstName = "D", LastName = "L" } }), "Hi DL");
