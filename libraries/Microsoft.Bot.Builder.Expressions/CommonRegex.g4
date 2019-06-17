@@ -4,9 +4,6 @@ parse
  : alternation EOF
  ;
 
-// ALTERNATION
-//
-// expr|expr|expr...
 alternation
  : expr ('|' expr)*
  ;
@@ -37,6 +34,7 @@ element
 //         {n,}        n or more, greedy
 //         {n,}+       n or more, possessive
 //         {n,}?       n or more, lazy
+
 quantifier
  : '?' quantifier_type
  | '+' quantifier_type
@@ -57,53 +55,10 @@ quantifier_type
 //         [...]       positive character class
 //         [^...]      negative character class
 //         [x-y]       range (can be used for hex characters)
-//         [[:xxx:]]   positive POSIX named set
-//         [[:^xxx:]]  negative POSIX named set
-//
-//         alnum       alphanumeric
-//         alpha       alphabetic
-//         ascii       0-127
-//         blank       space or tab
-//         cntrl       control character
-//         digit       decimal digit
-//         graph       printing, excluding space
-//         lower       lower case letter
-//         print       printing, including space
-//         punct       printing, excluding alphanumeric
-//         space       white space
-//         upper       upper case letter
-//         word        same as \w
-//         xdigit      hexadecimal digit
 
 character_class
- : '[' '^' CharacterClassEnd Hyphen cc_atom+ ']'
- | '[' '^' CharacterClassEnd cc_atom* ']'
- | '[' '^' cc_atom+ ']'
- | '[' CharacterClassEnd Hyphen cc_atom+ ']'
- | '[' CharacterClassEnd cc_atom* ']'
+ : '[' '^' cc_atom+ ']'
  | '[' cc_atom+ ']'
- ;
-
-// BACKREFERENCES
-//
-//         \n              reference by number (can be ambiguous)
-//         \gn             reference by number
-//         \g{n}           reference by number
-//         \g{-n}          relative reference by number
-//         \k<name>        reference by name (javascript)
-//         \k{name}        reference by name (.NET)
-backreference
- : backreference_or_octal
- | '\\g' number
- | '\\g' '{' number '}'
- | '\\g' '{' '-' number '}'
- | '\\k' '<' name '>'
- | '\\k' '{' name '}'
- ;
-
-backreference_or_octal
- : octal_char
- | Backslash digit
  ;
 
 // CAPTURING
@@ -124,7 +79,7 @@ non_capture
  | '(' '?' '|' alternation ')'
  ;
 
-// OPTION SETTING
+// OPTION SETTING(C# format, for javascript should be wrapped in code)
 //
 //         (?i)            caseless
 //         (?J)            allow duplicate names
@@ -132,16 +87,9 @@ non_capture
 //         (?s)            single line (dotall)
 //         (?U)            default ungreedy (lazy)
 //         (?x)            extended (ignore white space)
-//         (?-...)         unset option(s)
 
 option
- : '(' '?' option_flags '-' option_flags ')'
- | '(' '?' option_flags ')'
- | '(' '?' '-' option_flags ')'
- ;
-
-option_flags
- : option_flag+
+ : '(' '?' option_flag+ ')'
  ;
 
 option_flag
@@ -153,21 +101,6 @@ option_flag
  | 'x'
  ;
 
-// LOOKAHEAD AND LOOKBEHIND ASSERTIONS
-//
-//         (?=...)         positive look ahead
-//         (?!...)         negative look ahead
-//         (?<=...)        positive look behind
-//         (?<!...)        negative look behind
-//
-//       Each top-level branch of a look behind must be of a fixed length.
-look_around
- : '(' '?' '=' alternation ')'
- | '(' '?' '!' alternation ')'
- | '(' '?' '<' '=' alternation ')'
- | '(' '?' '<' '!' alternation ')'
- ;
-
 atom
  : shared_atom
  | literal
@@ -175,18 +108,10 @@ atom
  | capture
  | non_capture
  | option
- | look_around
- | backreference
  | Dot
  | Caret
  | StartOfSubject
- | WordBoundary
- | NonWordBoundary
  | EndOfSubjectOrLine
- | EndOfSubjectOrLineEndOfSubject
- | EndOfSubject
- | PreviousMatchInSubject
- | ResetStartMatch
  | OneDataUnit
  | ExtendedUnicodeChar
  ;
@@ -195,13 +120,10 @@ cc_atom
  : cc_literal Hyphen cc_literal
  | shared_atom
  | cc_literal
- | backreference_or_octal // only octal is valid in a cc
  ;
 
 shared_atom
- : POSIXNamedSet
- | POSIXNegatedNamedSet
- | ControlChar
+ : ControlChar
  | DecimalDigit
  | NotDecimalDigit
  | HorizontalWhiteSpace
@@ -231,7 +153,6 @@ cc_literal
  | QuestionMark
  | Plus
  | Star
- | WordBoundary
  | EndOfSubjectOrLine
  | Pipe
  | OpenParen
@@ -249,8 +170,6 @@ shared_literal
  | CarriageReturn
  | Tab
  | HexChar
- | Quoted
- | BlockQuoted
  | OpenBrace
  | CloseBrace
  | Comma
@@ -311,12 +230,6 @@ letter
    AUC | BUC | CUC | DUC | EUC | FUC | GUC | HUC | IUC | JUC | KUC | LUC | MUC | NUC | OUC | PUC | QUC | RUC | SUC | TUC | UUC | VUC | WUC | XUC | YUC | ZUC
  ;
 
-// QUOTING
-//
-//         \x         where x is non-alphanumeric is a literal x
-//         \Q...\E    treat enclosed characters as literal
-Quoted      : '\\' NonAlphaNumeric;
-BlockQuoted : '\\Q' .*? '\\E';
 
 // CHARACTERS
 //
@@ -386,8 +299,6 @@ CharacterClassStart  : '[';
 CharacterClassEnd    : ']';
 Caret                : '^';
 Hyphen               : '-';
-POSIXNamedSet        : '[[:' AlphaNumerics ':]]';
-POSIXNegatedNamedSet : '[[:^' AlphaNumerics ':]]';
 
 QuestionMark : '?';
 Plus         : '+';
@@ -398,33 +309,15 @@ Comma        : ',';
 
 // ANCHORS AND SIMPLE ASSERTIONS
 //
-//         \b          word boundary
-//         \B          not a word boundary
 //         ^           start of subject
 //                      also after internal newline in multiline mode
 //         \A          start of subject
 //         $           end of subject
 //                      also before newline at end of subject
 //                      also before internal newline in multiline mode
-//         \Z          end of subject
-//                      also before newline at end of subject
-//         \z          end of subject
-//         \G          first matching position in subject
-WordBoundary                   : '\\b';
-NonWordBoundary                : '\\B';
+
 StartOfSubject                 : '\\A'; 
 EndOfSubjectOrLine             : '$';
-EndOfSubjectOrLineEndOfSubject : '\\Z'; 
-EndOfSubject                   : '\\z'; 
-PreviousMatchInSubject         : '\\G';
-
-// MATCH POINT RESET
-//
-//         \K          reset start of match
-ResetStartMatch : '\\K';
-
-SubroutineOrNamedReferenceStartG : '\\g';
-NamedReferenceStartK             : '\\k';
 
 Pipe        : '|';
 OpenParen   : '(';
