@@ -1336,37 +1336,12 @@ namespace Microsoft.Bot.Builder.Expressions
             if (error == null)
             {
                 var ts = (DateTime)parsed;
-                switch (timeUnit)
-                {
-                    case "Second":
-                        ts = ts.AddSeconds(interval);
-                        break;
-                    case "Minute":
-                        ts = ts.AddMinutes(interval);
-                        break;
-                    case "Hour":
-                        ts = ts.AddHours(interval);
-                        break;
-                    case "Day":
-                        ts = ts.AddDays(interval);
-                        break;
-                    case "Week":
-                        ts = ts.AddDays(7 * interval);
-                        break;
-                    case "Month":
-                        ts = ts.AddMonths(interval);
-                        break;
-                    case "Year":
-                        ts = ts.AddYears(interval);
-                        break;
-                    default:
-                        error = "illegal time unit format, should be one of: 'Second', 'Minute', 'Hour', 'Day', 'Week', 'Month', 'Year'";
-                        break;
-                }
-
+                Func<DateTime, DateTime> converter;
+                (converter, error) = DateTimeConverter(interval, timeUnit, false);
                 if (error == null)
                 {
-                    (result, error) = ReturnFormatTimeStampStr(ts, format);
+                    var addedTimeStamp = converter(ts);
+                    (result, error) = ReturnFormatTimeStampStr(addedTimeStamp, format);
                 }
             }
 
