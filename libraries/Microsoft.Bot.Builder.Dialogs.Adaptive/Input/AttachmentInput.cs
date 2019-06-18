@@ -14,6 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         All,
         First
     }
+
     public class AttachmentInput : InputDialog
     {
         public AttachmentOutputFormat OutputFormat { get; set; } = AttachmentOutputFormat.First;
@@ -28,38 +29,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return $"AttachmentInput[{BindingPath()}]";
         }
 
-        protected override async Task<InputState> OnRecognizeInput(DialogContext dc, bool consultation)
+        protected override Task<InputState> OnRecognizeInput(DialogContext dc, bool consultation)
         {
-            var input = dc.State.GetValue<object>(INPUT_PROPERTY);
-
-            var attachments = new List<Attachment>();
-            if (input is List<Attachment>)
-            {
-                attachments.AddRange((List<Attachment>)input);
-            }
-            if (input is Attachment)
-            {
-                attachments.Add((Attachment)input);
-            }
-
-            var first = attachments.Count > 0 ? attachments[0] : null;
+            var input = dc.State.GetValue<List<Attachment>>(INPUT_PROPERTY);
+            var first = input.Count > 0 ? input[0] : null;
 
             if (first == null || (string.IsNullOrEmpty(first.ContentUrl) && first.Content == null))
             {
-                return InputState.Unrecognized;
+                return Task.FromResult(InputState.Unrecognized);
             }
 
             switch (this.OutputFormat)
             {
                 case AttachmentOutputFormat.All:
-                    dc.State.SetValue(INPUT_PROPERTY, attachments);
+                    dc.State.SetValue(INPUT_PROPERTY, input);
                     break;
                 case AttachmentOutputFormat.First:
                     dc.State.SetValue(INPUT_PROPERTY, first);
                     break;
             }
 
-            return InputState.Valid;
+            return Task.FromResult(InputState.Valid);
         }
     }
 }

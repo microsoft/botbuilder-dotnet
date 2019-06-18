@@ -60,6 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     var first = results[0];
                     if (bool.TryParse(first.Resolution["value"].ToString(), out var value))
                     {
+                        dc.State.SetValue(INPUT_PROPERTY, value);
                         return Task.FromResult(InputState.Valid);
                     }
                     else

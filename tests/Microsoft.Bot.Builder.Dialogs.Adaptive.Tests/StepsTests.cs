@@ -205,9 +205,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 new TextInput()
                                 {
                                     Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                    RetryPrompt = new ActivityTemplate("How should I call you?"),
+                                    UnrecognizedPrompt = new ActivityTemplate("How should I call you?"),
                                     Property = "user.name",
-                                    Pattern = @"(\s*(\S)\s*){3,}"
+                                    Validations = new List<Expression>()
+                                    {
+                                        new ExpressionEngine().Parse("turn._input.Length > 3")
+                                    }
                                 }
                             }
                         },
@@ -235,21 +238,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new ConfirmInput()
                     {
                         Prompt = new ActivityTemplate("yes or no"),
-                        RetryPrompt = new ActivityTemplate("I need a yes or no."),
+                        UnrecognizedPrompt = new ActivityTemplate("I need a yes or no."),
                         Property = "user.confirmed"
                     },
                     new SendActivity("confirmation: {user.confirmed}"),
                     new ConfirmInput()
                     {
                         Prompt = new ActivityTemplate("yes or no"),
-                        RetryPrompt = new ActivityTemplate("I need a yes or no."),
+                        UnrecognizedPrompt = new ActivityTemplate("I need a yes or no."),
                         Property = "user.confirmed"
                     },
                     new SendActivity("confirmation: {user.confirmed}"),
                     new ConfirmInput()
                     {
                         Prompt = new ActivityTemplate("yes or no"),
-                        RetryPrompt = new ActivityTemplate("I need a yes or no."),
+                        UnrecognizedPrompt = new ActivityTemplate("I need a yes or no."),
                         Property = "user.confirmed",
                         AlwaysPrompt = true
                     },
@@ -259,13 +262,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             await CreateFlow(testDialog)
             .Send("hi")
-                .AssertReply("yes or no")
+                .AssertReply("yes or no (1) Yes or (2) No")
             .Send("asdasd")
-                .AssertReply("I need a yes or no.")
+                .AssertReply("I need a yes or no. (1) Yes or (2) No")
             .Send("yes")
                 .AssertReply("confirmation: True")
-                .AssertReply("confirmation: True")
-                .AssertReply("yes or no")
+                .AssertReply("yes or no (1) Yes or (2) No")
             .Send("nope")
                 .AssertReply("confirmation: False")
             .StartTestAsync();
@@ -283,7 +285,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         Property = "user.color",
                         Prompt = new ActivityTemplate("Please select a color:"),
-                        RetryPrompt = new ActivityTemplate("Not a color. Please select a color:"),
+                        UnrecognizedPrompt = new ActivityTemplate("Not a color. Please select a color:"),
                         Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
                         Style = ListStyle.Inline
                     },
@@ -292,7 +294,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         Property = "user.color",
                         Prompt = new ActivityTemplate("Please select a color:"),
-                        RetryPrompt = new ActivityTemplate("Please select a color:"),
+                        UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
                         Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
                         Style = ListStyle.Inline
                     },
@@ -301,7 +303,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         Property = "user.color",
                         Prompt = new ActivityTemplate("Please select a color:"),
-                        RetryPrompt = new ActivityTemplate("Please select a color:"),
+                        UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
                         Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
                         AlwaysPrompt = true,
                         Style = ListStyle.Inline
@@ -316,7 +318,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             .Send("asdasd")
                 .AssertReply("Not a color. Please select a color: (1) red, (2) green, or (3) blue")
             .Send("blue")
-                .AssertReply("blue")
                 .AssertReply("blue")
                 .AssertReply("Please select a color: (1) red, (2) green, or (3) blue")
             .Send("red")
@@ -340,11 +341,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new NumberInput()
                         {
                             Prompt = new ActivityTemplate("Please enter your age."),
-                            MinValue = 1,
-                            MaxValue = 150,
-                            Precision = 0,
-                            RetryPrompt = new ActivityTemplate("The value entered must be greater than 0 and less than 150."),
-                            Property = "user.userProfile.Age"
+                            UnrecognizedPrompt = new ActivityTemplate("The value entered must be greater than 0 and less than 150."),
+                            Value = new ExpressionEngine().Parse("user.userProfile.Age"),
+                            Property = "user.userProfile.Age",
+                            OutputFormat = NumberOutputFormat.Integer,
+                            Validations = new List<Expression>()
+                            {
+                                new ExpressionEngine().Parse("turn._input > 0 && turn._input < 150")
+                            }
                         },
                         new SendActivity("I have your age as {user.userProfile.Age}."),
                     })
@@ -359,44 +363,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("I have your age as 15.")
             .Send("hi")
                 .AssertReply("I have your age as 15.")
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task Step_NumberInputPrecision()
-        {
-            var testDialog = new AdaptiveDialog("planningTest")
-            {
-                AutoEndDialog = false
-            };
-
-            testDialog.AddRules(new List<IRule>()
-            {
-                new UnknownIntentRule(
-                    new List<IDialog>()
-                    {
-                        new NumberInput()
-                        {
-                            Prompt = new ActivityTemplate("Please enter your dollars."),
-                            MinValue = 10.00f,
-                            MaxValue = 100.00f,
-                            Precision = 2,
-                            RetryPrompt = new ActivityTemplate("The value entered must be greater than 10.00 and less than 100.00."),
-                            Property = "user.userProfile.dollars"
-                        },
-                        new SendActivity("I have your dollars as {user.userProfile.dollars}."),
-                    })
-            });
-
-            await CreateFlow(testDialog)
-            .Send("hi")
-                .AssertReply("Please enter your dollars.")
-            .Send("1.345")
-                .AssertReply("The value entered must be greater than 10.00 and less than 100.00.")
-            .Send("15.348")
-                .AssertReply("I have your dollars as 15.35.")
-            .Send("hi")
-                .AssertReply("I have your dollars as 15.35.")
             .StartTestAsync();
         }
 
@@ -418,10 +384,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 new TextInput()
                                 {
                                     Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                    RetryPrompt = new ActivityTemplate("How should I call you?"),
+                                    UnrecognizedPrompt = new ActivityTemplate("How should I call you?"),
                                     InvalidPrompt  = new ActivityTemplate("That does not soud like a name"),
                                     Property = "user.name",
-                                    Pattern = @"(\s*(\S)\s*){3,}"
+                                    Validations = new List<Expression>()
+                                    {
+                                        new ExpressionEngine().Parse("turn._input.Length > 3")
+                                    }
                                 }
                             }
                         },
@@ -588,10 +557,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new TextInput()
                             {
                                 Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                RetryPrompt = new ActivityTemplate("How should I call you?"),
+                                UnrecognizedPrompt = new ActivityTemplate("How should I call you?"),
                                 InvalidPrompt  = new ActivityTemplate("That does not soud like a name"),
                                 Property = "user.name",
-                                Pattern = @"(\s*(\S)\s*){3,}"
                             }
                         }
                     },
@@ -687,7 +655,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
                 Steps = new List<IDialog>()
                 {
-                    new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name" },
+                    new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name" , Value = new ExpressionEngine().Parse("user.name") },
                     new SendActivity("Hello {user.name}, nice to meet you!"),
                     new EndTurn(),
                     new RepeatDialog()

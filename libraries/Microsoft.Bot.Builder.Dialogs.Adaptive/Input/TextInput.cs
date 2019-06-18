@@ -32,11 +32,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return $"TextInput[{BindingPath()}]";
         }
 
-        protected override async Task<InputState> OnRecognizeInput(DialogContext dc, bool consultation)
+        protected override Task<InputState> OnRecognizeInput(DialogContext dc, bool consultation)
         {
             if (consultation)
             {
-                return InputState.Unrecognized;
+                return Task.FromResult(InputState.Unrecognized);
             }
 
             var input = dc.State.GetValue<string>(INPUT_PROPERTY);
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             dc.State.SetValue(INPUT_PROPERTY, input);
-            return input.Length > 0 ? InputState.Valid : InputState.Unrecognized;
+            return input.Length > 0 ? Task.FromResult(InputState.Valid) : Task.FromResult(InputState.Unrecognized);
         }
     }
 }

@@ -15,10 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         Float,
         Integer
     }
-    /// <summary>
-    /// Generic declarative number input for gathering number information from users
-    /// </summary>
-    /// <typeparam name="float"></typeparam>
+
     public class NumberInput : InputDialog
     {
         public string DefaultLocale { get; set; } = null;
@@ -28,6 +25,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public NumberInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
+        }
+
+        protected override string OnComputeId()
+        {
+            return $"NumberInput[{BindingPath()}]";
         }
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc, bool consultation)

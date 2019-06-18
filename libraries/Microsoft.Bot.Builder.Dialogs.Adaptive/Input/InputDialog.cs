@@ -16,10 +16,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
     public class InputDialogOptions
     {
-        public InputDialogOptions()
-        {
-        }
     }
+
     public enum InputState
     {
         Missing,
@@ -27,11 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         Invalid,
         Valid
     }
-    /// <summary>
-    /// Generic wrapper around prompts to abstract non-declarative prompts into declarative style input classes.
-    /// </summary>
-    /// <typeparam name="TPrompt">Prompt type being wrapped</typeparam>
-    /// <typeparam name="TValue">Type of the value that the prompt will store and get to and from memory</typeparam>
+
     public abstract class InputDialog : DialogCommand
     {
         public bool AlwaysPrompt { get; set; } = false;
@@ -55,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// </summary>
         public ITemplate<Activity> InvalidPrompt { get; set; }
 
-        public List<Expression> Validations { get; } = new List<Expression>();
+        public List<Expression> Validations { get; set; } = new List<Expression>();
 
         public int? MaxTurnCount { get; set; }
 
@@ -85,11 +79,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         private const string PersistedOptions = "options";
         private const string PersistedState = "state";
 
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return Dialog.EndOfTurn;
-        }
-
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
@@ -113,7 +102,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 return await this.PromptUser(dc, state);
             }
         }
-
 
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -160,6 +148,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await this.PromptUser(dc, InputState.Missing);
+        }
+
+        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return Dialog.EndOfTurn;
         }
 
         protected abstract Task<InputState> OnRecognizeInput(DialogContext dc, bool consultation);
@@ -249,56 +242,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return options;
         }
 
-
-        private async Task<InputState> RecognizeInput(DialogContext dc, bool consultation)
-        {
-            dynamic input = null;
-            if (this.Value != null)
-            {
-                var (temp, error) = this.Value.TryEvaluate(dc.State);
-                input = temp;
-            }
-
-            if (input == null)
-            {
-                var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY);
-                if (turnCount == 0)
-                {
-                    input = dc.State.GetValue<object>(INITIAL_VALUE_PROPERTY, null);
-                }
-                else
-                {
-                    input = dc.Context.Activity.Text;
-                }
-            }
-
-            dc.State.SetValue(INPUT_PROPERTY, input);
-            if (input != null)
-            {
-                var state = await this.OnRecognizeInput(dc, consultation).ConfigureAwait(false);
-                if (state == InputState.Valid)
-                {
-                    foreach (var validation in this.Validations)
-                    {
-                        var (value, error) = validation.TryEvaluate(dc.State);
-                        if (value == null)
-                        {
-                            return InputState.Invalid;
-                        }
-                    }
-                    return InputState.Valid;
-                }
-                else
-                {
-                    return state;
-                }
-            }
-            else
-            {
-                return InputState.Missing;
-            }
-        }
-
         protected virtual async Task<IActivity> OnRenderPrompt(DialogContext dc, InputState state)
         {
             switch (state)
@@ -328,6 +271,62 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             return await this.Prompt.BindToData(dc.Context, dc.State);
+        }
+
+        private async Task<InputState> RecognizeInput(DialogContext dc, bool consultation)
+        {
+            dynamic input = null;
+            if (this.Value != null)
+            {
+                var (temp, error) = this.Value.TryEvaluate(dc.State);
+                input = temp;
+            }
+
+            if (input == null)
+            {
+                var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY);
+                if (turnCount == 0)
+                {
+                    input = dc.State.GetValue<object>(INITIAL_VALUE_PROPERTY, null);
+                }
+                else
+                {
+                    if (this.GetType().Name == nameof(AttachmentInput))
+                    {
+                        input = dc.Context.Activity.Attachments;
+                    }
+                    else
+                    {
+                        input = dc.Context.Activity.Text;
+                    }
+                }
+            }
+
+            dc.State.SetValue(INPUT_PROPERTY, input);
+            if (input != null)
+            {
+                var state = await this.OnRecognizeInput(dc, consultation).ConfigureAwait(false);
+                if (state == InputState.Valid)
+                {
+                    foreach (var validation in this.Validations)
+                    {
+                        var (value, error) = validation.TryEvaluate(dc.State);
+                        if (value == null || (value is bool && (bool)value == false))
+                        {
+                            return InputState.Invalid;
+                        }
+                    }
+                    return InputState.Valid;
+                }
+                else
+                {
+                    return state;
+                }
+            }
+            else
+            {
+                return InputState.Missing;
+            }
         }
 
         private async Task<DialogTurnResult> PromptUser(DialogContext dc, InputState state)
