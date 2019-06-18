@@ -24,30 +24,35 @@ namespace Microsoft.Bot.Configuration
         /// <summary>
         /// Gets or sets name of the bot.
         /// </summary>
+        /// <value>The name of the bot.</value>
         [JsonProperty("name")]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets description of the bot.
         /// </summary>
+        /// <value>The description for the bot.</value>
         [JsonProperty("description")]
         public string Description { get; set; }
 
         /// <summary>
         /// Gets or sets padlock - Used to validate that the secret is consistent for all encrypted fields.
         /// </summary>
+        /// <value>The padlock.</value>
         [JsonProperty("padlock")]
         public string Padlock { get; set; }
 
         /// <summary>
         /// Gets or sets the version.
         /// </summary>
+        /// <value>The version.</value>
         [JsonProperty("version")]
         public string Version { get; set; } = "2.0";
 
         /// <summary>
         /// Gets or sets connected services.
         /// </summary>
+        /// <value>The list of connected services.</value>
         [JsonProperty("services")]
         [JsonConverter(typeof(BotServiceConverter))]
         public List<ConnectedService> Services { get; set; } = new List<ConnectedService>();
@@ -262,7 +267,7 @@ namespace Microsoft.Bot.Configuration
             if (string.IsNullOrEmpty(newService.Id))
             {
                 int maxValue = 0;
-                foreach(var service in this.Services)
+                foreach (var service in this.Services)
                 {
                     if (int.TryParse(service.Id, out int id) && id > maxValue)
                     {
