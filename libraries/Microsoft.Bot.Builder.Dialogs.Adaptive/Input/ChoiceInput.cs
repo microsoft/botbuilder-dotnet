@@ -18,10 +18,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     public class ChoiceInputOptions : InputDialogOptions
     {
         public List<Choice> Choices { get; set; }
-
-        public ChoiceInputOptions()
-        {
-        }
     }
 
     public enum ChoiceOutputFormat
@@ -35,6 +31,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     /// </summary>
     public class ChoiceInput : InputDialog
     {
+        private static readonly Dictionary<string, ChoiceFactoryOptions> DefaultChoiceOptions = new Dictionary<string, ChoiceFactoryOptions>()
+        {
+            { Spanish, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " o ", InlineOrMore = ", o ", IncludeNumbers = true } },
+            { Dutch, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " of ", InlineOrMore = ", of ", IncludeNumbers = true } },
+            { English, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " or ", InlineOrMore = ", or ", IncludeNumbers = true } },
+            { French, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " ou ", InlineOrMore = ", ou ", IncludeNumbers = true } },
+            { German, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " oder ", InlineOrMore = ", oder ", IncludeNumbers = true } },
+            { Japanese, new ChoiceFactoryOptions { InlineSeparator = "、 ", InlineOr = " または ", InlineOrMore = "、 または ", IncludeNumbers = true } },
+            { Portuguese, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " ou ", InlineOrMore = ", ou ", IncludeNumbers = true } },
+            { Chinese, new ChoiceFactoryOptions { InlineSeparator = "， ", InlineOr = " 要么 ", InlineOrMore = "， 要么 ", IncludeNumbers = true } },
+        };
+
         public List<Choice> Choices { get; set; }
 
         public string ChoicesProperty { get; set; }
@@ -45,65 +53,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         public ChoiceOutputFormat OutputFormat { get; set; } = ChoiceOutputFormat.Value;
 
+        public ChoiceFactoryOptions ChoiceOptions { get; set; } = null;
+
+        public FindChoicesOptions RecognizerOptions { get; set; } = null;
+
         public ChoiceInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
-        // Override the base method since we need to pass choices to the prompt options
-        //protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
-        //{
-        //    if (options is CancellationToken)
-        //    {
-        //        throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
-        //    }
-
-        //    // Check value in state and only call if missing or required by AlwaysPrompt
-        //    var hasValue = Property == null ? false : dc.State.HasValue(Property);
-
-        //    if (hasValue == false || AlwaysPrompt)
-        //    {
-        //        if (Prompt == null)
-        //        {
-        //            throw new ArgumentNullException(nameof(Activity));
-        //        }
-
-        //        var prompt = await Prompt.BindToData(dc.Context, dc.State).ConfigureAwait(false);
-        //        var retryPrompt = RetryPrompt == null ? prompt : await RetryPrompt.BindToData(dc.Context, dc.State).ConfigureAwait(false);
-
-        //        this.prompt.Style = this.Style;
-
-        //        var choices = this.Choices ?? new List<Choice>();
-
-        //        if (!string.IsNullOrEmpty(this.ChoicesProperty))
-        //        {
-        //            if (dc.State.TryGetValue<object>(this.ChoicesProperty, out var choiceValue))
-        //            {
-        //                try
-        //                {
-        //                    if (choiceValue is string)
-        //                    {
-        //                        choices = JsonConvert.DeserializeObject<List<Choice>>(choiceValue.ToString());
-        //                    }
-        //                    else if (choiceValue is List<Choice>)
-        //                    {
-        //                        choices = (List<Choice>)choiceValue;
-        //                    }
-        //                }
-        //                catch
-        //                {
-
-        //                }
-        //            }
-        //        }
-
-        //        return await dc.PromptAsync(this.prompt.Id, new PromptOptions() { Prompt = prompt, RetryPrompt = retryPrompt, Choices = choices}, cancellationToken).ConfigureAwait(false);
-        //    }
-        //    else
-        //    {
-        //        return await dc.EndDialogAsync(cancellationToken: cancellationToken);
-        //    }
-        //}
         protected override object OnInitializeOptions(DialogContext dc, object options)
         {
             var op = options as ChoiceInputOptions;
@@ -149,8 +107,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 var activity = dc.Context.Activity;
                 var utterance = activity.Text;
-                var opt = new FindChoicesOptions();
-                opt.Locale = English;
+                var opt = this.RecognizerOptions ?? new FindChoicesOptions();
+                opt.Locale = GetCulture(dc);
                 var results = ChoiceRecognizers.RecognizeChoices(utterance, choices, opt);
                 if (results == null || results.Count == 0)
                 {
@@ -175,20 +133,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         protected override async Task<IActivity> OnRenderPrompt(DialogContext dc, InputState state)
         {
-            var locale = "en-us";
-            if (!string.IsNullOrEmpty(dc.Context.Activity.Locale))
-            {
-                locale = dc.Context.Activity.Locale;
-            }
-            else if (this.DefaultLocale != null)
-            {
-                locale = this.DefaultLocale;
-            }
-
+            var locale = GetCulture(dc);
             var prompt = await base.OnRenderPrompt(dc, state);
             var channelId = dc.Context.Activity.ChannelId;
             var choicePrompt = new ChoicePrompt();
-            return (IActivity)choicePrompt.AppendChoices(prompt.AsMessageActivity(), channelId, this.Choices, this.Style);
+            var choiceOptions = this.ChoiceOptions ?? ChoiceInput.DefaultChoiceOptions[locale];
+            return this.AppendChoices(prompt.AsMessageActivity(), channelId, this.Choices, this.Style, choiceOptions);
+        }
+
+        private string GetCulture(DialogContext dc)
+        {
+            if (!string.IsNullOrEmpty(dc.Context.Activity.Locale))
+            {
+                return dc.Context.Activity.Locale;
+            }
+
+            if (!string.IsNullOrEmpty(this.DefaultLocale))
+            {
+                return this.DefaultLocale;
+            }
+
+            return English;
         }
     }
 }

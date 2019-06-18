@@ -6,8 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 using static Microsoft.Bot.Builder.Dialogs.DialogContext;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
@@ -178,6 +180,68 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             return false;
+        }
+
+        protected IMessageActivity AppendChoices(IMessageActivity prompt, string channelId, IList<Choice> choices, ListStyle style, ChoiceFactoryOptions options = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // Get base prompt text (if any)
+            var text = prompt != null && !string.IsNullOrEmpty(prompt.Text) ? prompt.Text : string.Empty;
+
+            // Create temporary msg
+            IMessageActivity msg;
+            switch (style)
+            {
+                case ListStyle.Inline:
+                    msg = ChoiceFactory.Inline(choices, text, null, options);
+                    break;
+
+                case ListStyle.List:
+                    msg = ChoiceFactory.List(choices, text, null, options);
+                    break;
+
+                case ListStyle.SuggestedAction:
+                    msg = ChoiceFactory.SuggestedAction(choices, text);
+                    break;
+
+                case ListStyle.HeroCard:
+                    msg = ChoiceFactory.HeroCard(choices, text);
+                    break;
+
+                case ListStyle.None:
+                    msg = Activity.CreateMessageActivity();
+                    msg.Text = text;
+                    break;
+
+                default:
+                    msg = ChoiceFactory.ForChannel(channelId, choices, text, null, options);
+                    break;
+            }
+
+            // Update prompt with text, actions and attachments
+            if (prompt != null)
+            {
+                // clone the prompt the set in the options (note ActivityEx has Properties so this is the safest mechanism)
+                prompt = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(prompt));
+
+                prompt.Text = msg.Text;
+
+                if (msg.SuggestedActions != null && msg.SuggestedActions.Actions != null && msg.SuggestedActions.Actions.Count > 0)
+                {
+                    prompt.SuggestedActions = msg.SuggestedActions;
+                }
+
+                if (msg.Attachments != null && msg.Attachments.Any())
+                {
+                    prompt.Attachments = msg.Attachments;
+                }
+
+                return prompt;
+            }
+            else
+            {
+                msg.InputHint = InputHints.ExpectingInput;
+                return msg;
+            }
         }
 
         protected virtual object OnInitializeOptions(DialogContext dc, object options)

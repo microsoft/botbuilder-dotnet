@@ -21,21 +21,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     /// <typeparam name="float"></typeparam>
     public class NumberInput : InputDialog
     {
-        /// <summary>
-        /// Minimum value expected for number
-        /// </summary>
-        public float MinValue { get; set; } = float.MinValue;
-
-        /// <summary>
-        /// Maximum value expected for number
-        /// </summary>
-        public float MaxValue { get; set; } = float.MaxValue;
-
-        /// <summary>
-        /// Precision
-        /// </summary>
-        public int Precision { get; set; } = 0;
-
         public string DefaultLocale { get; set; } = null;
 
         public NumberOutputFormat OutputFormat { get; set; } = NumberOutputFormat.Float;
@@ -49,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         {
             var input = dc.State.GetValue<object>(INPUT_PROPERTY);
 
-            var culture = dc.Context.Activity.Locale ?? DefaultLocale ?? English;
+            var culture = GetCulture(dc);
             var results = NumberRecognizer.RecognizeNumber(input.ToString(), culture);
             if (results.Count > 0)
             {
@@ -82,6 +67,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             return Task.FromResult(InputState.Valid);
+        }
+
+        private string GetCulture(DialogContext dc)
+        {
+            if (!string.IsNullOrEmpty(dc.Context.Activity.Locale))
+            {
+                return dc.Context.Activity.Locale;
+            }
+
+            if (!string.IsNullOrEmpty(this.DefaultLocale))
+            {
+                return this.DefaultLocale;
+            }
+
+            return English;
         }
     }
 }
