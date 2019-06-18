@@ -10,13 +10,17 @@
         },
         {
             "properties": {
-                "pattern": {
+                "outputFormat": {
                     "type": "string",
-                    "title": "Pattern",
-                    "description": "A regular expression pattern which must match",
-                    "examples": [
-                        "\\w{3,30}"
-                    ]
+                    "enum": [
+                        "none",
+                        "trim",
+                        "lowercase",
+                        "uppercase"
+                    ],
+                    "title": "Output Format",
+                    "description": "The TextInput output format.",
+                    "default": "none"
                 }
             }
         }

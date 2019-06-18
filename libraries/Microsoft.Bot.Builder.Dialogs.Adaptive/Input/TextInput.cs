@@ -3,65 +3,59 @@
 
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
+    public enum TextOutputFormat
+    {
+        None,
+        Trim,
+        Lowercase,
+        UpperCase
+    };
+
     /// <summary>
     /// Declarative text input to gather text data from users
     /// </summary>
-    public class TextInput : InputWrapper<TextPrompt, string>
+    public class TextInput : InputDialog
     {
-        private Regex _patternMatcher;
-
-        /// <summary>
-        /// Regex Match expression to match.
-        /// </summary>
-        public string Pattern { get { return _patternMatcher?.ToString(); } set { _patternMatcher = new Regex(value); } }
-
+        public TextOutputFormat OutputFormat { get; set; } = TextOutputFormat.None;
 
         public TextInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
-        protected override TextPrompt CreatePrompt()
-        {
-            return new TextPrompt(null, new PromptValidator<string>(async (promptContext, cancel) =>
-            {
-                if (!promptContext.Recognized.Succeeded)
-                {
-                    return false;
-                }
-
-                if (_patternMatcher == null)
-                {
-                    return true;
-                }
-
-                var value = promptContext.Recognized.Value;
-
-                if (!_patternMatcher.IsMatch(value))
-                {
-                    if (InvalidPrompt != null)
-                    {
-                        var invalid = await InvalidPrompt.BindToData(promptContext.Context, promptContext.State).ConfigureAwait(false);
-                        if (invalid != null)
-                        {
-                            await promptContext.Context.SendActivityAsync(invalid).ConfigureAwait(false);
-                        }
-
-                    }
-
-                    return false;
-                }
-
-                return true;
-            }));
-        }
-
         protected override string OnComputeId()
         {
             return $"TextInput[{BindingPath()}]";
+        }
+
+        protected override Task<InputState> OnRecognizeInput(DialogContext dc, bool consultation)
+        {
+            if (consultation)
+            {
+                return Task.FromResult(InputState.Unrecognized);
+            }
+
+            var input = dc.State.GetValue<string>(INPUT_PROPERTY);
+
+            switch (this.OutputFormat)
+            {
+                case TextOutputFormat.Trim:
+                    input = input.Trim();
+                    break;
+                case TextOutputFormat.Lowercase:
+                    input = input.ToLower();
+                    break;
+                case TextOutputFormat.UpperCase:
+                    input = input.ToUpper();
+                    break;
+            }
+
+            dc.State.SetValue(INPUT_PROPERTY, input);
+            return input.Length > 0 ? Task.FromResult(InputState.Valid) : Task.FromResult(InputState.Unrecognized);
         }
     }
 }

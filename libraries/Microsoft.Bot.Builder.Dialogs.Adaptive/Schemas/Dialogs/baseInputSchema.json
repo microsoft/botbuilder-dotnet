@@ -51,12 +51,12 @@
         "value": {
           "$role": "expression",
           "title": "Value",
-          "description": "Value to return"
+          "description": "The expression that you evaluated for input."
         },
         "valueProperty": {
           "$role": "memoryPath",
           "title": "Value Property",
-          "description": "The property to store the result of the value",
+          "description": "It is where you want to the putput of the input written to",
           "examples": [
             "user.name"
           ]

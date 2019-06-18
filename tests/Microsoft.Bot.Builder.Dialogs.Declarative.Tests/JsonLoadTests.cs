@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             .SendConversationUpdate()
                 .AssertReply("What is your age?")
             .Send("Blablabla")
-                .AssertReply("What is your age?")
+                .AssertReply("Please input a number.")
             .Send("4")
                 .AssertReply("Hello, your age is 4!")
                 .AssertReply("2 * 2.2 equals?")
