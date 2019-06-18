@@ -16,9 +16,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public LGImport(LGFileParser.ImportDefinitionContext parseTree, string source = "")
         {
             ParseTree = parseTree;
+            Source = source;
 
             Description = ExtractDescription(parseTree);
-            Path = ExtractPath(parseTree);
+            Id = ExtractId(parseTree);
         }
 
         /// <summary>
@@ -30,12 +31,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public string Description { get; }
 
         /// <summary>
-        /// Gets path of this import, what's included by '()' in a lg file.
+        /// Gets id of this import, what's included by '()' in a lg file.
         /// </summary>
         /// <value>
-        /// Path of this import.
+        /// Id of this import.
         /// </value>
-        public string Path { get; }
+        public string Id { get; }
+
+        /// <summary>
+        /// Gets origin root source of the import.
+        /// </summary>
+        /// <value>
+        /// origin root source of the import.
+        /// </value>
+        public string Source { get; }
 
         /// <summary>
         /// Gets the parse tree of this lg file.
@@ -47,6 +56,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private string ExtractDescription(LGFileParser.ImportDefinitionContext parseTree) => parseTree.IMPORT_DESC()?.GetText()?.Trim('[').Trim(']');
 
-        private string ExtractPath(LGFileParser.ImportDefinitionContext parseTree) => parseTree.IMPORT_PATH()?.GetText()?.Trim('(').Trim(')');
+        private string ExtractId(LGFileParser.ImportDefinitionContext parseTree) => parseTree.IMPORT_PATH()?.GetText()?.Trim('(').Trim(')');
     }
 }

@@ -6,7 +6,7 @@
     "type": "object",
     "allOf": [
         {
-            "$ref": "./baseSchema.json"
+            "$ref": "./baseInputSchema.json"
         },
         {
             "properties": {
