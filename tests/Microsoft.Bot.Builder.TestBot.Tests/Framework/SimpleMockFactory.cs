@@ -44,7 +44,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Framework
         /// <typeparam name="TRecognizer">The type of <see cref="IRecognizer"/>to create.</typeparam>
         /// <typeparam name="TReturns">Type type of <see cref="IRecognizerConvert"/> to return.</typeparam>
         /// <param name="returns">The value to return when <see cref="IRecognizer.RecognizeAsync{T}"/> gets called.</param>
-        /// <returns>A <see cref="Mock{TRecognizer}" />instance.</returns>
+        /// <returns>A <see cref="Mock{TRecognizer}"/> instance.</returns>
         public static Mock<TRecognizer> CreateMockLuisRecognizer<TRecognizer, TReturns>(TReturns returns)
             where TRecognizer : class, IRecognizer
             where TReturns : IRecognizerConvert, new()
@@ -61,7 +61,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Framework
         /// </summary>
         /// <typeparam name="TRecognizer">The type of <see cref="IRecognizer"/>to create.</typeparam>
         /// <param name="returns">The value to return when <see cref="IRecognizer.RecognizeAsync"/> gets called.</param>
-        /// <returns>A <see cref="Mock{TRecognizer}" />instance.</returns>
+        /// <returns>A <see cref="Mock{TRecognizer}"/> instance.</returns>
         public static Mock<TRecognizer> CreateMockLuisRecognizer<TRecognizer>(RecognizerResult returns)
             where TRecognizer : class, IRecognizer
         {

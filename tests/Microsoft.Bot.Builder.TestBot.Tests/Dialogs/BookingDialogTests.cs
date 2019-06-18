@@ -46,16 +46,13 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             Output.WriteLine($"Test Case: {bookingTestData.Name}");
             for (var i = 0; i < bookingTestData.UtterancesAndReplies.GetLength(0); i++)
             {
-                var message = bookingTestData.UtterancesAndReplies[i, 0];
-                IMessageActivity reply;
-                if (!string.IsNullOrEmpty(message))
-                {
-                    reply = await testClient.SendActivityAsync<IMessageActivity>(message);
-                }
-                else
-                {
-                    reply = testClient.GetNextReply<IMessageActivity>();
-                }
+                var utterance = bookingTestData.UtterancesAndReplies[i, 0];
+
+                // Send the activity and receive the first reply or just pull the next
+                // activity from the queue if there's nothing to send
+                var reply = !string.IsNullOrEmpty(utterance)
+                    ? await testClient.SendActivityAsync<IMessageActivity>(utterance)
+                    : testClient.GetNextReply<IMessageActivity>();
 
                 Assert.Equal(bookingTestData.UtterancesAndReplies[i, 1], reply.Text);
             }
