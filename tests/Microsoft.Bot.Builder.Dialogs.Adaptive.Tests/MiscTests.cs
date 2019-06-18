@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .Send("hi")
                     .AssertReply("name?")
                 .Send("cancel")
-                    .AssertReply("cancel?")
+                    .AssertReply("cancel? (1) Yes or (2) No")
                 .Send("yes")
                     .AssertReply("canceling")
                 .StartTestAsync();
@@ -125,9 +125,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 },
                 Steps = new List<IDialog>()
                 {
-                    new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name" },
+                    new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name", AllowInterruptions = true , Value = new ExpressionEngine().Parse("user.name")},
                     new SendActivity("Hello {user.name}, nice to meet you!"),
-                    new NumberInput() { MinValue=1, MaxValue = 110, Prompt = new ActivityTemplate("What is your age?"), OutputBinding = "user.age" },
+                    new NumberInput() { Prompt = new ActivityTemplate("What is your age?"), OutputBinding = "user.age" },
                     new SendActivity("{user.age} is a good age to be!"),
                     new SendActivity("your name is {user.name}!"),
                 },
