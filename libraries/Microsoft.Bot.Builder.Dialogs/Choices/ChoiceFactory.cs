@@ -8,8 +8,25 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
+    /// <summary>
+    /// Assists with formatting a message activity that contains a list of choices.
+    /// </summary>
     public class ChoiceFactory
     {
+        /// <summary>
+        /// Creates a message activity that includes a list of choices formatted based on the capabilities of a given channel.
+        /// </summary>
+        /// <param name="channelId">A channel ID. The <see cref="Connector.Channels"/> class contains known channel IDs.</param>
+        /// <param name="list">The list of choices to include.</param>
+        /// <param name="text">Optional, the text of the message to send.</param>
+        /// <param name="speak">Optional, the text to be spoken by your bot on a speech-enabled channel.</param>
+        /// <param name="options">Optional, the formatting options to use when rendering as a list.</param>
+        /// <returns>The created message activity.</returns>
+        /// <remarks>The algorithm prefers to format the supplied list of choices as suggested actions but can decide
+        /// to use a text based list if suggested actions aren't natively supported by the channel, there are too many
+        /// choices for the channel to display, or the title of any choice is too long.
+        /// <para>If the algorithm decides to use a list, for 3 or fewer choices with short titles it will use an inline
+        /// list; otherwise, a numbered list.</para></remarks>
         public static IMessageActivity ForChannel(string channelId, IList<Choice> list, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             channelId = channelId ?? string.Empty;
@@ -58,6 +75,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             }
         }
 
+        /// <summary>
+        /// Creates a message activity that includes a list of choices formatted as an inline list.
+        /// </summary>
+        /// <param name="choices">The list of choices to include.</param>
+        /// <param name="text">Optional, the text of the message to send.</param>
+        /// <param name="speak">Optional, the text to be spoken by your bot on a speech-enabled channel.</param>
+        /// <param name="options">Optional, the formatting options to use when rendering as a list.</param>
+        /// <returns>The created message activity.</returns>
         public static Activity Inline(IList<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             choices = choices ?? new List<Choice>();
@@ -104,6 +129,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             return MessageFactory.Text(txtBuilder.ToString(), speak, InputHints.ExpectingInput);
         }
 
+        /// <summary>
+        /// Creates a message activity that includes a list of choices formatted as a numbered or bulleted list.
+        /// </summary>
+        /// <param name="choices">The list of choices to include.</param>
+        /// <param name="text">Optional, the text of the message to send.</param>
+        /// <param name="speak">Optional, the text to be spoken by your bot on a speech-enabled channel.</param>
+        /// <param name="options">Optional, the formatting options to use when rendering as a list.</param>
+        /// <returns>The created message activity.</returns>
         public static Activity List(IList<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             return List(ToChoices(choices), text, speak, options);

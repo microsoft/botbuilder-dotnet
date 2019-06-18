@@ -1,111 +1,88 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.BotBuilderSamples.Services;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 
 namespace Microsoft.BotBuilderSamples
 {
     public class BookingDialog : CancelAndHelpDialog
     {
-        public BookingDialog()
+        private readonly IFlightBookingService _flightBookingService;
+
+        public BookingDialog(GetBookingDetailsDialog getBookingDetailsDialog, IFlightBookingService flightBookingService)
             : base(nameof(BookingDialog))
         {
-            AddDialog(new TextPrompt(nameof(TextPrompt)));
+            _flightBookingService = flightBookingService;
+            AddDialog(getBookingDetailsDialog);
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
-            AddDialog(new DateResolverDialog());
             var steps = new WaterfallStep[]
             {
-                DestinationStepAsync,
-                OriginStepAsync,
-                TravelDateStepAsync,
+                GetBookingDetailsStepAsync,
                 ConfirmStepAsync,
                 FinalStepAsync,
             };
+
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), steps));
 
             // The initial child Dialog to run.
             InitialDialogId = nameof(WaterfallDialog);
         }
 
-        private static bool IsAmbiguous(string timex)
+        private async Task<DialogTurnResult> GetBookingDetailsStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var timexPropery = new TimexProperty(timex);
-            return !timexPropery.Types.Contains(Constants.TimexTypes.Definite);
-        }
+            var bookingDetails = (BookingDetails)stepContext.Options ?? new BookingDetails();
 
-        private async Task<DialogTurnResult> DestinationStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            var bookingDetails = (BookingDetails)stepContext.Options;
-
-            if (bookingDetails.Destination == null)
-            {
-                return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Where would you like to travel to?") }, cancellationToken);
-            }
-            else
-            {
-                return await stepContext.NextAsync(bookingDetails.Destination);
-            }
-        }
-
-        private async Task<DialogTurnResult> OriginStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            var bookingDetails = (BookingDetails)stepContext.Options;
-
-            bookingDetails.Destination = (string)stepContext.Result;
-
-            if (bookingDetails.Origin == null)
-            {
-                return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Where are you traveling from?") }, cancellationToken);
-            }
-            else
-            {
-                return await stepContext.NextAsync(bookingDetails.Origin);
-            }
-        }
-
-        private async Task<DialogTurnResult> TravelDateStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            var bookingDetails = (BookingDetails)stepContext.Options;
-
-            bookingDetails.Origin = (string)stepContext.Result;
-
-            if (bookingDetails.TravelDate == null || IsAmbiguous(bookingDetails.TravelDate))
-            {
-                return await stepContext.BeginDialogAsync(nameof(DateResolverDialog), bookingDetails.TravelDate, cancellationToken);
-            }
-            else
-            {
-                return await stepContext.NextAsync(bookingDetails.TravelDate);
-            }
+            return await stepContext.BeginDialogAsync(nameof(GetBookingDetailsDialog), bookingDetails, cancellationToken);
         }
 
         private async Task<DialogTurnResult> ConfirmStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var bookingDetails = (BookingDetails)stepContext.Options;
+            var bookingDetails = (BookingDetails)stepContext.Result;
 
-            bookingDetails.TravelDate = (string)stepContext.Result;
+            // Store the booking details in the waterfall state so we can use it once the user confirms
+            stepContext.Values["BookingInfo"] = bookingDetails;
 
             var msg = $"Please confirm, I have you traveling to: {bookingDetails.Destination} from: {bookingDetails.Origin} on: {bookingDetails.TravelDate}";
-
             return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text(msg) }, cancellationToken);
         }
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            if ((bool)stepContext.Result == true)
+            string msg;
+            if ((bool)stepContext.Result)
             {
-                var bookingDetails = (BookingDetails)stepContext.Options;
+                // Pull the booking details from the waterfall state.
+                var bookingDetails = (BookingDetails)stepContext.Values["BookingInfo"];
 
-                return await stepContext.EndDialogAsync(bookingDetails);
+                // Now we have all the booking information to call the booking service.
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Booking your flight, this shouldn't take long..."), cancellationToken);
+
+                var flightBooked = await _flightBookingService.BookFlight(bookingDetails, cancellationToken);
+                if (flightBooked)
+                {
+                    // If the call to the booking service was successful tell the user.
+                    var timeProperty = new TimexProperty(bookingDetails.TravelDate);
+                    var travelDateMsg = timeProperty.ToNaturalLanguage(DateTime.Now);
+                    msg = $"I have you booked to {bookingDetails.Destination} from {bookingDetails.Origin} on {travelDateMsg}";
+                }
+                else
+                {
+                    msg = "Sorry, I was unable to secure your reservation, please try another flight";
+                }
             }
             else
             {
-                return await stepContext.EndDialogAsync(null);
+                msg = "OK, we can do this later";
             }
+
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text(msg), cancellationToken);
+            return await stepContext.EndDialogAsync(null, cancellationToken);
         }
     }
 }

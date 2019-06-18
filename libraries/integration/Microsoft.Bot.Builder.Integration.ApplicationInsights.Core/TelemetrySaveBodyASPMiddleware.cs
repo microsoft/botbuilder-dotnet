@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -24,7 +24,9 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
         {
             var request = httpContext.Request;
 
-            if (request.Method == "POST" && request.ContentType.StartsWith("application/json"))
+            if (request.Method == "POST"
+                && !string.IsNullOrEmpty(request.ContentType)
+                && request.ContentType.StartsWith("application/json"))
             {
                 var items = httpContext.Items;
                 request.EnableBuffering();

@@ -259,22 +259,25 @@ namespace Microsoft.Bot.Configuration
                 throw new ArgumentNullException(nameof(newService));
             }
 
-            if (this.Services.Where(s => s.Type == newService.Type && s.Id == newService.Id).Any())
+            if (string.IsNullOrEmpty(newService.Id))
+            {
+                int maxValue = 0;
+                foreach(var service in this.Services)
+                {
+                    if (int.TryParse(service.Id, out int id) && id > maxValue)
+                    {
+                        maxValue = id;
+                    }
+                }
+
+                newService.Id = (++maxValue).ToString();
+            }
+            else if (this.Services.Where(s => s.Type == newService.Type && s.Id == newService.Id).Any())
             {
                 throw new Exception($"service with {newService.Id} is already connected");
             }
-            else
-            {
-                // Assign a unique random id between 0-255 (255 services seems like a LOT of services
-                var rnd = new Random();
-                do
-                {
-                    newService.Id = rnd.Next(byte.MaxValue).ToString();
-                }
-                while (this.Services.Where(s => s.Id == newService.Id).Any());
 
-                this.Services.Add(newService);
-            }
+            this.Services.Add(newService);
         }
 
         /// <summary>

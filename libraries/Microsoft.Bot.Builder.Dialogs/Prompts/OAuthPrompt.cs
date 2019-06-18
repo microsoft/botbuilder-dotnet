@@ -103,7 +103,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             var timeout = _settings.Timeout ?? DefaultPromptTimeout;
             var state = dc.ActiveDialog.State;
             state[PersistedOptions] = opt;
-            state[PersistedState] = new Dictionary<string, object>();
+            state[PersistedState] = new Dictionary<string, object>
+            {
+                { Prompt<int>.AttemptCountKey, 0 },
+            };
+
             state[PersistedExpires] = DateTime.Now.AddMilliseconds(timeout);
 
             // Attempt to get the users token
@@ -144,13 +148,17 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (hasTimedOut)
             {
-                // if the token fetch request timesout, complete the prompt with no result.
-                return await dc.EndDialogAsync(cancellationToken).ConfigureAwait(false);
+                // if the token fetch request times out, complete the prompt with no result.
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else
             {
                 var promptState = (IDictionary<string, object>)state[PersistedState];
                 var promptOptions = (PromptOptions)state[PersistedOptions];
+
+                // Increment attempt count
+                // Convert.ToInt32 For issue https://github.com/Microsoft/botbuilder-dotnet/issues/1859
+                promptState[Prompt<int>.AttemptCountKey] = Convert.ToInt32(promptState[Prompt<int>.AttemptCountKey]) + 1;
 
                 // Validate the return value
                 var isValid = false;
@@ -311,11 +319,32 @@ namespace Microsoft.Bot.Builder.Dialogs
                     throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
                 }
 
-                var token = await adapter.GetUserTokenAsync(turnContext, _settings.ConnectionName, magicCode, cancellationToken).ConfigureAwait(false);
-                if (token != null)
+                // Getting the token follows a different flow in Teams. At the signin completion, Teams
+                // will send the bot an "invoke" activity that contains a "magic" code. This code MUST
+                // then be used to try fetching the token from Botframework service within some time
+                // period. We try here. If it succeeds, we return 200 with an empty body. If it fails
+                // with a retriable error, we return 500. Teams will re-send another invoke in this case.
+                // If it failes with a non-retriable error, we return 404. Teams will not (still work in
+                // progress) retry in that case.
+                try
                 {
-                    result.Succeeded = true;
-                    result.Value = token;
+                    var token = await adapter.GetUserTokenAsync(turnContext, _settings.ConnectionName, magicCode, cancellationToken).ConfigureAwait(false);
+
+                    if (token != null)
+                    {
+                        result.Succeeded = true;
+                        result.Value = token;
+
+                        await turnContext.SendActivityAsync(new Activity { Type = ActivityTypesEx.InvokeResponse }, cancellationToken).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await turnContext.SendActivityAsync(new Activity { Type = ActivityTypesEx.InvokeResponse, Value = new InvokeResponse { Status = 404 } }, cancellationToken).ConfigureAwait(false);
+                    }
+                }
+                catch
+                {
+                    await turnContext.SendActivityAsync(new Activity { Type = ActivityTypesEx.InvokeResponse, Value = new InvokeResponse { Status = 500 } }, cancellationToken).ConfigureAwait(false);
                 }
             }
             else if (turnContext.Activity.Type == ActivityTypes.Message)
