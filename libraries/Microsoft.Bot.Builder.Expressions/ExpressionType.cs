@@ -89,7 +89,6 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string ConvertFromUTC = "convertFromUTC";
         public const string ConvertToUTC = "convertToUTC";
         public const string AddToTime = "addToTime";
-        public const string ConvertTimeZone = "convertTimeZone";
         public const string StartOfDay = "startOfDay";
         public const string StartOfHour = "startOfHour";
         public const string StartOfMonth = "startOfMonth";
