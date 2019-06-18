@@ -232,6 +232,37 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
+        public async Task QnaMaker_LowScoreVariation()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
+
+            var qna = GetQnAMaker(
+                mockHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname,
+                },
+                new QnAMakerOptions
+                {
+                    Top = 5,
+                });
+
+            var results = await qna.GetAnswersAsync(GetContext("Q11"));
+            Assert.IsNotNull(results);
+            Assert.AreEqual(results.Length, 4, "should get four results");
+
+            var filteredResults = qna.GetLowScoreVariation(results);
+            Assert.IsNotNull(filteredResults);
+            Assert.AreEqual(filteredResults.Length, 3, "should get three results");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
         public async Task QnaMaker_ReturnsAnswer_Configuration()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -500,55 +531,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             // Verify that we added the bot.builder package details.
             Assert.IsTrue(interceptHttp.UserAgent.Contains("Microsoft.Bot.Builder.AI.QnA/4"));
-        }
-
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        [ExpectedException(typeof(NotSupportedException))]
-        public async Task QnaMaker_V2LegacyEndpoint_ConvertsToHaveIdPropertyInResult()
-        {
-            var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetV2LegacyRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_LegacyEndpointAnswer.json"));
-
-            var v2LegacyEndpoint = new QnAMakerEndpoint
-            {
-                KnowledgeBaseId = _knowlegeBaseId,
-                EndpointKey = _endpointKey,
-                Host = $"{_hostname}/v2.0",
-            };
-
-            var v2Qna = GetQnAMaker(mockHttp, v2LegacyEndpoint);
-
-            var v2legacyResult = await v2Qna.GetAnswersAsync(GetContext("How do I be the best?"));
-
-            Assert.IsNotNull(v2legacyResult);
-            Assert.IsTrue(v2legacyResult[0]?.Id != null);
-        }
-
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        public async Task QnaMaker_V3LegacyEndpoint_ConvertsToHaveIdPropertyInResult()
-        {
-            var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetV3LegacyRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_LegacyEndpointAnswer.json"));
-
-            var v3LegacyEndpoint = new QnAMakerEndpoint
-            {
-                KnowledgeBaseId = _knowlegeBaseId,
-                EndpointKey = _endpointKey,
-                Host = $"{_hostname}/v3.0",
-            };
-
-            var v3Qna = GetQnAMaker(mockHttp, v3LegacyEndpoint);
-
-            var v3legacyResult = await v3Qna.GetAnswersAsync(GetContext("How do I be the best?"));
-
-            Assert.IsNotNull(v3legacyResult);
-            Assert.IsTrue(v3legacyResult[0]?.Id != null);
         }
 
         [TestMethod]
@@ -1145,11 +1127,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             return new TurnContext(b, a);
         }
 
-        private string GetV2LegacyRequestUrl() => $"{_hostname}/v2.0/knowledgebases/{_knowlegeBaseId}/generateanswer";
-
-        private string GetV3LegacyRequestUrl() => $"{_hostname}/v3.0/knowledgebases/{_knowlegeBaseId}/generateanswer";
-
         private string GetRequestUrl() => $"{_hostname}/knowledgebases/{_knowlegeBaseId}/generateanswer";
+
+        private string GetTrainRequestUrl() => $"{_hostname}/knowledgebases/{_knowlegeBaseId}/train";
 
         private Stream GetResponse(string fileName)
         {
