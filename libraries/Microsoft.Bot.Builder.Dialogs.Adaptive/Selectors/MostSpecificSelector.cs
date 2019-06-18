@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             }
         }
 
-        public async Task<IReadOnlyList<int>> Select(PlanningContext context, CancellationToken cancel)
+        public async Task<IReadOnlyList<int>> Select(SequenceContext context, CancellationToken cancel)
         {
             var nodes = _tree.Matches(context.State);
             IReadOnlyList<int> selections;

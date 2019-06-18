@@ -2,6 +2,7 @@
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
     "autoEndDialog": false,
+    "generator": "ExternalLanguage.main.lg",
     "recognizer": {
         "$type": "Microsoft.RegexRecognizer",
         "intents": {

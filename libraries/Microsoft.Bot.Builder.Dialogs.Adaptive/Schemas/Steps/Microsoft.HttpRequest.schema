@@ -2,7 +2,7 @@
     "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "type": "object",
-    "title": "Goto Dialog",
+    "title": "Http Request",
     "description": "This is a step which replaces the current dialog with the target dialog",
     "properties": {
         "method": {
@@ -40,7 +40,7 @@
                 "dialog.contosodata"
             ]
         },
-        "header": {
+        "headers": {
             "type": "object",
             "additionProperties": true,
             "title": "Http headers",
@@ -55,7 +55,8 @@
                 "json",
                 "activity",
                 "activities"
-            ]
+            ],
+            "default": "json"
         }
     },
     "required": [

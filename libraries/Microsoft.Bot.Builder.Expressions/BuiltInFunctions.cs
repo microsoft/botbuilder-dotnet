@@ -6,8 +6,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml;
+using System.Xml.Linq;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -38,7 +42,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <summary>
         /// The default date time format string.
         /// </summary>
-        public static readonly string DefaultDateTimeFormat = "o";
+        public static readonly string DefaultDateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
 
         /// <summary>
         /// Verify the result of an expression is of the appropriate type and return a string if not.
@@ -206,7 +210,7 @@ namespace Microsoft.Bot.Builder.Expressions
 
         /// <summary>
         /// Validate there is a single string argument.
-        /// </summary>
+        /// </summary> 
         /// <param name="expression">Expression to validate.</param>
         public static void ValidateUnaryString(Expression expression)
             => ValidateArityAndAnyType(expression, 1, 1, ReturnType.String);
@@ -272,7 +276,7 @@ namespace Microsoft.Bot.Builder.Expressions
         public static string VerifyContainer(object value, Expression expression, int _)
         {
             string error = null;
-            if (!(value is string) && !(value is IList))
+            if (!(value is string) && !(value is IList) && !(value is IEnumerable))
             {
                 error = $"{expression} must be a string or list.";
             }
@@ -605,7 +609,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         if (args[0] is string string0 && args[1] is int int1)
                         {
                             var formatString = (args.Count() == 3 && args[2] is string string1) ? string1 : DefaultDateTimeFormat;
-                            (value, error) = ParseTimestamp(string0, dt => function(dt, int1).ToString(formatString));
+                            (value, error) = ParseISOTimestamp(string0, dt => function(dt, int1).ToString(formatString));
                         }
                         else
                         {
@@ -1200,6 +1204,385 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
+        private static (object, string) ParseISOTimestamp(string timeStamp, Func<DateTime, object> transform = null)
+        {
+            object result = null;
+            string error = null;
+            if (DateTime.TryParse(
+                    s: timeStamp,
+                    provider: CultureInfo.InvariantCulture,
+                    styles: DateTimeStyles.RoundtripKind,
+                    result: out var parsed))
+            {
+                if (parsed.ToString(DefaultDateTimeFormat).Equals(timeStamp, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    result = transform != null ? transform(parsed) : parsed;
+                }
+                else
+                {
+                    error = $"{timeStamp} is not standard ISO format.";
+                }
+            }
+            else
+            {
+                error = $"Could not parse {timeStamp}";
+            }
+            return (result, error);
+        }
+
+        private static (object, string) ConvertTimeZoneFormat(string timezone)
+        {
+            object convertedTimeZone = null;
+            string convertedTimeZoneStr = null;
+            string error = null;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                convertedTimeZoneStr = TimeZoneConverter.IanaToWindows(timezone);
+            }
+            else
+            {
+                convertedTimeZoneStr = TimeZoneConverter.WindowsToIana(timezone);
+            }
+
+            try
+            {
+                convertedTimeZone = TimeZoneInfo.FindSystemTimeZoneById(convertedTimeZoneStr);
+            }
+            catch
+            {
+                error = $"{timezone} is an illegal timezone";
+            }
+
+            return (convertedTimeZone, error);
+        }
+
+        private static (string, string) ReturnFormatTimeStampStr(DateTime datetime, string format)
+        {
+            string result = null;
+            string error = null;
+            try
+            {
+                result = datetime.ToString(format);
+            }
+            catch
+            {
+                error = $"illegal format representation: {format}";
+            }
+
+            return (result, error);
+        }
+
+        private static (string, string) ConvertFromUTC(string utcTimestamp, string timezone, string format)
+        {
+            string error = null;
+            string result = null;
+            var utcDt = DateTime.UtcNow;
+            object parsed = null;
+            object convertedTimeZone = null;
+            (parsed, error) = ParseISOTimestamp(utcTimestamp);
+            if (error == null)
+            {
+                utcDt = ((DateTime)parsed).ToUniversalTime();
+            }
+
+            if (error == null)
+            {
+                (convertedTimeZone, error) = ConvertTimeZoneFormat(timezone);
+
+                if (error == null)
+                {
+                    var convertedDateTime = TimeZoneInfo.ConvertTimeFromUtc(utcDt, (TimeZoneInfo)convertedTimeZone);
+                    (result, error) = ReturnFormatTimeStampStr(convertedDateTime, format);
+                }
+            }
+
+            return (result, error);
+        }
+
+        private static (string, string) ConvertToUTC(string sourceTimestamp, string sourceTimezone, string format)
+        {
+            string error = null;
+            string result = null;
+            var srcDt = DateTime.UtcNow;
+            object convertedTimeZone = null;
+            try
+            {
+                srcDt = DateTime.Parse(sourceTimestamp);
+            }
+            catch
+            {
+                error = $"illegal timestamp representation {sourceTimestamp}";
+            }
+
+            if (error == null)
+            {
+                (convertedTimeZone, error) = ConvertTimeZoneFormat(sourceTimezone);
+                if (error == null)
+                {
+                    var convertedDateTime = TimeZoneInfo.ConvertTimeToUtc(srcDt, (TimeZoneInfo)convertedTimeZone);
+                    (result, error) = ReturnFormatTimeStampStr(convertedDateTime, format);
+                }
+            }
+
+            return (result, error);
+        }
+
+        private static (string, string) AddToTime(string timestamp, int interval, string timeUnit, string format)
+        {
+            string result = null;
+            string error = null;
+            object parsed = null;
+            (parsed, error) = ParseISOTimestamp(timestamp);
+            if (error == null)
+            {
+                var ts = (DateTime)parsed;
+                Func<DateTime, DateTime> converter;
+                (converter, error) = DateTimeConverter(interval, timeUnit, false);
+                if (error == null)
+                {
+                    var addedTimeStamp = converter(ts);
+                    (result, error) = ReturnFormatTimeStampStr(addedTimeStamp, format);
+                }
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) StartOfDay(string timestamp, string format)
+        {
+            string result = null;
+            string error = null;
+            object parsed = null;
+            (parsed, error) = ParseISOTimestamp(timestamp);
+
+            if (error == null)
+            {
+                var ts = (DateTime)parsed;
+                var startOfDay = ts.Date;
+                (result, error) = ReturnFormatTimeStampStr(startOfDay, format);
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) StartOfHour(string timestamp, string format)
+        {
+            string result = null;
+            string error = null;
+            object parsed = null;
+            (parsed, error) = ParseISOTimestamp(timestamp);
+
+            if (error == null)
+            {
+                var ts = (DateTime)parsed;
+                var startOfDay = ts.Date;
+                var hours = ts.Hour;
+                var startOfHour = startOfDay.AddHours(hours);
+                (result, error) = ReturnFormatTimeStampStr(startOfHour, format);
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) StartOfMonth(string timestamp, string format)
+        {
+            string result = null;
+            object parsed = null;
+            string error = null;
+            (parsed, error) = ParseISOTimestamp(timestamp);
+
+            if (error == null)
+            {
+                var ts = (DateTime)parsed;
+                var startOfDay = ts.Date;
+                var days = ts.Day;
+                var startOfMonth = startOfDay.AddDays(1-days);
+                (result, error) = ReturnFormatTimeStampStr(startOfMonth, format);
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) Ticks(string timestamp)
+        {
+            object result = null;
+            object parsed = null;
+            string error = null;
+            (parsed, error) = ParseISOTimestamp(timestamp);
+
+            if (error == null)
+            {
+                var ts = (DateTime)parsed;
+                result = ts.Ticks;
+            }
+
+            return (result, error);
+        }
+
+        // URI Parsing Functions
+        private static (object, string) ParseUri(string uri)
+        {
+            object result = null;
+            string error = null;
+            try
+            {
+                result = new Uri(uri);
+            }
+            catch
+            {
+                error = $"{uri} is an illegal URI string";
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) UriHost(string uri)
+        {
+            object result = null;
+            string error = null;
+            object parsed = null;
+            (parsed, error) = ParseUri(uri);
+
+            if (error == null)
+            {
+                try
+                {
+                    var uriBase = (Uri)parsed;
+                    var host = uriBase.Host;
+                    result = host.ToString();
+                }
+                catch
+                {
+                    error = "invalid operation, input uri should be an absolute URI";
+                }
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) UriPath(string uri)
+        {
+            object result = null;
+            string error = null;
+            object parsed = null;
+            (parsed, error) = ParseUri(uri);
+
+            if (error == null)
+            {
+                try
+                {
+                    var uriBase = (Uri)parsed;
+                    result = uriBase.AbsolutePath.ToString();
+                }
+                catch
+                {
+                    error = "invalid operation, input uri should be an absolute URI";
+                }
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) UriPathAndQuery(string uri)
+        {
+            object result = null;
+            string error = null;
+            dynamic uriBase = null;
+            try
+            {
+                uriBase = new Uri(uri);
+            }
+            catch
+            {
+                error = "illegal URI string";
+            }
+
+            if (error == null)
+            {
+                try
+                {
+                    var pathAndQuery = uriBase.PathAndQuery;
+                    result = pathAndQuery.ToString();
+                }
+                catch
+                {
+                    error = "invalid operation, input uri should be an absolute URI";
+                }
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) UriPort(string uri)
+        {
+            object result = null;
+            string error = null;
+            object parsed = null;
+            (parsed, error) = ParseUri(uri);
+            if (error == null)
+            {
+                try
+                {
+                    var uriBase = (Uri)parsed;
+                    var port = uriBase.Port;
+                    result = (int)port;
+                }
+                catch
+                {
+                    error = "invalid operation, input uri should be an absolute URI";
+                }
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) UriQuery(string uri)
+        {
+            object result = null;
+            string error = null;
+            object parsed = null;
+            (parsed, error) = ParseUri(uri);
+            if (error == null)
+            {
+                try
+                {
+                    var uriBase = (Uri)parsed;
+                    var query = uriBase.Query;
+                    result = query.ToString();
+                }
+                catch
+                {
+                    error = "invalid operation, input uri should be an absolute URI";
+                }
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) UriScheme(string uri)
+        {
+            object result = null;
+            string error = null;
+            object parsed = null;
+            (parsed, error) = ParseUri(uri);
+
+            if (error == null)
+            {
+                try
+                {
+                    var uriBase = (Uri)parsed;
+                    var scheme = uriBase.Scheme;
+                    result = scheme.ToString();
+                }
+                catch
+                {
+                    error = "invalid operation, input uri should be an absolute URI";
+                }
+            }
+
+            return (result, error);
+        }
+
         private static string AddOrdinal(int num)
         {
             var hasResult = false;
@@ -1237,6 +1620,301 @@ namespace Microsoft.Bot.Builder.Expressions
             }
 
             return ordinalResult;
+        }
+
+        // object manipulation
+        private static object Coalesce(object[] objectList)
+        {
+            foreach (var obj in objectList)
+            {
+                if (obj != null)
+                {
+                    return obj;
+                }
+            }
+
+            return null;
+        }
+
+        private static (object, string) XPath(object xmlObj, object xpath)
+        {
+            object value = null;
+            object result = null;
+            string error = null;
+            var doc = new XmlDocument();
+            try
+            {
+                doc.LoadXml(xmlObj.ToString());
+            }
+            catch
+            {
+                error = "not valid xml input";
+            }
+
+            if (error == null)
+            {
+                var nav = doc.CreateNavigator();
+                var strExpr = xpath.ToString();
+                var nodeList = new List<string>();
+                try
+                {
+                    value = nav.Evaluate(strExpr);
+                    if (value is IEnumerable)
+                    {
+                        var iterNodes = nav.Select(strExpr);
+                        while (iterNodes.MoveNext())
+                        {
+                            var nodeType = (System.Xml.XmlNodeType)iterNodes.Current.NodeType;
+                            var name = iterNodes.Current.Name;
+                            var nameSpaceURI = iterNodes.Current.NamespaceURI.ToString();
+                            XmlNode node = doc.CreateNode(nodeType, name, nameSpaceURI);
+                            node.InnerText = iterNodes.Current.Value;
+                            nodeList.Add(node.OuterXml.ToString());
+                        }
+
+                        if (nodeList.Count == 0)
+                        {
+                            error = "there is no matched nodes in the xml";
+                        }
+                    }
+                }
+                catch
+                {
+                    error = $"cannot evaluate the xpath query expression: {xpath.ToString()}";
+                }
+
+                if (error == null)
+                {
+                    if (nodeList.Count >= 1)
+                    {
+                        result = nodeList.ToArray();
+                    }
+                    else
+                    {
+                        result = value;
+                    }
+                }
+            }
+
+            return (result, error);
+        }
+
+        // conversion functions
+        private static string ToBinary(string strToConvert)
+        {
+            var result = string.Empty;
+            foreach (var element in strToConvert.ToCharArray())
+            {
+                result += Convert.ToString(element, 2).PadLeft(8, '0');
+            }
+
+            return result;
+        }
+
+        private static (object, string) ToXml(object contentToConvert)
+        {
+            string error = null;
+            XDocument xml = null;
+            string result = null;
+            try
+            {
+                if (contentToConvert is string str)
+                {
+                    xml = XDocument.Load(JsonReaderWriterFactory.CreateJsonReader(Encoding.ASCII.GetBytes(str), new XmlDictionaryReaderQuotas()));
+                }
+                else
+                {
+                    xml = XDocument.Load(JsonReaderWriterFactory.CreateJsonReader(Encoding.ASCII.GetBytes(contentToConvert.ToString()), new XmlDictionaryReaderQuotas()));
+                }
+
+                result = xml.ToString().TrimStart('{').TrimEnd('}');
+            }
+            catch
+            {
+                error = "Invalid json";
+            }
+
+            return (result, error);
+        }
+
+        // collection functions
+        private static (object value, string error) Skip(Expression expression, object state)
+        {
+            object result = null;
+            string error;
+            object arr;
+            (arr, error) = expression.Children[0].TryEvaluate(state);
+
+            if (error == null)
+            {
+                if (TryParseList(arr, out var list))
+                {
+                    object start;
+                    var startInt = 0;
+                    var startExpr = expression.Children[1];
+                    (start, error) = startExpr.TryEvaluate(state);
+                    if (error == null)
+                    {
+                        if (start == null || !start.IsInteger())
+                        {
+                            error = $"{startExpr} is not an integer.";
+                        }
+                        else
+                        {
+                            startInt = (int)start;
+                            if (startInt < 0 || startInt >= list.Count)
+                            {
+                                error = $"{startExpr}={start} which is out of range for {arr}";
+                            }
+                        }
+
+                        if (error == null)
+                        {
+                            result = list.OfType<object>().Skip(startInt).ToList();
+                        }
+                    }
+                }
+                else
+                {
+                    error = $"{expression.Children[0]} is not array.";
+                }
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) Take(Expression expression, object state)
+        {
+            object result = null;
+            string error;
+            object arr;
+            (arr, error) = expression.Children[0].TryEvaluate(state);
+            if (error == null)
+            {
+                var arrIsList = TryParseList(arr, out var list);
+                var arrIsStr = arr.GetType() == typeof(string);
+                if (arrIsList || arrIsStr)
+                {
+                    object countObj;
+                    var countExpr = expression.Children[1];
+                    (countObj, error) = countExpr.TryEvaluate(state);
+                    if (error == null)
+                    {
+                        if (countObj == null || !countObj.IsInteger())
+                        {
+                            error = $"{countExpr} is not an integer.";
+                        }
+                        else
+                        {
+                            var count = (int)countObj;
+                            if (arrIsList)
+                            {
+                                if (count < 0 || count >= list.Count)
+                                {
+                                    error = $"{countExpr}={count} which is out of range for {arr}";
+                                }
+                                else
+                                {
+                                    result = list.OfType<object>().Take(count).ToList();
+                                }
+                            }
+                            else
+                            {
+                                if (count < 0 || count > list.Count)
+                                {
+                                    error = $"{countExpr}={count} which is out of range for {arr}";
+                                }
+                                else
+                                {
+                                    result = arr.ToString().Substring(0, count);
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    error = $"{expression.Children[0]} is not array or string.";
+                }
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) SubArray(Expression expression, object state)
+        {
+            object result = null;
+            string error;
+            object arr;
+            (arr, error) = expression.Children[0].TryEvaluate(state);
+
+            if (error == null)
+            {
+                if (TryParseList(arr, out var list))
+                {
+                    var startExpr = expression.Children[1];
+                    object startObj;
+                    (startObj, error) = startExpr.TryEvaluate(state);
+                    var start = 0;
+                    if (error == null)
+                    {
+                        if (startObj == null || !startObj.IsInteger())
+                        {
+                            error = $"{startExpr} is not an integer.";
+                        }
+                        else
+                        {
+                            start = (int)startObj;
+                        }
+
+                        if (error == null && (start < 0 || start > list.Count))
+                        {
+                            error = $"{startExpr}={start} which is out of range for {arr}";
+                        }
+
+                        if (error == null)
+                        {
+                            var end = 0;
+                            if (expression.Children.Length == 2)
+                            {
+                                end = list.Count;
+                            }
+                            else
+                            {
+                                var endExpr = expression.Children[2];
+                                object endObj;
+                                (endObj, error) = endExpr.TryEvaluate(state);
+                                if (error == null)
+                                {
+                                    if (endObj == null || !endObj.IsInteger())
+                                    {
+                                        error = $"{endExpr} is not an integer.";
+                                    }
+                                    else
+                                    {
+                                        end = (int)endObj;
+                                    }
+                                    if (error == null && (end < 0 || end > list.Count))
+                                    {
+                                        error = $"{endExpr}={end} which is out of range for {arr}";
+                                    }
+                                }
+                            }
+
+                            if (error == null)
+                            {
+                                result = list.OfType<object>().Skip(start).Take(end - start).ToList();
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    error = $"{expression.Children[0]} is not array or string.";
+                }
+            }
+
+            return (result, error);
         }
 
         private static bool IsSameDay(DateTime date1, DateTime date2) => date1.Year == date2.Year && date1.Month == date2.Month && date1.Day == date2.Day;
@@ -1309,6 +1987,30 @@ namespace Microsoft.Bot.Builder.Expressions
                     ReturnType.Number,
                     ValidateUnary),
                 new ExpressionEvaluator(
+                    ExpressionType.Range,
+                    BuiltInFunctions.ApplyWithError(
+                        args =>
+                        {
+                            string error = null;
+                            IList result = null;
+                            var count = (int)args[1];
+                            if (count <= 0)
+                            {
+                                error = $"The second parameter should be more than zero";
+                            }
+                            else
+                            {
+                                result = Enumerable.Range((int) args[0], count).ToList();
+                            }
+
+                            return (result, error);
+                        },
+                        BuiltInFunctions.VerifyInteger),
+                    ReturnType.Object,
+                    BuiltInFunctions.ValidateBinaryNumber),
+
+                // Collection Functions
+                new ExpressionEvaluator(
                     ExpressionType.Count,
                     Apply(
                         args =>
@@ -1356,6 +2058,21 @@ namespace Microsoft.Bot.Builder.Expressions
                         }, VerifyList),
                     ReturnType.Object,
                     ValidateAtLeastOne),
+                new ExpressionEvaluator(
+                    ExpressionType.Skip,
+                    BuiltInFunctions.Skip,
+                    ReturnType.Object,
+                    (expression) => BuiltInFunctions.ValidateOrder(expression, null, ReturnType.Object, ReturnType.Number)),
+                new ExpressionEvaluator(
+                    ExpressionType.Take,
+                    BuiltInFunctions.Take,
+                    ReturnType.Object,
+                    (expression) => BuiltInFunctions.ValidateOrder(expression, null, ReturnType.Object, ReturnType.Number)),
+                new ExpressionEvaluator(
+                    ExpressionType.SubArray,
+                    BuiltInFunctions.SubArray,
+                    ReturnType.Object,
+                    (expression) => BuiltInFunctions.ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.Object, ReturnType.Number)),
 
                 // Booleans
                 Comparison(ExpressionType.LessThan, args => args[0] < args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
@@ -1479,6 +2196,21 @@ namespace Microsoft.Bot.Builder.Expressions
                     },
                     ReturnType.String,
                     expr => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.NewGuid,
+                    BuiltInFunctions.Apply(args => Guid.NewGuid().ToString()),
+                    ReturnType.String,
+                    (exprssion) => BuiltInFunctions.ValidateArityAndAnyType(exprssion, 0, 0)),
+                new ExpressionEvaluator(
+                    ExpressionType.IndexOf,
+                    Apply(args => args[0].IndexOf(args[1]), VerifyString),
+                    ReturnType.Number,
+                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.LastIndexOf,
+                    Apply(args => args[0].LastIndexOf(args[1]), VerifyString),
+                    ReturnType.Number,
+                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String)),
 
                 // Date and time
                 TimeTransform(ExpressionType.AddDays, (ts, add) => ts.AddDays(add)),
@@ -1487,32 +2219,32 @@ namespace Microsoft.Bot.Builder.Expressions
                 TimeTransform(ExpressionType.AddSeconds, (ts, add) => ts.AddSeconds(add)),
                 new ExpressionEvaluator(
                     ExpressionType.DayOfMonth,
-                    ApplyWithError(args => ParseTimestamp((string) args[0], dt => dt.Day), VerifyString),
+                    ApplyWithError(args => ParseISOTimestamp((string) args[0], dt => dt.Day), VerifyString),
                     ReturnType.Number,
                     ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.DayOfWeek,
-                    ApplyWithError(args => ParseTimestamp((string) args[0], dt => (int) dt.DayOfWeek), VerifyString),
+                    ApplyWithError(args => ParseISOTimestamp((string) args[0], dt => (int) dt.DayOfWeek), VerifyString),
                     ReturnType.Number,
                     ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.DayOfYear,
-                    ApplyWithError(args => ParseTimestamp((string) args[0], dt => dt.DayOfYear), VerifyString),
+                    ApplyWithError(args => ParseISOTimestamp((string) args[0], dt => dt.DayOfYear), VerifyString),
                     ReturnType.Number,
                     ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.Month,
-                    ApplyWithError(args => ParseTimestamp((string) args[0], dt => dt.Month), VerifyString),
+                    ApplyWithError(args => ParseISOTimestamp((string) args[0], dt => dt.Month), VerifyString),
                     ReturnType.Number,
                     ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.Date,
-                    ApplyWithError(args => ParseTimestamp((string) args[0], dt => dt.Date.ToString("M/dd/yyyy")), VerifyString),
+                    ApplyWithError(args => ParseISOTimestamp((string) args[0], dt => dt.Date.ToString("M/dd/yyyy")), VerifyString),
                     ReturnType.String,
                     ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.Year,
-                    ApplyWithError(args => ParseTimestamp((string) args[0], dt => dt.Year), VerifyString),
+                    ApplyWithError(args => ParseISOTimestamp((string) args[0], dt => dt.Year), VerifyString),
                     ReturnType.Number,
                     ValidateUnaryString),
                 new ExpressionEvaluator(
@@ -1521,9 +2253,28 @@ namespace Microsoft.Bot.Builder.Expressions
                     ReturnType.String),
                 new ExpressionEvaluator(
                     ExpressionType.FormatDateTime,
-                    ApplyWithError(args => ParseTimestamp((string) args[0], dt => dt.ToString(args.Count() == 2 ? args[1] : DefaultDateTimeFormat)), VerifyString),
+                    ApplyWithError(
+                        args =>
+                        {
+                            object result = null;
+                            string error = null;
+                            double unixTimestamp;
+                            dynamic timestamp = args[0];
+                            if (Extensions.IsNumber(timestamp))
+                            {
+                                if (double.TryParse(args[0].ToString(), out unixTimestamp))
+                                {
+                                    var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                                    timestamp = dateTime.AddSeconds(unixTimestamp);
+                                }
+                            }
+
+                            (result, error) = ParseTimestamp((string) timestamp.ToString(), dt => dt.ToString(args.Count() == 2 ? args[1] : DefaultDateTimeFormat));
+
+                            return (result, error);
+                        }),
                     ReturnType.String,
-                    (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String)),
+                    (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Object)),
                 new ExpressionEvaluator(
                     ExpressionType.SubtractFromTime,
                     (expr, state) =>
@@ -1541,7 +2292,7 @@ namespace Microsoft.Bot.Builder.Expressions
                                 (timeConverter, error) = DateTimeConverter(int1, string2);
                                 if (error == null)
                                 {
-                                    (value, error) = ParseTimestamp(string0, dt => timeConverter(dt).ToString(format));
+                                    (value, error) = ParseISOTimestamp(string0, dt => timeConverter(dt).ToString(format));
                                 }
                             }
                             else
@@ -1560,11 +2311,11 @@ namespace Microsoft.Bot.Builder.Expressions
                         {
                             object result = null;
                             string error;
-                            (result, error) = ParseTimestamp((string) args[0]);
+                            (result, error) = ParseISOTimestamp((string) args[0]);
                             if (error == null)
                             {
                                 var timestamp1 = (DateTime) result;
-                                (result, error) = ParseTimestamp((string) args[1]);
+                                (result, error) = ParseISOTimestamp((string) args[1]);
                                 if (error == null)
                                 {
                                     var timestamp2 = (DateTime) result;
@@ -1584,7 +2335,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         {
                             object value = null;
                             string error = null;
-                            (value, error) = ParseTimestamp((string) args[0]);
+                            (value, error) = ParseISOTimestamp((string) args[0]);
                             if (error == null)
                             {
                                 var timestamp = (DateTime) value;
@@ -1676,14 +2427,347 @@ namespace Microsoft.Bot.Builder.Expressions
                     },
                     ReturnType.String,
                     (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Number, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.ConvertFromUTC,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            var format = (args.Count() == 3)? (string)args[2] : DefaultDateTimeFormat;
+                            if (args[0] is string timestamp && args[1] is string targetTimeZone)
+                            {
+                                (value, error) = BuiltInFunctions.ConvertFromUTC(timestamp, targetTimeZone, format);
+                            }
+                            else
+                            {
+                                error = $"{expr} can't evaluate.";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    expr => ValidateArityAndAnyType(expr, 2, 3, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.ConvertToUTC,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            var format = (args.Count() == 3)? (string)args[2] : DefaultDateTimeFormat;
+                            if (args[0] is string timestamp && args[1] is string sourceTimeZone)
+                            {
+                                (value, error) = BuiltInFunctions.ConvertToUTC(timestamp, sourceTimeZone, format);
+                            }
+                            else
+                            {
+                                error = $"{expr} can't evaluate.";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    expr => ValidateArityAndAnyType(expr, 2, 3, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.AddToTime,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            var format = (args.Count() == 4)? (string)args[3] : DefaultDateTimeFormat;
+                            if (args[0] is string timestamp && args[1] is int interval && args[2] is string timeUnit)
+                            {
+                                (value, error) = AddToTime(timestamp, interval, timeUnit, format);
+                            }
+                            else
+                            {
+                                error = $"{expr} can't evaluate.";
+                            }
+
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String, ReturnType.Number, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.StartOfDay,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            var format = (args.Count() == 2)? (string)args[1] : DefaultDateTimeFormat;
+                            if (args[0] is string timestamp)
+                            {
+                                (value, error) = StartOfDay(timestamp, format);
+                            }
+                            else
+                            {
+                                error = $"{expr} can't evaluate.";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    expr => ValidateArityAndAnyType(expr, 1, 2, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.StartOfHour,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            var format = (args.Count() == 2)? (string)args[1] : DefaultDateTimeFormat;
+                            if (args[0] is string timestamp )
+                            {
+                                (value, error) = StartOfHour(timestamp, format);
+                            }
+                            else
+                            {
+                                error = $"{expr} can't evaluate.";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    expr => ValidateArityAndAnyType(expr, 1, 2, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.StartOfMonth,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            var format = (args.Count() == 2)? (string)args[1] : DefaultDateTimeFormat;
+                            if (args[0] is string timestamp )
+                            {
+                                (value, error) = StartOfMonth(timestamp, format);
+                            }
+                            else
+                            {
+                                error = $"{expr} can't evaluate.";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    expr => ValidateArityAndAnyType(expr, 1, 2, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.Ticks,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            if (args[0] is string ts )
+                            {
+                                (value, error) = Ticks(ts);
+                            }
+                            else
+                            {
+                                error = $"{expr} can't evaluate.";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.Number,
+                    expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.String)),
+
+                // URI Parsing
+                new ExpressionEvaluator(
+                    ExpressionType.UriHost,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            if (args[0] is string uri )
+                            {
+                                (value, error) = UriHost(uri);
+                            }
+                            else
+                            {
+                                error = $"{expr} can't evaluate.";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.UriPath,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            if (args[0] is string uri )
+                            {
+                                (value, error) = UriPath(uri);
+                            }
+                            else
+                            {
+                                error = $"{expr} can't evaluate.";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.UriPathAndQuery,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            if (args[0] is string uri )
+                            {
+                                (value, error) = UriPathAndQuery(uri);
+                            }
+                            else
+                            {
+                                error = $"{expr} can't evaluate.";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.UriPort,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            if (args[0] is string uri )
+                            {
+                                (value, error) = UriPort(uri);
+                            }
+                            else
+                            {
+                                error = $"{expr} can't evaluate.";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.Number,
+                    ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.UriQuery,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+                            if (args[0] is string uri )
+                            {
+                                (value, error) = UriQuery(uri);
+                            }
+                            else
+                            {
+                                error = $"{expr} can't evaluate.";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.UriScheme,
+                    (expr, state) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<dynamic> args;
+                        (args, error) = EvaluateChildren(expr, state);
+                        if (error == null)
+                        {
+
+                                if (args[0] is string uri )
+                                {
+                                    (value, error) = UriScheme(uri);
+                                }
+                                else
+                                {
+                                    error = $"{expr} can't evaluate.";
+                                }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.String,
+                    ValidateUnary),
 
                 // Conversions
                 new ExpressionEvaluator(ExpressionType.Float, Apply(args => (float) Convert.ToDouble(args[0])), ReturnType.Number, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Int, Apply(args => (int) Convert.ToInt64(args[0])), ReturnType.Number, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Array, Apply(args => new[] { args[0] }, VerifyString), ReturnType.Object, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Binary, Apply(args => BuiltInFunctions.ToBinary(args[0]), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Base64, Apply(args => Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0])), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Base64ToBinary, Apply(args => BuiltInFunctions.ToBinary(args[0]), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Base64ToString, Apply(args => System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(args[0])), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.UriComponent, Apply(args => Uri.EscapeDataString(args[0]), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.DataUri, Apply(args => "data:text/plain;charset=utf-8;base64," + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0])), VerifyString), ReturnType.String, BuiltInFunctions.ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.DataUriToBinary, Apply(args => BuiltInFunctions.ToBinary(args[0]), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.DataUriToString, Apply(args => System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(args[0].Substring(args[0].IndexOf(",")+1))), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.UriComponentToString, Apply(args => Uri.UnescapeDataString(args[0]), VerifyString), ReturnType.String, ValidateUnary),
 
                 // TODO: Is this really the best way?
                 new ExpressionEvaluator(ExpressionType.String, Apply(args => JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"')), ReturnType.String, ValidateUnary),
                 Comparison(ExpressionType.Bool, args => IsLogicTrue(args[0]), ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Xml, ApplyWithError(args => BuiltInFunctions.ToXml(args[0])), ReturnType.String, BuiltInFunctions.ValidateUnary),
 
                 // Misc
                 new ExpressionEvaluator(ExpressionType.Accessor, Accessor, ReturnType.Object, ValidateAccessor),
@@ -1782,6 +2866,8 @@ namespace Microsoft.Bot.Builder.Expressions
                     ReturnType.Object,
                     (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
                 new ExpressionEvaluator(ExpressionType.Foreach, Foreach, ReturnType.Object, ValidateForeach),
+                new ExpressionEvaluator(ExpressionType.Coalesce, Apply(args => Coalesce(args.ToArray<object>())), ReturnType.Object, ValidateAtLeastOne),
+                new ExpressionEvaluator(ExpressionType.XPath, ApplyWithError(args => XPath(args[0], args[1])), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
             };
 
             var lookup = new Dictionary<string, ExpressionEvaluator>();

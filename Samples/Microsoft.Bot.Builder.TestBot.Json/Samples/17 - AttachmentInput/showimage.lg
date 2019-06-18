@@ -1,0 +1,5 @@
+# ShowImage(contentUrl, contentType)
+- ```
+You sent:
+[attachment=@{contentUrl} @{contentType}]
+```

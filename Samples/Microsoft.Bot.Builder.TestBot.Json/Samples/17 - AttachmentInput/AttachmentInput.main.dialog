@@ -1,0 +1,17 @@
+{
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "generator": "showimage.lg",
+    "steps": [
+        {
+            "$type": "Microsoft.AttachmentInput",
+            "property": "dialog.attachments",
+            "prompt": "Please send an image or music.",
+            "outputFormat": "All"
+        },
+        {
+            "$type": "Microsoft.SendActivity",
+            "activity": "[ShowImage(dialog.attachments[0].contentUrl, dialog.attachments[0].contentType)]"
+        }
+    ]
+}

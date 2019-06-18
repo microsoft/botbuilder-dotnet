@@ -15,8 +15,9 @@
         },
         {
             "$type":"Microsoft.TextInput",
-            "prompt" : "Hello, what is your name?", 
-            "property": "user.name"
+            "prompt" : "Hello, what is your name?",
+            "property": "user.name",
+            "value": "user.name"
         },
         {
             "$type":"Microsoft.SendActivity",

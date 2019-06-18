@@ -63,6 +63,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             return Task.FromResult(result);
         }
 
+        protected override async Task<bool> OnPreBubbleEvent(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+        {
+            return false;
+        }
+
         protected override string OnComputeId()
         {
             return $"TextPrompt[{this.BindingPath()}]";

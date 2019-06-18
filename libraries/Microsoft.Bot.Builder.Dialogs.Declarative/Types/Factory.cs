@@ -135,22 +135,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.DebugBreak", typeof(DebugBreak));
             Register("Microsoft.DeleteProperty", typeof(DeleteProperty));
             Register("Microsoft.EditArray", typeof(EditArray));
+            Register("Microsoft.EditSteps", typeof(EditSteps));
             Register("Microsoft.EmitEvent", typeof(EmitEvent));
             Register("Microsoft.EndDialog", typeof(EndDialog));
             Register("Microsoft.EndTurn", typeof(EndTurn));
+            Register("Microsoft.Foreach", typeof(Foreach));
+            Register("Microsoft.ForeachPage", typeof(ForeachPage));
             Register("Microsoft.HttpRequest", typeof(HttpRequest));
             Register("Microsoft.IfCondition", typeof(IfCondition));
             Register("Microsoft.InitProperty", typeof(InitProperty));
             Register("Microsoft.LogStep", typeof(LogStep));
             Register("Microsoft.RepeatDialog", typeof(RepeatDialog));
             Register("Microsoft.ReplaceDialog", typeof(ReplaceDialog));
-            Register("Microsoft.SaveEntity", typeof(SaveEntity));
             Register("Microsoft.SendActivity", typeof(SendActivity));
             Register("Microsoft.SetProperty", typeof(SetProperty));
             Register("Microsoft.SwitchCondition", typeof(SwitchCondition));
             Register("Microsoft.TraceActivity", typeof(TraceActivity));
 
             // Inputs
+            Register("Microsoft.AttachmentInput", typeof(AttachmentInput));
             Register("Microsoft.ConfirmInput", typeof(ConfirmInput));
             Register("Microsoft.NumberInput", typeof(NumberInput));
             Register("Microsoft.TextInput", typeof(TextInput));

@@ -1,0 +1,25 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "ConfirmInput Dialog",
+    "description": "This represents a dialog which gathers a yes/no style responses",
+    "allOf": [
+        {
+            "$ref": "./baseInputSchema.json"
+        },
+        {
+            "properties": {
+                "outputFormat": {
+                    "type": "string",
+                    "enum": [
+                        "all",
+                        "first"
+                    ],
+                    "title": "Output Format",
+                    "description": "The attachment output format.",
+                    "default":  "first"
+                }
+            }
+        }
+    ],
+}

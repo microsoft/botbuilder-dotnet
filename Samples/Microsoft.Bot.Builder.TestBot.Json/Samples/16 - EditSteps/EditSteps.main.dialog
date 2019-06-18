@@ -1,0 +1,31 @@
+{
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "steps": [
+        {
+            "$type": "Microsoft.EditSteps",
+            "changeType": "InsertSteps",
+            "steps": [
+                {
+                    "$type": "Microsoft.TextInput",
+                    "prompt": "Hello, I'm Zoidberg. What is your name?",
+                    "property": "user.name"
+                }
+            ]
+        },
+        {
+            "$type": "Microsoft.EditSteps",
+            "changeType": "AppendSteps",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Goodbye!"
+                }
+            ]
+        },
+        {
+            "$type": "Microsoft.SendActivity",
+            "activity": "Hello {user.name}, nice to talk to you!"
+        }
+    ]
+}

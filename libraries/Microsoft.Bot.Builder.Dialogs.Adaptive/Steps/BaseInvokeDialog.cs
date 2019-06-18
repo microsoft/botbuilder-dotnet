@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             }
         }
 
-        public BaseInvokeDialog(string dialogIdToCall = null, string id = null, string property = null, object options = null) 
+        public BaseInvokeDialog(string dialogIdToCall = null, string property = null, object options = null) 
             : base()
         {
             this.dialogIdToCall = dialogIdToCall;
@@ -59,8 +59,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             {
                 Property = property;
             }
-
-            Id = id;
         }
 
         protected override string OnComputeId()
