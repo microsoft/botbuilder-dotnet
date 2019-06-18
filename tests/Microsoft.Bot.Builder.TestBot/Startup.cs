@@ -113,6 +113,15 @@ namespace Microsoft.BotBuilderSamples
             });
         }
 
+        private static void RegisterDialogs(IServiceCollection services)
+        {
+            // Register booking dialog
+            services.AddSingleton(new BookingDialog(new GetBookingDetailsDialog(), new FlightBookingService()));
+
+            // The Dialog that will be run by the bot.
+            services.AddSingleton<MainDialog>();
+        }
+
         private void RegisterLuisRecognizers(IServiceCollection services)
         {
             var luisIsConfigured = !string.IsNullOrEmpty(Configuration["LuisAppId"]) && !string.IsNullOrEmpty(Configuration["LuisAPIKey"]) && !string.IsNullOrEmpty(Configuration["LuisAPIHostName"]);
@@ -126,15 +135,6 @@ namespace Microsoft.BotBuilderSamples
                 var recognizer = new LuisRecognizer(luisApplication);
                 services.AddSingleton<IRecognizer>(recognizer);
             }
-        }
-
-        private static void RegisterDialogs(IServiceCollection services)
-        {
-            // Register booking dialog
-            services.AddSingleton(new BookingDialog(new GetBookingDetailsDialog(), new FlightBookingService()));
-
-            // The Dialog that will be run by the bot.
-            services.AddSingleton<MainDialog>();
         }
     }
 }

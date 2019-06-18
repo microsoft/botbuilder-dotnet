@@ -82,6 +82,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Testi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Testing.Tests", "tests\Microsoft.Bot.Builder.Testing.Tests\Microsoft.Bot.Builder.Testing.Tests.csproj", "{E4E13301-9193-4106-B0E3-41276B478E7C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestBot.Tests", "tests\Microsoft.Bot.Builder.TestBot.Tests\Microsoft.Bot.Builder.TestBot.Tests.csproj", "{76391566-9F22-4994-8B0F-02EFC0E9E228}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug - NuGet Packages|Any CPU = Debug - NuGet Packages|Any CPU
@@ -293,6 +295,14 @@ Global
 		{E4E13301-9193-4106-B0E3-41276B478E7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4E13301-9193-4106-B0E3-41276B478E7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4E13301-9193-4106-B0E3-41276B478E7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -335,6 +345,7 @@ Global
 		{B9DDC8CB-8EDF-4D98-913A-22F19E642223} = {8667F820-8ADA-4498-91AE-AE95DEE5227E}
 		{060F070A-BBFA-490E-BE89-3844C857B771} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{E4E13301-9193-4106-B0E3-41276B478E7C} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{76391566-9F22-4994-8B0F-02EFC0E9E228} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

@@ -1,0 +1,10 @@
+{
+  "settings": {
+    "namingRules": {
+      "allowCommonHungarianPrefixes": true,
+      "allowedHungarianPrefixes": [
+        "lu"
+      ]
+    }
+  }
+}

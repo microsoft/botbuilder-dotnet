@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Testing
         }
 
         /// <summary>
-        /// Sends a message activity to to the target dialog.
+        /// Sends a message activity to the target dialog.
         /// </summary>
         /// <param name="text">The text of the message to send.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Testing
         }
 
         /// <summary>
-        /// Gets and returns the next bot response./>.
+        /// Gets the next bot response.
         /// </summary>
         /// <returns>The next activity in the queue; or null, if the queue is empty.</returns>
         /// <typeparam name="T">An <see cref="IActivity"/> derived type.</typeparam>
