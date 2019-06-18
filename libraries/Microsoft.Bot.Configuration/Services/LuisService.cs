@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Configuration
         /// <summary>
         /// Gets or sets authoringKey for interacting with service management.
         /// </summary>
-        /// <value>The AAuthoring Key.</value>
+        /// <value>The Authoring Key.</value>
         [JsonProperty("authoringKey")]
         public string AuthoringKey { get; set; }
 
@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Configuration
         /// <summary>
         /// Gets or sets version of the LUIS app.
         /// </summary>
-        /// <value>The Version of Luis app.</value>
+        /// <value>The Version of the LUIS app.</value>
         [JsonProperty("version")]
         public string Version { get; set; }
 
