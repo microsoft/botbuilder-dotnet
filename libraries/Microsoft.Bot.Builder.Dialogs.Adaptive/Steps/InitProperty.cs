@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         {
             get
             {
-                return InputBindings["value"];
+                return OutputBinding;
             }
             set
             {
