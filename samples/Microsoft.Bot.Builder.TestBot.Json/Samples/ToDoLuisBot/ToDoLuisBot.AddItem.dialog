@@ -4,13 +4,13 @@
     "generator": "ToDoLuisBot.lg",
     "steps": [
         {
-            "$type": "Microsoft.SaveEntity",
-            "entity": "promptContentML",
+            "$type": "Microsoft.SetProperty",
+            "value": "@promptContentML",
             "property": "dialog.item"
         },
         {
-            "$type": "Microsoft.SaveEntity",
-            "entity": "ListType",
+            "$type": "Microsoft.SetProperty",
+            "value": "@ListType",
             "property": "dialog.listName"
         },
         {

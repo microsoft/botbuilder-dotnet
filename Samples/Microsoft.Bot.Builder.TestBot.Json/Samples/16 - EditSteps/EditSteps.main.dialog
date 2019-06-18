@@ -4,7 +4,7 @@
     "steps": [
         {
             "$type": "Microsoft.EditSteps",
-            "changeType": "DoSteps",
+            "changeType": "InsertSteps",
             "steps": [
                 {
                     "$type": "Microsoft.TextInput",
@@ -15,7 +15,7 @@
         },
         {
             "$type": "Microsoft.EditSteps",
-            "changeType": "DoStepsLater",
+            "changeType": "AppendSteps",
             "steps": [
                 {
                     "$type": "Microsoft.SendActivity",
