@@ -262,7 +262,40 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("getFutureTime(timestamp, 'W')"),// error parameters format
             Test("getFutureTime('yyyy', '1')"),// second param should be integer
             Test("getFutureTime('yyyy')"),// should have 2 or 3 params
+            Test("convertFromUTC(notValidTimestamp, timezone)"), // not valid iso timestamp
+            Test("convertFromUTC(timestamp, invalidTimezone,'D')"), // not valid timezone
+            Test("convertFromUTC(timestamp, timezone, 'a')"),  // not valid format 
+            Test("convertFromUTC(timestamp, timezone, 'D', hello)"),  // should have 2 or 3 params
+            Test("convertToUTC(notValidTimestamp, timezone)"), // not valid timestamp
+            Test("convertToUTC(timestamp, invalidTimezone, 'D')"), // not valid timezone
+            Test("convertToUTC(timestamp, timezone, 'a')"),  // not valid format 
+            Test("convertToUTC(timestamp, timezone, 'D', hello)"),  // should have 2 or 3 params
+            Test("addToTime(notValidTimeStamp, one, 'day')"), // not valid timestamp
+            Test("addToTime(timeStamp, hello, 'day')"), // interval should be integer
+            Test("addToTime(timeStamp, one, 'decade', 'D')"), //not valid time unit 
+            Test("addToTime(timeStamp, one, 'week', 'A')"), //not valid format
+            Test("addToTime(timeStamp, one, 'week', 'A', one)"), //should have 3 or 4 params
+            Test("convertTimeZone(notValidTimeStamp, 'UTC', timezone)"), // not valid timestamp
+            Test("convertTimeZone(timestamp2, invalidTimezone, timezone, 'D')"), // not valid source timezone
+            Test("convertTimeZone(timestamp2, timezone, invalidTimezone, 'D')"), // not valid destination timezone
+            Test("convertTimeZone(timestamp2, timezone, 'UTC', 'A')"), // not valid destination timezone
+            Test("startOfDay(notValidTimeStamp)"), // not valid timestamp
+            Test("startOfDay(timeStamp, 'A')"), // not valid format
+            Test("startOfHour(notValidTimeStamp)"), // not valid timestamp
+            Test("startOfHour(timeStamp, 'A')"), // not valid format
+            Test("startOfMonth(notValidTimeStamp)"), // not valid timestamp
+            Test("startOfMonth(timeStamp, 'A')"), // not valid format
+            Test("ticks(notValidTimeStamp)"), // not valid timestamp
             # endregion
+
+            #region uri parsing function test
+            Test("uriHost(relatibeUri)"),
+            Test("uriPath(relatibeUri)"),
+            Test("uriPathAndQuery(relatibeUri)"),
+            Test("uriPort(relatibeUri)"),
+            Test("uriQuery(relatibeUri)"),
+            Test("uriScheme(relatibeUri)"),
+            #endregion
 
             # region collection functions test
             Test("sum(items, 'hello')"),//should have 1 parameter
@@ -311,7 +344,11 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("setProperty(json('{\"key1\":\"value1\"}'), 'key2','value2','key3')"), //should have 3 parameter
             Test("setProperty(json('{\"key1\":\"value1\"}'), 1,'value2')"), // second param should be string
             Test("removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), 1))"),// second param should be string
-            Test("removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), '1', '2'))"),// should have 2 parameter
+            Test("removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), '1', '2'))"),// should have 2 parameters
+            Test("coalesce()"), // should have at least 1 parameter
+            Test("xPath(invalidXml, ''sum(/produce/item/count)')"), //not valid xml
+            Test("xPath(xmlStr)"), // should have two params
+            Test("xPath(xmlStr, 'getTotal')"), // invalid xpath query
            # endregion
 
             # region Memory access test
@@ -348,6 +385,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     name = "mybag"
                 },
                 items = new string[] { "zero", "one", "two" },
+                xmlStr = "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>",
+                invalidXml = "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count>",
                 nestedItems = new[]
                 {
                     new
@@ -363,11 +402,15 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                         x = 3,
                     }
                 },
-                timestamp = "2018-03-15T13:00:00Z",
+                timestamp = "2018-03-15T13:00:00.000Z",
+                timestamp2 = "2018-01-01T03:00:00.000Z",
+                timezone = "Pacific Standard Time",
+                invalidTimeZone = "Local",
                 notISOTimestamp = "2018/03/15 13:00:00",
                 notValidTimestamp = "2018timestmap",
                 notValidTimestamp2 = "1521118800",
                 notValidTimestamp3 = "20181115",
+                relativeUri = "../catalog/shownew.htm?date=today",
                 turn = new
                 {
                     entities = new

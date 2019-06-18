@@ -86,6 +86,13 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string GetTimeOfDay = "getTimeOfDay";
         public const string GetFutureTime = "getFutureTime";
         public const string GetPastTime = "getPastTime";
+        public const string ConvertFromUTC = "convertFromUTC";
+        public const string ConvertToUTC = "convertToUTC";
+        public const string AddToTime = "addToTime";
+        public const string StartOfDay = "startOfDay";
+        public const string StartOfHour = "startOfHour";
+        public const string StartOfMonth = "startOfMonth";
+        public const string Ticks = "ticks";
 
         // Conversions
         public const string Float = "float";
@@ -104,6 +111,14 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string UriComponentToString = "uriComponentToString";
         public const string Xml = "xml";
 
+        // URI Parsing Functions
+        public const string UriHost = "uriHost";
+        public const string UriPath = "uriPath";
+        public const string UriPathAndQuery = "uriPathAndQuery";
+        public const string UriPort = "uriPort";
+        public const string UriQuery = "uriQuery";
+        public const string UriScheme = "uriScheme";
+
         // Memory
         public const string Accessor = "Accessor";
         public const string Element = "Element";
@@ -121,5 +136,7 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string AddProperty = "addProperty";
         public const string RemoveProperty = "removeProperty";
         public const string SetProperty = "setProperty";
+        public const string Coalesce = "coalesce";
+        public const string XPath = "xPath";
     }
 }
