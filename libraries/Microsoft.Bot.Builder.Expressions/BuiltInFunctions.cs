@@ -276,7 +276,7 @@ namespace Microsoft.Bot.Builder.Expressions
         public static string VerifyContainer(object value, Expression expression, int _)
         {
             string error = null;
-            if (!(value is string) && !(value is IList))
+            if (!(value is string) && !(value is IList) && !(value is IEnumerable))
             {
                 error = $"{expression} must be a string or list.";
             }
@@ -1230,126 +1230,112 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
-        private static (string, string) ConvertFromUTC(string utcTimestamp, string timezone, string format = "o")
+        private static (object, string) ConvertTimeZoneFormat(string timezone)
         {
+            object convertedTimeZone = null;
+            string convertedTimeZoneStr = null;
             string error = null;
-            string result = null;
-            TimeZoneInfo tz = null;
-            var utcDt = DateTime.UtcNow;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                convertedTimeZoneStr = TimeZoneConverter.IanaToWindows(timezone);
+            }
+            else
+            {
+                convertedTimeZoneStr = TimeZoneConverter.WindowsToIana(timezone);
+            }
+
             try
             {
-                utcDt = DateTime.Parse(utcTimestamp).ToUniversalTime();
+                convertedTimeZone = TimeZoneInfo.FindSystemTimeZoneById(convertedTimeZoneStr);
             }
             catch
             {
-                error = "illegal timestamp format";
+                error = $"{timezone} is an illegal timezone";
+            }
+
+            return (convertedTimeZone, error);
+        }
+
+        private static (string, string) ReturnFormatTimeStampStr(DateTime datetime, string format)
+        {
+            string result = null;
+            string error = null;
+            try
+            {
+                result = datetime.ToString(format);
+            }
+            catch
+            {
+                error = $"illegal format representation: {format}";
+            }
+
+            return (result, error);
+        }
+
+        private static (string, string) ConvertFromUTC(string utcTimestamp, string timezone, string format)
+        {
+            string error = null;
+            string result = null;
+            var utcDt = DateTime.UtcNow;
+            object parsed = null;
+            object convertedTimeZone = null;
+            (parsed, error) = ParseISOTimestamp(utcTimestamp);
+            if (error == null)
+            {
+                utcDt = ((DateTime)parsed).ToUniversalTime();
             }
 
             if (error == null)
             {
-                try
-                {
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                    {
-                        var convertedTZ = TimeZoneConverter.WindowsToIana(timezone);
-                        tz = TimeZoneInfo.FindSystemTimeZoneById(convertedTZ);
-                    }
-                    else
-                    {
-                        var convertedTZ = TimeZoneConverter.IanaToWindows(timezone);
-                        tz = TimeZoneInfo.FindSystemTimeZoneById(convertedTZ);
-                    }
-                }
-                catch
-                {
-                    error = "illegal timezone info";
-                }
+                (convertedTimeZone, error) = ConvertTimeZoneFormat(timezone);
 
                 if (error == null)
                 {
-                    var convertedTS = TimeZoneInfo.ConvertTimeFromUtc(utcDt, tz);
-                    try
-                    {
-                        result = convertedTS.ToString(format);
-                    }
-                    catch
-                    {
-                        error = "illegal format representation";
-                    }
+                    var convertedDateTime = TimeZoneInfo.ConvertTimeFromUtc(utcDt, (TimeZoneInfo)convertedTimeZone);
+                    (result, error) = ReturnFormatTimeStampStr(convertedDateTime, format);
                 }
             }
 
             return (result, error);
         }
 
-        private static (string, string) ConvertToUTC(string sourceTimestamp, string sourceTimezone, string format = "o")
+        private static (string, string) ConvertToUTC(string sourceTimestamp, string sourceTimezone, string format)
         {
             string error = null;
             string result = null;
-            TimeZoneInfo tz = null;
             var srcDt = DateTime.UtcNow;
+            object convertedTimeZone = null;
             try
             {
                 srcDt = DateTime.Parse(sourceTimestamp);
             }
             catch
             {
-                error = "illegal timestamp format";
+                error = $"illegal timestamp representation {sourceTimestamp}";
             }
 
             if (error == null)
             {
-                try
-                {
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                    {
-                        var convertedTZ = TimeZoneConverter.WindowsToIana(sourceTimezone);
-                        tz = TimeZoneInfo.FindSystemTimeZoneById(convertedTZ);
-                    }
-                    else
-                    {
-                        var convertedTZ = TimeZoneConverter.IanaToWindows(sourceTimezone);
-                        tz = TimeZoneInfo.FindSystemTimeZoneById(convertedTZ);
-                    }
-                }
-                catch
-                {
-                    error = "illegal timezone info";
-                }
-
+                (convertedTimeZone, error) = ConvertTimeZoneFormat(sourceTimezone);
                 if (error == null)
                 {
-                    var convertedTS = TimeZoneInfo.ConvertTimeToUtc(srcDt, tz);
-                    try
-                    {
-                        result = convertedTS.ToString(format);
-                    }
-                    catch
-                    {
-                        error = "illegal format representation";
-                    }
+                    var convertedDateTime = TimeZoneInfo.ConvertTimeToUtc(srcDt, (TimeZoneInfo)convertedTimeZone);
+                    (result, error) = ReturnFormatTimeStampStr(convertedDateTime, format);
                 }
             }
 
             return (result, error);
         }
 
-        private static (string, string) AddToTime(string timestamp, int interval, string timeUnit, string format = "o")
+        private static (string, string) AddToTime(string timestamp, int interval, string timeUnit, string format)
         {
-            dynamic ts = null;
             string result = null;
             string error = null;
-            try
-            {
-                ts = DateTime.Parse(timestamp).ToUniversalTime();
-            }
-            catch
-            {
-                error = "illegal timestamp format";
-            }
-
+            object parsed = null;
+            (parsed, error) = ParseISOTimestamp(timestamp);
             if (error == null)
             {
+                var ts = (DateTime)parsed;
                 switch (timeUnit)
                 {
                     case "Second":
@@ -1380,202 +1366,63 @@ namespace Microsoft.Bot.Builder.Expressions
 
                 if (error == null)
                 {
-                    try
-                    {
-                        result = ts.ToString(format);
-                    }
-                    catch
-                    {
-                        error = "illegal format representation";
-                    }
+                    (result, error) = ReturnFormatTimeStampStr(ts, format);
                 }
             }
 
             return (result, error);
         }
 
-        private static (string, string) ConvertTimeZone(string timestamp, string sourceTimeZone, string destinationTimeZone, string format = "o")
-        {
-            dynamic ts = null;
-            dynamic destanationTS = null;
-            string result = null;
-            string error = null;
-            TimeZoneInfo sourceTZ = null;
-            TimeZoneInfo destinationTZ = null;
-
-            try
-            {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                {
-                    var convertedTZ = TimeZoneConverter.WindowsToIana(sourceTimeZone);
-                    sourceTZ = TimeZoneInfo.FindSystemTimeZoneById(convertedTZ);
-                    sourceTimeZone = convertedTZ;
-                }
-                else
-                {
-                    var convertedTZ = TimeZoneConverter.IanaToWindows(sourceTimeZone);
-                    sourceTZ = TimeZoneInfo.FindSystemTimeZoneById(convertedTZ);
-                    sourceTimeZone = convertedTZ;
-                }
-            }
-            catch
-            {
-                error = "illegal source timezone info";
-            }
-
-            if (error == null)
-            {
-                try
-                {
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                    {
-                        var convertedTZ = TimeZoneConverter.WindowsToIana(destinationTimeZone);
-                        destinationTZ = TimeZoneInfo.FindSystemTimeZoneById(convertedTZ);
-                        destinationTimeZone = convertedTZ;
-                    }
-                    else
-                    {
-                        var convertedTZ = TimeZoneConverter.IanaToWindows(destinationTimeZone);
-                        destinationTZ = TimeZoneInfo.FindSystemTimeZoneById(convertedTZ);
-                        destinationTimeZone = convertedTZ;
-                    }
-                }
-                catch
-                {
-                    error = "illegal destination timezone info";
-                }
-            }
-
-            if (error == null)
-            {
-                try
-                {
-                    ts = DateTime.Parse(timestamp);
-                }
-                catch
-                {
-                    error = "illegal timestamp representation";
-                }
-            }
-
-            if (error == null)
-            {
-                if (ts.Kind == DateTimeKind.Unspecified)
-                {
-                    destanationTS = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(ts, sourceTimeZone, destinationTimeZone);
-                }
-                else if (ts.Kind == DateTimeKind.Local)
-                {
-                    var utcTS = TimeZoneInfo.ConvertTimeToUtc(ts, TimeZoneInfo.Local);
-                    destanationTS = TimeZoneInfo.ConvertTimeFromUtc(utcTS, destinationTZ);
-                }
-                else
-                {
-                    destanationTS = TimeZoneInfo.ConvertTimeFromUtc(ts, destinationTZ);
-                }
-
-                try
-                {
-                    result = destanationTS.ToString(format);
-                }
-                catch
-                {
-                    error = "illegal format representation";
-                }
-            }
-
-            return (result, error);
-        }
-
-        private static (object, string) StartOfDay(string timestamp, string format = "o")
+        private static (object, string) StartOfDay(string timestamp, string format)
         {
             string result = null;
-            dynamic ts = null;
             string error = null;
-            try
-            {
-                ts = DateTime.Parse(timestamp).ToUniversalTime();
-            }
-            catch
-            {
-                error = "illegal timestamp format";
-            }
+            object parsed = null;
+            (parsed, error) = ParseISOTimestamp(timestamp);
 
             if (error == null)
             {
+                var ts = (DateTime)parsed;
                 var startOfDay = ts.Date;
-                try
-                {
-                    result = startOfDay.ToString(format);
-                }
-                catch
-                {
-                    error = "illegal format representation";
-                }
+                (result, error) = ReturnFormatTimeStampStr(startOfDay, format);
             }
 
             return (result, error);
         }
 
-        private static (object, string) StartOfHour(string timestamp, string format = "o")
+        private static (object, string) StartOfHour(string timestamp, string format)
         {
             string result = null;
-            dynamic ts = null;
             string error = null;
-            try
-            {
-                ts = DateTime.Parse(timestamp).ToUniversalTime();
-            }
-            catch
-            {
-                error = "illegal timestamp format";
-            }
+            object parsed = null;
+            (parsed, error) = ParseISOTimestamp(timestamp);
 
             if (error == null)
             {
+                var ts = (DateTime)parsed;
                 var startOfDay = ts.Date;
                 var hours = ts.Hour;
                 var startOfHour = startOfDay.AddHours(hours);
-                try
-                {
-                    result = startOfHour.ToString(format);
-                }
-                catch
-                {
-                    error = "illegal format representation";
-                }
+                (result, error) = ReturnFormatTimeStampStr(startOfHour, format);
             }
 
             return (result, error);
         }
 
-        private static (object, string) StartOfMonth(string timestamp, string format = "o")
+        private static (object, string) StartOfMonth(string timestamp, string format)
         {
             string result = null;
-            dynamic ts = null;
+            object parsed = null;
             string error = null;
-            try
-            {
-                ts = DateTime.Parse(timestamp).ToUniversalTime();
-            }
-            catch
-            {
-                error = "illegal timestamp format";
-            }
+            (parsed, error) = ParseISOTimestamp(timestamp);
 
             if (error == null)
             {
+                var ts = (DateTime)parsed;
                 var startOfDay = ts.Date;
                 var days = ts.Day;
-                var startOfHour = startOfDay.AddDays(1-days);
-                try
-                {
-                    result = startOfHour.ToString(format);
-                }
-                catch
-                {
-                    error = "illegal format representation";
-                }
+                var startOfMonth = startOfDay.AddDays(1-days);
+                (result, error) = ReturnFormatTimeStampStr(startOfMonth, format);
             }
 
             return (result, error);
@@ -1584,19 +1431,13 @@ namespace Microsoft.Bot.Builder.Expressions
         private static (object, string) Ticks(string timestamp)
         {
             object result = null;
-            dynamic ts = null;
+            object parsed = null;
             string error = null;
-            try
-            {
-                ts = DateTime.Parse(timestamp).ToUniversalTime();
-            }
-            catch
-            {
-                error = "illegal timestamp format";
-            }
+            (parsed, error) = ParseISOTimestamp(timestamp);
 
             if (error == null)
             {
+                var ts = (DateTime)parsed;
                 result = ts.Ticks;
             }
 
@@ -1604,24 +1445,34 @@ namespace Microsoft.Bot.Builder.Expressions
         }
 
         // URI Parsing Functions
+        private static (object, string) ParseUri(string uri)
+        {
+            object result = null;
+            string error = null;
+            try
+            {
+                result = new Uri(uri);
+            }
+            catch
+            {
+                error = $"{uri} is an illegal URI string";
+            }
+
+            return (result, error);
+        }
+
         private static (object, string) UriHost(string uri)
         {
             object result = null;
             string error = null;
-            dynamic uriBase = null;
-            try
-            {
-                uriBase = new Uri(uri);
-            }
-            catch
-            {
-                error = "illegal URI string";
-            }
+            object parsed = null;
+            (parsed, error) = ParseUri(uri);
 
             if (error == null)
             {
                 try
                 {
+                    var uriBase = (Uri)parsed;
                     var host = uriBase.Host;
                     result = host.ToString();
                 }
@@ -1638,22 +1489,15 @@ namespace Microsoft.Bot.Builder.Expressions
         {
             object result = null;
             string error = null;
-            dynamic uriBase = null;
-            try
-            {
-                uriBase = new Uri(uri);
-            }
-            catch
-            {
-                error = "illegal URI string";
-            }
+            object parsed = null;
+            (parsed, error) = ParseUri(uri);
 
             if (error == null)
             {
                 try
                 {
-                    var path = uriBase.AbsolutePath;
-                    result = path.ToString();
+                    var uriBase = (Uri)parsed;
+                    result = uriBase.AbsolutePath.ToString();
                 }
                 catch
                 {
@@ -1698,20 +1542,13 @@ namespace Microsoft.Bot.Builder.Expressions
         {
             object result = null;
             string error = null;
-            dynamic uriBase = null;
-            try
-            {
-                uriBase = new Uri(uri);
-            }
-            catch
-            {
-                error = "illegal URI string";
-            }
-
+            object parsed = null;
+            (parsed, error) = ParseUri(uri);
             if (error == null)
             {
                 try
                 {
+                    var uriBase = (Uri)parsed;
                     var port = uriBase.Port;
                     result = (int)port;
                 }
@@ -1728,20 +1565,13 @@ namespace Microsoft.Bot.Builder.Expressions
         {
             object result = null;
             string error = null;
-            dynamic uriBase = null;
-            try
-            {
-                uriBase = new Uri(uri);
-            }
-            catch
-            {
-                error = "illegal URI string";
-            }
-
+            object parsed = null;
+            (parsed, error) = ParseUri(uri);
             if (error == null)
             {
                 try
                 {
+                    var uriBase = (Uri)parsed;
                     var query = uriBase.Query;
                     result = query.ToString();
                 }
@@ -1758,20 +1588,14 @@ namespace Microsoft.Bot.Builder.Expressions
         {
             object result = null;
             string error = null;
-            dynamic uriBase = null;
-            try
-            {
-                uriBase = new Uri(uri);
-            }
-            catch
-            {
-                error = "illegal URI string";
-            }
+            object parsed = null;
+            (parsed, error) = ParseUri(uri);
 
             if (error == null)
             {
                 try
                 {
+                    var uriBase = (Uri)parsed;
                     var scheme = uriBase.Scheme;
                     result = scheme.ToString();
                 }
@@ -1881,7 +1705,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 }
                 catch
                 {
-                    error = "cannot evaluate the xpath query expression";
+                    error = $"cannot evaluate the xpath query expression: {xpath.ToString()}";
                 }
 
                 if (error == null)
@@ -2638,31 +2462,14 @@ namespace Microsoft.Bot.Builder.Expressions
                         (args, error) = EvaluateChildren(expr, state);
                         if (error == null)
                         {
-                            if (args.Count == 2)
+                            var format = (args.Count() == 3)? (string)args[2] : DefaultDateTimeFormat;
+                            if (args[0] is string timestamp && args[1] is string targetTimeZone)
                             {
-                                if (args[0] is string ts && args[1] is string tz)
-                                {
-                                    (value, error) = ConvertFromUTC(ts, tz);
-                                }
-                                else
-                                {
-                                    error = $"{expr} can't evaluate.";
-                                }
-                            }
-                            else if (args.Count == 3)
-                            {
-                                if (args[0] is string ts && args[1] is string tz && args[2] is string format)
-                                {
-                                    (value, error) = ConvertFromUTC(ts, tz, format);
-                                }
-                                else
-                                {
-                                    error = $"{expr} can't evaluate.";
-                                }
+                                (value, error) = BuiltInFunctions.ConvertFromUTC(timestamp, targetTimeZone, format);
                             }
                             else
                             {
-                                error = $"{expr} should have two or three parameters";
+                                error = $"{expr} can't evaluate.";
                             }
                         }
 
@@ -2680,31 +2487,14 @@ namespace Microsoft.Bot.Builder.Expressions
                         (args, error) = EvaluateChildren(expr, state);
                         if (error == null)
                         {
-                            if (args.Count == 2)
+                            var format = (args.Count() == 3)? (string)args[2] : DefaultDateTimeFormat;
+                            if (args[0] is string timestamp && args[1] is string sourceTimeZone)
                             {
-                                if (args[0] is string ts && args[1] is string tz)
-                                {
-                                    (value, error) = ConvertToUTC(ts, tz);
-                                }
-                                else
-                                {
-                                    error = $"{expr} can't evaluate.";
-                                }
-                            }
-                            else if (args.Count == 3)
-                            {
-                                if (args[0] is string ts && args[1] is string tz && args[2] is string format)
-                                {
-                                    (value, error) = ConvertToUTC(ts, tz, format);
-                                }
-                                else
-                                {
-                                    error = $"{expr} can't evaluate.";
-                                }
+                                (value, error) = BuiltInFunctions.ConvertToUTC(timestamp, sourceTimeZone, format);
                             }
                             else
                             {
-                                error = $"{expr} should have two or three parameters";
+                                error = $"{expr} can't evaluate.";
                             }
                         }
 
@@ -2722,80 +2512,22 @@ namespace Microsoft.Bot.Builder.Expressions
                         (args, error) = EvaluateChildren(expr, state);
                         if (error == null)
                         {
-                            if (args.Count == 3)
+                            var format = (args.Count() == 4)? (string)args[3] : DefaultDateTimeFormat;
+                            if (args[0] is string timestamp && args[1] is int interval && args[2] is string timeUnit)
                             {
-                                if (args[0] is string ts && args[1] is int interval && args[2] is string timeUnit)
-                                {
-                                    (value, error) = AddToTime(ts, interval, timeUnit);
-                                }
-                                else
-                                {
-                                    error = $"{expr} can't evaluate.";
-                                }
-                            }
-                            else if (args.Count == 4)
-                            {
-                                if (args[0] is string ts && args[1] is int interval && args[2] is string timeUnit && args[3] is string format)
-                                {
-                                    (value, error) = AddToTime(ts, interval, timeUnit, format);
-                                }
-                                else
-                                {
-                                    error = $"{expr} can't evaluate.";
-                                }
+                                (value, error) = AddToTime(timestamp, interval, timeUnit, format);
                             }
                             else
                             {
-                                error = $"{expr} should have three or four parameters";
+                                error = $"{expr} can't evaluate.";
                             }
+
                         }
 
                         return (value, error);
                     },
                     ReturnType.String,
                     expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String, ReturnType.Number, ReturnType.String)),
-                new ExpressionEvaluator(
-                    ExpressionType.ConvertTimeZone,
-                    (expr, state) =>
-                    {
-                        object value = null;
-                        string error = null;
-                        IReadOnlyList<dynamic> args;
-                        (args, error) = EvaluateChildren(expr, state);
-                        if (error == null)
-                        {
-                            if (args.Count == 3)
-                            {
-                                if (args[0] is string ts && args[1] is string sourceTZ && args[2] is string destinationTZ)
-                                {
-                                    (value, error) = ConvertTimeZone(ts, sourceTZ, destinationTZ);
-                                }
-                                else
-                                {
-                                    error = $"{expr} can't evaluate.";
-                                }
-                            }
-                            else if (args.Count == 4)
-                            {
-                                if (args[0] is string ts && args[1] is string sourceTZ && args[2] is string destinationTZ && args[3] is string format)
-                                {
-                                    (value, error) = ConvertTimeZone(ts, sourceTZ, destinationTZ, format);
-                                }
-                                else
-                                {
-                                    error = $"{expr} can't evaluate.";
-                                }
-                            }
-                            else
-                            {
-                                error = $"{expr} should have three or four parameters";
-                            }
-                        }
-
-                        return (value, error);
-                    },
-                    ReturnType.String,
-                    expr => ValidateArityAndAnyType(expr, 3, 4, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.StartOfDay,
                     (expr, state) =>
@@ -2806,31 +2538,14 @@ namespace Microsoft.Bot.Builder.Expressions
                         (args, error) = EvaluateChildren(expr, state);
                         if (error == null)
                         {
-                            if (args.Count == 1)
+                            var format = (args.Count() == 2)? (string)args[1] : DefaultDateTimeFormat;
+                            if (args[0] is string timestamp)
                             {
-                                if (args[0] is string ts )
-                                {
-                                    (value, error) = StartOfDay(ts);
-                                }
-                                else
-                                {
-                                    error = $"{expr} can't evaluate.";
-                                }
-                            }
-                            else if (args.Count == 2)
-                            {
-                                if (args[0] is string ts && args[1] is string format)
-                                {
-                                    (value, error) = StartOfDay(ts, format);
-                                }
-                                else
-                                {
-                                    error = $"{expr} can't evaluate.";
-                                }
+                                (value, error) = StartOfDay(timestamp, format);
                             }
                             else
                             {
-                                error = $"{expr} should have one or two parameters";
+                                error = $"{expr} can't evaluate.";
                             }
                         }
 
@@ -2848,31 +2563,14 @@ namespace Microsoft.Bot.Builder.Expressions
                         (args, error) = EvaluateChildren(expr, state);
                         if (error == null)
                         {
-                            if (args.Count == 1)
+                            var format = (args.Count() == 2)? (string)args[1] : DefaultDateTimeFormat;
+                            if (args[0] is string timestamp )
                             {
-                                if (args[0] is string ts )
-                                {
-                                    (value, error) = StartOfHour(ts);
-                                }
-                                else
-                                {
-                                    error = $"{expr} can't evaluate.";
-                                }
-                            }
-                            else if (args.Count == 2)
-                            {
-                                if (args[0] is string ts && args[1] is string format)
-                                {
-                                    (value, error) = StartOfHour(ts, format);
-                                }
-                                else
-                                {
-                                    error = $"{expr} can't evaluate.";
-                                }
+                                (value, error) = StartOfHour(timestamp, format);
                             }
                             else
                             {
-                                error = $"{expr} should have one or two parameters";
+                                error = $"{expr} can't evaluate.";
                             }
                         }
 
@@ -2890,31 +2588,14 @@ namespace Microsoft.Bot.Builder.Expressions
                         (args, error) = EvaluateChildren(expr, state);
                         if (error == null)
                         {
-                            if (args.Count == 1)
+                            var format = (args.Count() == 2)? (string)args[1] : DefaultDateTimeFormat;
+                            if (args[0] is string timestamp )
                             {
-                                if (args[0] is string ts )
-                                {
-                                    (value, error) = StartOfMonth(ts);
-                                }
-                                else
-                                {
-                                    error = $"{expr} can't evaluate.";
-                                }
-                            }
-                            else if (args.Count == 2)
-                            {
-                                if (args[0] is string ts && args[1] is string format)
-                                {
-                                    (value, error) = StartOfMonth(ts, format);
-                                }
-                                else
-                                {
-                                    error = $"{expr} can't evaluate.";
-                                }
+                                (value, error) = StartOfMonth(timestamp, format);
                             }
                             else
                             {
-                                error = $"{expr} should have one or two parameters";
+                                error = $"{expr} can't evaluate.";
                             }
                         }
 
@@ -2932,26 +2613,19 @@ namespace Microsoft.Bot.Builder.Expressions
                         (args, error) = EvaluateChildren(expr, state);
                         if (error == null)
                         {
-                            if (args.Count == 1)
+                            if (args[0] is string ts )
                             {
-                                if (args[0] is string ts )
-                                {
-                                    (value, error) = Ticks(ts);
-                                }
-                                else
-                                {
-                                    error = $"{expr} can't evaluate.";
-                                }
+                                (value, error) = Ticks(ts);
                             }
                             else
                             {
-                                error = $"{expr} should have one parameters";
+                                error = $"{expr} can't evaluate.";
                             }
                         }
 
                         return (value, error);
                     },
-                    ReturnType.String,
+                    ReturnType.Number,
                     expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.String)),
 
                 // URI Parsing
@@ -2965,20 +2639,13 @@ namespace Microsoft.Bot.Builder.Expressions
                         (args, error) = EvaluateChildren(expr, state);
                         if (error == null)
                         {
-                            if (args.Count == 1)
+                            if (args[0] is string uri )
                             {
-                                if (args[0] is string uri )
-                                {
-                                    (value, error) = UriHost(uri);
-                                }
-                                else
-                                {
-                                    error = $"{expr} can't evaluate.";
-                                }
+                                (value, error) = UriHost(uri);
                             }
                             else
                             {
-                                error = $"{expr} should have one parameters";
+                                error = $"{expr} can't evaluate.";
                             }
                         }
 
@@ -2996,20 +2663,13 @@ namespace Microsoft.Bot.Builder.Expressions
                         (args, error) = EvaluateChildren(expr, state);
                         if (error == null)
                         {
-                            if (args.Count == 1)
+                            if (args[0] is string uri )
                             {
-                                if (args[0] is string uri )
-                                {
-                                    (value, error) = UriPath(uri);
-                                }
-                                else
-                                {
-                                    error = $"{expr} can't evaluate.";
-                                }
+                                (value, error) = UriPath(uri);
                             }
                             else
                             {
-                                error = $"{expr} should have one parameters";
+                                error = $"{expr} can't evaluate.";
                             }
                         }
 
@@ -3027,20 +2687,13 @@ namespace Microsoft.Bot.Builder.Expressions
                         (args, error) = EvaluateChildren(expr, state);
                         if (error == null)
                         {
-                            if (args.Count == 1)
+                            if (args[0] is string uri )
                             {
-                                if (args[0] is string uri )
-                                {
-                                    (value, error) = UriPathAndQuery(uri);
-                                }
-                                else
-                                {
-                                    error = $"{expr} can't evaluate.";
-                                }
+                                (value, error) = UriPathAndQuery(uri);
                             }
                             else
                             {
-                                error = $"{expr} should have one parameters";
+                                error = $"{expr} can't evaluate.";
                             }
                         }
 
@@ -3058,20 +2711,13 @@ namespace Microsoft.Bot.Builder.Expressions
                         (args, error) = EvaluateChildren(expr, state);
                         if (error == null)
                         {
-                            if (args.Count == 1)
+                            if (args[0] is string uri )
                             {
-                                if (args[0] is string uri )
-                                {
-                                    (value, error) = UriPort(uri);
-                                }
-                                else
-                                {
-                                    error = $"{expr} can't evaluate.";
-                                }
+                                (value, error) = UriPort(uri);
                             }
                             else
                             {
-                                error = $"{expr} should have one parameters";
+                                error = $"{expr} can't evaluate.";
                             }
                         }
 
@@ -3089,20 +2735,13 @@ namespace Microsoft.Bot.Builder.Expressions
                         (args, error) = EvaluateChildren(expr, state);
                         if (error == null)
                         {
-                            if (args.Count == 1)
+                            if (args[0] is string uri )
                             {
-                                if (args[0] is string uri )
-                                {
-                                    (value, error) = UriQuery(uri);
-                                }
-                                else
-                                {
-                                    error = $"{expr} can't evaluate.";
-                                }
+                                (value, error) = UriQuery(uri);
                             }
                             else
                             {
-                                error = $"{expr} should have one parameters";
+                                error = $"{expr} can't evaluate.";
                             }
                         }
 
@@ -3120,8 +2759,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         (args, error) = EvaluateChildren(expr, state);
                         if (error == null)
                         {
-                            if (args.Count == 1)
-                            {
+
                                 if (args[0] is string uri )
                                 {
                                     (value, error) = UriScheme(uri);
@@ -3130,11 +2768,6 @@ namespace Microsoft.Bot.Builder.Expressions
                                 {
                                     error = $"{expr} can't evaluate.";
                                 }
-                            }
-                            else
-                            {
-                                error = $"{expr} should have one parameters";
-                            }
                         }
 
                         return (value, error);

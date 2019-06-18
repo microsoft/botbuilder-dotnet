@@ -402,8 +402,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                         x = 3,
                     }
                 },
-                timestamp = "2018-03-15T13:00:00Z",
-                timestamp2 = "2018-01-01T03:00:00.0000000",
+                timestamp = "2018-03-15T13:00:00.000Z",
+                timestamp2 = "2018-01-01T03:00:00.000Z",
                 timezone = "Pacific Standard Time",
                 invalidTimeZone = "Local",
                 notISOTimestamp = "2018/03/15 13:00:00",
