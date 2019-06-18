@@ -153,6 +153,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.TraceActivity", typeof(TraceActivity));
 
             // Inputs
+            Register("Microsoft.AttachmentInput", typeof(AttachmentInput));
             Register("Microsoft.ConfirmInput", typeof(ConfirmInput));
             Register("Microsoft.NumberInput", typeof(NumberInput));
             Register("Microsoft.TextInput", typeof(TextInput));
