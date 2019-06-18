@@ -83,7 +83,7 @@
                         }
                     }
                 },
-                "ChoiceOptions": {
+                "recognizerOptions": {
                     "type": "object",
                     "properties": {
                         "noValue": {
@@ -127,7 +127,7 @@
                 }
             }
         },
-        "CardAction": {
+        "cardAction": {
             "type": "object"
         }
     }
