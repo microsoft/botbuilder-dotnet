@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="text">LG file content or inline text.</param>
         /// <param name="id">text source.</param>
         /// <returns>LG template list.</returns>
-        public static LGSource Parse(string text, string id = "")
+        public static LGResource Parse(string text, string id = "")
         {
             var parseSuccess = TryParse(text, out var templates, out var imports, out var error, id);
             if (!parseSuccess)
@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception(error.ToString());
             }
 
-            return new LGSource(templates, imports, id);
+            return new LGResource(templates, imports, id);
         }
 
         /// <summary>
