@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string Coalesce = "coalesce";
         public const string XPath = "xPath";
 
-        // Regar expression
+        // Regular expression
         public const string IsMatch = "isMatch";
     }
 }

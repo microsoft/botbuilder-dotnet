@@ -12,16 +12,16 @@ namespace Microsoft.Bot.Builder.Expressions
     {
         public static Regex CreateRegex(string pattern)
         {
-            if (string.IsNullOrEmpty(pattern) || !IsCommanRegex(pattern))
+            if (string.IsNullOrEmpty(pattern) || !IsCommonRegex(pattern))
             {
                 throw new ArgumentException("A regular expression parsing error occurred.");
             }
 
             // TODO check pattern
-            return new Regex(pattern, RegexOptions.Compiled);
+            return new Regex(pattern);
         }
 
-        private static bool IsCommanRegex(string pattern)
+        private static bool IsCommonRegex(string pattern)
         {
             try
             {
