@@ -264,12 +264,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (dialog is DialogCommand)
             {
                 State.SetValue(DialogContextState.STEP_OPTIONS_PROPERTY, options);
-                // State.SetValue(DialogContextState.STEP_INSTANCE_PROPERTY, dialog);
             }
             else
             {
                 State.SetValue(DialogContextState.DIALOG_OPTIONS, options);
-                // State.SetValue(DIALOG_INSTANCE_PROPERTY, dialog);
             }
 
             // Call dialogs BeginAsync() method.
@@ -321,18 +319,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     throw new Exception($"Failed to continue dialog. A dialog with id {instance.Id} could not be found.");
                 }
-
-                // // set dialog instance state properties which aren't persisted
-                // if (dialog is DialogCommand)
-                // {
-                //     var parent = this.FindDialog(this.Parent?.ActiveDialog.Id);
-                //     this.State.SetValue(DIALOG_INSTANCE_PROPERTY, parent);
-                //     this.State.SetValue(STEP_INSTANCE_PROPERTY, dialog);
-                // }
-                // else
-                // {
-                //     this.State.SetValue(DIALOG_INSTANCE_PROPERTY, dialog);
-                // }
 
                 // Continue dialog execution
                 return await dialog.ContinueDialogAsync(this, cancellationToken).ConfigureAwait(false);

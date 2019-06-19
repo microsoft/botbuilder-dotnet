@@ -59,8 +59,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public const string STEP_OPTIONS_PROPERTY = "dialog.step.options";
 
-        // public const string DIALOG_INSTANCE_PROPERTY = "turn.dialog.instance";
-        // public const string STEP_INSTANCE_PROPERTY = "turn.step.instance";
 
         /// <summary>
         /// Gets or sets settings for the application.
