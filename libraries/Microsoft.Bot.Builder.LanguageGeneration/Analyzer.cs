@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public HashSet<string> TemplateRefNames { get; set; }
 
-        public AnalyzerResult Append(AnalyzerResult outputItem)
+        public AnalyzerResult Union(AnalyzerResult outputItem)
         {
             this.Variables.UnionWith(outputItem.Variables);
             this.TemplateRefNames.UnionWith(outputItem.TemplateRefNames);
@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             foreach (var templateStr in context.normalTemplateString())
             {
                 var item = Visit(templateStr);
-                result.Append(item);
+                result.Union(item);
             }
 
             return result;
@@ -110,12 +110,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var expression = ifRule.ifCondition().EXPRESSION(0);
                 if (expression != null)
                 {
-                    result.Append(AnalyzeExpression(expression.GetText()));
+                    result.Union(AnalyzeExpression(expression.GetText()));
                 }
 
                 if (ifRule.normalTemplateBody() != null)
                 {
-                    result.Append(Visit(ifRule.normalTemplateBody()));
+                    result.Union(Visit(ifRule.normalTemplateBody()));
                 }
             }
 
@@ -131,11 +131,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var expression = iterNode.switchCaseStat().EXPRESSION();
                 if (expression.Length > 0)
                 {
-                    result.Append(AnalyzeExpression(expression[0].GetText()));
+                    result.Union(AnalyzeExpression(expression[0].GetText()));
                 }
                 if (iterNode.normalTemplateBody() != null)
                 {
-                    result.Append(Visit(iterNode.normalTemplateBody()));
+                    result.Union(Visit(iterNode.normalTemplateBody()));
                 }
             }
 
@@ -152,13 +152,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     case LGFileParser.DASH:
                         break;
                     case LGFileParser.EXPRESSION:
-                        result.Append(AnalyzeExpression(node.GetText()));
+                        result.Union(AnalyzeExpression(node.GetText()));
                         break;
                     case LGFileParser.TEMPLATE_REF:
-                        result.Append(AnalyzeTemplateRef(node.GetText()));
+                        result.Union(AnalyzeTemplateRef(node.GetText()));
                         break;
                     case LGFileLexer.MULTI_LINE_TEXT:
-                        result.Append(AnalyzeMultiLineText(node.GetText()));
+                        result.Union(AnalyzeMultiLineText(node.GetText()));
                         break;
                     default:
                         break;
@@ -185,25 +185,25 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             if (exp.Type == "lgTemplate")
             {
                 var templateName = (exp.Children[0] as Constant).Value.ToString();
-                result.Append(new AnalyzerResult(templateRefNames: new HashSet<string>() { templateName }));
+                result.Union(new AnalyzerResult(templateRefNames: new HashSet<string>() { templateName }));
 
                 if (exp.Children.Length == 1)
                 {
-                    result.Append(this.AnalyzeTemplate((exp.Children[0] as Constant).Value.ToString()));
+                    result.Union(this.AnalyzeTemplate((exp.Children[0] as Constant).Value.ToString()));
                 }
                 else
                 {
                     // only get template ref names
                     var templateRefNames = this.AnalyzeTemplate((exp.Children[0] as Constant).Value.ToString()).TemplateRefNames;
-                    result.Append(new AnalyzerResult(templateRefNames: templateRefNames));
+                    result.Union(new AnalyzerResult(templateRefNames: templateRefNames));
 
                     // analyzer other children
-                    exp.Children.Select(x => result.Append(this.AnalyzeExpressionDirectly(x)));
+                    exp.Children.ToList().ForEach(x => result.Union(this.AnalyzeExpressionDirectly(x)));
                 }
             }
             else
             {
-                exp.Children.Select(x => result.Append(this.AnalyzeExpressionDirectly(x)));
+                exp.Children.ToList().ForEach(x => result.Union(this.AnalyzeExpressionDirectly(x)));
             }
 
             return result;
@@ -217,8 +217,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var references = parsed.References();
 
-            result.Append(new AnalyzerResult(variables: new HashSet<string>(references)));
-            result.Append(this.AnalyzeExpressionDirectly(parsed));
+            result.Union(new AnalyzerResult(variables: new HashSet<string>(references)));
+            result.Union(this.AnalyzeExpressionDirectly(parsed));
 
             return result;
         }
@@ -246,22 +246,22 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var templateName = exp.Substring(0, argsStartPos);
 
                 // add this template
-                result.Append(new AnalyzerResult(templateRefNames: new HashSet<string>() { templateName }));
-                templateAnalyzerResult.Select(t => result.Append(t));
+                result.Union(new AnalyzerResult(templateRefNames: new HashSet<string>() { templateName }));
+                templateAnalyzerResult.ToList().ForEach(t => result.Union(t));
             }
             else
             {
-                result.Append(new AnalyzerResult(templateRefNames: new HashSet<string>() { exp }));
+                result.Union(new AnalyzerResult(templateRefNames: new HashSet<string>() { exp }));
 
                 // We analyze tempalte only if the template has no formal parameters
                 // But we should analyzer template reference names for all situation
                 if (this.templateMap[exp].Paramters == null || this.templateMap[exp].Paramters.Count == 0)
                 {
-                    result.Append(this.AnalyzeTemplate(exp));
+                    result.Union(this.AnalyzeTemplate(exp));
                 }
                 else
                 {
-                    result.Append(new AnalyzerResult(templateRefNames: this.AnalyzeTemplate(exp).TemplateRefNames));
+                    result.Union(new AnalyzerResult(templateRefNames: this.AnalyzeTemplate(exp).TemplateRefNames));
                 }
             }
 
@@ -280,7 +280,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 if (matchItem.Success)
                 {
-                    result.Append(AnalyzeExpression(matchItem.Value));
+                    result.Union(AnalyzeExpression(matchItem.Value));
                 }
             }
 
