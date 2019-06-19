@@ -14,20 +14,23 @@ namespace Microsoft.Bot.Builder.Expressions
 
         public static Regex CreateRegex(string pattern)
         {
+            Regex result;
             if (!string.IsNullOrEmpty(pattern) && regexCache.TryGet(pattern, out var regex))
             {
-                return regex;
+                result = regex;
             }
-
-            if (string.IsNullOrEmpty(pattern) || !IsCommonRegex(pattern))
+            else
             {
-                throw new ArgumentException("A regular expression parsing error occurred.");
+                if (string.IsNullOrEmpty(pattern) || !IsCommonRegex(pattern))
+                {
+                    throw new ArgumentException("A regular expression parsing error occurred.");
+                }
+
+                result = new Regex(pattern);
+                regexCache.Set(pattern, result);
             }
 
-            regex = new Regex(pattern);
-            regexCache.Set(pattern, regex);
-
-            return regex;
+            return result;
         }
 
         private static bool IsCommonRegex(string pattern)
