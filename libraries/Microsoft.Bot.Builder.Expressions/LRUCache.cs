@@ -6,7 +6,7 @@ namespace Microsoft.Bot.Builder.Expressions
     public class LRUCache<TKey, TValue>
     {
         private const int DefaultCapacity = 255;
-        private int capacity;
+        private readonly int capacity;
         private ReaderWriterLockSlim locker;
         private IDictionary<TKey, TValue> dictionary;
         private LinkedList<TKey> linkedList;
@@ -22,98 +22,6 @@ namespace Microsoft.Bot.Builder.Expressions
             this.capacity = capacity > 0 ? capacity : DefaultCapacity;
             dictionary = new Dictionary<TKey, TValue>();
             linkedList = new LinkedList<TKey>();
-        }
-
-        public int Count
-        {
-            get
-            {
-                locker.EnterReadLock();
-                try
-                {
-                    return dictionary.Count;
-                }
-                finally
-                {
-                    locker.ExitReadLock();
-                }
-            }
-        }
-
-        public int Capacity
-        {
-            get
-            {
-                locker.EnterReadLock();
-                try
-                {
-                    return capacity;
-                }
-                finally
-                {
-                    locker.ExitReadLock();
-                }
-            }
-
-            set
-            {
-                locker.EnterUpgradeableReadLock();
-                try
-                {
-                    if (value > 0 && capacity != value)
-                    {
-                        locker.EnterWriteLock();
-                        try
-                        {
-                            capacity = value;
-                            while (linkedList.Count > capacity)
-                            {
-                                linkedList.RemoveLast();
-                            }
-                        }
-                        finally
-                        {
-                            locker.ExitWriteLock();
-                        }
-                    }
-                }
-                finally
-                {
-                    locker.ExitUpgradeableReadLock();
-                }
-            }
-        }
-
-        public ICollection<TKey> Keys
-        {
-            get
-            {
-                locker.EnterReadLock();
-                try
-                {
-                    return dictionary.Keys;
-                }
-                finally
-                {
-                    locker.ExitReadLock();
-                }
-            }
-        }
-
-        public ICollection<TValue> Values
-        {
-            get
-            {
-                locker.EnterReadLock();
-                try
-                {
-                    return dictionary.Values;
-                }
-                finally
-                {
-                    locker.ExitReadLock();
-                }
-            }
         }
 
         public void Set(TKey key, TValue value)
@@ -165,19 +73,6 @@ namespace Microsoft.Bot.Builder.Expressions
             finally
             {
                 locker.ExitUpgradeableReadLock();
-            }
-        }
-
-        public bool ContainsKey(TKey key)
-        {
-            locker.EnterReadLock();
-            try
-            {
-                return dictionary.ContainsKey(key);
-            }
-            finally
-            {
-                locker.ExitReadLock();
             }
         }
     }
