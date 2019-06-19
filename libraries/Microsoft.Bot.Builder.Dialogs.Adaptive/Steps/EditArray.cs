@@ -172,6 +172,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             }
 
             dc.State.SetValue(prop, array);
+            if (ResultProperty != null)
+            {
+                dc.State.SetValue(ResultProperty, result);
+            }
             return await dc.EndDialogAsync(result);
         }
 
