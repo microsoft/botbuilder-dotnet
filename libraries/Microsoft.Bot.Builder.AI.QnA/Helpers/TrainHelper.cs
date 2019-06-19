@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
 
             // Call train
-            await this.CallTrainAsync(feedbackRecords).ConfigureAwait(false);
+            await this.QueryTrainAsync(feedbackRecords).ConfigureAwait(false);
         }
 
         private async Task QueryTrainAsync(FeedbackRecords feedbackRecords)

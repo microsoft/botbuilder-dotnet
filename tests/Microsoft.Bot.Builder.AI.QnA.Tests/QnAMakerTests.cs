@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -258,6 +259,45 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var filteredResults = qna.GetLowScoreVariation(results);
             Assert.IsNotNull(filteredResults);
             Assert.AreEqual(filteredResults.Length, 3, "should get three results");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        public async Task QnaMaker_CallTrain()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetTrainRequestUrl())
+                .Respond(HttpStatusCode.NoContent, "application/json", "{ }");
+
+            var qna = GetQnAMaker(
+                mockHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname,
+                });
+
+            var feedbackRecords = new FeedbackRecords();
+
+            var feedback1 = new FeedbackRecord
+            {
+                QnaId = 1,
+                UserId = "test",
+                UserQuestion = "How are you?"
+            };
+
+            var feedback2 = new FeedbackRecord
+            {
+                QnaId = 2,
+                UserId = "test",
+                UserQuestion = "What up??"
+            };
+
+            feedbackRecords.Records = new FeedbackRecord[] { feedback1, feedback2 };
+
+            await qna.CallTrainAsync(feedbackRecords);
         }
 
         [TestMethod]

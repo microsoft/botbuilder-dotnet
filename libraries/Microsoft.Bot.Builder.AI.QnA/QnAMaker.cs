@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             // TODO: Improve message
             if (_endpoint.Host.EndsWith("v2.0") || _endpoint.Host.EndsWith("v3.0"))
             {
-                throw new NotSupportedException("v2.0 and v3.0 of QnA Maker service is no longer supported in the Bot Framework.");
+                throw new NotSupportedException("v2.0 and v3.0 of QnA Maker service is no longer supported in the QnA Maker.");
             }
 
             if (httpClient == null)
@@ -282,7 +282,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task CallTrainAsync(FeedbackRecords feedbackRecords)
         {
-            await this.CallTrainAsync(feedbackRecords).ConfigureAwait(false);
+            await this.activeLearningTrainHelper.CallTrainAsync(feedbackRecords).ConfigureAwait(false);
         }
 
     }
