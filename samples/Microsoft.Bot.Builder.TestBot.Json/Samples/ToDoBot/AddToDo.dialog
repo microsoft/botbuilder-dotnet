@@ -11,6 +11,7 @@
         {
             "$type": "Microsoft.TextInput",
             "prompt": "OK, please enter the title of your todo.",
+            "value":  "@title",
             "property": "dialog.todo"
         },
         {

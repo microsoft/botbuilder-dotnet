@@ -11,6 +11,7 @@
         {
             "$type": "Microsoft.TextInput",
             "prompt": "OK, please enter the title of the todo you want to remove.",
+            "value": "@title",
             "property": "dialog.todo"
         },
         {

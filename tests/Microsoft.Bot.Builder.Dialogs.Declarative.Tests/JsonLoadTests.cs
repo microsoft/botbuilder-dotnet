@@ -240,7 +240,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         }
 
         [TestMethod]
-        //[Ignore("Temporarily disabling to unblock event model PR. This is a super important test, reenabling shortly.")]
         public async Task JsonDialogLoad_ToDoBot()
         {
             await BuildTestFlow("ToDoBot.main.dialog")
