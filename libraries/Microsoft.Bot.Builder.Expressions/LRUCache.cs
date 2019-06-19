@@ -155,6 +155,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         locker.ExitWriteLock();
                     }
                 }
+
                 return getSuccess;
             }
             catch

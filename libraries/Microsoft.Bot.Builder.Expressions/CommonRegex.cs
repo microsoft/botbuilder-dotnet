@@ -26,6 +26,7 @@ namespace Microsoft.Bot.Builder.Expressions
 
             regex = new Regex(pattern);
             regexCache.Set(pattern, regex);
+
             return regex;
         }
 
@@ -39,6 +40,7 @@ namespace Microsoft.Bot.Builder.Expressions
             {
                 return false;
             }
+
             return true;
         }
 
@@ -51,6 +53,7 @@ namespace Microsoft.Bot.Builder.Expressions
             parser.RemoveErrorListeners();
             parser.AddErrorListener(new ErrorListener());
             parser.BuildParseTree = true;
+
             return parser.parse();
         }
     }
