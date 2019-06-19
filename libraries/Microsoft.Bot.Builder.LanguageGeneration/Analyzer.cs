@@ -11,20 +11,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class AnalyzerResult
     {
-        public AnalyzerResult(HashSet<string> variables = null, HashSet<string> templateRefNames = null)
+        public AnalyzerResult(List<string> variables = null, List<string> templateRefNames = null)
         {
-            this.Variables = variables ?? new HashSet<string>();
-            this.TemplateRefNames = templateRefNames ?? new HashSet<string>();
+            this.Variables = (variables ?? new List<string>()).Distinct().ToList();
+            this.TemplateRefNames = (templateRefNames ?? new List<string>()).Distinct().ToList();
         }
 
-        public HashSet<string> Variables { get; set; }
+        public List<string> Variables { get; set; }
 
-        public HashSet<string> TemplateRefNames { get; set; }
+        public List<string> TemplateRefNames { get; set; }
 
         public AnalyzerResult Union(AnalyzerResult outputItem)
         {
-            this.Variables.UnionWith(outputItem.Variables);
-            this.TemplateRefNames.UnionWith(outputItem.TemplateRefNames);
+            this.Variables = this.Variables.Union(outputItem.Variables).ToList();
+            this.TemplateRefNames = this.TemplateRefNames.Union(outputItem.TemplateRefNames).ToList();
             return this;
         }
     }
@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             if (exp.Type == "lgTemplate")
             {
                 var templateName = (exp.Children[0] as Constant).Value.ToString();
-                result.Union(new AnalyzerResult(templateRefNames: new HashSet<string>() { templateName }));
+                result.Union(new AnalyzerResult(templateRefNames: new List<string>() { templateName }));
 
                 if (exp.Children.Length == 1)
                 {
@@ -217,7 +217,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var references = parsed.References();
 
-            result.Union(new AnalyzerResult(variables: new HashSet<string>(references)));
+            result.Union(new AnalyzerResult(variables: new List<string>(references)));
             result.Union(this.AnalyzeExpressionDirectly(parsed));
 
             return result;
@@ -246,12 +246,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var templateName = exp.Substring(0, argsStartPos);
 
                 // add this template
-                result.Union(new AnalyzerResult(templateRefNames: new HashSet<string>() { templateName }));
+                result.Union(new AnalyzerResult(templateRefNames: new List<string>() { templateName }));
                 templateAnalyzerResult.ToList().ForEach(t => result.Union(t));
             }
             else
             {
-                result.Union(new AnalyzerResult(templateRefNames: new HashSet<string>() { exp }));
+                result.Union(new AnalyzerResult(templateRefNames: new List<string>() { exp }));
 
                 // We analyze tempalte only if the template has no formal parameters
                 // But we should analyzer template reference names for all situation
