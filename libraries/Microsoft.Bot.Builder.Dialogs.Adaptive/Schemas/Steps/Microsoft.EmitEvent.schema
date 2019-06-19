@@ -31,13 +31,13 @@
         "eventValue": {
             "type": "object",
             "title": "Event Value",
-            "description": "optional value to emit along with the event",
+            "description": "Optional value to emit along with the event",
             "additionalProperties": true
         },
         "bubbleEvent": {
             "type": "boolean",
             "title": "Bubble Event",
-            "description": "if true this event should propagate to parent dialogs"
+            "description": "If true this event should propagate to parent dialogs"
         }
     },
     "required": [

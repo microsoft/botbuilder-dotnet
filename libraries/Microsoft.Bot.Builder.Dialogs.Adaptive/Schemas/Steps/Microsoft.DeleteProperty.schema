@@ -8,7 +8,7 @@
         "property": {
             "$role": "memoryPath",
             "title": "Property",
-            "description": "The Memory property path to delete",
+            "description": "The Memory property path to delete"
         }
     },
     "required": [ "property" ]

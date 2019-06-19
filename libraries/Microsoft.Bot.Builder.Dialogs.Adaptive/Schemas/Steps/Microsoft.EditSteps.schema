@@ -23,7 +23,7 @@
                 "$type": "Microsoft.IDialog"
             },
             "title": "Steps",
-            "description": "Step to execute"
+            "description": "Steps to execute"
         }
     },
     "required": [
