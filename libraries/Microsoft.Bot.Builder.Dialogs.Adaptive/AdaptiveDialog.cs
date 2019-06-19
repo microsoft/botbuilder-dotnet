@@ -26,7 +26,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     {
         private string changeKey = Guid.NewGuid().ToString();
         private const string ADAPTIVE_KEY = "adaptiveDialogState";
-
         private bool installedDependencies = false;
 
         protected DialogSet runDialogs = new DialogSet(); // Used by the Run method
@@ -175,8 +174,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         protected async Task<bool> ProcessEventAsync(SequenceContext sequence, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Save into turn
-            sequence.State.SetValue($"turn.dialogEvent", dialogEvent);
-            sequence.State.SetValue($"turn.dialogEvents.{dialogEvent.Name}", dialogEvent.Value);
+            sequence.State.SetValue(DialogContextState.TURN_DIALOGEVENT, dialogEvent);
 
             // Look for triggered rule
             var handled = await this.QueueFirstMatchAsync(sequence, dialogEvent, preBubble, cancellationToken).ConfigureAwait(false);
@@ -227,13 +225,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                         if (activity.Type == ActivityTypes.Message)
                         {
-                            // Clear any recognizer results
-                            sequence.State.SetValue("turn.recognized", null);
-
                             // Recognize utterance
                             var recognized = await this.OnRecognize(sequence, cancellationToken).ConfigureAwait(false);
 
-                            sequence.State.SetValue("turn.recognized", recognized);
+                            sequence.State.SetValue(DialogContextState.TURN_RECOGNIZED, recognized);
 
                             // Emit leading RecognizedIntent event
                             var e = new DialogEvent() { Name = AdaptiveEvents.RecognizedIntent, Value = recognized, Bubble = false };
@@ -278,8 +273,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         if (activity.Type == ActivityTypes.Message)
                         {
                             // Clear recognizer results
-                            sequence.State.SetValue("turn.recognized", null);
-
+                            sequence.State.RemoveValue(DialogContextState.TURN_RECOGNIZED);
 
                             // Empty sequence?
                             if (!sequence.Steps.Any())
@@ -557,8 +551,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 // Increment turns step count
                 // This helps dialogs being resumed from an interruption to determine if they
                 // should re-prompt or not.
-                var stepCount = sequence.State.GetValue<int>("turn.stepCount", 0);
-                sequence.State.SetValue("turn.stepCount", stepCount + 1);
+                var stepCount = sequence.State.GetValue<int>(DialogContextState.TURN_STEPCOUNT, 0);
+                sequence.State.SetValue(DialogContextState.TURN_STEPCOUNT, stepCount + 1);
 
                 // Is the step waiting for input or were we cancelled?
                 if (result.Status == DialogTurnStatus.Waiting || this.GetUniqueInstanceId(sequence) != instanceId)

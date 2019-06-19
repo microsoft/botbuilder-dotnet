@@ -215,14 +215,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         {
                             new SendActivity("{turn.activity.text}"),
                             new SendActivity("{turn.intent.intentnumber1}"),
-                            new SendActivity("{turn.dialogevents.recognizedIntent.text}"),
-                            new SendActivity("{turn.dialogevents.recognizedIntent.intents.intentnumber1.score}"),
+                            new SendActivity("{turn.recognized.text}"),
+                            new SendActivity("{turn.recognized.intents.intentnumber1.score}"),
                         }),
                     new IntentRule(intent: "NameIntent",
                         steps:new List<IDialog>()
                         {
                             new SendActivity("{turn.entities.name}"),
-                            new SendActivity("{turn.dialogevents.recognizedIntent.entities.name}"),
+                            new SendActivity("{turn.recognized.entities.name}"),
                         }),
                 }
             };
@@ -240,5 +240,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     .AssertReply("joe")
                 .StartTestAsync();
         }
+
+        
     }
 }

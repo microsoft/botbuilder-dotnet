@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         {
             get
             {
-                return InputBindings["value"];
+                return InputBindings.TryGetValue("value", out string value) ? value : null;
             }
             set
             {
