@@ -328,7 +328,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 var variableEvaledOptions = testItem.GetType().GetProperty("variableOptions").GetValue(testItem) as string[];
                 Assert.AreEqual(variableEvaledOptions.Length, variableEvaled.Count);
                 variableEvaledOptions.ToList().ForEach(element => Assert.AreEqual(variableEvaled.Contains(element), true));
-                var templateEvaled = evaled1.TemplateRefNames;
+                var templateEvaled = evaled1.TemplateReferences;
                 var templateEvaledOptions = testItem.GetType().GetProperty("templateRefOptions").GetValue(testItem) as string[];
                 Assert.AreEqual(templateEvaledOptions.Length, templateEvaled.Count);
                 templateEvaledOptions.ToList().ForEach(element => Assert.AreEqual(templateEvaled.Contains(element), true));
