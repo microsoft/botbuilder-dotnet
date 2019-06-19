@@ -22,15 +22,11 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RichardSzalay.MockHttp;
 
-namespace Microsoft.Bot.Builder.FunctionalTests
+namespace Microsoft.Bot.Builder.AI.Luis.Tests
 {
     [TestClass]
-#if !FUNCTIONALTESTS
-    [Ignore("These integration tests run only when FUNCTIONALTESTS is defined")]
-#endif
-
-    // The LUIS application used in these unit tests is in TestData/TestLuistApp.json
-    public class LuisRecognizerTests
+    // The LUIS application used in these unit tests is in TestData/Contoso App.json
+    public class LuisOracleTests
     {
         // Access the checked-in oracles so that if they are changed you can compare the changes and easily modify them.
         private const string _testData = @"../../../TestData/";
