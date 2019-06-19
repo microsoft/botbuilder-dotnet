@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return evaluator.EvaluateTemplate(templateName, scope);
         }
 
-        public List<string> AnalyzeTemplate(string templateName)
+        public AnalyzerResult AnalyzeTemplate(string templateName)
         {
             var analyzer = new Analyzer(Templates);
             return analyzer.AnalyzeTemplate(templateName);
