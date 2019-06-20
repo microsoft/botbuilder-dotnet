@@ -108,8 +108,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else
             {
-                return Dialog.EndOfTurn;
+                await OnPromptAsync(dc.Context, state, options, true, cancellationToken).ConfigureAwait(false);
             }
+
+            return EndOfTurn;
         }
 
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -120,14 +122,14 @@ namespace Microsoft.Bot.Builder.Dialogs
             // To avoid the prompt prematurely ending we need to implement this method and
             // simply re-prompt the user.
             await RepromptDialogAsync(dc.Context, dc.ActiveDialog, cancellationToken).ConfigureAwait(false);
-            return Dialog.EndOfTurn;
+            return EndOfTurn;
         }
 
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
             var state = (IDictionary<string, object>)instance.State[PersistedState];
             var options = (PromptOptions)instance.State[PersistedOptions];
-            await OnPromptAsync(turnContext, state, options, cancellationToken).ConfigureAwait(false);
+            await OnPromptAsync(turnContext, state, options, false, cancellationToken).ConfigureAwait(false);
         }
 
         protected virtual async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
