@@ -230,6 +230,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                             sequence.State.SetValue(DialogContextState.TURN_RECOGNIZED, recognized);
 
+                            var (name, score) = recognized.GetTopScoringIntent();
+                            sequence.State.SetValue(DialogContextState.TURN_TOPINTENT, name);
+                            sequence.State.SetValue(DialogContextState.TURN_TOPSCORE, score);
+
                             // Emit leading RecognizedIntent event
                             var e = new DialogEvent() { Name = AdaptiveEvents.RecognizedIntent, Value = recognized, Bubble = false };
                             handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -243,7 +247,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                         else if (activity.Type == ActivityTypes.ConversationUpdate)
                         {
-                            var membersAdded = sequence.State.GetValue<List<ChannelAccount>>("turn.membersAdded", null);
+                            var membersAdded = sequence.State.GetValue<List<ChannelAccount>>(DialogContextState.TURN_MEMBERSADDED, null);
                             if (membersAdded != null && membersAdded.Any())
                             {
                                 // Emit trailing ConversationMembersAdded event
@@ -268,13 +272,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     case AdaptiveEvents.ActivityReceived:
 
                         var activity = sequence.Context.Activity;
-                        var membersAdded = sequence.State.GetValue<List<ChannelAccount>>("turn.membersAdded", null);
+                        var membersAdded = sequence.State.GetValue<List<ChannelAccount>>(DialogContextState.TURN_MEMBERSADDED, null);
 
                         if (activity.Type == ActivityTypes.Message)
                         {
-                            // Clear recognizer results
-                            sequence.State.RemoveValue(DialogContextState.TURN_RECOGNIZED);
-
                             // Empty sequence?
                             if (!sequence.Steps.Any())
                             {

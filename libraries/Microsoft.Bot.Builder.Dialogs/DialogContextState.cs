@@ -54,8 +54,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public const string TURN_ACTIVITY = "turn.activity";
         public const string TURN_RECOGNIZED = "turn.recognized";
+        public const string TURN_TOPINTENT = "turn.recognized.intent";
+        public const string TURN_TOPSCORE = "turn.recognized.score";
         public const string TURN_STEPCOUNT = "turn.stepCount";
         public const string TURN_DIALOGEVENT = "turn.dialogEvent";
+        public const string TURN_MEMBERSADDED = "turn.membersAdded";
 
         public const string STEP_OPTIONS_PROPERTY = "dialog.step.options";
 
@@ -251,15 +254,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else
             {
-                //if (segments.First() == "turn")
-                //{
-                //    // no need to clone turn properties.
-                //    current[segments.Last()] = (object)value;
-                //}
-                //else
-                {
-                    current[segments.Last()] = (JToken)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(value, expressionCaseSettings));
-                }
+                current[segments.Last()] = (JToken)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(value, expressionCaseSettings));
             }
         }
 
