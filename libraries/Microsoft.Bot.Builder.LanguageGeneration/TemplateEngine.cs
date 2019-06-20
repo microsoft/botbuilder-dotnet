@@ -51,15 +51,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 importResolver = importResolver ?? ((id) =>
                  {
-                    // import paths are in resource files which can be executed on multiple OS environments
-                    // Call GetOsPath() to map / & \ in importPath -> OSPath
-                    var importPath = GetOsPath(id);
-                    if (!Path.IsPathRooted(importPath))
+                     // import paths are in resource files which can be executed on multiple OS environments
+                     // Call GetOsPath() to map / & \ in importPath -> OSPath
+                     var importPath = GetOsPath(id);
+                     if (!Path.IsPathRooted(importPath))
                      {
-                        // get full path for importPath relative to path which is doing the import.
-                        importPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(filePath), id));
+                         // get full path for importPath relative to path which is doing the import.
+                         importPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(filePath), id));
                      }
-                    return (File.ReadAllText(importPath), importPath);
+                     return (File.ReadAllText(importPath), importPath);
                  });
 
                 var fullPath = Path.GetFullPath(filePath);
@@ -67,6 +67,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 this.Templates.AddRange(parsedTemplates);
             }
 
+            this.Templates = this.RemoveDuplicatedTemplates(this.Templates);
             RunStaticCheck(this.Templates);
 
             return this;
@@ -92,6 +93,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var parsedTemplates = this.ParseContent(content, name, importResolver);
             this.Templates.AddRange(parsedTemplates);
 
+            this.Templates = this.RemoveDuplicatedTemplates(this.Templates);
             RunStaticCheck(Templates);
 
             return this;
@@ -220,6 +222,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         /// <summary>
         /// Parse lg content to LGTemplate list.
+        /// All the imports of the content will be also tracked down to parse templates.
         /// </summary>
         /// <param name="content">Text content contains lg templates.</param>
         /// <param name="name">Text name.</param>
@@ -229,8 +232,33 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var sources = new Dictionary<string, LGResource>();
             LoopLGText(content, name, sources, importResolver);
+            var parsedTemplates = sources.SelectMany(s => s.Value.Templates).ToList();
 
-            return sources.SelectMany(s => s.Value.Templates).ToList();
+            // check if there are duplicated templates among parsed templates from both current content and its imports
+            var checker = new StaticChecker(parsedTemplates);
+            var errors = checker.CheckTemplateDuplication();
+            if (errors.Count != 0)
+            {
+                throw new Exception(string.Join("\n", errors));
+            }
+
+            return parsedTemplates;
+        }
+
+        /// <summary>
+        /// Remove duplicated lg templates when they are imported from multiple files by AddFiles function.
+        /// Given that a.lg imports c.lg and b.lg also imports c.lg, the templates in c.lg will be added twice in this.Templates.
+        /// Run this function to remove the duplicated templates from same file.
+        /// </summary>
+        /// <param name="templates">Templates list with duplicated templates.</param>
+        /// <returns>Unique templates list.</returns>
+        private List<LGTemplate> RemoveDuplicatedTemplates(List<LGTemplate> templates)
+        {
+            var uniqueTemplates = templates.GroupBy(x => new { x.Name, x.Source })
+                                            .Select(x => x.First())
+                                            .ToList();
+
+            return uniqueTemplates;
         }
     }
 }
