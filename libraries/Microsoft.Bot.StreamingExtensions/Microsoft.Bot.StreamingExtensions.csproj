@@ -15,8 +15,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
-    <PackageId>Microsoft.Bot.Protocol</PackageId>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <PackageId>Microsoft.Bot.StreamingExtensions</PackageId>
     <Authors>Microsoft</Authors>
     <Product>Microsoft Bot Protocol SDK</Product>
     <Company>Microsoft</Company>
