@@ -60,11 +60,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             var opt = (PromptOptions)options;
 
+            // should throw ArgumentNullException
             await OnPromptAsync(turnContext: null, state: null, options: opt, isRetry: false);
         }
 
         public async Task OnPromptNullOptions(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
+            // should throw ArgumentNullException
             await OnPromptAsync(dc.Context, state: null, options: null, isRetry: false);
         }
     }
