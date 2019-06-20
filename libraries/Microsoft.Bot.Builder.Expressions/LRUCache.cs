@@ -49,8 +49,8 @@ namespace Microsoft.Bot.Builder.Expressions
             locker.EnterUpgradeableReadLock();
             try
             {
-                var getSuccess = dictionary.TryGetValue(key, out value);
-                if (getSuccess)
+                var keyExist = dictionary.TryGetValue(key, out value);
+                if (keyExist)
                 {
                     locker.EnterWriteLock();
                     try
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     }
                 }
 
-                return getSuccess;
+                return keyExist;
             }
             catch
             {
