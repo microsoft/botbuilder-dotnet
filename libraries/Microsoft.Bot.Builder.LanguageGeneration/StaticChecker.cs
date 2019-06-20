@@ -51,10 +51,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>report result.</returns>
         public List<Diagnostic> Check()
         {
-            var result = new List<Diagnostic>();
-
             // check dup first
-            result.AddRange(this.CheckTemplateDuplication());
+            var result = this.CheckTemplateDuplication();
 
             if (result.Count > 0)
             {
