@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             };
 
             // Send initial prompt
-            await OnPromptAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions], cancellationToken).ConfigureAwait(false);
+            await OnPromptAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions], false, cancellationToken).ConfigureAwait(false);
             return Dialog.EndOfTurn;
         }
 
@@ -131,22 +131,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         protected virtual async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (turnContext == null)
-            {
-                throw new ArgumentNullException(nameof(turnContext));
-            }
-
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            if (options.Prompt != null)
-            {
-                await turnContext.SendActivityAsync(options.Prompt, cancellationToken).ConfigureAwait(false);
-            }
-        }
+            => await OnPromptAsync(turnContext, state, options, false, cancellationToken).ConfigureAwait(false);
 
         protected virtual async Task OnPromptAsync(
             ITurnContext turnContext,
