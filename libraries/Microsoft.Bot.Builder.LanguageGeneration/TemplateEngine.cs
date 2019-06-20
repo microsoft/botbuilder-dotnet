@@ -220,6 +220,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         /// <summary>
         /// Parse lg content to LGTemplate list.
+        /// All the imports of the content will also be tracked down to parse templates.
         /// </summary>
         /// <param name="content">Text content contains lg templates.</param>
         /// <param name="name">Text name.</param>
