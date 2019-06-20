@@ -394,9 +394,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             ex = Assert.ThrowsException<Exception>(() => new TemplateEngine().AddFiles(new List<string> { file123[0], file123[2] }));
             TestContext.WriteLine(ex.Message);
 
-            var engine = new TemplateEngine().AddFiles(new List<string> { file123[2], file123[1], file123[0] });
-
             var msg = "hello from t1, ref template2: 'hello from t2, ref template3: hello from t3' and ref template3: 'hello from t3'";
+
+            var engine = new TemplateEngine().AddFiles(new List<string> { file123[0], file123[1], file123[2] });
+            Assert.AreEqual(msg, engine.EvaluateTemplate("template1", null));
+
+            engine = new TemplateEngine().AddFiles(new List<string> { file123[1], file123[0], file123[2] });
+            Assert.AreEqual(msg, engine.EvaluateTemplate("template1", null));
+
+            engine = new TemplateEngine().AddFiles(new List<string> { file123[2], file123[1], file123[0] });
             Assert.AreEqual(msg, engine.EvaluateTemplate("template1", null));
         }
 
