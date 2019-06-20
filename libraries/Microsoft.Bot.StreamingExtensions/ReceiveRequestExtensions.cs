@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Protocol
+namespace Microsoft.Bot.StreamingExtensions
 {
     public static class ReceiveRequestExtensions
-    {        
+    {
         public static async Task<T> ReadBodyAsJson<T>(this ReceiveRequest request)
         {
             IContentStream contentStream = request.Streams?.FirstOrDefault();

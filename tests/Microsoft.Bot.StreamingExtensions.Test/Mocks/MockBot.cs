@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Protocol.UnitTests.Mocks
+namespace Microsoft.Bot.StreamingExtensions.UnitTests.Mocks
 {
     public class MockBot : IBot
     {

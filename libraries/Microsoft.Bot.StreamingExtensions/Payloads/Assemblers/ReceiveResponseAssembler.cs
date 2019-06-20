@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Bot.Protocol.Utilities;
+using Microsoft.Bot.StreamingExtensions.Utilities;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Protocol.Payloads
+namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
     public class ReceiveResponseAssembler : PayloadAssembler
     {

@@ -2,11 +2,11 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Protocol.Payloads;
-using Microsoft.Bot.Protocol.PayloadTransport;
-using Microsoft.Bot.Protocol.Utilities;
+using Microsoft.Bot.StreamingExtensions.Payloads;
+using Microsoft.Bot.StreamingExtensions.PayloadTransport;
+using Microsoft.Bot.StreamingExtensions.Utilities;
 
-namespace Microsoft.Bot.Protocol
+namespace Microsoft.Bot.StreamingExtensions
 {
     public class ProtocolAdapter
     {
@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Protocol
         public async Task<ReceiveResponse> SendRequestAsync(Request request, CancellationToken cancellationToken)
         {
             var requestId = Guid.NewGuid();
-            
+
             // wait for the response befores sending the request , so that we dont hit the case
             // where response is received before request is sent. This would lead to no tcs
             // being signaled

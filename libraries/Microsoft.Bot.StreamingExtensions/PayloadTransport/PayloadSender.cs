@@ -4,11 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Protocol.Payloads;
-using Microsoft.Bot.Protocol.Transport;
-using Microsoft.Bot.Protocol.Utilities;
+using Microsoft.Bot.StreamingExtensions.Payloads;
+using Microsoft.Bot.StreamingExtensions.Transport;
+using Microsoft.Bot.StreamingExtensions.Utilities;
 
-namespace Microsoft.Bot.Protocol.PayloadTransport
+namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
 {
     /// <summary>
     /// On Send: queues up sends and sends them along the transport
@@ -112,9 +112,9 @@ namespace Microsoft.Bot.Protocol.PayloadTransport
                     packet.Header.PayloadLength = count;
                     packet.Header.End = count == 0;
                 }
-                
+
                 int length;
-                
+
                 int headerLength = HeaderSerializer.Serialize(packet.Header, _sendHeaderBuffer, 0);
 
                 // Send: Packet Header

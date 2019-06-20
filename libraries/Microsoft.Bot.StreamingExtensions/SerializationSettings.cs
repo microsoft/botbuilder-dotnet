@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace Microsoft.Bot.Protocol
+namespace Microsoft.Bot.StreamingExtensions
 {
     public static class SerializationSettings
     {

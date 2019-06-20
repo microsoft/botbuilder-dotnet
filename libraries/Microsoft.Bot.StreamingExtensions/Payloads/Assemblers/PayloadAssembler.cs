@@ -5,12 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Protocol.Payloads;
-using Microsoft.Bot.Protocol.Utilities;
+using Microsoft.Bot.StreamingExtensions.Payloads;
+using Microsoft.Bot.StreamingExtensions.Utilities;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Protocol.Payloads
-{    
+namespace Microsoft.Bot.StreamingExtensions.Payloads
+{
     public abstract class PayloadAssembler
     {
         protected static JsonSerializer Serializer = JsonSerializer.Create(SerializationSettings.DefaultSerializationSettings);
@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Protocol.Payloads
             Id = id;
             End = false;
         }
-        
+
         public Stream GetPayloadStream()
         {
             lock (_syncLock)

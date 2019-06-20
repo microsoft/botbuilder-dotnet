@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Microsoft.Bot.Protocol
+namespace Microsoft.Bot.StreamingExtensions
 {
     public class ReceiveResponse
     {

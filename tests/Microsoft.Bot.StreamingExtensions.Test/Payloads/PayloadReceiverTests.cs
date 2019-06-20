@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Bot.Protocol.PayloadTransport;
-using Microsoft.Bot.Protocol.UnitTests.Mocks;
+using Microsoft.Bot.StreamingExtensions.PayloadTransport;
+using Microsoft.Bot.StreamingExtensions.UnitTests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Protocol.UnitTests.Payloads
+namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
 {
     [TestClass]
     public class PayloadReceiverTests

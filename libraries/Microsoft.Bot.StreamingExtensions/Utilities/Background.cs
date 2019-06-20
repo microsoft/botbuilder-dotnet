@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Protocol.Utilities
+namespace Microsoft.Bot.StreamingExtensions.Utilities
 {
     public static class Background
     {
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Protocol.Utilities
         {
             Task.Run(() => TrackAsRequest(() => task(CancellationToken.None), properties));
         }
-        
+
         /// <summary>
         /// Register periodic background task with ASP.Net hosting environment and trace exceptions.
         /// </summary>

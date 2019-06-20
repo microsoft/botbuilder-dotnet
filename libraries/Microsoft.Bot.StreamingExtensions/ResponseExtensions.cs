@@ -8,15 +8,15 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Protocol
+namespace Microsoft.Bot.StreamingExtensions
 {
     public static class ResponseExtensions
-    {        
+    {
         public static void SetBody(this Response response, string body)
         {
             response.AddStream(new StringContent(body, Encoding.UTF8));
         }
-        
+
         public static void SetBody(this Response response, object body)
         {
             var json = JsonConvert.SerializeObject(body, SerializationSettings.BotSchemaSerializationSettings);

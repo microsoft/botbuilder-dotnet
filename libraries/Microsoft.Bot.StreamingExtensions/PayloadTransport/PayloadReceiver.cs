@@ -4,11 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Protocol.Payloads;
-using Microsoft.Bot.Protocol.Transport;
-using Microsoft.Bot.Protocol.Utilities;
+using Microsoft.Bot.StreamingExtensions.Payloads;
+using Microsoft.Bot.StreamingExtensions.Transport;
+using Microsoft.Bot.StreamingExtensions.Utilities;
 
-namespace Microsoft.Bot.Protocol.PayloadTransport
+namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
 {
     public class PayloadReceiver : IPayloadReceiver
     {
@@ -87,16 +87,16 @@ namespace Microsoft.Bot.Protocol.PayloadTransport
         {
             Background.Run(ReceivePacketsAsync);
         }
-        
+
         private byte[] _receiveHeaderBuffer = new byte[TransportConstants.MaxHeaderLength];
         private byte[] _receiveContentBuffer = new byte[TransportConstants.MaxPayloadLength];
-        
+
         private async Task ReceivePacketsAsync()
         {
             bool isClosed = false;
             int length;
             DisconnectedEventArgs disconnectArgs = null;
-            
+
             while (_receiver != null && _receiver.IsConnected && !isClosed)
             {
                 // receive a single packet
@@ -114,10 +114,10 @@ namespace Microsoft.Bot.Protocol.PayloadTransport
 
                         headerOffset += length;
                     }
-                    
+
                     // deserialize the bytes into a header
                     var header = HeaderSerializer.Deserialize(_receiveHeaderBuffer, 0, TransportConstants.MaxHeaderLength);
-                    
+
                     // read the payload
                     var contentStream = _getStream(header);
 

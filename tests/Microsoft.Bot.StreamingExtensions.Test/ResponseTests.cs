@@ -7,11 +7,11 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Bot.Protocol;
+using Microsoft.Bot.StreamingExtensions;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Protocol.UnitTests
+namespace Microsoft.Bot.StreamingExtensions.UnitTests
 {
     [TestClass]
     public class ResponseTests

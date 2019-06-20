@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Bot.Protocol.Payloads;
+using Microsoft.Bot.StreamingExtensions.Payloads;
 
-namespace Microsoft.Bot.Protocol.PayloadTransport
+namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
 {
     public class SendPacket
     {

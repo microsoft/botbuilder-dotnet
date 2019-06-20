@@ -6,15 +6,15 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Protocol.Payloads;
-using Microsoft.Bot.Protocol.PayloadTransport;
-using Microsoft.Bot.Protocol.Transport;
-using Microsoft.Bot.Protocol.UnitTests.Mocks;
+using Microsoft.Bot.StreamingExtensions.Payloads;
+using Microsoft.Bot.StreamingExtensions.PayloadTransport;
+using Microsoft.Bot.StreamingExtensions.Transport;
+using Microsoft.Bot.StreamingExtensions.UnitTests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Moq.Protected;
 
-namespace Microsoft.Bot.Protocol.UnitTests
+namespace Microsoft.Bot.StreamingExtensions.UnitTests
 {
     [TestClass]
     public class SendOperationsTests

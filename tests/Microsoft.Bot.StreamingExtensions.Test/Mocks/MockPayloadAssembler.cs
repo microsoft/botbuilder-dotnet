@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Microsoft.Bot.Protocol.Payloads;
+using Microsoft.Bot.StreamingExtensions.Payloads;
 
-namespace Microsoft.Bot.Protocol.UnitTests.Mocks
+namespace Microsoft.Bot.StreamingExtensions.UnitTests.Mocks
 {
     public class MockPayloadAssembler : PayloadAssembler
     {

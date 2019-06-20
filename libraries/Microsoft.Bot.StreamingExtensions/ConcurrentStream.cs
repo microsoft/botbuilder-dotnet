@@ -5,10 +5,10 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Protocol.Payloads;
-using Microsoft.Bot.Protocol.Utilities;
+using Microsoft.Bot.StreamingExtensions.Payloads;
+using Microsoft.Bot.StreamingExtensions.Utilities;
 
-namespace Microsoft.Bot.Protocol
+namespace Microsoft.Bot.StreamingExtensions
 {
     public class ConcurrentStream : Stream
     {
@@ -35,12 +35,12 @@ namespace Microsoft.Bot.Protocol
         public override long Length => _producerLength;
 
         public override long Position { get => _consumerPosition; set => throw new NotSupportedException(); }
-        
+
         internal ConcurrentStream(ContentStreamAssembler assembler)
         {
             _assembler = assembler;
         }
-        
+
         public override void Flush()
         {
         }
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Protocol
         {
             throw new NotSupportedException();
         }
-        
+
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             if (_end)
@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Protocol
 
             return availableCount;
         }
-        
+
         /// <summary>
         /// Only 1 thread should be calling Read at a time
         /// </summary>
@@ -160,7 +160,7 @@ namespace Microsoft.Bot.Protocol
         {
             GiveBuffer(Array.Empty<byte>(), 0);
         }
-        
+
         public void Cancel()
         {
             if (_assembler != null)

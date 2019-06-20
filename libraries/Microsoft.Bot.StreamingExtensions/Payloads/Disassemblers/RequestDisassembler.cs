@@ -4,17 +4,17 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Bot.Protocol.PayloadTransport;
-using Microsoft.Bot.Protocol.Transport;
+using Microsoft.Bot.StreamingExtensions.PayloadTransport;
+using Microsoft.Bot.StreamingExtensions.Transport;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Protocol.Payloads
+namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
     public class RequestDisassembler : PayloadDisassembler
     {
         public Request Request { get; private set; }
-        
+
         public override char Type => PayloadTypes.Request;
 
         public RequestDisassembler(IPayloadSender sender, Guid id, Request request)

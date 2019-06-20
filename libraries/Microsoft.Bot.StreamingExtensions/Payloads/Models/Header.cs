@@ -1,4 +1,4 @@
-﻿using Microsoft.Bot.Protocol.Transport;
+﻿using Microsoft.Bot.StreamingExtensions.Transport;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Protocol.Payloads
+namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
     public class Header
     {
@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Protocol.Payloads
                 internalPayloadLength = value;
                 return;
             }
-        } 
+        }
 
         public Guid Id { get; set; }
 

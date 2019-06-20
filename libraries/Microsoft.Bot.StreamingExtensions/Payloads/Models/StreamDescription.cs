@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Protocol.Payloads
+namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
     public class StreamDescription
     {

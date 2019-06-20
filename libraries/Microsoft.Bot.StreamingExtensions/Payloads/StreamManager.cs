@@ -5,10 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Protocol.Payloads;
-using Microsoft.Bot.Protocol.Utilities;
+using Microsoft.Bot.StreamingExtensions.Payloads;
+using Microsoft.Bot.StreamingExtensions.Utilities;
 
-namespace Microsoft.Bot.Protocol.Payloads
+namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
     public class StreamManager : IStreamManager
     {
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Protocol.Payloads
                     _activeAssemblers.TryGetValue(id, out assembler);
                 }
             }
-            
+
             return assembler;
         }
 

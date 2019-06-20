@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
-using Microsoft.Bot.Protocol.Payloads;
+using Microsoft.Bot.StreamingExtensions.Payloads;
 
-namespace Microsoft.Bot.Protocol
+namespace Microsoft.Bot.StreamingExtensions
 {
     public class ContentStream : IContentStream
     {

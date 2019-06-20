@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Protocol.Transport
+namespace Microsoft.Bot.StreamingExtensions.Transport
 {
     public interface IStreamingTransportServer
     {

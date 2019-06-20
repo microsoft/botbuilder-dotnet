@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.Bot.Protocol.Payloads;
-using Microsoft.Bot.Protocol.UnitTests.Mocks;
+using Microsoft.Bot.StreamingExtensions.Payloads;
+using Microsoft.Bot.StreamingExtensions.UnitTests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Protocol.UnitTests.Payloads
+namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
 {
     [TestClass]
     public class PayloadAssemblerTests

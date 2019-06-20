@@ -6,20 +6,20 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Bot.Protocol.Payloads;
-using Microsoft.Bot.Protocol.Transport;
+using Microsoft.Bot.StreamingExtensions.Payloads;
+using Microsoft.Bot.StreamingExtensions.Transport;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Protocol.Payloads
+namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
     public static class HeaderSerializer
-    {   
+    {
         public const byte Delimiter = (byte)'.';
         public const byte Terminator = (byte)'\n';
         public const byte End = (byte)'1';
         public const byte NotEnd = (byte)'0';
 
-        
+
 
         public const int TypeOffset = 0;
         public const int TypeDelimiterOffset = 1;
@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Protocol.Payloads
         public const int IdLength = 36;
         public const int IdDelimeterOffset = 45;
         public const int EndOffset = 46;
-        public const int TerminatorOffset = 47; 
+        public const int TerminatorOffset = 47;
 
         public static int Serialize(Header header, byte[] buffer, int offset)
         {
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Protocol.Payloads
 
             buffer[EndOffset] = header.End ? End : NotEnd;
             buffer[TerminatorOffset] = Terminator;
-            
+
             return TransportConstants.MaxHeaderLength;
         }
 
@@ -61,14 +61,14 @@ namespace Microsoft.Bot.Protocol.Payloads
             }
 
             var header = new Header();
-            
+
             header.Type = (char)buffer[TypeOffset];
 
             if(buffer[TypeDelimiterOffset] != Delimiter)
             {
                 throw new InvalidDataException("header type delimeter is malformed");
             }
-            
+
             var lengthString = Encoding.ASCII.GetString(buffer, LengthOffset, LengthLength);
             if (!Int32.TryParse(lengthString, out int length))
             {

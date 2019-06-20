@@ -4,12 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Bot.Protocol.PayloadTransport;
-using Microsoft.Bot.Protocol.Transport;
+using Microsoft.Bot.StreamingExtensions.PayloadTransport;
+using Microsoft.Bot.StreamingExtensions.Transport;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Protocol.Payloads
+namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
     public abstract class PayloadDisassembler
     {
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Protocol.Payloads
         {
             // determine if we know the length we can send and whether we can tell if this is the end
             bool isLengthKnown = IsEnd;
-            
+
             var header = new Header()
             {
                 Type = Type,

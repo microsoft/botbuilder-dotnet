@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Protocol.UnitTests
+namespace Microsoft.Bot.StreamingExtensions.UnitTests
 {
     [TestClass]
     public class ConcurrentStreamTests

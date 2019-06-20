@@ -7,14 +7,14 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Bot.Protocol;
-using Microsoft.Bot.Protocol.StreamingExtensions;
-using Microsoft.Bot.Protocol.UnitTests.Mocks;
+using Microsoft.Bot.StreamingExtensions;
+using Microsoft.Bot.StreamingExtensions.StreamingExtensions;
+using Microsoft.Bot.StreamingExtensions.UnitTests.Mocks;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Protocol.UnitTests.StreamingExtensions
+namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
 {
     [TestClass]
     public class StreamingRequestHandlerTests

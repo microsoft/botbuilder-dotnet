@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Protocol.Transport;
+using Microsoft.Bot.StreamingExtensions.Transport;
 
-namespace Microsoft.Bot.Protocol.UnitTests.Mocks
+namespace Microsoft.Bot.StreamingExtensions.UnitTests.Mocks
 {
     public class MockStreamingTransportServer : IStreamingTransportServer
     {

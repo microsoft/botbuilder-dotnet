@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Protocol.Utilities;
+using Microsoft.Bot.StreamingExtensions.Utilities;
 
-namespace Microsoft.Bot.Protocol.PayloadTransport
+namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
 {
     public class SendQueue<T> : IDisposable
     {
@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Protocol.PayloadTransport
 
                             obj = _queue.Dequeue();
                         }
-                        
+
                         // Queue item
                         try
                         {

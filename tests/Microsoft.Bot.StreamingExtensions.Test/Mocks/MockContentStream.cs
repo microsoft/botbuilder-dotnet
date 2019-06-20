@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Microsoft.Bot.Protocol.UnitTests.Mocks
+namespace Microsoft.Bot.StreamingExtensions.UnitTests.Mocks
 {
     public class MockContentStream : IContentStream
     {

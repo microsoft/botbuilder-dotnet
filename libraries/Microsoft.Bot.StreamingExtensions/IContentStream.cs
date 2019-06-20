@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Microsoft.Bot.Protocol
+namespace Microsoft.Bot.StreamingExtensions
 {
     public interface IContentStream
     {

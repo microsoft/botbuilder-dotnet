@@ -5,7 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Protocol.Payloads
+namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
     public class RequestPayload
     {
@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Protocol.Payloads
         /// </summary>
         [JsonProperty("path")]
         public string Path { get; set; }
-        
+
         /// <summary>
         /// Assoicated stream descriptions
         /// </summary>
