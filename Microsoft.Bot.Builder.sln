@@ -86,6 +86,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.StreamingExtensions", "libraries\Microsoft.Bot.StreamingExtensions\Microsoft.Bot.StreamingExtensions.csproj", "{DB08C572-4ED0-4D47-8A53-47AB9B678DB0}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.StreamingExtensions.Tests", "tests\Microsoft.Bot.StreamingExtensions.Test\Microsoft.Bot.StreamingExtensions.Tests.csproj", "{18189978-BE8B-47CC-A637-59A7321BEDE5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug - NuGet Packages|Any CPU = Debug - NuGet Packages|Any CPU
@@ -309,6 +311,12 @@ Global
 		{DB08C572-4ED0-4D47-8A53-47AB9B678DB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB08C572-4ED0-4D47-8A53-47AB9B678DB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB08C572-4ED0-4D47-8A53-47AB9B678DB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18189978-BE8B-47CC-A637-59A7321BEDE5}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{18189978-BE8B-47CC-A637-59A7321BEDE5}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{18189978-BE8B-47CC-A637-59A7321BEDE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18189978-BE8B-47CC-A637-59A7321BEDE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18189978-BE8B-47CC-A637-59A7321BEDE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18189978-BE8B-47CC-A637-59A7321BEDE5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -353,6 +361,7 @@ Global
 		{E4E13301-9193-4106-B0E3-41276B478E7C} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{76391566-9F22-4994-8B0F-02EFC0E9E228} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{DB08C572-4ED0-4D47-8A53-47AB9B678DB0} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
+		{18189978-BE8B-47CC-A637-59A7321BEDE5} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
