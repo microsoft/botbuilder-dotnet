@@ -3,7 +3,6 @@ using System.IO;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.StreamingExtensions.Transport;
 
 namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
 {

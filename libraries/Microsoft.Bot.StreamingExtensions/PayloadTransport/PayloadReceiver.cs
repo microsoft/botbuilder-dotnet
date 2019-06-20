@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.StreamingExtensions.Payloads;
 using Microsoft.Bot.StreamingExtensions.Transport;
@@ -16,7 +13,8 @@ namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
         private Action<Header, Stream, int> _receiveAction;
         private ITransportReceiver _receiver;
         private bool _isDisconnecting = false;
-
+        private readonly byte[] _receiveHeaderBuffer = new byte[TransportConstants.MaxHeaderLength];
+        private readonly byte[] _receiveContentBuffer = new byte[TransportConstants.MaxPayloadLength];
 
         public PayloadReceiver()
         {
@@ -24,10 +22,7 @@ namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
 
         public event DisconnectedEventHandler Disconnected;
 
-        public bool IsConnected
-        {
-            get { return _receiver != null; }
-        }
+        public bool IsConnected => _receiver != null;
 
         public void Connect(ITransportReceiver receiver)
         {
@@ -51,7 +46,7 @@ namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
 
         public void Disconnect(DisconnectedEventArgs e = null)
         {
-            bool didDisconnect = false;
+            var didDisconnect = false;
             if (!_isDisconnecting)
             {
                 _isDisconnecting = true;
@@ -69,6 +64,7 @@ namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
                     catch (Exception)
                     {
                     }
+
                     _receiver = null;
 
                     if (didDisconnect)
@@ -83,13 +79,7 @@ namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
             }
         }
 
-        private void RunReceive()
-        {
-            Background.Run(ReceivePacketsAsync);
-        }
-
-        private byte[] _receiveHeaderBuffer = new byte[TransportConstants.MaxHeaderLength];
-        private byte[] _receiveContentBuffer = new byte[TransportConstants.MaxPayloadLength];
+        private void RunReceive() => Background.Run(ReceivePacketsAsync);
 
         private async Task ReceivePacketsAsync()
         {
@@ -149,11 +139,13 @@ namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
                                     await contentStream.WriteAsync(buffer, offset, length).ConfigureAwait(false);
                                 }
                             }
+
                             offset += length;
-                        } while (offset < header.PayloadLength);
+                        }
+                        while (offset < header.PayloadLength);
 
                         // give the full payload buffer to the contentStream if it's a stream
-                        if(contentStream != null && PayloadTypes.IsStream(header))
+                        if (contentStream != null && PayloadTypes.IsStream(header))
                         {
                             ((ConcurrentStream)contentStream).GiveBuffer(buffer, length);
                         }
@@ -161,12 +153,12 @@ namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
 
                     _receiveAction(header, contentStream, offset);
                 }
-                catch(TransportDisconnectedException de)
+                catch (TransportDisconnectedException de)
                 {
                     isClosed = true;
                     disconnectArgs = new DisconnectedEventArgs()
                     {
-                        Reason = de.Reason
+                        Reason = de.Reason,
                     };
                 }
                 catch (Exception e)
@@ -174,7 +166,7 @@ namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
                     isClosed = true;
                     disconnectArgs = new DisconnectedEventArgs()
                     {
-                        Reason = e.Message
+                        Reason = e.Message,
                     };
                 }
             }

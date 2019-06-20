@@ -47,6 +47,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
                 // Execute the request on a seperate Task
                 Background.Run(() => ProcessResponse(stream));
             }
+
             // else: still receiving data into the stream
         }
 
@@ -61,7 +62,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
                     var response = new ReceiveResponse()
                     {
                         StatusCode = responsePayload.StatusCode,
-                        Streams = new List<IContentStream>()
+                        Streams = new List<IContentStream>(),
                     };
 
                     if (responsePayload.Streams != null)
@@ -80,7 +81,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
                             response.Streams.Add(new ContentStream(id, streamAssembler)
                             {
                                 Length = streamDescription.Length,
-                                Type = streamDescription.Type
+                                Type = streamDescription.Type,
                             });
                         }
                     }

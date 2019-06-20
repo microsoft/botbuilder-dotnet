@@ -5,18 +5,18 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
-using Microsoft.Bot.StreamingExtensions.Transport;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Bot.StreamingExtensions;
+using Microsoft.Bot.StreamingExtensions.Transport;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder
 {
     public class StreamingRequestHandler : RequestHandler
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class.
         /// The StreamingRequestHandler serves as a translation layer between the transport layer and bot adapter.
         /// It receives ReceiveRequests from the transport and provides them to the bot adapter in a form
         /// it is able to build activities out of, which are then handed to the bot itself to processed.
@@ -32,6 +32,7 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class.
         /// An overload for use with dependency injection via ServiceProvider, as shown
         /// in DotNet Core samples.
         /// </summary>
@@ -46,16 +47,23 @@ namespace Microsoft.Bot.Builder
         }
 
         public IStreamingTransportServer Server { get; set; }
+
         public IBot Bot { get; }
+
         public IServiceProvider Services { get; }
+
         public IList<IMiddleware> MiddlewareSet { get; }
-        private Func<ITurnContext, Exception, Task> OnTurnError { get; set; }
+
         public string UserAgent { get; private set; }
+
+        private Func<ITurnContext, Exception, Task> OnTurnError { get; set; }
 
         /// <summary>
         /// Processes incoming requests and returns the response, if any.
         /// </summary>
         /// <param name="request">A ReceiveRequest from the connected channel.</param>
+        /// <param name="context">Unused by bot implementation.</param>
+        /// <param name="logger">Optional logger.</param>
         /// <returns>A response created by the BotAdapter.</returns>
         public override async Task<Response> ProcessRequestAsync(ReceiveRequest request, object context = null, ILogger<RequestHandler> logger = null)
         {
@@ -79,7 +87,7 @@ namespace Microsoft.Bot.Builder
                 else if (string.Equals(request.Verb, Request.POST, StringComparison.InvariantCultureIgnoreCase) &&
                          string.Equals(request.Path, "/api/messages", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    var body = await request.ReadBodyAsString().ConfigureAwait(false);
+                    var body = request.ReadBodyAsString();
                     if (string.IsNullOrEmpty(body) || request.Streams?.Count == 0)
                     {
                         response.StatusCode = (int)HttpStatusCode.BadRequest;
@@ -92,7 +100,7 @@ namespace Microsoft.Bot.Builder
                         var adapter = new BotFrameworkStreamingExtensionsAdapter(Server, MiddlewareSet, logger);
                         var bot = Services?.GetService<IBot>() ?? Bot;
 
-                        if(bot == null)
+                        if (bot == null)
                         {
                             throw new Exception("Unable to find bot when processing request.");
                         }

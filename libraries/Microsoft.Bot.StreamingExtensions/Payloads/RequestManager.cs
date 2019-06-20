@@ -26,6 +26,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
                 Task.Run(() => { signal.TrySetResult(response); });
                 return Task.FromResult(true);
             }
+
             return Task.FromResult(false);
         }
 

@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.StreamingExtensions.Payloads;
 using Microsoft.Bot.StreamingExtensions.Utilities;
 using Newtonsoft.Json;
 
@@ -51,6 +47,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
                 // Execute the request on a seperate Task
                 Background.Run(() => ProcessRequest(stream));
             }
+
             // else: still receiving data into the stream
         }
 
@@ -66,7 +63,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
                     {
                         Verb = requestPayload.Verb,
                         Path = requestPayload.Path,
-                        Streams = new List<IContentStream>()
+                        Streams = new List<IContentStream>(),
                     };
 
                     if (requestPayload.Streams != null)
@@ -85,7 +82,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
                             request.Streams.Add(new ContentStream(id, streamAssembler)
                             {
                                 Length = streamDescription.Length,
-                                Type = streamDescription.Type
+                                Type = streamDescription.Type,
                             });
                         }
                     }

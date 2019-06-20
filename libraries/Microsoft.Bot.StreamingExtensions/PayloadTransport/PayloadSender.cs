@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.StreamingExtensions.Payloads;
@@ -18,9 +16,10 @@ namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
     {
         private readonly SendQueue<SendPacket> _sendQueue;
         private readonly EventWaitHandle _connectedEvent = new EventWaitHandle(false, EventResetMode.ManualReset);
-
         private ITransportSender _sender;
         private bool _isDisconnecting = false;
+        private byte[] _sendHeaderBuffer = new byte[TransportConstants.MaxHeaderLength];
+        private byte[] _sendContentBuffer = new byte[TransportConstants.MaxPayloadLength];
 
         public PayloadSender()
         {
@@ -53,7 +52,7 @@ namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
                 Header = header,
                 Payload = payload,
                 IsLengthKnown = isLengthKnown,
-                SentCallback = sentCallback
+                SentCallback = sentCallback,
             };
             _sendQueue.Post(packet);
         }
@@ -79,6 +78,7 @@ namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
                     catch (Exception)
                     {
                     }
+
                     _sender = null;
 
                     if (didDisconnect)
@@ -93,9 +93,6 @@ namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
                 }
             }
         }
-
-        private byte[] _sendHeaderBuffer = new byte[TransportConstants.MaxHeaderLength];
-        private byte[] _sendContentBuffer = new byte[TransportConstants.MaxPayloadLength];
 
         private async Task WritePacketAsync(SendPacket packet)
         {
@@ -157,7 +154,8 @@ namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
                             }
 
                             offset += count;
-                        } while (offset < packet.Header.PayloadLength);
+                        }
+                        while (offset < packet.Header.PayloadLength);
                     }
                 }
 
@@ -170,7 +168,7 @@ namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
             {
                 disconnectedArgs = new DisconnectedEventArgs()
                 {
-                    Reason = e.Message
+                    Reason = e.Message,
                 };
                 Disconnect(disconnectedArgs);
             }

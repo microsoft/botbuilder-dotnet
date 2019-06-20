@@ -1,23 +1,11 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Bot.StreamingExtensions.Payloads;
-using Microsoft.Bot.StreamingExtensions.Utilities;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
     public class ContentStreamAssembler : PayloadAssembler
     {
         private readonly IStreamManager _streamManager;
-
-        public int? ContentLength { get; set; }
-
-        public string ContentType { get; set; }
 
         public ContentStreamAssembler(IStreamManager streamManager, Guid id)
             : base(id)
@@ -33,6 +21,10 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
             ContentType = type;
             ContentLength = length;
         }
+
+        public int? ContentLength { get; set; }
+
+        public string ContentType { get; set; }
 
         public override Stream CreatePayloadStream()
         {

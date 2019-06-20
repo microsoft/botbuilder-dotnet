@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +23,7 @@ namespace Microsoft.Bot.StreamingExtensions
                     }
                 }
             }
+
             return default(T);
         }
 
@@ -32,7 +32,9 @@ namespace Microsoft.Bot.StreamingExtensions
             var contentStream = response.Streams?.FirstOrDefault();
 
             if (contentStream != null)
+            {
                 return contentStream.GetStream().ReadAsUtf8String();
+            }
 
             return null;
         }
@@ -42,7 +44,9 @@ namespace Microsoft.Bot.StreamingExtensions
             var contentStream = response.Streams?.FirstOrDefault();
 
             if (contentStream != null)
+            {
                 return await contentStream.GetStream().ReadAsUtf8StringAsync().ConfigureAwait(false);
+            }
 
             return null;
         }

@@ -2,7 +2,6 @@
 using System.IO;
 using System.IO.Pipes;
 using System.Threading.Tasks;
-using Microsoft.Bot.StreamingExtensions.Transport;
 
 namespace Microsoft.Bot.StreamingExtensions.Transport.NamedPipes
 {

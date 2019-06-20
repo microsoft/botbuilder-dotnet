@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.StreamingExtensions.Payloads;
 using Microsoft.Bot.StreamingExtensions.PayloadTransport;
-using Microsoft.Bot.StreamingExtensions.Transport;
 
 namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
 {
@@ -19,19 +18,12 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
         private readonly IPayloadReceiver _receiver;
         private bool _isDisconnecting = false;
 
-        // UTC time of the last send on this client. Made available so we can clean up idle clients.
-        public DateTime LastMessageSendTime { get; private set; }
-
-        // Whether the client thinks it is currently connected.
-        public bool IsConnected { get; private set; }
-
-        public event DisconnectedEventHandler Disconnected;
-
         /// <summary>
-        /// Create the web socket client
+        /// Initializes a new instance of the <see cref="WebSocketClient"/> class.
         /// </summary>
         /// <param name="url">URL to talk to</param>
         /// <param name="requestHandler">A handler for the requests</param>
+        /// <param name="handlerContext">The context for the handler.</param>
         public WebSocketClient(string url, RequestHandler requestHandler = null, object handlerContext = null)
         {
             _url = url;
@@ -45,6 +37,14 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
 
             IsConnected = false;
         }
+
+        public event DisconnectedEventHandler Disconnected;
+
+        // UTC time of the last send on this client. Made available so we can clean up idle clients.
+        public DateTime LastMessageSendTime { get; private set; }
+
+        // Whether the client thinks it is currently connected.
+        public bool IsConnected { get; private set; }
 
         /// <inheritdoc />
         public Task ConnectAsync() => ConnectAsync(null);
@@ -106,6 +106,11 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
             IsConnected = false;
         }
 
+        public void Dispose()
+        {
+            Disconnect();
+        }
+
         private void OnConnectionDisconnected(object sender, EventArgs e)
         {
             if (!_isDisconnecting)
@@ -128,11 +133,6 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
 
                 _isDisconnecting = false;
             }
-        }
-
-        public void Dispose()
-        {
-            Disconnect();
         }
     }
 }

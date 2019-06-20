@@ -1,10 +1,6 @@
-﻿using Microsoft.Bot.StreamingExtensions.Transport;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
+using Microsoft.Bot.StreamingExtensions.Transport;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
@@ -16,7 +12,11 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 
         public int PayloadLength
         {
-            get { return internalPayloadLength; }
+            get
+            {
+                return internalPayloadLength;
+            }
+
             set
             {
                 ClampLength(value, TransportConstants.MaxLength, TransportConstants.MinLength);
@@ -35,11 +35,11 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
             {
                 throw new InvalidDataException(string.Format("Length must be less than {0}", max));
             }
+
             if (value < min)
             {
                 throw new InvalidDataException(string.Format("Length must be greater than {0}", min));
             }
-
         }
     }
 }

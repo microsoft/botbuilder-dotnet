@@ -1,26 +1,11 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Bot.StreamingExtensions.Payloads;
-using Microsoft.Bot.StreamingExtensions.Utilities;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
     public abstract class PayloadAssembler
     {
-        protected static JsonSerializer Serializer = JsonSerializer.Create(SerializationSettings.DefaultSerializationSettings);
-
-        public Guid Id { get; private set; }
-
-        public bool End { get; private set; }
-
-        private Stream Stream { get; set; }
-
         private object _syncLock = new object();
 
         public PayloadAssembler(Guid id)
@@ -28,6 +13,14 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
             Id = id;
             End = false;
         }
+
+        public Guid Id { get; private set; }
+
+        public bool End { get; private set; }
+
+        protected static JsonSerializer Serializer { get; set; } = JsonSerializer.Create(SerializationSettings.DefaultSerializationSettings);
+
+        private Stream Stream { get; set; }
 
         public Stream GetPayloadStream()
         {
@@ -38,15 +31,13 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
                     Stream = CreatePayloadStream();
                 }
             }
+
             return Stream;
         }
 
         public abstract Stream CreatePayloadStream();
 
-        public virtual void OnReceive(Header header, Stream stream, int contentLength)
-        {
-            End = header.End;
-        }
+        public virtual void OnReceive(Header header, Stream stream, int contentLength) => End = header.End;
 
         public virtual void Close()
         {

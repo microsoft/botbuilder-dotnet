@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,17 +7,6 @@ namespace Microsoft.Bot.StreamingExtensions.Utilities
 {
     public static class Background
     {
-        private static async Task TrackAsRequest(Func<Task> task, IDictionary<string, object> properties)
-        {
-            try
-            {
-                await task().ConfigureAwait(false);
-            }
-            catch (Exception)
-            {
-            }
-        }
-
         /// <summary>
         /// Register background task with ASP.Net hosting environment and trace exceptions
         /// Falls back to Thread pool if not running under ASP.Net
@@ -92,6 +79,17 @@ namespace Microsoft.Bot.StreamingExtensions.Utilities
                     }
                 }
             });
+        }
+
+        private static async Task TrackAsRequest(Func<Task> task, IDictionary<string, object> properties)
+        {
+            try
+            {
+                await task().ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+            }
         }
     }
 }

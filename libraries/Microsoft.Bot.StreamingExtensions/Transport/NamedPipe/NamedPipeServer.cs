@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.StreamingExtensions.Payloads;
 using Microsoft.Bot.StreamingExtensions.PayloadTransport;
-using Microsoft.Bot.StreamingExtensions.Transport;
 using Microsoft.Bot.StreamingExtensions.Utilities;
 
 namespace Microsoft.Bot.StreamingExtensions.Transport.NamedPipes
@@ -97,7 +96,7 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.NamedPipes
 
                     if (_autoReconnect)
                     {
-                        // Try to rerun the server connection 
+                        // Try to rerun the server connection
                         Background.Run(StartAsync);
                     }
                 }

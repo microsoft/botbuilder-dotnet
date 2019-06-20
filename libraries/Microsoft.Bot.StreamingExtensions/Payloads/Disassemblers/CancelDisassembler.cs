@@ -1,30 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.StreamingExtensions.PayloadTransport;
-using Microsoft.Bot.StreamingExtensions.Transport;
-using Microsoft.Net.Http.Headers;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
     public class CancelDisassembler
     {
-        private IPayloadSender Sender { get; set; }
-
-        private Guid Id { get; set; }
-
-        private char Type { get; set; }
-
         public CancelDisassembler(IPayloadSender sender, Guid id, char type)
         {
             Sender = sender;
             Id = id;
             Type = type;
         }
+
+        private IPayloadSender Sender { get; set; }
+
+        private Guid Id { get; set; }
+
+        private char Type { get; set; }
 
         public Task Disassemble()
         {
@@ -33,7 +26,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
                 Type = Type,
                 Id = Id,
                 PayloadLength = 0,
-                End = true
+                End = true,
             };
 
             Sender.SendPayload(header, null, true, null);

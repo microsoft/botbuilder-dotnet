@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.Bot.StreamingExtensions.Transport
+﻿namespace Microsoft.Bot.StreamingExtensions.Transport
 {
     public class TransportConstants
     {

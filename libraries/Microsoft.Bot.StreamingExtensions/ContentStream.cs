@@ -27,6 +27,7 @@ namespace Microsoft.Bot.StreamingExtensions
             {
                 _stream = (ConcurrentStream)_assembler.GetPayloadStream();
             }
+
             return _stream;
         }
 

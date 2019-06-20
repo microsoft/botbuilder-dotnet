@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.WebSockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.StreamingExtensions.Payloads;
 using Microsoft.Bot.StreamingExtensions.PayloadTransport;
-using Microsoft.Bot.StreamingExtensions.Transport;
 
 namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
 {
@@ -38,17 +35,17 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
 
         public event DisconnectedEventHandler Disconnected;
 
+        public bool IsConnected
+        {
+            get { return _sender.IsConnected && _receiver.IsConnected; }
+        }
+
         public Task StartAsync()
         {
             _closedSignal = new TaskCompletionSource<string>();
             _sender.Connect(_websocketTransport);
             _receiver.Connect(_websocketTransport);
             return _closedSignal.Task;
-        }
-
-        public bool IsConnected
-        {
-            get { return _sender.IsConnected && _receiver.IsConnected; }
         }
 
         public Task<ReceiveResponse> SendAsync(Request request, CancellationToken cancellationToken = default(CancellationToken))
@@ -88,7 +85,7 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
                 {
                     _sender.Disconnect();
                 }
-                
+
                 Disconnected?.Invoke(this, DisconnectedEventArgs.Empty);
 
                 _isDisconnecting = false;

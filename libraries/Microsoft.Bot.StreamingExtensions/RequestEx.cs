@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Microsoft.Bot.StreamingExtensions
 {
@@ -14,30 +10,6 @@ namespace Microsoft.Bot.StreamingExtensions
         public const string POST = "POST";
         public const string PUT = "PUT";
         public const string DELETE = "DELETE";
-
-        public void AddStream(HttpContent content, Guid streamId)
-        {
-            if (content == null)
-            {
-                throw new ArgumentNullException(nameof(content));
-            }
-
-            if (Streams == null)
-            {
-                Streams = new List<HttpContentStream>();
-            }
-
-            Streams.Add(
-                new HttpContentStream(streamId)
-                {
-                    Content = content
-                });
-        }
-
-        public void AddStream(HttpContent content)
-        {
-            AddStream(content, Guid.NewGuid());
-        }
 
         public static Request CreateGet(string path = null, HttpContent body = null)
         {
@@ -64,7 +36,7 @@ namespace Microsoft.Bot.StreamingExtensions
             var request = new Request()
             {
                 Verb = method,
-                Path = path
+                Path = path,
             };
 
             if (body != null)
@@ -74,5 +46,26 @@ namespace Microsoft.Bot.StreamingExtensions
 
             return request;
         }
+
+        public void AddStream(HttpContent content, Guid streamId)
+        {
+            if (content == null)
+            {
+                throw new ArgumentNullException(nameof(content));
+            }
+
+            if (Streams == null)
+            {
+                Streams = new List<HttpContentStream>();
+            }
+
+            Streams.Add(
+                new HttpContentStream(streamId)
+                {
+                    Content = content,
+                });
+        }
+
+        public void AddStream(HttpContent content) => AddStream(content, Guid.NewGuid());
     }
 }

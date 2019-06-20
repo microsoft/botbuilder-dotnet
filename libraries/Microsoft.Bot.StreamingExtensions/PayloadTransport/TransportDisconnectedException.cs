@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
 {
     public class TransportDisconnectedException : Exception
     {
-        public TransportDisconnectedException() : base()
+        public TransportDisconnectedException()
+            : base()
         {
         }
 
-        public TransportDisconnectedException(string reason) : base()
+        public TransportDisconnectedException(string reason)
+            : base()
         {
             Reason = reason;
         }

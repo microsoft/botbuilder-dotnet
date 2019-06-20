@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.StreamingExtensions
@@ -19,10 +15,11 @@ namespace Microsoft.Bot.StreamingExtensions
             NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
             ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize,
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            //Converters = new List<JsonConverter>
-            //{
+
+            // Converters = new List<JsonConverter>
+            // {
             //    new Iso8601TimeSpanConverter(),
-            //},
+            // },
         };
 
         public static readonly JsonSerializerSettings DefaultSerializationSettings = new JsonSerializerSettings
@@ -32,11 +29,12 @@ namespace Microsoft.Bot.StreamingExtensions
             DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc,
             NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
             ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize,
-            //ContractResolver = new ReadOnlyJsonContractResolver(),
-            //Converters = new List<JsonConverter>
-            //{
+
+            // ContractResolver = new ReadOnlyJsonContractResolver(),
+            // Converters = new List<JsonConverter>
+            // {
             //    new Iso8601TimeSpanConverter(),
-            //},
+            // },
         };
 
         public static readonly JsonSerializerSettings DefaultDeserializationSettings = new JsonSerializerSettings
@@ -45,8 +43,9 @@ namespace Microsoft.Bot.StreamingExtensions
             DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc,
             NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
             ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize,
-            //ContractResolver = new ReadOnlyJsonContractResolver(),
-            //Converters = new List<JsonConverter>
+
+            // ContractResolver = new ReadOnlyJsonContractResolver(),
+            // Converters = new List<JsonConverter>
             //    {
             //        new Iso8601TimeSpanConverter(),
             //    },

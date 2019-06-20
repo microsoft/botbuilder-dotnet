@@ -1,17 +1,15 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.StreamingExtensions
 {
     public static class ReceiveRequestExtensions
     {
-        public static async Task<T> ReadBodyAsJson<T>(this ReceiveRequest request)
+        public static T ReadBodyAsJson<T>(this ReceiveRequest request)
         {
-            IContentStream contentStream = request.Streams?.FirstOrDefault();
+            var contentStream = request.Streams?.FirstOrDefault();
             if (contentStream != null)
             {
                 var stream = contentStream.GetStream();
@@ -24,12 +22,13 @@ namespace Microsoft.Bot.StreamingExtensions
                     }
                 }
             }
+
             return default(T);
         }
 
-        public static async Task<string> ReadBodyAsString(this ReceiveRequest request)
+        public static string ReadBodyAsString(this ReceiveRequest request)
         {
-            IContentStream contentStream = request.Streams?.FirstOrDefault();
+            var contentStream = request.Streams?.FirstOrDefault();
             if (contentStream != null)
             {
                 var stream = contentStream.GetStream();
@@ -38,6 +37,7 @@ namespace Microsoft.Bot.StreamingExtensions
                     return reader.ReadToEnd();
                 }
             }
+
             return null;
         }
     }

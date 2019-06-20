@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.StreamingExtensions.Payloads;
 using Microsoft.Bot.StreamingExtensions.PayloadTransport;
-using Microsoft.Bot.StreamingExtensions.Transport;
 using Microsoft.Bot.StreamingExtensions.Utilities;
 
 namespace Microsoft.Bot.StreamingExtensions.Transport.NamedPipes
@@ -40,6 +39,18 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.NamedPipes
 
         public event DisconnectedEventHandler Disconnected;
 
+        public bool IncomingConnected
+        {
+            get { return _receiver.IsConnected; }
+        }
+
+        public bool OutgoingConnected
+        {
+            get { return _receiver.IsConnected; }
+        }
+
+        public bool IsConnected => IncomingConnected && OutgoingConnected;
+
         /// <inheritdoc />
         public Task ConnectAsync() => ConnectAsync(null);
 
@@ -58,18 +69,6 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.NamedPipes
             _receiver.Connect(new NamedPipeTransport(incoming));
         }
 
-        public bool IncomingConnected
-        {
-            get { return _receiver.IsConnected; }
-        }
-
-        public bool OutgoingConnected
-        {
-            get { return _receiver.IsConnected; }
-        }
-
-        public bool IsConnected => IncomingConnected && OutgoingConnected;
-
         public async Task<ReceiveResponse> SendAsync(Request message, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await _protocolAdapter.SendRequestAsync(message, cancellationToken).ConfigureAwait(false);
@@ -79,6 +78,11 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.NamedPipes
         {
             _sender.Disconnect();
             _receiver.Disconnect();
+        }
+
+        public void Dispose()
+        {
+            Disconnect();
         }
 
         private void OnConnectionDisconnected(object sender, EventArgs e)
@@ -114,7 +118,7 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.NamedPipes
 
                     if (_autoReconnect)
                     {
-                        // Try to rerun the client connection 
+                        // Try to rerun the client connection
                         Background.Run(ConnectAsync);
                     }
                 }
@@ -126,11 +130,6 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.NamedPipes
                     }
                 }
             }
-        }
-
-        public void Dispose()
-        {
-            Disconnect();
         }
     }
 }

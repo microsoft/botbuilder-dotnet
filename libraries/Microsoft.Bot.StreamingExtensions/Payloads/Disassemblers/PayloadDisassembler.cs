@@ -13,7 +13,18 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
     public abstract class PayloadDisassembler
     {
-        protected static JsonSerializer Serializer = JsonSerializer.Create(SerializationSettings.DefaultSerializationSettings);
+        private TaskCompletionSource<bool> _taskCompletionSource;
+
+        public PayloadDisassembler(IPayloadSender sender, Guid id)
+        {
+            Sender = sender;
+            Id = id;
+            _taskCompletionSource = new TaskCompletionSource<bool>();
+        }
+
+        public abstract char Type { get; }
+
+        protected static JsonSerializer Serializer { get; set; } = JsonSerializer.Create(SerializationSettings.DefaultSerializationSettings);
 
         private IPayloadSender Sender { get; set; }
 
@@ -26,17 +37,6 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
         private Guid Id { get; set; }
 
         private bool IsEnd { get; set; } = false;
-
-        private TaskCompletionSource<bool> _taskCompletionSource;
-
-        public abstract char Type { get; }
-
-        public PayloadDisassembler(IPayloadSender sender, Guid id)
-        {
-            Sender = sender;
-            Id = id;
-            _taskCompletionSource = new TaskCompletionSource<bool>();
-        }
 
         public abstract Task<StreamWrapper> GetStream();
 
@@ -51,6 +51,50 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
             await Send().ConfigureAwait(false);
         }
 
+        protected static StreamDescription GetStreamDescription(HttpContentStream stream)
+        {
+            var description = new StreamDescription()
+            {
+                Id = stream.Id.ToString("D"),
+            };
+
+            if (stream.Content.Headers.TryGetValues(HeaderNames.ContentType, out IEnumerable<string> contentType))
+            {
+                description.Type = contentType?.FirstOrDefault();
+            }
+
+            if (stream.Content.Headers.TryGetValues(HeaderNames.ContentLength, out IEnumerable<string> contentLength))
+            {
+                var value = contentLength?.FirstOrDefault();
+                if (value != null && int.TryParse(value, out int length))
+                {
+                    description.Length = length;
+                }
+            }
+            else
+            {
+                description.Length = (int?)stream.Content.Headers.ContentLength;
+            }
+
+            return description;
+        }
+
+        protected static void Serialize<T>(T item, out MemoryStream stream, out int length)
+        {
+            stream = new MemoryStream();
+            using (var textWriter = new StreamWriter(stream, Encoding.UTF8, 1024, true))
+            {
+                using (var jsonWriter = new JsonTextWriter(textWriter))
+                {
+                    Serializer.Serialize(jsonWriter, item);
+                    jsonWriter.Flush();
+                }
+            }
+
+            length = (int)stream.Position;
+            stream.Position = 0;
+        }
+
         private Task Send()
         {
             // determine if we know the length we can send and whether we can tell if this is the end
@@ -61,7 +105,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
                 Type = Type,
                 Id = Id,
                 PayloadLength = 0,      // this value is updated by the sender when isLengthKnown is false
-                End = IsEnd             // this value is updated by the sender when isLengthKnown is false
+                End = IsEnd,             // this value is updated by the sender when isLengthKnown is false
             };
 
             if (StreamLength.HasValue)
@@ -90,49 +134,6 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
             {
                 await Send().ConfigureAwait(false);
             }
-        }
-
-        protected static StreamDescription GetStreamDescription(HttpContentStream stream)
-        {
-            var description = new StreamDescription()
-            {
-                Id = stream.Id.ToString("D")
-            };
-
-            if (stream.Content.Headers.TryGetValues(HeaderNames.ContentType, out IEnumerable<string> contentType))
-            {
-                description.Type = contentType?.FirstOrDefault();
-            }
-
-            if (stream.Content.Headers.TryGetValues(HeaderNames.ContentLength, out IEnumerable<string> contentLength))
-            {
-                var value = contentLength?.FirstOrDefault();
-                if (value != null && Int32.TryParse(value, out int length))
-                {
-                    description.Length = length;
-                }
-            }
-            else
-            {
-                description.Length = (int?)stream.Content.Headers.ContentLength;
-            }
-
-            return description;
-        }
-
-        protected static void Serialize<T>(T item, out MemoryStream stream, out int length)
-        {
-            stream = new MemoryStream();
-            using (var textWriter = new StreamWriter(stream, Encoding.UTF8, 1024, true))
-            {
-                using (var jsonWriter = new JsonTextWriter(textWriter))
-                {
-                    Serializer.Serialize(jsonWriter, item);
-                    jsonWriter.Flush();
-                }
-            }
-            length = (int)stream.Position;
-            stream.Position = 0;
         }
     }
 }

@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.StreamingExtensions.Payloads;
-using Microsoft.Bot.StreamingExtensions.Utilities;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
@@ -30,7 +25,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 
         public Stream GetPayloadStream(Header header)
         {
-            if(IsStreamPayload(header))
+            if (IsStreamPayload(header))
             {
                 return _streamManager.GetPayloadStream(header);
             }
@@ -86,6 +81,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
                 case PayloadTypes.Response:
                     return new ReceiveResponseAssembler(header, _streamManager, _onReceiveResponse);
             }
+
             return null;
         }
     }

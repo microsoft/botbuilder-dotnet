@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Bot.StreamingExtensions.Payloads;
 using Microsoft.Bot.StreamingExtensions.Transport;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
@@ -18,8 +12,6 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
         public const byte Terminator = (byte)'\n';
         public const byte End = (byte)'1';
         public const byte NotEnd = (byte)'0';
-
-
 
         public const int TypeOffset = 0;
         public const int TypeDelimiterOffset = 1;
@@ -55,7 +47,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 
         public static Header Deserialize(byte[] buffer, int offset, int count)
         {
-            if(count != TransportConstants.MaxHeaderLength)
+            if (count != TransportConstants.MaxHeaderLength)
             {
                 throw new ArgumentException("Cannot deserialize header, incorrect length");
             }
@@ -64,18 +56,18 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 
             header.Type = (char)buffer[TypeOffset];
 
-            if(buffer[TypeDelimiterOffset] != Delimiter)
+            if (buffer[TypeDelimiterOffset] != Delimiter)
             {
                 throw new InvalidDataException("header type delimeter is malformed");
             }
 
             var lengthString = Encoding.ASCII.GetString(buffer, LengthOffset, LengthLength);
-            if (!Int32.TryParse(lengthString, out int length))
+            if (!int.TryParse(lengthString, out int length))
             {
                 throw new InvalidDataException("header length is malformed");
             }
 
-            if(length > 999999 || length < 0)
+            if (length > 999999 || length < 0)
             {
                 throw new InvalidDataException("Header length value must be at least 0 and no greater than 999999.");
             }
@@ -87,8 +79,8 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
                 throw new InvalidDataException("header length delimeter is malformed");
             }
 
-            var idString = Encoding.ASCII.GetString(buffer, IdOffset, IdLength);
-            if (!Guid.TryParse(idString, out Guid id))
+            var identityText = Encoding.ASCII.GetString(buffer, IdOffset, IdLength);
+            if (!Guid.TryParse(identityText, out Guid id))
             {
                 throw new InvalidDataException("header id is malformed");
             }
@@ -100,7 +92,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
                 throw new InvalidDataException("header id delimeter is malformed");
             }
 
-            if(buffer[EndOffset] != End && buffer[EndOffset] != NotEnd)
+            if (buffer[EndOffset] != End && buffer[EndOffset] != NotEnd)
             {
                 throw new InvalidDataException("header end is malformed");
             }

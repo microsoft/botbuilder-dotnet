@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.StreamingExtensions.Payloads;
-using Microsoft.Bot.StreamingExtensions.Utilities;
 
 namespace Microsoft.Bot.StreamingExtensions
 {
@@ -15,7 +12,7 @@ namespace Microsoft.Bot.StreamingExtensions
         private readonly ContentStreamAssembler _assembler;
         private readonly Queue<byte[]> _bufferQueue = new Queue<byte[]>();
 
-        private readonly SemaphoreSlim dataAvailable = new SemaphoreSlim(0, Int32.MaxValue);
+        private readonly SemaphoreSlim dataAvailable = new SemaphoreSlim(0, int.MaxValue);
         private readonly object syncLock = new object();
 
         private long _producerLength = 0;       // total length
@@ -26,6 +23,11 @@ namespace Microsoft.Bot.StreamingExtensions
 
         private bool _end = false;
 
+        internal ConcurrentStream(ContentStreamAssembler assembler)
+        {
+            _assembler = assembler;
+        }
+
         public override bool CanRead => true;
 
         public override bool CanSeek => false;
@@ -35,11 +37,6 @@ namespace Microsoft.Bot.StreamingExtensions
         public override long Length => _producerLength;
 
         public override long Position { get => _consumerPosition; set => throw new NotSupportedException(); }
-
-        internal ConcurrentStream(ContentStreamAssembler assembler)
-        {
-            _assembler = assembler;
-        }
 
         public override void Flush()
         {
@@ -92,8 +89,9 @@ namespace Microsoft.Bot.StreamingExtensions
         }
 
         /// <summary>
-        /// Only 1 thread should be calling Read at a time
+        /// Only 1 thread should be calling Read at a time.
         /// </summary>
+        /// <returns>0 on end.</returns>
         public override int Read(byte[] buffer, int offset, int count)
         {
             if (_end)
@@ -138,27 +136,11 @@ namespace Microsoft.Bot.StreamingExtensions
             return Task.CompletedTask;
         }
 
-
         public override void Write(byte[] buffer, int offset, int count)
         {
             var copy = new byte[count];
             Array.Copy(buffer, offset, copy, 0, count);
             GiveBuffer(copy, count);
-        }
-
-        internal void GiveBuffer(byte[] buffer, int count)
-        {
-            lock (syncLock)
-            {
-                _bufferQueue.Enqueue(buffer);
-                _producerLength += count;
-            }
-            dataAvailable.Release();
-        }
-
-        internal void DoneProducing()
-        {
-            GiveBuffer(Array.Empty<byte>(), 0);
         }
 
         public void Cancel()
@@ -169,6 +151,22 @@ namespace Microsoft.Bot.StreamingExtensions
             }
 
             DoneProducing();
+        }
+
+        internal void GiveBuffer(byte[] buffer, int count)
+        {
+            lock (syncLock)
+            {
+                _bufferQueue.Enqueue(buffer);
+                _producerLength += count;
+            }
+
+            dataAvailable.Release();
+        }
+
+        internal void DoneProducing()
+        {
+            GiveBuffer(Array.Empty<byte>(), 0);
         }
 
         protected override void Dispose(bool disposing)

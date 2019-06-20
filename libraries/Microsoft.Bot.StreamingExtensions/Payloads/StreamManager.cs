@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Bot.StreamingExtensions.Payloads;
-using Microsoft.Bot.StreamingExtensions.Utilities;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
@@ -55,7 +49,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 
         public void CloseStream(Guid id)
         {
-            if(_activeAssemblers.TryRemove(id, out ContentStreamAssembler assembler))
+            if (_activeAssemblers.TryRemove(id, out ContentStreamAssembler assembler))
             {
                 // decide whether to cancel it or not
                 var stream = assembler.GetPayloadStream();

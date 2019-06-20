@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.StreamingExtensions.PayloadTransport;
-using Microsoft.Bot.StreamingExtensions.Utilities;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
@@ -34,6 +30,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 
                     tasks.Add(contentDisassembler.Disassemble());
                 }
+
                 await Task.WhenAll(tasks).ConfigureAwait(false);
             }
         }
@@ -53,6 +50,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 
                     tasks.Add(contentDisassembler.Disassemble());
                 }
+
                 await Task.WhenAll(tasks).ConfigureAwait(false);
             }
         }
