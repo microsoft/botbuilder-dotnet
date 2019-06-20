@@ -88,12 +88,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .UseLanguageGeneration(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
-
             adapter.Locale = locale;
 
-            var planningDialog = new AdaptiveDialog();
-            planningDialog.Recognizer = GetMultiLingualRecognizer();
-            planningDialog.AddRules(new List<IRule>()
+            var dialog = new AdaptiveDialog();
+            dialog.Recognizer = GetMultiLingualRecognizer();
+            dialog.AddRules(new List<IRule>()
             {
                 new IntentRule("Greeting", steps:
                     new List<IDialog>()
@@ -111,10 +110,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new SendActivity("default rule"),
                     }),
             });
+            DialogManager dm = new DialogManager(dialog);
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                await planningDialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
         }
 
