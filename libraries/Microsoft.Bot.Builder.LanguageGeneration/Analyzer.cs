@@ -9,7 +9,27 @@ using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
-    public class Analyzer : LGFileParserBaseVisitor<List<string>>
+    public class AnalyzerResult
+    {
+        public AnalyzerResult(List<string> variables = null, List<string> templateReferences = null)
+        {
+            this.Variables = (variables ?? new List<string>()).Distinct().ToList();
+            this.TemplateReferences = (templateReferences ?? new List<string>()).Distinct().ToList();
+        }
+
+        public List<string> Variables { get; set; }
+
+        public List<string> TemplateReferences { get; set; }
+
+        public AnalyzerResult Union(AnalyzerResult outputItem)
+        {
+            this.Variables = this.Variables.Union(outputItem.Variables).ToList();
+            this.TemplateReferences = this.TemplateReferences.Union(outputItem.TemplateReferences).ToList();
+            return this;
+        }
+    }
+
+    public class Analyzer : LGFileParserBaseVisitor<AnalyzerResult>
     {
         private readonly Dictionary<string, LGTemplate> templateMap;
 
@@ -26,7 +46,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public List<LGTemplate> Templates { get; }
 
-        public List<string> AnalyzeTemplate(string templateName)
+        public AnalyzerResult AnalyzeTemplate(string templateName)
         {
             if (!templateMap.ContainsKey(templateName))
             {
@@ -40,20 +60,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             // Using a stack to track the evalution trace
             evaluationTargetStack.Push(new EvaluationTarget(templateName, null));
-            var rawDependencies = Visit(templateMap[templateName].ParseTree);
 
             // we don't exclude paratemters any more
             // because given we don't track down for templates have paramters
             // the only scenario that we are still analyzing an paramterized template is
             // this template is root template to anaylze, in this we also don't have exclude paramters
-            var dependencies = rawDependencies.Distinct().ToList();
-
+            var dependencies = Visit(templateMap[templateName].ParseTree);
             evaluationTargetStack.Pop();
 
             return dependencies;
         }
 
-        public override List<string> VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
+        public override AnalyzerResult VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
         {
             var templateNameContext = context.templateNameLine();
             if (templateNameContext.templateName().GetText().Equals(CurrentTarget().TemplateName))
@@ -67,24 +85,24 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             throw new Exception("template name match failed");
         }
 
-        public override List<string> VisitNormalBody([NotNull] LGFileParser.NormalBodyContext context) => Visit(context.normalTemplateBody());
+        public override AnalyzerResult VisitNormalBody([NotNull] LGFileParser.NormalBodyContext context) => Visit(context.normalTemplateBody());
 
-        public override List<string> VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
+        public override AnalyzerResult VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
         {
-            var result = new List<string>();
+            var result = new AnalyzerResult();
 
             foreach (var templateStr in context.normalTemplateString())
             {
                 var item = Visit(templateStr);
-                result.AddRange(item);
+                result.Union(item);
             }
 
             return result;
         }
 
-        public override List<string> VisitIfElseBody([NotNull] LGFileParser.IfElseBodyContext context)
+        public override AnalyzerResult VisitIfElseBody([NotNull] LGFileParser.IfElseBodyContext context)
         {
-            var result = new List<string>();
+            var result = new AnalyzerResult();
 
             var ifRules = context.ifElseTemplateBody().ifConditionRule();
             foreach (var ifRule in ifRules)
@@ -92,41 +110,41 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var expression = ifRule.ifCondition().EXPRESSION(0);
                 if (expression != null)
                 {
-                    result.AddRange(AnalyzeExpression(expression.GetText()));
+                    result.Union(AnalyzeExpression(expression.GetText()));
                 }
 
                 if (ifRule.normalTemplateBody() != null)
                 {
-                    result.AddRange(Visit(ifRule.normalTemplateBody()));
+                    result.Union(Visit(ifRule.normalTemplateBody()));
                 }
             }
 
             return result;
         }
 
-        public override List<string> VisitSwitchCaseBody([NotNull] LGFileParser.SwitchCaseBodyContext context)
+        public override AnalyzerResult VisitSwitchCaseBody([NotNull] LGFileParser.SwitchCaseBodyContext context)
         {
-            var result = new List<string>();
+            var result = new AnalyzerResult();
             var switchCaseNodes = context.switchCaseTemplateBody().switchCaseRule();
             foreach (var iterNode in switchCaseNodes)
             {
                 var expression = iterNode.switchCaseStat().EXPRESSION();
                 if (expression.Length > 0)
                 {
-                    result.AddRange(AnalyzeExpression(expression[0].GetText()));
+                    result.Union(AnalyzeExpression(expression[0].GetText()));
                 }
                 if (iterNode.normalTemplateBody() != null)
                 {
-                    result.AddRange(Visit(iterNode.normalTemplateBody()));
+                    result.Union(Visit(iterNode.normalTemplateBody()));
                 }
             }
 
             return result;
         }
 
-        public override List<string> VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
+        public override AnalyzerResult VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
         {
-            var result = new List<string>();
+            var result = new AnalyzerResult();
             foreach (ITerminalNode node in context.children)
             {
                 switch (node.Symbol.Type)
@@ -134,13 +152,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     case LGFileParser.DASH:
                         break;
                     case LGFileParser.EXPRESSION:
-                        result.AddRange(AnalyzeExpression(node.GetText()));
+                        result.Union(AnalyzeExpression(node.GetText()));
                         break;
                     case LGFileParser.TEMPLATE_REF:
-                        result.AddRange(AnalyzeTemplateRef(node.GetText()));
+                        result.Union(AnalyzeTemplateRef(node.GetText()));
                         break;
                     case LGFileLexer.MULTI_LINE_TEXT:
-                        result.AddRange(AnalyzeMultiLineText(node.GetText()));
+                        result.Union(AnalyzeMultiLineText(node.GetText()));
                         break;
                     default:
                         break;
@@ -161,35 +179,53 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="exp">Expression.</param>
         /// <returns>template refs.</returns>
-        private List<string> GetDirectTemplateRefs(Expression exp)
+        private AnalyzerResult AnalyzeExpressionDirectly(Expression exp)
         {
-            if (exp.Type == "lgTemplate" && exp.Children.Length == 1)
+            var result = new AnalyzerResult();
+            if (exp.Type == "lgTemplate")
             {
-                return new List<string> { (string)(exp.Children[0] as Constant).Value };
+                var templateName = (exp.Children[0] as Constant).Value.ToString();
+                result.Union(new AnalyzerResult(templateReferences: new List<string>() { templateName }));
+
+                if (exp.Children.Length == 1)
+                {
+                    result.Union(this.AnalyzeTemplate((exp.Children[0] as Constant).Value.ToString()));
+                }
+                else
+                {
+                    // only get template ref names
+                    var templateRefNames = this.AnalyzeTemplate((exp.Children[0] as Constant).Value.ToString()).TemplateReferences;
+                    result.Union(new AnalyzerResult(templateReferences: templateRefNames));
+
+                    // analyzer other children
+                    exp.Children.ToList().ForEach(x => result.Union(this.AnalyzeExpressionDirectly(x)));
+                }
             }
             else
             {
-                return exp.Children.Select(x => GetDirectTemplateRefs(x)).SelectMany(x => x).ToList();
+                exp.Children.ToList().ForEach(x => result.Union(this.AnalyzeExpressionDirectly(x)));
             }
+
+            return result;
         }
 
-        private List<string> AnalyzeExpression(string exp)
+        private AnalyzerResult AnalyzeExpression(string exp)
         {
+            var result = new AnalyzerResult();
             exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
             var parsed = _expressionParser.Parse(exp);
 
             var references = parsed.References();
 
-            var referencesInTemplates = GetDirectTemplateRefs(parsed)
-                                            .Select(x => AnalyzeTemplate(x))
-                                            .SelectMany(x => x)
-                                            .ToList();
+            result.Union(new AnalyzerResult(variables: new List<string>(references)));
+            result.Union(this.AnalyzeExpressionDirectly(parsed));
 
-            return references.Concat(referencesInTemplates).ToList();
+            return result;
         }
 
-        private List<string> AnalyzeTemplateRef(string exp)
+        private AnalyzerResult AnalyzeTemplateRef(string exp)
         {
+            var result = new AnalyzerResult();
             exp = exp.TrimStart('[').TrimEnd(']').Trim();
 
             var argsStartPos = exp.IndexOf('(');
@@ -201,23 +237,40 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var argsEndPos = exp.LastIndexOf(')');
 
                 var args = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(',');
-                var refs = args.Select(arg => AnalyzeExpression(arg)).SelectMany(x => x).ToList();
 
                 // Before we have a matural solution to analyze paramterized template, we stop digging into
                 // templates with paramters, we just analyze it's args.
                 // With this approach we may not get a very fine-grained result
                 // but the result will still be accurate
-                return refs;
+                var templateAnalyzerResult = args.Select(arg => this.AnalyzeExpression(arg));
+                var templateName = exp.Substring(0, argsStartPos);
+
+                // add this template
+                result.Union(new AnalyzerResult(templateReferences: new List<string>() { templateName }));
+                templateAnalyzerResult.ToList().ForEach(t => result.Union(t));
             }
             else
             {
-                return AnalyzeTemplate(exp);
+                result.Union(new AnalyzerResult(templateReferences: new List<string>() { exp }));
+
+                // We analyze tempalte only if the template has no formal parameters
+                // But we should analyzer template reference names for all situation
+                if (this.templateMap[exp].Paramters == null || this.templateMap[exp].Paramters.Count == 0)
+                {
+                    result.Union(this.AnalyzeTemplate(exp));
+                }
+                else
+                {
+                    result.Union(new AnalyzerResult(templateReferences: this.AnalyzeTemplate(exp).TemplateReferences));
+                }
             }
+
+            return result;
         }
 
-        private List<string> AnalyzeMultiLineText(string exp)
+        private AnalyzerResult AnalyzeMultiLineText(string exp)
         {
-            var result = new List<string>();
+            var result = new AnalyzerResult();
 
             // remove ``` ```
             exp = exp.Substring(3, exp.Length - 6);
@@ -227,7 +280,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 if (matchItem.Success)
                 {
-                    result.AddRange(AnalyzeExpression(matchItem.Value));
+                    result.Union(AnalyzeExpression(matchItem.Value));
                 }
             }
 
