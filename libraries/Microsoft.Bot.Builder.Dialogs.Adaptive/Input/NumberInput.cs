@@ -3,64 +3,87 @@
 
 using System;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using Microsoft.Bot.Schema;
+using Microsoft.Recognizers.Text.Number;
+using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
-    /// <summary>
-    /// Generic declarative number input for gathering number information from users
-    /// </summary>
-    /// <typeparam name="float"></typeparam>
-    public class NumberInput : InputWrapper<NumberPrompt<float>, float> 
+    public enum NumberOutputFormat
     {
-        /// <summary>
-        /// Minimum value expected for number
-        /// </summary>
-        public float MinValue { get; set; } = float.MinValue;
+        Float,
+        Integer
+    }
 
-        /// <summary>
-        /// Maximum value expected for number
-        /// </summary>
-        public float MaxValue { get; set; } = float.MaxValue;
+    public class NumberInput : InputDialog
+    {
+        public string DefaultLocale { get; set; } = null;
 
-        /// <summary>
-        /// Precision
-        /// </summary>
-        public int Precision { get; set; } = 0;
+        public NumberOutputFormat OutputFormat { get; set; } = NumberOutputFormat.Float;
 
         public NumberInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
-        protected override NumberPrompt<float> CreatePrompt()
+        protected override string OnComputeId()
         {
-            // We override the default constructor behavior from base class to add custom validation around min and max values.
-            return new NumberPrompt<float>(null, new PromptValidator<float>(async (promptContext, cancel) =>
+            return $"NumberInput[{BindingPath()}]";
+        }
+
+        protected override Task<InputState> OnRecognizeInput(DialogContext dc, bool consultation)
+        {
+            var input = dc.State.GetValue<object>(INPUT_PROPERTY);
+
+            var culture = GetCulture(dc);
+            var results = NumberRecognizer.RecognizeNumber(input.ToString(), culture);
+            if (results.Count > 0)
             {
-                if (!promptContext.Recognized.Succeeded)
+                // Try to parse value based on type
+                var text = results[0].Resolution["value"].ToString();
+                    
+                if (float.TryParse(text, out var value))
                 {
-                    return false;
+                    input = value;
                 }
-
-                promptContext.Recognized.Value = (float)Math.Round(promptContext.Recognized.Value, Precision);
-                var result = (IComparable<float>)promptContext.Recognized.Value;
-                if (result.CompareTo(MinValue) < 0 || result.CompareTo(MaxValue) > 0)
+                else
                 {
-                    if (InvalidPrompt != null)
-                    {
-                        var invalid = await InvalidPrompt.BindToData(promptContext.Context, promptContext.State).ConfigureAwait(false);
-                        if (invalid != null)
-                        {
-                            await promptContext.Context.SendActivityAsync(invalid).ConfigureAwait(false);
-                        }
-
-                    }
-
-                    return false;
+                    return Task.FromResult(InputState.Unrecognized);
                 }
+            }
+            else
+            {
+                return Task.FromResult(InputState.Unrecognized);
+            }
 
-                return true;
-            }));
+            switch (this.OutputFormat)
+            {
+                case NumberOutputFormat.Float:
+                default:
+                    dc.State.SetValue(INPUT_PROPERTY, input);
+                    break;
+                case NumberOutputFormat.Integer:
+                    dc.State.SetValue(INPUT_PROPERTY, Math.Floor((float)input));
+                    break;
+            }
+
+            return Task.FromResult(InputState.Valid);
+        }
+
+        private string GetCulture(DialogContext dc)
+        {
+            if (!string.IsNullOrEmpty(dc.Context.Activity.Locale))
+            {
+                return dc.Context.Activity.Locale;
+            }
+
+            if (!string.IsNullOrEmpty(this.DefaultLocale))
+            {
+                return this.DefaultLocale;
+            }
+
+            return English;
         }
     }
 }

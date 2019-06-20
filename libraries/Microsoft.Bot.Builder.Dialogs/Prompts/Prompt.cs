@@ -25,6 +25,22 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         protected PromptValidator<T> _validator = null;
 
+        /// <summary>
+        /// Property which is bidirectional property for input and output.  Example: user.age will be passed in, and user.age will be set when the dialog completes
+        /// </summary>
+        public string Property
+        {
+            get
+            {
+                return OutputBinding;
+            }
+            set
+            {
+                InputBindings["value"] = value;
+                OutputBinding = value;
+            }
+        }
+
         public Prompt(string dialogId = null, PromptValidator<T> validator = null)
             : base(dialogId)
         {

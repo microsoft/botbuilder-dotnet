@@ -9,40 +9,34 @@
             "property": "dialog.todo"
         },
         {
-            "$type": "Microsoft.IfCondition",
-            "condition": "dialog.todo == null",
-            "steps": [
-                {
-                    "$type": "Microsoft.TextInput",
-                    "prompt": "OK, please enter the title of the todo you want to remove.",
-                    "property": "dialog.todo"
-                }
-            ]
+            "$type": "Microsoft.TextInput",
+            "prompt": "OK, please enter the title of the todo you want to remove.",
+            "value": "@title",
+            "property": "dialog.todo"
         },
         {
             "$type": "Microsoft.EditArray",
             "changeType": "Remove",
             "arrayProperty": "user.todos",
-            "value": "dialog.todo"
+            "value": "dialog.todo",
+            "resultProperty": "dialog.removed"
         },
         {
-            "$type": "Microsoft.SendActivity",
-            "activity": "Successfully removed a todo named \"{dialog.todo}\""
-        },
-        {
-            "$type": "Microsoft.DeleteProperty",
-            "property": "dialog.todo"
-        }
-    ],
-    "rules": [
-        {
-            "$type": "Microsoft.IntentRule",
-            "intent": "CancelIntent",
+            "$type": "Microsoft.IfCondition",
+            "condition": "dialog.removed",
             "steps": [
                 {
-                    "$type": "Microsoft.CancelAllDialogs"
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Successfully removed a todo named \"{dialog.todo}\""
+                }
+            ],
+            "elseSteps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "\"{dialog.todo}\" is not in the Todo List"
                 }
             ]
         }
+        
     ]
 }

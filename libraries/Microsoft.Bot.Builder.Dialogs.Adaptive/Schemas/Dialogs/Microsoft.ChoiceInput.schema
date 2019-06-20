@@ -10,6 +10,36 @@
         },
         {
             "properties": {
+                "outputFormat": {
+                    "type": "string",
+                    "enum": [
+                        "value",
+                        "index"
+                    ],
+                    "title": "Output Format",
+                    "description": "The output format.",
+                    "default": "value"
+                },
+                "choices": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "$ref": "#/definitions/choice"
+                        }
+                    ]
+                },
+                "appendChoices": {
+                    "type": "boolean",
+                    "title": "Append Choices",
+                    "description": "Compose an output activity containing a set of choices",
+                    "default": "true"
+                },
+                "defaultLocale": {
+                    "type": "string",
+                    "title": "Default Locale",
+                    "description": "The prompts default locale that should be recognized.",
+                    "default": "en-us"
+                },
                 "style": {
                     "type": "string",
                     "enum": [
@@ -22,20 +52,53 @@
                     ],
                     "title": "List Style",
                     "description": "The kind of choice list style to generate",
-                    "default":  "Auto"
+                    "default": "Auto"
                 },
-                "choicesProperty": {
-                    "type": "string",
-                    "title": "Choices Property",
-                    "description": "unknown ??? "
-                },
-                "choices": {
-                    "type": "array",
-                    "items": [
-                        {
-                            "$ref": "#/definitions/choice"
+                "choiceOptions": {
+                    "type": "object",
+                    "properties": {
+                        "inlineSeparator": {
+                            "type": "string",
+                            "title": "Inline Seperator",
+                            "description": "Character used to separate individual choices when there are more than 2 choices",
+                            "default": ", "
+                        },
+                        "inlineOr": {
+                            "type": "string",
+                            "title": "Inline Or",
+                            "description": "Separator inserted between the choices when their are only 2 choices",
+                            "default": " or "
+                        },
+                        "inlineOrMore": {
+                            "type": "string",
+                            "title": "Inline OrMore",
+                            "description": "Separator inserted between the last 2 choices when their are more than 2 choices.",
+                            "default": ", or "
+                        },
+                        "includeNumbers": {
+                            "type": "boolean",
+                            "title": "Include Numbers",
+                            "description": "if true, inline and list style choices will be prefixed with the index of the choice.",
+                            "default": true
                         }
-                    ]
+                    }
+                },
+                "recognizerOptions": {
+                    "type": "object",
+                    "properties": {
+                        "noValue": {
+                            "type": "boolean",
+                            "title": "No Value",
+                            "description": "If true, the choices value field will NOT be search over",
+                            "default": false
+                        },
+                        "noAction": {
+                            "type": "boolean",
+                            "title": "No Action",
+                            "description": "If true, the the choices action.title field will NOT be searched over",
+                            "default": false
+                        }
+                    }
                 }
             }
         }
@@ -64,7 +127,7 @@
                 }
             }
         },
-        "CardAction": {
+        "cardAction": {
             "type": "object"
         }
     }

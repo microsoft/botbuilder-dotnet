@@ -32,12 +32,12 @@
           ]
         },
         "maxTurnCount": {
-          "type": "number",
+          "type": "integer",
           "title": "Max Turn Count",
           "description": "The max retry count for this prompt.",
-          "default": "2147483647",
+          "default": 2147483647,
           "examples": [
-            "3"
+            3
           ]
         },
         "validations": {
@@ -45,18 +45,18 @@
           "items": {
             "$role": "expression"
           },
-          "title": "validation expressions",
-          "description": "Expressions to valid an input."
+          "title": "Validation Expressions",
+          "description": "Expressions to validate an input."
         },
         "value": {
           "$role": "expression",
           "title": "Value",
-          "description": "Value to return"
+          "description": "The expression that you evaluated for input."
         },
         "valueProperty": {
           "$role": "memoryPath",
           "title": "Value Property",
-          "description": "The property to store the result of the value",
+          "description": "It is where you want to the putput of the input written to",
           "examples": [
             "user.name"
           ]
@@ -64,21 +64,21 @@
         "defaultValue": {
           "$role": "expression",
           "title": "Default Value",
-          "description": "value to return if the value expression can't be evaluated.",
+          "description": "Value to return if the value expression can't be evaluated."
         },
         "alwaysPrompt": {
           "type": "boolean",
           "title": "Always Prompt",
           "description": "If set to true this will always prompt the user regardless if you already have the value or not.",
-          "default": "false",
-          "examples": [ "false" ]
+          "default": false,
+          "examples": [ false ]
         },
         "allowInterruptions": {
           "type": "boolean",
           "title": "Allow Interruptions",
-          "description": "If set to true this will always consult the parent dialog whether it will be interupt or not",
-          "default": "true",
-          "examples": [ "true" ]
+          "description": "If set to true this will always consult the parent dialog whether it will be interupt or not.",
+          "default": true,
+          "examples": [ true ]
         }
       }
     }

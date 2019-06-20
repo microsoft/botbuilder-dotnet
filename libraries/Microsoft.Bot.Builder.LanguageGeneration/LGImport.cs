@@ -16,6 +16,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public LGImport(LGFileParser.ImportDefinitionContext parseTree, string source = "")
         {
             ParseTree = parseTree;
+            Source = source;
 
             Description = ExtractDescription(parseTree);
             Id = ExtractId(parseTree);
@@ -36,6 +37,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Id of this import.
         /// </value>
         public string Id { get; }
+
+        /// <summary>
+        /// Gets origin root source of the import.
+        /// </summary>
+        /// <value>
+        /// origin root source of the import.
+        /// </value>
+        public string Source { get; }
 
         /// <summary>
         /// Gets the parse tree of this lg file.

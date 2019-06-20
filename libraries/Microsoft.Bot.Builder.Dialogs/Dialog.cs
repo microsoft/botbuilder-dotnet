@@ -61,15 +61,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         public string OutputBinding { get; set; }
 
         /// <summary>
-        /// Property which is bidirectional property for input and output.  Example: user.age will be passed in, and user.age will be set when the dialog completes
-        /// </summary>
-        public virtual string Property
-        {
-            get { return OutputBinding; }
-            set { OutputBinding = value; }
-        }
-
-        /// <summary>
         /// Gets or sets the telemetry client for logging events.
         /// </summary>
         /// <value>The Telemetry Client logger.</value>
@@ -219,10 +210,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             else if (!string.IsNullOrEmpty(OutputBinding))
             {
                 return OutputBinding;
-            }
-            else if (!string.IsNullOrEmpty(Property))
-            {
-                return Property;
             }
 
             return string.Empty;

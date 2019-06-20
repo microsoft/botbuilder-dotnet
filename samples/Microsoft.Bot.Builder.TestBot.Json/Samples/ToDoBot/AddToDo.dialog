@@ -9,15 +9,10 @@
             "property": "dialog.todo"
         },
         {
-            "$type": "Microsoft.IfCondition",
-            "condition": "dialog.todo == null",
-            "steps": [
-                {
-                    "$type": "Microsoft.TextInput",
-                    "prompt": "OK, please enter the title of your todo.",
-                    "property": "dialog.todo"
-                }
-            ]
+            "$type": "Microsoft.TextInput",
+            "prompt": "OK, please enter the title of your todo.",
+            "value":  "@title",
+            "property": "dialog.todo"
         },
         {
             "$type": "Microsoft.IfCondition",
@@ -39,21 +34,6 @@
         {
             "$type": "Microsoft.SendActivity",
             "activity": "Successfully added a todo named \"{dialog.todo}\""
-        },
-        {
-            "$type": "Microsoft.DeleteProperty",
-            "property": "dialog.todo"
-        }
-    ],
-    "rules": [
-        {
-            "$type": "Microsoft.IntentRule",
-            "intent": "CancelIntent",
-            "steps": [
-                {
-                    "$type": "Microsoft.CancelAllDialogs"
-                }
-            ]
         }
     ]
 }

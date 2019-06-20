@@ -4,8 +4,8 @@
     "generator": "ToDoLuisBot.lg",
     "steps": [
         {
-            "$type": "Microsoft.SaveEntity",
-            "entity": "ListType",
+            "$type": "Microsoft.SetProperty",
+            "value": "@ListType",
             "property": "dialog.listName"
         },
         {
