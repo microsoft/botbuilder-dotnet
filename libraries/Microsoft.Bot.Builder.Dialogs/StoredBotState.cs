@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive
+namespace Microsoft.Bot.Builder.Dialogs
 {
     public class StoredBotState
     {
