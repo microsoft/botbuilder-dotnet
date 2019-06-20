@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Integration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
-namespace Microsoft.Bot.Protocol.StreamingExtensions
+namespace Microsoft.Bot.Builder
 {
     public static class BotFrameworkApplicationBuilderExtensions
     {

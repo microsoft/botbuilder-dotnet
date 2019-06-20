@@ -4,19 +4,17 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Protocol.Transport;
 using Microsoft.Bot.Schema;
+using Microsoft.Bot.StreamingExtensions;
+using Microsoft.Bot.StreamingExtensions.Transport;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Net.Http.Headers;
 using Microsoft.Rest;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Protocol.StreamingExtensions
+namespace Microsoft.Bot.Builder
 {
     public class BotFrameworkStreamingExtensionsAdapter : BotAdapter
     {
@@ -73,7 +71,7 @@ namespace Microsoft.Bot.Protocol.StreamingExtensions
         /// <param name="body">The json string to deserialize into an activity.</param>
         /// <param name="streams">A set of streams associated with but not attached to the activity.</param>
         /// <param name="callback">The BotCallBackHandler to call on completion.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <param name="cancellation">Cancellation token.</param>
         /// <returns>The response to the activity.</returns>
         public async Task<InvokeResponse> ProcessActivityAsync(string body, List<IContentStream> streams, BotCallbackHandler callback, CancellationToken cancellation)
         {
@@ -82,7 +80,7 @@ namespace Microsoft.Bot.Protocol.StreamingExtensions
             if (streams.Count > 1)
             {
                 var streamAttachments = new List<Attachment>();
-                for (int i = 1; i < streams.Count; i++)
+                for (var i = 1; i < streams.Count; i++)
                 {
                     streamAttachments.Add(new Attachment() { ContentType = streams[i].Type, Content = streams[i].GetStream() });
                 }
@@ -97,7 +95,7 @@ namespace Microsoft.Bot.Protocol.StreamingExtensions
                 }
             }
 
-            return await ProcessActivityAsync(activity, callback, cancellation);
+            return await ProcessActivityAsync(activity, callback, cancellation).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -208,6 +206,7 @@ namespace Microsoft.Bot.Protocol.StreamingExtensions
                 {
                     requestPath = $"/v3/conversations/{activity.Conversation?.Id}/activities";
                 }
+
                 var streamAttachments = UpdateAttachmentStreams(activity);
                 var request = Request.CreatePost(requestPath);
                 request.SetBody(activity);
@@ -218,6 +217,7 @@ namespace Microsoft.Bot.Protocol.StreamingExtensions
                         request.AddStream(attachment);
                     }
                 }
+
                 response = await SendRequestAsync<ResourceResponse>(request).ConfigureAwait(false);
 
                 // If No response is set, then defult to a "simple" response. This can't really be done
@@ -266,7 +266,6 @@ namespace Microsoft.Bot.Protocol.StreamingExtensions
 
             await SendRequestAsync<ResourceResponse>(request, cancellationToken).ConfigureAwait(false);
         }
-
 
         public async Task<ConversationsResult> GetConversationsAsync(string continuationToken = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -464,7 +463,7 @@ namespace Microsoft.Bot.Protocol.StreamingExtensions
                 return streamAttachments.Select(streamAttachment =>
                 {
                     var streamContent = new StreamContent(streamAttachment.Content as Stream);
-                    streamContent.Headers.TryAddWithoutValidation(HeaderNames.ContentType, streamAttachment.ContentType);
+                    streamContent.Headers.TryAddWithoutValidation("Content-Type", streamAttachment.ContentType);
                     return streamContent;
                 });
             }

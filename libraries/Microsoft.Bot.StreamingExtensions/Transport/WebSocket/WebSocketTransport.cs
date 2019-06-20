@@ -3,9 +3,9 @@ using System.IO;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Protocol.Transport;
+using Microsoft.Bot.StreamingExtensions.Transport;
 
-namespace Microsoft.Bot.Protocol.WebSockets
+namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
 {
     public class WebSocketTransport : ITransportSender, ITransportReceiver
     {
@@ -55,6 +55,7 @@ namespace Microsoft.Bot.Protocol.WebSockets
                             _socket.Dispose();
                         }
                     }
+
                     return result.Count;
                 }
             }

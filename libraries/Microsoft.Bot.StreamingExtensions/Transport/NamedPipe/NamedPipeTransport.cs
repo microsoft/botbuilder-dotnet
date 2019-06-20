@@ -2,9 +2,9 @@
 using System.IO;
 using System.IO.Pipes;
 using System.Threading.Tasks;
-using Microsoft.Bot.Protocol.Transport;
+using Microsoft.Bot.StreamingExtensions.Transport;
 
-namespace Microsoft.Bot.Protocol.NamedPipes
+namespace Microsoft.Bot.StreamingExtensions.Transport.NamedPipes
 {
     public class NamedPipeTransport : ITransportSender, ITransportReceiver
     {

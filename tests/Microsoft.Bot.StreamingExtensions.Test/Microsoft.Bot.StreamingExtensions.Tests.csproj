@@ -17,10 +17,4 @@
     <PackageReference Include="MSTest.TestAdapter" Version="1.2.0" />
     <PackageReference Include="MSTest.TestFramework" Version="1.2.0" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\SDK\Microsoft.Bot.Protocol.StreamingExtensions\Microsoft.Bot.Protocol.StreamingExtensions.csproj" />
-    <ProjectReference Include="..\..\SDK\Microsoft.Bot.Protocol\Microsoft.Bot.Protocol.csproj" />
-  </ItemGroup>
-
 </Project>

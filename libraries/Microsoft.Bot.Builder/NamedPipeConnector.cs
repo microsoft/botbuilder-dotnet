@@ -1,12 +1,11 @@
-﻿using Microsoft.Bot.Builder;
-using Microsoft.Bot.Protocol.NamedPipes;
-using Microsoft.Bot.Protocol.Transport;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Bot.StreamingExtensions.Transport;
+using Microsoft.Bot.StreamingExtensions.Transport.NamedPipes;
+using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Bot.Protocol.StreamingExtensions
+namespace Microsoft.Bot.Builder
 {
     public class NamedPipeConnector
     {

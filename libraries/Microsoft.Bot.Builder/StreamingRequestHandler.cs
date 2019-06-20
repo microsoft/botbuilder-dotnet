@@ -7,11 +7,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
-using Microsoft.Bot.Protocol.Transport;
+using Microsoft.Bot.StreamingExtensions.Transport;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Bot.StreamingExtensions;
 
-namespace Microsoft.Bot.Protocol.StreamingExtensions
+namespace Microsoft.Bot.Builder
 {
     public class StreamingRequestHandler : RequestHandler
     {

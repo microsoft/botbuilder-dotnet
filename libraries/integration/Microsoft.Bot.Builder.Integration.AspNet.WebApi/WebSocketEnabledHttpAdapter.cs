@@ -10,7 +10,7 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Bot.Protocol.StreamingExtensions.WebApi
+namespace Microsoft.Bot.StreamingExtensions.StreamingExtensions.WebApi
 {
     public class WebSocketEnabledHttpAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {

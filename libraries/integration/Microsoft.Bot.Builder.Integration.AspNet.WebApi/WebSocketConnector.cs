@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 using System.Web.WebSockets;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector.Authentication;
-using Microsoft.Bot.Protocol.Transport;
-using Microsoft.Bot.Protocol.WebSockets;
+using Microsoft.Bot.StreamingExtensions.Transport;
+using Microsoft.Bot.StreamingExtensions.WebSockets;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Bot.Protocol.StreamingExtensions.WebApi
+namespace Microsoft.Bot.StreamingExtensions.StreamingExtensions.WebApi
 {
     internal class WebSocketConnector
     {

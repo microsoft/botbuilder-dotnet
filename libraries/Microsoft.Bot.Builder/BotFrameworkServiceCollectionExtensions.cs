@@ -1,7 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
+using Microsoft.Bot.StreamingExtensions;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Bot.Protocol.StreamingExtensions
+namespace Microsoft.Bot.Builder
 {
     public static partial class BotFrameworkServiceCollectionExtensions
     {

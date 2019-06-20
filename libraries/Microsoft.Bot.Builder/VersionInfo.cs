@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.Bot.Protocol.StreamingExtensions
+﻿namespace Microsoft.Bot.Builder
 {
     public class VersionInfo
     {

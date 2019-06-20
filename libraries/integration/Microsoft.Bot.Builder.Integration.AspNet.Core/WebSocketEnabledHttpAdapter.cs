@@ -12,7 +12,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Bot.Protocol.StreamingExtensions.NetCore
+namespace Microsoft.Bot.StreamingExtensions.StreamingExtensions.NetCore
 {
     public class WebSocketEnabledHttpAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {

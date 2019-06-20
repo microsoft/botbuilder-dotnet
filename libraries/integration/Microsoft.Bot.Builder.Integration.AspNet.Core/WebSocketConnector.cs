@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector.Authentication;
-using Microsoft.Bot.Protocol.Transport;
-using Microsoft.Bot.Protocol.WebSockets;
+using Microsoft.Bot.StreamingExtensions.Transport;
+using Microsoft.Bot.StreamingExtensions.WebSockets;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Bot.Protocol.StreamingExtensions.NetCore
+namespace Microsoft.Bot.StreamingExtensions.StreamingExtensions.NetCore
 {
     internal class WebSocketConnector
     {

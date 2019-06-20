@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Protocol.Payloads;
-using Microsoft.Bot.Protocol.PayloadTransport;
-using Microsoft.Bot.Protocol.Transport;
+using Microsoft.Bot.StreamingExtensions.Payloads;
+using Microsoft.Bot.StreamingExtensions.PayloadTransport;
+using Microsoft.Bot.StreamingExtensions.Transport;
 
-namespace Microsoft.Bot.Protocol.WebSockets
+namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
 {
     public class WebSocketClient : IStreamingTransportClient
     {
