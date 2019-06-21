@@ -232,7 +232,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public async Task OnPromptErrorsWithNullContext()
         {
-            var eventPrompt = new EventActivityWithoutRetryPrompt("EventActivityWithoutRetryPrompt", Validator);
+            var eventPrompt = new EventActivityPrompt("EventActivityPrompt", Validator);
 
             var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "please send an event." } };
 
@@ -253,7 +253,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogs = new DialogSet(dialogState);
 
             // Create and add custom activity prompt to DialogSet.
-            var eventPrompt = new EventActivityWithoutRetryPrompt("EventActivityPrompt", Validator);
+            var eventPrompt = new EventActivityPrompt("EventActivityPrompt", Validator);
             dialogs.Add(eventPrompt);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
