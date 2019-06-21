@@ -145,12 +145,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Called when a prompt dialog resumes being the active dialog on the dialog stack, after another
-        /// dialog that was th
+        /// Called when a prompt dialog resumes being the active dialog on the dialog stack, such as
+        /// when the previous active dialog on the stack completes.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of the conversation.</param>
-        /// <param name="reason">Reason why the dialog resumed.</param>
-        /// <param name="result">(Optional) value returned from the dialog that was called. The type of the value returned is dependent on the dialog that was called.</param>
+        /// <param name="reason">An enumeration values that indicates why the dialog resumed.</param>
+        /// <param name="result">Optional, value returned from the previous dialog on the stack.
+        /// The type of the value returned is dependent on the previous dialog.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -167,6 +168,14 @@ namespace Microsoft.Bot.Builder.Dialogs
             return EndOfTurn;
         }
 
+        /// <summary>
+        /// Called when a prompt dialog has been requested to re-prompt the user for input.
+        /// </summary>
+        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
+        /// <param name="instance">The instance of the dialog on the stack.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
             var state = (IDictionary<string, object>)instance.State[PersistedState];
@@ -174,10 +183,45 @@ namespace Microsoft.Bot.Builder.Dialogs
             await OnPromptAsync(turnContext, state, options, false, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// When overridden in a derived class, prompts the user for input.
+        /// </summary>
+        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
+        /// <param name="state">Contains state for the current instance of the prompt on the dialog stack.</param>
+        /// <param name="options">A prompt options object constructed from the options initially provided
+        /// in the call to <see cref="DialogContext.PromptAsync(string, PromptOptions, CancellationToken)"/>.</param>
+        /// <param name="isRetry"><code>true</code> if this is the first time this prompt dialog instance
+        /// on the stack is prompting the user for input; otherwise, <code>false</code>.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         protected abstract Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken));
 
+        /// <summary>
+        /// When overridden in a derived class, attempts to recognize the user's input.
+        /// </summary>
+        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
+        /// <param name="state">Contains state for the current instance of the prompt on the dialog stack.</param>
+        /// <param name="options">A prompt options object constructed from the options initially provided
+        /// in the call to <see cref="DialogContext.PromptAsync(string, PromptOptions, CancellationToken)"/>.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <remarks>If the task is successful, the result describes the result of the recognition attempt.</remarks>
         protected abstract Task<PromptRecognizerResult<T>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken));
 
+        /// <summary>
+        /// When overridden in a derived class, appends choices to the activity when the user is prompted for input.
+        /// </summary>
+        /// <param name="prompt">The activity to append the choices to.</param>
+        /// <param name="channelId">The ID of the user's channel.</param>
+        /// <param name="choices">The choices to append.</param>
+        /// <param name="style">Indicates how the choices should be presented to the user.</param>
+        /// <param name="options">The formatting options to use when presenting the choices.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <remarks>If the task is successful, the result contains the updated activity.</remarks>
         protected IMessageActivity AppendChoices(IMessageActivity prompt, string channelId, IList<Choice> choices, ListStyle style, ChoiceFactoryOptions options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Get base prompt text (if any)
