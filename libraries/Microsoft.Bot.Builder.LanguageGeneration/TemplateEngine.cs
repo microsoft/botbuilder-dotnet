@@ -25,8 +25,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Delegate for resolving resource id of imported lg file.
         /// </summary>
         /// <param name="resourceId">Resource id to resolve.</param>
-        /// <returns>Resolved resource content and absolute file path id.</returns>
-        public delegate (string content, string absoluteFilePath) ImportResolverDelegate(string resourceId);
+        /// <returns>Resolved resource content and unique id.</returns>
+        public delegate (string content, string id) ImportResolverDelegate(string resourceId);
 
         /// <summary>
         /// Gets or sets parsed LG templates.
@@ -200,10 +200,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ImportIds(source.Imports.Select(lg => lg.Id).ToArray(), sources, importResolver);
         }
 
-        private (string, string) FileResolver(string path)
+        private (string, string) FileResolver(string id)
         {
-            path = Path.GetFullPath(path);
-            return (File.ReadAllText(path), path);
+            id = Path.GetFullPath(id);
+            return (File.ReadAllText(id), id);
         }
 
         /// <summary>
