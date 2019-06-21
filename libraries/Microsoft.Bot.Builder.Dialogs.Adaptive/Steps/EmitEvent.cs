@@ -45,15 +45,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
             set
             {
+                InputBindings["value"] = value;
                 OutputBinding = value;
             }
         }
 
         [JsonConstructor]
-        public EmitEvent([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public EmitEvent(string eventName = null, object eventValue = null, bool bubble = true, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
+            this.EventName = eventName;
+            this.EventValue = EventValue;
+            this.BubbleEvent = bubble;
         }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
