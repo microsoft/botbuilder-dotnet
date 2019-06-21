@@ -30,9 +30,10 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             flow.SendToServer(
                 CreateGet("/hello"),
                 CreateOK(),
-                async (req, exp, res) =>
+                (req, exp, res) =>
                 {
                     Assert.AreEqual(200, res.StatusCode);
+                    return System.Threading.Tasks.Task.CompletedTask;
                 });
             flow.Run();
         }
@@ -44,9 +45,10 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             flow.SendToClient(
                 CreateGet("/hello"),
                 CreateOK(),
-                async (req, exp, res) =>
+                (req, exp, res) =>
                 {
                     Assert.AreEqual(200, res.StatusCode);
+                    return System.Threading.Tasks.Task.CompletedTask;
                 });
             flow.Run();
         }
@@ -61,11 +63,12 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             flow.SendToServer(
                 CreateGet("/hello"),
                 response,
-                async (req, exp, res) =>
+                (req, exp, res) =>
                 {
                     Assert.AreEqual(200, res.StatusCode);
                     var body = res.ReadBodyAsString();
                     Assert.AreEqual("TestBody", body);
+                    return System.Threading.Tasks.Task.CompletedTask;
                 });
             flow.Run();
         }
@@ -83,12 +86,13 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
                 flow.SendToServer(
                     CreateGet($"/hello/{i}"),
                     CreateOK(i.ToString()),
-                    async (req, exp, res) =>
+                    (req, exp, res) =>
                     {
                         Assert.AreEqual(200, res.StatusCode);
                         var body = res.ReadBodyAsString();
                         int idx = int.Parse(body);
                         results[idx] = true;
+                        return System.Threading.Tasks.Task.CompletedTask;
                     });
             }
 
@@ -111,12 +115,13 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
                 flow.SendToClient(
                     CreateGet($"/hello/{i}"),
                     CreateOK(i.ToString()),
-                    async (req, exp, res) =>
+                    (req, exp, res) =>
                     {
                         Assert.AreEqual(200, res.StatusCode);
                         var body = res.ReadBodyAsString();
                         int idx = int.Parse(body);
                         results[idx] = true;
+                        return System.Threading.Tasks.Task.CompletedTask;
                     });
             }
 
@@ -141,23 +146,25 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
                 flow.SendToClient(
                     CreateGet($"/client/hello{i}"),
                     CreateOK(i.ToString()),
-                    async (req, exp, res) =>
+                    (req, exp, res) =>
                     {
                         Assert.AreEqual(200, res.StatusCode);
                         var body = res.ReadBodyAsString();
                         int idx = int.Parse(body);
                         toClientResults[idx] = true;
+                        return System.Threading.Tasks.Task.CompletedTask;
                     });
 
                 flow.SendToServer(
                     CreateGet($"/server/hello{i}"),
                     CreateOK(i.ToString()),
-                    async (req, exp, res) =>
+                    (req, exp, res) =>
                     {
                         Assert.AreEqual(200, res.StatusCode);
                         var body = res.ReadBodyAsString();
                         int idx = int.Parse(body);
                         toServerResults[idx] = true;
+                        return System.Threading.Tasks.Task.CompletedTask;
                     });
             }
 
@@ -182,11 +189,12 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             flow.SendToServer(
                 CreatePost("/hello", sb.ToString()),
                 CreateOK(sb.ToString()),
-                async (req, exp, res) =>
+                (req, exp, res) =>
                 {
                     Assert.AreEqual(200, res.StatusCode);
                     var body = res.ReadBodyAsString();
                     Assert.AreEqual(count, body.Length);
+                    return System.Threading.Tasks.Task.CompletedTask;
                 });
             flow.Run();
         }
@@ -203,11 +211,14 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             flow.SendToServer(
                 request,
                 response,
-                async (req, exp, res) => { },
-                async (req) =>
+                (req, exp, res) => {
+                    return System.Threading.Tasks.Task.CompletedTask;
+                },
+                (req) =>
                 {
                     var body = req.ReadBodyAsJson<Attachment>();
                     Assert.IsNotNull(body);
+                    return System.Threading.Tasks.Task.CompletedTask;
                 });
             flow.Run();
         }
