@@ -433,6 +433,37 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             Assert.AreEqual(1, result.Entities["$instance"]["datetime_time"].Count());
         }
 
+        public async Task TestEndpoint<T>(string expectedPath, JToken oracle, string version)
+            where T : IRecognizerConvert, new()
+        {
+            var newPath = expectedPath + "-" + version + ".new";
+            using (var mockResponse = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(oracle[version]))))
+            {
+                var text = oracle["text"] ?? oracle["Text"];
+                var query = text.ToString();
+                var context = GetContext(query);
+
+                var mockHttp = GetMockHttpClientHandlerObject(query, mockResponse);
+                var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true });
+                var typedResult = await luisRecognizer.RecognizeAsync<T>(context, CancellationToken.None);
+                var typedJson = Json(typedResult);
+
+                if (!WithinDelta(oracle, typedJson, 0.1))
+                {
+                    using (var writer = new StreamWriter(newPath))
+                    {
+                        writer.Write(typedJson);
+                    }
+
+                    Assert.Fail($"Returned JSON in {newPath} != expected JSON in {expectedPath}");
+                }
+                else
+                {
+                    File.Delete(expectedPath + ".new");
+                }
+            }
+        }
+
         // To create a file to test:
         // 1) Create a <name>.json file with an object { Text:<query> } in it.
         // 2) Run this test which will fail and generate a <name>.json.new file.
@@ -441,38 +472,13 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             where T : IRecognizerConvert, new()
         {
             var expectedPath = GetFilePath(file);
-            var newPath = expectedPath + ".new";
 
             GetEnvironmentVarsLuis();
 
             using (var expectedJsonReader = new JsonTextReader(new StreamReader(expectedPath)))
             {
                 var expectedJson = await JToken.ReadFromAsync(expectedJsonReader);
-                using (var mockResponse = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(expectedJson["luisResult"]))))
-                {
-                    var text = expectedJson["text"] ?? expectedJson["Text"];
-                    var query = text.ToString();
-                    var context = GetContext(query);
-
-                    var mockHttp = GetMockHttpClientHandlerObject(query, mockResponse);
-                    var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true });
-                    var typedResult = await luisRecognizer.RecognizeAsync<T>(context, CancellationToken.None);
-                    var typedJson = Json(typedResult);
-
-                    if (!WithinDelta(expectedJson, typedJson, 0.1))
-                    {
-                        using (var writer = new StreamWriter(newPath))
-                        {
-                            writer.Write(typedJson);
-                        }
-
-                        Assert.Fail($"Returned JSON in {newPath} != expected JSON in {expectedPath}");
-                    }
-                    else
-                    {
-                        File.Delete(expectedPath + ".new");
-                    }
-                }
+                await TestEndpoint<T>(expectedPath, expectedJson, "v2");
             }
         }
 

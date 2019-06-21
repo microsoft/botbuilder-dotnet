@@ -81,7 +81,7 @@
     "label": "neutral",
     "score": 0.5
   },
-  "luisResult": {
+  "v2": {
     "query": "http://foo.com is where you can get a weather forecast for seattle",
     "topScoringIntent": {
       "intent": "Weather.GetForecast",

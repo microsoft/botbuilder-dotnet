@@ -121,7 +121,7 @@
     "label": "neutral",
     "score": 0.5
   },
-  "luisResult": {
+  "v2": {
     "query": "Deliver from 12345 VA to 12346 WA",
     "topScoringIntent": {
       "intent": "Roles",

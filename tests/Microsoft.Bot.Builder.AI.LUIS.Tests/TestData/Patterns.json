@@ -87,7 +87,7 @@
     "label": "negative",
     "score": 0.210341513
   },
-  "luisResult": {
+  "v2": {
     "query": "email about something wicked this way comes from bart simpson and also kb435",
     "topScoringIntent": {
       "intent": "search",

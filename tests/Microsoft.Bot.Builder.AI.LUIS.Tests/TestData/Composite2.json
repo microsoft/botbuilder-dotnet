@@ -105,7 +105,7 @@
     "label": "neutral",
     "score": 0.5
   },
-  "luisResult": {
+  "v2": {
     "query": "http://foo.com is where you can fly from seattle to dallas via denver",
     "topScoringIntent": {
       "intent": "EntityTests",
