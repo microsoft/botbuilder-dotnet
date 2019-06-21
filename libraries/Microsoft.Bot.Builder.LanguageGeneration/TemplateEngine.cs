@@ -231,7 +231,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Parse lg content to LGTemplate list. This function will track down all the imports of the content
+        /// Parse lg content to LGTemplate list.
         /// All the imports of the content will be also tracked down to parse templates.
         /// </summary>
         /// <param name="content">Text content contains lg templates.</param>
@@ -242,9 +242,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var sources = new Dictionary<string, LGResource>();
             LoopLGText(content, name, sources, importResolver);
-            var parsedTemplates = sources.SelectMany(s => s.Value.Templates).ToList();
 
-            return parsedTemplates;
+            return sources.SelectMany(s => s.Value.Templates).ToList();
         }
     }
 }
