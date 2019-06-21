@@ -211,7 +211,8 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             flow.SendToServer(
                 request,
                 response,
-                (req, exp, res) => {
+                (req, exp, res) =>
+                {
                     return System.Threading.Tasks.Task.CompletedTask;
                 },
                 (req) =>

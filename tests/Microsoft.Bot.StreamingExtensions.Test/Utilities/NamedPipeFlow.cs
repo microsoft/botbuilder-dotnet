@@ -144,17 +144,31 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Utilities
 
         private class PendingRequest
         {
-            public Response Response;
-            public Func<ReceiveRequest, Task> ValidateRequest;
+            private Response response;
+            private Func<ReceiveRequest, Task> validateRequest;
+
+            public Response Response { get => response; set => response = value; }
+
+            public Func<ReceiveRequest, Task> ValidateRequest { get => validateRequest; set => validateRequest = value; }
         }
 
         private class PendingAction
         {
-            public Request Request;
-            public Response ExpectedResponse;
-            public Func<Request, Response, ReceiveResponse, Task> Validate;
-            public bool ToClient;
-            public TaskCompletionSource<string> Done = new TaskCompletionSource<string>();
+            private Request request;
+            private Response expectedResponse;
+            private Func<Request, Response, ReceiveResponse, Task> validate;
+            private bool toClient;
+            private TaskCompletionSource<string> done = new TaskCompletionSource<string>();
+
+            public bool ToClient { get => toClient; set => toClient = value; }
+
+            public Func<Request, Response, ReceiveResponse, Task> Validate { get => validate; set => validate = value; }
+
+            public TaskCompletionSource<string> Done { get => done; set => done = value; }
+
+            public Response ExpectedResponse { get => expectedResponse; set => expectedResponse = value; }
+
+            public Request Request { get => request; set => request = value; }
         }
     }
 }

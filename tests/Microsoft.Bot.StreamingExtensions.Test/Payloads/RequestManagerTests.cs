@@ -107,7 +107,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
                     TaskCompletionSource<ReceiveResponse> value;
                     while (!d.TryGetValue(g, out value))
                     {
-                        ;
+                        // Wait for a value;
                     }
 
                     value.SetResult(resp);
@@ -132,7 +132,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
                     TaskCompletionSource<ReceiveResponse> value;
                     while (!d.TryGetValue(g, out value))
                     {
-                        ;
+                        // Wait for a value.;
                     }
 
                     value.SetResult(null);
@@ -160,7 +160,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
                     TaskCompletionSource<ReceiveResponse> value;
                     while (!d.TryGetValue(g, out value))
                     {
-                        ;
+                        // Wait for a value.;
                     }
 
                     value.SetCanceled();
@@ -187,7 +187,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
                     TaskCompletionSource<ReceiveResponse> value;
                     while (!d.TryGetValue(g, out value))
                     {
-                        ;
+                        // Wait for a value.;
                     }
 
                     value.SetException(new InvalidOperationException());
