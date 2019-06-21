@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <summary>
         /// The property from memory to pass to the calling dialog and to set the return value to.
         /// </summary>
-        public override string Property
+        public string Property
         {
             get
             {

@@ -91,7 +91,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-
             if (options is CancellationToken)
             {
                 throw new ArgumentException($"{nameof(options)} should not ever be a cancellation token");
@@ -373,129 +372,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 return $"AdaptiveDialog({Path.GetFileName(range.Path)}:{range.Start.LineIndex})";
             }
             return $"AdaptiveDialog[{this.BindingPath()}]";
-        }
-
-        public async Task<BotTurnResult> OnTurnAsync(ITurnContext context, StoredBotState storedState, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var saveState = false;
-            var keys = ComputeKeys(context);
-            var storage = context.TurnState.Get<IStorage>();
-
-            if (storedState == null)
-            {
-                storedState = await LoadBotState(storage, keys).ConfigureAwait(false);
-                saveState = true;
-            }
-
-            lock (runDialogs)
-            {
-                if (runDialogs.GetDialogs().Count() == 0)
-                {
-                    // Create DialogContext
-                    this.runDialogs.Add(this);
-                }
-            }
-
-            var dc = new DialogContext(runDialogs,
-                context,
-                new DialogState()
-                {
-                    ConversationState = storedState.ConversationState,
-                    UserState = storedState.UserState,
-                    DialogStack = storedState.DialogStack
-                },
-                conversationState: storedState.ConversationState,
-                userState: storedState.UserState);
-
-            // Dispatch ActivityReceived event
-            // This will queue up any interruptions
-            await dc.EmitEventAsync(AdaptiveEvents.ActivityReceived, value: null, bubble: true, fromLeaf: true, cancellationToken: cancellationToken).ConfigureAwait(false);
-
-            // Continue execution
-            // This will apply any queued up interruptions and execute the current / next step(s)
-            var result = await dc.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
-
-            if (result.Status == DialogTurnStatus.Empty)
-            {
-                result = await dc.BeginDialogAsync(this.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
-
-            if (saveState)
-            {
-                await SaveBotState(storage, storedState, keys).ConfigureAwait(false);
-                return new BotTurnResult()
-                {
-                    TurnResult = result,
-                };
-            }
-            else
-            {
-                return new BotTurnResult()
-                {
-                    TurnResult = result,
-                    NewState = storedState,
-                };
-            }
-        }
-
-        private static async Task<StoredBotState> LoadBotState(IStorage storage, BotStateStorageKeys keys)
-        {
-            var data = await storage.ReadAsync(new[] { keys.UserState, keys.ConversationState, keys.DialogState }).ConfigureAwait(false);
-
-            return new StoredBotState()
-            {
-                UserState = data.ContainsKey(keys.UserState) ? data[keys.UserState] as Dictionary<string, object> : new Dictionary<string, object>(),
-                ConversationState = data.ContainsKey(keys.ConversationState) ? data[keys.ConversationState] as Dictionary<string, object> : new Dictionary<string, object>(),
-                DialogStack = data.ContainsKey(keys.DialogState) ? data[keys.DialogState] as List<DialogInstance> : new List<DialogInstance>(),
-            };
-        }
-
-        private static async Task SaveBotState(IStorage storage, StoredBotState newState, BotStateStorageKeys keys) => await storage.WriteAsync(new Dictionary<string, object>()
-            {
-                { keys.UserState, newState.UserState},
-                { keys.ConversationState, newState.ConversationState},
-                { keys.DialogState, newState.DialogStack}
-            });
-
-        private static BotStateStorageKeys ComputeKeys(ITurnContext context)
-        {
-            // Get channel, user and conversation ids
-            var activity = context.Activity;
-            var channelId = activity.ChannelId;
-            var userId = activity.From?.Id;
-            var conversationId = activity.Conversation?.Id;
-
-            // Patch user id if needed
-            if (activity.Type == ActivityTypes.ConversationUpdate)
-            {
-                var members = activity.MembersAdded ?? activity.MembersRemoved ?? new List<ChannelAccount>();
-                var nonRecipients = members.Where(m => m.Id != activity.Recipient.Id);
-                var found = userId != null ? nonRecipients.FirstOrDefault(r => r.Id == userId) : null;
-
-                if (found == null && members.Count > 0)
-                {
-                    userId = nonRecipients.FirstOrDefault()?.Id ?? userId;
-                }
-            }
-
-            // Verify ids were found
-            if (userId == null)
-            {
-                throw new Exception("PlanningDialog: unable to load the bots state.The users ID couldn't be found.");
-            }
-
-            if (conversationId == null)
-            {
-                throw new Exception("PlanningDialog: unable to load the bots state. The conversations ID couldn't be found.");
-            }
-
-            // Return storage keys
-            return new BotStateStorageKeys()
-            {
-                UserState = $"{channelId}/users/{userId}",
-                ConversationState = $"{channelId}/conversations/{conversationId}",
-                DialogState = $"{channelId}/dialog/{conversationId}",
-            };
         }
 
         public override DialogContext CreateChildContext(DialogContext dc)
