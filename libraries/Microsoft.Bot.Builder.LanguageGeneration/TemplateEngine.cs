@@ -47,7 +47,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Teamplate engine with parsed files.</returns>
         public TemplateEngine AddFiles(IEnumerable<string> filePaths, ImportResolverDelegate importResolver = null)
         {
-            var fileTemplatesContainer = new List<List<LGTemplate>>();
+            var filePathContainer = new HashSet<string>();
+
             foreach (var filePath in filePaths)
             {
                 importResolver = importResolver ?? ((id) =>
@@ -60,14 +61,24 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                          // get full path for importPath relative to path which is doing the import.
                          importPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(filePath), id));
                      }
-                     return (File.ReadAllText(importPath), importPath);
+
+                     if (!filePathContainer.Contains(importPath))
+                     {
+                         filePathContainer.Add(importPath);
+                         return (File.ReadAllText(importPath), importPath);
+                     }
+
+                     return (null, null);
                  });
 
                 var fullPath = Path.GetFullPath(filePath);
-                var parsedTemplates = this.ParseContent(File.ReadAllText(fullPath), fullPath, importResolver);
-                fileTemplatesContainer.Add(parsedTemplates);
+                if (!filePathContainer.Contains(fullPath))
+                {
+                    filePathContainer.Add(fullPath);
+                    var parsedTemplates = this.ParseContent(File.ReadAllText(fullPath), fullPath, importResolver);
+                    Templates.AddRange(parsedTemplates);
+                }
             }
-            Templates = MergeTemplates(Templates, fileTemplatesContainer);
 
             RunStaticCheck(Templates);
 
@@ -92,7 +103,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public TemplateEngine AddText(string content, string name, ImportResolverDelegate importResolver)
         {
             var parsedTemplates = ParseContent(content, name, importResolver);
-            Templates = MergeTemplates(Templates, new List<List<LGTemplate>> { parsedTemplates });
+            Templates.AddRange(parsedTemplates);
             RunStaticCheck(Templates);
 
             return this;
@@ -157,17 +168,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return evaluator.EvaluateTemplate(fakeTemplateId, scope);
         }
 
-        /// <summary>
-        /// Merge template container into one whole template list.
-        /// </summary>
-        /// <param name="templateContainer">template list container. One lg file has one template list.</param>
-        /// <returns>Merged templates.</returns>
-        private List<LGTemplate> MergeTemplates(List<LGTemplate> templates, List<List<LGTemplate>> templateContainer)
-        {
-            templateContainer.ForEach(u => templates.AddRange(u));
-            return RemoveDuplicatedTemplates(templates);
-        }
-
         private void ImportIds(string[] ids, Dictionary<string, LGResource> sources, ImportResolverDelegate importResolver)
         {
             if (importResolver == null)
@@ -181,7 +181,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 try
                 {
                     var (content, path) = importResolver(id);
-                    if (!sources.ContainsKey(path))
+                    if (path != null && !sources.ContainsKey(path))
                     {
                         LoopLGText(content, path, sources, importResolver);
                     }
@@ -244,30 +244,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             LoopLGText(content, name, sources, importResolver);
             var parsedTemplates = sources.SelectMany(s => s.Value.Templates).ToList();
 
-            // check if there are duplicated templates among parsed templates from both current content and its imports
-            var errors = new StaticChecker(parsedTemplates).CheckTemplateDuplication();
-            if (errors.Count != 0)
-            {
-                throw new Exception(string.Join("\n", errors));
-            }
-
             return parsedTemplates;
-        }
-
-        /// <summary>
-        /// Remove duplicated lg templates when they are imported from multiple files by AddFiles function.
-        /// Given that a.lg imports c.lg and b.lg also imports c.lg, the templates in c.lg will be added twice in this.Templates.
-        /// Run this function to remove the duplicated templates from same file.
-        /// </summary>
-        /// <param name="templates">Templates list with duplicated templates.</param>
-        /// <returns>Unique templates list.</returns>
-        private List<LGTemplate> RemoveDuplicatedTemplates(List<LGTemplate> templates)
-        {
-            var uniqueTemplates = templates.GroupBy(x => new { x.Name, x.Source })
-                                            .Select(x => x.First())
-                                            .ToList();
-
-            return uniqueTemplates;
         }
     }
 }

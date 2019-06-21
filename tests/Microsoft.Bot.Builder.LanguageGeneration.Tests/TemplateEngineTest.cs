@@ -498,6 +498,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = engine.EvaluateTemplate("basicTemplate4", null);
             Assert.IsTrue("Hi 2" == evaled || "Hello 2" == evaled);
+
+            engine = new TemplateEngine().AddFile(GetExampleFilePath("import.lg"));
+            var ex = Assert.ThrowsException<Exception>(() => engine.AddFile(GetExampleFilePath("import2.lg")));
+            Assert.IsTrue(ex.Message.Contains("Duplicated definitions found for template: wPhrase"));
+
+            engine = new TemplateEngine().AddFiles(new List<string>() { GetExampleFilePath("import.lg") });
+            ex = Assert.ThrowsException<Exception>(() => engine.AddFiles(new List<string>() { GetExampleFilePath("import2.lg") }));
+            Assert.IsTrue(ex.Message.Contains("Duplicated definitions found for template: wPhrase"));
         }
     }
 }
