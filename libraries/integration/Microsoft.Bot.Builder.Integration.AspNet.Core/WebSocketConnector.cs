@@ -11,7 +11,7 @@ using Microsoft.Bot.StreamingExtensions.Transport;
 using Microsoft.Bot.StreamingExtensions.Transport.WebSockets;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Bot.StreamingExtensions.StreamingExtensions.NetCore
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
 {
     internal class WebSocketConnector
     {

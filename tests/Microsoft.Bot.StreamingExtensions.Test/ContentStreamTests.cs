@@ -19,7 +19,8 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void ContentStream_ctor_NullAssembler_Throws()
         {
-            Assert.ThrowsException<ArgumentNullException>(() => {
+            Assert.ThrowsException<ArgumentNullException>(() =>
+            {
                 var c = new ContentStream(Guid.Empty, null);
             });
         }

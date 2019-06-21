@@ -8,25 +8,17 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.StreamingExtensions;
-using Microsoft.Bot.StreamingExtensions.StreamingExtensions;
 using Microsoft.Bot.StreamingExtensions.UnitTests.Mocks;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using Microsoft.Bot.Builder;
 
 namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
 {
     [TestClass]
     public class StreamingRequestHandlerTests
     {
-        [TestMethod]
-        public void StreamingRequestHandler_NullBot_Throws()
-        {
-            Assert.ThrowsException<ArgumentNullException>(() => {
-                var s = new StreamingRequestHandler((context, ex) => Task.CompletedTask, null);
-            });
-        }
-        
         [TestMethod]
         public void StreamingRequestHandler_NullOnTurnError_Ok()
         {

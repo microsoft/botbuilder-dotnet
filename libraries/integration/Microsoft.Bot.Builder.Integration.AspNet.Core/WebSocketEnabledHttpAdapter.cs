@@ -12,7 +12,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Bot.StreamingExtensions.StreamingExtensions.NetCore
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
 {
     public class WebSocketEnabledHttpAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
@@ -32,14 +32,14 @@ namespace Microsoft.Bot.StreamingExtensions.StreamingExtensions.NetCore
                 _botFrameworkHttpAdapter = new BotFrameworkHttpAdapter(credentialProvider, channelProvider, loggerFactory?.CreateLogger<BotFrameworkHttpAdapter>());
                 _webSocketConnector = new WebSocketConnector(credentialProvider, channelProvider, loggerFactory?.CreateLogger<WebSocketConnector>());
             }
-            else
-            {
-                // No Credential provider is provided. Create everything from the global configuration.
-                _botFrameworkHttpAdapter = new BotFrameworkHttpAdapter(configuration, loggerFactory?.CreateLogger<BotFrameworkHttpAdapter>());
-                var credentialProviderPvt = new ConfigurationCredentialProvider(configuration);
-                var channelProviderPvt = new ConfigurationChannelProvider(configuration);
-                _webSocketConnector = new WebSocketConnector(credentialProviderPvt, channelProviderPvt, loggerFactory?.CreateLogger<WebSocketConnector>());
-            }
+            //else
+            //{
+            //    // No Credential provider is provided. Create everything from the global configuration.
+            //    _botFrameworkHttpAdapter = new BotFrameworkHttpAdapter(configuration, loggerFactory?.CreateLogger<BotFrameworkHttpAdapter>());
+            //    var credentialProviderPvt = new ConfigurationCredentialProvider(configuration);
+            //    var channelProviderPvt = new ConfigurationChannelProvider(configuration);
+            //    _webSocketConnector = new WebSocketConnector(credentialProviderPvt, channelProviderPvt, loggerFactory?.CreateLogger<WebSocketConnector>());
+            //}
         }
 
         private WebSocketEnabledHttpAdapter()

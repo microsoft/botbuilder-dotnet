@@ -1,8 +1,7 @@
 ﻿using System;
-using Microsoft.Bot.StreamingExtensions.StreamingExtensions.NetCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Bot.StreamingExtensions.StreamingExtensions
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
 {
     public static partial class BotFrameworkServiceCollectionExtensions
     {
