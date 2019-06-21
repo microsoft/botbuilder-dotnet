@@ -9,8 +9,17 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
+    /// <summary>
+    /// Prompts a user to upload attachments, like images.
+    /// </summary>
     public class AttachmentPrompt : Prompt<IList<Attachment>>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AttachmentPrompt"/> class.
+        /// </summary>
+        /// <param name="dialogId">Unique ID of the dialog within its parent <see cref="DialogSet"/>
+        /// or <see cref="ComponentDialog"/>.</param>
+        /// <param name="validator">Validator that will be called each time a new activity is received.</param>
         public AttachmentPrompt(string dialogId, PromptValidator<IList<Attachment>> validator = null)
             : base(dialogId, validator)
         {

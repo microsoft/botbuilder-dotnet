@@ -35,6 +35,13 @@ namespace Microsoft.Bot.Builder.Dialogs
             _validator = validator ?? throw new ArgumentNullException(nameof(validator));
         }
 
+        /// <summary>
+        /// Method called when a new dialog has been pushed onto the stack and is being activated.
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <param name="options">(Optional) additional argument(s) to pass to the dialog being started.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
@@ -72,6 +79,15 @@ namespace Microsoft.Bot.Builder.Dialogs
             return Dialog.EndOfTurn;
         }
 
+        /// <summary>
+        /// Method called when an instance of the dialog is the "current" dialog and the
+        /// user replies with a new activity. The dialog will generally continue to receive the user's
+        /// replies until it calls either `EndDialogAsync()` or `BeginDialogAsync()`.
+        /// If this method is NOT implemented then the dialog will automatically be ended when the user replies.
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
@@ -112,6 +128,18 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
+        /// <summary>
+        /// Method called when an instance of the dialog is being returned to from another
+        /// dialog that was started by the current instance using `BeginDialogAsync()`.
+        /// If this method is NOT implemented then the dialog will be automatically ended with a call
+        /// to `EndDialogAsync()`. Any result passed from the called dialog will be passed
+        /// to the current dialog's parent.
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of the conversation.</param>
+        /// <param name="reason">Reason why the dialog resumed.</param>
+        /// <param name="result">(Optional) value returned from the dialog that was called. The type of the value returned is dependent on the dialog that was called.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Prompts are typically leaf nodes on the stack but the dev is free to push other dialogs
@@ -123,6 +151,13 @@ namespace Microsoft.Bot.Builder.Dialogs
             return Dialog.EndOfTurn;
         }
 
+        /// <summary>
+        /// Method called when the dialog has been requested to re-prompt the user for input.
+        /// </summary>
+        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
+        /// <param name="instance">The instance of the dialog on the stack.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
             var state = (IDictionary<string, object>)instance.State[PersistedState];

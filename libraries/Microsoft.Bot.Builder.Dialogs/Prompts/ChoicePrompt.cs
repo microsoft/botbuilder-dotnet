@@ -11,6 +11,9 @@ using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
+    /// <summary>
+    /// Prompts a user to select from a list of choices.
+    /// </summary>
     public class ChoicePrompt : Prompt<FoundChoice>
     {
         private static readonly Dictionary<string, ChoiceFactoryOptions> DefaultChoiceOptions = new Dictionary<string, ChoiceFactoryOptions>()
@@ -25,6 +28,14 @@ namespace Microsoft.Bot.Builder.Dialogs
             { Chinese, new ChoiceFactoryOptions { InlineSeparator = "， ", InlineOr = " 要么 ", InlineOrMore = "， 要么 ", IncludeNumbers = true } },
         };
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChoicePrompt"/> class.
+        /// </summary>
+        /// <param name="dialogId">Unique ID of the dialog within its parent <see cref="DialogSet"/>
+        /// or <see cref="ComponentDialog"/>.</param>
+        /// <param name="validator">Validator that will be called each time a new activity is received.</param>
+        /// <param name="defaultLocale">Optional, the default locale used to determine language-specific behavior of the prompt.
+        /// The locale is a 2, 3, or 4 character ISO 639 code that represents a language or language family.</param>
         public ChoicePrompt(string dialogId, PromptValidator<FoundChoice> validator = null, string defaultLocale = null)
             : base(dialogId, validator)
         {
@@ -32,10 +43,23 @@ namespace Microsoft.Bot.Builder.Dialogs
             DefaultLocale = defaultLocale;
         }
 
+        /// <summary>
+        /// Gets or sets the style to use when presenting the prompt to the user.
+        /// </summary>
+        /// <value>The style to use when presenting the prompt to the user.</value>
         public ListStyle Style { get; set; }
 
+        /// <summary>
+        /// Gets or sets the default locale used to determine language-specific behavior of the prompt.
+        /// </summary>
+        /// <value>The default locale used to determine language-specific behavior of the prompt.</value>
         public string DefaultLocale { get; set; }
 
+        /// <summary>
+        /// Gets or sets additional options passed to the <see cref="ChoiceFactory"/> and used to tweak
+        /// the style of choices rendered to the user.
+        /// </summary>
+        /// <value>Additional options for presenting the set of choices.</value>
         public ChoiceFactoryOptions ChoiceOptions { get; set; }
 
         public FindChoicesOptions RecognizerOptions { get; set; }

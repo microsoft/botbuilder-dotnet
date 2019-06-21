@@ -87,6 +87,13 @@ namespace Microsoft.Bot.Builder.Dialogs
             return await dc.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Method called when the dialog has been requested to re-prompt the user for input.
+        /// </summary>
+        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
+        /// <param name="instance">The instance of the dialog on the stack.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public virtual Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
             // No-op by default
