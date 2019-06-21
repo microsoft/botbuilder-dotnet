@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             State = new DialogContextState(this, settings: settings, userState: userState, conversationState: conversationState, turnState: turnState as Dictionary<string, object>);
-            State.SetValue($"turn.activity", Context.Activity);
+            State.SetValue(DialogContextState.TURN_ACTIVITY, Context.Activity);
         }
 
         public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state, Dictionary<string, object> conversationState = null, Dictionary<string, object> userState = null, Dictionary<string, object> settings = null)
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             State = new DialogContextState(this, settings: settings, userState: userState, conversationState: conversationState, turnState: turnState as Dictionary<string, object>);
-            State.SetValue($"turn.activity", Context.Activity);
+            State.SetValue(DialogContextState.TURN_ACTIVITY, Context.Activity);
         }
 
         public DialogContext Parent { get; set; }
@@ -239,11 +239,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             Stack.Insert(0, instance);
             activeTags = null;
 
-
             // Process dialogs input bindings
             // - If the stack is empty, any 'dialog.*' bindings will be pulled from the active dialog on
             //   the parents stack.
-            if (!State.TryGetValue<Dictionary<string, object>>("dialog.result", out var stateBindings))
+            if (!State.TryGetValue<Dictionary<string, object>>(DialogContextState.DIALOG_RESULT, out var stateBindings))
             {
                 stateBindings = new Dictionary<string, object>();
             }
@@ -259,7 +258,17 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
             }
 
-            State.SetValue("dialog.result", stateBindings);
+            // set dialog result
+            State.SetValue(DialogContextState.DIALOG_RESULT, stateBindings);
+
+            if (dialog is DialogCommand)
+            {
+                State.SetValue(DialogContextState.STEP_OPTIONS_PROPERTY, options);
+            }
+            else
+            {
+                State.SetValue(DialogContextState.DIALOG_OPTIONS, options);
+            }
 
             // Call dialogs BeginAsync() method.
             await this.DebuggerStepAsync(dialog, DialogEvents.BeginDialog, cancellationToken).ConfigureAwait(false);

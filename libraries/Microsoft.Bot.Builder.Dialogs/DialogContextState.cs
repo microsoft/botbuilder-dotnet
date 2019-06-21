@@ -47,6 +47,23 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
+        /// Common state properties paths.
+        /// </summary>
+        public const string DIALOG_OPTIONS = "dialog.options";
+        public const string DIALOG_RESULT = "dialog.result";
+
+        public const string TURN_ACTIVITY = "turn.activity";
+        public const string TURN_RECOGNIZED = "turn.recognized";
+        public const string TURN_TOPINTENT = "turn.recognized.intent";
+        public const string TURN_TOPSCORE = "turn.recognized.score";
+        public const string TURN_STEPCOUNT = "turn.stepCount";
+        public const string TURN_DIALOGEVENT = "turn.dialogEvent";
+        public const string TURN_MEMBERSADDED = "turn.membersAdded";
+
+        public const string STEP_OPTIONS_PROPERTY = "dialog.step.options";
+
+
+        /// <summary>
         /// Gets or sets settings for the application.
         /// </summary>
         [JsonProperty(PropertyName = "settings")]
@@ -213,7 +230,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     if (!curDict.TryGetValue(segment, out var segVal) || segVal == null)
                     {
-                        curDict[segment] = new JObject();
+                        curDict[segment] = new Dictionary<string, object>();
                     }
 
                     current = curDict[segment];
