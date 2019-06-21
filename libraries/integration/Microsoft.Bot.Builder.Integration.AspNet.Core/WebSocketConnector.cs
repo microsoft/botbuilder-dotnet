@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.StreamingExtensions.Transport;
-using Microsoft.Bot.StreamingExtensions.WebSockets;
+using Microsoft.Bot.StreamingExtensions.Transport.WebSockets;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.StreamingExtensions.StreamingExtensions.NetCore

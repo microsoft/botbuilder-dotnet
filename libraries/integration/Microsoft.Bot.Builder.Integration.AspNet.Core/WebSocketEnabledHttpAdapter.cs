@@ -23,7 +23,7 @@ namespace Microsoft.Bot.StreamingExtensions.StreamingExtensions.NetCore
         private readonly List<Builder.IMiddleware> middlewares = new List<Builder.IMiddleware>();
         private Lazy<bool> _ensureMiddlewareSet;
 
-        //Note: these constructor overloads exist so that BotFrameworkHttpAdapter can transparently be replaced with WebSocketEnabledHttpAdapter
+        // Note: these constructor overloads exist so that BotFrameworkHttpAdapter can transparently be replaced with WebSocketEnabledHttpAdapter
         public WebSocketEnabledHttpAdapter(IConfiguration configuration, ICredentialProvider credentialProvider = null, IChannelProvider channelProvider = null, ILoggerFactory loggerFactory = null)
             : this()
         {
@@ -32,8 +32,9 @@ namespace Microsoft.Bot.StreamingExtensions.StreamingExtensions.NetCore
                 _botFrameworkHttpAdapter = new BotFrameworkHttpAdapter(credentialProvider, channelProvider, loggerFactory?.CreateLogger<BotFrameworkHttpAdapter>());
                 _webSocketConnector = new WebSocketConnector(credentialProvider, channelProvider, loggerFactory?.CreateLogger<WebSocketConnector>());
             }
-            else //No Credential provider is provided. Create everything from the global configuration.
+            else
             {
+                // No Credential provider is provided. Create everything from the global configuration.
                 _botFrameworkHttpAdapter = new BotFrameworkHttpAdapter(configuration, loggerFactory?.CreateLogger<BotFrameworkHttpAdapter>());
                 var credentialProviderPvt = new ConfigurationCredentialProvider(configuration);
                 var channelProviderPvt = new ConfigurationChannelProvider(configuration);
@@ -71,6 +72,7 @@ namespace Microsoft.Bot.StreamingExtensions.StreamingExtensions.NetCore
             {
                 middlewares.Add(middleware);
             }
+
             return this;
         }
 

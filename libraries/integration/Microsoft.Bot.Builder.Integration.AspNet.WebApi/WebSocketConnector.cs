@@ -10,7 +10,7 @@ using System.Web.WebSockets;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.StreamingExtensions.Transport;
-using Microsoft.Bot.StreamingExtensions.WebSockets;
+using Microsoft.Bot.StreamingExtensions.Transport.WebSockets;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.StreamingExtensions.StreamingExtensions.WebApi
@@ -26,6 +26,7 @@ namespace Microsoft.Bot.StreamingExtensions.StreamingExtensions.WebApi
         private readonly ILogger _logger;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="WebSocketConnector"/> class.
         /// Constructor for use when establishing a connection with a WebSocket server.
         /// </summary>
         /// <param name="credentialProvider">Used for validating channel authentication information.</param>
@@ -49,7 +50,7 @@ namespace Microsoft.Bot.StreamingExtensions.StreamingExtensions.WebApi
         /// <param name="cancellationToken">Optional cancellation token.</param>
         /// <returns></returns>
         public async Task ProcessAsync(Func<ITurnContext, Exception, Task> onTurnError, List<IMiddleware> middlewareSet, HttpRequestMessage httpRequest, HttpResponseMessage httpResponse, IBot bot = null, CancellationToken cancellationToken = default(CancellationToken))
-        {           
+        {
             if (httpRequest == null)
             {
                 var ex = new ArgumentNullException(nameof(httpRequest));
@@ -77,7 +78,7 @@ namespace Microsoft.Bot.StreamingExtensions.StreamingExtensions.WebApi
 
             try
             {
-                if (!await _credentialProvider.IsAuthenticationDisabledAsync())
+                if (!await _credentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false))
                 {
                     var authHeader = httpRequest.Headers.Where(x => x.Key.ToLower() == AuthHeaderName).FirstOrDefault().Value?.FirstOrDefault();
                     var channelId = httpRequest.Headers.Where(x => x.Key.ToLower() == ChannelIdHeaderName).FirstOrDefault().Value?.FirstOrDefault();
