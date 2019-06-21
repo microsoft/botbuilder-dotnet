@@ -41,18 +41,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .UseLanguageGeneration(explorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
-            var convoStateProperty = convoState.CreateProperty<Dictionary<string, object>>("conversation");
-
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            ruleDialog.BotState = convoState.CreateProperty<BotState>("bot");
-            ruleDialog.UserState = userState.CreateProperty<Dictionary<string, object>>("user"); ;
-
-            var dialogs = new DialogSet(dialogState);
-
+            DialogManager dm = new DialogManager(ruleDialog);
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                await ruleDialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
         }
 
@@ -595,10 +587,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             }
                         }
                     }
-                }
-            });
-
-            innerDialog.AddDialog(new[] {
+                },
                 new AdaptiveDialog("TellJokeDialog")
                     {
                         Steps = new List<IDialog>()

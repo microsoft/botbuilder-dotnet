@@ -40,10 +40,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .UseResourceExplorer(resourceExplorer)
                 .UseLanguageGeneration(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+            DialogManager dm = new DialogManager(testDialog);
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                await testDialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
         }
 

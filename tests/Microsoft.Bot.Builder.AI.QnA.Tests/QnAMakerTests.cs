@@ -51,18 +51,11 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 .UseLanguageGeneration(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
-            var convoStateProperty = conversationState.CreateProperty<Dictionary<string, object>>("conversation");
-
-            var dialogState = conversationState.CreateProperty<DialogState>("dialogState");
-
-            ruleDialog.BotState = conversationState.CreateProperty<Microsoft.Bot.Builder.Dialogs.Adaptive.BotState>("bot");
-            ruleDialog.UserState = userState.CreateProperty<Dictionary<string, object>>("user"); ;
-
-            var dialogs = new DialogSet(dialogState);
+            DialogManager dm = new DialogManager(ruleDialog);
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                await ruleDialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
         }
 

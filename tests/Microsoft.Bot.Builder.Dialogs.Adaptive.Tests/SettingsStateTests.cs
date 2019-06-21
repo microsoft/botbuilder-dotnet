@@ -45,8 +45,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
-            var planningDialog = new AdaptiveDialog();
-            planningDialog.AddRules(new List<IRule>()
+            var dialog = new AdaptiveDialog();
+            dialog.AddRules(new List<IRule>()
             {
                 new UnknownIntentRule(steps:
                     new List<IDialog>()
@@ -68,18 +68,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .Use(new AutoSaveStateMiddleware(convoState, userState))
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
-            // adapter.Locale = locale;
-
-            var userStateProperty = userState.CreateProperty<Dictionary<string, object>>("user");
-            var convoStateProperty = convoState.CreateProperty<Dictionary<string, object>>("conversation");
-
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-            var dialogs = new DialogSet(dialogState);
-
+            DialogManager dm = new DialogManager(dialog);
 
             return new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
             {
-                await planningDialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
         }
 

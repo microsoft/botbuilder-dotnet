@@ -164,7 +164,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.AreEqual(state.GetValue<Foo>("turn.foo").SubName.Name, "bob");
         }
 
-        private TestFlow CreateFlow(AdaptiveDialog planningDialog, ConversationState convoState, UserState userState, bool sendTrace = false)
+        private TestFlow CreateFlow(AdaptiveDialog dialog, ConversationState convoState, UserState userState, bool sendTrace = false)
         {
             TypeFactory.Configuration = new ConfigurationBuilder().Build();
             var resourceExplorer = new ResourceExplorer();
@@ -176,14 +176,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .Use(new AutoSaveStateMiddleware(convoState, userState))
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
-            var userStateProperty = userState.CreateProperty<Dictionary<string, object>>("user");
-            var convoStateProperty = convoState.CreateProperty<Dictionary<string, object>>("conversation");
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-            var dialogs = new DialogSet(dialogState);
+            var dm = new DialogManager(dialog);
 
             return new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
             {
-                await planningDialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
         }
 
