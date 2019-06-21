@@ -164,6 +164,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                             {
                                 result = true;
                                 array.RemoveAt(i);
+                                break;
                             }
                         }
                     }
