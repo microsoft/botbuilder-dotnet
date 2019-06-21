@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
                 _botFrameworkHttpAdapter = new BotFrameworkHttpAdapter(credentialProvider, channelProvider, loggerFactory?.CreateLogger<BotFrameworkHttpAdapter>());
                 _webSocketConnector = new WebSocketConnector(credentialProvider, channelProvider, loggerFactory?.CreateLogger<WebSocketConnector>());
             }
-            //else
+            //else // TODO: Fix this
             //{
             //    // No Credential provider is provided. Create everything from the global configuration.
             //    _botFrameworkHttpAdapter = new BotFrameworkHttpAdapter(configuration, loggerFactory?.CreateLogger<BotFrameworkHttpAdapter>());
