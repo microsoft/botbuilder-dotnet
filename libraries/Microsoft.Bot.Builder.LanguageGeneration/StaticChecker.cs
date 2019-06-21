@@ -22,9 +22,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public List<LGTemplate> Templates { get; }
 
-        public List<Diagnostic> CheckTemplateDuplication()
+        /// <summary>
+        /// Return error messaages list.
+        /// </summary>
+        /// <returns>report result.</returns>
+        public List<Diagnostic> Check()
         {
             var result = new List<Diagnostic>();
+
+            // check dup first
             var duplicatedTemplates = Templates
                                       .GroupBy(t => t.Name)
                                       .Where(g => g.Count() > 1)
@@ -40,22 +46,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var msg = $"Duplicated definitions found for template: {name} in {sources}";
                     result.Add(BuildLGDiagnostic(msg));
                 });
-            }
 
-            return result;
-        }
-
-        /// <summary>
-        /// Return error messaages list.
-        /// </summary>
-        /// <returns>report result.</returns>
-        public List<Diagnostic> Check()
-        {
-            // check dup first
-            var result = this.CheckTemplateDuplication();
-
-            if (result.Count > 0)
-            {
                 return result;
             }
 
