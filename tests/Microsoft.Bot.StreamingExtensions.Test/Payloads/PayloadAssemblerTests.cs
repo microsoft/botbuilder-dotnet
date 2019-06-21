@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Bot.StreamingExtensions.Payloads;
 using Microsoft.Bot.StreamingExtensions.UnitTests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -18,7 +16,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
 
             Assert.AreEqual(id, a.Id);
         }
-        
+
         [TestMethod]
         public void PayloadAssembler_ctor_End_false()
         {

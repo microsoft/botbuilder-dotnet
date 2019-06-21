@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Microsoft.Bot.StreamingExtensions.Payloads;
@@ -18,7 +17,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
                 Type = PayloadTypes.Request,
                 PayloadLength = 168,
                 Id = Guid.Parse("68e999ca-a651-40f4-ad8f-3aaf781862b4"),
-                End = true
+                End = true,
             };
 
             var buffer = new byte[1024];
@@ -42,7 +41,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
                 Type = PayloadTypes.Request,
                 PayloadLength = 168,
                 Id = Guid.Parse("68e999ca-a651-40f4-ad8f-3aaf781862b4"),
-                End = true
+                End = true,
             };
 
             var buffer = new byte[1024];
@@ -87,7 +86,8 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
             var header = "A.000168.68e999ca-a651-40f4-ad8f-3aaf781862b4.1\n";
             var bytes = Encoding.ASCII.GetBytes(header);
 
-            Assert.ThrowsException<ArgumentException>(() => {
+            Assert.ThrowsException<ArgumentException>(() =>
+            {
                 var result = HeaderSerializer.Deserialize(bytes, 0, 5);
             });
         }
@@ -98,7 +98,8 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
             var header = "A.000168.68e999ca-a651-40f4-ad8f-3aaf781862b4.1\n";
             var bytes = Encoding.ASCII.GetBytes(header);
 
-            Assert.ThrowsException<ArgumentException>(() => {
+            Assert.ThrowsException<ArgumentException>(() =>
+            {
                 var result = HeaderSerializer.Deserialize(bytes, 0, 55);
             });
         }
@@ -109,7 +110,8 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
             var header = "Ax000168.68e999ca-a651-40f4-ad8f-3aaf781862b4.1\n";
             var bytes = Encoding.ASCII.GetBytes(header);
 
-            Assert.ThrowsException<InvalidDataException>(() => {
+            Assert.ThrowsException<InvalidDataException>(() =>
+            {
                 var result = HeaderSerializer.Deserialize(bytes, 0, bytes.Length);
             });
         }
@@ -120,7 +122,8 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
             var header = "A.000168x68e999ca-a651-40f4-ad8f-3aaf781862b4.1\n";
             var bytes = Encoding.ASCII.GetBytes(header);
 
-            Assert.ThrowsException<InvalidDataException>(() => {
+            Assert.ThrowsException<InvalidDataException>(() =>
+            {
                 var result = HeaderSerializer.Deserialize(bytes, 0, bytes.Length);
             });
         }
@@ -131,7 +134,8 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
             var header = "A.000168.68e999ca-a651-40f4-ad8f-3aaf781862b4x1\n";
             var bytes = Encoding.ASCII.GetBytes(header);
 
-            Assert.ThrowsException<InvalidDataException>(() => {
+            Assert.ThrowsException<InvalidDataException>(() =>
+            {
                 var result = HeaderSerializer.Deserialize(bytes, 0, bytes.Length);
             });
         }
@@ -142,7 +146,8 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
             var header = "A.000168.68e999ca-a651-40f4-ad8f-3aaf781862b4.1c";
             var bytes = Encoding.ASCII.GetBytes(header);
 
-            Assert.ThrowsException<InvalidDataException>(() => {
+            Assert.ThrowsException<InvalidDataException>(() =>
+            {
                 var result = HeaderSerializer.Deserialize(bytes, 0, bytes.Length);
             });
         }
@@ -153,7 +158,8 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
             var header = "A.00p168.68e999ca-a651-40f4-ad8f-3aaf781862b4.1\n";
             var bytes = Encoding.ASCII.GetBytes(header);
 
-            Assert.ThrowsException<InvalidDataException>(() => {
+            Assert.ThrowsException<InvalidDataException>(() =>
+            {
                 var result = HeaderSerializer.Deserialize(bytes, 0, bytes.Length);
             });
         }
@@ -164,7 +170,8 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
             var header = "A.000168.68e9p9ca-a651-40f4-ad8f-3aaf781862b4.1\n";
             var bytes = Encoding.ASCII.GetBytes(header);
 
-            Assert.ThrowsException<InvalidDataException>(() => {
+            Assert.ThrowsException<InvalidDataException>(() =>
+            {
                 var result = HeaderSerializer.Deserialize(bytes, 0, bytes.Length);
             });
         }
@@ -175,7 +182,8 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
             var header = "A.000168.68e999ca-a651-40f4-ad8f-3aaf781862b4.z\n";
             var bytes = Encoding.ASCII.GetBytes(header);
 
-            Assert.ThrowsException<InvalidDataException>(() => {
+            Assert.ThrowsException<InvalidDataException>(() =>
+            {
                 var result = HeaderSerializer.Deserialize(bytes, 0, bytes.Length);
             });
         }

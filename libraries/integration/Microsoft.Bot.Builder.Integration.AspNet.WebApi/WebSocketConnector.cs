@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -29,7 +28,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
         /// Initializes a new instance of the <see cref="WebSocketConnector"/> class.
         /// Constructor for use when establishing a connection with a WebSocket server.
         /// </summary>
-        /// <param name="credentialProvider">Used for validating channel authentication information.</param>
+        /// <param name="credentialProvider">Used for validating channel credential authentication information.</param>
         /// <param name="channelProvider">Used for validating channel authentication information.</param>
         /// <param name="logger">Set in order to enable logging.</param>
         public WebSocketConnector(ICredentialProvider credentialProvider, IChannelProvider channelProvider = null, ILogger logger = null)
@@ -48,7 +47,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
         /// <param name="httpResponse">The response sent on error or connection termination.</param>
         /// <param name="bot">The bot that is communicating over this connection.</param>
         /// <param name="cancellationToken">Optional cancellation token.</param>
-        /// <returns></returns>
+        /// <returns>Returns on task completion.</returns>
         public async Task ProcessAsync(Func<ITurnContext, Exception, Task> onTurnError, List<IMiddleware> middlewareSet, HttpRequestMessage httpRequest, HttpResponseMessage httpResponse, IBot bot = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (httpRequest == null)
@@ -148,7 +147,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
                 await server.StartAsync().ConfigureAwait(false);
             };
 
-            //set the status code first , since the next call might have a chance to block the thread.
+            // set the status code first , since the next call might have a chance to block the thread.
             httpResponse.StatusCode = HttpStatusCode.SwitchingProtocols;
             httpContext.AcceptWebSocketRequest(processWebSocketSessionFunc);
         }

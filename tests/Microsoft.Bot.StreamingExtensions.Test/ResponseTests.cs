@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.IO.Pipes;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Bot.StreamingExtensions;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -16,15 +11,12 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
     [TestClass]
     public class ResponseTests
     {
-        #region ReceiveResponse
-
         [TestMethod]
         public void ReceiveResponse_Streams_Zero()
         {
             var r = new ReceiveResponse();
             Assert.IsNull(r.Streams);
         }
-     
 
         [TestMethod]
         public void ReceiveResponse_NullProperties()
@@ -32,10 +24,6 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             var r = new ReceiveResponse();
             Assert.AreEqual(0, r.StatusCode);
         }
-
-        #endregion
-
-        #region Response
 
         [TestMethod]
         public void Response_NullProperties()
@@ -50,7 +38,8 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         {
             var r = new Response();
 
-            Assert.ThrowsException<ArgumentNullException>(() => {
+            Assert.ThrowsException<ArgumentNullException>(() =>
+            {
                 r.AddStream(null);
             });
         }
@@ -102,7 +91,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             Assert.AreEqual((int)HttpStatusCode.Forbidden, r.StatusCode);
             Assert.IsNull(r.Streams);
         }
-        
+
         [TestMethod]
         public void Response_OK_Success()
         {
@@ -111,7 +100,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             Assert.AreEqual((int)HttpStatusCode.OK, r.StatusCode);
             Assert.IsNull(r.Streams);
         }
-        
+
         [TestMethod]
         public void Response_InternalServerError_Success()
         {
@@ -126,19 +115,15 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         {
             var s = new StringContent("hi");
             var r = Response.CreateResponse(HttpStatusCode.OK, s);
-            
+
             Assert.AreEqual((int)HttpStatusCode.OK, r.StatusCode);
             Assert.IsNotNull(r.Streams);
             Assert.AreEqual(1, r.Streams.Count);
             Assert.AreEqual(s, r.Streams[0].Content);
         }
 
-        #endregion
-
-        #region ResponseExtensions
-        
         [TestMethod]
-        public async Task  ResponseExtensions_SetBodyString_Success()
+        public async Task ResponseExtensions_SetBodyString_Success()
         {
             var r = new Response();
             r.SetBody("123");
@@ -192,12 +177,10 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         {
             var r = new ReceiveResponse();
             r.Streams = new List<IContentStream>();
-           
+
             var result = r.ReadBodyAsString();
 
             Assert.IsNull(result);
         }
-        
-        #endregion
     }
 }

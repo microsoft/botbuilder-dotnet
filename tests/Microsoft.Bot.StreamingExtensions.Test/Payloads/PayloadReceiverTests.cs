@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.StreamingExtensions.PayloadTransport;
 using Microsoft.Bot.StreamingExtensions.UnitTests.Mocks;
@@ -23,13 +21,14 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
             var transport = new MockTransportReceiver(buffer);
 
             var receiver = new PayloadReceiver();
-            receiver.Disconnected += (sender, e) => {
+            receiver.Disconnected += (sender, e) =>
+            {
                 Assert.AreEqual("Stream closed while reading header bytes", e.Reason);
                 disconnectEvent.SetResult("done");
             };
 
             receiver.Connect(transport);
-            
+
             var result = await disconnectEvent.Task;
 
             Assert.AreEqual("done", result);

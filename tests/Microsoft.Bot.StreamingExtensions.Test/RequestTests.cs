@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.IO.Pipes;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Bot.StreamingExtensions;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -15,15 +10,12 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
     [TestClass]
     public class RequestTests
     {
-        #region ReceiveRequest
-
         [TestMethod]
         public void ReceiveRequest_ctor_NullStreams()
         {
             var r = new ReceiveRequest();
             Assert.IsNull(r.Streams);
         }
-     
 
         [TestMethod]
         public void ReceiveRequest_ctor_NullProperties()
@@ -32,10 +24,6 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             Assert.IsNull(r.Verb);
             Assert.IsNull(r.Path);
         }
-
-        #endregion
-
-        #region Request
 
         [TestMethod]
         public void Request_NullProperties()
@@ -50,7 +38,8 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         {
             var r = new Request();
 
-            Assert.ThrowsException<ArgumentNullException>(() => {
+            Assert.ThrowsException<ArgumentNullException>(() =>
+            {
                 r.AddStream(null);
             });
         }
@@ -104,7 +93,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             Assert.IsNull(r.Path);
             Assert.IsNull(r.Streams);
         }
-        
+
         [TestMethod]
         public void Request_Create_Delete_Success()
         {
@@ -114,7 +103,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             Assert.IsNull(r.Path);
             Assert.IsNull(r.Streams);
         }
-        
+
         [TestMethod]
         public void Request_Create_Put_Success()
         {
@@ -138,12 +127,8 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             Assert.AreEqual(s, r.Streams[0].Content);
         }
 
-        #endregion
-
-        #region RequestExtensions
-        
         [TestMethod]
-        public async Task  RequestExtensions_SetBodyString_Success()
+        public async Task RequestExtensions_SetBodyString_Success()
         {
             var r = new Request();
             r.SetBody("123");
@@ -191,7 +176,5 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
                 r.SetBody(null);
             });
         }
-
-        #endregion
     }
 }

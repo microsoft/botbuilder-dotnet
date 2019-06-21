@@ -88,10 +88,6 @@ namespace Microsoft.Bot.StreamingExtensions
             return availableCount;
         }
 
-        /// <summary>
-        /// Only 1 thread should be calling Read at a time.
-        /// </summary>
-        /// <returns>0 on end.</returns>
         public override int Read(byte[] buffer, int offset, int count)
         {
             if (_end)

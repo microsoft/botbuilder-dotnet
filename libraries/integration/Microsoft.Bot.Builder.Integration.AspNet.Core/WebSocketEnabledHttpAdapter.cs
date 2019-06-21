@@ -52,16 +52,17 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             });
         }
 
+        public new Func<ITurnContext, Exception, Task> OnTurnError { get; set; }
+
         public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (HttpMethods.IsGet(httpRequest.Method) && httpRequest.HttpContext.WebSockets.IsWebSocketRequest)
             {
-
                 await _webSocketConnector.ProcessAsync(OnTurnError, middlewares, httpRequest, httpResponse, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                bool _ = _ensureMiddlewareSet.Value;
+                bool ensure = _ensureMiddlewareSet.Value;
                 await _botFrameworkHttpAdapter.ProcessAsync(httpRequest, httpResponse, bot, cancellationToken).ConfigureAwait(false);
             }
         }
@@ -76,9 +77,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             return this;
         }
 
-        public new Func<ITurnContext, Exception, Task> OnTurnError { get; set; }
-
-        #region Not Implemented Here
         public override Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
@@ -93,6 +91,5 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
         {
             throw new NotImplementedException();
         }
-        #endregion
     }
 }

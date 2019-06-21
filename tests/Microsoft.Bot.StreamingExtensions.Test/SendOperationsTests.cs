@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -12,7 +11,6 @@ using Microsoft.Bot.StreamingExtensions.Transport;
 using Microsoft.Bot.StreamingExtensions.UnitTests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Moq.Protected;
 
 namespace Microsoft.Bot.StreamingExtensions.UnitTests
 {
@@ -33,13 +31,13 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             var sendOperations = new SendOperations(payLoadSender);
             try
             {
-
                 using (var stream = GetMockedStream(TransportConstants.MaxPayloadLength * 4))
                 {
                     var request = new Request();
                     request.AddStream(new StreamContent(stream));
                     await sendOperations.SendRequestAsync(Guid.NewGuid(), request);
                 }
+
                 await tcs.Task;
             }
             finally
@@ -47,8 +45,6 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
                 payLoadSender.Disconnected -= eventHandler;
             }
         }
-
-
 
         [TestMethod]
         public async Task RequestDisassembler_WithVariableStream_Sends()
@@ -62,7 +58,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             var stream = new ConcurrentStream(new ContentStreamAssembler(null, Guid.NewGuid(), "blah", 100));
             stream.Write(new byte[100], 0, 100);
             request.AddStream(new StreamContent(stream));
-            
+
             await ops.SendRequestAsync(Guid.NewGuid(), request);
 
             Assert.AreEqual(5, transport.Buffers.Count);
@@ -84,8 +80,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             Assert.AreEqual(4, transport.Buffers.Count);
         }
 
-        #region Mocks
-        //Creates a stream that throws if read from after Disposal. Otherwise returns a buffer of byte data
+        // Creates a stream that throws if read from after Disposal. Otherwise returns a buffer of byte data
         private Stream GetMockedStream(int length)
         {
             int read = 0;
@@ -101,18 +96,22 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
                     if (count > 0)
                     {
                         if (isStreamDisposed == 0)
+                        {
                             throw new ObjectDisposedException(nameof(Stream));
+                        }
+
                         var data = Enumerable.Repeat((byte)10, count).ToArray();
                         Buffer.BlockCopy(data, 0, buffer, 0, count);
                         read += count;
                     }
-                    return Task.FromResult(count); ;
+
+                    return Task.FromResult(count);
                 });
             mockedStream.As<IDisposable>().Setup(a => a.Dispose()).Callback(() => Interlocked.Exchange(ref isStreamDisposed, 0));
             return mockedStream.Object;
         }
 
-        //Gets a transport sender that signals the tcs if it receives expected count of data.
+        // Gets a transport sender that signals the tcs if it receives expected count of data.
         private ITransportSender GetMockedTransportSender(TaskCompletionSource<bool> tcs, int length)
         {
             var dataSent = 0;
@@ -127,10 +126,10 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
                     {
                         tcs.TrySetResult(true);
                     }
+
                     return Task.FromResult(count);
                 });
             return transportSenderMock.Object;
         }
-        #endregion
     }
 }

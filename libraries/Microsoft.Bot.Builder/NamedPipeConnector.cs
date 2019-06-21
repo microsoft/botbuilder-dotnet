@@ -35,7 +35,6 @@ namespace Microsoft.Bot.Builder
             handler.Server = server;
 
             Task.Run(() => server.StartAsync());
-
         }
     }
 }

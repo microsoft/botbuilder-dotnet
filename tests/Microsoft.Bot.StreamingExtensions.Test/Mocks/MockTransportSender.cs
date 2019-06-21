@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.StreamingExtensions.Transport;
 
@@ -11,7 +10,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Mocks
         public List<ArraySegment<byte>> Buffers { get; set; } = new List<ArraySegment<byte>>();
 
         public bool IsConnected => true;
-        
+
         public Task<int> SendAsync(byte[] buffer, int offset, int count)
         {
             Buffers.Add(new ArraySegment<byte>(buffer, offset, count));

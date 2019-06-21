@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO.Pipes;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.StreamingExtensions.Transport.NamedPipes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -94,7 +93,6 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
 
             try
             {
-
                 var tasks = new List<Task>();
                 tasks.Add(Task.Run(
                     async () =>
@@ -137,7 +135,6 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
 
             try
             {
-
                 var tasks = new List<Task>();
                 tasks.Add(Task.Run(
                     async () =>
@@ -170,7 +167,6 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             }
         }
 
-
         [TestMethod]
         public void Close_DisconnectsStream()
         {
@@ -183,7 +179,6 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
 
             try
             {
-
                 var tasks = new List<Task>();
                 tasks.Add(Task.Run(
                     async () =>
@@ -325,6 +320,5 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
                 writeStream.Dispose();
             }
         }
-
     }
 }

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.StreamingExtensions.Payloads;
@@ -45,7 +43,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
 
             Assert.IsTrue(r);
         }
-        
+
         [TestMethod]
         public async Task RequestManager_SignalResponse_NullResponseIsOk()
         {
@@ -59,7 +57,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
 
             Assert.IsNull(tcs.Task.Result);
         }
-        
+
         [TestMethod]
         public async Task RequestManager_SignalResponse_Response()
         {
@@ -99,13 +97,19 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
             var resp = new ReceiveResponse();
 
             Task.WaitAll(
-                Task.Run(async () => {
+                Task.Run(async () =>
+                {
                     var r = await rm.GetResponseAsync(g, CancellationToken.None);
                     Assert.IsTrue(resp.Equals(r));
                 }),
-                Task.Run(() => {
+                Task.Run(() =>
+                {
                     TaskCompletionSource<ReceiveResponse> value;
-                    while (!d.TryGetValue(g, out value));
+                    while (!d.TryGetValue(g, out value))
+                    {
+                        ;
+                    }
+
                     value.SetResult(resp);
                 }));
         }
@@ -116,15 +120,21 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
             var d = new ConcurrentDictionary<Guid, TaskCompletionSource<ReceiveResponse>>();
             var g = Guid.NewGuid();
             var rm = new RequestManager(d);
-            
+
             Task.WaitAll(
-                Task.Run(async () => {
+                Task.Run(async () =>
+                {
                     var r = await rm.GetResponseAsync(g, CancellationToken.None);
                     Assert.IsNull(r);
                 }),
-                Task.Run(() => {
+                Task.Run(() =>
+                {
                     TaskCompletionSource<ReceiveResponse> value;
-                    while (!d.TryGetValue(g, out value)) ;
+                    while (!d.TryGetValue(g, out value))
+                    {
+                        ;
+                    }
+
                     value.SetResult(null);
                 }));
         }
@@ -137,15 +147,22 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
             var rm = new RequestManager(d);
 
             Task.WaitAll(
-                Task.Run(async () => {
-                    await Assert.ThrowsExceptionAsync<TaskCanceledException>(async () => {
+                Task.Run(async () =>
+                {
+                    await Assert.ThrowsExceptionAsync<TaskCanceledException>(async () =>
+                    {
                         var r = await rm.GetResponseAsync(g, CancellationToken.None);
                         Assert.Fail();
                     });
                 }),
-                Task.Run(() => {
+                Task.Run(() =>
+                {
                     TaskCompletionSource<ReceiveResponse> value;
-                    while (!d.TryGetValue(g, out value)) ;
+                    while (!d.TryGetValue(g, out value))
+                    {
+                        ;
+                    }
+
                     value.SetCanceled();
                 }));
         }
@@ -156,16 +173,23 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
             var d = new ConcurrentDictionary<Guid, TaskCompletionSource<ReceiveResponse>>();
             var g = Guid.NewGuid();
             var rm = new RequestManager(d);
-            
+
             Task.WaitAll(
-                Task.Run(() => {
-                    Assert.ThrowsExceptionAsync<AggregateException>(async () => {
+                Task.Run(() =>
+                {
+                    Assert.ThrowsExceptionAsync<AggregateException>(async () =>
+                    {
                         var r = await rm.GetResponseAsync(g, CancellationToken.None);
                     });
                 }),
-                Task.Run(() => {
+                Task.Run(() =>
+                {
                     TaskCompletionSource<ReceiveResponse> value;
-                    while (!d.TryGetValue(g, out value)) ;
+                    while (!d.TryGetValue(g, out value))
+                    {
+                        ;
+                    }
+
                     value.SetException(new InvalidOperationException());
                 }));
         }
@@ -177,9 +201,10 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
             var g = Guid.NewGuid();
             var rm = new RequestManager(d);
 
-            await Assert.ThrowsExceptionAsync<TaskCanceledException>(async () => {
+            await Assert.ThrowsExceptionAsync<TaskCanceledException>(async () =>
+            {
                 using (var cs = new CancellationTokenSource(100))
-                { 
+                {
                     var r = await rm.GetResponseAsync(g, cs.Token);
                 }
             });

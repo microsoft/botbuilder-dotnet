@@ -24,9 +24,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
         private readonly ILogger _logger;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="WebSocketConnector"/> class.
         /// Constructor for use when establishing a connection with a WebSocket server.
         /// </summary>
-        /// <param name="credentialProvider">Used for validating channel authentication information.</param>
+        /// <param name="credentialProvider">Used for validating channel credential authentication information.</param>
         /// <param name="channelProvider">Used for validating channel authentication information.</param>
         /// <param name="logger">Set in order to enable logging.</param>
         public WebSocketConnector(ICredentialProvider credentialProvider, IChannelProvider channelProvider = null, ILogger logger = null)
@@ -44,7 +45,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
         /// <param name="httpRequest">The connection request.</param>
         /// <param name="httpResponse">The response sent on error or connection termination.</param>
         /// <param name="cancellationToken">Optional cancellation token.</param>
-        /// <returns></returns>
+        /// <returns>Returns on task completion.</returns>
         public async Task ProcessAsync(Func<ITurnContext, Exception, Task> onTurnError, List<Builder.IMiddleware> middlewareSet, HttpRequest httpRequest, HttpResponse httpResponse, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (httpRequest == null)
@@ -66,7 +67,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             if (!httpRequest.HttpContext.WebSockets.IsWebSocketRequest)
             {
                 httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                await httpRequest.HttpContext.Response.WriteAsync("Upgrade to WebSocket is required.");
+                await httpRequest.HttpContext.Response.WriteAsync("Upgrade to WebSocket is required.").ConfigureAwait(false);
                 _logger?.LogInformation("Invalid request: Request was not a WebSocket handshake.");
 
                 return;
@@ -74,21 +75,21 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
 
             try
             {
-                if (!await _credentialProvider.IsAuthenticationDisabledAsync())
+                if (!await _credentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false))
                 {
                     var authHeader = httpRequest.Headers.Where(x => x.Key.ToLower() == AuthHeaderName).FirstOrDefault().Value.FirstOrDefault();
                     var channelId = httpRequest.Headers.Where(x => x.Key.ToLower() == ChannelIdHeaderName).FirstOrDefault().Value.FirstOrDefault();
 
                     if (string.IsNullOrWhiteSpace(authHeader))
                     {
-                        await MissingAuthHeaderHelper(AuthHeaderName, httpRequest);
+                        await MissingAuthHeaderHelperAsync(AuthHeaderName, httpRequest).ConfigureAwait(false);
 
                         return;
                     }
 
                     if (string.IsNullOrWhiteSpace(channelId))
                     {
-                        await MissingAuthHeaderHelper(ChannelIdHeaderName, httpRequest);
+                        await MissingAuthHeaderHelperAsync(ChannelIdHeaderName, httpRequest).ConfigureAwait(false);
 
                         return;
                     }
@@ -106,23 +107,23 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             catch (Exception ex)
             {
                 httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                await httpRequest.HttpContext.Response.WriteAsync("Error while attempting to authorize connection.");
+                await httpRequest.HttpContext.Response.WriteAsync("Error while attempting to authorize connection.").ConfigureAwait(false);
                 _logger?.LogError(ex.Message);
 
                 return;
             }
 
-            await CreateStreamingServerConnection(onTurnError, middlewareSet, httpRequest.HttpContext).ConfigureAwait(false);
+            await CreateStreamingServerConnectionAsync(onTurnError, middlewareSet, httpRequest.HttpContext).ConfigureAwait(false);
         }
 
-        private async Task MissingAuthHeaderHelper(string headerName, HttpRequest httpRequest)
+        private async Task MissingAuthHeaderHelperAsync(string headerName, HttpRequest httpRequest)
         {
             httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             _logger?.LogInformation($"Unable to authentiate. Missing header: {headerName}");
-            await httpRequest.HttpContext.Response.WriteAsync($"Unable to authentiate. Missing header: {headerName}");
+            await httpRequest.HttpContext.Response.WriteAsync($"Unable to authentiate. Missing header: {headerName}").ConfigureAwait(false);
         }
 
-        private async Task CreateStreamingServerConnection(Func<ITurnContext, Exception, Task> onTurnError, List<Builder.IMiddleware> middlewareSet, HttpContext httpContext)
+        private async Task CreateStreamingServerConnectionAsync(Func<ITurnContext, Exception, Task> onTurnError, List<Builder.IMiddleware> middlewareSet, HttpContext httpContext)
         {
             var handler = new StreamingRequestHandler(onTurnError, httpContext.RequestServices, middlewareSet);
             _logger?.LogInformation("Creating server for WebSocket connection.");
@@ -132,7 +133,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             if (server == null)
             {
                 httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                await httpContext.Response.WriteAsync("Unable to create transport server.");
+                await httpContext.Response.WriteAsync("Unable to create transport server.").ConfigureAwait(false);
                 _logger?.LogInformation("Failed to create server.");
 
                 return;

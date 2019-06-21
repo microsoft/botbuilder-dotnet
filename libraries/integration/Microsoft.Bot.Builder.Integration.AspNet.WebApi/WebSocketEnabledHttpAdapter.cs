@@ -4,8 +4,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Integration.AspNet.WebApi;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
@@ -32,6 +30,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
             });
         }
 
+        public new Func<ITurnContext, Exception, Task> OnTurnError { get; set; }
+
         public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
             }
             else
             {
-                bool _ = _ensureMiddlewareSet.Value;
+                bool ensure = _ensureMiddlewareSet.Value;
                 await _botFrameworkHttpAdapter.ProcessAsync(httpRequest, httpResponse, bot, cancellationToken).ConfigureAwait(false);
             }
         }
@@ -56,10 +56,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
             {
                 _middlewares.Add(middleware);
             }
+
             return this;
         }
-
-        public new Func<ITurnContext, Exception, Task> OnTurnError { get; set; }
 
         public override Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
         {

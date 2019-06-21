@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.Bot.StreamingExtensions;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.StreamingExtensions.UnitTests.Mocks

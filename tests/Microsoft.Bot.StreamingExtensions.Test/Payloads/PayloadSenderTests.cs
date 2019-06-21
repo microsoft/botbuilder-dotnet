@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Formatting;
@@ -27,13 +26,14 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
                 Type = PayloadTypes.Stream,
                 Id = Guid.NewGuid(),
                 PayloadLength = 0,
-                End = false
+                End = false,
             };
 
             var stream = new MemoryStream(new byte[100]);
             TaskCompletionSource<string> done = new TaskCompletionSource<string>();
 
-            sender.SendPayload(header, stream, false, (Header sentHeader) => {
+            sender.SendPayload(header, stream, false, (Header sentHeader) =>
+            {
                 Assert.AreEqual(100, sentHeader.PayloadLength);
                 Assert.IsFalse(sentHeader.End);
                 done.SetResult("done");
@@ -57,14 +57,15 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
                 Type = PayloadTypes.Stream,
                 Id = Guid.NewGuid(),
                 PayloadLength = 555,
-                End = false
+                End = false,
             };
 
             var stream = new MemoryStream(new byte[100]);
             stream.Position = 100;
             TaskCompletionSource<string> done = new TaskCompletionSource<string>();
 
-            sender.SendPayload(header, stream, false, (Header sentHeader) => {
+            sender.SendPayload(header, stream, false, (Header sentHeader) =>
+            {
                 Assert.AreEqual(0, sentHeader.PayloadLength);
                 Assert.IsTrue(sentHeader.End);
                 done.SetResult("done");
@@ -88,13 +89,14 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
                 Type = PayloadTypes.Stream,
                 Id = Guid.NewGuid(),
                 PayloadLength = 55,
-                End = false
+                End = false,
             };
 
             var stream = new MemoryStream(new byte[100]);
             TaskCompletionSource<string> done = new TaskCompletionSource<string>();
 
-            sender.SendPayload(header, stream, true, (Header sentHeader) => {
+            sender.SendPayload(header, stream, true, (Header sentHeader) =>
+            {
                 Assert.AreEqual(55, sentHeader.PayloadLength);
                 Assert.IsFalse(sentHeader.End);
                 done.SetResult("done");
@@ -116,15 +118,15 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
 
             var content = new HttpContentStream(Guid.NewGuid())
             {
-                Content = new StringContent("blah blah blah", Encoding.ASCII)
+                Content = new StringContent("blah blah blah", Encoding.ASCII),
             };
-            
+
             TaskCompletionSource<string> done = new TaskCompletionSource<string>();
 
             var disassembler = new HttpContentStreamDisassembler(sender, content);
 
             await disassembler.Disassemble();
-            
+
             Assert.AreEqual(2, transport.Buffers.Count);
         }
 
@@ -137,7 +139,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
 
             var content = new HttpContentStream(Guid.NewGuid())
             {
-                Content = new ObjectContent(typeof(string), "{'a': 55}", new JsonMediaTypeFormatter()) 
+                Content = new ObjectContent(typeof(string), "{'a': 55}", new JsonMediaTypeFormatter()),
             };
 
             var disassembler = new HttpContentStreamDisassembler(sender, content);
@@ -158,11 +160,11 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
 
             var content = new HttpContentStream(Guid.NewGuid())
             {
-                Content = new StreamContent(stream)
+                Content = new StreamContent(stream),
             };
 
             stream.Write(new byte[100], 0, 100);
-            
+
             var disassembler = new HttpContentStreamDisassembler(sender, content);
 
             await disassembler.Disassemble();
@@ -176,7 +178,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
             var sender = new PayloadSender();
             var transport = new MockTransportSender();
             sender.Connect(transport);
-            
+
             var disassembler = new RequestDisassembler(sender, Guid.NewGuid(), Request.CreateGet("/a/b/c"));
 
             await disassembler.Disassemble();

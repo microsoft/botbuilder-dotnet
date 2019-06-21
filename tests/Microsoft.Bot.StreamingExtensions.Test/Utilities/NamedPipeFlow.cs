@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.StreamingExtensions;
 using Microsoft.Bot.StreamingExtensions.Transport.NamedPipes;
 using Microsoft.Bot.StreamingExtensions.UnitTests.Mocks;
 
@@ -42,7 +37,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Utilities
                 Request = request,
                 ExpectedResponse = expectedResponse,
                 Validate = validate,
-                ToClient = false
+                ToClient = false,
             });
         }
 
@@ -55,13 +50,12 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Utilities
                 Request = request,
                 ExpectedResponse = expectedResponse,
                 Validate = validate,
-                ToClient = true
+                ToClient = true,
             });
         }
 
         public void Run()
         {
-            int x = 0;
             try
             {
                 while (_sendToClient.Count > 0 || _sendToServer.Count > 0)
@@ -80,6 +74,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Utilities
                             await a.Validate(a.Request, a.ExpectedResponse, receivedResponse).ConfigureAwait(false);
                         }));
                     }
+
                     _sendToServer.RemoveRange(0, count);
 
                     count = Math.Min(_serverTasks, _sendToClient.Count);
@@ -94,8 +89,8 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Utilities
                             await a.Validate(a.Request, a.ExpectedResponse, receivedResponse).ConfigureAwait(false);
                         }));
                     }
-                    _sendToClient.RemoveRange(0, count);
 
+                    _sendToClient.RemoveRange(0, count);
 
                     try
                     {
@@ -122,7 +117,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Utilities
             {
                 response = new Response()
                 {
-                    StatusCode = 500
+                    StatusCode = 500,
                 };
             }
             else
@@ -133,6 +128,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Utilities
                     await pendingRequest.ValidateRequest(request);
                 }
             }
+
             return response;
         }
 

@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.IO.Pipes;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Bot.StreamingExtensions;
-using Microsoft.Bot.StreamingExtensions.UnitTests.Mocks;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
+using Microsoft.Bot.StreamingExtensions.UnitTests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
-using Microsoft.Bot.Builder;
 
 namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
 {
@@ -91,7 +86,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
 
             Assert.AreEqual((int)HttpStatusCode.NotFound, response.StatusCode);
         }
-        
+
         [TestMethod]
         public async Task StreamingRequestHandler_ProcessRequestAsync_GetVersion()
         {
@@ -106,8 +101,6 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
             Assert.IsNotNull(version);
             Assert.IsNotNull(version.UserAgent);
         }
-
-
 
         [TestMethod]
         public async Task StreamingRequestHandler_ProcessRequestAsync_PostMessages_NoActivity_BadRequest()
@@ -131,7 +124,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
             var stream = new MemoryStream();
             var x = new StreamWriter(stream);
             var writer = new JsonTextWriter(x);
-            
+
             var serializer = new JsonSerializer();
             serializer.Serialize(writer, new Activity() { Type = "message", Text = "hi" });
             x.Flush();
@@ -139,7 +132,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
 
             request.Streams = new List<IContentStream>()
             {
-                new MockContentStream(stream, "application/json")
+                new MockContentStream(stream, "application/json"),
             };
 
             var response = await s.ProcessRequestAsync(request);
@@ -166,7 +159,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
 
             request.Streams = new List<IContentStream>()
             {
-                new MockContentStream(stream, "application/json")
+                new MockContentStream(stream, "application/json"),
             };
 
             var response = await s.ProcessRequestAsync(request);
@@ -194,7 +187,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
 
             request.Streams = new List<IContentStream>()
             {
-                new MockContentStream(stream, "application/json")
+                new MockContentStream(stream, "application/json"),
             };
 
             var response = await s.ProcessRequestAsync(request);
@@ -212,7 +205,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
             stream.Position = 0;
             request.Streams = new List<IContentStream>()
             {
-                new MockContentStream(stream, "application/json")
+                new MockContentStream(stream, "application/json"),
             };
 
             response = await s.ProcessRequestAsync(request);

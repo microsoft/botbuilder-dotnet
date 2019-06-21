@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
@@ -16,7 +15,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Mocks
 
         public Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if(ThrowDuringOnTurnAsync)
+            if (ThrowDuringOnTurnAsync)
             {
                 throw new InvalidOperationException();
             }

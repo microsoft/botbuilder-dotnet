@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Microsoft.Bot.StreamingExtensions.Payloads;
 
 namespace Microsoft.Bot.StreamingExtensions.UnitTests.Mocks
 {
     public class MockPayloadAssembler : PayloadAssembler
     {
-        public MockPayloadAssembler(Guid id) : base(id)
+        public MockPayloadAssembler(Guid id)
+            : base(id)
         {
         }
 
@@ -20,7 +19,6 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Mocks
         public override void Close()
         {
             base.Close();
-
         }
 
         public override void OnReceive(Header header, Stream stream, int contentLength)

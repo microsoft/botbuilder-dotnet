@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.StreamingExtensions.Transport;
 
@@ -8,16 +6,16 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Mocks
 {
     public class MockTransportReceiver : ITransportReceiver
     {
+        public MockTransportReceiver(byte[] buffer)
+        {
+            Buffer = buffer;
+        }
+
         public byte[] Buffer { get; set; }
 
         public int Offset { get; set; }
 
         public bool IsConnected => true;
-
-        public MockTransportReceiver(byte[] buffer)
-        {
-            Buffer = buffer;
-        }
 
         public Task<int> ReceiveAsync(byte[] buffer, int offset, int count)
         {

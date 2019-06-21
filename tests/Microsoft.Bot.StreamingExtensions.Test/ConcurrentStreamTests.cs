@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,7 +10,6 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
     [TestClass]
     public class ConcurrentStreamTests
     {
-
         [TestMethod]
         public async Task ConsumeInSmallerChunks()
         {
@@ -43,67 +40,6 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             await ProducerConsumerMultithreadedTest(1024, 1, 1024, 50);
         }
 
-        private async Task ProducerConsumerMultithreadedTest(
-            int producerTotalCount,
-            int producerChunkCount,
-            int consumerTotalCount,
-            int consumerChunkCount
-            )
-        {
-            var producerBuffer = new byte[producerTotalCount];
-            var consumerBuffer = new byte[consumerTotalCount];
-
-            var random = new Random();
-            random.NextBytes(producerBuffer);
-            
-            int producerPosition = 0;
-            int consumerPosition = 0;
-
-            using (var ct = new CancellationTokenSource())
-            {
-                using (var s = new ConcurrentStream(null))
-                {
-                    Func<Task> reader = async () =>
-                    {
-                        while (consumerPosition < consumerBuffer.Length)
-                        {
-                            int readCount = Math.Min(consumerChunkCount, consumerBuffer.Length - consumerPosition);
-                            
-                            var bytesRead = await s.ReadAsync(consumerBuffer, consumerPosition, readCount, ct.Token);
-
-                            if (bytesRead == 0)
-                                break;
-
-                            consumerPosition += bytesRead;
-                        }
-                    };
-
-                    Func<Task> writer = async () =>
-                    {
-                        while (producerPosition < producerBuffer.Length)
-                        {
-                            int writeCount = Math.Min(producerChunkCount, producerBuffer.Length - producerPosition);
-
-                            await s.WriteAsync(producerBuffer, producerPosition, writeCount, ct.Token);
-
-                            producerPosition += writeCount;
-
-                            await Task.Yield();
-                        }
-                    };
-
-                    var readTask = reader();
-                    var writetask = writer();
-                    await Task.WhenAll(readTask, writetask);
-                }
-            }
-
-            Assert.AreEqual(producerTotalCount, producerPosition);
-            var consumableCount = Math.Min(producerTotalCount, consumerTotalCount);
-            Assert.AreEqual(consumableCount, consumerPosition);
-            CollectionAssert.AreEquivalent(producerBuffer.Take(consumableCount).ToArray(), consumerBuffer.Take(consumableCount).ToArray());
-        }
-
         [TestMethod]
         public async Task CanReadLess()
         {
@@ -121,7 +57,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
 
                 readCount = await stream.ReadAsync(consumerBuffer, 0, expectedReadCount);
             }
-            
+
             Assert.AreEqual(expectedReadCount, readCount);
             CollectionAssert.AreEquivalent(producerBuffer.Take(expectedReadCount).ToArray(), consumerBuffer.Take(expectedReadCount).ToArray());
         }
@@ -143,7 +79,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
 
                 readCount = await stream.ReadAsync(consumerBuffer, 0, expectedReadCount);
             }
-            
+
             Assert.AreEqual(expectedReadCount, readCount);
             CollectionAssert.AreEquivalent(producerBuffer.Take(expectedReadCount).ToArray(), consumerBuffer.Take(expectedReadCount).ToArray());
         }
@@ -165,7 +101,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
 
                 readCount = await stream.ReadAsync(consumerBuffer, 0, expectedReadCount);
             }
-            
+
             Assert.AreEqual(100, readCount);
             CollectionAssert.AreEquivalent(producerBuffer.Take(readCount).ToArray(), consumerBuffer.Take(readCount).ToArray());
         }
@@ -283,7 +219,8 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         {
             using (var stream = new ConcurrentStream(null))
             {
-                Assert.ThrowsException<NotSupportedException>(() => {
+                Assert.ThrowsException<NotSupportedException>(() =>
+                {
                     stream.Position = 10;
                 });
             }
@@ -294,18 +231,20 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         {
             using (var stream = new ConcurrentStream(null))
             {
-                Assert.ThrowsException<NotSupportedException>(() => {
+                Assert.ThrowsException<NotSupportedException>(() =>
+                {
                     stream.SetLength(100);
                 });
             }
         }
-        
+
         [TestMethod]
         public void Seek_Throws()
         {
             using (var stream = new ConcurrentStream(null))
             {
-                Assert.ThrowsException<NotSupportedException>(() => {
+                Assert.ThrowsException<NotSupportedException>(() =>
+                {
                     stream.Seek(100, SeekOrigin.Begin);
                 });
             }
@@ -317,7 +256,6 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             int expectedReadCount = 200;
             var consumerBuffer = new byte[expectedReadCount];
             int readCount = 0;
-            
 
             using (var stream = new ConcurrentStream(null))
             {
@@ -325,7 +263,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
 
                 readCount = await stream.ReadAsync(consumerBuffer, 0, expectedReadCount);
             }
-            
+
             Assert.AreEqual(0, readCount);
         }
 
@@ -349,9 +287,71 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
                 readCount1 = await stream.ReadAsync(consumerBuffer, 0, expectedReadCount);
                 readCount2 = await stream.ReadAsync(consumerBuffer, readCount1, expectedReadCount);
             }
-            
+
             Assert.AreEqual(100, readCount1);
             Assert.AreEqual(0, readCount2);
+        }
+
+        private async Task ProducerConsumerMultithreadedTest(
+            int producerTotalCount,
+            int producerChunkCount,
+            int consumerTotalCount,
+            int consumerChunkCount)
+        {
+            var producerBuffer = new byte[producerTotalCount];
+            var consumerBuffer = new byte[consumerTotalCount];
+
+            var random = new Random();
+            random.NextBytes(producerBuffer);
+
+            int producerPosition = 0;
+            int consumerPosition = 0;
+
+            using (var ct = new CancellationTokenSource())
+            {
+                using (var s = new ConcurrentStream(null))
+                {
+                    Func<Task> reader = async () =>
+                    {
+                        while (consumerPosition < consumerBuffer.Length)
+                        {
+                            int readCount = Math.Min(consumerChunkCount, consumerBuffer.Length - consumerPosition);
+
+                            var bytesRead = await s.ReadAsync(consumerBuffer, consumerPosition, readCount, ct.Token);
+
+                            if (bytesRead == 0)
+                            {
+                                break;
+                            }
+
+                            consumerPosition += bytesRead;
+                        }
+                    };
+
+                    Func<Task> writer = async () =>
+                    {
+                        while (producerPosition < producerBuffer.Length)
+                        {
+                            int writeCount = Math.Min(producerChunkCount, producerBuffer.Length - producerPosition);
+
+                            await s.WriteAsync(producerBuffer, producerPosition, writeCount, ct.Token);
+
+                            producerPosition += writeCount;
+
+                            await Task.Yield();
+                        }
+                    };
+
+                    var readTask = reader();
+                    var writetask = writer();
+                    await Task.WhenAll(readTask, writetask);
+                }
+            }
+
+            Assert.AreEqual(producerTotalCount, producerPosition);
+            var consumableCount = Math.Min(producerTotalCount, consumerTotalCount);
+            Assert.AreEqual(consumableCount, consumerPosition);
+            CollectionAssert.AreEquivalent(producerBuffer.Take(consumableCount).ToArray(), consumerBuffer.Take(consumableCount).ToArray());
         }
     }
 }

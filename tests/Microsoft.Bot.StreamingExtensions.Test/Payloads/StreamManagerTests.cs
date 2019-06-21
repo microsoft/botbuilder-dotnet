@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Bot.StreamingExtensions.Payloads;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -19,7 +17,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
         [TestMethod]
         public void StreamManager_GetPayloadAssembler_NotExists_Ok()
         {
-            var m = new StreamManager((c)=> { });
+            var m = new StreamManager((c) => { });
             var id = Guid.NewGuid();
 
             var a = m.GetPayloadAssembler(id);
@@ -101,7 +99,8 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
         [TestMethod]
         public void StreamManager_CloseStream_NotExists_NoOp()
         {
-            var m = new StreamManager((c) => {
+            var m = new StreamManager((c) =>
+            {
                 Assert.Fail();
             });
             var id = Guid.NewGuid();
@@ -113,7 +112,8 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
         public void StreamManager_CloseStream_NotEnd_Closed()
         {
             bool closed = false;
-            var m = new StreamManager((c) => {
+            var m = new StreamManager((c) =>
+            {
                 closed = true;
             });
 
@@ -129,13 +129,15 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
         public void StreamManager_CloseStream_End_NoOp()
         {
             bool closed = false;
-            var m = new StreamManager((c) => {
+            var m = new StreamManager((c) =>
+            {
                 closed = true;
             });
 
             var id = Guid.NewGuid();
             var a = m.GetPayloadAssembler(id);
             var s = a.GetPayloadStream();
+
             // set it as ended
             a.OnReceive(new Header() { End = true }, s, 1);
 
