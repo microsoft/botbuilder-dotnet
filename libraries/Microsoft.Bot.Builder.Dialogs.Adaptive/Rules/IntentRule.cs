@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
             // add constraints for the intents property
             if (!String.IsNullOrEmpty(this.Intent))
             {
-                constraints.Add(factory.Parse($"turn.dialogEvent.value.intents.{this.Intent}.score > 0.0"));
+                constraints.Add(factory.Parse($"turn.recognized.intents.{this.Intent}.score > 0.0"));
             }
 
             //TODO
@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
 
         protected override StepChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
         {
-            if (planning.State.TryGetValue<RecognizerResult>("turn.dialogEvent.value", out var recognizerResult))
+            if (planning.State.TryGetValue<RecognizerResult>("turn.recognized", out var recognizerResult))
             {
                 var (name, score) = recognizerResult.GetTopScoringIntent();
                 return new StepChangeList()

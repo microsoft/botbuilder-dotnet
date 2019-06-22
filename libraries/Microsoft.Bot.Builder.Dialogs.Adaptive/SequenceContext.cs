@@ -253,12 +253,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
     public class AdaptiveEvents : DialogContext.DialogEvents
     {
-        public const string ActivityReceived = "activityReceived";
         public const string RecognizedIntent = "recognizedIntent";
         public const string UnknownIntent = "unknownIntent";
         public const string SequenceStarted = "stepsStarted";
         public const string SequenceEnded = "stepsEnded";
-        public const string ConversationMembersAdded = "conversationMembersAdded";
     }
 
     public class AdaptiveDialogState

@@ -62,6 +62,7 @@
     <None Remove="Schemas\Microsoft.IRuleSelector.schema" />
     <None Remove="Schemas\Recognizers\Microsoft.MultiLanguageRecognizer.schema" />
     <None Remove="Schemas\Recognizers\Microsoft.RegexRecognizer.schema" />
+    <None Remove="Schemas\Rules\Microsoft.ActivityRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.EventRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.IntentRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.Rule.schema" />
@@ -102,6 +103,7 @@
     <Content Include="Schemas\Microsoft.IRuleSelector.schema" />
     <Content Include="Schemas\Recognizers\Microsoft.MultiLanguageRecognizer.schema" />
     <Content Include="Schemas\Recognizers\Microsoft.RegexRecognizer.schema" />
+    <Content Include="Schemas\Rules\Microsoft.ActivityRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.Rule.schema" />
     <Content Include="Schemas\Rules\Microsoft.EventRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.IntentRule.schema" />

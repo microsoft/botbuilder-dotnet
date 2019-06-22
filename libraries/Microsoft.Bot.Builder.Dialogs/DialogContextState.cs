@@ -58,7 +58,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         public const string TURN_TOPSCORE = "turn.recognized.score";
         public const string TURN_STEPCOUNT = "turn.stepCount";
         public const string TURN_DIALOGEVENT = "turn.dialogEvent";
-        public const string TURN_MEMBERSADDED = "turn.membersAdded";
 
         public const string STEP_OPTIONS_PROPERTY = "dialog.step.options";
 
