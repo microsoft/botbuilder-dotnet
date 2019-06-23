@@ -845,6 +845,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task AdaptiveDialog_ActivityAndIntentRules()
+        {
+            var dialog = new AdaptiveDialog("test")
+            {
+                AutoEndDialog = false,
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>()
+                    {
+                        { "JokeIntent", "joke" }
+                    }
+                },
+                Rules = new List<IRule>()
+                {
+                    new IntentRule(intent: "JokeIntent", steps: new List<IDialog>() { new SendActivity("chicken joke") }),
+                    new MessageActivityRule(constraint: "turn.activity.text == 'magic'", steps: new List<IDialog>() { new SendActivity("abracadabra") }),
+                }
+            };
+
+            await CreateFlow(dialog)
+            .Send("tell me a joke")
+                .AssertReply("chicken joke")
+            .Send("magic")
+                .AssertReply("abracadabra")
+            .StartTestAsync();
+        }
 
     }
 }
