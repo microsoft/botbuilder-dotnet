@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Dispatch ActivityReceived event
             // This will queue up any interruptions
-            await dc.EmitEventAsync(DialogEvents.ActivityReceived, value: null, bubble: true, fromLeaf: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+            await dc.EmitEventAsync(DialogEvents.ActivityReceived, value: context.Activity, bubble: true, fromLeaf: true, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             // Continue execution
             // This will apply any queued up interruptions and execute the current / next step(s)

@@ -129,6 +129,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.IntentRule", typeof(IntentRule));
             Register("Microsoft.UnknownIntentRule", typeof(UnknownIntentRule));
 
+            Register("Microsoft.ActivityRule", typeof(ActivityRule));
+            Register("Microsoft.MessageActivityRule", typeof(MessageActivityRule));
+            Register("Microsoft.MessageUpdateActivityRule", typeof(MessageUpdateActivityRule));
+            Register("Microsoft.MessageDeleteActivityRule", typeof(MessageDeleteActivityRule));
+            Register("Microsoft.MessageReactionActivityRule", typeof(MessageReactionActivityRule));
+            Register("Microsoft.EventActivityRule", typeof(EventActivityRule));
+            Register("Microsoft.InvokeActivityRule", typeof(InvokeActivityRule));
+            Register("Microsoft.ConversationUpdateActivityRule", typeof(ConversationUpdateActivityRule));
+            Register("Microsoft.EndOfConversationActivityRule", typeof(EndOfConversationActivityRule));
+            Register("Microsoft.TypingActivityRule", typeof(TypingActivityRule));
+            Register("Microsoft.HandoffActivityRule", typeof(HandoffActivityRule));
+
             // Steps
             Register("Microsoft.BeginDialog", typeof(BeginDialog));
             Register("Microsoft.CancelAllDialogs", typeof(CancelAllDialogs));

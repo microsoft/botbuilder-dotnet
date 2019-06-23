@@ -160,12 +160,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public async Task TestDialogInjectionDeclarative()
         {
-            var resource = resourceExplorer.GetResource("test.dialog");
-            var dialog = (AdaptiveDialog)DeclarativeTypeLoader.Load<IDialog>(resource, resourceExplorer, DebugSupport.SourceRegistry);
-            DialogManager dm = new DialogManager(dialog);
-
             await CreateFlow("en-us", async (turnContext, cancellationToken) =>
             {
+                var resource = resourceExplorer.GetResource("test.dialog");
+                var dialog = (AdaptiveDialog)DeclarativeTypeLoader.Load<IDialog>(resource, resourceExplorer, DebugSupport.SourceRegistry);
+                DialogManager dm = new DialogManager(dialog);
                 await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             })
             .Send("hello")

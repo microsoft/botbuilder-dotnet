@@ -1,0 +1,18 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
+    "$ref": "./Microsoft.EventRule.schema#",
+    "$role": "unionType(Microsoft.IRule)",
+    "title": "Message Activity Rule",
+    "description": "This defines the steps to take when an Message activity is received. NOTE: If this triggers it will override any Recognizer/Intent rule calculation",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "./Microsoft.Rule.schema"
+        },
+        {
+            "required": [
+                "steps"
+            ]
+        }
+    ]
+}

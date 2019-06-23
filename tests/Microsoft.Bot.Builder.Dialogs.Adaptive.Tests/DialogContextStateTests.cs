@@ -211,15 +211,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         steps:new List<IDialog>()
                         {
                             new SendActivity("{turn.activity.text}"),
-                            new SendActivity("{turn.intent.intentnumber1}"),
-                            new SendActivity("{turn.dialogevents.recognizedIntent.text}"),
-                            new SendActivity("{turn.dialogevents.recognizedIntent.intents.intentnumber1.score}"),
+                            new SendActivity("{turn.recognized.intent}"),
+                            new SendActivity("{turn.recognized.score}"),
+                            new SendActivity("{turn.recognized.text}"),
+                            new SendActivity("{turn.recognized.intents.intentnumber1.score}"),
                         }),
                     new IntentRule(intent: "NameIntent",
                         steps:new List<IDialog>()
                         {
-                            new SendActivity("{turn.entities.name}"),
-                            new SendActivity("{turn.dialogevents.recognizedIntent.entities.name}"),
+                            new SendActivity("{turn.recognized.entities.name}"),
                         }),
                 }
             };
@@ -229,13 +229,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     .AssertReply("hi")
                 .Send("intent1")
                     .AssertReply("intent1")
+                    .AssertReply("IntentNumber1")
                     .AssertReply("1")
                     .AssertReply("intent1")
                     .AssertReply("1")
                 .Send("my name is joe")
                     .AssertReply("joe")
-                    .AssertReply("joe")
                 .StartTestAsync();
         }
+
+        
     }
 }

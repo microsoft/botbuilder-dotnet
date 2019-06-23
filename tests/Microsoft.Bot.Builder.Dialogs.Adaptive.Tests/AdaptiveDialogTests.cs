@@ -787,5 +787,91 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task AdaptiveDialog_ActivityRules()
+        {
+            var dialog = new AdaptiveDialog("test")
+            {
+                AutoEndDialog = false,
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>()
+                    {
+                        { "JokeIntent", "joke" }
+                    }
+                },
+                Rules = new List<IRule>()
+                {
+                    new ActivityRule("Custom", steps: new List<IDialog>() { new SendActivity("CustomActivityRule") }),
+                    new MessageActivityRule(steps: new List<IDialog>() { new SendActivity("MessageActivityRule") }),
+                    new MessageDeleteActivityRule(steps: new List<IDialog>() { new SendActivity("MessageDeleteActivityRule") }),
+                    new MessageUpdateActivityRule(steps: new List<IDialog>() { new SendActivity("MessageUpdateActivityRule") }),
+                    new MessageReactionActivityRule(steps: new List<IDialog>() { new SendActivity("MessageReactionActivityRule") }),
+                    new ConversationUpdateActivityRule(steps: new List<IDialog>() { new SendActivity("ConversationUpdateActivityRule") }),
+                    new EndOfConversationActivityRule(steps: new List<IDialog>() { new SendActivity("EndOfConversationActivityRule") }),
+                    new InvokeActivityRule(steps: new List<IDialog>() { new SendActivity("InvokeActivityRule") }),
+                    new EventActivityRule(steps: new List<IDialog>() { new SendActivity("EventActivityRule") }),
+                    new HandoffActivityRule(steps: new List<IDialog>() { new SendActivity("HandoffActivityRule") }),
+                    new TypingActivityRule(steps: new List<IDialog>() { new SendActivity("TypingActivityRule") }),
+                    new MessageActivityRule(constraint: "turn.activity.text == 'constraint'", steps: new List<IDialog>() { new SendActivity("constraint") }),
+                }
+            };
+
+            await CreateFlow(dialog)
+            .SendConversationUpdate()
+                .AssertReply("ConversationUpdateActivityRule")
+            .Send("MessageActivityRule")
+                .AssertReply("MessageActivityRule")
+            .Send("constraint")
+                .AssertReply("constraint")
+            .Send(new Activity(type: ActivityTypes.MessageUpdate))
+                .AssertReply("MessageUpdateActivityRule")
+            .Send(new Activity(type: ActivityTypes.MessageDelete))
+                .AssertReply("MessageDeleteActivityRule")
+            .Send(new Activity(type: ActivityTypes.MessageReaction))
+                .AssertReply("MessageReactionActivityRule")
+            .Send(Activity.CreateTypingActivity())
+                .AssertReply("TypingActivityRule")
+            .Send(Activity.CreateEndOfConversationActivity())
+                .AssertReply("EndOfConversationActivityRule")
+            .Send(Activity.CreateEventActivity())
+                .AssertReply("EventActivityRule")
+            .Send(Activity.CreateHandoffActivity())
+                .AssertReply("HandoffActivityRule")
+            .Send(Activity.CreateInvokeActivity())
+                .AssertReply("InvokeActivityRule")
+            .Send(new Activity(type: "Custom"))
+                .AssertReply("CustomActivityRule")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_ActivityAndIntentRules()
+        {
+            var dialog = new AdaptiveDialog("test")
+            {
+                AutoEndDialog = false,
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>()
+                    {
+                        { "JokeIntent", "joke" }
+                    }
+                },
+                Rules = new List<IRule>()
+                {
+                    new IntentRule(intent: "JokeIntent", steps: new List<IDialog>() { new SendActivity("chicken joke") }),
+                    new MessageActivityRule(constraint: "turn.activity.text == 'magic'", steps: new List<IDialog>() { new SendActivity("abracadabra") }),
+                }
+            };
+
+            await CreateFlow(dialog)
+            .Send("tell me a joke")
+                .AssertReply("chicken joke")
+            .Send("magic")
+                .AssertReply("abracadabra")
+            .StartTestAsync();
+        }
+
     }
 }
