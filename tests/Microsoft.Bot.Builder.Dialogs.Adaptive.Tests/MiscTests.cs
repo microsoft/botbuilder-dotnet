@@ -41,9 +41,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .UseLanguageGeneration(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
+            DialogManager dm = new DialogManager(dialog);
+
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                await dialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
         }
 

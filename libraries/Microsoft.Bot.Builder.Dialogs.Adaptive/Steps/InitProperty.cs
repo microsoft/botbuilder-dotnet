@@ -23,6 +23,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         }
 
         /// <summary>
+        /// Property which is bidirectional property for input and output.  Example: user.age will be passed in, and user.age will be set when the dialog completes
+        /// </summary>
+        public string Property
+        {
+            get
+            {
+                return OutputBinding;
+            }
+            set
+            {
+                InputBindings["value"] = value;
+                OutputBinding = value;
+            }
+        }
+
+        /// <summary>
         ///  Type, either Array or Object
         /// </summary>
         public string Type { get; set; }

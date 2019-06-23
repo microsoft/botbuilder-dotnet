@@ -145,12 +145,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         private string GetCulture(DialogContext dc)
         {
-            if (!string.IsNullOrEmpty(dc.Context.Activity.Locale))
+            if (!string.IsNullOrWhiteSpace(dc.Context.Activity.Locale))
             {
                 return dc.Context.Activity.Locale;
             }
 
-            if (!string.IsNullOrEmpty(this.DefaultLocale))
+            if (!string.IsNullOrWhiteSpace(this.DefaultLocale))
             {
                 return this.DefaultLocale;
             }
