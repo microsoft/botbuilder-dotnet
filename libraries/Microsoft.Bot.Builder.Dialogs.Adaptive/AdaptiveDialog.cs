@@ -212,7 +212,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         else
                         {
                             // Emit leading ActivityReceived event
-                            var e = new DialogEvent() { Name = AdaptiveEvents.ActivityReceived, Bubble = false };
+                            var e = new DialogEvent() { Name = AdaptiveEvents.ActivityReceived, Value = sequenceContext.Context.Activity, Bubble = false };
                             handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: e, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
                         }
 
@@ -250,7 +250,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 switch (dialogEvent.Name)
                 {
                     case AdaptiveEvents.BeginDialog:
-                        var e = new DialogEvent() { Name = AdaptiveEvents.ActivityReceived, Bubble = false };
+                        var e = new DialogEvent() { Name = AdaptiveEvents.ActivityReceived, Value = sequenceContext.Context.Activity, Bubble = false };
                         handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: e, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                         break;
@@ -359,7 +359,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 ctx.Parent = dc;
                 return ctx;
             }
-            
+
             return null;
         }
 
