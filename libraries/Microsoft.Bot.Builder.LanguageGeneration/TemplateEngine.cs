@@ -63,10 +63,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                  });
 
                 var fullPath = Path.GetFullPath(filePath);
-                this.AddText(File.ReadAllText(fullPath), fullPath, importResolver);
+                var parsedTemplates = this.ParseContent(File.ReadAllText(fullPath), fullPath, importResolver);
+                this.Templates.AddRange(parsedTemplates);
             }
 
-            RunStaticCheck(Templates);
+            RunStaticCheck(this.Templates);
+
             return this;
         }
 
@@ -87,12 +89,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Template engine with the parsed content.</returns>
         public TemplateEngine AddText(string content, string name, ImportResolverDelegate importResolver)
         {
-            var sources = new Dictionary<string, LGResource>();
-            LoopLGText(content, name, sources, importResolver);
-
-            Templates.AddRange(sources.SelectMany(s => s.Value.Templates));
+            var parsedTemplates = this.ParseContent(content, name, importResolver);
+            this.Templates.AddRange(parsedTemplates);
 
             RunStaticCheck(Templates);
+
             return this;
         }
 
@@ -126,7 +127,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return evaluator.EvaluateTemplate(templateName, scope);
         }
 
-        public List<string> AnalyzeTemplate(string templateName)
+        public AnalyzerResult AnalyzeTemplate(string templateName)
         {
             var analyzer = new Analyzer(Templates);
             return analyzer.AnalyzeTemplate(templateName);
@@ -215,6 +216,22 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 // map windows sep -> linux/mac
                 return ambigiousPath.Replace("\\", "/");
             }
+        }
+
+        /// <summary>
+        /// Parse lg content to LGTemplate list.
+        /// All the imports of the content will also be tracked down to parse templates.
+        /// </summary>
+        /// <param name="content">Text content contains lg templates.</param>
+        /// <param name="name">Text name.</param>
+        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
+        /// <returns>LGTemplate list of parsed lg content.</returns>
+        private IList<LGTemplate> ParseContent(string content, string name, ImportResolverDelegate importResolver)
+        {
+            var sources = new Dictionary<string, LGResource>();
+            LoopLGText(content, name, sources, importResolver);
+
+            return sources.SelectMany(s => s.Value.Templates).ToList();
         }
     }
 }

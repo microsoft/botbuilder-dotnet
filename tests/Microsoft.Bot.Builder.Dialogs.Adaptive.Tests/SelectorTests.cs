@@ -34,8 +34,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .UseLanguageGeneration(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
-            var planningDialog = new AdaptiveDialog() { Selector = selector };
-            planningDialog.Recognizer = new RegexRecognizer
+            var dialog = new AdaptiveDialog() { Selector = selector };
+            dialog.Recognizer = new RegexRecognizer
             {
                 Intents = new Dictionary<string, string>
                 {
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     { "trigger", "trigger" }
                 }
             };
-            planningDialog.AddRules(new List<IRule>()
+            dialog.AddRules(new List<IRule>()
             {
                 new IntentRule("a", steps: new List<IDialog> { new SetProperty {  OutputBinding = "user.a", Value = Expression.ConstantExpression(1) } }),
                 new IntentRule("b", steps: new List<IDialog> { new SetProperty {  OutputBinding = "user.b", Value = Expression.ConstantExpression(1) } }),
@@ -55,11 +55,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 new IntentRule("trigger", constraint:"user.a == 1 && user.c == 1", steps: new List<IDialog> { new SendActivity("ruleAandC") }),
                 new IntentRule("trigger", steps: new List<IDialog> { new SendActivity("default")})
             });
-            planningDialog.AutoEndDialog = false;
+            dialog.AutoEndDialog = false;
+
+            DialogManager dm = new DialogManager(dialog);
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                await planningDialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
         }
 

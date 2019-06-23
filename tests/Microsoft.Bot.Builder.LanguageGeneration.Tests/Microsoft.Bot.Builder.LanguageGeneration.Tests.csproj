@@ -212,4 +212,10 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Examples\lgTemplate.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -164,7 +164,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.AreEqual(state.GetValue<Foo>("turn.foo").SubName.Name, "bob");
         }
 
-        private TestFlow CreateFlow(AdaptiveDialog planningDialog, ConversationState convoState, UserState userState, bool sendTrace = false)
+        private TestFlow CreateFlow(AdaptiveDialog dialog, ConversationState convoState, UserState userState, bool sendTrace = false)
         {
             TypeFactory.Configuration = new ConfigurationBuilder().Build();
             var resourceExplorer = new ResourceExplorer();
@@ -176,14 +176,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .Use(new AutoSaveStateMiddleware(convoState, userState))
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
-            var userStateProperty = userState.CreateProperty<Dictionary<string, object>>("user");
-            var convoStateProperty = convoState.CreateProperty<Dictionary<string, object>>("conversation");
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-            var dialogs = new DialogSet(dialogState);
+            var dm = new DialogManager(dialog);
 
             return new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
             {
-                await planningDialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
         }
 
@@ -214,15 +211,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         steps:new List<IDialog>()
                         {
                             new SendActivity("{turn.activity.text}"),
-                            new SendActivity("{turn.intent.intentnumber1}"),
-                            new SendActivity("{turn.dialogevents.recognizedIntent.text}"),
-                            new SendActivity("{turn.dialogevents.recognizedIntent.intents.intentnumber1.score}"),
+                            new SendActivity("{turn.recognized.intent}"),
+                            new SendActivity("{turn.recognized.score}"),
+                            new SendActivity("{turn.recognized.text}"),
+                            new SendActivity("{turn.recognized.intents.intentnumber1.score}"),
                         }),
                     new IntentRule(intent: "NameIntent",
                         steps:new List<IDialog>()
                         {
-                            new SendActivity("{turn.entities.name}"),
-                            new SendActivity("{turn.dialogevents.recognizedIntent.entities.name}"),
+                            new SendActivity("{turn.recognized.entities.name}"),
                         }),
                 }
             };
@@ -232,13 +229,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     .AssertReply("hi")
                 .Send("intent1")
                     .AssertReply("intent1")
+                    .AssertReply("IntentNumber1")
                     .AssertReply("1")
                     .AssertReply("intent1")
                     .AssertReply("1")
                 .Send("my name is joe")
                     .AssertReply("joe")
-                    .AssertReply("joe")
                 .StartTestAsync();
         }
+
+        
     }
 }

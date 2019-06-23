@@ -27,6 +27,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         /// </summary>
         public Expression Value { get; set; }
 
+        /// <summary>
+        /// Property which is bidirectional property for input and output.  Example: user.age will be passed in, and user.age will be set when the dialog completes
+        /// </summary>
+        public string Property
+        {
+            get
+            {
+                return OutputBinding;
+            }
+            set
+            {
+                InputBindings["value"] = value;
+                OutputBinding = value;
+            }
+        }
+
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
