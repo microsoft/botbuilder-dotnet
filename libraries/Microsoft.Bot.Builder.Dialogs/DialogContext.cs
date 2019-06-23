@@ -518,9 +518,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             public const string RepromptDialog = "repromptDialog";
             public const string CancelDialog = "cancelDialog";
             public const string EndDialog = "endDialog";
-            public const string OnRecognize = "onRecognize";
             public const string ActivityReceived = "activityReceived";
-
         }
 
         /// <summary>

@@ -27,6 +27,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             this.Activity = new ActivityTemplate(text ?? string.Empty);
         }
 
+        public SendActivity(Activity activity, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        {
+            this.RegisterSourceLocation(callerPath, callerLine);
+            this.Activity = new StaticActivityTemplate(activity);
+        }
+
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)

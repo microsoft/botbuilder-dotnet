@@ -1,0 +1,26 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
+    "$ref": "./Microsoft.EventRule.schema#",
+    "$role": "unionType(Microsoft.IRule)",
+    "title": "Custom Activity Rule",
+    "description": "This defines the steps to take when an custom activity is received",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "./Microsoft.Rule.schema"
+        },
+        {
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "title": "Type",
+                    "description": "Activity type"
+                }
+            },
+            "required": [
+                "type",
+                "steps"
+            ]
+        }
+    ]
+}

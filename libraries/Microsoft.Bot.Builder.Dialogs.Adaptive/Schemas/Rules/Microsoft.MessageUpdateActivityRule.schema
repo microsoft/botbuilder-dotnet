@@ -1,0 +1,18 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
+    "$ref": "./Microsoft.EventRule.schema#",
+    "$role": "unionType(Microsoft.IRule)",
+    "title": "MessageUpdate Activity Rule",
+    "description": "This defines the steps to take when an MessageUpdate ctivity is received",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "./Microsoft.Rule.schema"
+        },
+        {
+            "required": [
+                "steps"
+            ]
+        }
+    ]
+}
