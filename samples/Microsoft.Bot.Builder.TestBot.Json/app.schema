@@ -7,7 +7,7 @@
     "oneOf": [
         {
             "title": "Microsoft.ActivityRule",
-            "description": "This defines the steps to take when an activity is received",
+            "description": "This defines the steps to take when an custom activity is received",
             "$ref": "#/definitions/Microsoft.ActivityRule"
         },
         {
@@ -162,7 +162,7 @@
         },
         {
             "title": "Microsoft.MessageActivityRule",
-            "description": "This defines the steps to take when an Message activity is received",
+            "description": "This defines the steps to take when an Message activity is received. NOTE: If this triggers it will override any Recognizer/Intent rule calculation",
             "$ref": "#/definitions/Microsoft.MessageActivityRule"
         },
         {
@@ -279,8 +279,8 @@
     "definitions": {
         "Microsoft.ActivityRule": {
             "$role": "unionType(Microsoft.IRule)",
-            "title": "Activity Rule",
-            "description": "This defines the steps to take when an activity is received",
+            "title": "Custom Activity Rule",
+            "description": "This defines the steps to take when an custom activity is received",
             "type": "object",
             "properties": {
                 "$type": {
@@ -347,6 +347,7 @@
                     "title": "Type",
                     "required": [
                         "steps",
+                        "type",
                         "$type"
                     ]
                 }
@@ -1920,7 +1921,7 @@
         },
         "Microsoft.EndOfConversationActivityRule": {
             "$role": "unionType(Microsoft.IRule)",
-            "title": "Activity Rule",
+            "title": "EndOfConversation Activity Rule",
             "description": "This defines the steps to take when an EndOfConversation Activity is received",
             "type": "object",
             "properties": {
@@ -2042,7 +2043,7 @@
         },
         "Microsoft.EventActivityRule": {
             "$role": "unionType(Microsoft.IRule)",
-            "title": "Activity Rule",
+            "title": "Event Activity Rule",
             "description": "This defines the steps to take when an Event activity is received",
             "type": "object",
             "properties": {
@@ -2428,7 +2429,7 @@
         },
         "Microsoft.HandoffActivityRule": {
             "$role": "unionType(Microsoft.IRule)",
-            "title": "Activity Rule",
+            "title": "Handoff Activity Rule",
             "description": "This defines the steps to take when an Handoff activity is received",
             "type": "object",
             "properties": {
@@ -2839,7 +2840,7 @@
             "oneOf": [
                 {
                     "title": "Microsoft.ActivityRule",
-                    "description": "This defines the steps to take when an activity is received",
+                    "description": "This defines the steps to take when an custom activity is received",
                     "$ref": "#/definitions/Microsoft.ActivityRule"
                 },
                 {
@@ -2879,7 +2880,7 @@
                 },
                 {
                     "title": "Microsoft.MessageActivityRule",
-                    "description": "This defines the steps to take when an Message activity is received",
+                    "description": "This defines the steps to take when an Message activity is received. NOTE: If this triggers it will override any Recognizer/Intent rule calculation",
                     "$ref": "#/definitions/Microsoft.MessageActivityRule"
                 },
                 {
@@ -3197,7 +3198,7 @@
         },
         "Microsoft.InvokeActivityRule": {
             "$role": "unionType(Microsoft.IRule)",
-            "title": "Activity Rule",
+            "title": "Invoke Activity Rule",
             "description": "This defines the steps to take when an Invoke activity is received",
             "type": "object",
             "properties": {
@@ -3447,8 +3448,8 @@
         },
         "Microsoft.MessageActivityRule": {
             "$role": "unionType(Microsoft.IRule)",
-            "title": "Activity Rule",
-            "description": "This defines the steps to take when an Message activity is received",
+            "title": "Message Activity Rule",
+            "description": "This defines the steps to take when an Message activity is received. NOTE: If this triggers it will override any Recognizer/Intent rule calculation",
             "type": "object",
             "properties": {
                 "$type": {
@@ -3517,7 +3518,7 @@
         },
         "Microsoft.MessageDeleteActivityRule": {
             "$role": "unionType(Microsoft.IRule)",
-            "title": "Activity Rule",
+            "title": "MessageDelete Activity Rule",
             "description": "This defines the steps to take when an MessageDelete activity is received",
             "type": "object",
             "properties": {
@@ -3587,7 +3588,7 @@
         },
         "Microsoft.MessageReactionActivityRule": {
             "$role": "unionType(Microsoft.IRule)",
-            "title": "Activity Rule",
+            "title": "MessageReaction Activity Rule",
             "description": "This defines the steps to take when a MessageReaction activity is received",
             "type": "object",
             "properties": {
@@ -3657,7 +3658,7 @@
         },
         "Microsoft.MessageUpdateActivityRule": {
             "$role": "unionType(Microsoft.IRule)",
-            "title": "Activity Rule",
+            "title": "MessageUpdate Activity Rule",
             "description": "This defines the steps to take when an MessageUpdate ctivity is received",
             "type": "object",
             "properties": {
@@ -4975,7 +4976,7 @@
         },
         "Microsoft.TypingActivityRule": {
             "$role": "unionType(Microsoft.IRule)",
-            "title": "Activity Rule",
+            "title": "Typing Activity Rule",
             "description": "This defines the steps to take when a Typing activity is received",
             "type": "object",
             "properties": {

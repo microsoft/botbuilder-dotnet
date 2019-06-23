@@ -27,7 +27,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             this.Activity = new ActivityTemplate(text ?? string.Empty);
         }
 
-        [JsonConstructor]
         public SendActivity(Activity activity, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
