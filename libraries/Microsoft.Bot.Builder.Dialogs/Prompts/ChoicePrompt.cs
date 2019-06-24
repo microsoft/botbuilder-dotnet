@@ -62,8 +62,22 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>Additional options for presenting the set of choices.</value>
         public ChoiceFactoryOptions ChoiceOptions { get; set; }
 
+        /// <summary>
+        /// Gets or sets additional options passed to the underlying
+        /// <see cref="ChoiceRecognizers.RecognizeChoices(string, IList{Choice}, FindChoicesOptions)"/> method.
+        /// </summary>
+        /// <value>Options to control the recognition strategy.</value>
         public FindChoicesOptions RecognizerOptions { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="turnContext"></param>
+        /// <param name="state"></param>
+        /// <param name="options"></param>
+        /// <param name="isRetry"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)

@@ -10,7 +10,7 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
-    /// Waits for an activity to be received.
+    /// Defines the core behavior of a prompt that waits for an activity to be received.
     /// </summary>
     /// <remarks>
     /// This prompt requires a validator be passed in and is useful when waiting for non-message
@@ -165,6 +165,16 @@ namespace Microsoft.Bot.Builder.Dialogs
             await OnPromptAsync(turnContext, state, options, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// When overridden in a derived class, prompts the user for input.
+        /// </summary>
+        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
+        /// <param name="state">Contains state for the current instance of the prompt on the dialog stack.</param>
+        /// <param name="options">A prompt options object constructed from the options initially provided
+        /// in the call to <see cref="DialogContext.PromptAsync(string, PromptOptions, CancellationToken)"/>.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         protected virtual async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
