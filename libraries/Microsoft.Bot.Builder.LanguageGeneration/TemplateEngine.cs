@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Teamplate engine with parsed files.</returns>
         public TemplateEngine AddFiles(IEnumerable<string> filePaths, ImportResolverDelegate importResolver = null)
         {
-            var parsedResoureceIds = new HashSet<string>();
+            var parsedResourceIds = new HashSet<string>();
 
             foreach (var filePath in filePaths)
             {
@@ -66,9 +66,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                  });
 
                 var fullPath = Path.GetFullPath(filePath);
-                if (!parsedResoureceIds.Contains(fullPath))
+                if (!parsedResourceIds.Contains(fullPath))
                 {
-                    var parsedTemplates = this.ParseContent(File.ReadAllText(fullPath), fullPath, importResolver, parsedResoureceIds);
+                    var parsedTemplates = this.ParseContent(File.ReadAllText(fullPath), fullPath, importResolver, parsedResourceIds);
                     Templates.AddRange(parsedTemplates);
                 }
             }
