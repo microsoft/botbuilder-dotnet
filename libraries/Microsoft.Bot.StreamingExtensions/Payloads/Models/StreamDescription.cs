@@ -2,7 +2,7 @@
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    public class StreamDescription
+    internal class StreamDescription
     {
         [JsonProperty("id")]
         public string Id { get; set; }

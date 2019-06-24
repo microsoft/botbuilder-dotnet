@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    public interface IRequestManager
+    internal interface IRequestManager
     {
         Task<bool> SignalResponse(Guid requestId, ReceiveResponse response);
 

@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    public class RequestPayload
+    internal class RequestPayload
     {
         /// <summary>
         /// Request verb, null on responses

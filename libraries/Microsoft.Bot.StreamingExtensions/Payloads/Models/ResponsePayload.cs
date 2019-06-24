@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    public class ResponsePayload
+    internal class ResponsePayload
     {
         /// <summary>
         /// Status - The Response Status

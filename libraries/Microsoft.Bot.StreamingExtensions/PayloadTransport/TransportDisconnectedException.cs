@@ -2,7 +2,7 @@
 
 namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
 {
-    public class TransportDisconnectedException : Exception
+    internal class TransportDisconnectedException : Exception
     {
         public TransportDisconnectedException()
             : base()

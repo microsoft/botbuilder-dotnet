@@ -5,7 +5,7 @@ using Microsoft.Bot.StreamingExtensions.Payloads;
 
 namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
 {
-    public class SendPacket
+    internal class SendPacket
     {
         public Header Header { get; set; }
 

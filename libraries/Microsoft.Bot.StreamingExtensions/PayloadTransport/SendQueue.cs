@@ -6,7 +6,7 @@ using Microsoft.Bot.StreamingExtensions.Utilities;
 
 namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
 {
-    public class SendQueue<T> : IDisposable
+    internal class SendQueue<T> : IDisposable
     {
         private readonly Func<T, Task> _action;
 

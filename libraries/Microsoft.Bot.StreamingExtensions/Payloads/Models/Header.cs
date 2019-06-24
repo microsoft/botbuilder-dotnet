@@ -4,7 +4,7 @@ using Microsoft.Bot.StreamingExtensions.Transport;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    public class Header
+    internal class Header
     {
         private int internalPayloadLength;
 

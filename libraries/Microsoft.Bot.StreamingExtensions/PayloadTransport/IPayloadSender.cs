@@ -6,7 +6,7 @@ using Microsoft.Bot.StreamingExtensions.Transport;
 
 namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
 {
-    public interface IPayloadSender
+    internal interface IPayloadSender
     {
         event DisconnectedEventHandler Disconnected;
 

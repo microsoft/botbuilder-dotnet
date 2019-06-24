@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    public static class PayloadTypes
+    internal static class PayloadTypes
     {
         public const char Request = 'A';
         public const char Response = 'B';

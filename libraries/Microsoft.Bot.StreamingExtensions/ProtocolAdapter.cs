@@ -7,7 +7,7 @@ using Microsoft.Bot.StreamingExtensions.Utilities;
 
 namespace Microsoft.Bot.StreamingExtensions
 {
-    public class ProtocolAdapter
+    internal class ProtocolAdapter
     {
         private readonly RequestHandler _requestHandler;
         private readonly object _handlerContext;
