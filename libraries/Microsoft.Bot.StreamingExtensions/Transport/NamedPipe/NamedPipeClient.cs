@@ -39,12 +39,12 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.NamedPipes
 
         public event DisconnectedEventHandler Disconnected;
 
-        public bool IncomingConnected
+        private bool IncomingConnected
         {
             get { return _receiver.IsConnected; }
         }
 
-        public bool OutgoingConnected
+        private bool OutgoingConnected
         {
             get { return _receiver.IsConnected; }
         }

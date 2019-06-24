@@ -10,7 +10,5 @@ namespace Microsoft.Bot.StreamingExtensions.Transport
         Task StartAsync();
 
         Task<ReceiveResponse> SendAsync(Request request, CancellationToken cancellationToken = default(CancellationToken));
-
-        void Disconnect();
     }
 }

@@ -39,7 +39,7 @@ namespace Microsoft.Bot.StreamingExtensions
             return null;
         }
 
-        public static async Task<string> ReadBodyAsStringAsync(this ReceiveResponse response)
+        private static async Task<string> ReadBodyAsStringAsync(this ReceiveResponse response)
         {
             var contentStream = response.Streams?.FirstOrDefault();
 

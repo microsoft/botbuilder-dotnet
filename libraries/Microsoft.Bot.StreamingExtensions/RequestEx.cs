@@ -47,7 +47,9 @@ namespace Microsoft.Bot.StreamingExtensions
             return request;
         }
 
-        public void AddStream(HttpContent content, Guid streamId)
+        public void AddStream(HttpContent content) => AddStream(content, Guid.NewGuid());
+
+        private void AddStream(HttpContent content, Guid streamId)
         {
             if (content == null)
             {
@@ -65,7 +67,5 @@ namespace Microsoft.Bot.StreamingExtensions
                     Content = content,
                 });
         }
-
-        public void AddStream(HttpContent content) => AddStream(content, Guid.NewGuid());
     }
 }

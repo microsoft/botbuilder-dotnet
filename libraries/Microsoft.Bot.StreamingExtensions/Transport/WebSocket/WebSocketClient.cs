@@ -79,11 +79,6 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
             IsConnected = true;
         }
 
-        public void Connect()
-        {
-            ConnectAsync().Wait();
-        }
-
         public Task<ReceiveResponse> SendAsync(Request message, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (!_sender.IsConnected || !_receiver.IsConnected)

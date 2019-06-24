@@ -58,7 +58,7 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
             return _protocolAdapter.SendRequestAsync(request, cancellationToken);
         }
 
-        public void Disconnect()
+        private void Disconnect()
         {
             _sender.Disconnect();
             _receiver.Disconnect();

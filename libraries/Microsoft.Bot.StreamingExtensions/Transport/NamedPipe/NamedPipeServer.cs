@@ -57,7 +57,7 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.NamedPipes
             return await _protocolAdapter.SendRequestAsync(request, cancellationToken).ConfigureAwait(false);
         }
 
-        public void Disconnect()
+        private void Disconnect()
         {
             _sender.Disconnect();
             _receiver.Disconnect();
