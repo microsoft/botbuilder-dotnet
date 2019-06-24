@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    public class ReceiveRequestAssembler : PayloadAssembler
+    internal class ReceiveRequestAssembler : PayloadAssembler
     {
         private readonly Func<Guid, ReceiveRequest, Task> _onCompleted;
         private readonly IStreamManager _streamManager;

@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    public interface IStreamManager
+    internal interface IStreamManager
     {
         ContentStreamAssembler GetPayloadAssembler(Guid id);
 

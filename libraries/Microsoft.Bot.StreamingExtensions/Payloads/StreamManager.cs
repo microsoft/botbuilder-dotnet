@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    public class StreamManager : IStreamManager
+    internal class StreamManager : IStreamManager
     {
         private readonly ConcurrentDictionary<Guid, ContentStreamAssembler> _activeAssemblers;
         private readonly Action<ContentStreamAssembler> _onCancelStream;

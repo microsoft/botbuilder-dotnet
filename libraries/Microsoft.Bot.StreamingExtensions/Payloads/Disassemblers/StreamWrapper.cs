@@ -2,7 +2,7 @@
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    public class StreamWrapper
+    internal class StreamWrapper
     {
         public Stream Stream { get; set; }
 

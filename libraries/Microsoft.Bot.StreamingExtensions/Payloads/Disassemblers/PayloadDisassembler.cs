@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    public abstract class PayloadDisassembler
+    internal abstract class PayloadDisassembler
     {
         private TaskCompletionSource<bool> _taskCompletionSource;
 

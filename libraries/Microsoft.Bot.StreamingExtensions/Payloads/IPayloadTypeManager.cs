@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    public interface IPayloadTypeManager
+    internal interface IPayloadTypeManager
     {
         PayloadAssembler CreatePayloadAssembler(Header header);
     }

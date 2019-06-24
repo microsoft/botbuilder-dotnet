@@ -6,7 +6,7 @@ using Microsoft.Bot.StreamingExtensions.Transport;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    public static class HeaderSerializer
+    internal static class HeaderSerializer
     {
         public const byte Delimiter = (byte)'.';
         public const byte Terminator = (byte)'\n';

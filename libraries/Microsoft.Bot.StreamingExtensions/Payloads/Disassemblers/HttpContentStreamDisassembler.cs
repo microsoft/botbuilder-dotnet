@@ -3,7 +3,7 @@ using Microsoft.Bot.StreamingExtensions.PayloadTransport;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    public class HttpContentStreamDisassembler : PayloadDisassembler
+    internal class HttpContentStreamDisassembler : PayloadDisassembler
     {
         public HttpContentStreamDisassembler(IPayloadSender sender, HttpContentStream contentStream)
             : base(sender, contentStream.Id)

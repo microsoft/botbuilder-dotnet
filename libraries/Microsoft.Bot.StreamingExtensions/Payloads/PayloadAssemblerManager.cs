@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    public class PayloadAssemblerManager
+    internal class PayloadAssemblerManager
     {
         private readonly Func<Guid, ReceiveRequest, Task> _onReceiveRequest;
         private readonly Func<Guid, ReceiveResponse, Task> _onReceiveResponse;

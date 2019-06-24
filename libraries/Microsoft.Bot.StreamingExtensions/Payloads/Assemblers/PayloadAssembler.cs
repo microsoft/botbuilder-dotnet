@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    public abstract class PayloadAssembler
+    internal abstract class PayloadAssembler
     {
         private object _syncLock = new object();
 
