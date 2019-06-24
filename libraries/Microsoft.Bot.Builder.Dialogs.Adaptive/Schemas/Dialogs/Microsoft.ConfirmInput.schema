@@ -54,7 +54,7 @@
                         "includeNumbers": {
                             "type": "boolean",
                             "title": "Include Numbers",
-                            "description": "if true, inline and list style choices will be prefixed with the index of the choice.",
+                            "description": "If true, inline and list style choices will be prefixed with the index of the choice.",
                             "default": true
                         }
                     }
@@ -87,7 +87,7 @@
                 "synonyms": {
                     "type": "array",
                     "title": "Synonyms",
-                    "description": "the list of synonyms to recognize in addition to the value. This is optional.",
+                    "description": "The list of synonyms to recognize in addition to the value. This is optional.",
                     "items": {
                         "type": "string"
                     }
