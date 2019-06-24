@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     /// </summary>
     public class ConfirmInput : InputDialog
     {
-        private static readonly Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> ChoiceDefaults = new Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)>()
+        private static readonly Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> ChoiceDefaults = new Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)>(StringComparer.OrdinalIgnoreCase)
         {
             { Spanish, (new Choice("Sí"), new Choice("No"), new ChoiceFactoryOptions(", ", " o ", ", o ", true)) },
             { Dutch, (new Choice("Ja"), new Choice("Nee"), new ChoiceFactoryOptions(", ", " of ", ", of ", true)) },
@@ -114,12 +114,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         {
             if (!string.IsNullOrEmpty(dc.Context.Activity.Locale))
             {
-                return dc.Context.Activity.Locale.ToLower();
+                return dc.Context.Activity.Locale;
             }
 
             if (!string.IsNullOrEmpty(this.DefaultLocale))
             {
-                return this.DefaultLocale.ToLower();
+                return this.DefaultLocale;
             }
 
             return English;
