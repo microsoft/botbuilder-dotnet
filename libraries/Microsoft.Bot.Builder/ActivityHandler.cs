@@ -212,7 +212,7 @@ namespace Microsoft.Bot.Builder
         /// A TurnContext with a strongly typed Activity property that wraps an untyped inner TurnContext.
         /// </summary>
         /// <typeparam name="T">An IActivity derived type, that is one of IMessageActivity, IConversationUpdateActivity etc.</typeparam>
-        private class DelegatingTurnContext<T> : ITurnContext<T>
+        protected class DelegatingTurnContext<T> : ITurnContext<T>
             where T : IActivity
         {
             private ITurnContext _innerTurnContext;
