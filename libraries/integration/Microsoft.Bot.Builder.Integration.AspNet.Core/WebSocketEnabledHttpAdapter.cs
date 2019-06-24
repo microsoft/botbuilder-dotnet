@@ -22,11 +22,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
         public WebSocketEnabledHttpAdapter(IConfiguration configuration, ICredentialProvider credentialProvider = null, IChannelProvider channelProvider = null, ILoggerFactory loggerFactory = null)
             : this()
         {
-            if (credentialProvider != null)
+            if (configuration == null)
             {
-                _botFrameworkHttpAdapter = new BotFrameworkHttpAdapter(credentialProvider, channelProvider, loggerFactory?.CreateLogger<BotFrameworkHttpAdapter>());
-                _webSocketConnector = new WebSocketConnector(credentialProvider, channelProvider, loggerFactory?.CreateLogger<WebSocketConnector>());
+                throw new ArgumentNullException(nameof(configuration));
             }
+
+            _botFrameworkHttpAdapter = new BotFrameworkHttpAdapter(credentialProvider, channelProvider, loggerFactory?.CreateLogger<BotFrameworkHttpAdapter>());
+            _webSocketConnector = new WebSocketConnector(credentialProvider, channelProvider, loggerFactory?.CreateLogger<WebSocketConnector>());
         }
 
         private WebSocketEnabledHttpAdapter()

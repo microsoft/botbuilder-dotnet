@@ -7,18 +7,18 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder
 {
-    public class NamedPipeConnector
+    internal class NamedPipeConnector
     {
         private readonly ILogger _logger;
         private readonly string _pipeName;
 
-        public NamedPipeConnector(ILogger logger = null, string pipeName = "bfv4.pipes")
+        internal NamedPipeConnector(ILogger logger = null, string pipeName = "bfv4.pipes")
         {
             _logger = logger;
             _pipeName = pipeName;
         }
 
-        public void InitializeNamedPipeServer(IBot bot, IList<IMiddleware> middleware = null, Func<ITurnContext, Exception, Task> onTurnError = null)
+        internal void InitializeNamedPipeServer(IBot bot, IList<IMiddleware> middleware = null, Func<ITurnContext, Exception, Task> onTurnError = null)
         {
             var handler = new StreamingRequestHandler(onTurnError, bot, middleware);
             IStreamingTransportServer server = null;

@@ -18,8 +18,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
         private readonly List<IMiddleware> _middlewares = new List<IMiddleware>();
         private Lazy<bool> _ensureMiddlewareSet;
 
-        public WebSocketEnabledHttpAdapter(ICredentialProvider credentialProvider = null, IChannelProvider channelProvider = null, ILoggerFactory loggerFactory = null)
+        public WebSocketEnabledHttpAdapter(ICredentialProvider credentialProvider, IChannelProvider channelProvider = null, ILoggerFactory loggerFactory = null)
         {
+            if (credentialProvider == null)
+            {
+                throw new ArgumentNullException(nameof(credentialProvider));
+            }
+
             _botFrameworkHttpAdapter = new BotFrameworkHttpAdapter(credentialProvider, channelProvider, loggerFactory?.CreateLogger<BotFrameworkHttpAdapter>());
             _webSocketConnector = new WebSocketConnector(credentialProvider, channelProvider, loggerFactory?.CreateLogger<WebSocketConnector>());
             _ensureMiddlewareSet = new Lazy<bool>(() =>

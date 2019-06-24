@@ -5,7 +5,6 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.StreamingExtensions.Transport;
 using Microsoft.Bot.StreamingExtensions.Transport.WebSockets;
@@ -30,7 +29,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
         /// <param name="credentialProvider">Used for validating channel credential authentication information.</param>
         /// <param name="channelProvider">Used for validating channel authentication information.</param>
         /// <param name="logger">Set in order to enable logging.</param>
-        public WebSocketConnector(ICredentialProvider credentialProvider, IChannelProvider channelProvider = null, ILogger logger = null)
+        internal WebSocketConnector(ICredentialProvider credentialProvider, IChannelProvider channelProvider = null, ILogger logger = null)
         {
             _credentialProvider = credentialProvider;
             _channelProvider = channelProvider;
@@ -46,7 +45,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
         /// <param name="httpResponse">The response sent on error or connection termination.</param>
         /// <param name="cancellationToken">Optional cancellation token.</param>
         /// <returns>Returns on task completion.</returns>
-        public async Task ProcessAsync(Func<ITurnContext, Exception, Task> onTurnError, List<Builder.IMiddleware> middlewareSet, HttpRequest httpRequest, HttpResponse httpResponse, CancellationToken cancellationToken = default(CancellationToken))
+        internal async Task ProcessAsync(Func<ITurnContext, Exception, Task> onTurnError, List<Builder.IMiddleware> middlewareSet, HttpRequest httpRequest, HttpResponse httpResponse, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (httpRequest == null)
             {

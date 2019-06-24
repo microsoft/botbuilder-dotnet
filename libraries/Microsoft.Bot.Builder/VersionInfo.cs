@@ -1,7 +1,7 @@
 ﻿namespace Microsoft.Bot.Builder
 {
-    public class VersionInfo
+    internal class VersionInfo
     {
-        public string UserAgent { get; set; }
+        internal string UserAgent { get; set; }
     }
 }

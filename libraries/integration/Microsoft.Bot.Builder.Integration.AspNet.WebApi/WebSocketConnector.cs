@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.WebSockets;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.StreamingExtensions.Transport;
 using Microsoft.Bot.StreamingExtensions.Transport.WebSockets;
@@ -31,7 +30,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
         /// <param name="credentialProvider">Used for validating channel credential authentication information.</param>
         /// <param name="channelProvider">Used for validating channel authentication information.</param>
         /// <param name="logger">Set in order to enable logging.</param>
-        public WebSocketConnector(ICredentialProvider credentialProvider, IChannelProvider channelProvider = null, ILogger logger = null)
+        internal WebSocketConnector(ICredentialProvider credentialProvider, IChannelProvider channelProvider = null, ILogger logger = null)
         {
             _credentialProvider = credentialProvider;
             _channelProvider = channelProvider;
@@ -48,7 +47,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
         /// <param name="bot">The bot that is communicating over this connection.</param>
         /// <param name="cancellationToken">Optional cancellation token.</param>
         /// <returns>Returns on task completion.</returns>
-        public async Task ProcessAsync(Func<ITurnContext, Exception, Task> onTurnError, List<IMiddleware> middlewareSet, HttpRequestMessage httpRequest, HttpResponseMessage httpResponse, IBot bot = null, CancellationToken cancellationToken = default(CancellationToken))
+        internal async Task ProcessAsync(Func<ITurnContext, Exception, Task> onTurnError, List<IMiddleware> middlewareSet, HttpRequestMessage httpRequest, HttpResponseMessage httpResponse, IBot bot = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (httpRequest == null)
             {
