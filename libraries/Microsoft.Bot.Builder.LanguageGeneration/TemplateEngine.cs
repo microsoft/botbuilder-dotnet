@@ -184,15 +184,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>LGResource list of parsed lg content.</returns>
         private List<LGResource> DiscoverLGResources(LGResource start, ImportResolverDelegate importResolver)
         {
-            var resourceIdsFound = new HashSet<string>();
+            var resourcesFound = new HashSet<LGResource>();
+            ResolveImportResources(start, importResolver ?? FileResolver, resourcesFound);
 
-            if (importResolver == null)
-            {
-                // default to fileResolver...
-                importResolver = FileResolver;
-            }
-
-            return ResolveImportResources(start, importResolver, resourceIdsFound);
+            return resourcesFound.ToList();
         }
 
         /// <summary>
@@ -201,24 +196,24 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="start">The lg resource from which to start resolving imported resources.</param>
         /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
-        /// <param name="resourceIdsFound">Resource ids that have been vistied.</param>
-        /// <returns>LGTemplate list of parsed lg content.</returns>
-        private List<LGResource> ResolveImportResources(LGResource start, ImportResolverDelegate importResolver, HashSet<string> resourceIdsFound)
+        /// <param name="resourcesFound">Resources that have been found.</param>
+        private void ResolveImportResources(LGResource start, ImportResolverDelegate importResolver, HashSet<LGResource> resourcesFound)
         {
             var resourceIds = start.Imports.Select(lg => lg.Id).ToList();
-            var resourcesFound = new List<LGResource>() { start };
-            resourceIdsFound.Add(start.Id);
+            resourcesFound.Add(start);
 
             foreach (var id in resourceIds)
             {
                 try
                 {
                     var (content, path) = importResolver(id);
-                    if (path != null && !resourceIdsFound.Contains(path))
+                    if (path != null)
                     {
-                        resourceIdsFound.Add(path);
                         var childResource = LGParser.Parse(content, path);
-                        resourcesFound.AddRange(ResolveImportResources(childResource, importResolver, resourceIdsFound));
+                        if (!resourcesFound.Contains(childResource))
+                        {
+                            ResolveImportResources(childResource, importResolver, resourcesFound);
+                        }
                     }
                 }
                 catch (Exception err)
@@ -226,8 +221,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     throw new Exception($"{id}:{err.Message}", err);
                 }
             }
-
-            return resourcesFound;
         }
 
         /// <summary>
