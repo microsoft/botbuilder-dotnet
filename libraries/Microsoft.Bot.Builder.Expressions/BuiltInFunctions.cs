@@ -1129,6 +1129,17 @@ namespace Microsoft.Bot.Builder.Expressions
             expression.Children[2] = RewriteAccessor(expression.Children[2], iteratorName);
         }
 
+        private static void ValidateIsMatch(Expression expression)
+        {
+            ValidateArityAndAnyType(expression, 2, 2, ReturnType.String);
+
+            var second = expression.Children[1];
+            if (second.ReturnType == ReturnType.String && second.Type == ExpressionType.Constant)
+            {
+                CommonRegex.CreateRegex((second as Constant).Value.ToString());
+            }
+        }
+
         private static Expression RewriteAccessor(Expression expression, string localVarName)
         {
             if (expression.Type == ExpressionType.Accessor)
@@ -2890,7 +2901,7 @@ namespace Microsoft.Bot.Builder.Expressions
                             return (value, error);
                         }),
                     ReturnType.Boolean,
-                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String)),
+                    ValidateIsMatch),
             };
 
             var lookup = new Dictionary<string, ExpressionEvaluator>();
