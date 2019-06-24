@@ -168,9 +168,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
         /// <param name="parsedResoureceIds">Resource ids that have been vistied and parsed.</param>
         /// <returns>LGTemplate list of parsed lg content.</returns>
-        private List<LGResource> DiscoverLGResources(LGResource start, ImportResolverDelegate importResolver, HashSet<string> parsedResoureceIds)
+        private List<LGTemplate> DiscoverLGResources(LGResource start, ImportResolverDelegate importResolver, HashSet<string> parsedResoureceIds)
         {
-            var finalResources = new List<LGResource>();
+            var finalResources = new List<LGTemplate>();
 
             if (importResolver == null)
             {
@@ -186,10 +186,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var (content, path) = importResolver(id);
                     if (path != null && !parsedResoureceIds.Contains(path))
                     {
-                        var rootResource = LGParser.Parse(content, path);
-                        finalResources.Add(rootResource);
-                        parsedResoureceIds.Add(path);
-                        var discoveredResources = DiscoverLGResources(rootResource, importResolver, parsedResoureceIds);
+                        var discoveredResources = ParseContent(content, path, importResolver, parsedResoureceIds);
                         finalResources.AddRange(discoveredResources);
                     }
                 }
@@ -221,8 +218,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             parsedTemplates.AddRange(rootResource.Templates);
             parsedResourceIds.Add(name);
 
-            var discoveredResources = this.DiscoverLGResources(rootResource, importResolver, parsedResourceIds);
-            var discoveredTemplates = discoveredResources.SelectMany(s => s.Templates).ToList();
+            var discoveredTemplates = this.DiscoverLGResources(rootResource, importResolver, parsedResourceIds);
             parsedTemplates.AddRange(discoveredTemplates);
 
             return parsedTemplates;
