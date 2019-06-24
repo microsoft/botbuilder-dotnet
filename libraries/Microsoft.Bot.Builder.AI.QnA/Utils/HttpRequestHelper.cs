@@ -14,8 +14,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// <summary>
     /// Helper for HTTP requests.
     /// </summary>
-    public class HttpRequestHelper
+    internal class HttpRequestHelper
     {
+        private static ProductInfoHeaderValue BotBuilderInfo;
+        private static ProductInfoHeaderValue PlatformInfo;
+
         private readonly HttpClient _httpClient;
 
         /// <summary>
@@ -25,6 +28,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public HttpRequestHelper(HttpClient httpClient)
         {
             this._httpClient = httpClient;
+            this.UpdateBotBuilderAndPlatformInfo();
         }
 
         /// <summary>
@@ -36,6 +40,21 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <returns>Returns http response object.</returns>
         public async Task<HttpResponseMessage> ExecuteHttpRequest(string requestUrl, string payloadBody, QnAMakerEndpoint endpoint)
         {
+            if (requestUrl == null)
+            {
+                throw new ArgumentNullException(nameof(requestUrl), "Request url can not be null.");
+            }
+
+            if (payloadBody == null)
+            {
+                throw new ArgumentNullException(nameof(payloadBody), "Payload body can not be null.");
+            }
+
+            if (endpoint == null)
+            {
+                throw new ArgumentNullException(nameof(endpoint));
+            }
+
             var request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
 
             request.Content = new StringContent(payloadBody, Encoding.UTF8, "application/json");
@@ -51,14 +70,15 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private void SetHeaders(HttpRequestMessage request, QnAMakerEndpoint endpoint)
         {
             request.Headers.Add("Authorization", $"EndpointKey {endpoint.EndpointKey}");
-            AddUserAgent(request);
+            request.Headers.UserAgent.Add(BotBuilderInfo);
+            request.Headers.UserAgent.Add(PlatformInfo);
         }
 
-        private void AddUserAgent(HttpRequestMessage request)
+        private void UpdateBotBuilderAndPlatformInfo()
         {
             // Bot Builder Package name and version
             var assemblyName = this.GetType().Assembly.GetName();
-            request.Headers.UserAgent.Add(new ProductInfoHeaderValue(assemblyName.Name, assemblyName.Version.ToString()));
+            BotBuilderInfo = new ProductInfoHeaderValue(assemblyName.Name, assemblyName.Version.ToString());
 
             // Platform information: OS and language runtime
             var framework = Assembly
@@ -66,7 +86,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 .GetCustomAttribute<TargetFrameworkAttribute>()?
                 .FrameworkName;
             var comment = $"({Environment.OSVersion.VersionString};{framework})";
-            request.Headers.UserAgent.Add(new ProductInfoHeaderValue(comment));
+            PlatformInfo = new ProductInfoHeaderValue(comment);
         }
     }
 }

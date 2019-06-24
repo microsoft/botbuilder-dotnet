@@ -54,6 +54,21 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
         public async Task<QueryResult[]> GetAnswersAsync(ITurnContext turnContext, IMessageActivity messageActivity, QnAMakerOptions options)
         {
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
+
+            if (turnContext.Activity == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext.Activity));
+            }
+
+            if (messageActivity == null)
+            {
+                throw new ArgumentException("Activity type is not a message");
+            }
+
             var hydratedOptions = HydrateOptions(options);
             ValidateOptions(hydratedOptions);
 
@@ -64,42 +79,23 @@ namespace Microsoft.Bot.Builder.AI.QnA
             return result;
         }
 
-        /// <summary>
-        /// Combines QnAMakerOptions passed into the QnAMaker constructor with the options passed as arguments into GetAnswersAsync().
-        /// </summary>
-        /// <param name="queryOptions">The options for the QnA Maker knowledge base.</param>
-        /// <returns>Return modified options for the QnA Maker knowledge base.</returns>
-        private QnAMakerOptions HydrateOptions(QnAMakerOptions queryOptions)
+        private static async Task<QueryResult[]> FormatQnaResultAsync(HttpResponseMessage response, QnAMakerOptions options)
         {
-            var hydratedOptions = JsonConvert.DeserializeObject<QnAMakerOptions>(JsonConvert.SerializeObject(this.Options));
+            var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            if (queryOptions != null)
+            var results = JsonConvert.DeserializeObject<QueryResults>(jsonResponse);
+
+            foreach (var answer in results.Answers)
             {
-                if (queryOptions.ScoreThreshold != hydratedOptions.ScoreThreshold && queryOptions.ScoreThreshold != 0)
-                {
-                    hydratedOptions.ScoreThreshold = queryOptions.ScoreThreshold;
-                }
-
-                if (queryOptions.Top != hydratedOptions.Top && queryOptions.Top != 0)
-                {
-                    hydratedOptions.Top = queryOptions.Top;
-                }
-
-                if (queryOptions.StrictFilters?.Length > 0)
-                {
-                    hydratedOptions.StrictFilters = queryOptions.StrictFilters;
-                }
-
-                if (queryOptions.MetadataBoost?.Length > 0)
-                {
-                    hydratedOptions.MetadataBoost = queryOptions.MetadataBoost;
-                }
+                answer.Score = answer.Score / 100;
             }
 
-            return hydratedOptions;
+            var result = results.Answers.Where(answer => answer.Score > options.ScoreThreshold).ToArray();
+
+            return result;
         }
 
-        private void ValidateOptions(QnAMakerOptions options)
+        private static void ValidateOptions(QnAMakerOptions options)
         {
             if (options.ScoreThreshold == 0)
             {
@@ -137,6 +133,41 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
         }
 
+        /// <summary>
+        /// Combines QnAMakerOptions passed into the QnAMaker constructor with the options passed as arguments into GetAnswersAsync().
+        /// </summary>
+        /// <param name="queryOptions">The options for the QnA Maker knowledge base.</param>
+        /// <returns>Return modified options for the QnA Maker knowledge base.</returns>
+        private QnAMakerOptions HydrateOptions(QnAMakerOptions queryOptions)
+        {
+            var hydratedOptions = JsonConvert.DeserializeObject<QnAMakerOptions>(JsonConvert.SerializeObject(this.Options));
+
+            if (queryOptions != null)
+            {
+                if (queryOptions.ScoreThreshold != hydratedOptions.ScoreThreshold && queryOptions.ScoreThreshold != 0)
+                {
+                    hydratedOptions.ScoreThreshold = queryOptions.ScoreThreshold;
+                }
+
+                if (queryOptions.Top != hydratedOptions.Top && queryOptions.Top != 0)
+                {
+                    hydratedOptions.Top = queryOptions.Top;
+                }
+
+                if (queryOptions.StrictFilters?.Length > 0)
+                {
+                    hydratedOptions.StrictFilters = queryOptions.StrictFilters;
+                }
+
+                if (queryOptions.MetadataBoost?.Length > 0)
+                {
+                    hydratedOptions.MetadataBoost = queryOptions.MetadataBoost;
+                }
+            }
+
+            return hydratedOptions;
+        }
+
         private async Task<QueryResult[]> QueryQnaServiceAsync(Activity messageActivity, QnAMakerOptions options)
         {
             var requestUrl = $"{_endpoint.Host}/knowledgebases/{_endpoint.KnowledgeBaseId}/generateanswer";
@@ -172,22 +203,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
             };
             var traceActivity = Activity.CreateTraceActivity(QnAMakerName, QnATelemetryConstants.QnAMakerTraceType, traceInfo, QnATelemetryConstants.QnAMakerTraceLabel);
             await turnContext.SendActivityAsync(traceActivity).ConfigureAwait(false);
-        }
-
-        private async Task<QueryResult[]> FormatQnaResultAsync(HttpResponseMessage response, QnAMakerOptions options)
-        {
-            var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-            var results = JsonConvert.DeserializeObject<QueryResults>(jsonResponse);
-
-            foreach (var answer in results.Answers)
-            {
-                answer.Score = answer.Score / 100;
-            }
-
-            var result = results.Answers.Where(answer => answer.Score > options.ScoreThreshold).ToArray();
-
-            return result;
         }
     }
 }

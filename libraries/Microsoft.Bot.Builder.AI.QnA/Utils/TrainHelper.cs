@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -10,7 +11,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// <summary>
     /// Helper class for train API
     /// </summary>
-    public class TrainHelper
+    internal class TrainHelper
     {
         private static readonly string QnAMakerName = nameof(QnAMaker);
         private QnAMakerEndpoint _endpoint;
@@ -34,7 +35,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task CallTrainAsync(FeedbackRecords feedbackRecords)
         {
-            if (feedbackRecords == null || feedbackRecords.Records.Length == 0)
+            if (feedbackRecords == null)
+            {
+                throw new ArgumentNullException(nameof(feedbackRecords), "Feedback records cannot be null.");
+            }
+
+            if (feedbackRecords.Records == null || feedbackRecords.Records.Length == 0)
             {
                 return;
             }
