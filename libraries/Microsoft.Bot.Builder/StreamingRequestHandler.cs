@@ -15,6 +15,16 @@ namespace Microsoft.Bot.Builder
 {
     public class StreamingRequestHandler : RequestHandler
     {
+        private IBot bot;
+
+        private IServiceProvider services;
+
+        private IList<IMiddleware> middlewareSet;
+
+        private string userAgent;
+
+        private Func<ITurnContext, Exception, Task> onTurnError;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class.
         /// The StreamingRequestHandler serves as a translation layer between the transport layer and bot adapter.
@@ -26,9 +36,10 @@ namespace Microsoft.Bot.Builder
         /// <param name="middlewareSet">An optional set of middleware to register with the bot.</param>
         public StreamingRequestHandler(Func<ITurnContext, Exception, Task> onTurnError, IBot bot, IList<IMiddleware> middlewareSet = null)
         {
-            Bot = bot;
-            MiddlewareSet = middlewareSet;
-            UserAgent = GetUserAgent();
+            this.bot = bot;
+            this.middlewareSet = middlewareSet;
+            userAgent = GetUserAgent();
+            this.onTurnError = onTurnError;
         }
 
         /// <summary>
@@ -41,22 +52,13 @@ namespace Microsoft.Bot.Builder
         /// <param name="middlewareSet">An optional set of middleware to register with the bot.</param>
         public StreamingRequestHandler(Func<ITurnContext, Exception, Task> onTurnError, IServiceProvider serviceProvider, IList<IMiddleware> middlewareSet = null)
         {
-            Services = serviceProvider;
-            MiddlewareSet = middlewareSet;
-            UserAgent = GetUserAgent();
+            services = serviceProvider;
+            this.middlewareSet = middlewareSet;
+            userAgent = GetUserAgent();
+            this.onTurnError = onTurnError;
         }
 
         public IStreamingTransportServer Server { get; set; }
-
-        public IBot Bot { get; }
-
-        public IServiceProvider Services { get; }
-
-        public IList<IMiddleware> MiddlewareSet { get; }
-
-        public string UserAgent { get; private set; }
-
-        private Func<ITurnContext, Exception, Task> OnTurnError { get; set; }
 
         /// <summary>
         /// Processes incoming requests and returns the response, if any.
@@ -82,7 +84,7 @@ namespace Microsoft.Bot.Builder
                          string.Equals(request.Path, "/api/version", StringComparison.InvariantCultureIgnoreCase))
                 {
                     response.StatusCode = (int)HttpStatusCode.OK;
-                    response.SetBody(new VersionInfo() { UserAgent = UserAgent });
+                    response.SetBody(new VersionInfo() { UserAgent = userAgent });
                 }
                 else if (string.Equals(request.Verb, Request.POST, StringComparison.InvariantCultureIgnoreCase) &&
                          string.Equals(request.Path, "/api/messages", StringComparison.InvariantCultureIgnoreCase))
@@ -97,15 +99,15 @@ namespace Microsoft.Bot.Builder
 
                     try
                     {
-                        var adapter = new BotFrameworkStreamingExtensionsAdapter(Server, MiddlewareSet, logger);
-                        var bot = Services?.GetService<IBot>() ?? Bot;
+                        var adapter = new BotFrameworkStreamingExtensionsAdapter(Server, middlewareSet, logger);
+                        var bot = services?.GetService<IBot>() ?? this.bot;
 
                         if (bot == null)
                         {
                             throw new Exception("Unable to find bot when processing request.");
                         }
 
-                        adapter.OnTurnError = OnTurnError;
+                        adapter.OnTurnError = onTurnError;
                         var invokeResponse = await adapter.ProcessActivityAsync(body, request.Streams, new BotCallbackHandler(bot.OnTurnAsync), CancellationToken.None).ConfigureAwait(false);
 
                         if (invokeResponse == null)
