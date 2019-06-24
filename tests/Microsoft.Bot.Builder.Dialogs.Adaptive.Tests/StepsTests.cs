@@ -40,10 +40,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .UseResourceExplorer(resourceExplorer)
                 .UseLanguageGeneration(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+            DialogManager dm = new DialogManager(testDialog);
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                await testDialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
         }
 
@@ -205,9 +206,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 new TextInput()
                                 {
                                     Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                    RetryPrompt = new ActivityTemplate("How should I call you?"),
+                                    UnrecognizedPrompt = new ActivityTemplate("How should I call you?"),
                                     Property = "user.name",
-                                    Pattern = @"(\s*(\S)\s*){3,}"
+                                    Validations = new List<Expression>()
+                                    {
+                                        new ExpressionEngine().Parse("turn._input.Length > 3")
+                                    }
                                 }
                             }
                         },
@@ -235,21 +239,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new ConfirmInput()
                     {
                         Prompt = new ActivityTemplate("yes or no"),
-                        RetryPrompt = new ActivityTemplate("I need a yes or no."),
+                        UnrecognizedPrompt = new ActivityTemplate("I need a yes or no."),
                         Property = "user.confirmed"
                     },
                     new SendActivity("confirmation: {user.confirmed}"),
                     new ConfirmInput()
                     {
                         Prompt = new ActivityTemplate("yes or no"),
-                        RetryPrompt = new ActivityTemplate("I need a yes or no."),
+                        UnrecognizedPrompt = new ActivityTemplate("I need a yes or no."),
                         Property = "user.confirmed"
                     },
                     new SendActivity("confirmation: {user.confirmed}"),
                     new ConfirmInput()
                     {
                         Prompt = new ActivityTemplate("yes or no"),
-                        RetryPrompt = new ActivityTemplate("I need a yes or no."),
+                        UnrecognizedPrompt = new ActivityTemplate("I need a yes or no."),
                         Property = "user.confirmed",
                         AlwaysPrompt = true
                     },
@@ -259,13 +263,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             await CreateFlow(testDialog)
             .Send("hi")
-                .AssertReply("yes or no")
+                .AssertReply("yes or no (1) Yes or (2) No")
             .Send("asdasd")
-                .AssertReply("I need a yes or no.")
+                .AssertReply("I need a yes or no. (1) Yes or (2) No")
             .Send("yes")
                 .AssertReply("confirmation: True")
-                .AssertReply("confirmation: True")
-                .AssertReply("yes or no")
+                .AssertReply("yes or no (1) Yes or (2) No")
             .Send("nope")
                 .AssertReply("confirmation: False")
             .StartTestAsync();
@@ -283,7 +286,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         Property = "user.color",
                         Prompt = new ActivityTemplate("Please select a color:"),
-                        RetryPrompt = new ActivityTemplate("Not a color. Please select a color:"),
+                        UnrecognizedPrompt = new ActivityTemplate("Not a color. Please select a color:"),
                         Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
                         Style = ListStyle.Inline
                     },
@@ -292,7 +295,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         Property = "user.color",
                         Prompt = new ActivityTemplate("Please select a color:"),
-                        RetryPrompt = new ActivityTemplate("Please select a color:"),
+                        UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
                         Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
                         Style = ListStyle.Inline,
                         ResultType = ResultType.Value,
@@ -303,7 +306,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         Property = "user.color",
                         Prompt = new ActivityTemplate("Please select a color:"),
-                        RetryPrompt = new ActivityTemplate("Please select a color:"),
+                        UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
                         Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
                         Style = ListStyle.Inline,
                         ResultType = ResultType.Index,
@@ -359,11 +362,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new NumberInput()
                         {
                             Prompt = new ActivityTemplate("Please enter your age."),
-                            MinValue = 1,
-                            MaxValue = 150,
-                            Precision = 0,
-                            RetryPrompt = new ActivityTemplate("The value entered must be greater than 0 and less than 150."),
-                            Property = "user.userProfile.Age"
+                            UnrecognizedPrompt = new ActivityTemplate("The value entered must be greater than 0 and less than 150."),
+                            Value = new ExpressionEngine().Parse("user.userProfile.Age"),
+                            Property = "user.userProfile.Age",
+                            OutputFormat = NumberOutputFormat.Integer,
+                            Validations = new List<Expression>()
+                            {
+                                new ExpressionEngine().Parse("turn._input > 0 && turn._input < 150")
+                            }
                         },
                         new SendActivity("I have your age as {user.userProfile.Age}."),
                     })
@@ -382,7 +388,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_NumberInputPrecision()
+        public async Task Step_DatetimeInput()
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
@@ -394,28 +400,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 new UnknownIntentRule(
                     new List<IDialog>()
                     {
-                        new NumberInput()
+                        new DateTimeInput()
                         {
-                            Prompt = new ActivityTemplate("Please enter your dollars."),
-                            MinValue = 10.00f,
-                            MaxValue = 100.00f,
-                            Precision = 2,
-                            RetryPrompt = new ActivityTemplate("The value entered must be greater than 10.00 and less than 100.00."),
-                            Property = "user.userProfile.dollars"
+                            Prompt = new ActivityTemplate("Please enter a date."),
+                            Value = new ExpressionEngine().Parse("user.date"),
+                            Property = "user.date",
                         },
-                        new SendActivity("I have your dollars as {user.userProfile.dollars}."),
+                        new SendActivity("You entered {user.date[0].Value}"),
                     })
             });
 
             await CreateFlow(testDialog)
             .Send("hi")
-                .AssertReply("Please enter your dollars.")
-            .Send("1.345")
-                .AssertReply("The value entered must be greater than 10.00 and less than 100.00.")
-            .Send("15.348")
-                .AssertReply("I have your dollars as 15.35.")
-            .Send("hi")
-                .AssertReply("I have your dollars as 15.35.")
+                .AssertReply("Please enter a date.")
+            .Send("June 1st 2019")
+                .AssertReply("You entered 2019-06-01")
             .StartTestAsync();
         }
 
@@ -437,10 +436,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 new TextInput()
                                 {
                                     Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                    RetryPrompt = new ActivityTemplate("How should I call you?"),
+                                    UnrecognizedPrompt = new ActivityTemplate("How should I call you?"),
                                     InvalidPrompt  = new ActivityTemplate("That does not soud like a name"),
                                     Property = "user.name",
-                                    Pattern = @"(\s*(\S)\s*){3,}"
+                                    Validations = new List<Expression>()
+                                    {
+                                        new ExpressionEngine().Parse("turn._input.Length > 3")
+                                    }
                                 }
                             }
                         },
@@ -607,10 +609,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new TextInput()
                             {
                                 Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                RetryPrompt = new ActivityTemplate("How should I call you?"),
+                                UnrecognizedPrompt = new ActivityTemplate("How should I call you?"),
                                 InvalidPrompt  = new ActivityTemplate("That does not soud like a name"),
                                 Property = "user.name",
-                                Pattern = @"(\s*(\S)\s*){3,}"
                             }
                         }
                     },
@@ -706,7 +707,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
                 Steps = new List<IDialog>()
                 {
-                    new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name" },
+                    new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name" , Value = new ExpressionEngine().Parse("user.name") },
                     new SendActivity("Hello {user.name}, nice to meet you!"),
                     new EndTurn(),
                     new RepeatDialog()
@@ -815,21 +816,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         ArrayProperty = "dialog.todo",
                         ChangeType = EditArray.ArrayChangeType.Push,
-                        ItemProperty = "1"
+                        Value = new ExpressionEngine().Parse("1")
                     },
 
                     new EditArray()
                     {
                         ArrayProperty = "dialog.todo",
                         ChangeType = EditArray.ArrayChangeType.Push,
-                        ItemProperty = "2"
+                        Value = new ExpressionEngine().Parse("2")
                     },
 
                     new EditArray()
                     {
                         ArrayProperty = "dialog.todo",
                         ChangeType = EditArray.ArrayChangeType.Push,
-                        ItemProperty = "3"
+                        Value = new ExpressionEngine().Parse("3")
                     },
 
                     new Foreach()
@@ -872,42 +873,42 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         ArrayProperty = "dialog.todo",
                         ChangeType = EditArray.ArrayChangeType.Push,
-                        ItemProperty = "1"
+                        Value = new ExpressionEngine().Parse("1")
                     },
 
                     new EditArray()
                     {
                         ArrayProperty = "dialog.todo",
                         ChangeType = EditArray.ArrayChangeType.Push,
-                        ItemProperty = "2"
+                        Value = new ExpressionEngine().Parse("2")
                     },
 
                     new EditArray()
                     {
                         ArrayProperty = "dialog.todo",
                         ChangeType = EditArray.ArrayChangeType.Push,
-                        ItemProperty = "3"
+                        Value = new ExpressionEngine().Parse("3")
                     },
 
                     new EditArray()
                     {
                         ArrayProperty = "dialog.todo",
                         ChangeType = EditArray.ArrayChangeType.Push,
-                        ItemProperty = "4"
+                        Value = new ExpressionEngine().Parse("4")
                     },
 
                     new EditArray()
                     {
                         ArrayProperty = "dialog.todo",
                         ChangeType = EditArray.ArrayChangeType.Push,
-                        ItemProperty = "5"
+                        Value = new ExpressionEngine().Parse("5")
                     },
 
                     new EditArray()
                     {
                         ArrayProperty = "dialog.todo",
                         ChangeType = EditArray.ArrayChangeType.Push,
-                        ItemProperty = "6"
+                        Value = new ExpressionEngine().Parse("6")
                     },
 
                     new ForeachPage()

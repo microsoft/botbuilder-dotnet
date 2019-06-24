@@ -10,12 +10,11 @@
             "title": "Change Type",
             "description": "The change type to apply to current dialog",
             "enum": [
-                "NewPlan",
-                "DoSteps",
-                "DoStepsBeforeTags",
-                "DoStepsLater",
-                "EndPlan",
-                "ReplacePlan"
+                "InsertSteps",
+                "InsertStepsBeforeTags",
+                "AppendSteps",
+                "EndSequence",
+                "ReplaceSequence"
             ]
         },
         "Steps": {
@@ -24,7 +23,7 @@
                 "$type": "Microsoft.IDialog"
             },
             "title": "Steps",
-            "description": "Step to execute"
+            "description": "Steps to execute"
         }
     },
     "required": [

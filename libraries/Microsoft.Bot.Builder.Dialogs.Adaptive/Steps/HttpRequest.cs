@@ -21,6 +21,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     /// </summary>
     public class HttpRequest : DialogCommand
     {
+        private static readonly HttpClient client = new HttpClient();
+
         public enum ResponseTypes
         {
             /// <summary>
@@ -79,7 +81,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         [JsonProperty("returnType")]
         public ResponseTypes ResponseType { get; set; } = ResponseTypes.Json;
 
-        private static readonly HttpClient client = new HttpClient();
+        /// <summary>
+        /// Property which is bidirectional property for input and output.  Example: user.age will be passed in, and user.age will be set when the dialog completes
+        /// </summary>
+        public string Property
+        {
+            get
+            {
+                return OutputBinding;
+            }
+            set
+            {
+                InputBindings["value"] = value;
+                OutputBinding = value;
+            }
+        }
 
         public HttpRequest(HttpMethod method, string url, string property, Dictionary<string, string> headers = null, JObject body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {

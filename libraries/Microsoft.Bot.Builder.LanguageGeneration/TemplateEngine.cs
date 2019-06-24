@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Antlr4.Runtime;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -21,6 +22,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
+        /// Delegate for resolving resource id of imported lg file.
+        /// </summary>
+        /// <param name="resourceId">Resource id to resolve.</param>
+        /// <returns>Resolved resource content and absolute file path id.</returns>
+        public delegate (string content, string absoluteFilePath) ImportResolverDelegate(string resourceId);
+
+        /// <summary>
         /// Gets or sets parsed LG templates.
         /// </summary>
         /// <value>
@@ -29,56 +37,63 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public List<LGTemplate> Templates { get; set; } = new List<LGTemplate>();
 
         /// <summary>
-        /// Create a template engine from files, a shorthand for.
-        ///    new TemplateEngine().AddFiles(filePath).
-        /// </summary>
-        /// <param name="filePaths">paths to LG files.</param>
-        /// <returns>Engine created.</returns>
-        public static TemplateEngine FromFiles(params string[] filePaths) => new TemplateEngine().AddFiles(filePaths);
-
-        /// <summary>
-        /// Create a template engine from text, equivalent to.
-        ///    new TemplateEngine.AddText(text).
-        /// </summary>
-        /// <param name="text">Content of lg file.</param>
-        /// <param name="resourceLoader">delegate resolve templateid -> template text.</param>
-        /// <returns>Engine created.</returns>
-        public static TemplateEngine FromText(string text, Func<string, string> resourceLoader = null) => new TemplateEngine().AddText(text);
-
-        /// <summary>
         /// Load .lg files into template engine
         /// You can add one file, or mutlple file as once
         /// If you have multiple files referencing each other, make sure you add them all at once,
         /// otherwise static checking won't allow you to add it one by one.
         /// </summary>
         /// <param name="filePaths">Paths to .lg files.</param>
+        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
         /// <returns>Teamplate engine with parsed files.</returns>
-        public TemplateEngine AddFiles(params string[] filePaths)
+        public TemplateEngine AddFiles(IEnumerable<string> filePaths, ImportResolverDelegate importResolver = null)
         {
-            var newTemplates = filePaths.Select(filePath =>
+            foreach (var filePath in filePaths)
             {
-                var text = File.ReadAllText(filePath);
-                return LGParser.Parse(text, filePath);
-            }).SelectMany(x => x);
+                importResolver = importResolver ?? ((id) =>
+                 {
+                    // import paths are in resource files which can be executed on multiple OS environments
+                    // Call GetOsPath() to map / & \ in importPath -> OSPath
+                    var importPath = GetOsPath(id);
+                    if (!Path.IsPathRooted(importPath))
+                     {
+                        // get full path for importPath relative to path which is doing the import.
+                        importPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(filePath), id));
+                     }
+                    return (File.ReadAllText(importPath), importPath);
+                 });
 
-            var mergedTemplates = Templates.Concat(newTemplates).ToList();
+                var fullPath = Path.GetFullPath(filePath);
+                var parsedTemplates = this.ParseContent(File.ReadAllText(fullPath), fullPath, importResolver);
+                this.Templates.AddRange(parsedTemplates);
+            }
 
-            RunStaticCheck(mergedTemplates);
-
-            Templates = mergedTemplates; // only set value after static checking is passed
+            RunStaticCheck(this.Templates);
 
             return this;
         }
 
         /// <summary>
+        /// Load single .lg file into template engine.
+        /// </summary>
+        /// <param name="filePath">Path to .lg file.</param>
+        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
+        /// <returns>Teamplate engine with single parsed file.</returns>
+        public TemplateEngine AddFile(string filePath, ImportResolverDelegate importResolver = null) => AddFiles(new List<string> { filePath }, importResolver);
+
+        /// <summary>
         /// Add text as lg file content to template engine.
         /// </summary>
-        /// <param name="text">Text content contains lg templates.</param>
+        /// <param name="content">Text content contains lg templates.</param>
+        /// <param name="name">Text name.</param>
+        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
         /// <returns>Template engine with the parsed content.</returns>
-        public TemplateEngine AddText(string text)
+        public TemplateEngine AddText(string content, string name, ImportResolverDelegate importResolver)
         {
-            Templates.AddRange(LGParser.Parse(text, "text"));
-            RunStaticCheck();
+            var parsedTemplates = this.ParseContent(content, name, importResolver);
+            this.Templates.AddRange(parsedTemplates);
+
+            RunStaticCheck(Templates);
+
             return this;
         }
 
@@ -106,13 +121,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="scope">The state visible in the evaluation.</param>
         /// <param name="methodBinder">Optional methodBinder to extend or override functions.</param>
         /// <returns>Evaluate result.</returns>
-        public string EvaluateTemplate(string templateName, object scope, IGetMethod methodBinder = null)
+        public string EvaluateTemplate(string templateName, object scope = null, IGetMethod methodBinder = null)
         {
             var evaluator = new Evaluator(Templates, methodBinder);
             return evaluator.EvaluateTemplate(templateName, scope);
         }
 
-        public List<string> AnalyzeTemplate(string templateName)
+        public AnalyzerResult AnalyzeTemplate(string templateName)
         {
             var analyzer = new Analyzer(Templates);
             return analyzer.AnalyzeTemplate(templateName);
@@ -125,7 +140,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="scope">scope object or JToken.</param>
         /// <param name="methodBinder">input method.</param>
         /// <returns>Evaluate result.</returns>
-        public string Evaluate(string inlineStr, object scope, IGetMethod methodBinder = null)
+        public string Evaluate(string inlineStr, object scope = null, IGetMethod methodBinder = null)
         {
             // wrap inline string with "# name and -" to align the evaluation process
             var fakeTemplateId = "__temp__";
@@ -133,15 +148,90 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                    ? "```" + inlineStr + "```" : inlineStr;
             var wrappedStr = $"# {fakeTemplateId} \r\n - {inlineStr}";
 
-            var parsedTemplates = LGParser.Parse(wrappedStr, "inline");
+            var lgSource = LGParser.Parse(wrappedStr, "inline");
+            var templates = Templates.Concat(lgSource.Templates).ToList();
+            RunStaticCheck(templates);
 
-            // merge the existing templates and this new template as a whole for evaluation
-            var mergedTemplates = Templates.Concat(parsedTemplates).ToList();
-
-            RunStaticCheck(mergedTemplates);
-
-            var evaluator = new Evaluator(mergedTemplates, methodBinder);
+            var evaluator = new Evaluator(templates, methodBinder);
             return evaluator.EvaluateTemplate(fakeTemplateId, scope);
+        }
+
+        private void ImportIds(string[] ids, Dictionary<string, LGResource> sources, ImportResolverDelegate importResolver)
+        {
+            if (importResolver == null)
+            {
+                // default to fileResolver...
+                importResolver = FileResolver;
+            }
+
+            foreach (var id in ids)
+            {
+                try
+                {
+                    var (content, path) = importResolver(id);
+                    if (!sources.ContainsKey(path))
+                    {
+                        LoopLGText(content, path, sources, importResolver);
+                    }
+                }
+                catch (Exception err)
+                {
+                    throw new Exception($"{id}:{err.Message}", err);
+                }
+            }
+        }
+
+        private void LoopLGText(string content, string name, Dictionary<string, LGResource> sources, ImportResolverDelegate importResolver)
+        {
+            var source = LGParser.Parse(content, name);
+            sources.Add(name, source);
+            ImportIds(source.Imports.Select(lg => lg.Id).ToArray(), sources, importResolver);
+        }
+
+        private (string, string) FileResolver(string path)
+        {
+            path = Path.GetFullPath(path);
+            return (File.ReadAllText(path), path);
+        }
+
+        /// <summary>
+        /// Normalize authored path to os path.
+        /// </summary>
+        /// <remarks>
+        /// path is from authored content which doesn't know what OS it is running on.
+        /// This method treats / and \ both as seperators regardless of OS, for windows that means / -> \ and for linux/mac \ -> /.
+        /// This allows author to use ../foo.lg or ..\foo.lg as equivelents for importing.
+        /// </remarks>
+        /// <param name="ambigiousPath">authoredPath.</param>
+        /// <returns>path expressed as OS path.</returns>
+        private string GetOsPath(string ambigiousPath)
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // map linux/mac sep -> windows
+                return ambigiousPath.Replace("/", "\\");
+            }
+            else
+            {
+                // map windows sep -> linux/mac
+                return ambigiousPath.Replace("\\", "/");
+            }
+        }
+
+        /// <summary>
+        /// Parse lg content to LGTemplate list.
+        /// All the imports of the content will also be tracked down to parse templates.
+        /// </summary>
+        /// <param name="content">Text content contains lg templates.</param>
+        /// <param name="name">Text name.</param>
+        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
+        /// <returns>LGTemplate list of parsed lg content.</returns>
+        private IList<LGTemplate> ParseContent(string content, string name, ImportResolverDelegate importResolver)
+        {
+            var sources = new Dictionary<string, LGResource>();
+            LoopLGText(content, name, sources, importResolver);
+
+            return sources.SelectMany(s => s.Value.Templates).ToList();
         }
     }
 }

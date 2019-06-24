@@ -1,22 +1,26 @@
 {
     "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "Text prompt",
+    "title": "TextInput Dialog",
     "description": "This represents a dialog which gathers a text from the user",
     "type": "object",
     "allOf": [
         {
-            "$ref": "./baseSchema.json"
+            "$ref": "./baseInputSchema.json"
         },
         {
             "properties": {
-                "pattern": {
+                "outputFormat": {
                     "type": "string",
-                    "title": "Pattern",
-                    "description": "A regular expression pattern which must match",
-                    "examples": [
-                        "\\w{3,30}"
-                    ]
+                    "enum": [
+                        "none",
+                        "trim",
+                        "lowercase",
+                        "uppercase"
+                    ],
+                    "title": "Output Format",
+                    "description": "The TextInput output format.",
+                    "default": "none"
                 }
             }
         }

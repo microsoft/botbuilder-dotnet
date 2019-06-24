@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
     {
         private readonly TemplateEngine engine;
 
-        private static string getOsPath(string path) => Path.Combine(path.TrimEnd('\\').Split('\\'));
+        private static string getOsPath(string path) => Path.Combine(path.TrimEnd('\\', '/').Split('\\', '/'));
 
         private string GetLGResourceFile(string fileName)
         {
@@ -25,8 +25,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         public TestBotLG(TestBotAccessors accessors)
         {
             // load LG file into engine
-            engine = new TemplateEngine()
-                .AddFiles(GetLGResourceFile("8.LG"));
+            engine = new TemplateEngine().AddFile(GetLGResourceFile("8.LG"));
         }
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))

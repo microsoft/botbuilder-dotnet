@@ -83,8 +83,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
 
                     Turn = new Dictionary<string, object>()
                     {
-                        { "intent",  new Dictionary<string, object>() { { name, score } } },
-                        { "entities", recognizerResult.Entities }
+                        { "recognized" , JObject.FromObject(new
+                            {
+                                text = recognizerResult.Text,
+                                alteredText = recognizerResult.AlteredText,
+                                intent = name,
+                                score,
+                                intents = recognizerResult.Intents,
+                                entities = recognizerResult.Entities,
+                            })
+                        }
                     },
                     Steps = Steps.Select(s => new StepState()
                     {
