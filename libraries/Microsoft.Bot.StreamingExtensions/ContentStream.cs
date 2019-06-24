@@ -4,7 +4,7 @@ using Microsoft.Bot.StreamingExtensions.Payloads;
 
 namespace Microsoft.Bot.StreamingExtensions
 {
-    public class ContentStream : IContentStream
+    internal class ContentStream : IContentStream
     {
         private readonly ContentStreamAssembler _assembler;
         private ConcurrentStream _stream;

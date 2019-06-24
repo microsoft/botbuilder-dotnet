@@ -2,7 +2,7 @@
 
 namespace Microsoft.Bot.StreamingExtensions.Transport
 {
-    public interface ITransport : IDisposable
+    internal interface ITransport : IDisposable
     {
         bool IsConnected { get; }
 

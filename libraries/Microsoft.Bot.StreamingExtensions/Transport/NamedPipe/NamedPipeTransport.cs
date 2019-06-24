@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.StreamingExtensions.Transport.NamedPipes
 {
-    public class NamedPipeTransport : ITransportSender, ITransportReceiver
+    internal class NamedPipeTransport : ITransportSender, ITransportReceiver
     {
         public const string ServerIncomingPath = ".incoming";
         public const string ServerOutgoingPath = ".outgoing";

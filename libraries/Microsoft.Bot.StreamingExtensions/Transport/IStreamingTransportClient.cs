@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.StreamingExtensions.Transport
 {
-    public interface IStreamingTransportClient : IDisposable
+    internal interface IStreamingTransportClient : IDisposable
     {
         event DisconnectedEventHandler Disconnected;
 

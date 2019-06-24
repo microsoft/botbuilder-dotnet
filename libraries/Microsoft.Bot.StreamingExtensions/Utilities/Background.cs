@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.StreamingExtensions.Utilities
 {
-    public static class Background
+    internal static class Background
     {
         /// <summary>
         /// Register background task with ASP.Net hosting environment and trace exceptions

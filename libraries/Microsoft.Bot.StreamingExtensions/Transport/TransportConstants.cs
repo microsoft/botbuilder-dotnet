@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.Bot.StreamingExtensions.Transport
 {
-    public class TransportConstants
+    internal class TransportConstants
     {
         public const int MaxPayloadLength = 4096;
         public const int MaxHeaderLength = 48;

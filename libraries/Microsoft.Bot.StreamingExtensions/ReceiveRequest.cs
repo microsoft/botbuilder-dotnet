@@ -5,7 +5,7 @@ namespace Microsoft.Bot.StreamingExtensions
     public class ReceiveRequest
     {
         /// <summary>
-        /// Request verb, null on responses
+        /// Request verb, null on responses.
         /// </summary>
         public string Verb { get; set; }
 

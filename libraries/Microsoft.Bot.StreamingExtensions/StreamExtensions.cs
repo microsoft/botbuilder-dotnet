@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.StreamingExtensions
 {
-    public static class StreamExtensions
+    internal static class StreamExtensions
     {
         /// <summary>
         /// Read the contents of the Concurrent stream and convert to an Utf8 string.

@@ -2,7 +2,7 @@
 
 namespace Microsoft.Bot.StreamingExtensions.Transport
 {
-    public interface ITransportReceiver : ITransport
+    internal interface ITransportReceiver : ITransport
     {
         Task<int> ReceiveAsync(byte[] buffer, int offset, int count);
     }

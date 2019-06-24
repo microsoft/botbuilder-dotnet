@@ -7,7 +7,7 @@ using Microsoft.Bot.StreamingExtensions.Payloads;
 
 namespace Microsoft.Bot.StreamingExtensions
 {
-    public class ConcurrentStream : Stream
+    internal class ConcurrentStream : Stream
     {
         private readonly ContentStreamAssembler _assembler;
         private readonly Queue<byte[]> _bufferQueue = new Queue<byte[]>();

@@ -2,7 +2,7 @@
 
 namespace Microsoft.Bot.StreamingExtensions
 {
-    public class OperationException : Exception
+    internal class OperationException : Exception
     {
         public OperationException(string message, int statusCode, object body)
     : base(message)
