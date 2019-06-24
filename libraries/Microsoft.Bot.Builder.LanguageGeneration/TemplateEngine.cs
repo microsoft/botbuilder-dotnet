@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Teamplate engine with parsed files.</returns>
         public TemplateEngine AddFiles(IEnumerable<string> filePaths, ImportResolverDelegate importResolver = null)
         {
-            var filePathContainer = new HashSet<string>();
+            var parsedResoureceIds = new HashSet<string>();
 
             foreach (var filePath in filePaths)
             {
@@ -62,20 +62,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                          importPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(filePath), id));
                      }
 
-                     if (!filePathContainer.Contains(importPath))
-                     {
-                         filePathContainer.Add(importPath);
-                         return (File.ReadAllText(importPath), importPath);
-                     }
-
-                     return (null, null);
+                     return (File.ReadAllText(importPath), importPath);
                  });
 
                 var fullPath = Path.GetFullPath(filePath);
-                if (!filePathContainer.Contains(fullPath))
+                if (!parsedResoureceIds.Contains(fullPath))
                 {
-                    filePathContainer.Add(fullPath);
-                    var parsedTemplates = this.ParseContent(File.ReadAllText(fullPath), fullPath, importResolver);
+                    var parsedTemplates = this.ParseContent(File.ReadAllText(fullPath), fullPath, importResolver, parsedResoureceIds);
                     Templates.AddRange(parsedTemplates);
                 }
             }
@@ -168,22 +161,36 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return evaluator.EvaluateTemplate(fakeTemplateId, scope);
         }
 
-        private void ImportIds(string[] ids, Dictionary<string, LGResource> sources, ImportResolverDelegate importResolver)
+        /// <summary>
+        /// Discover all imported lg resources from a start resouce.
+        /// </summary>
+        /// <param name="start">The lg resource from which to start discovering imported resources.</param>
+        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
+        /// <param name="parsedResoureceIds">Resource ids that have been vistied and parsed.</param>
+        /// <returns>LGTemplate list of parsed lg content.</returns>
+        private List<LGResource> DiscoverLGResources(LGResource start, ImportResolverDelegate importResolver, HashSet<string> parsedResoureceIds)
         {
+            var finalResources = new List<LGResource>();
+
             if (importResolver == null)
             {
                 // default to fileResolver...
                 importResolver = FileResolver;
             }
 
-            foreach (var id in ids)
+            var resourceIds = start.Imports.Select(lg => lg.Id).ToArray();
+            foreach (var id in resourceIds)
             {
                 try
                 {
                     var (content, path) = importResolver(id);
-                    if (path != null && !sources.ContainsKey(path))
+                    if (path != null && !parsedResoureceIds.Contains(path))
                     {
-                        LoopLGText(content, path, sources, importResolver);
+                        var rootResource = LGParser.Parse(content, path);
+                        finalResources.Add(rootResource);
+                        parsedResoureceIds.Add(path);
+                        var discoveredResources = DiscoverLGResources(rootResource, importResolver, parsedResoureceIds);
+                        finalResources.AddRange(discoveredResources);
                     }
                 }
                 catch (Exception err)
@@ -191,15 +198,41 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     throw new Exception($"{id}:{err.Message}", err);
                 }
             }
+
+            return finalResources;
         }
 
-        private void LoopLGText(string content, string name, Dictionary<string, LGResource> sources, ImportResolverDelegate importResolver)
+        /// <summary>
+        /// Parse lg content to LGTemplate list.
+        /// All the imports of the content will be also tracked down to parse templates.
+        /// </summary>
+        /// <param name="content">Text content contains lg templates.</param>
+        /// <param name="name">Text name.</param>
+        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
+        /// <param name="parsedResourceIds">Resource ids that have been vistied and parsed.</param>
+        /// <returns>LGTemplate list of parsed lg content.</returns>
+        private List<LGTemplate> ParseContent(string content, string name, ImportResolverDelegate importResolver, HashSet<string> parsedResourceIds = null)
         {
-            var source = LGParser.Parse(content, name);
-            sources.Add(name, source);
-            ImportIds(source.Imports.Select(lg => lg.Id).ToArray(), sources, importResolver);
+            parsedResourceIds = parsedResourceIds ?? new HashSet<string>();
+
+            var parsedTemplates = new List<LGTemplate>();
+
+            var rootResource = LGParser.Parse(content, name);
+            parsedTemplates.AddRange(rootResource.Templates);
+            parsedResourceIds.Add(name);
+
+            var discoveredResources = this.DiscoverLGResources(rootResource, importResolver, parsedResourceIds);
+            var discoveredTemplates = discoveredResources.SelectMany(s => s.Templates).ToList();
+            parsedTemplates.AddRange(discoveredTemplates);
+
+            return parsedTemplates;
         }
 
+        /// <summary>
+        /// Default file resolver.
+        /// </summary>
+        /// <param name="id">File id.</param>
+        /// <returns>File content and unique id.</returns>
         private (string, string) FileResolver(string id)
         {
             id = Path.GetFullPath(id);
@@ -228,22 +261,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 // map windows sep -> linux/mac
                 return ambigiousPath.Replace("\\", "/");
             }
-        }
-
-        /// <summary>
-        /// Parse lg content to LGTemplate list.
-        /// All the imports of the content will be also tracked down to parse templates.
-        /// </summary>
-        /// <param name="content">Text content contains lg templates.</param>
-        /// <param name="name">Text name.</param>
-        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
-        /// <returns>LGTemplate list of parsed lg content.</returns>
-        private List<LGTemplate> ParseContent(string content, string name, ImportResolverDelegate importResolver)
-        {
-            var sources = new Dictionary<string, LGResource>();
-            LoopLGText(content, name, sources, importResolver);
-
-            return sources.SelectMany(s => s.Value.Templates).ToList();
         }
     }
 }
