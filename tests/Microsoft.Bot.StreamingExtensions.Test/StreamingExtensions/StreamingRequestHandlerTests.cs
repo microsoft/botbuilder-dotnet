@@ -35,7 +35,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
         public void StreamingRequestHandler_UserAgentSet()
         {
             var s = new StreamingRequestHandler(null, new MockBot(), null);
-            Assert.IsNotNull(s.UserAgent);
+            Assert.IsNotNull(s.userAgent);
         }
 
         [TestMethod]

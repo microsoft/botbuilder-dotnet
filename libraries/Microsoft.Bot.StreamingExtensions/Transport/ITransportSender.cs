@@ -5,7 +5,12 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.StreamingExtensions.Transport
 {
-    internal interface ITransportSender : ITransport
+#if DEBUG
+    public
+#else
+    internal
+#endif
+    interface ITransportSender : ITransport
     {
         Task<int> SendAsync(byte[] buffer, int offset, int count);
     }

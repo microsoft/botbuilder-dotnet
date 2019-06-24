@@ -24,7 +24,12 @@ namespace Microsoft.Bot.Builder
 
         private IList<IMiddleware> middlewareSet;
 
-        private string userAgent;
+#if DEBUG
+        public
+#else
+        private
+#endif
+            string userAgent;
 
         private Func<ITurnContext, Exception, Task> onTurnError;
 

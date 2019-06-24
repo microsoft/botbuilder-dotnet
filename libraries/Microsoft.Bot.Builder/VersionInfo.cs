@@ -3,8 +3,13 @@
 
 namespace Microsoft.Bot.Builder
 {
-    internal class VersionInfo
+#if DEBUG
+    public
+#else
+    internal
+#endif
+    class VersionInfo
     {
-        internal string UserAgent { get; set; }
+        public string UserAgent { get; set; }
     }
 }

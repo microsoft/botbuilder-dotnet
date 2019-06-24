@@ -7,7 +7,7 @@ using Microsoft.Bot.StreamingExtensions.Payloads;
 
 namespace Microsoft.Bot.StreamingExtensions.UnitTests.Mocks
 {
-    public class MockPayloadAssembler : PayloadAssembler
+    internal class MockPayloadAssembler : PayloadAssembler
     {
         public MockPayloadAssembler(Guid id)
             : base(id)
