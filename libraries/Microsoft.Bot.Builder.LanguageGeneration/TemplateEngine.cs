@@ -207,13 +207,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 try
                 {
                     var (content, path) = importResolver(id);
-                    if (path != null)
+                    var childResource = LGParser.Parse(content, path);
+
+                    if (!resourcesFound.Contains(childResource))
                     {
-                        var childResource = LGParser.Parse(content, path);
-                        if (!resourcesFound.Contains(childResource))
-                        {
-                            ResolveImportResources(childResource, importResolver, resourcesFound);
-                        }
+                        ResolveImportResources(childResource, importResolver, resourcesFound);
                     }
                 }
                 catch (Exception err)
