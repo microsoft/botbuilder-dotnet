@@ -114,12 +114,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         {
             if (!string.IsNullOrEmpty(dc.Context.Activity.Locale))
             {
-                return dc.Context.Activity.Locale;
+                return dc.Context.Activity.Locale.ToLower();
             }
 
             if (!string.IsNullOrEmpty(this.DefaultLocale))
             {
-                return this.DefaultLocale;
+                return this.DefaultLocale.ToLower();
             }
 
             return English;
