@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.BotFramework;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -23,7 +19,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
         private readonly List<Builder.IMiddleware> middlewares = new List<Builder.IMiddleware>();
         private Lazy<bool> _ensureMiddlewareSet;
 
-        // Note: these constructor overloads exist so that BotFrameworkHttpAdapter can transparently be replaced with WebSocketEnabledHttpAdapter
         public WebSocketEnabledHttpAdapter(IConfiguration configuration, ICredentialProvider credentialProvider = null, IChannelProvider channelProvider = null, ILoggerFactory loggerFactory = null)
             : this()
         {
@@ -32,14 +27,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
                 _botFrameworkHttpAdapter = new BotFrameworkHttpAdapter(credentialProvider, channelProvider, loggerFactory?.CreateLogger<BotFrameworkHttpAdapter>());
                 _webSocketConnector = new WebSocketConnector(credentialProvider, channelProvider, loggerFactory?.CreateLogger<WebSocketConnector>());
             }
-            //else // TODO: Fix this
-            //{
-            //    // No Credential provider is provided. Create everything from the global configuration.
-            //    _botFrameworkHttpAdapter = new BotFrameworkHttpAdapter(configuration, loggerFactory?.CreateLogger<BotFrameworkHttpAdapter>());
-            //    var credentialProviderPvt = new ConfigurationCredentialProvider(configuration);
-            //    var channelProviderPvt = new ConfigurationChannelProvider(configuration);
-            //    _webSocketConnector = new WebSocketConnector(credentialProviderPvt, channelProviderPvt, loggerFactory?.CreateLogger<WebSocketConnector>());
-            //}
         }
 
         private WebSocketEnabledHttpAdapter()
