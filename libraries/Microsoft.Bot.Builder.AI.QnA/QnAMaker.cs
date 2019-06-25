@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             LogPersonalInformation = logPersonalInformation;
 
             this.generateAnswerHelper = new GenerateAnswerUtils(TelemetryClient, _endpoint, options, _httpClient);
-            this.activeLearningTrainHelper = new TrainUtils(_endpoint, httpClient);
+            this.activeLearningTrainHelper = new TrainUtils(_endpoint, _httpClient);
         }
 
         /// <summary>
