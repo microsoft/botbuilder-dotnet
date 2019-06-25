@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                  });
 
                 var fullPath = Path.GetFullPath(filePath);
-                var parsedResources = this.ParseContent(File.ReadAllText(fullPath), fullPath, importResolver);
+                var parsedResources = this.DiscoverLGResources(LGParser.Parse(File.ReadAllText(fullPath), fullPath), importResolver);
                 lgResources.AddRange(parsedResources);
             }
 
@@ -94,8 +94,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Template engine with the parsed content.</returns>
         public TemplateEngine AddText(string content, string name, ImportResolverDelegate importResolver)
         {
-            var lgResources = ParseContent(content, name, importResolver);
-            Templates.AddRange(lgResources.SelectMany(x => x.Templates));
+            var parsedResources = this.DiscoverLGResources(LGParser.Parse(content, name), importResolver);
+            Templates.AddRange(parsedResources.SelectMany(x => x.Templates));
             RunStaticCheck(Templates);
 
             return this;
@@ -158,22 +158,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var evaluator = new Evaluator(templates, methodBinder);
             return evaluator.EvaluateTemplate(fakeTemplateId, scope);
-        }
-
-        /// <summary>
-        /// Parse lg content to LGResource list.
-        /// All the imports of the content will be also tracked down to parse.
-        /// </summary>
-        /// <param name="content">Text content contains lg templates.</param>
-        /// <param name="name">Text name.</param>
-        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
-        /// <returns>LGTemplate list of parsed lg content.</returns>
-        private List<LGResource> ParseContent(string content, string name, ImportResolverDelegate importResolver)
-        {
-            var rootResource = LGParser.Parse(content, name);
-            var parsedResources = this.DiscoverLGResources(rootResource, importResolver);
-
-            return parsedResources;
         }
 
         /// <summary>
