@@ -80,6 +80,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         }
 
         [TestMethod]
+        public async Task JsonDialogLoad_SwitchCondition_Number()
+        {
+            await BuildTestFlow("SwitchCondition.main.dialog")
+            .Send("Hi")
+            .AssertReply("Age is 22!")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task JsonDialogLoad_TextInputWithoutProperty()
         {
             await BuildTestFlow("TextInput.WithoutProperty.main.dialog")
