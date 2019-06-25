@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Teamplate engine with parsed files.</returns>
         public TemplateEngine AddFiles(IEnumerable<string> filePaths, ImportResolverDelegate importResolver = null)
         {
-            var lgResources = new List<LGResource>();
+            var totalLGResources = new List<LGResource>();
             foreach (var filePath in filePaths)
             {
                 importResolver = importResolver ?? ((id) =>
@@ -65,13 +65,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                  });
 
                 var fullPath = Path.GetFullPath(filePath);
-                var parsedResources = this.DiscoverLGResources(LGParser.Parse(File.ReadAllText(fullPath), fullPath), importResolver);
-                lgResources.AddRange(parsedResources);
+                var rootResource = LGParser.Parse(File.ReadAllText(fullPath), fullPath);
+                var lgResources = this.DiscoverLGResources(rootResource, importResolver);
+                totalLGResources.AddRange(lgResources);
             }
 
             // Remove duplicated lg files by id
-            lgResources = lgResources.GroupBy(x => x.Id).Select(x => x.First()).ToList();
-            Templates.AddRange(lgResources.SelectMany(x => x.Templates));
+            var deduplicatedLGResources = totalLGResources.GroupBy(x => x.Id).Select(x => x.First()).ToList();
+
+            Templates.AddRange(deduplicatedLGResources.SelectMany(x => x.Templates));
             RunStaticCheck(Templates);
 
             return this;
@@ -94,8 +96,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Template engine with the parsed content.</returns>
         public TemplateEngine AddText(string content, string name, ImportResolverDelegate importResolver)
         {
-            var parsedResources = this.DiscoverLGResources(LGParser.Parse(content, name), importResolver);
-            Templates.AddRange(parsedResources.SelectMany(x => x.Templates));
+            var lgResources = this.DiscoverLGResources(LGParser.Parse(content, name), importResolver);
+            Templates.AddRange(lgResources.SelectMany(x => x.Templates));
             RunStaticCheck(Templates);
 
             return this;
