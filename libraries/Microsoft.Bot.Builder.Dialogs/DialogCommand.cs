@@ -123,6 +123,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 if (dialog is DialogCommand)
                 {
                     dc.Stack.RemoveAt(i);
+                    i--;
                 }
                 else
                 {
