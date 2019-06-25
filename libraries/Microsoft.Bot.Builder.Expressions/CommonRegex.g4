@@ -66,8 +66,6 @@ character_class
 //         (...)           capturing group
 //         (?<name>...)    named capturing group (.NET, javascript)
 //         (?:...)         non-capturing group
-//         (?|...)         non-capturing group; reset group numbers for
-//                          capturing groups in each alternative
 
 capture
  : '(' '?' '<' name '>' alternation ')'
@@ -76,17 +74,13 @@ capture
 
 non_capture
  : '(' '?' ':' alternation ')'
- | '(' '?' '|' alternation ')'
  ;
 
 // OPTION SETTING(C# format, for javascript should be wrapped in code)
 //
 //         (?i)            caseless
-//         (?J)            allow duplicate names
 //         (?m)            multiline
 //         (?s)            single line (dotall)
-//         (?U)            default ungreedy (lazy)
-//         (?x)            extended (ignore white space)
 
 option
  : '(' '?' option_flag+ ')'
@@ -94,11 +88,8 @@ option
 
 option_flag
  : 'i'
- | 'J'
  | 'm'
  | 's'
- | 'U'
- | 'x'
  ;
 
 atom
@@ -110,10 +101,7 @@ atom
  | option
  | Dot
  | Caret
- | StartOfSubject
- | EndOfSubjectOrLine
- | OneDataUnit
- | ExtendedUnicodeChar
+ | EndOfSubject
  ;
 
 cc_atom
@@ -126,16 +114,10 @@ shared_atom
  : ControlChar
  | DecimalDigit
  | NotDecimalDigit
- | HorizontalWhiteSpace
- | NotHorizontalWhiteSpace
- | NotNewLine
  | CharWithProperty
  | CharWithoutProperty
- | NewLineSequence
  | WhiteSpace
  | NotWhiteSpace
- | VerticalWhiteSpace
- | NotVerticalWhiteSpace
  | WordChar
  | NotWordChar 
  ;
@@ -153,7 +135,7 @@ cc_literal
  | QuestionMark
  | Plus
  | Star
- | EndOfSubjectOrLine
+ | EndOfSubject
  | Pipe
  | OpenParen
  | CloseParen
@@ -191,10 +173,7 @@ number
  ;
 
 octal_char
- : ( Backslash (D0 | D1 | D2 | D3) octal_digit octal_digit
-   | Backslash octal_digit octal_digit                     
-   )
-
+ : ( Backslash (D0 | D1 | D2 | D3) octal_digit octal_digit | Backslash octal_digit octal_digit)
  ;
 
 octal_digit
@@ -243,6 +222,7 @@ letter
 //         \ddd       character with octal code ddd, or backreference
 //         \xhh       character with hex code hh
 //         \x{hhh..}  character with hex code hhh..
+
 BellChar       : '\\a';
 ControlChar    : '\\c';
 EscapeChar     : '\\e';
@@ -260,40 +240,24 @@ HexChar        : '\\x' ( HexDigit HexDigit
 //
 //         .          any character except newline;
 //                      in dotall mode, any character whatsoever
-//         \C         one data unit, even in UTF mode (best avoided)
 //         \d         a decimal digit
 //         \D         a character that is not a decimal digit
-//         \h         a horizontal white space character
-//         \H         a character that is not a horizontal white space character
-//         \N         a character that is not a newline
 //         \p{xx}     a character with the xx property
 //         \P{xx}     a character without the xx property
-//         \R         a newline sequence
 //         \s         a white space character
 //         \S         a character that is not a white space character
-//         \v         a vertical white space character
-//         \V         a character that is not a vertical white space character
 //         \w         a "word" character
 //         \W         a "non-word" character
-//         \X         an extended Unicode sequence
 
 Dot                     : '.';
-OneDataUnit             : '\\C';
 DecimalDigit            : '\\d';
 NotDecimalDigit         : '\\D';
-HorizontalWhiteSpace    : '\\h';
-NotHorizontalWhiteSpace : '\\H';
-NotNewLine              : '\\N';
 CharWithProperty        : '\\p{' UnderscoreAlphaNumerics '}';
 CharWithoutProperty     : '\\P{' UnderscoreAlphaNumerics '}';
-NewLineSequence         : '\\R';
 WhiteSpace              : '\\s';
 NotWhiteSpace           : '\\S';
-VerticalWhiteSpace      : '\\v';
-NotVerticalWhiteSpace   : '\\V';
 WordChar                : '\\w';
 NotWordChar             : '\\W';
-ExtendedUnicodeChar     : '\\X';
 
 CharacterClassStart  : '[';
 CharacterClassEnd    : ']';
@@ -309,15 +273,9 @@ Comma        : ',';
 
 // ANCHORS AND SIMPLE ASSERTIONS
 //
-//         ^           start of subject
-//                      also after internal newline in multiline mode
-//         \A          start of subject
 //         $           end of subject
-//                      also before newline at end of subject
-//                      also before internal newline in multiline mode
 
-StartOfSubject                 : '\\A'; 
-EndOfSubjectOrLine             : '$';
+EndOfSubject                   : '$';
 
 Pipe        : '|';
 OpenParen   : '(';
@@ -406,4 +364,3 @@ fragment AlphaNumeric            : [a-zA-Z0-9];
 fragment NonAlphaNumeric         : ~[a-zA-Z0-9];
 fragment HexDigit                : [0-9a-fA-F];
 fragment ASCII                   : [\u0000-\u007F];
-
