@@ -19,13 +19,13 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
         /// <summary>
         /// constant short hand currently have.
         /// </summary>
-        private static readonly Dictionary<string, ShortHand> ShortHandDict = new Dictionary<string, ShortHand>()
+        private static readonly Dictionary<string, Shorthand> BuildinShorthandDict = new Dictionary<string, Shorthand>()
         {
-            { "#", new ShortHand("#", ExpressionType.Intent, (name) => $"turn.recognized.intents.{name}") },
-            { "@", new ShortHand("@", ExpressionType.Entity, (name) => $"turn.recognized.entities.{name}") },
-            { "$", new ShortHand("$", ExpressionType.Title, (name) => $"dialog.{name}") },
-            { "%", new ShortHand("%", ExpressionType.Instance, (name) => $"dialog.instance.{name}") },
-            { "^", new ShortHand("^", ExpressionType.Option, (name) => $"dialog.options.{name}") },
+            { "#", new Shorthand("#", ExpressionType.Intent, (name) => $"turn.recognized.intents.{name}") },
+            { "@", new Shorthand("@", ExpressionType.Entity, (name) => $"turn.recognized.entities.{name}") },
+            { "$", new Shorthand("$", ExpressionType.Title, (name) => $"dialog.{name}") },
+            { "%", new Shorthand("%", ExpressionType.Instance, (name) => $"dialog.instance.{name}") },
+            { "^", new Shorthand("^", ExpressionType.Option, (name) => $"dialog.options.{name}") },
         };
 
         private readonly EvaluatorLookup _lookup;
@@ -86,10 +86,6 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             public override Expression VisitShortHandExp([NotNull] ExpressionParser.ShortHandExpContext context)
             {
                 var shortHandMark = context.GetChild(0).GetText();
-                if (!ShortHandDict.ContainsKey(shortHandMark))
-                {
-                    throw new Exception($"{shortHandMark} is not a shorthand");
-                }
 
                 return MakeShortHandExpression(shortHandMark, context.IDENTIFIER().GetText());
             }
@@ -202,11 +198,16 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
 
             private Expression MakeShortHandExpression(string prefix, string name)
             {
-                var shortHandEntity = ShortHandDict[prefix];
+                if (!BuildinShorthandDict.ContainsKey(prefix))
+                {
+                    throw new Exception($"{prefix} is not a shorthand");
+                }
 
-                var realMemoryVariable = shortHandEntity.ConvertName(name);
-                var accessorExpression = this.Transform(AntlrParse(realMemoryVariable));
-                return MakeExpression(shortHandEntity.FunctionName, accessorExpression);
+                var shortHandEntity = BuildinShorthandDict[prefix];
+
+                var realMemoryVarName = shortHandEntity.ExtractName(name);
+                var accessorExpression = this.Transform(AntlrParse(realMemoryVarName));
+                return MakeExpression(shortHandEntity.BuildinFunction, accessorExpression);
             }
         }
     }

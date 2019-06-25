@@ -1,23 +1,23 @@
 ﻿namespace Microsoft.Bot.Builder.Expressions.Parser
 {
     /// <summary>
-    /// Bot Memory short hand.
+    /// Bot Memory shorthand entity.
     /// </summary>
-    public class ShortHand
+    public class Shorthand
     {
-        public ShortHand(string prefix, string functionName, ConvertShorthandName shorthandConvert)
+        public Shorthand(string prefix, string functionName, NameExtracter extractName)
         {
             Prefix = prefix;
-            FunctionName = functionName;
-            ConvertName = shorthandConvert;
+            BuildinFunction = functionName;
+            ExtractName = extractName;
         }
 
         /// <summary>
         /// Convert function delegate, from shorthand name to real memory name.
         /// </summary>
-        /// <param name="disappealName">shorthand name.</param>
+        /// <param name="shorthandName">shorthand name.</param>
         /// <returns>real memory name.</returns>
-        public delegate string ConvertShorthandName(string disappealName);
+        public delegate string NameExtracter(string shorthandName);
 
         /// <summary>
         /// Gets or sets shorthand prefix mark, like "@".
@@ -33,7 +33,7 @@
         /// <value>
         /// The short hand corresponding function name.
         /// </value>
-        public string FunctionName { get; set; }
+        public string BuildinFunction { get; set; }
 
         /// <summary>
         /// Gets or sets convert function, from shorthand name to real memory name.
@@ -41,6 +41,6 @@
         /// <value>
         /// Convert function, from shorthand name to real memory name.
         /// </value>
-        public ConvertShorthandName ConvertName { get; set; }
+        public NameExtracter ExtractName { get; set; }
     }
 }
