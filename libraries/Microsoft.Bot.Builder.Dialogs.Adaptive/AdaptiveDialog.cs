@@ -68,6 +68,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </summary>
         public IRuleSelector Selector { get; set; }
 
+        /// <summary>
+        /// Gets or sets the property to return as the result ending the dialog.
+        /// </summary>
+        public string ResultProperty { get; set; } = "dialog.result";
+
         public override IBotTelemetryClient TelemetryClient
         {
             get
@@ -430,8 +435,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 if (this.ShouldEnd(sequenceContext))
                 {
-                    var state = (sequenceContext.ActiveDialog.State as Dictionary<string, object>)[ADAPTIVE_KEY] as AdaptiveDialogState;
-                    return await sequenceContext.EndDialogAsync(state.Result, cancellationToken).ConfigureAwait(false);
+                    sequenceContext.State.TryGetValue<object>(ResultProperty, out var result);
+                    return await sequenceContext.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {

@@ -19,19 +19,16 @@
         },
         "arrayProperty": {
             "$role": "memoryPath",
-            "type": "string",
             "title": "Array Property",
             "description": "Memory expression of the array to manipulate."
         },
         "resultProperty": {
             "$role": "memoryPath",
-            "type": "string",
             "title": "Result Property",
             "description": "Memory expression of the result of this action."
         },
         "value": {
             "$role": "expression",
-            "type": "string",
             "title": "Value of the Item",
             "description": "Expression to evaluate.",
             "examples": [

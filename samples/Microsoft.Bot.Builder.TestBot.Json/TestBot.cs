@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             // auto reload dialogs when file changes
             this.resourceExplorer.Changed += (resources) =>
             {
-                if (resources.Any(resource => resource.Id== ".dialog"))
+                if (resources.Any(resource => resource.Id.EndsWith(".dialog")))
                 {
                     Task.Run(() => this.LoadDialogs());
                 }

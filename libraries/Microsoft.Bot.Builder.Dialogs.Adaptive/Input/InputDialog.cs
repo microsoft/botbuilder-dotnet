@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         Valid
     }
 
-    public abstract class InputDialog : DialogCommand
+    public abstract class InputDialog : Dialog
     {
         public bool AlwaysPrompt { get; set; } = false;
 
@@ -71,10 +71,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
         }
 
-        public static readonly string OPTIONS_PROPERTY = "dialog._input";
-        public static readonly string INITIAL_VALUE_PROPERTY = "dialog._input.value";
-        public static readonly string TURN_COUNT_PROPERTY = "dialog._input.turnCount";
-        public static readonly string INPUT_PROPERTY = "turn._input";
+        public static readonly string OPTIONS_PROPERTY = "dialog.options";
+        public static readonly string INITIAL_VALUE_PROPERTY = "dialog.value";
+        public static readonly string TURN_COUNT_PROPERTY = "dialog.turnCount";
+        public static readonly string INPUT_PROPERTY = "turn.value";
 
         private const string PersistedOptions = "options";
         private const string PersistedState = "state";
@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 return Dialog.EndOfTurn;
             }
 
-            var stepCount = dc.State.GetValue<int>("turn.stepCount", 0);
+            var stepCount = dc.State.GetValue<int>(DialogContextState.TURN_STEPCOUNT, 0);
 
             if (stepCount > 0)
             {
@@ -148,11 +148,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await this.PromptUser(dc, InputState.Missing);
-        }
-
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return Dialog.EndOfTurn;
         }
 
         protected abstract Task<InputState> OnRecognizeInput(DialogContext dc, bool consultation);

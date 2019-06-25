@@ -50,7 +50,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Common state properties paths.
         /// </summary>
         public const string DIALOG_OPTIONS = "dialog.options";
-        public const string DIALOG_RESULT = "dialog.result";
 
         public const string TURN_ACTIVITY = "turn.activity";
         public const string TURN_RECOGNIZED = "turn.recognized";
@@ -100,6 +99,19 @@ namespace Microsoft.Bot.Builder.Dialogs
                     {
                         return null;  //throw new Exception("DialogContext.State.Dialog: no active or parent dialog instance.");
                     }
+                //}
+                //else
+                //{
+                //    IDialog dlg;
+                //    do
+                //    {
+                //        dlg = dialogContext.FindDialog(instance.Id);
+                //        if (dlg is DialogCommand)
+                //        {
+                //            instance = dialogContext.Parent.ActiveDialog;
+                //        }
+                //    }
+                //    while (dlg is DialogCommand);
                 }
 
                 return instance.State;
