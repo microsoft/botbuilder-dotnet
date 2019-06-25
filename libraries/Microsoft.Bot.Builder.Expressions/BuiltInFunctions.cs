@@ -1129,6 +1129,17 @@ namespace Microsoft.Bot.Builder.Expressions
             expression.Children[2] = RewriteAccessor(expression.Children[2], iteratorName);
         }
 
+        private static void ValidateIsMatch(Expression expression)
+        {
+            ValidateArityAndAnyType(expression, 2, 2, ReturnType.String);
+
+            var second = expression.Children[1];
+            if (second.ReturnType == ReturnType.String && second.Type == ExpressionType.Constant)
+            {
+                CommonRegex.CreateRegex((second as Constant).Value.ToString());
+            }
+        }
+
         private static Expression RewriteAccessor(Expression expression, string localVarName)
         {
             if (expression.Type == ExpressionType.Accessor)
@@ -2868,6 +2879,29 @@ namespace Microsoft.Bot.Builder.Expressions
                 new ExpressionEvaluator(ExpressionType.Foreach, Foreach, ReturnType.Object, ValidateForeach),
                 new ExpressionEvaluator(ExpressionType.Coalesce, Apply(args => Coalesce(args.ToArray<object>())), ReturnType.Object, ValidateAtLeastOne),
                 new ExpressionEvaluator(ExpressionType.XPath, ApplyWithError(args => XPath(args[0], args[1])), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
+
+                // Regex expression
+                new ExpressionEvaluator(
+                    ExpressionType.IsMatch,
+                    ApplyWithError(args =>
+                        {
+                            var value = false;
+                            string error = null;
+
+                            if (string.IsNullOrEmpty(args[0]))
+                            {
+                                value = false;
+                                error = "regular expression is empty.";
+                            }
+                            else
+                            {
+                                var regex = CommonRegex.CreateRegex(args[1]);
+                                value = regex.IsMatch(args[0]);
+                            }
+                            return (value, error);
+                        }),
+                    ReturnType.Boolean,
+                    ValidateIsMatch),
             };
 
             var lookup = new Dictionary<string, ExpressionEvaluator>();

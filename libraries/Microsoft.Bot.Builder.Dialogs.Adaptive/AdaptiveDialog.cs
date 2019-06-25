@@ -24,11 +24,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// </summary>
     public class AdaptiveDialog : DialogContainer
     {
-        private string changeKey = Guid.NewGuid().ToString();
         private const string ADAPTIVE_KEY = "adaptiveDialogState";
-        private bool installedDependencies = false;
 
-        protected DialogSet runDialogs = new DialogSet(); // Used by the Run method
+        private readonly string changeKey = Guid.NewGuid().ToString();
+        
+        private bool installedDependencies = false;
 
         public IStatePropertyAccessor<BotState> BotState { get; set; }
 
@@ -95,31 +95,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 throw new ArgumentException($"{nameof(options)} should not ever be a cancellation token");
             }
 
-            lock (this)
-            {
-                if (!installedDependencies)
-                {
-                    installedDependencies = true;
-
-                    AddDialog(this.Steps.ToArray());
-
-                    foreach (var rule in this.Rules)
-                    {
-                        AddDialog(rule.Steps.ToArray());
-                    }
-
-                    // Wire up selector
-                    if (this.Selector == null)
-                    {
-                        // Default to most specific then first
-                        this.Selector = new MostSpecificSelector
-                        {
-                            Selector = new FirstSelector()
-                        };
-                    }
-                    this.Selector.Initialize(this.Rules, true);
-                }
-            }
+            EnsureDependenciesInstalled();
 
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
             activeDialogState[ADAPTIVE_KEY] = new AdaptiveDialogState();
@@ -150,6 +126,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
+            EnsureDependenciesInstalled();
+
             // Continue step execution
             return await ContinueStepsAsync(dc, cancellationToken).ConfigureAwait(false);
         }
@@ -510,6 +488,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 }
             }
             return false;
+        }
+
+        private void EnsureDependenciesInstalled()
+        {
+            lock (this)
+            {
+                if (!installedDependencies)
+                {
+                    installedDependencies = true;
+
+                    AddDialog(this.Steps.ToArray());
+
+                    foreach (var rule in this.Rules)
+                    {
+                        AddDialog(rule.Steps.ToArray());
+                    }
+
+                    // Wire up selector
+                    if (this.Selector == null)
+                    {
+                        // Default to most specific then first
+                        this.Selector = new MostSpecificSelector
+                        {
+                            Selector = new FirstSelector()
+                        };
+                    }
+                    this.Selector.Initialize(this.Rules, true);
+                }
+            }
         }
 
         private bool ShouldEnd(DialogContext dc)

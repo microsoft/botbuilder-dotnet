@@ -138,5 +138,8 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string SetProperty = "setProperty";
         public const string Coalesce = "coalesce";
         public const string XPath = "xPath";
+
+        // Regular expression
+        public const string IsMatch = "isMatch";
     }
 }
