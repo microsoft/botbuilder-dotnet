@@ -16,6 +16,15 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// Defines the core behavior of prompt dialogs.
     /// </summary>
     /// <typeparam name="T">The type of value the prompt returns.</typeparam>
+    /// <remarks>When the prompt ends, it should return a <typeparamref name="T"/> object that
+    /// represents the value that was prompted for.
+    /// Use <see cref="DialogSet.Add(Dialog)"/> or <see cref="ComponentDialog.AddDialog(Dialog)"/>
+    /// to add a prompt to a dialog set or component dialog, respectively.
+    /// Use <see cref="DialogContext.PromptAsync(string, PromptOptions, CancellationToken)"/> or
+    /// <see cref="DialogContext.BeginDialogAsync(string, object, CancellationToken)"/> to start the prompt.
+    /// If you start a prompt from a <see cref="WaterfallStep"/> in a <see cref="WaterfallDialog"/>,
+    /// then the prompt result will be available in the next step of the waterfall.
+    /// </remarks>
     public abstract class Prompt<T> : Dialog
     {
         internal const string AttemptCountKey = "AttemptCount";
@@ -31,6 +40,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialogId">The ID to assign to this prompt.</param>
         /// <param name="validator">Optional, a <see cref="PromptValidator{T}"/> that contains additional,
         /// custom validation for this prompt.</param>
+        /// <remarks>The value of <paramref name="dialogId"/> must be unique within the
+        /// <see cref="DialogSet"/> or <see cref="ComponentDialog"/> to which the prompt is added.</remarks>
         public Prompt(string dialogId, PromptValidator<T> validator = null)
             : base(dialogId)
         {

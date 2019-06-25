@@ -10,12 +10,12 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
-    /// Defines the core behavior of a prompt that waits for an activity to be received.
+    /// Defines the core behavior of a prompt dialog that waits for an activity to be received.
     /// </summary>
     /// <remarks>
     /// This prompt requires a validator be passed in and is useful when waiting for non-message
-    /// activities like an event to be received.The validator can ignore received events until the
-    /// expected activity is received.
+    /// activities like an event to be received.The validator can ignore received activities until
+    /// the expected activity type is received.
     /// </remarks>
     public abstract class ActivityPrompt : Dialog
     {
@@ -26,9 +26,13 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ActivityPrompt"/> class.
+        /// Called from constructors in derived classes to initialize the <see cref="ActivityPrompt"/> class.
         /// </summary>
-        /// <param name="dialogId">Unique ID of the dialog within its parent <see cref="DialogSet"/> or <see cref="ComponentDialog"/>.</param>
-        /// <param name="validator">Validator that will be called each time a new activity is received.</param>
+        /// <param name="dialogId">The ID to assign to this prompt.</param>
+        /// <param name="validator">A <see cref="PromptValidator{Activity}"/> that contains
+        /// validation for this prompt.</param>
+        /// <remarks>The value of <paramref name="dialogId"/> must be unique within the
+        /// <see cref="DialogSet"/> or <see cref="ComponentDialog"/> to which the prompt is added.</remarks>
         public ActivityPrompt(string dialogId, PromptValidator<Activity> validator)
             : base(dialogId)
         {
@@ -36,12 +40,15 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Method called when a new dialog has been pushed onto the stack and is being activated.
+        /// Called when a prompt dialog is pushed onto the dialog stack and is being activated.
         /// </summary>
-        /// <param name="dc">The dialog context for the current turn of conversation.</param>
-        /// <param name="options">(Optional) additional argument(s) to pass to the dialog being started.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="dc">The dialog context for the current turn of the conversation.</param>
+        /// <param name="options">Optional, additional information to pass to the prompt being started.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <remarks>If the task is successful, the result indicates whether the prompt is still
+        /// active after the turn has been processed by the prompt.</remarks>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
@@ -80,14 +87,16 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Method called when an instance of the dialog is the "current" dialog and the
-        /// user replies with a new activity. The dialog will generally continue to receive the user's
-        /// replies until it calls either `EndDialogAsync()` or `BeginDialogAsync()`.
-        /// If this method is NOT implemented then the dialog will automatically be ended when the user replies.
+        /// Called when a prompt dialog is the active dialog and the user replied with a new activity.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of conversation.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <remarks>If the task is successful, the result indicates whether the dialog is still
+        /// active after the turn has been processed by the dialog.
+        /// <para>The prompt generally continues to receive the user's replies until it accepts the
+        /// user's reply as valid input for the prompt.</para></remarks>
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
@@ -129,17 +138,18 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Method called when an instance of the dialog is being returned to from another
-        /// dialog that was started by the current instance using `BeginDialogAsync()`.
-        /// If this method is NOT implemented then the dialog will be automatically ended with a call
-        /// to `EndDialogAsync()`. Any result passed from the called dialog will be passed
-        /// to the current dialog's parent.
+        /// Called when a prompt dialog resumes being the active dialog on the dialog stack, such as
+        /// when the previous active dialog on the stack completes.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of the conversation.</param>
-        /// <param name="reason">Reason why the dialog resumed.</param>
-        /// <param name="result">(Optional) value returned from the dialog that was called. The type of the value returned is dependent on the dialog that was called.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="reason">An enumeration values that indicates why the dialog resumed.</param>
+        /// <param name="result">Optional, value returned from the previous dialog on the stack.
+        /// The type of the value returned is dependent on the previous dialog.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <remarks>If the task is successful, the result indicates whether the dialog is still
+        /// active after the turn has been processed by the dialog.</remarks>
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Prompts are typically leaf nodes on the stack but the dev is free to push other dialogs
@@ -152,11 +162,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Method called when the dialog has been requested to re-prompt the user for input.
+        /// Called when a prompt dialog has been requested to re-prompt the user for input.
         /// </summary>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
         /// <param name="instance">The instance of the dialog on the stack.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -193,6 +204,17 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
+        /// <summary>
+        /// When overridden in a derived class, attempts to recognize the incoming activity.
+        /// </summary>
+        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
+        /// <param name="state">Contains state for the current instance of the prompt on the dialog stack.</param>
+        /// <param name="options">A prompt options object constructed from the options initially provided
+        /// in the call to <see cref="DialogContext.PromptAsync(string, PromptOptions, CancellationToken)"/>.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <remarks>If the task is successful, the result describes the result of the recognition attempt.</remarks>
         protected virtual Task<PromptRecognizerResult<Activity>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(new PromptRecognizerResult<Activity>
