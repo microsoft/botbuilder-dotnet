@@ -28,20 +28,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         public Expression Value { get; set; }
 
         /// <summary>
-        /// Property which is bidirectional property for input and output.  Example: user.age will be passed in, and user.age will be set when the dialog completes
+        /// Property to put the value in
         /// </summary>
-        public string Property
-        {
-            get
-            {
-                return OutputBinding;
-            }
-            set
-            {
-                InputBindings["value"] = value;
-                OutputBinding = value;
-            }
-        }
+        public string Property { get; set; }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -58,6 +47,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
                 if (error == null)
                 {
+                    dc.State.SetValue(Property, value);
+
                     var sc = dc as SequenceContext;
 
                     // If this step interrupted a step in the active plan
@@ -68,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     }
                 }
 
-                return await planning.EndDialogAsync(value, cancellationToken: cancellationToken).ConfigureAwait(false);
+                return await planning.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else
             {

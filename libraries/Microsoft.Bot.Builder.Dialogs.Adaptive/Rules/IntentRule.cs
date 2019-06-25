@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
     public class IntentRule : EventRule
     {
         [JsonConstructor]
-        public IntentRule(string intent = null, List<string> entities = null, List<IDialog> steps = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public IntentRule(string intent = null, List<string> entities = null, List<IDialog> steps = null, Expression constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(events: new List<string>()
             {
                 AdaptiveEvents.RecognizedIntent

@@ -41,9 +41,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         private Dictionary<string, Expression> caseExpressions = null;
 
         /// <summary>
-        /// Condition expression against memory Example: "user.age"
+        /// Condition expression against memory Example: "user.age > 18"
         /// </summary>
-        public string Condition { get; set; }
+        [JsonProperty("condition")]
+        public Expression Condition { get; set; }
 
         /// <summary>
         /// Cases
@@ -74,13 +75,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 lock (this.Condition)
                 {
                     var engine = new ExpressionEngine();
-                    Expression condition = engine.Parse(this.Condition);
                     if (this.caseExpressions == null)
                     {
                         this.caseExpressions = new Dictionary<string, Expression>();
                         foreach (var c in this.Cases)
                         {
-                            var caseCondition = Expression.EqualsExpression(condition, engine.Parse(c.Value));
+                            var caseCondition = Expression.EqualsExpression(this.Condition, engine.Parse(c.Value));
                             // map of expression to steps
                             this.caseExpressions[c.Value] = caseCondition;
                         }

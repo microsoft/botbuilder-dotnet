@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
             var handleChoice = new SwitchCondition()
             {
-                Condition = "conversation.dialogChoice",
+                Condition = new ExpressionEngine().Parse("conversation.dialogChoice"),
                 Cases = new List<Case>()
             };
 

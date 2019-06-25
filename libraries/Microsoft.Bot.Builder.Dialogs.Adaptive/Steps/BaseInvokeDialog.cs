@@ -35,11 +35,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         {
             get
             {
-                return InputBindings.TryGetValue("value", out string value) ? value : null;
+                return InputBindings.TryGetValue(DialogContextState.DIALOG_VALUE, out string value) ? value : null;
             }
             set
             {
-                InputBindings["value"] = value;
+                InputBindings[DialogContextState.DIALOG_VALUE] = value;
                 OutputBinding = value;
             }
         }

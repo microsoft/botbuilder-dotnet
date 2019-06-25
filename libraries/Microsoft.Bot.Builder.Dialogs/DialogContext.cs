@@ -63,16 +63,34 @@ namespace Microsoft.Bot.Builder.Dialogs
             State.SetValue(DialogContextState.TURN_ACTIVITY, Context.Activity);
         }
 
+        /// <summary>
+        /// Parent context.
+        /// </summary>
         public DialogContext Parent { get; set; }
 
+        /// <summary>
+        /// Set of dialogs which are active for the current dialog container.
+        /// </summary>
         public DialogSet Dialogs { get; private set; }
 
+        /// <summary>
+        /// Turn context.
+        /// </summary>
         public ITurnContext Context { get; private set; }
 
+        /// <summary>
+        /// Stack of active dialogs and their dialog state.
+        /// </summary>
         public List<DialogInstance> Stack { get; private set; }
 
+        /// <summary>
+        /// Current active scoped state with (user|conversation|dialog|settings scopes).
+        /// </summary>
         public DialogContextState State { get; private set; }
 
+        /// <summary>
+        /// Dialog context for child if there is an active child.
+        /// </summary>
         public DialogContext Child
         {
             get
@@ -161,6 +179,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
+        /// <summary>
+        /// The current dialog state for the active dialog.
+        /// </summary>
         public Dictionary<string, object> DialogState
         {
             get
@@ -253,20 +274,27 @@ namespace Microsoft.Bot.Builder.Dialogs
             Stack.Insert(0, instance);
             activeTags = null;
 
-            var activeDialogState = GetActiveDialogState(this, instance.State, instance.StackIndex);
+            // take the bindings (dialog.xxx => dialog.yyy) 
             foreach (var property in bindings)
             {
-                activeDialogState[property.Key] = property.Value;
+                // make sure the key is a dialog property this is only used for dialog bindings
+                if (!property.Key.StartsWith("$") && !property.Key.ToLower().StartsWith("dialog."))
+                {
+                    throw new ArgumentOutOfRangeException($"{property.Key} is not a dialog property");
+                }
+
+                // Set the dialog property in the current state to the value from the bindings
+                State.SetValue(property.Key, property.Value);
             }
 
             // set dialog result
             if (dialog is DialogCommand)
             {
-                State.SetValue(DialogContextState.STEP_OPTIONS_PROPERTY, bindings);
+                State.SetValue(DialogContextState.STEP_OPTIONS_PROPERTY, options);
             }
             else
             {
-                State.SetValue(DialogContextState.DIALOG_OPTIONS, bindings);
+                State.SetValue(DialogContextState.DIALOG_OPTIONS, options);
             }
 
             // Call dialogs BeginAsync() method.

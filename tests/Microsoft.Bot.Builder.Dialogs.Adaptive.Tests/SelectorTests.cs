@@ -11,6 +11,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -21,6 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         private TestFlow CreateFlow(IRuleSelector selector)
         {
+            var ee = new ExpressionEngine();
             TypeFactory.Configuration = new ConfigurationBuilder().Build();
             var storage = new MemoryStorage();
             var convoState = new ConversationState(storage);
@@ -46,13 +48,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             };
             dialog.AddRules(new List<IRule>()
             {
-                new IntentRule("a", steps: new List<IDialog> { new SetProperty {  OutputBinding = "user.a", Value = Expression.ConstantExpression(1) } }),
-                new IntentRule("b", steps: new List<IDialog> { new SetProperty {  OutputBinding = "user.b", Value = Expression.ConstantExpression(1) } }),
-                new IntentRule("trigger", constraint:"user.a == 1", steps: new List<IDialog> { new SendActivity("ruleA1") }),
-                new IntentRule("trigger", constraint:"user.a == 1", steps: new List<IDialog> { new SendActivity("ruleA2") }),
-                new IntentRule("trigger", constraint:"user.b == 1 || user.c == 1", steps: new List<IDialog> { new SendActivity("ruleBorC") }),
-                new IntentRule("trigger", constraint:"user.a == 1 && user.b == 1", steps: new List<IDialog> { new SendActivity("ruleAandB") }),
-                new IntentRule("trigger", constraint:"user.a == 1 && user.c == 1", steps: new List<IDialog> { new SendActivity("ruleAandC") }),
+                new IntentRule("a", steps: new List<IDialog> { new SetProperty { Property = "user.a", Value = Expression.ConstantExpression(1) } }),
+                new IntentRule("b", steps: new List<IDialog> { new SetProperty { Property = "user.b", Value = Expression.ConstantExpression(1) } }),
+                new IntentRule("trigger", constraint: ee.Parse("user.a == 1"), steps: new List<IDialog> { new SendActivity("ruleA1") }),
+                new IntentRule("trigger", constraint: ee.Parse("user.a == 1"), steps: new List<IDialog> { new SendActivity("ruleA2") }),
+                new IntentRule("trigger", constraint: ee.Parse("user.b == 1 || user.c == 1"), steps: new List<IDialog> { new SendActivity("ruleBorC") }),
+                new IntentRule("trigger", constraint: ee.Parse("user.a == 1 && user.b == 1"), steps: new List<IDialog> { new SendActivity("ruleAandB") }),
+                new IntentRule("trigger", constraint: ee.Parse("user.a == 1 && user.c == 1"), steps: new List<IDialog> { new SendActivity("ruleAandC") }),
                 new IntentRule("trigger", steps: new List<IDialog> { new SendActivity("default")})
             });
             dialog.AutoEndDialog = false;

@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         },
                         new SwitchCondition()
                         {
-                            Condition = "user.name",
+                            Condition = new ExpressionEngine().Parse("user.name"),
                             Cases = new List<Case>()
                             {
                                 new Case("'susan'", new List<IDialog>() { new SendActivity("hi susan") } ),
@@ -210,7 +210,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     Property = "user.name",
                                     Validations = new List<Expression>()
                                     {
-                                        new ExpressionEngine().Parse("turn._input.Length > 3")
+                                        new ExpressionEngine().Parse("turn.value.Length > 3")
                                     }
                                 }
                             }
@@ -268,6 +268,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("I need a yes or no. (1) Yes or (2) No")
             .Send("yes")
                 .AssertReply("confirmation: True")
+                .AssertReply("confirmation: True")
                 .AssertReply("yes or no (1) Yes or (2) No")
             .Send("nope")
                 .AssertReply("confirmation: False")
@@ -320,6 +321,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("Not a color. Please select a color: (1) red, (2) green, or (3) blue")
             .Send("blue")
                 .AssertReply("blue")
+                .AssertReply("blue")
                 .AssertReply("Please select a color: (1) red, (2) green, or (3) blue")
             .Send("red")
                 .AssertReply("red")
@@ -348,7 +350,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             OutputFormat = NumberOutputFormat.Integer,
                             Validations = new List<Expression>()
                             {
-                                new ExpressionEngine().Parse("turn._input > 0 && turn._input < 150")
+                                new ExpressionEngine().Parse("turn.value > 0 && turn.value < 150")
                             }
                         },
                         new SendActivity("I have your age as {user.userProfile.Age}."),
@@ -421,7 +423,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     Property = "user.name",
                                     Validations = new List<Expression>()
                                     {
-                                        new ExpressionEngine().Parse("turn._input.Length > 3")
+                                        new ExpressionEngine().Parse("turn.value.Length > 3")
                                     }
                                 }
                             }

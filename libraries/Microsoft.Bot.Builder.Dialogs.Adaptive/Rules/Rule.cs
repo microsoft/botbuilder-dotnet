@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         private List<Expression> extraConstraints = new List<Expression>();
 
         [JsonConstructor]
-        public Rule(string constraint = null, List<IDialog> steps = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public Rule(Expression constraint = null, List<IDialog> steps = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
 
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         /// <summary>
         /// Gets or sets the constraint to apply to the rule (OPTIONAL) 
         /// </summary>
-        public string Constraint { get; set; }
+        public Expression Constraint { get; set; }
 
         /// <summary>
         /// Gets or sets the steps to add to the plan when the rule constraints are met
@@ -65,9 +65,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         protected virtual Expression BuildExpression(IExpressionParser factory)
         {
             List<Expression> allExpressions = new List<Expression>();
-            if (!String.IsNullOrEmpty(this.Constraint))
+            if (this.Constraint != null)
             {
-                allExpressions.Add(factory.Parse(this.Constraint));
+                allExpressions.Add(this.Constraint);
             }
 
             if (this.extraConstraints.Any())

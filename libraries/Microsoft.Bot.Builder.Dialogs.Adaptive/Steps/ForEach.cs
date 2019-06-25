@@ -21,19 +21,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     public class Foreach : DialogCommand, IDialogDependencies
     {
         // Expression used to compute the list that should be enumerated.
-        [JsonProperty("ListProperty")]
+        [JsonProperty("listProperty")]
         public Expression ListProperty { get; set; }
 
         // In-memory property that will contain the current items index. Defaults to `dialog.index`.
-        [JsonProperty("IndexProperty")]
+        [JsonProperty("indexProperty")]
         public string IndexProperty { get; set; } = "dialog.index";
 
         // In-memory property that will contain the current items value. Defaults to `dialog.value`.
-        [JsonProperty("ValueProperty")]
-        public string ValueProperty { get; set; } = "dialog.value";
+        [JsonProperty("valueProperty")]
+        public string ValueProperty { get; set; } = DialogContextState.DIALOG_VALUE;
 
         // Steps to be run for each of items.
-        [JsonProperty("Steps")]
+        [JsonProperty("steps")]
         public List<IDialog> Steps { get; set; } = new List<IDialog>();
 
         [JsonConstructor]

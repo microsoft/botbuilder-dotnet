@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             }
             set
             {
-                InputBindings["value"] = value;
+                InputBindings[DialogContextState.DIALOG_VALUE] = value;
                 OutputBinding = value;
             }
         }

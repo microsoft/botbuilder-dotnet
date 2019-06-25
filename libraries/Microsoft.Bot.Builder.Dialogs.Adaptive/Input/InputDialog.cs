@@ -66,15 +66,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
             set
             {
-                InputBindings["value"] = value;
+                InputBindings[DialogContextState.DIALOG_VALUE] = value;
                 OutputBinding = value;
             }
         }
 
-        public static readonly string OPTIONS_PROPERTY = "dialog.options";
-        public static readonly string INITIAL_VALUE_PROPERTY = "dialog.value";
-        public static readonly string TURN_COUNT_PROPERTY = "dialog.turnCount";
-        public static readonly string INPUT_PROPERTY = "turn.value";
+        public const string TURN_COUNT_PROPERTY = "dialog.turnCount";
+        public const string INPUT_PROPERTY = "turn.value";
 
         private const string PersistedOptions = "options";
         private const string PersistedState = "state";
@@ -87,7 +85,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             var op = OnInitializeOptions(dc, options);
-            dc.State.SetValue(OPTIONS_PROPERTY, op);
+            dc.State.SetValue(DialogContextState.DIALOG_OPTIONS, op);
             dc.State.SetValue(TURN_COUNT_PROPERTY, 0);
             dc.State.SetValue(INPUT_PROPERTY, null);
 
@@ -282,7 +280,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY);
                 if (turnCount == 0)
                 {
-                    input = dc.State.GetValue<object>(INITIAL_VALUE_PROPERTY, null);
+                    input = dc.State.GetValue<object>(DialogContextState.DIALOG_VALUE, null);
                 }
                 else
                 {

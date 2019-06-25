@@ -19,13 +19,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public BindingTestDialog(string dialogId, string inputBinding, string outputBinding)
             : base(dialogId)
         {
-            this.InputBindings["value"] = inputBinding;
+            this.InputBindings[DialogContextState.DIALOG_VALUE] = inputBinding;
             this.OutputBinding = outputBinding;
         }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var bindingValue = dc.State.GetValue<string>("dialog.result.value");
+            var bindingValue = dc.State.GetValue<string>(DialogContextState.DIALOG_VALUE);
             return await dc.EndDialogAsync(bindingValue).ConfigureAwait(false);
         }
     }
@@ -310,12 +310,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 async (step, cancellationToken) =>
                 {
                     await Task.Delay(0);
-                    Assert.AreEqual("bill", step.State.GetValue<string>("dialog.result.name"));
+                    Assert.AreEqual("bill", step.State.GetValue<string>("dialog.name"));
                     return Dialog.EndOfTurn;
                 }
             }));
 
-            dialogs.Add(new BindingTestDialog("b", "user.profile.name", "dialog.result.name"));
+            dialogs.Add(new BindingTestDialog("b", "user.profile.name", "dialog.name"));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {

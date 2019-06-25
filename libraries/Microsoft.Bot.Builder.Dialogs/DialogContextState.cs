@@ -50,6 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Common state properties paths.
         /// </summary>
         public const string DIALOG_OPTIONS = "dialog.options";
+        public const string DIALOG_VALUE = "dialog.value";
 
         public const string TURN_ACTIVITY = "turn.activity";
         public const string TURN_RECOGNIZED = "turn.recognized";
@@ -59,7 +60,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         public const string TURN_DIALOGEVENT = "turn.dialogEvent";
 
         public const string STEP_OPTIONS_PROPERTY = "dialog.step.options";
-
 
         /// <summary>
         /// Gets or sets settings for the application.
@@ -228,6 +228,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (value is Task)
             {
                 throw new Exception($"{pathExpression} = You can't pass an unresolved Task to SetValue");
+            }
+
+            if (pathExpression.StartsWith("$"))
+            {
+                pathExpression = $"dialog.{pathExpression.Substring(1)}";
             }
 
             // If the json path does not exist

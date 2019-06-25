@@ -23,6 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     public class AdaptiveDialogTests
     {
         public TestContext TestContext { get; set; }
+        public ExpressionEngine expressionEngine = new ExpressionEngine();
 
         private TestFlow CreateFlow(AdaptiveDialog ruleDialog)
         {
@@ -813,7 +814,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new EventActivityRule(steps: new List<IDialog>() { new SendActivity("EventActivityRule") }),
                     new HandoffActivityRule(steps: new List<IDialog>() { new SendActivity("HandoffActivityRule") }),
                     new TypingActivityRule(steps: new List<IDialog>() { new SendActivity("TypingActivityRule") }),
-                    new MessageActivityRule(constraint: "turn.activity.text == 'constraint'", steps: new List<IDialog>() { new SendActivity("constraint") }),
+                    new MessageActivityRule(constraint: expressionEngine.Parse("turn.activity.text == 'constraint'"), steps: new List<IDialog>() { new SendActivity("constraint") }),
                 }
             };
 
@@ -861,7 +862,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 Rules = new List<IRule>()
                 {
                     new IntentRule(intent: "JokeIntent", steps: new List<IDialog>() { new SendActivity("chicken joke") }),
-                    new MessageActivityRule(constraint: "turn.activity.text == 'magic'", steps: new List<IDialog>() { new SendActivity("abracadabra") }),
+                    new MessageActivityRule(constraint: expressionEngine.Parse("turn.activity.text == 'magic'"), steps: new List<IDialog>() { new SendActivity("abracadabra") }),
                 }
             };
 
