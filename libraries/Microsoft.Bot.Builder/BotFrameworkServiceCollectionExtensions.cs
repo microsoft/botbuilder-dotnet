@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.Bot.StreamingExtensions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Bot.Builder
