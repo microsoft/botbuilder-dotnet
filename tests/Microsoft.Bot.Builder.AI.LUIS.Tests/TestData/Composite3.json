@@ -2,37 +2,37 @@
   "text": "Deliver from 12345 VA to 12346 WA",
   "intents": {
     "Roles": {
-      "score": 0.9999103
+      "score": 0.999888361
     },
     "Delivery": {
-      "score": 0.002187348
+      "score": 0.00234605442
     },
     "search": {
-      "score": 8.737297E-06
-    },
-    "SpecifyName": {
-      "score": 2.84510975E-06
+      "score": 9.343347E-06
     },
     "Travel": {
-      "score": 2.84510975E-06
+      "score": 3.04712876E-06
     },
     "None": {
-      "score": 1.07744E-06
+      "score": 1.15824787E-06
     },
     "Weather_GetForecast": {
-      "score": 9.387989E-07
+      "score": 1.01009994E-06
+    },
+    "SpecifyName": {
+      "score": 3.01666669E-09
     },
     "Greeting": {
-      "score": 9.9375E-10
+      "score": 1.06875E-09
     },
     "Cancel": {
-      "score": 9.2941177E-10
+      "score": 1E-09
     },
     "Help": {
-      "score": 9.2941177E-10
+      "score": 1E-09
     },
     "EntityTests": {
-      "score": 4.6451612E-10
+      "score": 4.6666665E-10
     }
   },
   "entities": {
@@ -43,7 +43,7 @@
           "endIndex": 21,
           "text": "12345 va",
           "type": "Address",
-          "score": 0.934437752
+          "score": 0.9377045
         }
       ],
       "Destination": [
@@ -52,7 +52,7 @@
           "endIndex": 33,
           "text": "12346 wa",
           "type": "Address",
-          "score": 0.9827704
+          "score": 0.9818967
         }
       ]
     },
@@ -74,7 +74,7 @@
               "endIndex": 21,
               "text": "va",
               "type": "State",
-              "score": 0.9457865
+              "score": 0.9417667
             }
           ]
         },
@@ -104,7 +104,7 @@
               "endIndex": 33,
               "text": "wa",
               "type": "State",
-              "score": 0.9903071
+              "score": 0.9899993
             }
           ]
         },
@@ -125,52 +125,52 @@
     "query": "Deliver from 12345 VA to 12346 WA",
     "topScoringIntent": {
       "intent": "Roles",
-      "score": 0.9999103
+      "score": 0.999888361
     },
     "intents": [
       {
         "intent": "Roles",
-        "score": 0.9999103
+        "score": 0.999888361
       },
       {
         "intent": "Delivery",
-        "score": 0.002187348
+        "score": 0.00234605442
       },
       {
         "intent": "search",
-        "score": 8.737297E-06
-      },
-      {
-        "intent": "SpecifyName",
-        "score": 2.84510975E-06
+        "score": 9.343347E-06
       },
       {
         "intent": "Travel",
-        "score": 2.84510975E-06
+        "score": 3.04712876E-06
       },
       {
         "intent": "None",
-        "score": 1.07744E-06
+        "score": 1.15824787E-06
       },
       {
         "intent": "Weather.GetForecast",
-        "score": 9.387989E-07
+        "score": 1.01009994E-06
+      },
+      {
+        "intent": "SpecifyName",
+        "score": 3.01666669E-09
       },
       {
         "intent": "Greeting",
-        "score": 9.9375E-10
+        "score": 1.06875E-09
       },
       {
         "intent": "Cancel",
-        "score": 9.2941177E-10
+        "score": 1E-09
       },
       {
         "intent": "Help",
-        "score": 9.2941177E-10
+        "score": 1E-09
       },
       {
         "intent": "EntityTests",
-        "score": 4.6451612E-10
+        "score": 4.6666665E-10
       }
     ],
     "entities": [
@@ -179,21 +179,21 @@
         "type": "State",
         "startIndex": 19,
         "endIndex": 20,
-        "score": 0.9457865
+        "score": 0.9417667
       },
       {
         "entity": "wa",
         "type": "State",
         "startIndex": 31,
         "endIndex": 32,
-        "score": 0.9903071
+        "score": 0.9899993
       },
       {
         "entity": "12345 va",
         "type": "Address",
         "startIndex": 13,
         "endIndex": 20,
-        "score": 0.934437752,
+        "score": 0.9377045,
         "role": "Source"
       },
       {
@@ -201,7 +201,7 @@
         "type": "Address",
         "startIndex": 25,
         "endIndex": 32,
-        "score": 0.9827704,
+        "score": 0.9818967,
         "role": "Destination"
       },
       {

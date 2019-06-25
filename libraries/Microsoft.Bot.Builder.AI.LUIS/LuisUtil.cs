@@ -85,14 +85,21 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
         internal static JToken ExtractEntityValue(EntityModel entity)
         {
+            if (entity.Type.StartsWith("builtin.geographyV2."))
+            {
+                var subtype = entity.Type.Substring(20);
+                return new JObject(
+                    new JProperty("type", subtype),
+                    new JProperty("location", entity.Entity));
+            }
+
 #pragma warning disable IDE0007 // Use implicit type
-            if (entity.AdditionalProperties == null || !entity.AdditionalProperties.TryGetValue("resolution", out dynamic resolution))
+            else if (entity.AdditionalProperties == null || !entity.AdditionalProperties.TryGetValue("resolution", out dynamic resolution))
 #pragma warning restore IDE0007 // Use implicit type
             {
                 return entity.Entity;
             }
-
-            if (entity.Type.StartsWith("builtin.datetime."))
+            else if (entity.Type.StartsWith("builtin.datetime."))
             {
                 return JObject.FromObject(resolution);
             }
@@ -108,6 +115,12 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 var timexes = resolutionValues.Select(val => val.timex);
                 var distinctTimexes = timexes.Distinct();
                 return new JObject(new JProperty("type", type), new JProperty("timex", JArray.FromObject(distinctTimexes)));
+            }
+            else if (entity.Type.StartsWith("builtin.ordinalV2"))
+            {
+                return new JObject(
+                    new JProperty("relativeTo", resolution.relativeTo),
+                    new JProperty("offset", Number(resolution.offset)));
             }
             else
             {
@@ -184,13 +197,19 @@ namespace Microsoft.Bot.Builder.AI.Luis
             {
                 type = "datetime";
             }
-
-            if (type.StartsWith("builtin.currency"))
+            else if (type.StartsWith("builtin.currency"))
             {
                 type = "money";
             }
-
-            if (type.StartsWith("builtin."))
+            else if (type.StartsWith("builtin.geographyV2"))
+            {
+                type = "geographyV2";
+            }
+            else if (type.StartsWith("builtin.ordinalV2"))
+            {
+                type = "ordinalV2";
+            }
+            else if (type.StartsWith("builtin."))
             {
                 type = type.Substring(8);
             }
@@ -270,9 +289,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             => entity.StartIndex >= compositeEntityMetadata.StartIndex &&
                    entity.EndIndex <= compositeEntityMetadata.EndIndex;
 
-        /// <summary>
-        /// If a property doesn't exist add it to a new array, otherwise append it to the existing array.
-        /// </summary>
+        // If a property doesn't exist add it to a new array, otherwise append it to the existing array.
         internal static void AddProperty(JObject obj, string key, JToken value)
         {
             if (value != null)

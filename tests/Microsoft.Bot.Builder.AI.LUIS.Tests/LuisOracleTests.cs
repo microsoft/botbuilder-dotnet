@@ -25,6 +25,7 @@ using RichardSzalay.MockHttp;
 namespace Microsoft.Bot.Builder.AI.Luis.Tests
 {
     [TestClass]
+
     // The LUIS application used in these unit tests is in TestData/Contoso App.json
     public class LuisOracleTests
     {
@@ -84,7 +85,6 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         public void LuisRecognizer_Timeout()
         {
             var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
-            var fieldInfo = typeof(LuisRecognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
             var optionsWithTimeout = new LuisPredictionOptions()
             {
                 Timeout = 300,
@@ -436,7 +436,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         public async Task TestEndpoint<T>(string expectedPath, JToken oracle, string version)
             where T : IRecognizerConvert, new()
         {
-            var newPath = expectedPath + "-" + version + ".new";
+            var newPath = expectedPath + ".new";
             using (var mockResponse = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(oracle[version]))))
             {
                 var text = oracle["text"] ?? oracle["Text"];
@@ -447,6 +447,8 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true });
                 var typedResult = await luisRecognizer.RecognizeAsync<T>(context, CancellationToken.None);
                 var typedJson = Json(typedResult);
+                typedJson[version] = typedJson["luisResult"];
+                typedJson.Remove("luisResult");
 
                 if (!WithinDelta(oracle, typedJson, 0.1))
                 {
@@ -538,6 +540,9 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
         [TestMethod]
         public async Task Composite3() => await TestJson<RecognizerResult>("Composite3.json");
+
+        [TestMethod]
+        public async Task GeoPeopleOrdinal() => await TestJson<RecognizerResult>("GeoPeopleOrdinal.json");
 
         [TestMethod]
         public async Task PrebuiltDomains() => await TestJson<RecognizerResult>("Prebuilt.json");
@@ -685,6 +690,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             var result = await recognizer.RecognizeAsync(turnContext, additionalProperties).ConfigureAwait(false);
 
             // Assert
+            Assert.IsNotNull(result);
             Assert.AreEqual(telemetryClient.Invocations.Count, 1);
             Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0].ToString(), "LuisResult");
             Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("test"));
@@ -731,6 +737,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             var result = await recognizer.RecognizeAsync(turnContext, null).ConfigureAwait(false);
 
             // Assert
+            Assert.IsNotNull(result);
             Assert.AreEqual(telemetryClient.Invocations.Count, 1);
             Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0].ToString(), "LuisResult");
             Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).Count == 8);
@@ -777,6 +784,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             var result = await recognizer.RecognizeAsync(turnContext, null).ConfigureAwait(false);
 
             // Assert
+            Assert.IsNotNull(result);
             Assert.AreEqual(telemetryClient.Invocations.Count, 1);
             Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0].ToString(), "LuisResult");
             Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).Count == 7);
@@ -828,6 +836,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             var result = await recognizer.RecognizeAsync(turnContext, additionalProperties).ConfigureAwait(false);
 
             // Assert
+            Assert.IsNotNull(result);
             Assert.AreEqual(telemetryClient.Invocations.Count, 2);
             Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0].ToString(), "LuisResult");
             Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("MyImportantProperty"));
@@ -885,6 +894,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             var result = await recognizer.RecognizeAsync(turnContext, additionalProperties, additionalMetrics).ConfigureAwait(false);
 
             // Assert
+            Assert.IsNotNull(result);
             Assert.AreEqual(telemetryClient.Invocations.Count, 2);
             Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0].ToString(), "LuisResult");
             Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("MyImportantProperty"));
@@ -937,6 +947,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             var result = await recognizer.RecognizeAsync(turnContext, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
+            Assert.IsNotNull(result);
             Assert.AreEqual(telemetryClient.Invocations.Count, 1);
             Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0].ToString(), "LuisResult");
             Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("applicationId"));
@@ -980,6 +991,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             var result = await recognizer.RecognizeAsync<TelemetryConvertResult>(turnContext, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
+            Assert.IsNotNull(result);
             Assert.AreEqual(telemetryClient.Invocations.Count, 1);
             Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0].ToString(), "LuisResult");
             Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("applicationId"));
@@ -1034,6 +1046,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             var result = await recognizer.RecognizeAsync<TelemetryConvertResult>(turnContext, additionalProperties, additionalMetrics, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
+            Assert.IsNotNull(result);
             Assert.AreEqual(telemetryClient.Invocations.Count, 1);
             Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0].ToString(), "LuisResult");
             Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("test"));
@@ -1170,9 +1183,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         }
 
         private MockedHttpClientHandler GetMockHttpClientHandler(string example, string responsePath)
-        {
-            return GetMockHttpClientHandler(example, GetResponse(responsePath));
-        }
+            => GetMockHttpClientHandler(example, GetResponse(responsePath));
 
         private MockedHttpClientHandler GetMockHttpClientHandler(string example, Stream response)
         {

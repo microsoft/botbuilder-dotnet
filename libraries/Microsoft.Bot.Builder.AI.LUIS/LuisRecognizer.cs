@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             }
 
             string topIntent = null;
-            double topScore = -1.0;
+            var topScore = -1.0;
             if (results.Intents.Count > 0)
             {
                 foreach (var intent in results.Intents)
@@ -189,10 +189,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>The LUIS results of the analysis of the current message text in the current turn's context activity.</returns>
-        public virtual async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return await RecognizeInternalAsync(turnContext, null, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
-        }
+        public virtual async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default)
+        => await RecognizeInternalAsync(turnContext, null, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
 
         /// <summary>
         /// Return results of the analysis (Suggested actions and intents).
@@ -204,10 +202,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>The LUIS results of the analysis of the current message text in the current turn's context activity.</returns>
-        public virtual async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, LuisPredictionOptions predictionOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return await RecognizeInternalAsync(turnContext, predictionOptions, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
-        }
+        public virtual async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, LuisPredictionOptions predictionOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default)
+        => await RecognizeInternalAsync(turnContext, predictionOptions, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
 
         /// <summary>
         /// Return results of the analysis (Suggested actions and intents).
@@ -218,7 +214,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>The LUIS results of the analysis of the current message text in the current turn's context activity.</returns>
-        public virtual async Task<T> RecognizeAsync<T>(ITurnContext turnContext, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<T> RecognizeAsync<T>(ITurnContext turnContext, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default)
             where T : IRecognizerConvert, new()
         {
             var result = new T();
@@ -237,7 +233,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>The LUIS results of the analysis of the current message text in the current turn's context activity.</returns>
-        public virtual async Task<T> RecognizeAsync<T>(ITurnContext turnContext, LuisPredictionOptions predictionOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<T> RecognizeAsync<T>(ITurnContext turnContext, LuisPredictionOptions predictionOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default)
             where T : IRecognizerConvert, new()
         {
             var result = new T();
@@ -254,7 +250,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns><see cref="Task"/>.</returns>
-        protected virtual async Task OnRecognizerResultAsync(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
+        protected virtual async Task OnRecognizerResultAsync(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default)
         {
             var properties = await FillLuisEventPropertiesAsync(recognizerResult, turnContext, telemetryProperties, cancellationToken).ConfigureAwait(false);
 
@@ -272,7 +268,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// additionalProperties
         /// <returns>A dictionary that is sent as "Properties" to IBotTelemetryClient.TrackEvent method for the BotMessageSend event.</returns>
-        protected Task<Dictionary<string, string>> FillLuisEventPropertiesAsync(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, CancellationToken cancellationToken = default(CancellationToken))
+        protected Task<Dictionary<string, string>> FillLuisEventPropertiesAsync(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, CancellationToken cancellationToken = default)
         {
             var topTwoIntents = (recognizerResult.Intents.Count > 0) ? recognizerResult.Intents.OrderByDescending(x => x.Value.Score).Take(2).ToArray() : null;
 
@@ -391,8 +387,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         }
 
         private LuisPredictionOptions MergeDefaultOptionsWithProvidedOptions(LuisPredictionOptions defaultOptions, LuisPredictionOptions overridenOptions)
-        {
-            return new LuisPredictionOptions()
+            => new LuisPredictionOptions()
             {
                 BingSpellCheckSubscriptionKey = overridenOptions.BingSpellCheckSubscriptionKey ?? defaultOptions.BingSpellCheckSubscriptionKey,
                 IncludeAllIntents = overridenOptions.IncludeAllIntents ?? defaultOptions.IncludeAllIntents,
@@ -402,7 +397,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 Staging = overridenOptions.Staging ?? defaultOptions.Staging,
                 TimezoneOffset = overridenOptions.TimezoneOffset ?? defaultOptions.TimezoneOffset,
             };
-        }
 
         private DelegatingHandler CreateHttpHandlerPipeline(HttpClientHandler httpClientHandler, params DelegatingHandler[] handlers)
         {

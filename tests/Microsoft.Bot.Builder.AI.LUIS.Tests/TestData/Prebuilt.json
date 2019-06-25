@@ -2,37 +2,37 @@
   "text": "http://foo.com is where you can get a weather forecast for seattle",
   "intents": {
     "Weather_GetForecast": {
-      "score": 0.6606207
+      "score": 0.669524968
     },
     "EntityTests": {
-      "score": 0.415276438
+      "score": 0.342939854
     },
     "Roles": {
-      "score": 0.101625636
+      "score": 0.0432791822
     },
     "None": {
-      "score": 0.0172496215
+      "score": 0.0175834317
     },
     "search": {
-      "score": 0.0112974783
+      "score": 0.014743383
     },
     "Travel": {
-      "score": 0.004495183
+      "score": 0.013458414
     },
     "SpecifyName": {
-      "score": 0.00139474764
+      "score": 0.00172697916
     },
     "Delivery": {
-      "score": 0.00116541423
+      "score": 0.0011408634
     },
     "Help": {
-      "score": 0.0005478024
+      "score": 0.0005502715
     },
     "Cancel": {
-      "score": 0.000173182227
+      "score": 0.000171828113
     },
     "Greeting": {
-      "score": 0.000154677386
+      "score": 0.0001518702
     }
   },
   "entities": {
@@ -43,7 +43,15 @@
           "endIndex": 66,
           "text": "http : / / foo . com is where you can get a weather forecast for seattle",
           "type": "Composite2",
-          "score": 0.68477273
+          "score": 0.456283748
+        }
+      ],
+      "geographyV2": [
+        {
+          "startIndex": 59,
+          "endIndex": 66,
+          "text": "seattle",
+          "type": "builtin.geographyV2.city"
         }
       ]
     },
@@ -64,7 +72,7 @@
               "endIndex": 66,
               "text": "seattle",
               "type": "Weather.Location",
-              "score": 0.756665945
+              "score": 0.76184386
             }
           ]
         },
@@ -74,6 +82,12 @@
         "Weather_Location": [
           "seattle"
         ]
+      }
+    ],
+    "geographyV2": [
+      {
+        "type": "city",
+        "location": "seattle"
       }
     ]
   },
@@ -85,52 +99,52 @@
     "query": "http://foo.com is where you can get a weather forecast for seattle",
     "topScoringIntent": {
       "intent": "Weather.GetForecast",
-      "score": 0.6606207
+      "score": 0.669524968
     },
     "intents": [
       {
         "intent": "Weather.GetForecast",
-        "score": 0.6606207
+        "score": 0.669524968
       },
       {
         "intent": "EntityTests",
-        "score": 0.415276438
+        "score": 0.342939854
       },
       {
         "intent": "Roles",
-        "score": 0.101625636
+        "score": 0.0432791822
       },
       {
         "intent": "None",
-        "score": 0.0172496215
+        "score": 0.0175834317
       },
       {
         "intent": "search",
-        "score": 0.0112974783
+        "score": 0.014743383
       },
       {
         "intent": "Travel",
-        "score": 0.004495183
+        "score": 0.013458414
       },
       {
         "intent": "SpecifyName",
-        "score": 0.00139474764
+        "score": 0.00172697916
       },
       {
         "intent": "Delivery",
-        "score": 0.00116541423
+        "score": 0.0011408634
       },
       {
         "intent": "Help",
-        "score": 0.0005478024
+        "score": 0.0005502715
       },
       {
         "intent": "Cancel",
-        "score": 0.000173182227
+        "score": 0.000171828113
       },
       {
         "intent": "Greeting",
-        "score": 0.000154677386
+        "score": 0.0001518702
       }
     ],
     "entities": [
@@ -139,14 +153,20 @@
         "type": "Weather.Location",
         "startIndex": 59,
         "endIndex": 65,
-        "score": 0.756665945
+        "score": 0.76184386
       },
       {
         "entity": "http : / / foo . com is where you can get a weather forecast for seattle",
         "type": "Composite2",
         "startIndex": 0,
         "endIndex": 65,
-        "score": 0.68477273
+        "score": 0.456283748
+      },
+      {
+        "entity": "seattle",
+        "type": "builtin.geographyV2.city",
+        "startIndex": 59,
+        "endIndex": 65
       },
       {
         "entity": "http://foo.com",
