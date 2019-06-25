@@ -13,7 +13,7 @@ namespace Microsoft.Bot.StreamingExtensions
     public static class ResponseExtensions
     {
         /// <summary>
-        /// Adds a new stream to the passed in <see cref="Response"/> containing the passed in body.
+        /// Adds a new stream to this <see cref="Response"/> containing the passed in body.
         /// Noop on empty body or null response.
         /// </summary>
         /// <param name="response">The <see cref="Response"/> instance to attach this body to.</param>
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.StreamingExtensions
         }
 
         /// <summary>
-        /// Adds a new stream to the passed in <see cref="Response"/> containing the passed in body.
+        /// Adds a new stream to this <see cref="Response"/> containing the passed in body.
         /// Noop on null body or null response.
         /// </summary>
         /// <param name="response">The <see cref="Response"/> instance to attach this body to.</param>

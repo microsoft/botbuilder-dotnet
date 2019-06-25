@@ -16,20 +16,23 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder
 {
+    /// <summary>
+    /// Used to process incoming requests sent over an <see cref="IStreamingTransport"/> and adhering to the Bot Framework Protocol v3 with Streaming Extensions.
+    /// </summary>
     public class StreamingRequestHandler : RequestHandler
     {
-        private IBot bot;
-
-        private IServiceProvider services;
-
-        private IList<IMiddleware> middlewareSet;
-
 #if DEBUG
         public
 #else
         private
 #endif
-            string userAgent;
+        string userAgent;
+
+        private IBot bot;
+
+        private IServiceProvider services;
+
+        private IList<IMiddleware> middlewareSet;
 
         private Func<ITurnContext, Exception, Task> onTurnError;
 
@@ -38,43 +41,52 @@ namespace Microsoft.Bot.Builder
         /// The StreamingRequestHandler serves as a translation layer between the transport layer and bot adapter.
         /// It receives ReceiveRequests from the transport and provides them to the bot adapter in a form
         /// it is able to build activities out of, which are then handed to the bot itself to processed.
+        /// Throws <see cref="ArgumentNullException"/> if arguments are null.
         /// </summary>
         /// <param name="onTurnError">The function to perform on turn errors.</param>
-        /// <param name="bot">The bot to be used for all requests to this handler.</param>
+        /// <param name="bot">The <see cref="IBot"/> to be used for all requests to this handler.</param>
         /// <param name="middlewareSet">An optional set of middleware to register with the bot.</param>
         public StreamingRequestHandler(Func<ITurnContext, Exception, Task> onTurnError, IBot bot, IList<IMiddleware> middlewareSet = null)
         {
-            this.bot = bot;
+            this.bot = bot ?? throw new ArgumentNullException(nameof(bot));
             this.middlewareSet = middlewareSet;
             userAgent = GetUserAgent();
-            this.onTurnError = onTurnError;
+            this.onTurnError = onTurnError ?? throw new ArgumentNullException(nameof(onTurnError));
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class.
         /// An overload for use with dependency injection via ServiceProvider, as shown
-        /// in DotNet Core samples.
+        /// in DotNet Core Bot Builder samples.
+        /// Throws <see cref="ArgumentNullException"/> if arguments are null.
         /// </summary>
         /// <param name="onTurnError">The function to perform on turn errors.</param>
         /// <param name="serviceProvider">The service collection containing the registered IBot type.</param>
         /// <param name="middlewareSet">An optional set of middleware to register with the bot.</param>
         public StreamingRequestHandler(Func<ITurnContext, Exception, Task> onTurnError, IServiceProvider serviceProvider, IList<IMiddleware> middlewareSet = null)
         {
-            services = serviceProvider;
+            services = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             this.middlewareSet = middlewareSet;
             userAgent = GetUserAgent();
-            this.onTurnError = onTurnError;
+            this.onTurnError = onTurnError ?? throw new ArgumentNullException(nameof(onTurnError));
         }
 
+        /// <summary>
+        /// Gets or sets the <see cref="IStreamingTransportServer"/> this handler listens for incoming messages on.
+        /// </summary>
+        /// <value>
+        /// The <see cref="IStreamingTransportServer"/> this handler listens for incoming messages on.
+        /// </value>
         public IStreamingTransportServer Server { get; set; }
 
         /// <summary>
         /// Processes incoming requests and returns the response, if any.
+        /// Checks the validity of the request and invokes the bot.
         /// </summary>
         /// <param name="request">A ReceiveRequest from the connected channel.</param>
-        /// <param name="context">Unused by bot implementation.</param>
-        /// <param name="logger">Optional logger.</param>
-        /// <returns>A response created by the BotAdapter.</returns>
+        /// <param name="context">Optional context to operate within. Unused in bot implementation.</param>
+        /// <param name="logger">Optional logger used to log request information and error details.</param>
+        /// <returns>A response created by the BotAdapter to be sent to the client that originated the request.</returns>
         public override async Task<Response> ProcessRequestAsync(ReceiveRequest request, object context = null, ILogger<RequestHandler> logger = null)
         {
             var response = new Response();

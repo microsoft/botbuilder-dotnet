@@ -13,7 +13,7 @@ namespace Microsoft.Bot.StreamingExtensions
     public static class RequestExtensions
     {
         /// <summary>
-        /// Adds a new stream to the passed in <see cref="Request"/> containing the passed in body.
+        /// Adds a new stream to this <see cref="Request"/> containing the passed in body.
         /// Noop on null body or null request.
         /// </summary>
         /// <param name="request">The <see cref="Request"/> instance to attach this body to.</param>
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.StreamingExtensions
         }
 
         /// <summary>
-        /// Adds a new stream to the passed in <see cref="Request"/> containing the passed in body.
+        /// Adds a new stream to this <see cref="Request"/> containing the passed in body.
         /// Noop on null body or null request.
         /// </summary>
         /// <param name="request">The <see cref="Request"/> instance to attach this body to.</param>

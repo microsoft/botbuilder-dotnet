@@ -19,19 +19,48 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder
 {
+    /// <summary>
+    /// A bot adapter that can connect a bot to a service endpoint.
+    /// </summary>
+    /// <remarks>The bot adapter sends activities to and receives activities
+    /// from the Streaming Extensions transport layer. When your
+    /// bot receives an activity, the adapter creates a context object, passes it to your
+    /// bot's application logic, and sends responses back to the user's channel.
+    /// <para>Use <see cref="Use(IMiddleware)"/> to add <see cref="IMiddleware"/> objects
+    /// to your adapter’s middleware collection. In conjunction with the <see cref="StreamingRequestHandler"/>
+    /// the adapter processes and directs incoming activities in through the bot middleware
+    /// pipeline to your bot’s logic and then back out again. As each activity flows in and
+    /// out of the bot, each piece of middleware can inspect or act upon the activity,
+    /// both before and after the bot logic runs.</para>
+    /// </remarks>
+    /// <seealso cref="ITurnContext"/>
+    /// <seealso cref="IActivity"/>
+    /// <seealso cref="IBot"/>
+    /// <seealso cref="IMiddleware"/>
     public class BotFrameworkStreamingExtensionsAdapter : BotAdapter
     {
         private const string InvokeReponseKey = "BotFrameworkStreamingExtensionsAdapter.InvokeResponse";
         private readonly ILogger _logger;
         private readonly IStreamingTransportServer _server;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotFrameworkStreamingExtensionsAdapter"/> class.
+        /// Throws <see cref="ArgumentNullException"/> if streamingTransportServer param is null.
+        /// </summary>
+        /// <param name="streamingTransportServer">The Bot Framework Protocol v3 with Streaming Extension compliant transport the adapter will use for all outgoing messages.</param>
+        /// <param name="middlewares">Optional collection of <see cref="IMiddleware"/> the adapter will execute when running the pipeline.</param>
+        /// <param name="logger">Optional logger.</param>
+        /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
+        /// components in the constructor. Use the <see cref="Use(IMiddleware)"/> method to
+        /// add additional middleware to the adapter after construction.
+        /// </remarks>
         public BotFrameworkStreamingExtensionsAdapter(
             IStreamingTransportServer streamingTransportServer,
             IList<IMiddleware> middlewares = null,
             ILogger logger = null)
         {
             _logger = logger ?? NullLogger.Instance;
-            _server = streamingTransportServer;
+            _server = streamingTransportServer ?? throw new ArgumentNullException(nameof(streamingTransportServer));
 
             if (middlewares != null)
             {
@@ -43,10 +72,13 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Registers any middleware the adapter should include in the pipeline.
+        /// Adds middleware to the adapter's pipeline.
         /// </summary>
-        /// <param name="middleware">The middleware to add to the pipeline.</param>
-        /// <returns>This instance of the adapter.</returns>
+        /// <param name="middleware">The middleware to add.</param>
+        /// <returns>The updated adapter object.</returns>
+        /// <remarks>Middleware is added to the adapter at initialization time.
+        /// For each turn, the adapter calls middleware in the order in which you added it.
+        /// </remarks>
         public new BotFrameworkStreamingExtensionsAdapter Use(IMiddleware middleware)
         {
             MiddlewareSet.Use(middleware);
@@ -54,30 +86,46 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Overload for processing activities when given an authheader.
+        /// Overload for processing activities when given the activity a json string representation of a request body.
+        /// Creates a turn context and runs the middleware pipeline for an incoming activity.
+        /// Throws <see cref="ArgumentNullException"/> on null arguments.
         /// </summary>
-        /// <param name="authHeader">The auth token provided by the request.</param>
-        /// <param name="activity">The activity to process.</param>
-        /// <param name="callback">The BotCallBackHandler to call on completion.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>The response to the activity.</returns>
-        public async Task<InvokeResponse> ProcessActivityAsync(string authHeader, Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
+        /// <param name="body">The json string to deserialize into an <see cref="Activity"/>.</param>
+        /// <param name="streams">A set of streams associated with but not attached to the <see cref="Activity"/>.</param>
+        /// <param name="callback">The code to run at the end of the adapter's middleware pipeline.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute. If the activity type
+        /// was 'Invoke' and the corresponding key (channelId + activityId) was found
+        /// then an InvokeResponse is returned, otherwise null is returned.</returns> /// <returns>a <see cref="Task"/> that will resolve a <see cref="InvokeResponse"/> in response to the activity.</returns>
+        /// <remarks>Call this method to reactively send a message to a conversation.
+        /// If the task completes successfully, then if the activity's <see cref="Activity.Type"/>
+        /// is <see cref="ActivityTypes.Invoke"/> and the corresponding key
+        /// (<see cref="Activity.ChannelId"/> + <see cref="Activity.Id"/>) is found
+        /// then an <see cref="InvokeResponse"/> is returned, otherwise null is returned.
+        /// <para>This method registers the following services for the turn.<list type="bullet">
+        public async Task<InvokeResponse> ProcessActivityAsync(string body, List<IContentStream> streams, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
-            BotAssert.ActivityNotNull(activity);
+            if (string.IsNullOrWhiteSpace(body))
+            {
+                throw new ArgumentNullException(nameof(body));
+            }
 
-            return await ProcessActivityAsync(activity, callback, cancellationToken).ConfigureAwait(false);
-        }
+            if (streams == null)
+            {
+                throw new ArgumentNullException(nameof(streams));
+            }
 
-        /// <summary>
-        /// Overload for processing activities when given the activity a json string.
-        /// </summary>
-        /// <param name="body">The json string to deserialize into an activity.</param>
-        /// <param name="streams">A set of streams associated with but not attached to the activity.</param>
-        /// <param name="callback">The BotCallBackHandler to call on completion.</param>
-        /// <param name="cancellation">Cancellation token.</param>
-        /// <returns>The response to the activity.</returns>
-        public async Task<InvokeResponse> ProcessActivityAsync(string body, List<IContentStream> streams, BotCallbackHandler callback, CancellationToken cancellation)
-        {
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
+            if (cancellationToken == null)
+            {
+                throw new ArgumentNullException(nameof(cancellationToken));
+            }
+
             var activity = JsonConvert.DeserializeObject<Activity>(body, SerializationSettings.DefaultDeserializationSettings);
 
             if (streams.Count > 1)
@@ -98,19 +146,40 @@ namespace Microsoft.Bot.Builder
                 }
             }
 
-            return await ProcessActivityAsync(activity, callback, cancellation).ConfigureAwait(false);
+            return await ProcessActivityAsync(activity, callback, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Primary adapter method for processing activities sent from channel.
+        /// Creates a turn context and runs the middleware pipeline for an incoming activity.
+        /// Throws <see cref="ArgumentNullException"/> on null arguments.
         /// </summary>
-        /// <param name="activity">The activity to process.</param>
-        /// <param name="callback">The BotCallBackHandler to call on completion.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>The response to the activity.</returns>
+        /// <param name="activity">The <see cref="Activity"/> to process.</param>
+        /// <param name="callback">The code to run at the end of the adapter's middleware pipeline.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute. If the activity type
+        /// was 'Invoke' and the corresponding key (channelId + activityId) was found
+        /// then an InvokeResponse is returned, otherwise null is returned.</returns> /// <returns>a <see cref="Task"/> that will resolve a <see cref="InvokeResponse"/> in response to the activity.</returns>
+        /// <remarks>Call this method to reactively send a message to a conversation.
+        /// If the task completes successfully, then if the activity's <see cref="Activity.Type"/>
+        /// is <see cref="ActivityTypes.Invoke"/> and the corresponding key
+        /// (<see cref="Activity.ChannelId"/> + <see cref="Activity.Id"/>) is found
+        /// then an <see cref="InvokeResponse"/> is returned, otherwise null is returned.
+        /// <para>This method registers the following services for the turn.<list type="bullet">
         public async Task<InvokeResponse> ProcessActivityAsync(Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             BotAssert.ActivityNotNull(activity);
+
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
+            if (cancellationToken == null)
+            {
+                throw new ArgumentNullException(nameof(cancellationToken));
+            }
 
             _logger.LogInformation($"Received an incoming activity.  ActivityId: {activity.Id}");
 
@@ -118,8 +187,6 @@ namespace Microsoft.Bot.Builder
             {
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
 
-                // Handle Invoke scenarios, which deviate from the request/response model in that
-                // the Bot will return a specific body and return code.
                 if (activity.Type == ActivityTypes.Invoke)
                 {
                     var activityInvokeResponse = context.TurnState.Get<Activity>(InvokeReponseKey);
@@ -133,14 +200,14 @@ namespace Microsoft.Bot.Builder
                     }
                 }
 
-                // For all non-invoke scenarios, the HTTP layers above don't have to mess
-                // with the Body and return codes.
                 return null;
             }
         }
 
         /// <summary>
         /// Sends activities to the conversation.
+        /// Throws <see cref="ArgumentNullException"/> on null arguments.
+        /// Throws <see cref="ArgumentException"/> if activities length is zero.
         /// </summary>
         /// <param name="turnContext">The context object for the turn.</param>
         /// <param name="activities">The activities to send.</param>
@@ -155,6 +222,11 @@ namespace Microsoft.Bot.Builder
             if (turnContext == null)
             {
                 throw new ArgumentNullException(nameof(turnContext));
+            }
+
+            if (cancellationToken == null)
+            {
+                throw new ArgumentNullException(nameof(cancellationToken));
             }
 
             if (activities == null)
@@ -223,7 +295,7 @@ namespace Microsoft.Bot.Builder
 
                 response = await SendRequestAsync<ResourceResponse>(request).ConfigureAwait(false);
 
-                // If No response is set, then defult to a "simple" response. This can't really be done
+                // If No response is set, then default to a "simple" response. This can't really be done
                 // above, as there are cases where the ReplyTo/SendTo methods will also return null
                 // (See below) so the check has to happen here.
 
@@ -243,11 +315,35 @@ namespace Microsoft.Bot.Builder
             return responses;
         }
 
+        /// <summary>
+        /// Replaces an existing activity in the conversation.
+        /// Throws <see cref="ArgumentNullException"/> if any required argument is null.
+        /// </summary>
+        /// <param name="turnContext">The context object for the turn.</param>
+        /// <param name="activity">New replacement activity.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the activity is successfully sent, the task result contains
+        /// a <see cref="ResourceResponse"/> object containing the ID that the receiving
+        /// channel assigned to the activity.
+        /// <para>Before calling this, set the ID of the replacement activity to the ID
+        /// of the activity to replace.</para></remarks>
+        /// <seealso cref="ITurnContext.OnUpdateActivity(UpdateActivityHandler)"/>
         public override async Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
+
             if (activity == null)
             {
                 throw new ArgumentNullException(nameof(activity));
+            }
+
+            if (cancellationToken == null)
+            {
+                throw new ArgumentNullException(nameof(cancellationToken));
             }
 
             var requestPath = $"/v3/conversations/{activity.Conversation.Id}/activities/{activity.Id}";
@@ -257,11 +353,32 @@ namespace Microsoft.Bot.Builder
             return await SendRequestAsync<ResourceResponse>(request, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Deletes an existing activity in the conversation.
+        /// Throws <see cref="ArgumentNullException"/> if any required argument is null.
+        /// </summary>
+        /// <param name="turnContext">The context object for the turn.</param>
+        /// <param name="reference">Conversation reference for the activity to delete.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>The <see cref="ConversationReference.ActivityId"/> of the conversation
+        /// reference identifies the activity to delete.</remarks>
+        /// <seealso cref="ITurnContext.OnDeleteActivity(DeleteActivityHandler)"/>
         public override async Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
         {
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
+
             if (reference == null)
             {
                 throw new ArgumentNullException(nameof(reference));
+            }
+
+            if (cancellationToken == null)
+            {
+                throw new ArgumentNullException(nameof(cancellationToken));
             }
 
             var requestPath = $"/v3/conversations/{reference.Conversation.Id}/activities/{reference.ActivityId}";
@@ -270,6 +387,17 @@ namespace Microsoft.Bot.Builder
             await SendRequestAsync<ResourceResponse>(request, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Lists the Conversations in which this bot has participated for a the channel server this adapters' connection is tethered to. The
+        /// channel server returns results in pages and each page will include a `continuationToken`
+        /// that can be used to fetch the next page of results from the server.
+        /// </summary>
+        /// <param name="continuationToken">The continuation token from the previous page of results.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task completes successfully, the result contains a page of the members of the current conversation.
+        /// </remarks>
         public async Task<ConversationsResult> GetConversationsAsync(string continuationToken = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var route = "/v3/conversations/";
@@ -278,6 +406,13 @@ namespace Microsoft.Bot.Builder
             return await SendRequestAsync<ConversationsResult>(request, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Creates a new conversation on the service.
+        /// Throws <see cref="ArgumentNullException"/> if parameters is null.
+        /// </summary>
+        /// <param name="parameters">The parameters to use when creating the service.</param>
+        /// <param name="cancellationToken">Optional cancellation token.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public async Task<ConversationResourceResponse> PostConversationAsync(ConversationParameters parameters, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (parameters == null)
@@ -292,6 +427,14 @@ namespace Microsoft.Bot.Builder
             return await SendRequestAsync<ConversationResourceResponse>(request, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Posts an activity to an existing conversation.
+        /// Throws <see cref="ArgumentNullException"/> if activity or conversationId is null.
+        /// </summary>
+        /// <param name="conversationId"> The Id of the conversation to post this activity to.</param>
+        /// <param name="activity">The activity to post to the conversation.</param>
+        /// <param name="cancellationToken">Optional cancellation token.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public async Task<ResourceResponse> PostToConversationAsync(string conversationId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (activity == null)
@@ -311,11 +454,24 @@ namespace Microsoft.Bot.Builder
             return await SendRequestAsync<ResourceResponse>(request, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Updates the conversation history stored on the service.
+        /// Throws <see cref="ArgumentNullException"/> if conversationId or transcript is null.
+        /// </summary>
+        /// <param name="conversationId">The id of the conversation to update.</param>
+        /// <param name="transcript">A transcript of the conversation history, which will replace the history on the service.</param>
+        /// <param name="cancellationToken">Optoinal cancellation token.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public async Task<ResourceResponse> PostConversationHistoryAsync(string conversationId, Transcript transcript, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(conversationId))
             {
                 throw new ArgumentNullException(nameof(conversationId));
+            }
+
+            if (transcript == null)
+            {
+                throw new ArgumentNullException(nameof(transcript));
             }
 
             var route = string.Format("/v3/conversations/{0}/activities/history", conversationId);
@@ -325,6 +481,19 @@ namespace Microsoft.Bot.Builder
             return await SendRequestAsync<ResourceResponse>(request, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Replaces an existing activity in the conversation.
+        /// Throws <see cref="ArgumentNullException"/> on null arguments.
+        /// </summary>
+        /// <param name="activity">New replacement activity.</param>
+        /// <param name="cancellationToken">Optional cancellation token.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the activity is successfully sent, the task result contains
+        /// a <see cref="ResourceResponse"/> object containing the ID that the receiving
+        /// channel assigned to the activity.
+        /// <para>Before calling this, set the ID of the replacement activity to the ID
+        /// of the activity to replace.</para></remarks>
+        /// <seealso cref="ITurnContext.OnUpdateActivity(UpdateActivityHandler)"/>
         public async Task<ResourceResponse> UpdateActivityAsync(Activity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (activity == null)
@@ -339,6 +508,13 @@ namespace Microsoft.Bot.Builder
             return await SendRequestAsync<ResourceResponse>(request, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Posts an update to an existing activity.
+        /// Throws <see cref="ArgumentNullException"/> if activity is null.
+        /// </summary>
+        /// <param name="activity">The updated activity.</param>
+        /// <param name="cancellationToken">Optional cancellation token.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public async Task<ResourceResponse> PostToActivityAsync(Activity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (activity == null)
@@ -353,6 +529,17 @@ namespace Microsoft.Bot.Builder
             return await SendRequestAsync<ResourceResponse>(request, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Deletes an existing activity in the conversation.
+        /// Throws <see cref="ArgumentNullException"/> if conversationId or activityId is null, empty, or whitespace.
+        /// </summary>
+        /// <param name="conversationId">Conversation reference for the activity to delete.</param>
+        /// <param name="activityId">The id of the activity to be deleted.</param>
+        /// <param name="cancellationToken">Optional cancellation token.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>The <see cref="ConversationReference.ActivityId"/> of the conversation
+        /// reference identifies the activity to delete.</remarks>
+        /// <seealso cref="ITurnContext.OnDeleteActivity(DeleteActivityHandler)"/>
         public async Task<HttpOperationResponse> DeleteActivityAsync(string conversationId, string activityId, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(conversationId))
@@ -371,6 +558,13 @@ namespace Microsoft.Bot.Builder
             return await SendRequestAsync<HttpOperationResponse>(request, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Lists the members of the current conversation.
+        /// Throws <see cref="ArgumentNullException"/> if conversationId is null, empty, or whitespace.
+        /// </summary>
+        /// <param name="conversationId">The id of the conversation to fetch the members of.</param>
+        /// <param name="cancellationToken">Optional cancellation token.</param>
+        /// <returns>List of Members of the current conversation.</returns>
         public async Task<IList<ChannelAccount>> GetConversationMembersAsync(string conversationId, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(conversationId))
@@ -384,7 +578,15 @@ namespace Microsoft.Bot.Builder
             return await SendRequestAsync<IList<ChannelAccount>>(request, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<PagedMembersResult> GetConversationPagedMembersAsync(string conversationId, int? pageSize = null, string continuationToken = null, CancellationToken cancellationToken = default(CancellationToken))
+        /// <summary>
+        /// Lists the members of the current conversation.
+        /// Throws <see cref="ArgumentNullException"/> if conversationId is null, empty, or whitespace.
+        /// </summary>
+        /// <param name="conversationId">The id of the conversation to fetch the members of.</param>
+        /// <param name="pageSize">Optional number of members to include per result page.</param>
+        /// <param name="cancellationToken">Optional cancellation token.</param>
+        /// <returns>List of Members of the current conversation.</returns>
+        public async Task<PagedMembersResult> GetConversationPagedMembersAsync(string conversationId, int? pageSize = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(conversationId))
             {
@@ -397,6 +599,14 @@ namespace Microsoft.Bot.Builder
             return await SendRequestAsync<PagedMembersResult>(request, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Deletes an existing member in the conversation.
+        /// Throws <see cref="ArgumentNullException"/> if conversationId or memberId is null, empty, or whitespace.
+        /// </summary>
+        /// <param name="conversationId">Conversation reference for the activity to delete.</param>
+        /// <param name="memberId">The id of the member to be deleted.</param>
+        /// <param name="cancellationToken">Optional cancellation token.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public async Task<HttpOperationResponse> DeleteConversationMemberAsync(string conversationId, string memberId, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(conversationId))
@@ -415,6 +625,14 @@ namespace Microsoft.Bot.Builder
             return await SendRequestAsync<HttpOperationResponse>(request, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Lists the members of the specified activity.
+        /// Throws <see cref="ArgumentNullException"/> if conversationId or activityId is null, empty, or whitespace.
+        /// </summary>
+        /// <param name="conversationId">The id of the conversation the activity is a part of.</param>
+        /// <param name="activityId">The id of the activity to fetch the members of.</param>
+        /// <param name="cancellationToken">Optional cancellation token.</param>
+        /// <returns>List of Members of the given activity.</returns>
         public async Task<IList<ChannelAccount>> GetActivityMembersAsync(string conversationId, string activityId, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(conversationId))
