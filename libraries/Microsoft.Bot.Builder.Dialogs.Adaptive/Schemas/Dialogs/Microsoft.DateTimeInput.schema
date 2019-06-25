@@ -1,8 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "NumberInput Dialog",
-    "description": "This represents a dialog which gathers a decimal number in a specified range",
+    "title": "DateTimeInput Dialog",
+    "description": "This represents a dialog which gathers Date or Time or DateTime from the user",
     "type": "object",
     "allOf": [
         {
@@ -10,16 +10,6 @@
         },
         {
             "properties": {
-                "outputFormat": {
-                    "type": "string",
-                    "enum": [
-                        "float",
-                        "interger"
-                    ],
-                    "title": "Output Format",
-                    "description": "The NumberInput output format.",
-                    "default": "float"
-                },
                 "defaultLocale": {
                     "type": "string",
                     "title": "Default Locale",

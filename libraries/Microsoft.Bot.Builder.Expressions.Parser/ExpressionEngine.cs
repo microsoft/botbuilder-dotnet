@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
         /// <returns>Expresion tree.</returns>
         public Expression Parse(string expression) => new ExpressionTransformer(_lookup).Transform(AntlrParse(expression));
 
-        private IParseTree AntlrParse(string expression)
+        protected static IParseTree AntlrParse(string expression)
         {
             var inputStream = new AntlrInputStream(expression);
             var lexer = new ExpressionLexer(inputStream);
@@ -187,7 +187,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             }
 
             private bool IsShortHandExpression(string name)
-                => name.StartsWith("#") || name.StartsWith("@") || name.StartsWith("$");
+                => name.StartsWith("#") || name.StartsWith("@") || name.StartsWith("$") || name.StartsWith("%") || name.StartsWith("^");
 
             private Expression MakeShortHandExpression(string name)
             {
@@ -199,37 +199,27 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                 var prefix = name[0];
                 name = name.Substring(1);
 
-                // $title == dialog.result.title
-                // @city == turn.entities.city
-                // #BookFlight == turn.intents.BookFlight
                 switch (prefix)
                 {
                     case '#':
-                        return MakeExpression(
-                            ExpressionType.Accessor,
-                            Expression.ConstantExpression(name),
-                            MakeExpression(
-                                ExpressionType.Accessor,
-                                Expression.ConstantExpression("intents"),
-                                MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression("turn"))));
+                        // #BookFlight == turn.recognized.intents.BookFlight
+                        return this.Transform(AntlrParse($"turn.recognized.intents.{name}"));
 
                     case '@':
-                        return MakeExpression(
-                            ExpressionType.Accessor,
-                            Expression.ConstantExpression(name),
-                            MakeExpression(
-                                ExpressionType.Accessor,
-                                Expression.ConstantExpression("entities"),
-                                MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression("turn"))));
+                        // @city == turn.recognized.entities.city
+                        return this.Transform(AntlrParse($"turn.recognized.entities.{name}"));
 
                     case '$':
-                        return MakeExpression(
-                            ExpressionType.Accessor,
-                            Expression.ConstantExpression(name),
-                            MakeExpression(
-                                ExpressionType.Accessor,
-                                Expression.ConstantExpression("result"),
-                                MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression("dialog"))));
+                        // $title == dialog.title
+                        return this.Transform(AntlrParse($"dialog.{name}"));
+
+                    case '%':
+                        // %xxx == dialog.instance.xxx
+                        return this.Transform(AntlrParse($"dialog.instance.{name}"));
+
+                    case '^':
+                        // ^xxx == dialog.options.xxx
+                        return this.Transform(AntlrParse($"dialog.options.{name}"));
                 }
 
                 throw new Exception($"no match for shorthand prefix: {prefix}");

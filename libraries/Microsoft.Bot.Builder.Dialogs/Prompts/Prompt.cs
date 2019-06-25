@@ -180,7 +180,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         protected override async Task<bool> OnPreBubbleEvent(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
-            // TODO: This lives in a constant in Adaptive dialog. The fact that we need this here uncovers some design issues that should be improved.
             if (e.Name == DialogEvents.ActivityReceived && dc.Context.Activity.Type == ActivityTypes.Message)
             {
                 // Perform base recognition

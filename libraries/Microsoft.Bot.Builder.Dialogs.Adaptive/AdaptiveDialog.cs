@@ -24,12 +24,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// </summary>
     public class AdaptiveDialog : DialogContainer
     {
-        private string changeKey = Guid.NewGuid().ToString();
         private const string ADAPTIVE_KEY = "adaptiveDialogState";
 
+        private readonly string changeKey = Guid.NewGuid().ToString();
+        
         private bool installedDependencies = false;
-
-        protected DialogSet runDialogs = new DialogSet(); // Used by the Run method
 
         public IStatePropertyAccessor<BotState> BotState { get; set; }
 
@@ -96,31 +95,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 throw new ArgumentException($"{nameof(options)} should not ever be a cancellation token");
             }
 
-            lock (this)
-            {
-                if (!installedDependencies)
-                {
-                    installedDependencies = true;
-
-                    AddDialog(this.Steps.ToArray());
-
-                    foreach (var rule in this.Rules)
-                    {
-                        AddDialog(rule.Steps.ToArray());
-                    }
-
-                    // Wire up selector
-                    if (this.Selector == null)
-                    {
-                        // Default to most specific then first
-                        this.Selector = new MostSpecificSelector
-                        {
-                            Selector = new FirstSelector()
-                        };
-                    }
-                    this.Selector.Initialize(this.Rules, true);
-                }
-            }
+            EnsureDependenciesInstalled();
 
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
             activeDialogState[ADAPTIVE_KEY] = new AdaptiveDialogState();
@@ -151,34 +126,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
+            EnsureDependenciesInstalled();
+
             // Continue step execution
             return await ContinueStepsAsync(dc, cancellationToken).ConfigureAwait(false);
         }
 
         protected override async Task<bool> OnPreBubbleEvent(DialogContext dc, DialogEvent dialogEvent, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var sequence = this.ToSequenceContext(dc);
+            var sequenceContext = this.ToSequenceContext(dc);
 
             // Process event and queue up any potential interruptions
-            return await this.ProcessEventAsync(sequence, dialogEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await this.ProcessEventAsync(sequenceContext, dialogEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         protected override async Task<bool> OnPostBubbleEvent(DialogContext dc, DialogEvent dialogEvent, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var sequence = this.ToSequenceContext(dc);
+            var sequenceContext = this.ToSequenceContext(dc);
 
             // Process event and queue up any potential interruptions
-            return await this.ProcessEventAsync(sequence, dialogEvent, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await this.ProcessEventAsync(sequenceContext, dialogEvent, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
-        protected async Task<bool> ProcessEventAsync(SequenceContext sequence, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default(CancellationToken))
+        protected async Task<bool> ProcessEventAsync(SequenceContext sequenceContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Save into turn
-            sequence.State.SetValue($"turn.dialogEvent", dialogEvent);
-            sequence.State.SetValue($"turn.dialogEvents.{dialogEvent.Name}", dialogEvent.Value);
+            sequenceContext.State.SetValue(DialogContextState.TURN_DIALOGEVENT, dialogEvent);
 
             // Look for triggered rule
-            var handled = await this.QueueFirstMatchAsync(sequence, dialogEvent, preBubble, cancellationToken).ConfigureAwait(false);
+            var handled = await this.QueueFirstMatchAsync(sequenceContext, dialogEvent, preBubble, cancellationToken).ConfigureAwait(false);
 
             if (handled)
             {
@@ -208,54 +184,42 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                                         DialogStack = new List<DialogInstance>()
                                     }));
 
-                            sequence.QueueChanges(changes);
+                            sequenceContext.QueueChanges(changes);
                             handled = true;
                         }
                         else
                         {
                             // Emit leading ActivityReceived event
-                            var e = new DialogEvent() { Name = AdaptiveEvents.ActivityReceived, Bubble = false };
-                            handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                            var e = new DialogEvent() { Name = AdaptiveEvents.ActivityReceived, Value = sequenceContext.Context.Activity, Bubble = false };
+                            handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: e, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
                         }
 
                         break;
 
                     case AdaptiveEvents.ActivityReceived:
 
-                        var activity = sequence.Context.Activity;
+                        var activity = sequenceContext.Context.Activity;
 
                         if (activity.Type == ActivityTypes.Message)
                         {
-                            // Clear any recognizer results
-                            sequence.State.SetValue("turn.recognized", null);
-
                             // Recognize utterance
-                            var recognized = await this.OnRecognize(sequence, cancellationToken).ConfigureAwait(false);
+                            var recognized = await this.OnRecognize(sequenceContext, cancellationToken).ConfigureAwait(false);
 
-                            sequence.State.SetValue("turn.recognized", recognized);
+                            sequenceContext.State.SetValue(DialogContextState.TURN_RECOGNIZED, recognized);
+
+                            var (name, score) = recognized.GetTopScoringIntent();
+                            sequenceContext.State.SetValue(DialogContextState.TURN_TOPINTENT, name);
+                            sequenceContext.State.SetValue(DialogContextState.TURN_TOPSCORE, score);
+
+                            if (this.Recognizer != null)
+                            {
+                                await sequenceContext.DebuggerStepAsync(Recognizer, AdaptiveEvents.RecognizedIntent, cancellationToken).ConfigureAwait(false);
+                            }
 
                             // Emit leading RecognizedIntent event
                             var e = new DialogEvent() { Name = AdaptiveEvents.RecognizedIntent, Value = recognized, Bubble = false };
-                            handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                            handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: e, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
                         }
-                        else if (activity.Type == ActivityTypes.Event)
-                        {
-                            // Emit trailing edge of named event that was received
-                            var e = new DialogEvent() { Name = activity.Name, Value = activity.Value, Bubble = false };
-                            handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
-                        }
-
-                        else if (activity.Type == ActivityTypes.ConversationUpdate)
-                        {
-                            var membersAdded = sequence.State.GetValue<List<ChannelAccount>>("turn.membersAdded", null);
-                            if (membersAdded != null && membersAdded.Any())
-                            {
-                                // Emit trailing ConversationMembersAdded event
-                                var e = new DialogEvent() { Name = AdaptiveEvents.ConversationMembersAdded, Value = membersAdded, Bubble = false };
-                                handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
-                            }
-                        }
-                        
                         break;
                 }
             }
@@ -264,47 +228,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 switch (dialogEvent.Name)
                 {
                     case AdaptiveEvents.BeginDialog:
-                        var e = new DialogEvent() { Name = AdaptiveEvents.ActivityReceived, Bubble = false };
-                        handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
+                        var e = new DialogEvent() { Name = AdaptiveEvents.ActivityReceived, Value = sequenceContext.Context.Activity, Bubble = false };
+                        handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: e, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                         break;
 
                     case AdaptiveEvents.ActivityReceived:
 
-                        var activity = sequence.Context.Activity;
-                        var membersAdded = sequence.State.GetValue<List<ChannelAccount>>("turn.membersAdded", null);
+                        var activity = sequenceContext.Context.Activity;
 
                         if (activity.Type == ActivityTypes.Message)
                         {
-                            // Clear recognizer results
-                            sequence.State.SetValue("turn.recognized", null);
-
-
                             // Empty sequence?
-                            if (!sequence.Steps.Any())
+                            if (!sequenceContext.Steps.Any())
                             {
                                 // Emit trailing unknownIntent event
                                 e = new DialogEvent() { Name = AdaptiveEvents.UnknownIntent, Bubble = false };
-                                handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
+                                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: e, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
                             }
                             else
                             {
                                 handled = false;
                             }
                         }
-                        else if (activity.Type == ActivityTypes.Event)
-                        {
-                            // Emit trailing edge of named event that was received
-                            e = new DialogEvent() { Name = activity.Name, Value = activity.Value, Bubble = false };
-                            handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
-                        }
-                        else if (activity.Type == ActivityTypes.ConversationUpdate && membersAdded != null && membersAdded.Any())
-                        {
-                            // Emit trailing conversation members added event
-                            e = new DialogEvent() { Name = activity.Name, Value = activity.Value, Bubble = false };
-                            handled = await this.ProcessEventAsync(sequence, dialogEvent: e, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
-                        }
-
                         break;
                 }
             }
@@ -391,7 +337,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 ctx.Parent = dc;
                 return ctx;
             }
-            
+
             return null;
         }
 
@@ -403,8 +349,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         protected async Task<DialogTurnResult> ContinueStepsAsync(DialogContext dc, CancellationToken cancellationToken)
         {
             // Apply any queued up changes
-            var sequence = this.ToSequenceContext(dc);
-            await sequence.ApplyChangesAsync(cancellationToken).ConfigureAwait(false);
+            var sequenceContext = this.ToSequenceContext(dc);
+            await sequenceContext.ApplyChangesAsync(cancellationToken).ConfigureAwait(false);
 
             if (this.Generator != null)
             {
@@ -414,9 +360,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Get a unique instance ID for the current stack entry.
             // We need to do this because things like cancellation can cause us to be removed
             // from the stack and we want to detect this so we can stop processing steps.
-            var instanceId = this.GetUniqueInstanceId(sequence);
+            var instanceId = this.GetUniqueInstanceId(sequenceContext);
 
-            var step = this.CreateChildContext(sequence) as SequenceContext;
+            var step = this.CreateChildContext(sequenceContext) as SequenceContext;
 
             if (step != null)
             {
@@ -424,7 +370,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 var result = await step.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
 
                 // Start step if not continued
-                if (result.Status == DialogTurnStatus.Empty && GetUniqueInstanceId(sequence) == instanceId)
+                if (result.Status == DialogTurnStatus.Empty && GetUniqueInstanceId(sequenceContext) == instanceId)
                 {
                     var nextStep = step.Steps.First();
                     result = await step.BeginDialogAsync(nextStep.DialogId, nextStep.Options, cancellationToken).ConfigureAwait(false);
@@ -433,22 +379,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 // Increment turns step count
                 // This helps dialogs being resumed from an interruption to determine if they
                 // should re-prompt or not.
-                var stepCount = sequence.State.GetValue<int>("turn.stepCount", 0);
-                sequence.State.SetValue("turn.stepCount", stepCount + 1);
+                var stepCount = sequenceContext.State.GetValue<int>(DialogContextState.TURN_STEPCOUNT, 0);
+                sequenceContext.State.SetValue(DialogContextState.TURN_STEPCOUNT, stepCount + 1);
 
                 // Is the step waiting for input or were we cancelled?
-                if (result.Status == DialogTurnStatus.Waiting || this.GetUniqueInstanceId(sequence) != instanceId)
+                if (result.Status == DialogTurnStatus.Waiting || this.GetUniqueInstanceId(sequenceContext) != instanceId)
                 {
                     return result;
                 }
 
                 // End current step
-                await this.EndCurrentStepAsync(sequence, cancellationToken).ConfigureAwait(false);
+                await this.EndCurrentStepAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
 
                 // Execute next step
                 // We call continueDialog() on the root dialog to ensure any changes queued up
                 // by the previous steps are applied.
-                DialogContext root = sequence;
+                DialogContext root = sequenceContext;
                 while (root.Parent != null)
                 {
                     root = root.Parent;
@@ -458,34 +404,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
             else
             {
-                return await this.OnEndOfStepsAsync(sequence, cancellationToken).ConfigureAwait(false);
+                return await this.OnEndOfStepsAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
             }
         }
 
-        protected async Task<bool> EndCurrentStepAsync(SequenceContext sequence, CancellationToken cancellationToken = default(CancellationToken))
+        protected async Task<bool> EndCurrentStepAsync(SequenceContext sequenceContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (sequence.Steps.Any())
+            if (sequenceContext.Steps.Any())
             {
-                sequence.Steps.RemoveAt(0);
+                sequenceContext.Steps.RemoveAt(0);
 
-                if (!sequence.Steps.Any())
+                if (!sequenceContext.Steps.Any())
                 {
-                    await sequence.EmitEventAsync(AdaptiveEvents.SequenceEnded, value: null, bubble: false, fromLeaf: false, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    await sequenceContext.EmitEventAsync(AdaptiveEvents.SequenceEnded, value: null, bubble: false, fromLeaf: false, cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
             }
 
             return false;
         }
 
-        protected async Task<DialogTurnResult> OnEndOfStepsAsync(SequenceContext sequence, CancellationToken cancellationToken = default(CancellationToken))
+        protected async Task<DialogTurnResult> OnEndOfStepsAsync(SequenceContext sequenceContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             // End dialog and return result
-            if (sequence.ActiveDialog != null)
+            if (sequenceContext.ActiveDialog != null)
             {
-                if (this.ShouldEnd(sequence))
+                if (this.ShouldEnd(sequenceContext))
                 {
-                    var state = (sequence.ActiveDialog.State as Dictionary<string, object>)[ADAPTIVE_KEY] as AdaptiveDialogState;
-                    return await sequence.EndDialogAsync(state.Result, cancellationToken).ConfigureAwait(false);
+                    var state = (sequenceContext.ActiveDialog.State as Dictionary<string, object>)[ADAPTIVE_KEY] as AdaptiveDialogState;
+                    return await sequenceContext.EndDialogAsync(state.Result, cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
@@ -498,12 +444,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        protected async Task<RecognizerResult> OnRecognize(SequenceContext planning, CancellationToken cancellationToken = default(CancellationToken))
+        protected async Task<RecognizerResult> OnRecognize(SequenceContext sequenceContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var context = planning.Context;
+            var context = sequenceContext.Context;
             if (Recognizer != null)
             {
-                await planning.DebuggerStepAsync(Recognizer, DialogContext.DialogEvents.OnRecognize, cancellationToken).ConfigureAwait(false);
                 var result = await Recognizer.RecognizeAsync(context, cancellationToken).ConfigureAwait(false);
                 // only allow one intent 
                 var topIntent = result.GetTopScoringIntent();
@@ -526,23 +471,52 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        private async Task<bool> QueueFirstMatchAsync(SequenceContext sequence, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken)
+        private async Task<bool> QueueFirstMatchAsync(SequenceContext sequenceContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken)
         {
-            var selection = await Selector.Select(sequence, cancellationToken).ConfigureAwait(false);
+            var selection = await Selector.Select(sequenceContext, cancellationToken).ConfigureAwait(false);
             if (selection.Any())
             {
                 var rule = Rules[selection.First()];
-                await sequence.DebuggerStepAsync(rule, dialogEvent, cancellationToken).ConfigureAwait(false);
+                await sequenceContext.DebuggerStepAsync(rule, dialogEvent, cancellationToken).ConfigureAwait(false);
                 System.Diagnostics.Trace.TraceInformation($"Executing Dialog: {this.Id} Rule[{selection}]: {rule.GetType().Name}: {rule.GetExpression(null)}");
-                var changes = await rule.ExecuteAsync(sequence).ConfigureAwait(false);
+                var changes = await rule.ExecuteAsync(sequenceContext).ConfigureAwait(false);
 
                 if (changes != null && changes.Count > 0)
                 {
-                    sequence.QueueChanges(changes[0]);
+                    sequenceContext.QueueChanges(changes[0]);
                     return true;
                 }
             }
             return false;
+        }
+
+        private void EnsureDependenciesInstalled()
+        {
+            lock (this)
+            {
+                if (!installedDependencies)
+                {
+                    installedDependencies = true;
+
+                    AddDialog(this.Steps.ToArray());
+
+                    foreach (var rule in this.Rules)
+                    {
+                        AddDialog(rule.Steps.ToArray());
+                    }
+
+                    // Wire up selector
+                    if (this.Selector == null)
+                    {
+                        // Default to most specific then first
+                        this.Selector = new MostSpecificSelector
+                        {
+                            Selector = new FirstSelector()
+                        };
+                    }
+                    this.Selector.Initialize(this.Rules, true);
+                }
+            }
         }
 
         private bool ShouldEnd(DialogContext dc)
