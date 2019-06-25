@@ -51,7 +51,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>True if the ids are same.</returns>
         public override bool Equals(object obj)
         {
-            return this.Id.Equals(((LGResource)obj).Id);
+            if (obj is LGResource lgResourceObj)
+            {
+                return this.Id.Equals(lgResourceObj.Id);
+            }
+
+            return false;
         }
 
         /// <summary>
