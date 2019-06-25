@@ -368,6 +368,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Step_DatetimeInput()
+        {
+            var testDialog = new AdaptiveDialog("planningTest")
+            {
+                AutoEndDialog = false
+            };
+
+            testDialog.AddRules(new List<IRule>()
+            {
+                new UnknownIntentRule(
+                    new List<IDialog>()
+                    {
+                        new DateTimeInput()
+                        {
+                            Prompt = new ActivityTemplate("Please enter a date."),
+                            Value = new ExpressionEngine().Parse("user.date"),
+                            Property = "user.date",
+                        },
+                        new SendActivity("You entered {user.date[0].Value}"),
+                    })
+            });
+
+            await CreateFlow(testDialog)
+            .Send("hi")
+                .AssertReply("Please enter a date.")
+            .Send("June 1st 2019")
+                .AssertReply("You entered 2019-06-01")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task Step_TextInputWithInvalidPrompt()
         {
             var testDialog = new AdaptiveDialog("planningTest");

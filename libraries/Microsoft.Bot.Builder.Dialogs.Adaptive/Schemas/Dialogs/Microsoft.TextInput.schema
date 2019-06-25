@@ -1,7 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "Text prompt",
+    "title": "TextInput Dialog",
     "description": "This represents a dialog which gathers a text from the user",
     "type": "object",
     "allOf": [
