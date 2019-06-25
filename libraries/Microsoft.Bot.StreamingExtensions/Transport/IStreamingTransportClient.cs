@@ -8,14 +8,26 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.StreamingExtensions.Transport
 {
-    internal interface IStreamingTransportClient : IDisposable
+    /// <summary>
+    /// Implemented by clients compatible with the Bot Framework Protocol 3 with Streaming Extensions.
+    /// </summary>
+    public interface IStreamingTransportClient : IDisposable
     {
+        /// <summary>
+        /// An event used to signal when the underlying connection has disconnected.
+        /// </summary>
         event DisconnectedEventHandler Disconnected;
 
+        /// <summary>
+        /// Gets a value indicating whether this client is currently connected.
+        /// </summary>
+        /// <value>
+        /// True if this client is currently connected, otherwise false.
+        /// </value>
         bool IsConnected { get; }
 
         /// <summary>
-        /// Establish a connection.
+        /// The task used to establish a connection for this client.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         Task ConnectAsync();
@@ -27,8 +39,17 @@ namespace Microsoft.Bot.StreamingExtensions.Transport
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         Task ConnectAsync(IDictionary<string, string> requestHeaders);
 
+        /// <summary>
+        /// Task used to send data over this client connection.
+        /// </summary>
+        /// <param name="message">The <see cref="Request"/> to send.</param>
+        /// <param name="cancellationToken">An optional <see cref="CancellationToken"/> used to signal this operation should be cancelled.</param>
+        /// <returns>A <see cref="Task"/> of type <see cref="ReceiveResponse"/> handling the send operation.</returns>
         Task<ReceiveResponse> SendAsync(Request message, CancellationToken cancellationToken = default(CancellationToken));
 
+        /// <summary>
+        /// Method used to disconnect this client.
+        /// </summary>
         void Disconnect();
     }
 }

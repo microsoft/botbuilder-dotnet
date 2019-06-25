@@ -11,6 +11,9 @@ using Microsoft.Bot.StreamingExtensions.PayloadTransport;
 
 namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
 {
+    /// <summary>
+    /// A client for use with the Bot Framework Protocol V3 with Streaming Extensions and an underlying WebSocket transport.
+    /// </summary>
     public class WebSocketClient : IStreamingTransportClient
     {
         private readonly string _url;
@@ -23,12 +26,18 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebSocketClient"/> class.
+        /// Throws <see cref="ArgumentNullException"/> if URL is null, empty, or whitespace.
         /// </summary>
-        /// <param name="url">URL to talk to</param>
-        /// <param name="requestHandler">A handler for the requests</param>
-        /// <param name="handlerContext">The context for the handler.</param>
+        /// <param name="url">The URL of the remote server to connect to.</param>
+        /// <param name="requestHandler">Optional <see cref="RequestHandler"/> to process incoming messages received by this server.</param>
+        /// <param name="handlerContext">Optional context for the <see cref="RequestHandler"/> to operate within.</param>
         public WebSocketClient(string url, RequestHandler requestHandler = null, object handlerContext = null)
         {
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                throw new ArgumentNullException(nameof(url));
+            }
+
             _url = url;
             _requestHandler = requestHandler;
             _requestManager = new RequestManager();
@@ -41,18 +50,43 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
             IsConnected = false;
         }
 
+        /// <summary>
+        /// An event to be fired when the underlying transport is disconnected. Any application communicating with this client should subscribe to this event.
+        /// </summary>
         public event DisconnectedEventHandler Disconnected;
 
-        // UTC time of the last send on this client. Made available so we can clean up idle clients.
+        /// <summary>
+        /// Gets the UTC time of the last send on this client. Made available for use when cleaning up idle clients.
+        /// </summary>
+        /// <value>
+        /// A <see cref="DateTime"/> representing the UTC time of the last send on this client.
+        /// </value>
         public DateTime LastMessageSendTime { get; private set; }
 
-        // Whether the client thinks it is currently connected.
+        /// <summary>
+        /// Gets a value indicating whether or not this client is currently connected.
+        /// </summary>
+        /// <returns>
+        /// True if this client is connected and ready to send and receive messages, otherwise false.
+        /// </returns>
+        /// <value>
+        /// A boolean value indicating whether or not this client is currently connected.
+        /// </value>
         public bool IsConnected { get; private set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Establish a connection with no custom headers.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> that will not resolve until the client stops listening for incoming messages.</returns>
         public Task ConnectAsync() => ConnectAsync(null);
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Establish a connection with optional custom headers.
+        /// </summary>
+        /// <param name="requestHeaders">An optional <see cref="IDictionary{TKey, TValue}"/> of string header names and string header values to include when sending the
+        /// initial request to establish this connection.
+        /// </param>
+        /// <returns>A <see cref="Task"/> that will not resolve until the client stops listening for incoming messages.</returns>
         public async Task ConnectAsync(IDictionary<string, string> requestHeaders = null)
         {
             if (IsConnected)
@@ -82,8 +116,21 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
             IsConnected = true;
         }
 
+        /// <summary>
+        /// Task used to send data over this client connection.
+        /// Throws <see cref="InvalidOperationException"/> if called when the client is disconnected.
+        /// Throws <see cref="ArgumentNullException"/> if message is null.
+        /// </summary>
+        /// <param name="message">The <see cref="Request"/> to send.</param>
+        /// <param name="cancellationToken">An optional <see cref="CancellationToken"/> used to signal this operation should be cancelled.</param>
+        /// <returns>A <see cref="Task"/> that will produce an instance of <see cref="ReceiveResponse"/> on completion of the send operation.</returns>
         public Task<ReceiveResponse> SendAsync(Request message, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
             if (!_sender.IsConnected || !_receiver.IsConnected)
             {
                 throw new InvalidOperationException("The client is not connected.");
@@ -93,6 +140,9 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
             return _protocolAdapter.SendRequestAsync(message, cancellationToken);
         }
 
+        /// <summary>
+        /// Method used to disconnect this client.
+        /// </summary>
         public void Disconnect()
         {
             _sender.Disconnect();
@@ -104,10 +154,10 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
             IsConnected = false;
         }
 
-        public void Dispose()
-        {
-            Disconnect();
-        }
+        /// <summary>
+        /// Method used to disconnect this client.
+        /// </summary>
+        public void Dispose() => Disconnect();
 
         private void OnConnectionDisconnected(object sender, EventArgs e)
         {

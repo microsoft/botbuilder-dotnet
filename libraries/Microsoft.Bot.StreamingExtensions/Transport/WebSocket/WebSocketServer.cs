@@ -10,6 +10,9 @@ using Microsoft.Bot.StreamingExtensions.PayloadTransport;
 
 namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
 {
+    /// <summary>
+    /// A server for use with the Bot Framework Protocol V3 with Streaming Extensions and an underlying WebSocket transport.
+    /// </summary>
     public class WebSocketServer : IStreamingTransportServer
     {
         private readonly RequestHandler _requestHandler;
@@ -21,28 +24,49 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
         private TaskCompletionSource<string> _closedSignal;
         private bool _isDisconnecting = false;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WebSocketServer"/> class.
+        /// Throws <see cref="ArgumentNullException"/> on null arguments.
+        /// </summary>
+        /// <param name="socket">The <see cref="WebSocket"/> of the underlying connection for this server to be built on top of.</param>
+        /// <param name="requestHandler">A <see cref="RequestHandler"/> to process incoming messages received by this server.</param>
         public WebSocketServer(WebSocket socket, RequestHandler requestHandler)
         {
+            if (socket == null)
+            {
+                throw new ArgumentNullException(nameof(socket));
+            }
+
             _websocketTransport = new WebSocketTransport(socket);
-            _requestHandler = requestHandler;
-
+            _requestHandler = requestHandler ?? throw new ArgumentNullException(nameof(requestHandler));
             _requestManager = new RequestManager();
-
             _sender = new PayloadSender();
             _sender.Disconnected += OnConnectionDisconnected;
             _receiver = new PayloadReceiver();
             _receiver.Disconnected += OnConnectionDisconnected;
-
             _protocolAdapter = new ProtocolAdapter(_requestHandler, _requestManager, _sender, _receiver);
         }
 
+        /// <summary>
+        /// An event to be fired when the underlying transport is disconnected. Any application communicating with this server should subscribe to this event.
+        /// </summary>
         public event DisconnectedEventHandler Disconnected;
 
-        public bool IsConnected
-        {
-            get { return _sender.IsConnected && _receiver.IsConnected; }
-        }
+        /// <summary>
+        /// Gets a value indicating whether or not this server is currently connected.
+        /// </summary>
+        /// <returns>
+        /// True if this server is connected and ready to send and receive messages, otherwise false.
+        /// </returns>
+        /// <value>
+        /// A boolean value indicating whether or not this server is currently connected.
+        /// </value>
+        public bool IsConnected => _sender.IsConnected && _receiver.IsConnected;
 
+        /// <summary>
+        /// Used to establish the connection used by this server and begin listening for incoming messages.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> to handle the server listen operation. This task will not resolve as long as the server is running.</returns>
         public Task StartAsync()
         {
             _closedSignal = new TaskCompletionSource<string>();
@@ -51,8 +75,21 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
             return _closedSignal.Task;
         }
 
+        /// <summary>
+        /// Task used to send data over this server connection. 
+        /// Throws <see cref="InvalidOperationException"/> if called when server is not connected.
+        /// Throws <see cref="ArgumentNullException"/> if request is null.
+        /// </summary>
+        /// <param name="request">The <see cref="Request"/> to send.</param>
+        /// <param name="cancellationToken">Optional <see cref="CancellationToken"/> used to signal this operation should be cancelled.</param>
+        /// <returns>A <see cref="Task"/> of type <see cref="ReceiveResponse"/> handling the send operation.</returns>
         public Task<ReceiveResponse> SendAsync(Request request, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
             if (!_sender.IsConnected || !_receiver.IsConnected)
             {
                 throw new InvalidOperationException("The server is not connected.");
@@ -61,7 +98,12 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
             return _protocolAdapter.SendRequestAsync(request, cancellationToken);
         }
 
-        private void Disconnect()
+#if DEBUG
+        public
+#else
+        private
+#endif
+        void Disconnect()
         {
             _sender.Disconnect();
             _receiver.Disconnect();
