@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// <summary>
     /// Helper for HTTP requests.
     /// </summary>
-    internal class HttpRequestHelper
+    internal class HttpRequestUtils
     {
         private static ProductInfoHeaderValue BotBuilderInfo;
         private static ProductInfoHeaderValue PlatformInfo;
@@ -22,10 +22,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private readonly HttpClient _httpClient;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HttpRequestHelper"/> class.
+        /// Initializes a new instance of the <see cref="HttpRequestUtils"/> class.
         /// </summary>
         /// <param name="httpClient">Http client.</param>
-        public HttpRequestHelper(HttpClient httpClient)
+        public HttpRequestUtils(HttpClient httpClient)
         {
             this._httpClient = httpClient;
             this.UpdateBotBuilderAndPlatformInfo();

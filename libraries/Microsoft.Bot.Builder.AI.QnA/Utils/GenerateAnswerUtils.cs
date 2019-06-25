@@ -15,22 +15,21 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// <summary>
     /// Helper class for Generate Answer API.
     /// </summary>
-    internal class GenerateAnswerHelper
+    internal class GenerateAnswerUtils
     {
-        private static readonly string QnAMakerName = nameof(QnAMaker);
         private readonly IBotTelemetryClient telemetryClient;
         private QnAMakerEndpoint _endpoint;
         private readonly HttpClient httpClient;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GenerateAnswerHelper"/> class.
+        /// Initializes a new instance of the <see cref="GenerateAnswerUtils"/> class.
         /// </summary>
         /// <param name="telemetryClient">Telemetry client.</param>
         /// <param name="endpoint">QnA Maker endpoint details.</param>
         /// <param name="options">QnA Maker options.</param>
         /// <param name="httpClient">Http client.</param>
         /// <param name="logPersonalInformation">Log personal Information.</param>
-        public GenerateAnswerHelper(IBotTelemetryClient telemetryClient, QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient)
+        public GenerateAnswerUtils(IBotTelemetryClient telemetryClient, QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient)
         {
             this.telemetryClient = telemetryClient;
             this._endpoint = endpoint;
@@ -181,7 +180,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     scoreThreshold = options.ScoreThreshold,
                 }, Formatting.None);
 
-            var httpRequestHelper = new HttpRequestHelper(httpClient);
+            var httpRequestHelper = new HttpRequestUtils(httpClient);
             var response = await httpRequestHelper.ExecuteHttpRequest(requestUrl, jsonRequest, _endpoint).ConfigureAwait(false);
 
             var result = await FormatQnaResultAsync(response, options).ConfigureAwait(false);
@@ -201,7 +200,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 StrictFilters = options.StrictFilters,
                 MetadataBoost = options.MetadataBoost,
             };
-            var traceActivity = Activity.CreateTraceActivity(QnAMakerName, QnATelemetryConstants.QnAMakerTraceType, traceInfo, QnATelemetryConstants.QnAMakerTraceLabel);
+            var traceActivity = Activity.CreateTraceActivity(QnAMaker.QnAMakerName, QnAMaker.QnAMakerTraceType, traceInfo, QnAMaker.QnAMakerTraceLabel);
             await turnContext.SendActivityAsync(traceActivity).ConfigureAwait(false);
         }
     }

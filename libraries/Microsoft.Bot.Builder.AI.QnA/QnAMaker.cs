@@ -19,12 +19,15 @@ namespace Microsoft.Bot.Builder.AI.QnA
     {
 
         public static readonly string QnAMakerName = nameof(QnAMaker);
+        public static readonly string QnAMakerTraceType = "https://www.qnamaker.ai/schemas/trace";
+        public static readonly string QnAMakerTraceLabel = "QnAMaker Trace";
+
         private readonly HttpClient _httpClient;
 
         private readonly QnAMakerEndpoint _endpoint;
 
-        private GenerateAnswerHelper generateAnswerHelper;
-        private TrainHelper activeLearningTrainHelper;
+        private GenerateAnswerUtils generateAnswerHelper;
+        private TrainUtils activeLearningTrainHelper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QnAMaker"/> class.
@@ -71,8 +74,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
             TelemetryClient = telemetryClient ?? new NullBotTelemetryClient();
             LogPersonalInformation = logPersonalInformation;
 
-            this.generateAnswerHelper = new GenerateAnswerHelper(TelemetryClient, _endpoint, options, _httpClient);
-            this.activeLearningTrainHelper = new TrainHelper(_endpoint, httpClient);
+            this.generateAnswerHelper = new GenerateAnswerUtils(TelemetryClient, _endpoint, options, _httpClient);
+            this.activeLearningTrainHelper = new TrainUtils(_endpoint, httpClient);
         }
 
         /// <summary>
@@ -270,7 +273,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <returns>Filtered array of ambiguous question</returns>
         public QueryResult[] GetLowScoreVariation(QueryResult[] queryResult)
         {
-            return ActiveLearningHelper.GetLowScoreVariation(queryResult.ToList()).ToArray();
+            return ActiveLearningUtils.GetLowScoreVariation(queryResult.ToList()).ToArray();
         }
 
         /// <summary>

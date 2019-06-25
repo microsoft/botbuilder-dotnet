@@ -18,7 +18,5 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public static readonly string QuestionIdProperty = "questionId";
         public static readonly string ScoreProperty = "score";
         public static readonly string UsernameProperty = "username";
-        public static readonly string QnAMakerTraceType = "https://www.qnamaker.ai/schemas/trace";
-        public static readonly string QnAMakerTraceLabel = "QnAMaker Trace";
     }
 }

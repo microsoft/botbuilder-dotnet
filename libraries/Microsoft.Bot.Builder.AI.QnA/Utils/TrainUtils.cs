@@ -11,18 +11,18 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// <summary>
     /// Helper class for train API
     /// </summary>
-    internal class TrainHelper
+    internal class TrainUtils
     {
         private static readonly string QnAMakerName = nameof(QnAMaker);
         private QnAMakerEndpoint _endpoint;
         private readonly HttpClient httpClient;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TrainHelper"/> class.
+        /// Initializes a new instance of the <see cref="TrainUtils"/> class.
         /// </summary>
         /// <param name="endpoint">QnA Maker endpoint details.</param>
         /// <param name="httpClient">Http client.</param>
-        public TrainHelper(QnAMakerEndpoint endpoint, HttpClient httpClient)
+        public TrainUtils(QnAMakerEndpoint endpoint, HttpClient httpClient)
         {
             this._endpoint = endpoint;
             this.httpClient = httpClient;
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             var requestUrl = $"{_endpoint.Host}/knowledgebases/{_endpoint.KnowledgeBaseId}/train";
             var jsonRequest = JsonConvert.SerializeObject(feedbackRecords, Formatting.None);
 
-            var httpRequestHelper = new HttpRequestHelper(httpClient);
+            var httpRequestHelper = new HttpRequestUtils(httpClient);
             var response = await httpRequestHelper.ExecuteHttpRequest(requestUrl, jsonRequest, _endpoint).ConfigureAwait(false);
         }
     }

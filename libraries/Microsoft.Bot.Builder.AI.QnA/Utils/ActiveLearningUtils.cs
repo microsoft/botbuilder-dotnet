@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// <summary>
     /// Active learning helper class.
     /// </summary>
-    public static class ActiveLearningHelper
+    public static class ActiveLearningUtils
     {
         /// <summary>
         /// Minimum Score For Low Score Variation
