@@ -208,7 +208,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     var (content, path) = importResolver(id);
                     var childResource = LGParser.Parse(content, path);
-
                     if (!resourcesFound.Contains(childResource))
                     {
                         ResolveImportResources(childResource, importResolver, resourcesFound);
