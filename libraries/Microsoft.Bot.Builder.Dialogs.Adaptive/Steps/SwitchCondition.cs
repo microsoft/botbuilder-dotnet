@@ -27,11 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         /// Value expression to be compared against condition.
         /// </summary>
         [JsonProperty("value")]
-        public string Value
-        {
-            get;
-            set;
-        }
+        public string Value { get; set; }
 
         /// <summary>
         /// Set of steps to be executed given that the condition of the switch matches the value of this case.
