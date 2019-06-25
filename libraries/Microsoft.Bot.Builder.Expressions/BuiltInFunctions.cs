@@ -442,6 +442,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         error = e.Message;
                     }
                 }
+                value = ResolveValue(value);
                 return (value, error);
             };
 
@@ -470,6 +471,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         error = e.Message;
                     }
                 }
+                value = ResolveValue(value);
                 return (value, error);
             };
 
@@ -651,6 +653,16 @@ namespace Microsoft.Bot.Builder.Expressions
             if (children.Length == 2 && children[1].ReturnType != ReturnType.Object)
             {
                 throw new Exception($"{expression} must have an object as its second argument.");
+            }
+        }
+
+        private static void ValidateShortHand(Expression expression)
+        {
+            var children = expression.Children;
+            if (children.Length != 1
+                || children[0].Type != ExpressionType.Accessor)
+            {
+                throw new Exception($"{expression} must have one accessor argument.");
             }
         }
 
@@ -2902,6 +2914,29 @@ namespace Microsoft.Bot.Builder.Expressions
                         }),
                     ReturnType.Boolean,
                     ValidateIsMatch),
+
+                // Short hand expression
+                new ExpressionEvaluator(ExpressionType.Intent, Apply(args => args[0]), ReturnType.Object, ValidateShortHand),
+                new ExpressionEvaluator(
+                    ExpressionType.Entity,
+                    Apply(args =>
+                        {
+                            var entityValue = args[0];
+                            IList list;
+
+                            // https://github.com/microsoft/botbuilder-dotnet/issues/1969
+                            while (TryParseList(entityValue, out list) && list.Count == 1)
+                            {
+                                entityValue = list[0];
+                            }
+
+                            return entityValue;
+                        }),
+                    ReturnType.Object,
+                    ValidateShortHand),
+                new ExpressionEvaluator(ExpressionType.Instance,  Apply(args => args[0]), ReturnType.Object, ValidateShortHand),
+                new ExpressionEvaluator(ExpressionType.Option,  Apply(args => args[0]), ReturnType.Object, ValidateShortHand),
+                new ExpressionEvaluator(ExpressionType.Title,  Apply(args => args[0]), ReturnType.Object, ValidateShortHand),
             };
 
             var lookup = new Dictionary<string, ExpressionEvaluator>();
