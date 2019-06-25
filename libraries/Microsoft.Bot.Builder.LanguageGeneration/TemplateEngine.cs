@@ -96,7 +96,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Template engine with the parsed content.</returns>
         public TemplateEngine AddText(string content, string name, ImportResolverDelegate importResolver)
         {
-            var lgResources = this.DiscoverLGResources(LGParser.Parse(content, name), importResolver);
+            var rootResource = LGParser.Parse(content, name);
+            var lgResources = this.DiscoverLGResources(rootResource, importResolver);
             Templates.AddRange(lgResources.SelectMany(x => x.Templates));
             RunStaticCheck(Templates);
 
