@@ -8,10 +8,13 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Bot.Builder
 {
+    /// <summary>
+    /// Maps various endpoint handlers for the <see cref="ServiceCollectionExtensions.AddBot{TBot}(IServiceCollection, Action{BotFrameworkOptions})">registered bot</see> into the request execution pipeline using the V4 protocol.
+    /// </summary>
     public static class BotFrameworkApplicationBuilderExtensions
     {
         /// <summary>
-        /// Maps various endpoint handlers for the <see cref="ServiceCollectionExtensions.AddBot{TBot}(IServiceCollection, Action{BotFrameworkOptions})">registered bot</see> into the request execution pipeline using the V4 protocol
+        /// Maps various endpoint handlers for the <see cref="ServiceCollectionExtensions.AddBot{TBot}(IServiceCollection, Action{BotFrameworkOptions})">registered bot</see> into the request execution pipeline using the V4 protocol.
         /// </summary>
         /// <param name="applicationBuilder">The application builder that defines the bot's pipeline.<see cref="IApplicationBuilder"/>.</param>
         /// <param name="middlewareSet">The set of middleware the bot executes on each turn. <see cref="MiddlewareSet"/>.</param>
