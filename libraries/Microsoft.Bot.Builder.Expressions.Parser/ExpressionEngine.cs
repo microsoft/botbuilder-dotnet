@@ -16,6 +16,15 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
     /// </summary>
     public class ExpressionEngine : IExpressionParser
     {
+        private static readonly Dictionary<string, string> ShorthandFunctionMap = new Dictionary<string, string>()
+        {
+            { "#", ExpressionType.Intent },
+            { "@", ExpressionType.Entity },
+            { "$", ExpressionType.Title },
+            { "%", ExpressionType.Instance },
+            { "^", ExpressionType.Option },
+        };
+
         private readonly EvaluatorLookup _lookup;
 
         /// <summary>
@@ -77,6 +86,19 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                 var left = Visit(context.expression(0));
                 var right = Visit(context.expression(1));
                 return MakeExpression(binaryOperationName, left, right);
+            }
+
+            public override Expression VisitShortHandExp([NotNull] ExpressionParser.ShortHandExpContext context)
+            {
+                var prefix = context.GetChild(0).GetText();
+                if (!ShorthandFunctionMap.ContainsKey(prefix))
+                {
+                    throw new Exception($"{prefix} is not a shorthand");
+                }
+
+                var functionName = ShorthandFunctionMap[prefix];
+
+                return MakeExpression(functionName, Expression.ConstantExpression(context.IDENTIFIER().GetText()));
             }
 
             public override Expression VisitFuncInvokeExp([NotNull] ExpressionParser.FuncInvokeExpContext context)
