@@ -84,8 +84,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Testi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestBot.Tests", "tests\Microsoft.Bot.Builder.TestBot.Tests\Microsoft.Bot.Builder.TestBot.Tests.csproj", "{76391566-9F22-4994-8B0F-02EFC0E9E228}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.Luis-preview", "libraries\Microsoft.Bot.Builder.AI.LUIS-preview\Microsoft.Bot.Builder.AI.Luis-preview.csproj", "{66A04273-E854-4793-A19D-49DEFAADB5E9}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug - NuGet Packages|Any CPU = Debug - NuGet Packages|Any CPU
@@ -303,9 +301,6 @@ Global
 		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Release|Any CPU.Build.0 = Release|Any CPU
-		{66A04273-E854-4793-A19D-49DEFAADB5E9}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
-		{66A04273-E854-4793-A19D-49DEFAADB5E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{66A04273-E854-4793-A19D-49DEFAADB5E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -349,7 +344,6 @@ Global
 		{060F070A-BBFA-490E-BE89-3844C857B771} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{E4E13301-9193-4106-B0E3-41276B478E7C} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{76391566-9F22-4994-8B0F-02EFC0E9E228} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
-		{66A04273-E854-4793-A19D-49DEFAADB5E9} = {763168FA-A590-482C-84D8-2922F7ADB1A2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
