@@ -273,6 +273,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <summary>
         /// If a property doesn't exist add it to a new array, otherwise append it to the existing array.
         /// </summary>
+        /// <param name="obj">Object in wich the property will be added.</param>
+        /// <param name="key">Key of the property.</param>
+        /// <param name="value">Value for the property.</param>
         internal static void AddProperty(JObject obj, string key, JToken value)
         {
             if (value != null)
