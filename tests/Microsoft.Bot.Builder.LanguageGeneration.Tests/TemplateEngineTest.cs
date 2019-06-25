@@ -470,6 +470,19 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public void TestRegex()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("Regex.lg"));
+            var evaled = engine.EvaluateTemplate("wPhrase", "");
+            Assert.AreEqual(evaled, "Hi");
+
+            evaled = engine.EvaluateTemplate("wPhrase", new { name = "jack"});
+            Assert.AreEqual(evaled, "Hi jack");
+
+            evaled = engine.EvaluateTemplate("wPhrase", new { name = "morethanfive" });
+            Assert.AreEqual(evaled, "Hi");
+        }
+
         public void TestLgFileImportMultipleTimes()
         {
             var engine = new TemplateEngine().AddFiles(new List<string>() { GetExampleFilePath("import.lg"), GetExampleFilePath("import2.lg") });
