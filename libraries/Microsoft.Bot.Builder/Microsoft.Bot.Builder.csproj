@@ -32,6 +32,8 @@
 		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
 		<PackageReference Include="Microsoft.Bot.Connector" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
 		<PackageReference Include="Microsoft.Bot.Connector" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.StreamingExtensions" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
+    <PackageReference Include="Microsoft.Bot.StreamingExtensions" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
 		<PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
 	</ItemGroup>
