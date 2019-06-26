@@ -31,6 +31,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(NotSupportedException))]
+        public void NumberPromptWithUnsupportedTypeShouldFail()
+        {
+            var nullId = string.Empty;
+            nullId = null;
+            var numberPrompt = new NumberPrompt<short>("prompt");
+        }
+
+        [TestMethod]
         public async Task NumberPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());

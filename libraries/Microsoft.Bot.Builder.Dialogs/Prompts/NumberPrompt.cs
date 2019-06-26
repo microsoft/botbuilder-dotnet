@@ -15,7 +15,9 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// Prompts a user to enter a number.
     /// </summary>
     /// <typeparam name="T">The type of input expected.</typeparam>
-    /// <remarks>The</remarks>
+    /// <remarks>The number prompt currently supports these types:
+    /// <see cref="float"/>, <see cref="int"/>, <see cref="long"/>, <see cref="double"/>, and
+    /// <see cref="decimal"/>.</remarks>
     public class NumberPrompt<T> : Prompt<T>
         where T : struct
     {
@@ -24,6 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             DefaultLocale = defaultLocale;
 
+            // Check wheter the number type is supported when the prompt is created.
             var type = typeof(T);
             if (!(type == typeof(float)
                 || type == typeof(int)
