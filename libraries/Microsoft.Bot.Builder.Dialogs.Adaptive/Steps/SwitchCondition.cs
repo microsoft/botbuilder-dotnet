@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         /// assumes that switch case values are compile time constants and not expressions
         /// that can be evaluated against state.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>An expression that reflects the constant case value</returns>
         public Expression CreateValueExpression()
         {
             Expression expression = null;
