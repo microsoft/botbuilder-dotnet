@@ -31,11 +31,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         /// <summary>
         /// The property from memory to pass to the calling dialog and to set the return value to.
         /// </summary>
-        public override string Property
+        public string Property
         {
             get
             {
-                return InputBindings["value"];
+                return InputBindings.TryGetValue("value", out string value) ? value : null;
             }
             set
             {

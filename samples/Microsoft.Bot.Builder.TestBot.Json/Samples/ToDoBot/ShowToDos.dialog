@@ -19,16 +19,5 @@
                 }
             ]
         }
-    ],
-    "rules": [
-        {
-            "$type": "Microsoft.IntentRule",
-            "intent": "CancelIntent",
-            "steps": [
-                {
-                    "$type": "Microsoft.CancelAllDialogs"
-                }
-            ]
-        }
     ]
 }

@@ -159,7 +159,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     Assert.IsTrue(result.Count() == 1 && result.First().ToString() == "foo");
 
                     result = step.State.Query("$..name");
-                    Assert.IsTrue(result.Count() == 5);
+                    Assert.AreEqual(5, result.Count(), "jpath query returns wrong count");
 
                     return Dialog.EndOfTurn;
                 }

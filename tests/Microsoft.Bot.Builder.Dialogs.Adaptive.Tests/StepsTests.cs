@@ -40,10 +40,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .UseResourceExplorer(resourceExplorer)
                 .UseLanguageGeneration(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+            DialogManager dm = new DialogManager(testDialog);
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                await testDialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
         }
 
@@ -363,6 +364,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("I have your age as 15.")
             .Send("hi")
                 .AssertReply("I have your age as 15.")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task Step_DatetimeInput()
+        {
+            var testDialog = new AdaptiveDialog("planningTest")
+            {
+                AutoEndDialog = false
+            };
+
+            testDialog.AddRules(new List<IRule>()
+            {
+                new UnknownIntentRule(
+                    new List<IDialog>()
+                    {
+                        new DateTimeInput()
+                        {
+                            Prompt = new ActivityTemplate("Please enter a date."),
+                            Value = new ExpressionEngine().Parse("user.date"),
+                            Property = "user.date",
+                        },
+                        new SendActivity("You entered {user.date[0].Value}"),
+                    })
+            });
+
+            await CreateFlow(testDialog)
+            .Send("hi")
+                .AssertReply("Please enter a date.")
+            .Send("June 1st 2019")
+                .AssertReply("You entered 2019-06-01")
             .StartTestAsync();
         }
 

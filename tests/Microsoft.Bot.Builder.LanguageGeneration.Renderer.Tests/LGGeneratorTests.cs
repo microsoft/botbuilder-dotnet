@@ -146,11 +146,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                     new SendActivity("[test]")
                 }
             };
+            DialogManager dm = new DialogManager(dialog);
 
             await CreateFlow("en-us", async (turnContext, cancellationToken) =>
             {
-                await dialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
-
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             })
             .Send("hello")
                 .AssertReply("overriden")
@@ -164,8 +164,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             {
                 var resource = resourceExplorer.GetResource("test.dialog");
                 var dialog = (AdaptiveDialog)DeclarativeTypeLoader.Load<IDialog>(resource, resourceExplorer, DebugSupport.SourceRegistry);
-
-                await dialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
+                DialogManager dm = new DialogManager(dialog);
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             })
             .Send("hello")
                 .AssertReply("root")

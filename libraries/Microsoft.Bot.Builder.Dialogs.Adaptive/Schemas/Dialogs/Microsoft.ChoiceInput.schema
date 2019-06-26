@@ -78,7 +78,7 @@
                         "includeNumbers": {
                             "type": "boolean",
                             "title": "Include Numbers",
-                            "description": "if true, inline and list style choices will be prefixed with the index of the choice.",
+                            "description": "If true, inline and list style choices will be prefixed with the index of the choice.",
                             "default": true
                         }
                     }
@@ -113,7 +113,7 @@
                     "description": "the value to return when selected."
                 },
                 "action": {
-                    "$ref": "#/definitions/CardAction",
+                    "$ref": "#/definitions/cardAction",
                     "title": "Action",
                     "description": "Card action for the choice"
                 },

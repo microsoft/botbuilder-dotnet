@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
     public class TestBot : ActivityHandler
     {
         private IStatePropertyAccessor<DialogState> dialogStateAccessor;
-        private AdaptiveDialog rootDialog;
+        private DialogManager dialogManager;
         private readonly ResourceExplorer resourceExplorer;
 
         public TestBot(ConversationState conversationState, ResourceExplorer resourceExplorer)
@@ -42,7 +42,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                     Task.Run(() => this.LoadDialogs());
                 }
             };
-
             LoadDialogs();
         }
 
@@ -51,7 +50,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         {
             System.Diagnostics.Trace.TraceInformation("Loading resources...");
 
-            this.rootDialog = new AdaptiveDialog()
+            var rootDialog = new AdaptiveDialog()
             {
                 AutoEndDialog = false,
                 Steps = new List<IDialog>()
@@ -78,22 +77,19 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 handleChoice.Cases.Add(new Case($"'{name}'", new List<IDialog>() { dialog }));
             }
             choiceInput.Style = ListStyle.Auto;
-            this.rootDialog.Steps.Add(choiceInput);
-            this.rootDialog.Steps.Add(new SendActivity("# Running {conversation.dialogChoice}.main.dialog"));
-            this.rootDialog.Steps.Add(handleChoice);
-            this.rootDialog.Steps.Add(new RepeatDialog());
+            rootDialog.Steps.Add(choiceInput);
+            rootDialog.Steps.Add(new SendActivity("# Running {conversation.dialogChoice}.main.dialog"));
+            rootDialog.Steps.Add(handleChoice);
+            rootDialog.Steps.Add(new RepeatDialog());
+
+            this.dialogManager = new DialogManager(rootDialog);
 
             System.Diagnostics.Trace.TraceInformation("Done loading resources.");
         }
 
-        protected override Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        public override Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return rootDialog.OnTurnAsync((ITurnContext)turnContext, null, cancellationToken);
-        }
-
-        protected async override Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
-        {
-            await rootDialog.OnTurnAsync(turnContext, null, cancellationToken).ConfigureAwait(false);
+            return this.dialogManager.OnTurnAsync(turnContext, cancellationToken: cancellationToken);
         }
     }
 }

@@ -292,18 +292,71 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestAnalyzer()
         {
-            var engine = new TemplateEngine().AddFile(GetExampleFilePath("analyzer.lg"));
-            var evaled1 = engine.AnalyzeTemplate("orderReadOut");
-            var evaled1Options = new List<string> { "orderType", "userName", "base", "topping", "bread", "meat" };
-            Assert.IsTrue(evaled1.All(evaled1Options.Contains) && evaled1.Count == evaled1Options.Count);
+            var testData = new object[]
+            {   new
+                {
+                    name = "orderReadOut",
+                    variableOptions = new string[] { "orderType", "userName", "base", "topping", "bread", "meat" },
+                    templateRefOptions = new string[] { "wPhrase", "pizzaOrderConfirmation", "sandwichOrderConfirmation" }
+                },
+                new
+                {
+                    name = "sandwichOrderConfirmation",
+                    variableOptions = new string[] { "bread", "meat" },
+                    templateRefOptions = new string[] { }
+                },
+                new
+                {
+                    name = "template1",
+                    // TODO: input.property should really be: customer.property but analyzer needs to be 
+                    variableOptions = new string[] { "alarms", "customer", "tasks[0]", "age", "city" },
+                    templateRefOptions = new string[] { "template2", "template3", "template4", "template5", "template6" }
+                },
+                new
+                {
+                    name = "coffee-to-go-order",
+                    variableOptions = new string[] { "coffee", "userName", "size", "price" },
+                    templateRefOptions = new string[] { "wPhrase", "LatteOrderConfirmation", "MochaOrderConfirmation", "CuppuccinoOrderConfirmation" }
+                }
+            };
 
-            var evaled2 = engine.AnalyzeTemplate("sandwichOrderConfirmation");
-            var evaled2Options = new List<string> { "bread", "meat" };
-            Assert.IsTrue(evaled2.All(evaled2Options.Contains) && evaled2.Count == evaled2Options.Count);
+            foreach (var testItem in testData)
+            {
+                var engine = new TemplateEngine().AddFile(GetExampleFilePath("analyzer.lg"));
+                var evaled1 = engine.AnalyzeTemplate(testItem.GetType().GetProperty("name").GetValue(testItem).ToString());
+                var variableEvaled = evaled1.Variables;
+                var variableEvaledOptions = testItem.GetType().GetProperty("variableOptions").GetValue(testItem) as string[];
+                Assert.AreEqual(variableEvaledOptions.Length, variableEvaled.Count);
+                variableEvaledOptions.ToList().ForEach(element => Assert.AreEqual(variableEvaled.Contains(element), true));
+                var templateEvaled = evaled1.TemplateReferences;
+                var templateEvaledOptions = testItem.GetType().GetProperty("templateRefOptions").GetValue(testItem) as string[];
+                Assert.AreEqual(templateEvaledOptions.Length, templateEvaled.Count);
+                templateEvaledOptions.ToList().ForEach(element => Assert.AreEqual(templateEvaled.Contains(element), true));
+            }
+        }
 
-            var evaled3 = engine.AnalyzeTemplate("template1");
-            var evaled3Options = new List<string> { "alarms", "customer", "tasks[0]", "age", "city" };
-            Assert.IsTrue(evaled3.All(evaled3Options.Contains) && evaled3.Count == evaled3Options.Count);
+        [TestMethod]
+        public void TestlgTemplateFunction()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("lgTemplate.lg"));
+            var evaled = engine.EvaluateTemplate("TemplateC", "");
+            var options = new List<string> { "Hi", "Hello" };
+            Assert.AreEqual(options.Contains(evaled), true);
+
+            evaled = engine.EvaluateTemplate("TemplateD", new { b = "morning"});
+            options = new List<string> { "Hi morning", "Hello morning" };
+            Assert.AreEqual(options.Contains(evaled), true);
+        }
+
+        [TestMethod]
+        public void TestAnalyzelgTemplateFunction()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("lgTemplate.lg"));
+            var evaled = engine.AnalyzeTemplate("TemplateD");
+            var variableEvaled = evaled.Variables;
+            var options = new List<string>() { "b" };
+            Assert.AreEqual(variableEvaled.Count, options.Count);
+            options.ForEach(e => Assert.AreEqual(variableEvaled.Contains(e), true));
         }
 
         [TestMethod]
@@ -341,9 +394,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             ex = Assert.ThrowsException<Exception>(() => new TemplateEngine().AddFiles(new List<string> { file123[0], file123[2] }));
             TestContext.WriteLine(ex.Message);
 
-            var engine = new TemplateEngine().AddFiles(new List<string> { file123[2], file123[1], file123[0] });
-
             var msg = "hello from t1, ref template2: 'hello from t2, ref template3: hello from t3' and ref template3: 'hello from t3'";
+
+            var engine = new TemplateEngine().AddFiles(new List<string> { file123[0], file123[1], file123[2] });
+            Assert.AreEqual(msg, engine.EvaluateTemplate("template1", null));
+
+            engine = new TemplateEngine().AddFiles(new List<string> { file123[1], file123[0], file123[2] });
+            Assert.AreEqual(msg, engine.EvaluateTemplate("template1", null));
+
+            engine = new TemplateEngine().AddFiles(new List<string> { file123[2], file123[1], file123[0] });
             Assert.AreEqual(msg, engine.EvaluateTemplate("template1", null));
         }
 
@@ -408,6 +467,58 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsTrue("Hi DL :)" == evaled ||
                 "Hey DL :)" == evaled ||
                 "Hello DL :)" == evaled);
+        }
+
+        [TestMethod]
+        public void TestRegex()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("Regex.lg"));
+            var evaled = engine.EvaluateTemplate("wPhrase", "");
+            Assert.AreEqual(evaled, "Hi");
+
+            evaled = engine.EvaluateTemplate("wPhrase", new { name = "jack"});
+            Assert.AreEqual(evaled, "Hi jack");
+
+            evaled = engine.EvaluateTemplate("wPhrase", new { name = "morethanfive" });
+            Assert.AreEqual(evaled, "Hi");
+        }
+
+        public void TestLgFileImportMultipleTimes()
+        {
+            var engine = new TemplateEngine().AddFiles(new List<string>() { GetExampleFilePath("import.lg"), GetExampleFilePath("import2.lg") });
+
+            // Assert 6.lg is imported only once and no exceptions are thrown when it is imported from multiple files.
+            Assert.AreEqual(13, engine.Templates.Count());
+
+            string evaled = engine.EvaluateTemplate("basicTemplate", null);
+            Assert.IsTrue("Hi" == evaled || "Hello" == evaled);
+
+            evaled = engine.EvaluateTemplate("welcome", null);
+            Assert.IsTrue("Hi DongLei :)" == evaled ||
+                "Hey DongLei :)" == evaled ||
+                "Hello DongLei :)" == evaled);
+
+            evaled = engine.EvaluateTemplate("welcome", new { userName = "DL" });
+            Assert.IsTrue("Hi DL :)" == evaled ||
+                "Hey DL :)" == evaled ||
+                "Hello DL :)" == evaled);
+
+            evaled = engine.EvaluateTemplate("basicTemplate2", null);
+            Assert.IsTrue("Hi 2" == evaled || "Hello 2" == evaled);
+
+            evaled = engine.EvaluateTemplate("basicTemplate3", null);
+            Assert.IsTrue("Hi" == evaled || "Hello" == evaled);
+
+            evaled = engine.EvaluateTemplate("basicTemplate4", null);
+            Assert.IsTrue("Hi 2" == evaled || "Hello 2" == evaled);
+
+            engine = new TemplateEngine().AddFile(GetExampleFilePath("import.lg"));
+            var ex = Assert.ThrowsException<Exception>(() => engine.AddFile(GetExampleFilePath("import2.lg")));
+            Assert.IsTrue(ex.Message.Contains("Duplicated definitions found for template: wPhrase"));
+
+            engine = new TemplateEngine().AddFiles(new List<string>() { GetExampleFilePath("import.lg") });
+            ex = Assert.ThrowsException<Exception>(() => engine.AddFiles(new List<string>() { GetExampleFilePath("import2.lg") }));
+            Assert.IsTrue(ex.Message.Contains("Duplicated definitions found for template: wPhrase"));
         }
     }
 }

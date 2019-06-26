@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
     public class JsonLoadTests
     {
         private static string getOsPath(string path) => Path.Combine(path.TrimEnd('\\').Split('\\'));
-        
+
         private readonly string samplesDirectory = getOsPath(@"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Samples\");
 
         private static ResourceExplorer resourceExplorer;
@@ -175,8 +175,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         public async Task JsonDialogLoad_BeginDialog()
         {
             await BuildTestFlow("BeginDialog.main.dialog")
-            .Send(new Activity(ActivityTypes.ConversationUpdate, 
-                membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot")}))
+            .Send(new Activity(ActivityTypes.ConversationUpdate,
+                membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
             .SendConversationUpdate()
                 .AssertReply("Hello, I'm Zoidberg. What is your name?")
             .Send("Carlos")
@@ -240,7 +240,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         }
 
         [TestMethod]
-        //[Ignore("Temporarily disabling to unblock event model PR. This is a super important test, reenabling shortly.")]
         public async Task JsonDialogLoad_ToDoBot()
         {
             await BuildTestFlow("ToDoBot.main.dialog")
@@ -301,13 +300,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
             var resource = resourceExplorer.GetResource(resourceName);
             var dialog = DeclarativeTypeLoader.Load<IDialog>(resource, resourceExplorer, DebugSupport.SourceRegistry);
+            DialogManager dm = new DialogManager(dialog);
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                if (dialog is AdaptiveDialog planningDialog)
-                {
-                    await planningDialog.OnTurnAsync(turnContext, null, cancellationToken).ConfigureAwait(false);
-                }
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
         }
     }
