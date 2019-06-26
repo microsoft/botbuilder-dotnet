@@ -145,13 +145,23 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         }
 
         [TestMethod]
-        public void RequestExtensions_SetBodyString_Null_Throws()
+        public void RequestExtensions_SetBodyString_Null_Does_Not_Throw()
         {
+            Exception ex = null;
+
             var r = new Request();
-            Assert.ThrowsException<ArgumentNullException>(() =>
+            try
             {
                 r.SetBody((string)null);
-            });
+            }
+            catch (Exception caughtEx)
+            {
+                ex = caughtEx;
+            }
+            finally
+            {
+                Assert.AreEqual(ex, null);
+            }
         }
 
         [TestMethod]
@@ -171,13 +181,23 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         }
 
         [TestMethod]
-        public void RequestExtensions_SetBody_Null_Throws()
+        public void RequestExtensions_SetBody_Null_Does_Not_Throw()
         {
             var r = new Request();
-            Assert.ThrowsException<ArgumentNullException>(() =>
+            Exception ex = null;
+
+            try
             {
                 r.SetBody(null);
-            });
+            }
+            catch (Exception caughtEx)
+            {
+                ex = caughtEx;
+            }
+            finally
+            {
+                Assert.AreEqual(ex, null);
+            }
         }
     }
 }
