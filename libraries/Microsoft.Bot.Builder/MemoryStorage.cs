@@ -132,7 +132,7 @@ namespace Microsoft.Bot.Builder
                         }
                     }
 
-                    var newState = JObject.FromObject(newValue, StateJsonSerializer);
+                    var newState = newValue != null ? JObject.FromObject(newValue, StateJsonSerializer) : null;
 
                     // Set ETag if applicable
                     if (newValue is IStoreItem newStoreItem)
