@@ -24,7 +24,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
         private const string ChannelIdHeaderName = "channelid";
         private readonly IChannelProvider _channelProvider;
         private readonly ICredentialProvider _credentialProvider;
-        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebSocketConnector"/> class.
@@ -33,11 +32,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
         /// <param name="credentialProvider">Used for validating channel credential authentication information.</param>
         /// <param name="channelProvider">Used for validating channel authentication information.</param>
         /// <param name="logger">Set in order to enable logging.</param>
-        internal WebSocketConnector(ICredentialProvider credentialProvider, IChannelProvider channelProvider = null, ILogger logger = null)
+        internal WebSocketConnector(ICredentialProvider credentialProvider, IChannelProvider channelProvider = null)
         {
             _credentialProvider = credentialProvider;
             _channelProvider = channelProvider;
-            _logger = logger;
         }
 
         /// <summary>

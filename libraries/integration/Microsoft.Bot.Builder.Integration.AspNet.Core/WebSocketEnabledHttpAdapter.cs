@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
 
             if (!string.IsNullOrEmpty(openIdEndpoint))
             {
-                // Indicate which Cloud we are using, for example, Public or Sovereign.
+                // If an open ID endpoint is configured, use it. This enables Public and Sovereign clouds that require open id.
                 ChannelValidation.OpenIdMetadataUrl = openIdEndpoint;
                 GovernmentChannelValidation.OpenIdMetadataUrl = openIdEndpoint;
             }
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             channelProvider = channelProvider ?? new ConfigurationChannelProvider(configuration);
 
             _botFrameworkHttpAdapter = _botFrameworkHttpAdapter ?? new BotFrameworkHttpAdapter(credentialProvider, channelProvider, loggerFactory?.CreateLogger<BotFrameworkHttpAdapter>());
-            _webSocketConnector = new WebSocketConnector(credentialProvider, channelProvider, loggerFactory?.CreateLogger<WebSocketConnector>());
+            _webSocketConnector = new WebSocketConnector(credentialProvider, channelProvider);
 
             _ensureMiddlewareSet = new Lazy<bool>(() =>
             {

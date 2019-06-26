@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
             }
 
             _botFrameworkHttpAdapter = new BotFrameworkHttpAdapter(credentialProvider, channelProvider, loggerFactory?.CreateLogger<BotFrameworkHttpAdapter>());
-            _webSocketConnector = new WebSocketConnector(credentialProvider, channelProvider, loggerFactory?.CreateLogger<WebSocketConnector>());
+            _webSocketConnector = new WebSocketConnector(credentialProvider, channelProvider);
             _ensureMiddlewareSet = new Lazy<bool>(() =>
             {
                 _middlewares.ForEach(mw => _botFrameworkHttpAdapter.Use(mw));
