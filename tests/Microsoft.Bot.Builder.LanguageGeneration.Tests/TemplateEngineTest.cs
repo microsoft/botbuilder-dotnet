@@ -468,5 +468,57 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 "Hey DL :)" == evaled ||
                 "Hello DL :)" == evaled);
         }
+
+        [TestMethod]
+        public void TestRegex()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("Regex.lg"));
+            var evaled = engine.EvaluateTemplate("wPhrase", "");
+            Assert.AreEqual(evaled, "Hi");
+
+            evaled = engine.EvaluateTemplate("wPhrase", new { name = "jack"});
+            Assert.AreEqual(evaled, "Hi jack");
+
+            evaled = engine.EvaluateTemplate("wPhrase", new { name = "morethanfive" });
+            Assert.AreEqual(evaled, "Hi");
+        }
+
+        public void TestLgFileImportMultipleTimes()
+        {
+            var engine = new TemplateEngine().AddFiles(new List<string>() { GetExampleFilePath("import.lg"), GetExampleFilePath("import2.lg") });
+
+            // Assert 6.lg is imported only once and no exceptions are thrown when it is imported from multiple files.
+            Assert.AreEqual(13, engine.Templates.Count());
+
+            string evaled = engine.EvaluateTemplate("basicTemplate", null);
+            Assert.IsTrue("Hi" == evaled || "Hello" == evaled);
+
+            evaled = engine.EvaluateTemplate("welcome", null);
+            Assert.IsTrue("Hi DongLei :)" == evaled ||
+                "Hey DongLei :)" == evaled ||
+                "Hello DongLei :)" == evaled);
+
+            evaled = engine.EvaluateTemplate("welcome", new { userName = "DL" });
+            Assert.IsTrue("Hi DL :)" == evaled ||
+                "Hey DL :)" == evaled ||
+                "Hello DL :)" == evaled);
+
+            evaled = engine.EvaluateTemplate("basicTemplate2", null);
+            Assert.IsTrue("Hi 2" == evaled || "Hello 2" == evaled);
+
+            evaled = engine.EvaluateTemplate("basicTemplate3", null);
+            Assert.IsTrue("Hi" == evaled || "Hello" == evaled);
+
+            evaled = engine.EvaluateTemplate("basicTemplate4", null);
+            Assert.IsTrue("Hi 2" == evaled || "Hello 2" == evaled);
+
+            engine = new TemplateEngine().AddFile(GetExampleFilePath("import.lg"));
+            var ex = Assert.ThrowsException<Exception>(() => engine.AddFile(GetExampleFilePath("import2.lg")));
+            Assert.IsTrue(ex.Message.Contains("Duplicated definitions found for template: wPhrase"));
+
+            engine = new TemplateEngine().AddFiles(new List<string>() { GetExampleFilePath("import.lg") });
+            ex = Assert.ThrowsException<Exception>(() => engine.AddFiles(new List<string>() { GetExampleFilePath("import2.lg") }));
+            Assert.IsTrue(ex.Message.Contains("Duplicated definitions found for template: wPhrase"));
+        }
     }
 }

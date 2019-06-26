@@ -25,8 +25,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Delegate for resolving resource id of imported lg file.
         /// </summary>
         /// <param name="resourceId">Resource id to resolve.</param>
-        /// <returns>Resolved resource content and absolute file path id.</returns>
-        public delegate (string content, string absoluteFilePath) ImportResolverDelegate(string resourceId);
+        /// <returns>Resolved resource content and unique id.</returns>
+        public delegate (string content, string id) ImportResolverDelegate(string resourceId);
 
         /// <summary>
         /// Gets or sets parsed LG templates.
@@ -47,27 +47,34 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Teamplate engine with parsed files.</returns>
         public TemplateEngine AddFiles(IEnumerable<string> filePaths, ImportResolverDelegate importResolver = null)
         {
+            var totalLGResources = new List<LGResource>();
             foreach (var filePath in filePaths)
             {
                 importResolver = importResolver ?? ((id) =>
                  {
-                    // import paths are in resource files which can be executed on multiple OS environments
-                    // Call GetOsPath() to map / & \ in importPath -> OSPath
-                    var importPath = GetOsPath(id);
-                    if (!Path.IsPathRooted(importPath))
+                     // import paths are in resource files which can be executed on multiple OS environments
+                     // Call GetOsPath() to map / & \ in importPath -> OSPath
+                     var importPath = GetOsPath(id);
+                     if (!Path.IsPathRooted(importPath))
                      {
-                        // get full path for importPath relative to path which is doing the import.
-                        importPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(filePath), id));
+                         // get full path for importPath relative to path which is doing the import.
+                         importPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(filePath), id));
                      }
-                    return (File.ReadAllText(importPath), importPath);
+
+                     return (File.ReadAllText(importPath), importPath);
                  });
 
                 var fullPath = Path.GetFullPath(filePath);
-                var parsedTemplates = this.ParseContent(File.ReadAllText(fullPath), fullPath, importResolver);
-                this.Templates.AddRange(parsedTemplates);
+                var rootResource = LGParser.Parse(File.ReadAllText(fullPath), fullPath);
+                var lgResources = this.DiscoverLGResources(rootResource, importResolver);
+                totalLGResources.AddRange(lgResources);
             }
 
-            RunStaticCheck(this.Templates);
+            // Remove duplicated lg files by id
+            var deduplicatedLGResources = totalLGResources.GroupBy(x => x.Id).Select(x => x.First()).ToList();
+
+            Templates.AddRange(deduplicatedLGResources.SelectMany(x => x.Templates));
+            RunStaticCheck(Templates);
 
             return this;
         }
@@ -89,9 +96,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Template engine with the parsed content.</returns>
         public TemplateEngine AddText(string content, string name, ImportResolverDelegate importResolver)
         {
-            var parsedTemplates = this.ParseContent(content, name, importResolver);
-            this.Templates.AddRange(parsedTemplates);
-
+            var rootResource = LGParser.Parse(content, name);
+            var lgResources = this.DiscoverLGResources(rootResource, importResolver);
+            Templates.AddRange(lgResources.SelectMany(x => x.Templates));
             RunStaticCheck(Templates);
 
             return this;
@@ -156,22 +163,41 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return evaluator.EvaluateTemplate(fakeTemplateId, scope);
         }
 
-        private void ImportIds(string[] ids, Dictionary<string, LGResource> sources, ImportResolverDelegate importResolver)
+        /// <summary>
+        /// Discover all imported lg resources from a start resouce.
+        /// </summary>
+        /// <param name="start">The lg resource from which to start discovering imported resources.</param>
+        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
+        /// <returns>LGResource list of parsed lg content.</returns>
+        private List<LGResource> DiscoverLGResources(LGResource start, ImportResolverDelegate importResolver)
         {
-            if (importResolver == null)
-            {
-                // default to fileResolver...
-                importResolver = FileResolver;
-            }
+            var resourcesFound = new HashSet<LGResource>();
+            ResolveImportResources(start, importResolver ?? FileResolver, resourcesFound);
 
-            foreach (var id in ids)
+            return resourcesFound.ToList();
+        }
+
+        /// <summary>
+        /// Resolve imported LG resources from a start resource.
+        /// All the imports will be visited and resolved to LGResouce list.
+        /// </summary>
+        /// <param name="start">The lg resource from which to start resolving imported resources.</param>
+        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
+        /// <param name="resourcesFound">Resources that have been found.</param>
+        private void ResolveImportResources(LGResource start, ImportResolverDelegate importResolver, HashSet<LGResource> resourcesFound)
+        {
+            var resourceIds = start.Imports.Select(lg => lg.Id).ToList();
+            resourcesFound.Add(start);
+
+            foreach (var id in resourceIds)
             {
                 try
                 {
                     var (content, path) = importResolver(id);
-                    if (!sources.ContainsKey(path))
+                    var childResource = LGParser.Parse(content, path);
+                    if (!resourcesFound.Contains(childResource))
                     {
-                        LoopLGText(content, path, sources, importResolver);
+                        ResolveImportResources(childResource, importResolver, resourcesFound);
                     }
                 }
                 catch (Exception err)
@@ -181,17 +207,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
-        private void LoopLGText(string content, string name, Dictionary<string, LGResource> sources, ImportResolverDelegate importResolver)
+        /// <summary>
+        /// Default file resolver.
+        /// </summary>
+        /// <param name="id">File id.</param>
+        /// <returns>File content and unique id.</returns>
+        private (string, string) FileResolver(string id)
         {
-            var source = LGParser.Parse(content, name);
-            sources.Add(name, source);
-            ImportIds(source.Imports.Select(lg => lg.Id).ToArray(), sources, importResolver);
-        }
-
-        private (string, string) FileResolver(string path)
-        {
-            path = Path.GetFullPath(path);
-            return (File.ReadAllText(path), path);
+            id = Path.GetFullPath(id);
+            return (File.ReadAllText(id), id);
         }
 
         /// <summary>
@@ -216,22 +240,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 // map windows sep -> linux/mac
                 return ambigiousPath.Replace("\\", "/");
             }
-        }
-
-        /// <summary>
-        /// Parse lg content to LGTemplate list.
-        /// All the imports of the content will also be tracked down to parse templates.
-        /// </summary>
-        /// <param name="content">Text content contains lg templates.</param>
-        /// <param name="name">Text name.</param>
-        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
-        /// <returns>LGTemplate list of parsed lg content.</returns>
-        private IList<LGTemplate> ParseContent(string content, string name, ImportResolverDelegate importResolver)
-        {
-            var sources = new Dictionary<string, LGResource>();
-            LoopLGText(content, name, sources, importResolver);
-
-            return sources.SelectMany(s => s.Value.Templates).ToList();
         }
     }
 }

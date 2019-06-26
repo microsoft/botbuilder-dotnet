@@ -1,0 +1,12 @@
+# basicTemplate3
+- Hi
+- Hello
+
+[import](./6.lg)
+[import](6.lg)
+[import](././6.lg)
+[import](8.lg)
+
+# basicTemplate4
+- Hi 2
+- Hello 2
