@@ -9,7 +9,16 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
     {
         public StartupNoParameters(IHostingEnvironment env)
         {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
+
+            Configuration = builder.Build();
         }
+
+        public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -17,7 +26,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 
             // Adding IConfiguration in sample test server.  Otherwise this appears to be
             // registered.
-            services.AddSingleton<IConfiguration>();
+            services.AddSingleton<IConfiguration>(this.Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
