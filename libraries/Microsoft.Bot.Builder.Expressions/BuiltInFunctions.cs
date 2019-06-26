@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// </summary>
         public static readonly string DefaultDateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
 
-        private static readonly Dictionary<string, string[]> PrefixsOfShorthand = new Dictionary<string, string[]>()
+        public static readonly Dictionary<string, string[]> PrefixsOfShorthand = new Dictionary<string, string[]>()
         {
             { ExpressionType.Intent, new[] { "turn", "recognized", "intents" } },
             { ExpressionType.Entity, new[] { "turn", "recognized", "entities" } },
@@ -451,6 +451,9 @@ namespace Microsoft.Bot.Builder.Expressions
                         error = e.Message;
                     }
                 }
+
+                value = ResolveValue(value);
+
                 return (value, error);
             };
 
@@ -479,6 +482,9 @@ namespace Microsoft.Bot.Builder.Expressions
                         error = e.Message;
                     }
                 }
+
+                value = ResolveValue(value);
+
                 return (value, error);
             };
 
@@ -490,7 +496,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 string error = null;
 
                 var property = (expression.Children[0] as Constant).Value.ToString();
-                var prefixs = PrefixsOfShorthand[ExpressionType.Intent];
+                var prefixs = PrefixsOfShorthand[functionName];
                 foreach (var prefix in prefixs)
                 {
                     (result, error) = AccessProperty(result, prefix);
@@ -509,6 +515,8 @@ namespace Microsoft.Bot.Builder.Expressions
                 {
                     (result, error) = function(result);
                 }
+
+                result = ResolveValue(result);
 
                 return (result, error);
             };

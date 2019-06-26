@@ -78,18 +78,18 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     {
                         city = "Seattle",
                         ordinal = new[]
-                    {
+                        {
                             "1",
                             "2",
                             "3"
-                        }
-                    },
-                    CompositeList1 = new[] {
+                        },
+                        CompositeList1 = new[] {
                             new[]{ "firstItem" }
                         },
-                    CompositeList2 = new[] {
+                        CompositeList2 = new[] {
                             new[]{ "firstItem", "secondItem" }
-                        },
+                        }
+                    },
                     intents = new
                     {
                         BookFlight = "BookFlight"
@@ -113,6 +113,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
        {
+            Test("@CompositeList1", "firstItem"),
             # region Operators test
             Test("1 + 2", 3),
             Test("- 1 + 2", 1),
