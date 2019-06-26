@@ -2966,7 +2966,7 @@ namespace Microsoft.Bot.Builder.Expressions
                                 IList list;
                                 var result = entity;
 
-                                // https://github.com/microsoft/botbuilder-dotnet/issues/1969
+                                // fix issue: https://github.com/microsoft/botbuilder-dotnet/issues/1969
                                 while (TryParseList(result, out list) && list.Count == 1)
                                 {
                                     result = list[0];
@@ -2975,8 +2975,7 @@ namespace Microsoft.Bot.Builder.Expressions
                                 return (result, null);
                         }),
                     ReturnType.Object,
-                    ValidateUnaryString
-                    ),
+                    ValidateUnaryString),
             };
 
             var lookup = new Dictionary<string, ExpressionEvaluator>();
