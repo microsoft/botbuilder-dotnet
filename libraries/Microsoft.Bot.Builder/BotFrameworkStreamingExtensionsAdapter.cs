@@ -59,7 +59,6 @@ namespace Microsoft.Bot.Builder
             IList<IMiddleware> middlewares = null,
             ILogger logger = null)
         {
-            _logger = logger ?? NullLogger.Instance;
             _server = streamingTransportServer ?? throw new ArgumentNullException(nameof(streamingTransportServer));
 
             if (middlewares != null)
@@ -69,6 +68,8 @@ namespace Microsoft.Bot.Builder
                     Use(item);
                 }
             }
+
+            _logger = logger ?? NullLogger.Instance;
         }
 
         /// <summary>
@@ -104,7 +105,7 @@ namespace Microsoft.Bot.Builder
         /// (<see cref="Activity.ChannelId"/> + <see cref="Activity.Id"/>) is found
         /// then an <see cref="InvokeResponse"/> is returned, otherwise null is returned.
         /// <para>This method registers the following services for the turn.<list type="bullet">
-        public async Task<InvokeResponse> ProcessActivityAsync(string body, List<IContentStream> streams, BotCallbackHandler callback, CancellationToken cancellationToken)
+        public async Task<InvokeResponse> ProcessActivityAsync(string body, List<IContentStream> streams, BotCallbackHandler callback, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(body))
             {
@@ -119,11 +120,6 @@ namespace Microsoft.Bot.Builder
             if (callback == null)
             {
                 throw new ArgumentNullException(nameof(callback));
-            }
-
-            if (cancellationToken == null)
-            {
-                throw new ArgumentNullException(nameof(cancellationToken));
             }
 
             var activity = JsonConvert.DeserializeObject<Activity>(body, SerializationSettings.DefaultDeserializationSettings);
@@ -167,18 +163,13 @@ namespace Microsoft.Bot.Builder
         /// (<see cref="Activity.ChannelId"/> + <see cref="Activity.Id"/>) is found
         /// then an <see cref="InvokeResponse"/> is returned, otherwise null is returned.
         /// <para>This method registers the following services for the turn.<list type="bullet">
-        public async Task<InvokeResponse> ProcessActivityAsync(Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
+        public async Task<InvokeResponse> ProcessActivityAsync(Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken = default(CancellationToken))
         {
             BotAssert.ActivityNotNull(activity);
 
             if (callback == null)
             {
                 throw new ArgumentNullException(nameof(callback));
-            }
-
-            if (cancellationToken == null)
-            {
-                throw new ArgumentNullException(nameof(cancellationToken));
             }
 
             _logger.LogInformation($"Received an incoming activity.  ActivityId: {activity.Id}");
@@ -217,16 +208,11 @@ namespace Microsoft.Bot.Builder
         /// an array of <see cref="ResourceResponse"/> objects containing the IDs that
         /// the receiving channel assigned to the activities.</remarks>
         /// <seealso cref="ITurnContext.OnSendActivities(SendActivitiesHandler)"/>
-        public override async Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
+        public override async Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
                 throw new ArgumentNullException(nameof(turnContext));
-            }
-
-            if (cancellationToken == null)
-            {
-                throw new ArgumentNullException(nameof(cancellationToken));
             }
 
             if (activities == null)
@@ -329,7 +315,7 @@ namespace Microsoft.Bot.Builder
         /// <para>Before calling this, set the ID of the replacement activity to the ID
         /// of the activity to replace.</para></remarks>
         /// <seealso cref="ITurnContext.OnUpdateActivity(UpdateActivityHandler)"/>
-        public override async Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
+        public override async Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -339,11 +325,6 @@ namespace Microsoft.Bot.Builder
             if (activity == null)
             {
                 throw new ArgumentNullException(nameof(activity));
-            }
-
-            if (cancellationToken == null)
-            {
-                throw new ArgumentNullException(nameof(cancellationToken));
             }
 
             var requestPath = $"/v3/conversations/{activity.Conversation.Id}/activities/{activity.Id}";
@@ -364,7 +345,7 @@ namespace Microsoft.Bot.Builder
         /// <remarks>The <see cref="ConversationReference.ActivityId"/> of the conversation
         /// reference identifies the activity to delete.</remarks>
         /// <seealso cref="ITurnContext.OnDeleteActivity(DeleteActivityHandler)"/>
-        public override async Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
+        public override async Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -374,11 +355,6 @@ namespace Microsoft.Bot.Builder
             if (reference == null)
             {
                 throw new ArgumentNullException(nameof(reference));
-            }
-
-            if (cancellationToken == null)
-            {
-                throw new ArgumentNullException(nameof(cancellationToken));
             }
 
             var requestPath = $"/v3/conversations/{reference.Conversation.Id}/activities/{reference.ActivityId}";
