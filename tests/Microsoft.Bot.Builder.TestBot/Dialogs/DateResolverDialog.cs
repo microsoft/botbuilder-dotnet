@@ -41,10 +41,8 @@ namespace Microsoft.BotBuilderSamples
 
                 return Task.FromResult(isDefinite);
             }
-            else
-            {
-                return Task.FromResult(false);
-            }
+
+            return Task.FromResult(false);
         }
 
         private async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -52,7 +50,7 @@ namespace Microsoft.BotBuilderSamples
             var timex = (string)stepContext.Options;
 
             var promptMsg = "When would you like to travel?";
-            var repromptMsg = $"I'm sorry, to make your booking please enter a full travel date including Day Month and Year.";
+            var repromptMsg = "I'm sorry, to make your booking please enter a full travel date including Day Month and Year.";
 
             if (timex == null)
             {
@@ -65,31 +63,27 @@ namespace Microsoft.BotBuilderSamples
                         RetryPrompt = MessageFactory.Text(repromptMsg),
                     }, cancellationToken);
             }
-            else
+
+            // We have a Date we just need to check it is unambiguous.
+            var timexProperty = new TimexProperty(timex);
+            if (!timexProperty.Types.Contains(Constants.TimexTypes.Definite))
             {
-                // We have a Date we just need to check it is unambiguous.
-                var timexProperty = new TimexProperty(timex);
-                if (!timexProperty.Types.Contains(Constants.TimexTypes.Definite))
-                {
-                    // This is essentially a "reprompt" of the data we were given up front.
-                    return await stepContext.PromptAsync(
-                        nameof(DateTimePrompt),
-                        new PromptOptions
-                        {
-                            Prompt = MessageFactory.Text(repromptMsg),
-                        }, cancellationToken);
-                }
-                else
-                {
-                    return await stepContext.NextAsync(new List<DateTimeResolution> { new DateTimeResolution { Timex = timex } });
-                }
+                // This is essentially a "reprompt" of the data we were given up front.
+                return await stepContext.PromptAsync(
+                    nameof(DateTimePrompt),
+                    new PromptOptions
+                    {
+                        Prompt = MessageFactory.Text(repromptMsg),
+                    }, cancellationToken);
             }
+
+            return await stepContext.NextAsync(new List<DateTimeResolution> { new DateTimeResolution { Timex = timex } }, cancellationToken);
         }
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var timex = ((List<DateTimeResolution>)stepContext.Result)[0].Timex;
-            return await stepContext.EndDialogAsync(timex);
+            return await stepContext.EndDialogAsync(timex, cancellationToken);
         }
     }
 }

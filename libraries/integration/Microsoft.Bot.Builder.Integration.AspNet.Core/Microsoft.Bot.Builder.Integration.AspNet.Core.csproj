@@ -4,7 +4,7 @@
 		<Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
 		<PackageVersion Condition=" '$(PackageVersion)' == '' ">4.0.0-local</PackageVersion>
 		<PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
-		<Configurations>Debug;Release;Documentation;Debug - NuGet Packages;</Configurations>
+		<Configurations>Debug;Release;Debug - NuGet Packages</Configurations>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -18,6 +18,7 @@
 		<DelaySign>true</DelaySign>
 		<AssemblyOriginatorKeyFile>..\..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Integration.AspNet.Core.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>

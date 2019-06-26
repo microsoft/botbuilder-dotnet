@@ -6,20 +6,33 @@ using System.Collections.Generic;
 
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
+    /// <summary>
+    /// Represents a callback method that can break a string into its component tokens.
+    /// </summary>
+    /// <param name="text">The input text.</param>
+    /// <param name="locale">Optional, identifies the locale of the input text.</param>
+    /// <returns>The list of the found <see cref="Token"/> objects.</returns>
     public delegate List<Token> TokenizerFunction(string text, string locale = null);
 
+    /// <summary>
+    /// Provides a default tokenizer implementation.
+    /// </summary>
     public class Tokenizer
     {
+        /// <summary>
+        /// Gets the default <see cref="TokenizerFunction"/> implementation.
+        /// </summary>
+        /// <value>The default <see cref="TokenizerFunction"/> implementation.</value>
         public static TokenizerFunction DefaultTokenizer => DefaultTokenizerImpl;
 
         /// <summary>
         /// Simple tokenizer that breaks on spaces and punctuation. The only normalization done is to lowercase.
-        /// This is an exact port of the JavaScript implementation of the algorithm except that here
-        /// the .NET library functions are used in place of the JavaScript string code point functions.
         /// </summary>
-        /// <param name="text">The text being tokenized.</param>
-        /// <param name="locale">The locale of the text.</param>
+        /// <param name="text">The input text.</param>
+        /// <param name="locale">Optional, identifies the locale of the input text.</param>
         /// <returns>A list of tokens.</returns>
+        /// <remarks>This is an exact port of the JavaScript implementation of the algorithm except that here
+        /// the .NET library functions are used in place of the JavaScript string code point functions.</remarks>
         public static List<Token> DefaultTokenizerImpl(string text, string locale = null)
         {
             var tokens = new List<Token>();

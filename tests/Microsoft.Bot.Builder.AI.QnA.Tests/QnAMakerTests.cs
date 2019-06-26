@@ -842,6 +842,54 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
         [TestCategory("Telemetry")]
+        public async Task Telemetry_ReturnsAnswer_WhenNoAnswerFoundInKB()
+        {
+            // Arrange
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
+
+            var client = new HttpClient(mockHttp);
+
+            var endpoint = new QnAMakerEndpoint
+            {
+                KnowledgeBaseId = _knowlegeBaseId,
+                EndpointKey = _endpointKey,
+                Host = _hostname,
+            };
+            var options = new QnAMakerOptions
+            {
+                Top = 1,
+            };
+            var telemetryClient = new Mock<IBotTelemetryClient>();
+
+            // Act - See if we get data back in telemetry
+            var qna = new QnAMaker(endpoint, options, client, telemetryClient: telemetryClient.Object, logPersonalInformation: true);
+            var results = await qna.GetAnswersAsync(GetContext("what is the answer to my nonsense question?"));
+
+            // Assert - Check Telemetry logged
+            Assert.AreEqual(telemetryClient.Invocations.Count, 1);
+            Assert.AreEqual(telemetryClient.Invocations[0].Arguments.Count, 3);
+            Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("knowledgeBaseId"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("matchedQuestion"));
+            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["matchedQuestion"], "No Qna Question matched");
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("question"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("questionId"));
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("answer"));
+            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["answer"], "No Qna Answer matched");
+            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("articleFound"));
+            Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).Count, 0);
+
+            // Assert - Validate we didn't break QnA functionality.
+            Assert.IsNotNull(results);
+            Assert.AreEqual(0, results.Length);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        [TestCategory("Telemetry")]
         public async Task Telemetry_PII()
         {
             // Arrange

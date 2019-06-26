@@ -19,30 +19,35 @@ namespace Microsoft.Bot.Configuration
         /// <summary>
         /// Gets or sets appId for the LUIS model.
         /// </summary>
+        /// <value>The App Id.</value>
         [JsonProperty("appId")]
         public string AppId { get; set; }
 
         /// <summary>
         /// Gets or sets authoringKey for interacting with service management.
         /// </summary>
+        /// <value>The Authoring Key.</value>
         [JsonProperty("authoringKey")]
         public string AuthoringKey { get; set; }
 
         /// <summary>
         /// Gets or sets subscriptionKey for accessing this service.
         /// </summary>
+        /// <value>The Subscription Key.</value>
         [JsonProperty("subscriptionKey")]
         public string SubscriptionKey { get; set; }
 
         /// <summary>
         /// Gets or sets version of the LUIS app.
         /// </summary>
+        /// <value>The Version of the LUIS app.</value>
         [JsonProperty("version")]
         public string Version { get; set; }
 
         /// <summary>
         /// Gets or sets region.
         /// </summary>
+        /// <value>The Region.</value>
         [JsonProperty("region")]
         public string Region { get; set; }
 

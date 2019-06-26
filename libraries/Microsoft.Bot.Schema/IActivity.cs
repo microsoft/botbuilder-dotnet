@@ -44,10 +44,13 @@ namespace Microsoft.Bot.Schema
         DateTimeOffset? Timestamp { get; set; }
 
         /// <summary>
-        /// Gets or sets client time when message was sent (local time or UTC).
+        /// Gets or sets the local date and time of the message,
+        /// expressed in ISO-8601 format.
+        /// For example, 2016-09-23T13:07:49.4714686-07:00.
         /// </summary>
         /// <value>
-        /// Client time when message was sent (local time or UTC).
+        /// Local date and time of the message,
+        /// expressed in ISO-8601 format.
         /// </value>
         DateTimeOffset? LocalTimestamp { get; set; }
 
