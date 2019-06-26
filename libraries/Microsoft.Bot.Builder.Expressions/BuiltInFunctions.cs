@@ -44,13 +44,13 @@ namespace Microsoft.Bot.Builder.Expressions
         /// </summary>
         public static readonly string DefaultDateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
 
-        public static readonly Dictionary<string, string[]> PrefixsOfShorthand = new Dictionary<string, string[]>()
+        public static readonly Dictionary<string, string> PrefixsOfShorthand = new Dictionary<string, string>()
         {
-            { ExpressionType.Intent, new[] { "turn", "recognized", "intents" } },
-            { ExpressionType.Entity, new[] { "turn", "recognized", "entities" } },
-            { ExpressionType.Title, new[] { "dialog" } },
-            { ExpressionType.Instance, new[] { "dialog", "instance" } },
-            { ExpressionType.Option, new[] { "dialog", "options" } },
+            { ExpressionType.Intent, "turn.recognized.intents." },
+            { ExpressionType.Entity, "turn.recognized.entities." },
+            { ExpressionType.Title, "dialog." },
+            { ExpressionType.Instance, "dialog.instance." },
+            { ExpressionType.Option, "dialog.options." },
         };
 
         /// <summary>
@@ -496,7 +496,8 @@ namespace Microsoft.Bot.Builder.Expressions
                 string error = null;
 
                 var property = (expression.Children[0] as Constant).Value.ToString();
-                var prefixs = PrefixsOfShorthand[functionName];
+                var prefixStr = PrefixsOfShorthand[functionName];
+                var prefixs = prefixStr.Split('.').Where(x => !string.IsNullOrEmpty(x)).ToList();
                 foreach (var prefix in prefixs)
                 {
                     (result, error) = AccessProperty(result, prefix);

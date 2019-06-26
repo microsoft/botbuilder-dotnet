@@ -194,10 +194,9 @@ namespace Microsoft.Bot.Builder.Expressions
                     var shorthandName = (children[0] as Constant)?.Value?.ToString();
                     if (shorthandName != null)
                     {
-                        var prefixs = BuiltInFunctions.PrefixsOfShorthand[expression.Type].ToList();
-                        prefixs.Add(shorthandName);
+                        var prefixStr = BuiltInFunctions.PrefixsOfShorthand[expression.Type];
+                        var reference = prefixStr + shorthandName;
 
-                        var reference = string.Join(".", prefixs);
                         references.Add(reference);
                     }
                 }
