@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             return $"EndTurn[]";
         }
 
-        protected async override Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+        protected async override Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {
