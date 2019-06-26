@@ -202,7 +202,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         },
                         new SwitchCondition()
                         {
-                            Condition = "user.name",
+                            Condition = new ExpressionEngine().Parse("user.name"),
                             Cases = new List<Case>()
                             {
                                 new Case("susan", new List<IDialog>() { new SendActivity("hi susan") } ),
@@ -234,7 +234,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         },
                         new SwitchCondition()
                         {
-                            Condition = "user.age",
+                            Condition = new ExpressionEngine().Parse("user.age"),
                             Cases = new List<Case>()
                             {
                                 new Case("21", new List<IDialog>() { new SendActivity("Age is 21") } ),
@@ -266,7 +266,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         },
                         new SwitchCondition()
                         {
-                            Condition = "user.isVip",
+                            Condition = new ExpressionEngine().Parse("user.isVip"),
                             Cases = new List<Case>()
                             {
                                 new Case("True", new List<IDialog>() { new SendActivity("User is VIP") } ),

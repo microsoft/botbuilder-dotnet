@@ -107,9 +107,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             {
                 lock (this.Condition)
                 {
-                    var engine = new ExpressionEngine();
-                    Expression condition = engine.Parse(this.Condition);
-
                     if (this.caseExpressions == null)
                     {
                         this.caseExpressions = new Dictionary<string, Expression>();
@@ -117,7 +114,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                         foreach (var c in this.Cases)
                         {
                             // Values for cases are always coerced to string
-                            var caseCondition = Expression.EqualsExpression(condition, c.CreateValueExpression());
+                            var caseCondition = Expression.EqualsExpression(this.Condition, c.CreateValueExpression());
 
                             // Map of expression to steps
                             this.caseExpressions[c.Value] = caseCondition;
