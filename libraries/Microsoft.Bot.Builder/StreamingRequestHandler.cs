@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder
         /// it is able to build activities out of, which are then handed to the bot itself to processed.
         /// Throws <see cref="ArgumentNullException"/> if arguments are null.
         /// </summary>
-        /// <param name="onTurnError">The function to perform on turn errors.</param>
+        /// <param name="onTurnError">Optional function to perform on turn errors.</param>
         /// <param name="bot">The <see cref="IBot"/> to be used for all requests to this handler.</param>
         /// <param name="middlewareSet">An optional set of middleware to register with the bot.</param>
         public StreamingRequestHandler(Func<ITurnContext, Exception, Task> onTurnError, IBot bot, IList<IMiddleware> middlewareSet = null)
@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder
             this.bot = bot ?? throw new ArgumentNullException(nameof(bot));
             this.middlewareSet = middlewareSet;
             userAgent = GetUserAgent();
-            this.onTurnError = onTurnError ?? throw new ArgumentNullException(nameof(onTurnError));
+            this.onTurnError = onTurnError;
         }
 
         /// <summary>
