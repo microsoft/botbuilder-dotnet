@@ -220,11 +220,6 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(activities));
             }
 
-            if (activities.Length == 0)
-            {
-                throw new ArgumentException("Expecting one or more activities, but the array was empty.", nameof(activities));
-            }
-
             var responses = new ResourceResponse[activities.Length];
 
             /*
