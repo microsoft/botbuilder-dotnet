@@ -52,25 +52,18 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
         {
             if (httpRequest == null)
             {
-                var ex = new ArgumentNullException(nameof(httpRequest));
-                _logger?.LogError(ex.Message);
-
-                throw ex;
+                throw new ArgumentNullException(nameof(httpRequest));
             }
 
             if (httpResponse == null)
             {
-                var ex = new ArgumentNullException(nameof(httpResponse));
-                _logger?.LogError(ex.Message);
-
-                throw ex;
+                throw new ArgumentNullException(nameof(httpResponse));
             }
 
             if (!httpRequest.HttpContext.WebSockets.IsWebSocketRequest)
             {
                 httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 await httpRequest.HttpContext.Response.WriteAsync("Upgrade to WebSocket is required.").ConfigureAwait(false);
-                _logger?.LogInformation("Invalid request: Request was not a WebSocket handshake.");
 
                 return;
             }
@@ -100,7 +93,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
                     if (!claimsIdentity.IsAuthenticated)
                     {
                         httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                        _logger?.LogInformation("Unauthorized connection attempt.");
 
                         return;
                     }
@@ -121,14 +113,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
         private async Task MissingAuthHeaderHelperAsync(string headerName, HttpRequest httpRequest)
         {
             httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            _logger?.LogInformation($"Unable to authentiate. Missing header: {headerName}");
             await httpRequest.HttpContext.Response.WriteAsync($"Unable to authentiate. Missing header: {headerName}").ConfigureAwait(false);
         }
 
         private async Task CreateStreamingServerConnectionAsync(Func<ITurnContext, Exception, Task> onTurnError, List<Builder.IMiddleware> middlewareSet, HttpContext httpContext)
         {
             var handler = new StreamingRequestHandler(onTurnError, httpContext.RequestServices, middlewareSet);
-            _logger?.LogInformation("Creating server for WebSocket connection.");
             var socket = await httpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
             IStreamingTransportServer server = new WebSocketServer(socket, handler);
 
@@ -136,7 +126,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             {
                 httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 await httpContext.Response.WriteAsync("Unable to create transport server.").ConfigureAwait(false);
-                _logger?.LogInformation("Failed to create server.");
 
                 return;
             }

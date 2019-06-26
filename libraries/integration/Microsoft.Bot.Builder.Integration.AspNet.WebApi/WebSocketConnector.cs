@@ -54,23 +54,16 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
         {
             if (httpRequest == null)
             {
-                var ex = new ArgumentNullException(nameof(httpRequest));
-                _logger?.LogError(ex.Message);
-
-                throw ex;
+                throw new ArgumentNullException(nameof(httpRequest));
             }
 
             if (httpResponse == null)
             {
-                var ex = new ArgumentNullException(nameof(httpResponse));
-                _logger?.LogError(ex.Message);
-
-                throw ex;
+                throw new ArgumentNullException(nameof(httpResponse));
             }
 
             if (!System.Web.HttpContext.Current.IsWebSocketRequest)
             {
-                _logger?.LogInformation("Invalid request: Request was not a WebSocket handshake.");
                 httpResponse.Content = new StringContent("Upgrade to web socket is required");
                 httpResponse.StatusCode = HttpStatusCode.BadRequest;
 
@@ -102,7 +95,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
                     if (!claimsIdentity.IsAuthenticated)
                     {
                         httpResponse.StatusCode = HttpStatusCode.Unauthorized;
-                        _logger?.LogInformation("Unauthorized connection attempt.");
 
                         return;
                     }
@@ -112,9 +104,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
             {
                 httpResponse.StatusCode = HttpStatusCode.InternalServerError;
                 httpResponse.Content = new StringContent("Error while attempting to authorize connection.");
-                _logger?.LogError(ex.Message);
 
-                return;
+                throw ex;
             }
 
             CreateStreamingServerConnection(onTurnError, middlewareSet, System.Web.HttpContext.Current, httpResponse, httpRequest, bot);
@@ -123,14 +114,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
         private void MissingAuthHeaderHelper(string headerName, HttpResponseMessage httpResponseMessage)
         {
             httpResponseMessage.StatusCode = HttpStatusCode.Unauthorized;
-            _logger?.LogInformation($"Unable to authentiate. Missing header: {headerName}");
             httpResponseMessage.Content = new StringContent($"Unable to authentiate. Missing header: {headerName}");
         }
 
         private void CreateStreamingServerConnection(Func<ITurnContext, Exception, Task> onTurnError, List<Builder.IMiddleware> middlewareSet, System.Web.HttpContext httpContext, HttpResponseMessage httpResponse, HttpRequestMessage httpRequest, IBot bot = null)
         {
             var handler = new StreamingRequestHandler(onTurnError, bot ?? httpRequest.GetDependencyScope().GetService(typeof(IBot)) as IBot, middlewareSet);
-            _logger?.LogInformation("Creating server for WebSocket connection.");
 
             Func<AspNetWebSocketContext, Task> processWebSocketSessionFunc = async (context) =>
             {
@@ -140,7 +129,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
                 {
                     httpResponse.StatusCode = HttpStatusCode.InternalServerError;
                     httpResponse.Content = new StringContent("Unable to create transport server.");
-                    _logger?.LogInformation("Failed to create server.");
 
                     return;
                 }
