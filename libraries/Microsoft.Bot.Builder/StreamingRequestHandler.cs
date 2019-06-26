@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder
         /// in DotNet Core Bot Builder samples.
         /// Throws <see cref="ArgumentNullException"/> if arguments are null.
         /// </summary>
-        /// <param name="onTurnError">The function to perform on turn errors.</param>
+        /// <param name="onTurnError">Optional function to perform on turn errors.</param>
         /// <param name="serviceProvider">The service collection containing the registered IBot type.</param>
         /// <param name="middlewareSet">An optional set of middleware to register with the bot.</param>
         public StreamingRequestHandler(Func<ITurnContext, Exception, Task> onTurnError, IServiceProvider serviceProvider, IList<IMiddleware> middlewareSet = null)
@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder
             services = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             this.middlewareSet = middlewareSet;
             userAgent = GetUserAgent();
-            this.onTurnError = onTurnError ?? throw new ArgumentNullException(nameof(onTurnError));
+            this.onTurnError = onTurnError;
         }
 
         /// <summary>
@@ -127,7 +127,11 @@ namespace Microsoft.Bot.Builder
                             throw new Exception("Unable to find bot when processing request.");
                         }
 
-                        adapter.OnTurnError = onTurnError;
+                        if (onTurnError != null)
+                        {
+                            adapter.OnTurnError = onTurnError;
+                        }
+
                         var invokeResponse = await adapter.ProcessActivityAsync(body, request.Streams, new BotCallbackHandler(bot.OnTurnAsync), CancellationToken.None).ConfigureAwait(false);
 
                         if (invokeResponse == null)
