@@ -408,14 +408,14 @@ namespace Microsoft.Bot.Builder
         /// <returns>A task that represents the work queued to execute.</returns>
         public async Task<ResourceResponse> PostToConversationAsync(string conversationId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (activity == null)
-            {
-                throw new ArgumentNullException(nameof(activity));
-            }
-
             if (string.IsNullOrWhiteSpace(conversationId))
             {
                 throw new ArgumentNullException(nameof(conversationId));
+            }
+
+            if (activity == null)
+            {
+                throw new ArgumentNullException(nameof(activity));
             }
 
             var route = string.Format("/v3/conversations/{0}/activities", conversationId);
