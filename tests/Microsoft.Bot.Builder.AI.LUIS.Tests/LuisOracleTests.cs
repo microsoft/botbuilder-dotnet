@@ -43,6 +43,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         // LUISGen "Contoso app.json" -cs Microsoft.Bot.Builder.AI.Luis.Tests.Contoso_App
         private readonly RecognizerResult _mockedResults = new RecognizerResult
         {
+            OrdinalV2.A
             Intents = new Dictionary<string, IntentScore>()
                 {
                     { "Test", new IntentScore { Score = 0.2 } },

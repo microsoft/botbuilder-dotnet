@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <summary>
         /// Possible anchors for offsets.
         /// </summary>
-        public abstract class Anchor
+        public static class Anchor
         {
             public const string Current = "current";
             public const string End = "end";

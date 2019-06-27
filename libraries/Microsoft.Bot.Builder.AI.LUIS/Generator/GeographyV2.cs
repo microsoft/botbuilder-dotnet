@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <summary>
         /// Different types of geographic locations.
         /// </summary>
-        public abstract class Types
+        public static class Types
         {
             public const string POI = "poi";
             public const string City = "city";
