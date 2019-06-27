@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Expressions
         {
             { ExpressionType.Intent, "turn.recognized.intents." },
             { ExpressionType.Entity, "turn.recognized.entities." },
-            { ExpressionType.Title, "dialog." },
+            { ExpressionType.Dialog, "dialog." },
             { ExpressionType.Instance, "dialog.instance." },
             { ExpressionType.Option, "dialog.options." },
         };
@@ -2954,7 +2954,7 @@ namespace Microsoft.Bot.Builder.Expressions
 
                 // Shorthand functions
                 new ExpressionEvaluator(ExpressionType.Intent, ApplyShorthand(ExpressionType.Intent), ReturnType.Object, ValidateUnaryString),
-                new ExpressionEvaluator(ExpressionType.Title, ApplyShorthand(ExpressionType.Title), ReturnType.Object, ValidateUnaryString),
+                new ExpressionEvaluator(ExpressionType.Dialog, ApplyShorthand(ExpressionType.Dialog), ReturnType.Object, ValidateUnaryString),
                 new ExpressionEvaluator(ExpressionType.Instance, ApplyShorthand(ExpressionType.Instance), ReturnType.Object, ValidateUnaryString),
                 new ExpressionEvaluator(ExpressionType.Option, ApplyShorthand(ExpressionType.Option), ReturnType.Object, ValidateUnaryString),
                 new ExpressionEvaluator(
