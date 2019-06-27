@@ -48,6 +48,7 @@ namespace Microsoft.Bot.Builder.Expressions
         {
             { ExpressionType.Intent, "turn.recognized.intents." },
             { ExpressionType.Entity, "turn.recognized.entities." },
+            { ExpressionType.SimpleEntity, "turn.recognized.entities." },
             { ExpressionType.Title, "dialog." },
             { ExpressionType.Instance, "dialog.instance." },
             { ExpressionType.Option, "dialog.options." },
@@ -2957,10 +2958,11 @@ namespace Microsoft.Bot.Builder.Expressions
                 new ExpressionEvaluator(ExpressionType.Title, ApplyShorthand(ExpressionType.Title), ReturnType.Object, ValidateUnaryString),
                 new ExpressionEvaluator(ExpressionType.Instance, ApplyShorthand(ExpressionType.Instance), ReturnType.Object, ValidateUnaryString),
                 new ExpressionEvaluator(ExpressionType.Option, ApplyShorthand(ExpressionType.Option), ReturnType.Object, ValidateUnaryString),
+                new ExpressionEvaluator(ExpressionType.Entity, ApplyShorthand(ExpressionType.Entity), ReturnType.Object, ValidateUnaryString),
                 new ExpressionEvaluator(
-                    ExpressionType.Entity,
+                    ExpressionType.SimpleEntity,
                     ApplyShorthand(
-                        ExpressionType.Entity,
+                        ExpressionType.SimpleEntity,
                         entity =>
                             {
                                 IList list;

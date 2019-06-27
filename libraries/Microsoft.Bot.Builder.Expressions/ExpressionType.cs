@@ -145,6 +145,7 @@ namespace Microsoft.Bot.Builder.Expressions
         // short hand functions
         public const string Intent = "intent";
         public const string Entity = "entity";
+        public const string SimpleEntity = "simpleEntity";
         public const string Title = "title";
         public const string Instance = "instance";
         public const string Option = "option";
