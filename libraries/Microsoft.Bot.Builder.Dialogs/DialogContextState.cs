@@ -97,21 +97,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
                     else
                     {
-                        return null;  //throw new Exception("DialogContext.State.Dialog: no active or parent dialog instance.");
+                        throw new Exception("DialogContext.State.Dialog: no active or parent dialog instance.");
                     }
-                //}
-                //else
-                //{
-                //    IDialog dlg;
-                //    do
-                //    {
-                //        dlg = dialogContext.FindDialog(instance.Id);
-                //        if (dlg is DialogCommand)
-                //        {
-                //            instance = dialogContext.Parent.ActiveDialog;
-                //        }
-                //    }
-                //    while (dlg is DialogCommand);
                 }
 
                 return instance.State;
@@ -197,15 +184,51 @@ namespace Microsoft.Bot.Builder.Dialogs
             return json.SelectTokens(pathExpression);
         }
 
+        public string ResolvePathShortcut(string path)
+        {
+            path = path.Trim();
+            if (path.Length == 0)
+            {
+                return path;
+            }
+
+            string name = path.Substring(1);
+
+            switch (path[0])
+            {
+                case '#':
+                    // #BookFlight == turn.recognized.intents.BookFlight
+                    return $"turn.recognized.intents.{name}";
+
+                case '@':
+                    // @city == turn.recognized.entities.city
+                    return $"turn.recognized.entities.{name}";
+
+                case '$':
+                    // $title == dialog.title
+                    return $"dialog.{name}";
+
+                case '%':
+                    // %xxx == dialog.instance.xxx
+                    return $"dialog.instance.{name}";
+
+                case '^':
+                    // ^xxx == dialog.options.xxx
+                    return $"dialog.options.{name}";
+
+                default:
+                    return path;
+            }
+        }
 
         public T GetValue<T>(string pathExpression)
         {
-            return ObjectPath.GetValue<T>(this, pathExpression);
+            return ObjectPath.GetValue<T>(this, ResolvePathShortcut(pathExpression));
         }
 
         public T GetValue<T>(string pathExpression, T defaultVal)
         {
-            if (ObjectPath.TryGetValue<T>(this, pathExpression, out var val))
+            if (ObjectPath.TryGetValue<T>(this, ResolvePathShortcut(pathExpression), out var val))
             {
                 return val;
             }
@@ -215,12 +238,12 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public bool TryGetValue<T>(string pathExpression, out T val)
         {
-            return ObjectPath.TryGetValue(this, pathExpression, out val);
+            return ObjectPath.TryGetValue(this, ResolvePathShortcut(pathExpression), out val);
         }
 
         public bool HasValue(string pathExpression)
         {
-            return ObjectPath.HasValue(this, pathExpression);
+            return ObjectPath.HasValue(this, ResolvePathShortcut(pathExpression));
         }
 
         public void SetValue(string pathExpression, object value)
@@ -230,12 +253,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new Exception($"{pathExpression} = You can't pass an unresolved Task to SetValue");
             }
 
-            if (pathExpression.StartsWith("$"))
-            {
-                pathExpression = $"dialog.{pathExpression.Substring(1)}";
-            }
-
             // If the json path does not exist
+            pathExpression = ResolvePathShortcut(pathExpression);
             var segments = pathExpression.Split('.').Select(segment => segment.ToLower()).ToArray();
             dynamic current = this;
 
@@ -276,6 +295,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public void RemoveValue(string pathExpression)
         {
+            pathExpression = ResolvePathShortcut(pathExpression);
+
             // If the json path does not exist
             string[] segments = pathExpression.Split('.').Select(segment => segment.ToLower()).ToArray();
             dynamic current = this;
