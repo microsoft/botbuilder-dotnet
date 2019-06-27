@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             var state = (IDictionary<string, object>)instance.State[PersistedState];
             var options = (PromptOptions)instance.State[PersistedOptions];
-            await OnPromptAsync(turnContext, state, options, false, cancellationToken).ConfigureAwait(false);
+            await OnPromptAsync(turnContext, state, options, true, cancellationToken).ConfigureAwait(false);
         }
 
         protected virtual async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
@@ -152,7 +152,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(options));
             }
 
-            if (isRetry == true && options.RetryPrompt != null)
+            if (isRetry && options.RetryPrompt != null)
             {
                 await turnContext.SendActivityAsync(options.RetryPrompt, cancellationToken).ConfigureAwait(false);
             }

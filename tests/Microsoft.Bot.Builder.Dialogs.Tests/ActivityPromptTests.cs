@@ -168,7 +168,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
                 {
-                    var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "please send an event." } };
+                    var options = new PromptOptions
+                    {
+                        Prompt = new Activity
+                        {
+                            Type = ActivityTypes.Message,
+                            Text = "please send an event.",
+                        },
+                        RetryPrompt = new Activity
+                        {
+                            Type = ActivityTypes.Message,
+                            Text = "Retrying - please send an event.",
+                        },
+                    };
                     await dc.PromptAsync("EventActivityPrompt", options);
                 }
 
@@ -181,7 +193,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             })
             .Send("hello")
             .AssertReply("please send an event.")
-            .AssertReply("please send an event.")
+            .Send("test")
+            .AssertReply("Retrying - please send an event.")
             .AssertReply("Test complete.")
             .StartTestAsync();
         }
