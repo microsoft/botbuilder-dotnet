@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             Assert.AreEqual("https://westus.api.cognitive.microsoft.com", app.Endpoint);
         }
 
-        // [TestMethod] Commented out due to test failing.
+        [TestMethod] 
         public async Task LuisRecognizer_Configuration()
         {
             GetEnvironmentVarsLuis();
@@ -1220,14 +1220,10 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 throw new Exception("Environment variable 'LuisAppId' not found.");
             }
 
+            // NOTE: This is required only if not mocking
             if (string.IsNullOrWhiteSpace(_subscriptionKey))
             {
                 _subscriptionKey = Environment.GetEnvironmentVariable("LUISSUBSCRIPTIONKEY");
-            }
-
-            if (string.IsNullOrWhiteSpace(_subscriptionKey))
-            {
-                throw new Exception("Environment variable 'LuisSubscriptionKey' not found.");
             }
 
             if (string.IsNullOrWhiteSpace(_endpoint))
