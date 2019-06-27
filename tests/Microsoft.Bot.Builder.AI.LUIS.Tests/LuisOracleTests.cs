@@ -1225,6 +1225,10 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             {
                 _subscriptionKey = Environment.GetEnvironmentVariable("LUISSUBSCRIPTIONKEY");
             }
+            if (string.IsNullOrWhiteSpace(_subscriptionKey))
+            {
+                _subscriptionKey = Guid.Empty.ToString();
+            }
 
             if (string.IsNullOrWhiteSpace(_endpoint))
             {
