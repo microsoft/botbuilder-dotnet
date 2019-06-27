@@ -16,6 +16,15 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
     /// </summary>
     public class ExpressionEngine : IExpressionParser
     {
+        private static readonly Dictionary<string, string> ShorthandFunctionMap = new Dictionary<string, string>()
+        {
+            { "#", ExpressionType.Intent },
+            { "@", ExpressionType.Entity },
+            { "$", ExpressionType.Title },
+            { "%", ExpressionType.Instance },
+            { "^", ExpressionType.Option },
+        };
+
         private readonly EvaluatorLookup _lookup;
 
         /// <summary>
@@ -79,6 +88,19 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                 return MakeExpression(binaryOperationName, left, right);
             }
 
+            public override Expression VisitShortHandExp([NotNull] ExpressionParser.ShortHandExpContext context)
+            {
+                var prefix = context.GetChild(0).GetText();
+                if (!ShorthandFunctionMap.ContainsKey(prefix))
+                {
+                    throw new Exception($"{prefix} is not a shorthand");
+                }
+
+                var functionName = ShorthandFunctionMap[prefix];
+
+                return MakeExpression(functionName, Expression.ConstantExpression(context.IDENTIFIER().GetText()));
+            }
+
             public override Expression VisitFuncInvokeExp([NotNull] ExpressionParser.FuncInvokeExpContext context)
             {
                 var parameters = ProcessArgsList(context.argsList()).ToList();
@@ -109,10 +131,6 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                 {
                     result = Expression.ConstantExpression(null);
                 }
-                else if (IsShortHandExpression(symbol))
-                {
-                    result = MakeShortHandExpression(symbol);
-                }
                 else
                 {
                     result = MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(symbol));
@@ -132,12 +150,6 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             {
                 var instance = Visit(context.primaryExpression());
                 var property = context.IDENTIFIER().GetText();
-
-                if (IsShortHandExpression(property))
-                {
-                    throw new Exception($"shorthand like {property} is not allowed in an accessor in expression '{context.GetText()}'");
-                }
-
                 return MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(property), instance);
             }
 
@@ -184,45 +196,6 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                         yield return Visit(expression);
                     }
                 }
-            }
-
-            private bool IsShortHandExpression(string name)
-                => name.StartsWith("#") || name.StartsWith("@") || name.StartsWith("$") || name.StartsWith("%") || name.StartsWith("^");
-
-            private Expression MakeShortHandExpression(string name)
-            {
-                if (!IsShortHandExpression(name))
-                {
-                    throw new Exception($"variable name:{name} is not a shorthand");
-                }
-
-                var prefix = name[0];
-                name = name.Substring(1);
-
-                switch (prefix)
-                {
-                    case '#':
-                        // #BookFlight == turn.recognized.intents.BookFlight
-                        return this.Transform(AntlrParse($"turn.recognized.intents.{name}"));
-
-                    case '@':
-                        // @city == turn.recognized.entities.city
-                        return this.Transform(AntlrParse($"turn.recognized.entities.{name}"));
-
-                    case '$':
-                        // $title == dialog.title
-                        return this.Transform(AntlrParse($"dialog.{name}"));
-
-                    case '%':
-                        // %xxx == dialog.instance.xxx
-                        return this.Transform(AntlrParse($"dialog.instance.{name}"));
-
-                    case '^':
-                        // ^xxx == dialog.options.xxx
-                        return this.Transform(AntlrParse($"dialog.options.{name}"));
-                }
-
-                throw new Exception($"no match for shorthand prefix: {prefix}");
             }
         }
     }

@@ -44,6 +44,15 @@ namespace Microsoft.Bot.Builder.Expressions
         /// </summary>
         public static readonly string DefaultDateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
 
+        public static readonly Dictionary<string, string> PrefixsOfShorthand = new Dictionary<string, string>()
+        {
+            { ExpressionType.Intent, "turn.recognized.intents." },
+            { ExpressionType.Entity, "turn.recognized.entities." },
+            { ExpressionType.Title, "dialog." },
+            { ExpressionType.Instance, "dialog.instance." },
+            { ExpressionType.Option, "dialog.options." },
+        };
+
         /// <summary>
         /// Verify the result of an expression is of the appropriate type and return a string if not.
         /// </summary>
@@ -442,6 +451,9 @@ namespace Microsoft.Bot.Builder.Expressions
                         error = e.Message;
                     }
                 }
+
+                value = ResolveValue(value);
+
                 return (value, error);
             };
 
@@ -470,7 +482,44 @@ namespace Microsoft.Bot.Builder.Expressions
                         error = e.Message;
                     }
                 }
+
+                value = ResolveValue(value);
+
                 return (value, error);
+            };
+
+        public static EvaluateExpressionDelegate ApplyShorthand(string functionName, Func<object, (object, string)> function = null)
+            =>
+            (expression, state) =>
+            {
+                var result = state;
+                string error = null;
+
+                var property = (expression.Children[0] as Constant).Value.ToString();
+                var prefixStr = PrefixsOfShorthand[functionName];
+                var prefixs = prefixStr.Split('.').Where(x => !string.IsNullOrEmpty(x)).ToList();
+                foreach (var prefix in prefixs)
+                {
+                    (result, error) = AccessProperty(result, prefix);
+                    if (error != null)
+                    {
+                        break;
+                    }
+                }
+
+                if (error == null)
+                {
+                    (result, error) = AccessProperty(result, property);
+                }
+
+                if (error == null && function != null)
+                {
+                    (result, error) = function(result);
+                }
+
+                result = ResolveValue(result);
+
+                return (result, error);
             };
 
         /// <summary>
@@ -2902,6 +2951,31 @@ namespace Microsoft.Bot.Builder.Expressions
                         }),
                     ReturnType.Boolean,
                     ValidateIsMatch),
+
+                // Shorthand functions
+                new ExpressionEvaluator(ExpressionType.Intent, ApplyShorthand(ExpressionType.Intent), ReturnType.Object, ValidateUnaryString),
+                new ExpressionEvaluator(ExpressionType.Title, ApplyShorthand(ExpressionType.Title), ReturnType.Object, ValidateUnaryString),
+                new ExpressionEvaluator(ExpressionType.Instance, ApplyShorthand(ExpressionType.Instance), ReturnType.Object, ValidateUnaryString),
+                new ExpressionEvaluator(ExpressionType.Option, ApplyShorthand(ExpressionType.Option), ReturnType.Object, ValidateUnaryString),
+                new ExpressionEvaluator(
+                    ExpressionType.Entity,
+                    ApplyShorthand(
+                        ExpressionType.Entity,
+                        entity =>
+                            {
+                                IList list;
+                                var result = entity;
+
+                                // fix issue: https://github.com/microsoft/botbuilder-dotnet/issues/1969
+                                while (TryParseList(result, out list) && list.Count == 1)
+                                {
+                                    result = list[0];
+                                }
+
+                                return (result, null);
+                        }),
+                    ReturnType.Object,
+                    ValidateUnaryString),
             };
 
             var lookup = new Dictionary<string, ExpressionEvaluator>();
