@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception($"no such template '{templateName}' to call in {expression}");
             }
 
-            var expectedArgsCount = _evaluator.TemplateMap[templateName].Paramters.Count();
+            var expectedArgsCount = _evaluator.TemplateMap[templateName].Parameters.Count();
             var actualArgsCount = expression.Children.Length - 1;
 
             if (expectedArgsCount != actualArgsCount)
