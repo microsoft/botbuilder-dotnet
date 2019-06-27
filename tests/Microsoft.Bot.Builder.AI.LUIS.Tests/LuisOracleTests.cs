@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         // 5) Run the review.cmd file to review each file if approved the new oracle file will replace the old one.
         // Changing this to false will cause running against the actual LUIS service.
         // This is useful in order to see if the oracles for mocking or testing have changed.
-        private readonly bool _mock = true;
+        private bool _mock = true;
 
         [TestMethod]
         public void LuisRecognizerConstruction()
@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             Assert.AreEqual("https://westus.api.cognitive.microsoft.com", app.Endpoint);
         }
 
-        [TestMethod] 
+        [TestMethod]
         public async Task LuisRecognizer_Configuration()
         {
             GetEnvironmentVarsLuis();
@@ -1225,6 +1225,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             {
                 _subscriptionKey = Environment.GetEnvironmentVariable("LUISSUBSCRIPTIONKEY");
             }
+
             if (string.IsNullOrWhiteSpace(_subscriptionKey))
             {
                 _subscriptionKey = Guid.Empty.ToString();
@@ -1238,6 +1239,12 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             if (string.IsNullOrWhiteSpace(_endpoint))
             {
                 throw new Exception("Environment variable 'LuisEndPoint' not found.");
+            }
+
+            var mock = Environment.GetEnvironmentVariable("LUISMOCK");
+            if (mock != null)
+            {
+                _mock = bool.Parse(mock);
             }
         }
     }
