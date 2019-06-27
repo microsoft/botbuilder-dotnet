@@ -24,13 +24,46 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         }
 
         /// <summary>
-        /// value expression to be compared against condition
+        /// Value expression to be compared against condition.
         /// </summary>
         [JsonProperty("value")]
         public string Value { get; set; }
 
+        /// <summary>
+        /// Set of steps to be executed given that the condition of the switch matches the value of this case.
+        /// </summary>
         [JsonProperty("steps")]
         public List<IDialog> Steps { get; set; } = new List<IDialog>();
+
+        /// <summary>
+        /// Creates an expression that returns the value in its primitive type. Still
+        /// assumes that switch case values are compile time constants and not expressions
+        /// that can be evaluated against state.
+        /// </summary>
+        /// <returns>An expression that reflects the constant case value</returns>
+        public Expression CreateValueExpression()
+        {
+            Expression expression = null;
+
+            if (Int64.TryParse(Value, out Int64 i))
+            {
+                expression = Expression.ConstantExpression(i);
+            }
+            else if (float.TryParse(Value, out float f))
+            {
+                expression = Expression.ConstantExpression(f);
+            }
+            else if (bool.TryParse(Value, out bool b))
+            {
+                expression = Expression.ConstantExpression(b);
+            }
+            else 
+            {
+                expression = Expression.ConstantExpression(Value);
+            }
+
+            return expression;
+        }
     }
 
     /// <summary>
@@ -75,13 +108,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 {
                     var engine = new ExpressionEngine();
                     Expression condition = engine.Parse(this.Condition);
+
                     if (this.caseExpressions == null)
                     {
                         this.caseExpressions = new Dictionary<string, Expression>();
+
                         foreach (var c in this.Cases)
                         {
-                            var caseCondition = Expression.EqualsExpression(condition, engine.Parse(c.Value));
-                            // map of expression to steps
+                            // Values for cases are always coerced to string
+                            var caseCondition = Expression.EqualsExpression(condition, c.CreateValueExpression());
+
+                            // Map of expression to steps
                             this.caseExpressions[c.Value] = caseCondition;
                         }
                     }
@@ -93,11 +130,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 {
 
                     var (value, error) = this.caseExpressions[caseCondition.Value].TryEvaluate(dc.State);
+
                     if (error != null)
                     {
-                        // Do what? 
+                        throw new Exception($"Expression evaluation resulted in an error. Expression: {caseExpressions[caseCondition.Value].ToString()}. Error: {error}");
                     }
-                    else if (((bool)value) == true)
+
+                    // Compare both expression results. The current switch case triggers if the comparison is true.
+                    if (((bool)value) == true)
                     {
                         stepsToRun = caseCondition.Steps;
                         break;

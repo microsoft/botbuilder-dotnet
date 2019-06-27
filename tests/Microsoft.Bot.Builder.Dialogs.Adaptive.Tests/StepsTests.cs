@@ -173,9 +173,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             Condition = "user.name",
                             Cases = new List<Case>()
                             {
-                                new Case("'susan'", new List<IDialog>() { new SendActivity("hi susan") } ),
-                                new Case("'bob'", new List<IDialog>() { new SendActivity("hi bob") } ),
-                                new Case("'frank'", new List<IDialog>() { new SendActivity("hi frank") } )
+                                new Case("susan", new List<IDialog>() { new SendActivity("hi susan") } ),
+                                new Case("bob", new List<IDialog>() { new SendActivity("hi bob") } ),
+                                new Case("frank", new List<IDialog>() { new SendActivity("hi frank") } )
                             },
                             Default = new List<IDialog>() { new SendActivity("Who are you?") }
                         },
@@ -185,6 +185,101 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             await CreateFlow(testDialog)
             .Send("hi")
                 .AssertReply("hi frank")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task Step_Switch_Default()
+        {
+            var testDialog = new AdaptiveDialog("planningTest")
+            {
+                Steps = new List<IDialog>()
+                    {
+                        new SetProperty()
+                        {
+                            Property = "user.name",
+                            Value = new ExpressionEngine().Parse("'Zoidberg'")
+                        },
+                        new SwitchCondition()
+                        {
+                            Condition = "user.name",
+                            Cases = new List<Case>()
+                            {
+                                new Case("susan", new List<IDialog>() { new SendActivity("hi susan") } ),
+                                new Case("bob", new List<IDialog>() { new SendActivity("hi bob") } ),
+                                new Case("frank", new List<IDialog>() { new SendActivity("hi frank") } )
+                            },
+                            Default = new List<IDialog>() { new SendActivity("Who are you?") }
+                        },
+                    }
+            };
+
+            await CreateFlow(testDialog)
+            .Send("hi")
+                .AssertReply("Who are you?")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task Step_Switch_Number()
+        {
+            var testDialog = new AdaptiveDialog("planningTest")
+            {
+                Steps = new List<IDialog>()
+                    {
+                        new SetProperty()
+                        {
+                            Property = "user.age",
+                            Value = new ExpressionEngine().Parse("22")
+                        },
+                        new SwitchCondition()
+                        {
+                            Condition = "user.age",
+                            Cases = new List<Case>()
+                            {
+                                new Case("21", new List<IDialog>() { new SendActivity("Age is 21") } ),
+                                new Case("22", new List<IDialog>() { new SendActivity("Age is 22") } ),
+                                new Case("23", new List<IDialog>() { new SendActivity("Age is 23") } )
+                            },
+                            Default = new List<IDialog>() { new SendActivity("Who are you?") }
+                        },
+                    }
+            };
+
+            await CreateFlow(testDialog)
+            .Send("hi")
+                .AssertReply("Age is 22")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task Step_Switch_Bool()
+        {
+            var testDialog = new AdaptiveDialog("planningTest")
+            {
+                Steps = new List<IDialog>()
+                    {
+                        new SetProperty()
+                        {
+                            Property = "user.isVip",
+                            Value = new ExpressionEngine().Parse("true")
+                        },
+                        new SwitchCondition()
+                        {
+                            Condition = "user.isVip",
+                            Cases = new List<Case>()
+                            {
+                                new Case("True", new List<IDialog>() { new SendActivity("User is VIP") } ),
+                                new Case("False", new List<IDialog>() { new SendActivity("User is NOT VIP") } )
+                            },
+                            Default = new List<IDialog>() { new SendActivity("Who are you?") }
+                        },
+                    }
+            };
+
+            await CreateFlow(testDialog)
+            .Send("hi")
+                .AssertReply("User is VIP")
             .StartTestAsync();
         }
 
