@@ -42,7 +42,8 @@ namespace Microsoft.Bot.Connector.Authentication
 
             if (customHttpClient != null)
             {
-                this.authContext = new AuthenticationContext(configurationOAuth.Authority, true, new TokenCache(), customHttpClient);
+                var httpClientFactory = new ConstantHttpClientFactory(customHttpClient);
+                this.authContext = new AuthenticationContext(configurationOAuth.Authority, true, new TokenCache(), httpClientFactory);
             }
             else
             {
