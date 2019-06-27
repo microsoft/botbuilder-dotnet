@@ -82,8 +82,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             };
 
             // Send initial prompt
-            await OnPromptAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions], cancellationToken).ConfigureAwait(false);
-            return Dialog.EndOfTurn;
+            await OnPromptAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions], false, cancellationToken).ConfigureAwait(false);
+            return EndOfTurn;
         }
 
         /// <summary>
@@ -133,8 +133,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else
             {
-                return Dialog.EndOfTurn;
+                await OnPromptAsync(dc.Context, state, options, true, cancellationToken).ConfigureAwait(false);
             }
+
+            return EndOfTurn;
         }
 
         /// <summary>
@@ -158,7 +160,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // To avoid the prompt prematurely ending we need to implement this method and
             // simply re-prompt the user.
             await RepromptDialogAsync(dc.Context, dc.ActiveDialog, cancellationToken).ConfigureAwait(false);
-            return Dialog.EndOfTurn;
+            return EndOfTurn;
         }
 
         /// <summary>
@@ -173,7 +175,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             var state = (IDictionary<string, object>)instance.State[PersistedState];
             var options = (PromptOptions)instance.State[PersistedOptions];
-            await OnPromptAsync(turnContext, state, options, cancellationToken).ConfigureAwait(false);
+            await OnPromptAsync(turnContext, state, options, true, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -187,6 +189,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         protected virtual async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
+            => await OnPromptAsync(turnContext, state, options, false, cancellationToken).ConfigureAwait(false);
+
+        protected virtual async Task OnPromptAsync(
+            ITurnContext turnContext,
+            IDictionary<string, object> state,
+            PromptOptions options,
+            bool isRetry,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -198,7 +208,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(options));
             }
 
-            if (options.Prompt != null)
+            if (isRetry && options.RetryPrompt != null)
+            {
+                await turnContext.SendActivityAsync(options.RetryPrompt, cancellationToken).ConfigureAwait(false);
+            }
+            else if (options.Prompt != null)
             {
                 await turnContext.SendActivityAsync(options.Prompt, cancellationToken).ConfigureAwait(false);
             }
