@@ -20,7 +20,13 @@ namespace Microsoft.BotBuilder.Adapters.Slack
         /// <param name="elements">An array of dialog elements.</param>
         public SlackDialog(string title, string callbackId, string submitLabel, List<DialogElement> elements)
         {
-            this.data = new DialogData(title, callbackId, submitLabel, elements);
+            this.data = new DialogData()
+            {
+                Title = title,
+                CallbackId = callbackId,
+                SubmitLabel = submitLabel,
+                Elements = elements,
+            };
         }
 
         /// <summary>
