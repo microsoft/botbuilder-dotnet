@@ -78,10 +78,16 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     {
                         city = "Seattle",
                         ordinal = new[]
-                    {
+                        {
                             "1",
                             "2",
                             "3"
+                        },
+                        CompositeList1 = new[] {
+                            new[]{ "firstItem" }
+                        },
+                        CompositeList2 = new[] {
+                            new[]{ "firstItem", "secondItem" }
                         }
                     },
                     intents = new
@@ -107,6 +113,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
        {
+            Test("@CompositeList1", "firstItem"),
             # region Operators test
             Test("1 + 2", 3),
             Test("- 1 + 2", 1),
@@ -470,9 +477,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("$subTitle", "Dialog Sub Title", new HashSet<string> {"dialog.subTitle"}),
             Test("%xxx", "instance", new HashSet<string> {"dialog.instance.xxx"}),
             Test("^xxx", "options", new HashSet<string> {"dialog.options.xxx"}),
-            # endregion
+            Test("count(@@CompositeList1) == 1 && count(@@CompositeList1[0]) == 1", true, new HashSet<string> {"turn.recognized.entities.CompositeList1" }),
+            #endregion
 
-            # region  Memory access
+            #region  Memory access
             Test("getProperty(bag, concat('na','me'))","mybag"),
             Test("items[2]", "two", new HashSet<string> { "items[2]" }),
             Test("bag.list[bag.index - 2]", "blue", new HashSet<string> {"bag.list", "bag.index" }),
@@ -491,6 +499,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("count(user.lists.todo) >= int(@ordinal[0]))", true),
             Test("user.lists.todo[int(@ordinal[0]) - 1]", "todo1"),
             Test("user.lists[user.listType][int(@ordinal[0]) - 1]", "todo1"),
+            Test("@CompositeList1", "firstItem"),
+            Test("count(@CompositeList2)", 2),
             #endregion
 
             # region Regex
