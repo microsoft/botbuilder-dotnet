@@ -6,10 +6,10 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.BotKit.Core;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
-using Microsoft.Bot.Builder.BotKit.Core;
 
 namespace Microsoft.Bot.Builder.BotKit
 {
