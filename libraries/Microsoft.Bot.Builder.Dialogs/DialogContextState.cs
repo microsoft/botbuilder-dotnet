@@ -126,14 +126,42 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
+        /// Gets access to the callstack of dialog state.
+        /// </summary>
+        [JsonIgnore]
+        public IEnumerable<object> CallStack
+        {
+            get
+            {
+                // get each state on the current stack.
+                foreach (var instance in this.dialogContext.Stack)
+                {
+                    if (instance.State != null)
+                    {
+                        yield return instance.State;
+                    }
+                }
+
+                // switch to parent stack and enumerate it's state objects
+                if (this.dialogContext.Parent != null)
+                {
+                    foreach (var state in dialogContext.State.CallStack)
+                    {
+                        yield return state;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets or sets state associated with the current turn only (this is non-persisted).
         /// </summary>
         [JsonProperty(PropertyName = "turn")]
         public Dictionary<string, object> Turn { get; set; }
 
-        public ICollection<string> Keys => new[] { "user", "conversation", "dialog", "turn", "settings" };
+        public ICollection<string> Keys => new[] { "user", "conversation", "dialog", "callstack", "turn", "settings" };
 
-        public ICollection<object> Values => new[] { User, Conversation, Dialog, Turn };
+        public ICollection<object> Values => new object[] { User, Conversation, Dialog, CallStack, Turn };
 
         public int Count => 3;
 
@@ -352,6 +380,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 case "dialog":
                     value = this.Dialog;
                     return true;
+                case "callstack":
+                    value = this.CallStack;
+                    return true;
                 case "settings":
                     value = this.Settings;
                     return true;
@@ -393,6 +424,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             yield return new KeyValuePair<string, object>("user", this.User);
             yield return new KeyValuePair<string, object>("conversation", this.Conversation);
             yield return new KeyValuePair<string, object>("dialog", this.Dialog);
+            yield return new KeyValuePair<string, object>("callstack", this.CallStack);
             yield return new KeyValuePair<string, object>("settings", this.Settings);
             yield return new KeyValuePair<string, object>("turn", this.Turn);
             yield break;

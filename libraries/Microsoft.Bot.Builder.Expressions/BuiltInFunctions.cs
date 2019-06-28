@@ -1157,6 +1157,57 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
+        private static (object value, string error) Where(Expression expression, object state)
+        {
+            object result = null;
+            string error;
+
+            dynamic collection;
+            (collection, error) = expression.Children[0].TryEvaluate(state);
+            if (error == null)
+            {
+                // 2nd parameter has been rewrite to $local.item
+                var iteratorName = (string)(expression.Children[1].Children[0] as Constant).Value;
+
+                if (TryParseList(collection, out IList ilist))
+                {
+                    result = new List<object>();
+                    for (var idx = 0; idx < ilist.Count; idx++)
+                    {
+                        var local = new Dictionary<string, object>
+                        {
+                            { iteratorName, AccessIndex(ilist, idx).value },
+                        };
+                        var newScope = new Dictionary<string, object>
+                        {
+                            { "$global", state },
+                            { "$local", local },
+                        };
+
+                        (var r, var e) = expression.Children[2].TryEvaluate(newScope);
+                        if (e != null)
+                        {
+                            return (null, e);
+                        }
+                        if ((bool)r)
+                        {
+                            // add if only if it evaluates to true
+                            ((List<object>)result).Add(local[iteratorName]);
+                        }
+                    }
+                }
+                else
+                {
+                    error = $"{expression.Children[0]} is not a collection to run where";
+                }
+            }
+            return (result, error);
+        }
+
+        private static void ValidateWhere(Expression expression)
+        {
+            ValidateForeach(expression);
+        }
         private static void ValidateForeach(Expression expression)
         {
             if (expression.Children.Count() != 3)
@@ -1456,7 +1507,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 var ts = (DateTime)parsed;
                 var startOfDay = ts.Date;
                 var days = ts.Day;
-                var startOfMonth = startOfDay.AddDays(1-days);
+                var startOfMonth = startOfDay.AddDays(1 - days);
                 (result, error) = ReturnFormatTimeStampStr(startOfMonth, format);
             }
 
@@ -2925,7 +2976,9 @@ namespace Microsoft.Bot.Builder.Expressions
                         }),
                     ReturnType.Object,
                     (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
+                new ExpressionEvaluator(ExpressionType.Select, Foreach, ReturnType.Object, ValidateForeach),
                 new ExpressionEvaluator(ExpressionType.Foreach, Foreach, ReturnType.Object, ValidateForeach),
+                new ExpressionEvaluator(ExpressionType.Where, Where, ReturnType.Object, ValidateWhere),
                 new ExpressionEvaluator(ExpressionType.Coalesce, Apply(args => Coalesce(args.ToArray<object>())), ReturnType.Object, ValidateAtLeastOne),
                 new ExpressionEvaluator(ExpressionType.XPath, ApplyWithError(args => XPath(args[0], args[1])), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
 

@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             timestampObj = DateTime.Parse("2018-03-15T13:00:00.000Z").ToUniversalTime(),
             unixTimestamp = 1521118800,
             xmlStr = "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>",
-        turn = new
+            turn = new
             {
                 recognized = new
                 {
@@ -439,6 +439,11 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("join(foreach(items, item, item), ',')", "zero,one,two"),
             Test("join(foreach(nestedItems, i, i.x + first(nestedItems).x), ',')", "2,3,4", new HashSet<string>{ "nestedItems"}),
             Test("join(foreach(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3", new HashSet<string>{ "items"}),
+            Test("join(select(items, item, item), ',')", "zero,one,two"),
+            Test("join(select(nestedItems, i, i.x + first(nestedItems).x), ',')", "2,3,4", new HashSet<string>{ "nestedItems"}),
+            Test("join(select(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3", new HashSet<string>{ "items"}),
+            Test("join(where(items, item, item == 'two'), ',')", "two"),
+            Test("join(foreach(where(nestedItems, item, item.x > 1), result, result.x), ',')", "2,3", new HashSet<string>{ "nestedItems"}),
             Test("last(items)", "two"),
             Test("last('hello')", "o"),
             Test("last(createArray(0, 1, 2))", 2),
