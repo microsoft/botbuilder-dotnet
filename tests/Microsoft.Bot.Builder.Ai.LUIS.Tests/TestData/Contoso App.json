@@ -1,6 +1,6 @@
 {
   "luis_schema_version": "3.2.0",
-  "versionId": "roles",
+  "versionId": "GeoPeople",
   "name": "Contoso App",
   "desc": "Default Intents for Azure Bot Service V2",
   "culture": "en-us",
@@ -37,19 +37,15 @@
       "name": "Travel"
     },
     {
-      "name": "Weather.GetForecast",
-      "inherits": {
-        "domain_name": "Weather",
-        "model_name": "GetForecast"
-      }
+      "name": "Weather.GetForecast"
     }
   ],
   "entities": [
     {
       "name": "Name",
       "roles": [
-        "liker",
-        "likee"
+        "likee",
+        "liker"
       ]
     },
     {
@@ -58,10 +54,6 @@
     },
     {
       "name": "Weather.Location",
-      "inherits": {
-        "domain_name": "Weather",
-        "model_name": "Location"
-      },
       "roles": [
         "source",
         "destination"
@@ -84,8 +76,8 @@
         "State"
       ],
       "roles": [
-        "Destination",
-        "Source"
+        "Source",
+        "Destination"
       ]
     },
     {
@@ -152,8 +144,8 @@
     {
       "name": "person",
       "roles": [
-        "to",
-        "from"
+        "from",
+        "to"
       ],
       "explicitList": []
     },
@@ -179,36 +171,43 @@
     {
       "name": "age",
       "roles": [
-        "end",
-        "begin"
+        "begin",
+        "end"
       ]
     },
     {
       "name": "datetimeV2",
       "roles": [
-        "leave",
-        "arrive"
+        "arrive",
+        "leave"
       ]
     },
     {
       "name": "dimension",
       "roles": [
-        "length",
-        "width"
+        "width",
+        "length"
       ]
     },
     {
       "name": "email",
       "roles": [
-        "sender",
-        "receiver"
+        "receiver",
+        "sender"
+      ]
+    },
+    {
+      "name": "geographyV2",
+      "roles": [
+        "startloc",
+        "endloc"
       ]
     },
     {
       "name": "money",
       "roles": [
-        "max",
-        "min"
+        "min",
+        "max"
       ]
     },
     {
@@ -222,6 +221,13 @@
       ]
     },
     {
+      "name": "ordinalV2",
+      "roles": [
+        "startpos",
+        "endpos"
+      ]
+    },
+    {
       "name": "percentage",
       "roles": [
         "minimum",
@@ -229,9 +235,16 @@
       ]
     },
     {
+      "name": "personName",
+      "roles": [
+        "child",
+        "parent"
+      ]
+    },
+    {
       "name": "phonenumber",
       "roles": [
-        "new",
+        "newPhone",
         "old"
       ]
     },
@@ -253,16 +266,16 @@
   "regex_features": [],
   "patterns": [
     {
-      "pattern": "email about {subject} [from {person}] [and also {subject:extra}]",
-      "intent": "search"
+      "pattern": "deliver from {Address:Source} to {Address:Destination}",
+      "intent": "Roles"
     },
     {
       "pattern": "email from {person:from} to {person:to}",
       "intent": "search"
     },
     {
-      "pattern": "deliver from {Address:Source} to {Address:Destination}",
-      "intent": "Roles"
+      "pattern": "email about {subject} [from {person}] [and also {subject:extra}]",
+      "intent": "search"
     }
   ],
   "utterances": [
@@ -419,6 +432,18 @@
           "role": "buy",
           "startPos": 119,
           "endPos": 123
+        },
+        {
+          "entity": "Airline",
+          "role": "Buyer",
+          "startPos": 173,
+          "endPos": 177
+        },
+        {
+          "entity": "Airline",
+          "role": "Seller",
+          "startPos": 183,
+          "endPos": 188
         },
         {
           "entity": "Weather.Location",
@@ -704,6 +729,64 @@
       "entities": []
     },
     {
+      "text": "bart simpson",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "bart simpson helps homer simpson",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "personName",
+          "role": "child",
+          "startPos": 0,
+          "endPos": 11
+        },
+        {
+          "entity": "personName",
+          "role": "parent",
+          "startPos": 19,
+          "endPos": 31
+        }
+      ]
+    },
+    {
+      "text": "bart simpson is parent of lisa simpson to move calcutta to london",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "personName",
+          "role": "parent",
+          "startPos": 0,
+          "endPos": 11
+        },
+        {
+          "entity": "personName",
+          "role": "child",
+          "startPos": 26,
+          "endPos": 37
+        },
+        {
+          "entity": "geographyV2",
+          "role": "startloc",
+          "startPos": 47,
+          "endPos": 54
+        },
+        {
+          "entity": "geographyV2",
+          "role": "endloc",
+          "startPos": 59,
+          "endPos": 64
+        }
+      ]
+    },
+    {
+      "text": "calcutta",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
       "text": "can i trade kb457 for kb922",
       "intent": "Roles",
       "entities": [
@@ -756,7 +839,7 @@
         },
         {
           "entity": "phonenumber",
-          "role": "new",
+          "role": "newPhone",
           "startPos": 23,
           "endPos": 34
         }
@@ -774,7 +857,7 @@
         },
         {
           "entity": "phonenumber",
-          "role": "new",
+          "role": "newPhone",
           "startPos": 23,
           "endPos": 34
         }
@@ -821,6 +904,11 @@
           "endPos": 30
         }
       ]
+    },
+    {
+      "text": "did delta buy virgin",
+      "intent": "Roles",
+      "entities": []
     },
     {
       "text": "did delta buy virgin?",
@@ -966,6 +1054,72 @@
       ]
     },
     {
+      "text": "go from 3rd to 5th",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "ordinalV2",
+          "role": "startpos",
+          "startPos": 8,
+          "endPos": 10
+        },
+        {
+          "entity": "ordinalV2",
+          "role": "endpos",
+          "startPos": 15,
+          "endPos": 17
+        }
+      ]
+    },
+    {
+      "text": "go from first to last",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "ordinalV2",
+          "role": "startpos",
+          "startPos": 8,
+          "endPos": 12
+        },
+        {
+          "entity": "ordinalV2",
+          "role": "endpos",
+          "startPos": 17,
+          "endPos": 20
+        }
+      ]
+    },
+    {
+      "text": "go from next to last to last move london to jakarta and homer simpson is the parent of lisa simpson",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "ordinalV2",
+          "role": "startpos",
+          "startPos": 8,
+          "endPos": 19
+        },
+        {
+          "entity": "ordinalV2",
+          "role": "endpos",
+          "startPos": 24,
+          "endPos": 27
+        },
+        {
+          "entity": "personName",
+          "role": "parent",
+          "startPos": 56,
+          "endPos": 68
+        },
+        {
+          "entity": "personName",
+          "role": "child",
+          "startPos": 87,
+          "endPos": 98
+        }
+      ]
+    },
+    {
       "text": "good afternoon",
       "intent": "Greeting",
       "entities": []
@@ -1056,6 +1210,53 @@
       "text": "hiya",
       "intent": "Greeting",
       "entities": []
+    },
+    {
+      "text": "homer simpson is parent of bart simpson",
+      "intent": "Roles",
+      "entities": []
+    },
+    {
+      "text": "homer simpson is parent of bart simpson to move jakarta to calcutta",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "personName",
+          "role": "child",
+          "startPos": 27,
+          "endPos": 38
+        },
+        {
+          "entity": "geographyV2",
+          "role": "startloc",
+          "startPos": 48,
+          "endPos": 54
+        },
+        {
+          "entity": "geographyV2",
+          "role": "endloc",
+          "startPos": 59,
+          "endPos": 66
+        }
+      ]
+    },
+    {
+      "text": "homer simpson is parent of lisa simpson",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "personName",
+          "role": "parent",
+          "startPos": 0,
+          "endPos": 12
+        },
+        {
+          "entity": "personName",
+          "role": "child",
+          "startPos": 27,
+          "endPos": 38
+        }
+      ]
     },
     {
       "text": "how are you",
@@ -1282,12 +1483,6 @@
           "role": "a",
           "startPos": 15,
           "endPos": 24
-        },
-        {
-          "entity": "temperature",
-          "role": "b",
-          "startPos": 30,
-          "endPos": 39
         }
       ]
     },
@@ -1455,6 +1650,78 @@
       "text": "mayday",
       "intent": "Help",
       "entities": []
+    },
+    {
+      "text": "move calcutta to mumbai",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "geographyV2",
+          "role": "startloc",
+          "startPos": 5,
+          "endPos": 12
+        },
+        {
+          "entity": "geographyV2",
+          "role": "endloc",
+          "startPos": 17,
+          "endPos": 22
+        }
+      ]
+    },
+    {
+      "text": "move jakarta to london",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "geographyV2",
+          "role": "startloc",
+          "startPos": 5,
+          "endPos": 11
+        },
+        {
+          "entity": "geographyV2",
+          "role": "endloc",
+          "startPos": 16,
+          "endPos": 21
+        }
+      ]
+    },
+    {
+      "text": "move london to calcutta",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "geographyV2",
+          "role": "startloc",
+          "startPos": 5,
+          "endPos": 10
+        },
+        {
+          "entity": "geographyV2",
+          "role": "endloc",
+          "startPos": 15,
+          "endPos": 22
+        }
+      ]
+    },
+    {
+      "text": "move london to jakarta",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "geographyV2",
+          "role": "startloc",
+          "startPos": 5,
+          "endPos": 10
+        },
+        {
+          "entity": "geographyV2",
+          "role": "endloc",
+          "startPos": 15,
+          "endPos": 21
+        }
+      ]
     },
     {
       "text": "my name is emad",

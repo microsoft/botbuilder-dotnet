@@ -4,53 +4,46 @@
     "Roles": {
       "score": 1.0
     },
-    "EntityTests": {
-      "score": 0.0115484772
+    "search": {
+      "score": 0.08896044
     },
     "Weather_GetForecast": {
-      "score": 0.009885744
-    },
-    "search": {
-      "score": 0.009508528
+      "score": 0.0100867962
     },
     "Travel": {
-      "score": 0.004027992
+      "score": 0.009896766
+    },
+    "EntityTests": {
+      "score": 0.0046325135
     },
     "None": {
-      "score": 0.00087468233
-    },
-    "SpecifyName": {
-      "score": 0.000113203794
+      "score": 0.00093744183
     },
     "Delivery": {
-      "score": 7.92103747E-05
+      "score": 7.978094E-05
+    },
+    "SpecifyName": {
+      "score": 5.360404E-05
     },
     "Help": {
-      "score": 6.826453E-07
+      "score": 7.622754E-07
     },
     "Greeting": {
-      "score": 4.24091354E-07
+      "score": 4.73494453E-07
     },
     "Cancel": {
-      "score": 4.06555785E-07
+      "score": 4.50860341E-07
     }
   },
   "entities": {
     "$instance": {
-      "Composite1": [
+      "likee": [
         {
-          "startIndex": 0,
-          "endIndex": 211,
-          "text": "3 inches long by 2 inches wide and 5 % to 10 % and are you between 6 years old and 8 years old and can i trade kb457 for kb922 and change 425 - 777 - 1212 to 206 - 666 - 4123 and did delta buy virgin and did the rain from",
-          "type": "Composite1",
-          "score": 0.0632453859
-        },
-        {
-          "startIndex": 299,
-          "endIndex": 420,
-          "text": "68 degrees and 72 degrees and john likes mary and leave 3pm and arrive 5pm and pay between $ 400 and $ 500 and send chrimc @",
-          "type": "Composite1",
-          "score": 0.0442264825
+          "startIndex": 340,
+          "endIndex": 344,
+          "text": "mary",
+          "type": "Name",
+          "score": 0.9899757
         }
       ],
       "liker": [
@@ -59,25 +52,7 @@
           "endIndex": 333,
           "text": "john",
           "type": "Name",
-          "score": 0.9921442
-        }
-      ],
-      "likee": [
-        {
-          "startIndex": 340,
-          "endIndex": 344,
-          "text": "mary",
-          "type": "Name",
-          "score": 0.9902693
-        }
-      ],
-      "destination": [
-        {
-          "startIndex": 226,
-          "endIndex": 233,
-          "text": "redmond",
-          "type": "Weather.Location",
-          "score": 0.987181664
+          "score": 0.9922591
         }
       ],
       "source": [
@@ -86,7 +61,130 @@
           "endIndex": 218,
           "text": "hawaii",
           "type": "Weather.Location",
-          "score": 0.972107649
+          "score": 0.9713092
+        }
+      ],
+      "destination": [
+        {
+          "startIndex": 226,
+          "endIndex": 233,
+          "text": "redmond",
+          "type": "Weather.Location",
+          "score": 0.985884964
+        }
+      ],
+      "number": [
+        {
+          "startIndex": 0,
+          "endIndex": 1,
+          "text": "3",
+          "type": "builtin.number",
+          "subtype": "integer"
+        },
+        {
+          "startIndex": 17,
+          "endIndex": 18,
+          "text": "2",
+          "type": "builtin.number",
+          "subtype": "integer"
+        },
+        {
+          "startIndex": 35,
+          "endIndex": 36,
+          "text": "5",
+          "type": "builtin.number",
+          "subtype": "integer"
+        },
+        {
+          "startIndex": 41,
+          "endIndex": 43,
+          "text": "10",
+          "type": "builtin.number",
+          "subtype": "integer"
+        },
+        {
+          "startIndex": 65,
+          "endIndex": 66,
+          "text": "6",
+          "type": "builtin.number",
+          "subtype": "integer"
+        },
+        {
+          "startIndex": 81,
+          "endIndex": 82,
+          "text": "8",
+          "type": "builtin.number",
+          "subtype": "integer"
+        },
+        {
+          "startIndex": 136,
+          "endIndex": 139,
+          "text": "425",
+          "type": "builtin.number",
+          "subtype": "integer"
+        },
+        {
+          "startIndex": 140,
+          "endIndex": 143,
+          "text": "777",
+          "type": "builtin.number",
+          "subtype": "integer"
+        },
+        {
+          "startIndex": 144,
+          "endIndex": 148,
+          "text": "1212",
+          "type": "builtin.number",
+          "subtype": "integer"
+        },
+        {
+          "startIndex": 152,
+          "endIndex": 155,
+          "text": "206",
+          "type": "builtin.number",
+          "subtype": "integer"
+        },
+        {
+          "startIndex": 156,
+          "endIndex": 159,
+          "text": "666",
+          "type": "builtin.number",
+          "subtype": "integer"
+        },
+        {
+          "startIndex": 160,
+          "endIndex": 164,
+          "text": "4123",
+          "type": "builtin.number",
+          "subtype": "integer"
+        },
+        {
+          "startIndex": 299,
+          "endIndex": 301,
+          "text": "68",
+          "type": "builtin.number",
+          "subtype": "integer"
+        },
+        {
+          "startIndex": 314,
+          "endIndex": 316,
+          "text": "72",
+          "type": "builtin.number",
+          "subtype": "integer"
+        },
+        {
+          "startIndex": 391,
+          "endIndex": 394,
+          "text": "400",
+          "type": "builtin.number",
+          "subtype": "integer"
+        },
+        {
+          "startIndex": 400,
+          "endIndex": 403,
+          "text": "500",
+          "type": "builtin.number",
+          "subtype": "integer"
         }
       ],
       "begin": [
@@ -103,6 +201,20 @@
           "endIndex": 92,
           "text": "8 years old",
           "type": "builtin.age"
+        }
+      ],
+      "datetime": [
+        {
+          "startIndex": 65,
+          "endIndex": 72,
+          "text": "6 years",
+          "type": "builtin.datetimeV2.duration"
+        },
+        {
+          "startIndex": 81,
+          "endIndex": 88,
+          "text": "8 years",
+          "type": "builtin.datetimeV2.duration"
         }
       ],
       "leave": [
@@ -137,6 +249,20 @@
           "type": "builtin.dimension"
         }
       ],
+      "dimension": [
+        {
+          "startIndex": 355,
+          "endIndex": 358,
+          "text": "3pm",
+          "type": "builtin.dimension"
+        },
+        {
+          "startIndex": 370,
+          "endIndex": 373,
+          "text": "5pm",
+          "type": "builtin.dimension"
+        }
+      ],
       "receiver": [
         {
           "startIndex": 413,
@@ -151,6 +277,20 @@
           "endIndex": 451,
           "text": "emad@gmail.com",
           "type": "builtin.email"
+        }
+      ],
+      "geographyV2": [
+        {
+          "startIndex": 212,
+          "endIndex": 218,
+          "text": "hawaii",
+          "type": "builtin.geographyV2.state"
+        },
+        {
+          "startIndex": 226,
+          "endIndex": 233,
+          "text": "redmond",
+          "type": "builtin.geographyV2.city"
         }
       ],
       "min": [
@@ -185,7 +325,37 @@
           "type": "builtin.percentage"
         }
       ],
-      "a": [
+      "personName": [
+        {
+          "startIndex": 329,
+          "endIndex": 333,
+          "text": "john",
+          "type": "builtin.personName"
+        },
+        {
+          "startIndex": 340,
+          "endIndex": 344,
+          "text": "mary",
+          "type": "builtin.personName"
+        }
+      ],
+      "old": [
+        {
+          "startIndex": 136,
+          "endIndex": 148,
+          "text": "425-777-1212",
+          "type": "builtin.phonenumber"
+        }
+      ],
+      "newPhone": [
+        {
+          "startIndex": 152,
+          "endIndex": 164,
+          "text": "206-666-4123",
+          "type": "builtin.phonenumber"
+        }
+      ],
+      "temperature": [
         {
           "startIndex": 299,
           "endIndex": 309,
@@ -250,233 +420,35 @@
         }
       ]
     },
-    "Composite1": [
-      {
-        "$instance": {
-          "datetime": [
-            {
-              "startIndex": 65,
-              "endIndex": 72,
-              "text": "6 years",
-              "type": "builtin.datetimeV2.duration"
-            },
-            {
-              "startIndex": 81,
-              "endIndex": 88,
-              "text": "8 years",
-              "type": "builtin.datetimeV2.duration"
-            }
-          ],
-          "number": [
-            {
-              "startIndex": 0,
-              "endIndex": 1,
-              "text": "3",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 17,
-              "endIndex": 18,
-              "text": "2",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 35,
-              "endIndex": 36,
-              "text": "5",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 41,
-              "endIndex": 43,
-              "text": "10",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 65,
-              "endIndex": 66,
-              "text": "6",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 81,
-              "endIndex": 82,
-              "text": "8",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 136,
-              "endIndex": 139,
-              "text": "425",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 140,
-              "endIndex": 143,
-              "text": "777",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 144,
-              "endIndex": 148,
-              "text": "1212",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 152,
-              "endIndex": 155,
-              "text": "206",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 156,
-              "endIndex": 159,
-              "text": "666",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 160,
-              "endIndex": 164,
-              "text": "4123",
-              "type": "builtin.number",
-              "subtype": "integer"
-            }
-          ],
-          "phonenumber": [
-            {
-              "startIndex": 136,
-              "endIndex": 148,
-              "text": "425-777-1212",
-              "type": "builtin.phonenumber"
-            },
-            {
-              "startIndex": 152,
-              "endIndex": 164,
-              "text": "206-666-4123",
-              "type": "builtin.phonenumber"
-            }
-          ]
-        },
-        "datetime": [
-          {
-            "type": "duration",
-            "timex": [
-              "P6Y"
-            ]
-          },
-          {
-            "type": "duration",
-            "timex": [
-              "P8Y"
-            ]
-          }
-        ],
-        "number": [
-          3,
-          2,
-          5,
-          10,
-          6,
-          8,
-          425,
-          777,
-          1212,
-          206,
-          666,
-          4123
-        ],
-        "phonenumber": [
-          "425-777-1212",
-          "206-666-4123"
-        ]
-      },
-      {
-        "$instance": {
-          "dimension": [
-            {
-              "startIndex": 355,
-              "endIndex": 358,
-              "text": "3pm",
-              "type": "builtin.dimension"
-            },
-            {
-              "startIndex": 370,
-              "endIndex": 373,
-              "text": "5pm",
-              "type": "builtin.dimension"
-            }
-          ],
-          "number": [
-            {
-              "startIndex": 299,
-              "endIndex": 301,
-              "text": "68",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 314,
-              "endIndex": 316,
-              "text": "72",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 391,
-              "endIndex": 394,
-              "text": "400",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 400,
-              "endIndex": 403,
-              "text": "500",
-              "type": "builtin.number",
-              "subtype": "integer"
-            }
-          ]
-        },
-        "dimension": [
-          {
-            "number": 3,
-            "units": "Picometer"
-          },
-          {
-            "number": 5,
-            "units": "Picometer"
-          }
-        ],
-        "number": [
-          68,
-          72,
-          400,
-          500
-        ]
-      }
+    "likee": [
+      "mary"
     ],
     "liker": [
       "john"
     ],
-    "likee": [
-      "mary"
+    "source": [
+      "hawaii"
     ],
     "destination": [
       "redmond"
     ],
-    "source": [
-      "hawaii"
+    "number": [
+      3,
+      2,
+      5,
+      10,
+      6,
+      8,
+      425,
+      777,
+      1212,
+      206,
+      666,
+      4123,
+      68,
+      72,
+      400,
+      500
     ],
     "begin": [
       {
@@ -488,6 +460,20 @@
       {
         "number": 8,
         "units": "Year"
+      }
+    ],
+    "datetime": [
+      {
+        "type": "duration",
+        "timex": [
+          "P6Y"
+        ]
+      },
+      {
+        "type": "duration",
+        "timex": [
+          "P8Y"
+        ]
       }
     ],
     "leave": [
@@ -518,11 +504,31 @@
         "units": "Inch"
       }
     ],
+    "dimension": [
+      {
+        "number": 3,
+        "units": "Picometer"
+      },
+      {
+        "number": 5,
+        "units": "Picometer"
+      }
+    ],
     "receiver": [
       "chrimc@hotmail.com"
     ],
     "sender": [
       "emad@gmail.com"
+    ],
+    "geographyV2": [
+      {
+        "type": "state",
+        "location": "hawaii"
+      },
+      {
+        "type": "city",
+        "location": "redmond"
+      }
     ],
     "min": [
       {
@@ -542,7 +548,17 @@
     "maximum": [
       10
     ],
-    "a": [
+    "personName": [
+      "john",
+      "mary"
+    ],
+    "old": [
+      "425-777-1212"
+    ],
+    "newPhone": [
+      "206-666-4123"
+    ],
+    "temperature": [
       {
         "number": 68,
         "units": "Degree"
@@ -581,7 +597,7 @@
     "label": "neutral",
     "score": 0.5
   },
-  "luisResult": {
+  "v2": {
     "query": "3 inches long by 2 inches wide and 5% to 10% and are you between 6 years old and 8 years old and can i trade kb457 for kb922 and change 425-777-1212 to 206-666-4123 and did delta buy virgin and did the rain from hawaii get to redmond and http://foo.com changed to http://blah.com and i like between 68 degrees and 72 degrees and john likes mary and leave 3pm and arrive 5pm and pay between $400 and $500 and send chrimc@hotmail.com from emad@gmail.com",
     "topScoringIntent": {
       "intent": "Roles",
@@ -593,92 +609,78 @@
         "score": 1.0
       },
       {
-        "intent": "EntityTests",
-        "score": 0.0115484772
+        "intent": "search",
+        "score": 0.08896044
       },
       {
         "intent": "Weather.GetForecast",
-        "score": 0.009885744
-      },
-      {
-        "intent": "search",
-        "score": 0.009508528
+        "score": 0.0100867962
       },
       {
         "intent": "Travel",
-        "score": 0.004027992
+        "score": 0.009896766
+      },
+      {
+        "intent": "EntityTests",
+        "score": 0.0046325135
       },
       {
         "intent": "None",
-        "score": 0.00087468233
-      },
-      {
-        "intent": "SpecifyName",
-        "score": 0.000113203794
+        "score": 0.00093744183
       },
       {
         "intent": "Delivery",
-        "score": 7.92103747E-05
+        "score": 7.978094E-05
+      },
+      {
+        "intent": "SpecifyName",
+        "score": 5.360404E-05
       },
       {
         "intent": "Help",
-        "score": 6.826453E-07
+        "score": 7.622754E-07
       },
       {
         "intent": "Greeting",
-        "score": 4.24091354E-07
+        "score": 4.73494453E-07
       },
       {
         "intent": "Cancel",
-        "score": 4.06555785E-07
+        "score": 4.50860341E-07
       }
     ],
     "entities": [
-      {
-        "entity": "john",
-        "type": "Name",
-        "startIndex": 329,
-        "endIndex": 332,
-        "score": 0.9921442,
-        "role": "liker"
-      },
       {
         "entity": "mary",
         "type": "Name",
         "startIndex": 340,
         "endIndex": 343,
-        "score": 0.9902693,
+        "score": 0.9899757,
         "role": "likee"
       },
       {
-        "entity": "redmond",
-        "type": "Weather.Location",
-        "startIndex": 226,
-        "endIndex": 232,
-        "score": 0.987181664,
-        "role": "destination"
+        "entity": "john",
+        "type": "Name",
+        "startIndex": 329,
+        "endIndex": 332,
+        "score": 0.9922591,
+        "role": "liker"
       },
       {
         "entity": "hawaii",
         "type": "Weather.Location",
         "startIndex": 212,
         "endIndex": 217,
-        "score": 0.972107649,
+        "score": 0.9713092,
         "role": "source"
       },
       {
-        "entity": "3 inches long by 2 inches wide and 5 % to 10 % and are you between 6 years old and 8 years old and can i trade kb457 for kb922 and change 425 - 777 - 1212 to 206 - 666 - 4123 and did delta buy virgin and did the rain from",
-        "type": "Composite1",
-        "startIndex": 0,
-        "endIndex": 210,
-        "score": 0.0632453859
-      },
-      {
-        "entity": "68 degrees and 72 degrees and john likes mary and leave 3pm and arrive 5pm and pay between $ 400 and $ 500 and send chrimc @",
-        "type": "Composite1",
-        "startIndex": 299,
-        "endIndex": 419,
-        "score": 0.0442264825
+        "entity": "redmond",
+        "type": "Weather.Location",
+        "startIndex": 226,
+        "endIndex": 232,
+        "score": 0.985884964,
+        "role": "destination"
       },
       {
         "entity": "3",
@@ -987,6 +989,18 @@
         "role": "sender"
       },
       {
+        "entity": "hawaii",
+        "type": "builtin.geographyV2.state",
+        "startIndex": 212,
+        "endIndex": 217
+      },
+      {
+        "entity": "redmond",
+        "type": "builtin.geographyV2.city",
+        "startIndex": 226,
+        "endIndex": 232
+      },
+      {
         "entity": "$400",
         "type": "builtin.currency",
         "startIndex": 390,
@@ -1029,6 +1043,18 @@
         "role": "maximum"
       },
       {
+        "entity": "john",
+        "type": "builtin.personName",
+        "startIndex": 329,
+        "endIndex": 332
+      },
+      {
+        "entity": "mary",
+        "type": "builtin.personName",
+        "startIndex": 340,
+        "endIndex": 343
+      },
+      {
         "entity": "425-777-1212",
         "type": "builtin.phonenumber",
         "startIndex": 136,
@@ -1036,7 +1062,8 @@
         "resolution": {
           "score": "0.9",
           "value": "425-777-1212"
-        }
+        },
+        "role": "old"
       },
       {
         "entity": "206-666-4123",
@@ -1046,7 +1073,8 @@
         "resolution": {
           "score": "0.9",
           "value": "206-666-4123"
-        }
+        },
+        "role": "newPhone"
       },
       {
         "entity": "68 degrees",
@@ -1056,8 +1084,7 @@
         "resolution": {
           "unit": "Degree",
           "value": "68"
-        },
-        "role": "a"
+        }
       },
       {
         "entity": "72 degrees",
@@ -1126,108 +1153,6 @@
         "startIndex": 119,
         "endIndex": 123,
         "role": "buy"
-      }
-    ],
-    "compositeEntities": [
-      {
-        "parentType": "Composite1",
-        "value": "3 inches long by 2 inches wide and 5 % to 10 % and are you between 6 years old and 8 years old and can i trade kb457 for kb922 and change 425 - 777 - 1212 to 206 - 666 - 4123 and did delta buy virgin and did the rain from",
-        "children": [
-          {
-            "type": "builtin.datetimeV2.duration",
-            "value": "6 years"
-          },
-          {
-            "type": "builtin.datetimeV2.duration",
-            "value": "8 years"
-          },
-          {
-            "type": "builtin.number",
-            "value": "3"
-          },
-          {
-            "type": "builtin.number",
-            "value": "2"
-          },
-          {
-            "type": "builtin.number",
-            "value": "5"
-          },
-          {
-            "type": "builtin.number",
-            "value": "10"
-          },
-          {
-            "type": "builtin.number",
-            "value": "6"
-          },
-          {
-            "type": "builtin.number",
-            "value": "8"
-          },
-          {
-            "type": "builtin.number",
-            "value": "425"
-          },
-          {
-            "type": "builtin.number",
-            "value": "777"
-          },
-          {
-            "type": "builtin.number",
-            "value": "1212"
-          },
-          {
-            "type": "builtin.number",
-            "value": "206"
-          },
-          {
-            "type": "builtin.number",
-            "value": "666"
-          },
-          {
-            "type": "builtin.number",
-            "value": "4123"
-          },
-          {
-            "type": "builtin.phonenumber",
-            "value": "425-777-1212"
-          },
-          {
-            "type": "builtin.phonenumber",
-            "value": "206-666-4123"
-          }
-        ]
-      },
-      {
-        "parentType": "Composite1",
-        "value": "68 degrees and 72 degrees and john likes mary and leave 3pm and arrive 5pm and pay between $ 400 and $ 500 and send chrimc @",
-        "children": [
-          {
-            "type": "builtin.dimension",
-            "value": "3pm"
-          },
-          {
-            "type": "builtin.dimension",
-            "value": "5pm"
-          },
-          {
-            "type": "builtin.number",
-            "value": "68"
-          },
-          {
-            "type": "builtin.number",
-            "value": "72"
-          },
-          {
-            "type": "builtin.number",
-            "value": "400"
-          },
-          {
-            "type": "builtin.number",
-            "value": "500"
-          }
-        ]
       }
     ],
     "sentimentAnalysis": {
