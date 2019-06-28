@@ -62,9 +62,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             evaluationTargetStack.Push(new EvaluationTarget(templateName, null));
 
             // we don't exclude paratemters any more
-            // because given we don't track down for templates have paramters
-            // the only scenario that we are still analyzing an paramterized template is
-            // this template is root template to anaylze, in this we also don't have exclude paramters
+            // because given we don't track down for templates have parameters
+            // the only scenario that we are still analyzing an parameterized template is
+            // this template is root template to anaylze, in this we also don't have exclude parameters
             var dependencies = Visit(templateMap[templateName].ParseTree);
             evaluationTargetStack.Pop();
 
@@ -238,8 +238,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 var args = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(',');
 
-                // Before we have a matural solution to analyze paramterized template, we stop digging into
-                // templates with paramters, we just analyze it's args.
+                // Before we have a matural solution to analyze parameterized template, we stop digging into
+                // templates with parameters, we just analyze it's args.
                 // With this approach we may not get a very fine-grained result
                 // but the result will still be accurate
                 var templateAnalyzerResult = args.Select(arg => this.AnalyzeExpression(arg));
@@ -255,7 +255,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 // We analyze tempalte only if the template has no formal parameters
                 // But we should analyzer template reference names for all situation
-                if (this.templateMap[exp].Paramters == null || this.templateMap[exp].Paramters.Count == 0)
+                if (this.templateMap[exp].Parameters == null || this.templateMap[exp].Parameters.Count == 0)
                 {
                     result.Union(this.AnalyzeTemplate(exp));
                 }

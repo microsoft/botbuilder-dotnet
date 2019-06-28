@@ -34,9 +34,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 return OutputBinding;
             }
+
             set
             {
-                InputBindings["value"] = value;
+                InputBindings[DialogContextState.DIALOG_VALUE] = value;
                 OutputBinding = value;
             }
         }

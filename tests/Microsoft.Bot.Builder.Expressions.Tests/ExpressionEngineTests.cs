@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             timestampObj = DateTime.Parse("2018-03-15T13:00:00.000Z").ToUniversalTime(),
             unixTimestamp = 1521118800,
             xmlStr = "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>",
-        turn = new
+            turn = new
             {
                 recognized = new
                 {
@@ -109,11 +109,16 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 title = "Dialog Title",
                 subTitle = "Dialog Sub Title"
             },
+            callstack = new object[]
+            {
+                new {x = 3 },
+                new {x = 2, y = 2 },
+                new {x = 1, y = 1, z = 1 },
+            }
         };
 
         public static IEnumerable<object[]> Data => new[]
        {
-            Test("@CompositeList1", "firstItem"),
             # region Operators test
             Test("1 + 2", 3),
             Test("- 1 + 2", 1),
@@ -439,6 +444,11 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("join(foreach(items, item, item), ',')", "zero,one,two"),
             Test("join(foreach(nestedItems, i, i.x + first(nestedItems).x), ',')", "2,3,4", new HashSet<string>{ "nestedItems"}),
             Test("join(foreach(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3", new HashSet<string>{ "items"}),
+            Test("join(select(items, item, item), ',')", "zero,one,two"),
+            Test("join(select(nestedItems, i, i.x + first(nestedItems).x), ',')", "2,3,4", new HashSet<string>{ "nestedItems"}),
+            Test("join(select(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3", new HashSet<string>{ "items"}),
+            Test("join(where(items, item, item == 'two'), ',')", "two"),
+            Test("join(foreach(where(nestedItems, item, item.x > 1), result, result.x), ',')", "2,3", new HashSet<string>{ "nestedItems"}),
             Test("last(items)", "two"),
             Test("last('hello')", "o"),
             Test("last(createArray(0, 1, 2))", 2),
@@ -475,9 +485,12 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("exists(#BookFlight)", true, new HashSet<string> {"turn.recognized.intents.BookFlight"}),
             Test("$title", "Dialog Title", new HashSet<string> {"dialog.title"}),
             Test("$subTitle", "Dialog Sub Title", new HashSet<string> {"dialog.subTitle"}),
-            Test("%xxx", "instance", new HashSet<string> {"dialog.instance.xxx"}),
-            Test("^xxx", "options", new HashSet<string> {"dialog.options.xxx"}),
-            Test("count(@@CompositeList1) == 1 && count(@@CompositeList1[0]) == 1", true, new HashSet<string> {"turn.recognized.entities.CompositeList1" }),
+            Test("~xxx", "instance", new HashSet<string> {"dialog.instance.xxx"}),
+            Test("%xxx", "options", new HashSet<string> {"dialog.options.xxx"}),
+            Test("^x", 3),
+            Test("^y", 2),
+            Test("^z", 1),
+            Test("count(@@CompositeList1) == 1 && count(@@CompositeList1[0]) == 1", true),
             #endregion
 
             #region  Memory access
@@ -499,8 +512,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("count(user.lists.todo) >= int(@ordinal[0]))", true),
             Test("user.lists.todo[int(@ordinal[0]) - 1]", "todo1"),
             Test("user.lists[user.listType][int(@ordinal[0]) - 1]", "todo1"),
-            Test("@CompositeList1", "firstItem"),
-            Test("count(@CompositeList2)", 2),
             #endregion
 
             # region Regex
@@ -531,7 +542,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             # endregion
         };
 
-        [DataTestMethod]
+        [DataTestMethod()]
         [DynamicData(nameof(Data))]
         public void Evaluate(string input, object expected, HashSet<string> expectedRefs)
         {

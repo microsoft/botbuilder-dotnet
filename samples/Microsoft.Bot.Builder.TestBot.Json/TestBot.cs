@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             // auto reload dialogs when file changes
             this.resourceExplorer.Changed += (resources) =>
             {
-                if (resources.Any(resource => resource.Id== ".dialog"))
+                if (resources.Any(resource => resource.Id.EndsWith(".dialog")))
                 {
                     Task.Run(() => this.LoadDialogs());
                 }
@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 var name = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(resource.Id));
                 choiceInput.Choices.Add(new Choice(name));
                 var dialog = DeclarativeTypeLoader.Load<IDialog>(resource, this.resourceExplorer, DebugSupport.SourceRegistry);
-                handleChoice.Cases.Add(new Case($"'{name}'", new List<IDialog>() { dialog }));
+                handleChoice.Cases.Add(new Case($"{name}", new List<IDialog>() { dialog }));
             }
             choiceInput.Style = ListStyle.Auto;
             rootDialog.Steps.Add(choiceInput);

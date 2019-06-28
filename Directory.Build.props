@@ -45,6 +45,7 @@
       replace PackageLicenseUrl with PackageLicenseExpression.
     -->
     <NoWarn>$(NoWarn);NU5125</NoWarn>
+    <LangVersion>7</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="$(Configuration) == 'Debug'">
     <!-- For debug builds, we don't generate documentation. Supress the StyleCop rule that warns about this. -->

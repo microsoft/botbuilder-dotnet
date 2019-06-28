@@ -62,6 +62,8 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string First = "first";
         public const string Last = "last";
         public const string Foreach = "foreach";
+        public const string Select = "select";
+        public const string Where = "where";
         public const string Union = "union";
         public const string Intersection = "intersection";
         public const string Skip = "skip";
@@ -145,9 +147,10 @@ namespace Microsoft.Bot.Builder.Expressions
         // short hand functions
         public const string Intent = "intent";
         public const string Entity = "entity";
+        public const string Dialog = "dialog";
         public const string SimpleEntity = "simpleEntity";
-        public const string Title = "title";
         public const string Instance = "instance";
         public const string Option = "option";
+        public const string Callstack = "callstack";
     }
 }
