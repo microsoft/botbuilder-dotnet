@@ -96,6 +96,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         {
         }
 
+        /// <summary>
         /// Initializes a new instance of the <see cref="QnAMaker"/> class.
         /// </summary>
         /// <param name="service">QnA service details from configuration.</param>
@@ -109,6 +110,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         {
         }
 
+        /// <summary>
         /// Initializes a new instance of the <see cref="QnAMaker"/> class.
         /// </summary>
         /// <param name="service">QnA service details from configuration.</param>

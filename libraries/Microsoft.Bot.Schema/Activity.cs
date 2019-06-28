@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Schema
 {
+#pragma warning disable SA1609 // PropertyDocumentationMustHaveValue, temporary ignore, needs to be fixed later
     /// <summary>
     /// An Activity is the basic communication type for the Bot Framework 3.0
     /// protocol.
@@ -167,11 +168,6 @@ namespace Microsoft.Bot.Schema
             SemanticAction = semanticAction;
             CustomInit();
         }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
 
         /// <summary>
         /// Gets or sets the activity type. Possible values include:
@@ -468,5 +464,11 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "callerId")]
         public string CallerId { get; set; }
+
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
+#pragma warning restore SA1609 // PropertyDocumentationMustHaveValue
 }

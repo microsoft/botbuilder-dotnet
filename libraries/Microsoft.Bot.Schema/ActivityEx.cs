@@ -262,6 +262,7 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Returns this activity as an event activity type; or null, if this is not that type of activity.
         /// </summary>
+        /// <returns>An activity event.</returns>
         public IEventActivity AsEventActivity()
         {
             return IsActivity(ActivityTypes.Event) ? this : null;

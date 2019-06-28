@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.Bot.Schema;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.IdentityModel.Protocols;
 using Xunit;
 
-namespace Microsoft.Bot.Connector.Authentication.Tests
+namespace Microsoft.Bot.Connector.Tests.Authentication
 {
     public class JwtTokenExtractorTests
     {

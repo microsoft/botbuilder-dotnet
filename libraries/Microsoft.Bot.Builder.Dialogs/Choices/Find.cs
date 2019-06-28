@@ -97,6 +97,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <summary>This method is internal and should not be used.</summary>
         /// <remarks>Please use <see cref="FindChoices(string, IList{Choice}, FindChoicesOptions)"/> or
         /// <see cref="FindChoices(string, IList{string}, FindChoicesOptions)"/> instead.</remarks>
+        /// <param name="utterance">The input.</param>
+        /// <param name="values">The values.</param>
+        /// <param name="options">The options for the search.</param>
+        /// <returns>A list of found values.</returns>
         public static List<ModelResult<FoundValue>> FindValues(string utterance, List<SortedValue> values, FindValuesOptions options = null)
         {
             // Sort values in descending order by length so that the longest value is searched over first.
