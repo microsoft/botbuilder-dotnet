@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using static Microsoft.Bot.Builder.Dialogs.DialogContext;
@@ -276,6 +277,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         private async Task<InputState> RecognizeInput(DialogContext dc, bool consultation)
         {
             dynamic input = null;
+
+            if (!string.IsNullOrEmpty(this.Property) && !this.AlwaysPrompt)
+            {
+                var (temp, error) = new ExpressionEngine().Parse(this.Property).TryEvaluate(dc.State);
+                input = temp;
+            }
+
             if (this.Value != null)
             {
                 var (temp, error) = this.Value.TryEvaluate(dc.State);

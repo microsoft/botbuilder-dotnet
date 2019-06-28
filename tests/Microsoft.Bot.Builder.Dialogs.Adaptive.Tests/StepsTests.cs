@@ -342,7 +342,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         Prompt = new ActivityTemplate("yes or no"),
                         UnrecognizedPrompt = new ActivityTemplate("I need a yes or no."),
-                        Property = "user.confirmed"
+                        Property = "user.confirmed",
+                        AlwaysPrompt = true
                     },
                     new SendActivity("confirmation: {user.confirmed}"),
                     new ConfirmInput()
@@ -392,6 +393,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         Prompt = new ActivityTemplate("Please select a color:"),
                         UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
                         Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
+                        AlwaysPrompt = true,
                         Style = ListStyle.Inline
                     },
                     new SendActivity("{user.color}"),
@@ -422,6 +424,64 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Step_ChoiceInputInMemory()
+        {
+            var testDialog = new AdaptiveDialog("planningTest")
+            {
+                AutoEndDialog = false,
+                Steps = new List<IDialog>()
+                {
+                    new SetProperty()
+                    {
+                        Value = new ExpressionEngine().Parse("json('[{\"value\": \"red\"}, {\"value\": \"green\"}, {\"value\": \"blue\"}]')"),
+                        Property = "user.choices"
+                    },
+                    new ChoiceInput()
+                    {
+                        Property = "user.color",
+                        Prompt = new ActivityTemplate("Please select a color:"),
+                        UnrecognizedPrompt = new ActivityTemplate("Not a color. Please select a color:"),
+                        ChoicesProperty = "user.choices",
+                        Style = ListStyle.Inline
+                    },
+                    new SendActivity("{user.color}"),
+                    new ChoiceInput()
+                    {
+                        Property = "user.color",
+                        Prompt = new ActivityTemplate("Please select a color:"),
+                        UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
+                        ChoicesProperty = "user.choices",
+                        AlwaysPrompt = true,
+                        Style = ListStyle.Inline
+                    },
+                    new SendActivity("{user.color}"),
+                    new ChoiceInput()
+                    {
+                        Property = "user.color",
+                        Prompt = new ActivityTemplate("Please select a color:"),
+                        UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
+                        ChoicesProperty = "user.choices",
+                        AlwaysPrompt = true,
+                        Style = ListStyle.Inline
+                    },
+                    new SendActivity("{user.color}"),
+                }
+            };
+
+            await CreateFlow(testDialog)
+            .Send("hi")
+                .AssertReply("Please select a color: (1) red, (2) green, or (3) blue")
+            .Send("asdasd")
+                .AssertReply("Not a color. Please select a color: (1) red, (2) green, or (3) blue")
+            .Send("3")
+                .AssertReply("blue")
+                .AssertReply("Please select a color: (1) red, (2) green, or (3) blue")
+            .Send("red")
+                .AssertReply("red")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task Step_NumberInput()
         {
             var testDialog = new AdaptiveDialog("planningTest")
@@ -438,7 +498,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         {
                             Prompt = new ActivityTemplate("Please enter your age."),
                             UnrecognizedPrompt = new ActivityTemplate("The value entered must be greater than 0 and less than 150."),
-                            Value = new ExpressionEngine().Parse("user.userProfile.Age"),
                             Property = "user.userProfile.Age",
                             OutputFormat = NumberOutputFormat.Integer,
                             Validations = new List<Expression>()

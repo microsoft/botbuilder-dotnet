@@ -75,6 +75,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     }
                     op.Choices = this.Choices;
                 }
+
+                if (!string.IsNullOrEmpty(this.ChoicesProperty))
+                {
+                    if (op == null)
+                    {
+                        op = new ChoiceInputOptions();
+                    }
+                    var choicesMemory = dc.State.GetValue<List<Choice>>(this.ChoicesProperty);
+                    if (choicesMemory != null && choicesMemory.Count > 0)
+                    {
+                        op.Choices = choicesMemory;
+                    }
+                }
             }
 
             return base.OnInitializeOptions(dc, op);
@@ -140,7 +153,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var channelId = dc.Context.Activity.ChannelId;
             var choicePrompt = new ChoicePrompt();
             var choiceOptions = this.ChoiceOptions ?? ChoiceInput.DefaultChoiceOptions[locale];
-            return this.AppendChoices(prompt.AsMessageActivity(), channelId, this.Choices, this.Style, choiceOptions);
+
+            var choices = this.Choices ?? new List<Choice>();
+
+            if (!string.IsNullOrEmpty(this.ChoicesProperty))
+            {
+                var choicesMemory = dc.State.GetValue<List<Choice>>(this.ChoicesProperty);
+                if (choicesMemory != null && choicesMemory.Count > 0)
+                {
+                    choices = choicesMemory;
+                }
+            }
+
+            return this.AppendChoices(prompt.AsMessageActivity(), channelId, choices, this.Style, choiceOptions);
         }
 
         private string GetCulture(DialogContext dc)
