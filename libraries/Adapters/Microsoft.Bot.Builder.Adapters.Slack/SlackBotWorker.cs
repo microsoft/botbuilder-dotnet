@@ -43,7 +43,7 @@ namespace Microsoft.BotBuilder.Adapters.Slack
         /// <param name="userId">A Slack user id, like one found in `message.user` or in a `.<@mention>`</param>
         public async Task<object> StartPrivateConversation(string userId)
         {
-            var channel = await this.ApiClient.JoinDirectMessageChannelAsync(userId);
+            var channel = await this.ApiClient.JoinDirectMessageChannelAsync(userId).ConfigureAwait(false);
 
             if (channel.ok)
             {
@@ -82,7 +82,7 @@ namespace Microsoft.BotBuilder.Adapters.Slack
             convRef.User.Name = null;
             convRef.ChannelId = "slack";
 
-            return await this.ChangeContextAsync(convRef);
+            return await this.ChangeContextAsync(convRef).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace Microsoft.BotBuilder.Adapters.Slack
             convRef.User.Name = null;
             convRef.ChannelId = "slack";
 
-            return await this.ChangeContextAsync(convRef);
+            return await this.ChangeContextAsync(convRef).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace Microsoft.BotBuilder.Adapters.Slack
                 threadTs = (source.IncomingMessage.ChannelData as dynamic).Ts; // TO-DO: replace 'as dynamic'
             }
 
-            return await this.ReplyAsync(source, resp);
+            return await this.ReplyAsync(source, resp).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace Microsoft.BotBuilder.Adapters.Slack
 
             resp.IncomingMessage = activity;
 
-            return await this.ReplyAsync(source, resp);
+            return await this.ReplyAsync(source, resp).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace Microsoft.BotBuilder.Adapters.Slack
 
             resp.IncomingMessage = activity;
 
-            return await this.ReplyInteractive(source, resp);
+            return await this.ReplyInteractive(source, resp).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace Microsoft.BotBuilder.Adapters.Slack
 
             resp.IncomingMessage = activity;
 
-            return await this.ReplyInteractive(source, resp);
+            return await this.ReplyInteractive(source, resp).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -223,15 +223,15 @@ namespace Microsoft.BotBuilder.Adapters.Slack
                 json = slackMessage,
             };
 
-            return await this.RequestUrl(requestOptions);
+            return await this.RequestUrl(requestOptions).ConfigureAwait(false);
         }
 
         public async Task<object> RequestUrl(dynamic options)
         {
             using (var client = new HttpClient())
             {
-                HttpResponseMessage response = await client.PostAsync(options.uri, options.json);
-                var result = await response.Content.ReadAsStringAsync();
+                HttpResponseMessage response = await client.PostAsync(options.uri, options.json).ConfigureAwait(false);
+                var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 return JsonConvert.DeserializeObject(result);
             }
@@ -269,7 +269,7 @@ namespace Microsoft.BotBuilder.Adapters.Slack
             var triggerId = (source as dynamic).TriggerId;
             var dialog = (Dialog)dialogObj;
 
-            return await this.ApiClient.DialogOpenAsync(triggerId, dialog);
+            return await this.ApiClient.DialogOpenAsync(triggerId, dialog).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -283,7 +283,7 @@ namespace Microsoft.BotBuilder.Adapters.Slack
             TurnContext context = this.Config.TurnContext;
             CancellationTokenSource source = new CancellationTokenSource();
             CancellationToken token = source.Token;
-            return await adapter.UpdateActivityAsync(context, update.IncomingMessage, token);
+            return await adapter.UpdateActivityAsync(context, update.IncomingMessage, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -297,7 +297,7 @@ namespace Microsoft.BotBuilder.Adapters.Slack
             var context = this.Config.TurnContext;
             CancellationTokenSource source = new CancellationTokenSource();
             CancellationToken token = source.Token;
-            await adapter.DeleteActivityAsync(context, update.Reference, token);
+            await adapter.DeleteActivityAsync(context, update.Reference, token).ConfigureAwait(false);
         }
     }
 }
